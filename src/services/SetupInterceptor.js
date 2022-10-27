@@ -10,7 +10,7 @@ const SetupInterceptor = (store) => {
   CustomAxios.interceptors.request.use(
     (config) => {
       const token = getLocalAccessToken();
-      config.baseURL = process.env.REACT_APP_DEPLOY_BACKEND_URL;
+      // config.baseURL = process.env.REACT_APP_DEPLOY_BACKEND_URL;
       if (token) {
         config.headers = {
           Authorization: `Bearer ${token}`,
