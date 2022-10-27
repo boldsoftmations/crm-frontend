@@ -1,0 +1,23 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans&family=Work+Sans&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  scrollbar-width: thin;
+  background-color: '#aaa9ad';
+
+}
+
+*::-webkit-scrollbar {
+  width: 30px;
+  background-color: #aaa9ad;
+}
+
+.appcontainer {
+  min-height: 100vh;
+  margin-top: 3%;
+  width: 100%;
+  position: absolute;
+  background-color: #aaa9ad;
+}

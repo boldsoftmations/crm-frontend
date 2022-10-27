@@ -1,0 +1,75 @@
+.title {
+  text-transform: uppercase;
+  font-size: 20px;
+  font-family: 'Josefin Sans, sans-serif';
+  cursor: pointer;
+  margin: 10px;
+}
+
+.header {
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.divider {
+  margin: 10px;
+  width: 100%;
+  background-color: grey;
+}
+
+.appMenu {
+  width: "100%";
+}
+
+.navList {
+  width: 300;
+}
+
+.menuItem {
+  width: 300;
+}
+
+.menuItemIcon {
+  color: "#97c05c";
+}
+
+.title {
+  margin-right: "auto";
+}
+
+.drawer {
+  width: 300;
+}
+
+.content {
+  padding: 30;
+}
+
+.header {
+  background-color: "#0d6efd";
+  padding-right: "79px";
+  padding-left: "118px";
+}
+
+.logo {
+  font-family: "Work Sans; sans-serif";
+  font-weight: 600;
+  color: "#FFFEFE";
+  text-align: "left";
+}
+
+.logo:hover {
+  color: "#000000";
+}
+
+
+.menuButton:hover {
+  background-color: "#1E90FF";
+  color: "#000000";
+
+}
+
+.toolbar {
+  display: "flex";
+  justify-content: "space-between";
+}
