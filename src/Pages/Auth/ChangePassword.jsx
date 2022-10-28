@@ -16,8 +16,9 @@ import {
 } from "@mui/material";
 import LockResetIcon from "@mui/icons-material/LockReset";
 import axios from "axios";
-
-const RESET_URL = `${process.env.REACT_APP_DEPLOY_BACKEND_URL}/api/user/send-reset-password-email/`;
+import { Link, useParams } from "react-router-dom";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+const RESET_URL = `${process.env.REACT_APP_DEPLOY_BACKEND_URL}/api/user/reset-password`;
 
 const style = {
   position: "absolute",
@@ -31,27 +32,31 @@ const style = {
   p: 4,
 };
 
-export const ForgotPassword = () => {
-  const [email, setEmail] = useState("");
+export const ChangePassword = () => {
+  const [password, setPassword] = useState("");
+  const [password2, setPassword2] = useState("");
   const theme = createTheme();
   const [open, setOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [message, setMessage] = useState("");
+  const { id } = useParams();
+  const { token } = useParams();
+  console.log("token", token);
 
+  console.log("id", id);
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       setOpen(true);
-      if (email) {
-        const req = {
-          email: email,
-        };
-        const response = await axios.post(RESET_URL, req);
-        setMessage(response.data.message);
-        setModalOpen(true);
-        setEmail("");
-      }
+
+      const req = {
+        password: password,
+        password2: password2,
+      };
+      const response = await axios.post(`${RESET_URL}/${id}/${token}/`, req);
+      setMessage(response.data.message);
+      setModalOpen(true);
+
       setOpen(false);
     } catch (err) {
       console.log("err :>> ", err);
@@ -77,14 +82,19 @@ export const ForgotPassword = () => {
       >
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            Verify Your Email
+            Password Reset Confirmation
           </Typography>
           <Typography
             id="modal-modal-description"
             sx={{ mb: 2, mt: 2, color: "#3980F4" }}
           >
             {message}
+
+            <CheckCircleIcon color="success" />
           </Typography>
+          <Button variant="contained" component={Link} to="/login">
+            LOGIN
+          </Button>
         </Box>
       </Modal>
       <Container className="Auth-form-container" component="main" maxWidth="xs">
@@ -113,11 +123,24 @@ export const ForgotPassword = () => {
                 <TextField
                   fullWidth
                   size="small"
-                  label="Email"
+                  label="Password"
                   variant="outlined"
-                  name="email"
-                  onChange={(e) => setEmail(e.target.value)}
-                  value={email}
+                  name="password"
+                  type={"password"}
+                  onChange={(e) => setPassword(e.target.value)}
+                  value={password}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  size="small"
+                  label="Confirm Password"
+                  variant="outlined"
+                  name="password2"
+                  type={"password"}
+                  onChange={(e) => setPassword2(e.target.value)}
+                  value={password2}
                 />
               </Grid>
             </Grid>

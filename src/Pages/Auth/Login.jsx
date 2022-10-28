@@ -173,7 +173,7 @@ export const Login = () => {
             </Button>
             <Grid container justifyContent="center">
               <Grid item>
-                <Link to="/forgot-password " className="link-primary">
+                <Link to="/forgot-password" className="link-primary">
                   Forgot Password? Click Here
                 </Link>
               </Grid>

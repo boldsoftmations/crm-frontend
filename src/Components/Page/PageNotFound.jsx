@@ -11,12 +11,10 @@ export const PageNotFound = () => {
       </div>
       <div className="err2">4</div>
       <div className="msg">
-        Maybe this page moved? Got deleted? Is hiding out in quarantine? Never
-        existed in the first place?
         <p>
           Let's go{" "}
           <Link className="link" to={`/login`}>
-            home
+            Login
           </Link>{" "}
           and try from there.
         </p>

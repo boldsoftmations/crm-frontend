@@ -13,10 +13,24 @@ import {
   TextField,
   Backdrop,
   CircularProgress,
+  Modal,
+  Typography,
 } from "@mui/material";
 import axios from "axios";
 import * as Yup from "yup";
 import { useFormik } from "formik";
+
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  border: "2px solid #000",
+  boxShadow: 24,
+  p: 4,
+};
 
 const phoneRegExp =
   /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
@@ -25,6 +39,8 @@ const SIGNUP_URL = `${process.env.REACT_APP_DEPLOY_BACKEND_URL}/api/user/registe
 export const SignUp = () => {
   let navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [message, setMessage] = useState("");
 
   const validationSchema = Yup.object().shape({
     first_name: Yup.string().required("first name is required"),
@@ -70,7 +86,8 @@ export const SignUp = () => {
 
         const res = await axios.post(SIGNUP_URL, req);
         console.log("res :>> ", res);
-        navigate("/login");
+        setMessage(res.data.message);
+        setModalOpen(true);
         setOpen(false);
       } catch (error) {
         console.log("error", error);
@@ -91,6 +108,27 @@ export const SignUp = () => {
             <CircularProgress color="inherit" />
           </Backdrop>
         </div>
+        <Modal
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={style}>
+            <Typography id="modal-modal-title" variant="h6" component="h2">
+              Verify Your Email
+            </Typography>
+            <Typography
+              id="modal-modal-description"
+              sx={{ mb: 2, color: "#3980F4" }}
+            >
+              {message}
+            </Typography>
+            <Button variant="contained" component={Link} to="/login">
+              LOGIN
+            </Button>
+          </Box>
+        </Modal>
         <Container
           className="Auth-form-container"
           component="main"

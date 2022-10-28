@@ -16,7 +16,7 @@ import { CreateRawMaterials } from "../Pages/Products/RawMaterials/CreateRawMate
 import { CreateUnit } from "./../Pages/Products/Unit/CreateUnit";
 import { Customers } from "../Pages/Customers";
 import { Dashboard } from "../Pages/Dashboard/Dashboard";
-import { ForgotPassword } from "../Pages/Auth/ForgotPassword";
+
 import { Home } from "../Pages/Home";
 import { Login } from "../Pages/Auth/Login";
 import { PageNotFound } from "../Components/Page/PageNotFound";
@@ -48,6 +48,8 @@ import { ViewRawMaterials } from "./../Pages/Products/RawMaterials/ViewRawMateri
 import { ViewUnit } from "./../Pages/Products/Unit/ViewUnit";
 
 import "../App.css";
+import { ForgotPassword } from "./../Pages/Auth/ForgotPassword";
+import { ChangePassword } from "./../Pages/Auth/ChangePassword";
 
 export const RouteScreen = () => {
   const token = useSelector((state) => state.auth);
@@ -58,6 +60,11 @@ export const RouteScreen = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route
+          path="/change-password/:id/:token"
+          element={<ChangePassword />}
+        />
+
         {token.user && (
           <>
             <Route path="/user/dashoard" element={<Dashboard />} />
