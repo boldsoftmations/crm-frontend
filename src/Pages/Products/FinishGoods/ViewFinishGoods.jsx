@@ -29,6 +29,7 @@ import AddIcon from "@mui/icons-material/Add";
 import ProductService from "../../../services/ProductService";
 import { Paginate } from "../../../Components/Pagination/Paginate";
 import CustomAxios from "../../../services/api";
+import ReactPaginate from "react-paginate";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -56,8 +57,7 @@ export const ViewFinishGoods = () => {
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [nextPageUrl, setNextPageUrl] = useState("");
-  const [prevPageUrl, setPrevPageUrl] = useState("");
+  const [pageCount, setpageCount] = useState(0);
 
   const getFinishGoods = async () => {
     try {
@@ -65,8 +65,8 @@ export const ViewFinishGoods = () => {
       const response = await ProductService.getAllFinishGoods();
 
       setFinishGood(response.data.results);
-      setPrevPageUrl(response.data.previous);
-      setNextPageUrl(response.data.next);
+      const total = response.data.count;
+      setpageCount(Math.ceil(total / 25));
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -93,34 +93,25 @@ export const ViewFinishGoods = () => {
     getFinishGoods();
   }, []);
 
-  const gotoNextPage = async () => {
+  const handlePageChange = async (data) => {
     try {
+      let currentPage = data.selected + 1;
       setOpen(true);
-      let response = await CustomAxios.get(nextPageUrl);
+
+      const response = await ProductService.getAllFinishGoodsPaginate(
+        currentPage,
+        searchQuery
+      );
       if (response) {
         setFinishGood(response.data.results);
-        setPrevPageUrl(response.data.previous);
-        setNextPageUrl(response.data.next);
-        setOpen(false);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      } else {
+        getFinishGoods();
       }
-    } catch (err) {
       setOpen(false);
-    }
-  };
-
-  const gotoPrevPage = async () => {
-    try {
-      setOpen(true);
-      let response = await CustomAxios.get(prevPageUrl);
-      if (response) {
-        setFinishGood(response.data.results);
-
-        setPrevPageUrl(response.data.previous);
-        setNextPageUrl(response.data.next);
-        setOpen(false);
-      }
-    } catch (err) {
-      console.log("error previous", err);
+    } catch (error) {
+      console.log("error", error);
       setOpen(false);
     }
   };
@@ -134,8 +125,8 @@ export const ViewFinishGoods = () => {
       );
       if (response) {
         setFinishGood(response.data.results);
-        setPrevPageUrl(response.data.previous);
-        setNextPageUrl(response.data.next);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
       } else {
         getFinishGoods();
       }
@@ -146,6 +137,11 @@ export const ViewFinishGoods = () => {
     } finally {
       setOpen(false);
     }
+  };
+
+  const getResetData = () => {
+    setSearchQuery("");
+    getFinishGoods();
   };
 
   return (
@@ -181,6 +177,7 @@ export const ViewFinishGoods = () => {
           <Box display="flex">
             <Box flexGrow={0.9}>
               <TextField
+                value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 name="search"
                 size="small"
@@ -189,13 +186,23 @@ export const ViewFinishGoods = () => {
                 sx={{ backgroundColor: "#ffffff" }}
               />
 
-              <IconButton
+              <Button
                 onClick={getSearchData}
-                size="small"
-                variant="outlined"
+                size="medium"
+                sx={{ marginLeft: "1em" }}
+                variant="contained"
+                startIcon={<SearchIcon />}
               >
-                <SearchIcon />
-              </IconButton>
+                Search
+              </Button>
+              <Button
+                onClick={getResetData}
+                sx={{ marginLeft: "1em" }}
+                size="medium"
+                variant="contained"
+              >
+                Reset
+              </Button>
             </Box>
             <Box flexGrow={2}>
               <h3
@@ -286,13 +293,26 @@ export const ViewFinishGoods = () => {
             </Table>
           </TableContainer>
           <TableFooter
-            sx={{ display: "flex", justifyContent: "center", marginTop: "1em" }}
+            sx={{ display: "flex", justifyContent: "center", marginTop: "2em" }}
           >
-            <Paginate
-              prevPageUrl={prevPageUrl}
-              nextPageUrl={nextPageUrl}
-              gotoNextPage={gotoNextPage}
-              gotoPrevPage={gotoPrevPage}
+            <ReactPaginate
+              previousLabel={"Previous"}
+              nextLabel={"Next"}
+              breakLabel={"..."}
+              pageCount={pageCount}
+              marginPagesDisplayed={2}
+              pageRangeDisplayed={3}
+              onPageChange={handlePageChange}
+              containerClassName={"pagination justify-content-center"}
+              pageClassName={"page-item"}
+              pageLinkClassName={"page-link"}
+              previousClassName={"page-item"}
+              previousLinkClassName={"page-link"}
+              nextClassName={"page-item"}
+              nextLinkClassName={"page-link"}
+              breakClassName={"page-item"}
+              breakLinkClassName={"page-link"}
+              activeClassName={"active"}
             />
           </TableFooter>
         </Paper>

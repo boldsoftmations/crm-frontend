@@ -157,6 +157,12 @@ const getAllSearchConsumable = (search) => {
   return CustomAxios.get(`/api/product/consumables/?search=${search}`);
 };
 
+const getAllConsumablePaginate = (currentPage, search) => {
+  return CustomAxios.get(
+    `/api/product/consumables/?page=${currentPage}&search=${search}`
+  );
+};
+
 const getConsumableById = (id) => {
   return CustomAxios.get(`/api/product/consumables/${id}`);
 };
@@ -177,6 +183,12 @@ const getAllSearchFinishGoods = (search) => {
   return CustomAxios.get(`/api/product/finished-goods/?search=${search}`);
 };
 
+const getAllFinishGoodsPaginate = (currentPage, search) => {
+  return CustomAxios.get(
+    `/api/product/finished-goods/?page=${currentPage}&search=${search}`
+  );
+};
+
 const createFinishGoods = (data) => {
   return CustomAxios.post("/api/product/finished-goods/", data);
 };
@@ -195,6 +207,12 @@ const getAllRawMaterials = () => {
 
 const getAllSearchRawMaterials = (search) => {
   return CustomAxios.get(`/api/product/raw-materials/?search=${search}`);
+};
+
+const getAllRawMaterialsPaginate = (currentPage, search) => {
+  return CustomAxios.get(
+    `/api/product/raw-materials/?page=${currentPage}&search=${search}`
+  );
 };
 
 const createRawMaterials = (data) => {
@@ -253,16 +271,19 @@ const ProductService = {
   updateProductCode,
   getAllConsumable,
   getAllSearchConsumable,
+  getAllConsumablePaginate,
   createConsumable,
   getConsumableById,
   updateConsumable,
   getAllFinishGoods,
   getAllSearchFinishGoods,
+  getAllFinishGoodsPaginate,
   createFinishGoods,
   getFinishGoodsById,
   updateFinishGoods,
   getAllRawMaterials,
   getAllSearchRawMaterials,
+  getAllRawMaterialsPaginate,
   createRawMaterials,
   getRawMaterialsById,
   updateRawMaterials,

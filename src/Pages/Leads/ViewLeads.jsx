@@ -113,6 +113,11 @@ export const Viewleads = () => {
     }
   };
 
+  const getResetData = () => {
+    setSearchQuery("");
+    getleads();
+  };
+
   const fetchComments = async (currentPage) => {
     if (searchQuery) {
       const res = await CustomAxios.get(
@@ -185,6 +190,7 @@ export const Viewleads = () => {
           <Box display="flex">
             <Box flexGrow={0.9} align="left">
               <TextField
+                value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 name="search"
                 size="small"
@@ -192,13 +198,23 @@ export const Viewleads = () => {
                 variant="outlined"
                 sx={{ backgroundColor: "#ffffff" }}
               />
-              <IconButton
+              <Button
                 onClick={getSearchData}
-                size="small"
-                variant="outlined"
+                size="medium"
+                sx={{ marginLeft: "1em" }}
+                variant="contained"
+                startIcon={<SearchIcon />}
               >
-                <SearchIcon />
-              </IconButton>
+                Search
+              </Button>
+              <Button
+                onClick={getResetData}
+                sx={{ marginLeft: "1em" }}
+                size="medium"
+                variant="contained"
+              >
+                Reset
+              </Button>
             </Box>
             <Box flexGrow={2} align="center">
               <h3

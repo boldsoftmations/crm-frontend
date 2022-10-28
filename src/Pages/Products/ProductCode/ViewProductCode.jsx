@@ -106,6 +106,11 @@ export const ViewProductCode = () => {
     }
   };
 
+  const getResetData = () => {
+    setSearchQuery("");
+    getproductCodes();
+  };
+
   return (
     <>
       <div>
@@ -139,6 +144,7 @@ export const ViewProductCode = () => {
           <Box display="flex">
             <Box flexGrow={0.9}>
               <TextField
+                value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 name="search"
                 size="small"
@@ -147,13 +153,23 @@ export const ViewProductCode = () => {
                 sx={{ backgroundColor: "#ffffff" }}
               />
 
-              <IconButton
+              <Button
                 onClick={getSearchData}
-                size="small"
-                variant="outlined"
+                size="medium"
+                sx={{ marginLeft: "1em" }}
+                variant="contained"
+                startIcon={<SearchIcon />}
               >
-                <SearchIcon />
-              </IconButton>
+                Search
+              </Button>
+              <Button
+                onClick={getResetData}
+                sx={{ marginLeft: "1em" }}
+                size="medium"
+                variant="contained"
+              >
+                Reset
+              </Button>
             </Box>
             <Box flexGrow={2}>
               <h3

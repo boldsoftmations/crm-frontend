@@ -25,8 +25,7 @@ import AddIcon from "@mui/icons-material/Add";
 
 import ProductService from "../../../services/ProductService";
 import SearchIcon from "@mui/icons-material/Search";
-import { Paginate } from "../../../Components/Pagination/Paginate";
-import CustomAxios from "../../../services/api";
+import ReactPaginate from "react-paginate";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -54,16 +53,15 @@ export const ViewConsumable = () => {
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [nextPageUrl, setNextPageUrl] = useState("");
-  const [prevPageUrl, setPrevPageUrl] = useState("");
+  const [pageCount, setpageCount] = useState(0);
 
   const getconsumables = async () => {
     try {
       setOpen(true);
       const response = await ProductService.getAllConsumable();
       setConsumable(response.data.results);
-      setPrevPageUrl(response.data.previous);
-      setNextPageUrl(response.data.next);
+      const total = response.data.count;
+      setpageCount(Math.ceil(total / 25));
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -90,33 +88,25 @@ export const ViewConsumable = () => {
     getconsumables();
   }, []);
 
-  const gotoNextPage = async () => {
+  const handlePageChange = async (data) => {
     try {
+      let currentPage = data.selected + 1;
       setOpen(true);
-      let response = await CustomAxios.get(nextPageUrl);
-      if (response) {
-        setConsumable(response.data.results);
-        setPrevPageUrl(response.data.previous);
-        setNextPageUrl(response.data.next);
-        setOpen(false);
-      }
-    } catch (err) {
-      setOpen(false);
-    }
-  };
 
-  const gotoPrevPage = async () => {
-    try {
-      setOpen(true);
-      let response = await CustomAxios.get(prevPageUrl);
+      const response = await ProductService.getAllConsumablePaginate(
+        currentPage,
+        searchQuery
+      );
       if (response) {
         setConsumable(response.data.results);
-        setPrevPageUrl(response.data.previous);
-        setNextPageUrl(response.data.next);
-        setOpen(false);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      } else {
+        getconsumables();
       }
-    } catch (err) {
-      console.log("error previous", err);
+      setOpen(false);
+    } catch (error) {
+      console.log("error", error);
       setOpen(false);
     }
   };
@@ -128,8 +118,8 @@ export const ViewConsumable = () => {
       const response = await ProductService.getAllSearchConsumable(searchQuery);
       if (response) {
         setConsumable(response.data.results);
-        setPrevPageUrl(response.data.previous);
-        setNextPageUrl(response.data.next);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
       } else {
         getconsumables();
       }
@@ -138,6 +128,11 @@ export const ViewConsumable = () => {
       console.log("error Search leads", error);
       setOpen(false);
     }
+  };
+
+  const getResetData = () => {
+    setSearchQuery("");
+    getconsumables();
   };
 
   return (
@@ -173,6 +168,7 @@ export const ViewConsumable = () => {
           <Box display="flex">
             <Box flexGrow={0.9} align="left">
               <TextField
+                value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 name="search"
                 size="small"
@@ -181,13 +177,23 @@ export const ViewConsumable = () => {
                 sx={{ backgroundColor: "#ffffff" }}
               />
 
-              <IconButton
+              <Button
                 onClick={getSearchData}
-                size="small"
-                variant="outlined"
+                size="medium"
+                sx={{ marginLeft: "1em" }}
+                variant="contained"
+                startIcon={<SearchIcon />}
               >
-                <SearchIcon />
-              </IconButton>
+                Search
+              </Button>
+              <Button
+                onClick={getResetData}
+                sx={{ marginLeft: "1em" }}
+                size="medium"
+                variant="contained"
+              >
+                Reset
+              </Button>
             </Box>
             <Box flexGrow={2} align="center">
               <h3
@@ -285,13 +291,26 @@ export const ViewConsumable = () => {
             </Table>
           </TableContainer>
           <TableFooter
-            sx={{ display: "flex", justifyContent: "center", marginTop: "1em" }}
+            sx={{ display: "flex", justifyContent: "center", marginTop: "2em" }}
           >
-            <Paginate
-              prevPageUrl={prevPageUrl}
-              nextPageUrl={nextPageUrl}
-              gotoNextPage={gotoNextPage}
-              gotoPrevPage={gotoPrevPage}
+            <ReactPaginate
+              previousLabel={"Previous"}
+              nextLabel={"Next"}
+              breakLabel={"..."}
+              pageCount={pageCount}
+              marginPagesDisplayed={2}
+              pageRangeDisplayed={3}
+              onPageChange={handlePageChange}
+              containerClassName={"pagination justify-content-center"}
+              pageClassName={"page-item"}
+              pageLinkClassName={"page-link"}
+              previousClassName={"page-item"}
+              previousLinkClassName={"page-link"}
+              nextClassName={"page-item"}
+              nextLinkClassName={"page-link"}
+              breakClassName={"page-item"}
+              breakLinkClassName={"page-link"}
+              activeClassName={"active"}
             />
           </TableFooter>
         </Paper>

@@ -166,7 +166,7 @@ export const AssignTo = () => {
       const response = await LeadServices.getAllSearchUnassignedData(
         searchQuery
       );
-      setSearchQuery("");
+
       if (response) {
         setLeads(response.data.results);
 
@@ -183,6 +183,7 @@ export const AssignTo = () => {
   };
 
   const getResetData = () => {
+    setSearchQuery("");
     getleads();
   };
   const fetchComments = async (currentPage) => {
@@ -204,7 +205,7 @@ export const AssignTo = () => {
     }
   };
 
-  const handlePageClick = async (data) => {
+  const handlePageChange = async (data) => {
     try {
       setOpen(true);
 
@@ -482,13 +483,13 @@ export const AssignTo = () => {
             sx={{ display: "flex", justifyContent: "center", marginTop: "2em" }}
           >
             <ReactPaginate
-              previousLabel={"previous"}
-              nextLabel={"next"}
+              previousLabel={"Previous"}
+              nextLabel={"Next"}
               breakLabel={"..."}
               pageCount={pageCount}
               marginPagesDisplayed={2}
               pageRangeDisplayed={3}
-              onPageChange={handlePageClick}
+              onPageChange={handlePageChange}
               containerClassName={"pagination justify-content-center"}
               pageClassName={"page-item"}
               pageLinkClassName={"page-link"}
