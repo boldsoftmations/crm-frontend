@@ -15,17 +15,16 @@ import {
   CircularProgress,
   styled,
   Box,
-  IconButton,
   TextField,
   TableFooter,
   TableContainer,
+  Pagination,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
 import AddIcon from "@mui/icons-material/Add";
 
 import ProductService from "../../../services/ProductService";
 import SearchIcon from "@mui/icons-material/Search";
-import ReactPaginate from "react-paginate";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -88,13 +87,13 @@ export const ViewConsumable = () => {
     getconsumables();
   }, []);
 
-  const handlePageChange = async (data) => {
+  const handlePageChange = async (event, value) => {
     try {
-      let currentPage = data.selected + 1;
+      let Page = value;
       setOpen(true);
 
       const response = await ProductService.getAllConsumablePaginate(
-        currentPage,
+        Page,
         searchQuery
       );
       if (response) {
@@ -293,24 +292,12 @@ export const ViewConsumable = () => {
           <TableFooter
             sx={{ display: "flex", justifyContent: "center", marginTop: "2em" }}
           >
-            <ReactPaginate
-              previousLabel={"Previous"}
-              nextLabel={"Next"}
-              breakLabel={"..."}
-              pageCount={pageCount}
-              marginPagesDisplayed={2}
-              pageRangeDisplayed={3}
-              onPageChange={handlePageChange}
-              containerClassName={"pagination justify-content-center"}
-              pageClassName={"page-item"}
-              pageLinkClassName={"page-link"}
-              previousClassName={"page-item"}
-              previousLinkClassName={"page-link"}
-              nextClassName={"page-item"}
-              nextLinkClassName={"page-link"}
-              breakClassName={"page-item"}
-              breakLinkClassName={"page-link"}
-              activeClassName={"active"}
+            <Pagination
+              count={pageCount}
+              onChange={handlePageChange}
+              color={"primary"}
+              variant="outlined"
+              shape="circular"
             />
           </TableFooter>
         </Paper>
