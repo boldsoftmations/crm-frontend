@@ -140,7 +140,7 @@ export const UpdateLeads = () => {
   const businessMismatchValue = businessMismatch
     ? businessMismatch
     : businessMismatch;
-  const descriptionValue = leads.description ? leads.description : personName;
+  const descriptionValue = personName ? personName : leads.description;
 
   const businesTypesValue = businesTypes ? businesTypes : businesTypes;
   const menuList = [
@@ -191,7 +191,7 @@ export const UpdateLeads = () => {
       setInterests(res.data.interested);
       setBusinesTypes(res.data.business_type);
       setBusinessMismatch(res.data.business_mismatch);
-      // setPersonName(res.data.description);
+      setPersonName(res.data.description);
       setLeads(res.data);
       setOpen(false);
     } catch (error) {
@@ -226,7 +226,7 @@ export const UpdateLeads = () => {
           alternate_email: leads.alternate_email ? leads.alternate_email : "",
           contact: leads.contact ? leads.contact : "",
           alternate_contact: leads.alternate_contact,
-          description: personName,
+          description: descriptionValue,
           business_type: businesTypesValue ? businesTypesValue : "",
           business_mismatch: businessMismatchValue
             ? businessMismatchValue
@@ -356,6 +356,7 @@ export const UpdateLeads = () => {
                       onChange={handleInputChange}
                     />
                   </Grid>
+
                   <Grid item xs={12} sm={6}>
                     <TextField
                       select
@@ -414,6 +415,7 @@ export const UpdateLeads = () => {
                       ))}
                     </TextField>
                   </Grid>
+
                   <Grid item xs={12} sm={6}>
                     <FormControl fullWidth sx={{ minWidth: 200 }}>
                       <InputLabel id="demo-multiple-chip-label">
@@ -467,12 +469,12 @@ export const UpdateLeads = () => {
                       </Select>
                     </FormControl>
                   </Grid>
-                  <Grid item xs={12} sm={3}>
+                  <Grid item xs={12} sm={6}>
                     <TextField
                       select
                       fullWidth
                       name="assign"
-                      size="small"
+                      size="medium"
                       label="Assignied To"
                       variant="outlined"
                       value={assignValue ? assignValue : ""}

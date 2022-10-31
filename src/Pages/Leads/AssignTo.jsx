@@ -22,6 +22,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Pagination,
 } from "@mui/material";
 import PropTypes from "prop-types";
 import CloseIcon from "@mui/icons-material/Close";
@@ -30,12 +31,8 @@ import LeadServices from "../../services/LeadService";
 import SearchIcon from "@mui/icons-material/Search";
 import "../CommonStyle.css";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
-
-import { getLocalAccessToken } from "../../services/TokenService";
 import { Link } from "react-router-dom";
-import CustomAxios from "../../services/api";
 import { styled } from "@mui/material/styles";
-import ReactPaginate from "react-paginate";
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.common.black,
@@ -105,21 +102,29 @@ export const AssignTo = () => {
   const [assign, setAssign] = useState("");
   const [assigned, setAssigned] = useState([]);
   const [pageCount, setpageCount] = useState(0);
-
+  const [currentPage, setCurrentPage] = useState(0);
   useEffect(() => {
     getleads();
   }, []);
 
   const getleads = async () => {
     try {
-      setOpen(true);
-      let response = await LeadServices.getAllUnassignedData();
-      if (response) {
+      if (currentPage) {
+        const response = await LeadServices.getAllPaginateUnassigned(
+          currentPage,
+          searchQuery
+        );
         setLeads(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
+      } else {
+        setOpen(true);
+        let response = await LeadServices.getAllUnassignedData();
+        if (response) {
+          setLeads(response.data.results);
+          const total = response.data.count;
+          setpageCount(Math.ceil(total / 25));
 
-        setOpen(false);
+          setOpen(false);
+        }
       }
     } catch (err) {
       setOpen(false);
@@ -186,36 +191,19 @@ export const AssignTo = () => {
     setSearchQuery("");
     getleads();
   };
-  const fetchComments = async (currentPage) => {
-    if (searchQuery) {
-      const res = await CustomAxios.get(
-        `https://crmbackend-glutape.herokuapp.com/api/lead/list-unassigned/?page=${currentPage}&search=${searchQuery}`
-      );
 
-      const data = await res.data;
-      console.log("data", data);
-      return data;
-    } else {
-      const res = await CustomAxios.get(
-        `https://crmbackend-glutape.herokuapp.com/api/lead/list-unassigned/?page=${currentPage}`
-      );
-      const data = await res.data;
-      console.log("data", data);
-      return data;
-    }
-  };
-
-  const handlePageChange = async (data) => {
+  const handlePageChange = async (event, value) => {
     try {
+      const page = value;
+      setCurrentPage(page);
       setOpen(true);
-
-      let currentPage = data.selected + 1;
-      const token = getLocalAccessToken();
-
-      const commentsFormServer = await fetchComments(currentPage, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setLeads(commentsFormServer.results);
+      if (page) {
+        const response = await LeadServices.getAllPaginateUnassigned(
+          page,
+          searchQuery
+        );
+        setLeads(response.data.results);
+      }
       setOpen(false);
     } catch (error) {
       console.log("error", error);
@@ -482,24 +470,12 @@ export const AssignTo = () => {
           <TableFooter
             sx={{ display: "flex", justifyContent: "center", marginTop: "2em" }}
           >
-            <ReactPaginate
-              previousLabel={"Previous"}
-              nextLabel={"Next"}
-              breakLabel={"..."}
-              pageCount={pageCount}
-              marginPagesDisplayed={2}
-              pageRangeDisplayed={3}
-              onPageChange={handlePageChange}
-              containerClassName={"pagination justify-content-center"}
-              pageClassName={"page-item"}
-              pageLinkClassName={"page-link"}
-              previousClassName={"page-item"}
-              previousLinkClassName={"page-link"}
-              nextClassName={"page-item"}
-              nextLinkClassName={"page-link"}
-              breakClassName={"page-item"}
-              breakLinkClassName={"page-link"}
-              activeClassName={"active"}
+            <Pagination
+              count={pageCount}
+              onChange={handlePageChange}
+              color={"primary"}
+              variant="outlined"
+              shape="circular"
             />
           </TableFooter>
         </Paper>

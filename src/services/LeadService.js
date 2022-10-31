@@ -16,6 +16,12 @@ const getAllUnassignedData = () => {
   return CustomAxios.get(`/api/lead/list-unassigned/`);
 };
 
+const getAllPaginateUnassigned = (currentPage, search) => {
+  return CustomAxios.get(
+    `/api/lead/list-unassigned/?page=${currentPage}&search=${search}`
+  );
+};
+
 const getAllSearchUnassignedData = (search) => {
   return CustomAxios.get(`/api/lead/list-unassigned/?search=${search}`);
 };
@@ -82,6 +88,7 @@ const LeadServices = {
   getAllAssignedUser,
   getAllUnassignedData,
   getAllSearchUnassignedData,
+  getAllPaginateUnassigned,
   getAllSearchLeads,
   createLeads,
   getLeadsById,

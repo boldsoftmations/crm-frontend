@@ -1,7 +1,7 @@
 .mainbox {
     background-color: #95c2de;
     margin: auto;
-    min-height: 300px;
+    height: 400px;
     width: 600px;
     position: relative;
 }
@@ -41,6 +41,7 @@
     left: 16%;
     top: 45%;
     width: 75%;
+    margin-top: 20%;
 }
 
 link {
