@@ -224,7 +224,7 @@ export const UpdateLeads = () => {
             : "",
           email: leads.email ? leads.email : "",
           alternate_email: leads.alternate_email ? leads.alternate_email : "",
-          contact: leads.contact ? leads.contact : "",
+          contact: leads.contact,
           alternate_contact: leads.alternate_contact,
           description: descriptionValue,
           business_type: businesTypesValue ? businesTypesValue : "",

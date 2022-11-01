@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom";
 import React, { useEffect, useRef, useState } from "react";
+
 import "../../CommonStyle.css";
 
 import {
@@ -25,6 +25,9 @@ import AddIcon from "@mui/icons-material/Add";
 
 import ProductService from "../../../services/ProductService";
 import SearchIcon from "@mui/icons-material/Search";
+import { Popup } from "../../../Components/Popup";
+import { CreateConsumable } from "./CreateConsumable";
+import { UpdateConsumable } from "./UpdateConsumable";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -53,14 +56,27 @@ export const ViewConsumable = () => {
   const [errMsg, setErrMsg] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [pageCount, setpageCount] = useState(0);
+  const [openPopup, setOpenPopup] = useState(false);
+  const [openPopup2, setOpenPopup2] = useState(false);
+  const [recordForEdit, setRecordForEdit] = useState(null);
+  const [currentPage, setCurrentPage] = useState(0);
 
   const getconsumables = async () => {
     try {
       setOpen(true);
-      const response = await ProductService.getAllConsumable();
-      setConsumable(response.data.results);
-      const total = response.data.count;
-      setpageCount(Math.ceil(total / 25));
+
+      if (currentPage) {
+        const response = await ProductService.getAllConsumablePaginate(
+          currentPage,
+          searchQuery
+        );
+        setConsumable(response.data.results);
+      } else {
+        const response = await ProductService.getAllConsumable();
+        setConsumable(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      }
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -87,13 +103,19 @@ export const ViewConsumable = () => {
     getconsumables();
   }, []);
 
+  const openInPopup = (item) => {
+    setRecordForEdit(item);
+    setOpenPopup(true);
+  };
+
   const handlePageChange = async (event, value) => {
     try {
-      let Page = value;
+      const page = value;
+      setCurrentPage(page);
       setOpen(true);
 
       const response = await ProductService.getAllConsumablePaginate(
-        Page,
+        page,
         searchQuery
       );
       if (response) {
@@ -209,8 +231,7 @@ export const ViewConsumable = () => {
             </Box>
             <Box flexGrow={0.5} align="right">
               <Button
-                component={Link}
-                to="/products/create-consumable"
+                onClick={() => setOpenPopup2(true)}
                 variant="contained"
                 color="success"
                 startIcon={<AddIcon />}
@@ -276,12 +297,12 @@ export const ViewConsumable = () => {
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         {" "}
-                        <Link
-                          to={"/products/update-consumable/" + row.id}
-                          // className="badge badge-warning"
+                        <Button
+                          variant="contained"
+                          onClick={() => openInPopup(row.id)}
                         >
                           Edit
-                        </Link>{" "}
+                        </Button>
                       </StyledTableCell>
                     </StyledTableRow>
                   );
@@ -302,6 +323,27 @@ export const ViewConsumable = () => {
           </TableFooter>
         </Paper>
       </Grid>
+      <Popup
+        title={"Create Consumable"}
+        openPopup={openPopup2}
+        setOpenPopup={setOpenPopup2}
+      >
+        <CreateConsumable
+          getconsumables={getconsumables}
+          setOpenPopup={setOpenPopup2}
+        />
+      </Popup>
+      <Popup
+        title={"Update Consumable"}
+        openPopup={openPopup}
+        setOpenPopup={setOpenPopup}
+      >
+        <UpdateConsumable
+          recordForEdit={recordForEdit}
+          setOpenPopup={setOpenPopup}
+          getconsumables={getconsumables}
+        />
+      </Popup>
     </>
   );
 };

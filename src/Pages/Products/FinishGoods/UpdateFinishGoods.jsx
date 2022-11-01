@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 
 import ProductService from "../../../services/ProductService";
-import { Link, useNavigate, useParams } from "react-router-dom";
+
 import {
   Backdrop,
   Box,
@@ -11,10 +11,9 @@ import {
   Button,
   Autocomplete,
 } from "@mui/material";
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 
-export const UpdateFinishGoods = () => {
-  const { id } = useParams();
+export const UpdateFinishGoods = (props) => {
+  const { recordForEdit, setOpenPopup, getFinishGoods } = props;
   const [finishGoods, setFinishGoods] = useState([]);
   const [allBasicUnit, setAllBasicUnit] = useState([]);
   const [basicUnit, setBasicUnit] = useState([]);
@@ -34,7 +33,7 @@ export const UpdateFinishGoods = () => {
   const [errMsg, setErrMsg] = useState("");
 
   const [open, setOpen] = useState(false);
-  const navigate = useNavigate();
+
   const productCodeValue = productCode.productcode
     ? productCode.productcode
     : productCode;
@@ -179,10 +178,10 @@ export const UpdateFinishGoods = () => {
     }
   };
 
-  const getFinishGoodData = async (id) => {
+  const getFinishGoodData = async (recordForEdit) => {
     try {
       setOpen(true);
-      const res = await ProductService.getFinishGoodsById(id);
+      const res = await ProductService.getFinishGoodsById(recordForEdit);
       setFinishGoods(res.data);
       setProductCode(res.data);
       setBrand(res.data);
@@ -219,15 +218,16 @@ export const UpdateFinishGoods = () => {
         sgst: GST,
         type: "finished-goods",
       };
-      if (id) {
+      if (recordForEdit) {
         const res = await ProductService.updateFinishGoods(
           finishGoods.id,
           data
         );
         console.log("res", res);
-        navigate("/products/view-finish-goods");
+        setOpenPopup(false);
 
         setOpen(false);
+        getFinishGoods();
       }
     } catch (err) {
       console.log("error update color :>> ", err);
@@ -250,8 +250,8 @@ export const UpdateFinishGoods = () => {
   };
 
   useEffect(() => {
-    if (id) getFinishGoodData(id);
-  }, [id]);
+    if (recordForEdit) getFinishGoodData(recordForEdit);
+  }, [recordForEdit]);
 
   const GST = JSON.stringify(finishGoods.gst / 2);
 
@@ -269,34 +269,7 @@ export const UpdateFinishGoods = () => {
         </Backdrop>
       </div>
 
-      <Box
-        className="Auth-form-content"
-        component="form"
-        noValidate
-        onSubmit={(e) => updateFinishGood(e)}
-        sx={{
-          minWidth: "40em",
-          boxShadow: "rgb(0 0 0 / 16%) 1px 1px 10px",
-          marginTop: "2em",
-          marginLeft: "10em",
-          marginRight: "10em",
-          position: "relative",
-          paddingTop: "30px",
-          paddingBottom: "20px",
-          borderRadius: "8px",
-          backgroundColor: "white",
-        }}
-      >
-        <Box display="flex">
-          <Box sx={{ marginRight: "5em" }}>
-            <Link to="/products/view-finish-goods" className="link-primary">
-              <KeyboardBackspaceIcon fontSize="large" />
-            </Link>
-          </Box>
-          <Box>
-            <h3 className="Auth-form-title">Update Finish Goods</h3>
-          </Box>
-        </Box>
+      <Box component="form" noValidate onSubmit={(e) => updateFinishGood(e)}>
         <Grid container spacing={2}>
           <p
             style={{

@@ -1,4 +1,3 @@
-import { Link, useNavigate, useParams } from "react-router-dom";
 import React, { useEffect, useRef, useState } from "react";
 
 import ProductService from "../../../services/ProductService";
@@ -13,10 +12,9 @@ import {
   Autocomplete,
 } from "@mui/material";
 
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
+export const UpdateRawMaterials = (props) => {
+  const { recordForEdit, setOpenPopup, getrawMaterials } = props;
 
-export const UpdateRawMaterials = () => {
-  const { id } = useParams();
   const [rawMaterial, setRawMaterial] = useState([]);
   const [brand, setBrand] = useState([]);
   const [brandData, setBrandData] = useState([]);
@@ -29,7 +27,6 @@ export const UpdateRawMaterials = () => {
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
   const [open, setOpen] = useState(false);
-  const navigate = useNavigate();
 
   const productCodeValue = productCode.productcode
     ? productCode.productcode
@@ -118,10 +115,10 @@ export const UpdateRawMaterials = () => {
     getColours();
   }, []);
 
-  const getRawMaterialData = async (id) => {
+  const getRawMaterialData = async (recordForEdit) => {
     try {
       setOpen(true);
-      const res = await ProductService.getRawMaterialsById(id);
+      const res = await ProductService.getRawMaterialsById(recordForEdit);
       setRawMaterial(res.data);
       setProductCode(res.data);
       setBrand(res.data);
@@ -152,14 +149,12 @@ export const UpdateRawMaterials = () => {
         sgst: GST,
         type: "raw-materials",
       };
-      if (id) {
-        const res = await ProductService.updateRawMaterials(
-          rawMaterial.id,
-          data
-        );
-        console.log("res", res);
-        navigate("/products/view-raw-materials");
+      if (recordForEdit) {
+        await ProductService.updateRawMaterials(rawMaterial.id, data);
+
+        setOpenPopup(false);
         setOpen(false);
+        getrawMaterials();
       }
     } catch (err) {
       console.log("error update color :>> ", err);
@@ -184,8 +179,8 @@ export const UpdateRawMaterials = () => {
   const GST = JSON.stringify(rawMaterial.gst / 2);
 
   useEffect(() => {
-    if (id) getRawMaterialData(id);
-  }, []);
+    if (recordForEdit) getRawMaterialData(recordForEdit);
+  }, [recordForEdit]);
 
   return (
     <>
@@ -201,34 +196,7 @@ export const UpdateRawMaterials = () => {
         </Backdrop>
       </div>
 
-      <Box
-        className="Auth-form-content"
-        component="form"
-        noValidate
-        onSubmit={(e) => updateRawMaterial(e)}
-        sx={{
-          minWidth: "40em",
-          boxShadow: "rgb(0 0 0 / 16%) 1px 1px 10px",
-          marginTop: "2em",
-          marginLeft: "10em",
-          marginRight: "10em",
-          position: "relative",
-          paddingTop: "30px",
-          paddingBottom: "20px",
-          borderRadius: "8px",
-          backgroundColor: "white",
-        }}
-      >
-        <Box display="flex">
-          <Box sx={{ marginRight: "5em" }}>
-            <Link to="/products/view-raw-materials" className="link-primary">
-              <KeyboardBackspaceIcon fontSize="large" />
-            </Link>
-          </Box>
-          <Box>
-            <h3 className="Auth-form-title"> Update Raw Material</h3>
-          </Box>
-        </Box>
+      <Box component="form" noValidate onSubmit={(e) => updateRawMaterial(e)}>
         <Grid container spacing={2}>
           <p
             style={{

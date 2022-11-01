@@ -7,21 +7,16 @@ import {
   Grid,
   TextField,
 } from "@mui/material";
-import { Link, useNavigate, useParams } from "react-router-dom";
-
 import { useRef, useState } from "react";
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import React, { useEffect } from "react";
 
 import ProductService from "../../../services/ProductService";
 
 import "../../CommonStyle.css";
 
-export const UpdateConsumable = () => {
-  const navigate = useNavigate();
+export const UpdateConsumable = (props) => {
+  const { recordForEdit, setOpenPopup, getconsumables } = props;
   const [open, setOpen] = useState(false);
-  const { id } = useParams();
-
   const [consumable, setConsumable] = useState([]);
   const [unit, setUnit] = useState([]);
   const [selectedDescription, setSelectedDescription] = useState([]);
@@ -115,10 +110,10 @@ export const UpdateConsumable = () => {
     }
   };
 
-  const getconsumable = async (id) => {
+  const getconsumable = async (recordForEdit) => {
     try {
       setOpen(true);
-      const res = await ProductService.getConsumableById(id);
+      const res = await ProductService.getConsumableById(recordForEdit);
       setConsumable(res.data);
       setSelectedDescription(res.data);
       setUnit(res.data);
@@ -152,11 +147,12 @@ export const UpdateConsumable = () => {
         sgst: GST,
         type: "consumables",
       };
-      if (id) {
+      if (recordForEdit) {
         const res = await ProductService.updateConsumable(consumable.id, data);
         console.log("res", res);
-        navigate("/products/view-consumable");
+        setOpenPopup(false);
         setOpen(false);
+        getconsumables();
       }
     } catch (err) {
       console.log("error update color :>> ", err);
@@ -181,8 +177,8 @@ export const UpdateConsumable = () => {
   };
 
   useEffect(() => {
-    if (id) getconsumable(id);
-  }, [id]);
+    if (recordForEdit) getconsumable(recordForEdit);
+  }, [recordForEdit]);
 
   const GST = JSON.stringify(consumable.gst / 2);
 
@@ -200,34 +196,7 @@ export const UpdateConsumable = () => {
         </Backdrop>
       </div>
 
-      <Box
-        className="Auth-form-content"
-        component="form"
-        noValidate
-        onSubmit={(e) => updatesconsumable(e)}
-        sx={{
-          minWidth: "40em",
-          boxShadow: "rgb(0 0 0 / 16%) 1px 1px 10px",
-          marginTop: "2em",
-          marginLeft: "10em",
-          marginRight: "10em",
-          position: "relative",
-          paddingTop: "30px",
-          paddingBottom: "20px",
-          borderRadius: "8px",
-          backgroundColor: "white",
-        }}
-      >
-        <Box display="flex">
-          <Box sx={{ marginRight: "5em" }}>
-            <Link to="/products/view-consumable" className="link-primary">
-              <KeyboardBackspaceIcon fontSize="large" />
-            </Link>
-          </Box>
-          <Box>
-            <h3 className="Auth-form-title">Update Consumable</h3>
-          </Box>
-        </Box>
+      <Box component="form" noValidate onSubmit={(e) => updatesconsumable(e)}>
         <Grid container spacing={2}>
           <p
             style={{

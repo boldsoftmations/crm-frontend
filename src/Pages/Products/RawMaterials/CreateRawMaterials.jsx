@@ -7,16 +7,15 @@ import {
   Grid,
   TextField,
 } from "@mui/material";
-import { Link, useNavigate } from "react-router-dom";
 
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import React, { useEffect, useRef, useState } from "react";
 
 import ProductService from "../../../services/ProductService";
 
 import "../../CommonStyle.css";
 
-export const CreateRawMaterials = () => {
+export const CreateRawMaterials = (props) => {
+  const { setOpenPopup, getrawMaterials } = props;
   const [brand, setBrand] = useState([]);
   const [brandData, setBrandData] = useState([]);
   const [unit, setUnit] = useState([]);
@@ -26,7 +25,7 @@ export const CreateRawMaterials = () => {
   const [productCode, setProductCode] = useState([]);
   const [productCodeData, setProductCodeData] = useState([]);
   const [rawMaterials, setRawMaterials] = useState([]);
-  const navigate = useNavigate();
+
   const [open, setOpen] = useState(false);
 
   const errRef = useRef();
@@ -129,10 +128,11 @@ export const CreateRawMaterials = () => {
         sgst: GST,
         type: "raw-materials",
       };
-      const res = await ProductService.createRawMaterials(data);
-      console.log("res :>> ", res);
-      navigate("/products/view-raw-materials");
+      await ProductService.createRawMaterials(data);
+
+      setOpenPopup(false);
       setOpen(false);
+      getrawMaterials();
     } catch (err) {
       console.log("error update color :>> ", err);
       setOpen(false);
@@ -166,35 +166,7 @@ export const CreateRawMaterials = () => {
         </Backdrop>
       </div>
 
-      <Box
-        className="Auth-form-content"
-        component="form"
-        noValidate
-        onSubmit={(e) => createrawMaterials(e)}
-        sx={{
-          minWidth: "40em",
-          boxShadow: "rgb(0 0 0 / 16%) 1px 1px 10px",
-          marginTop: "2em",
-          marginLeft: "10em",
-          marginRight: "10em",
-          position: "relative",
-          paddingTop: "30px",
-          paddingBottom: "20px",
-          borderRadius: "8px",
-          backgroundColor: "white",
-        }}
-      >
-        <Box display="flex">
-          <Box sx={{ marginRight: "2em" }}>
-            <Link to="/products/view-raw-materials" className="link-primary">
-              <KeyboardBackspaceIcon fontSize="large" />
-            </Link>
-          </Box>
-          <Box>
-            <h3 className="Auth-form-title">Create Raw Materials</h3>
-          </Box>
-        </Box>
-
+      <Box component="form" noValidate onSubmit={(e) => createrawMaterials(e)}>
         <Grid container spacing={2}>
           <p
             style={{

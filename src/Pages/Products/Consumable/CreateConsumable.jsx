@@ -8,16 +8,14 @@ import {
   TextField,
 } from "@mui/material";
 
-import { Link, useNavigate } from "react-router-dom";
-
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import React, { useEffect, useRef, useState } from "react";
 
 import ProductService from "../../../services/ProductService";
 
 import "../../CommonStyle.css";
 
-export const CreateConsumable = () => {
+export const CreateConsumable = (props) => {
+  const { setOpenPopup, getconsumables } = props;
   const [description, setDescription] = useState([]);
   const [allDescription, seAllDescription] = useState([]);
   const [brand, setBrand] = useState([]);
@@ -25,7 +23,6 @@ export const CreateConsumable = () => {
   const [unit, setUnit] = useState([]);
   const [unitData, setUnitData] = useState([]);
   const [consumable, setConsumable] = useState([]);
-  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
   const errRef = useRef();
@@ -123,10 +120,11 @@ export const CreateConsumable = () => {
         sgst: GST,
         type: "consumables",
       };
-      const res = await ProductService.createConsumable(data);
-      console.log("res :>> ", res);
-      navigate("/products/view-consumable");
+      await ProductService.createConsumable(data);
+
+      setOpenPopup(false);
       setOpen(false);
+      getconsumables();
     } catch (err) {
       console.log("error update color :>> ", err);
       setOpen(false);
@@ -159,34 +157,7 @@ export const CreateConsumable = () => {
         </Backdrop>
       </div>
 
-      <Box
-        className="Auth-form-content"
-        component="form"
-        noValidate
-        onSubmit={(e) => createconsumable(e)}
-        sx={{
-          minWidth: "35em",
-          boxShadow: "rgb(0 0 0 / 16%) 1px 1px 10px",
-          marginTop: "2em",
-          marginLeft: "10em",
-          marginRight: "10em",
-          position: "relative",
-          paddingTop: "30px",
-          paddingBottom: "20px",
-          borderRadius: "8px",
-          backgroundColor: "white",
-        }}
-      >
-        <Box display="flex">
-          <Box sx={{ marginRight: "4em" }}>
-            <Link to="/products/view-consumable" className="link-primary">
-              <KeyboardBackspaceIcon fontSize="large" />
-            </Link>
-          </Box>
-          <Box>
-            <h3 className="Auth-form-title"> Create Consumable</h3>
-          </Box>
-        </Box>
+      <Box component="form" noValidate onSubmit={(e) => createconsumable(e)}>
         <Grid container spacing={2}>
           <p
             style={{

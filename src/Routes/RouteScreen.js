@@ -6,13 +6,10 @@ import { AssignTo } from "../Pages/Leads/AssignTo";
 import { CreateBasicUnit } from "./../Pages/Products/BasicUnit/CreateBasicUnit";
 import { CreateBrand } from "./../Pages/Products/Brand/CreateBrand";
 import { CreateColor } from "../Pages/Products/Color/CreateColor";
-import { CreateConsumable } from "../Pages/Products/Consumable/CreateConsumable";
 import { CreateDescription } from "./../Pages/Products/Description/CreateDescription";
-import { CreateFinishGoods } from "./../Pages/Products/FinishGoods/CreateFinishGoods";
 import { CreateLeads } from "../Pages/Leads/CreateLeads";
 import { CreatePackingUnit } from "./../Pages/Products/PackingUnit/CreatePackingUnit";
 import { CreateProductCode } from "./../Pages/Products/ProductCode/CreateProductCode";
-import { CreateRawMaterials } from "../Pages/Products/RawMaterials/CreateRawMaterials";
 import { CreateUnit } from "./../Pages/Products/Unit/CreateUnit";
 import { Customers } from "../Pages/Customers";
 import { Dashboard } from "../Pages/Dashboard/Dashboard";
@@ -27,13 +24,10 @@ import { UpcomingFollowup } from "../Pages/FollowUp/UpcomingFollowup";
 import { UpdateBasicUnit } from "./../Pages/Products/BasicUnit/UpdateBasicUnit";
 import { UpdateBrand } from "./../Pages/Products/Brand/UpdateBrand";
 import { UpdateColor } from "../Pages/Products/Color/UpdateColor";
-import { UpdateConsumable } from "../Pages/Products/Consumable/UpdateConsumable";
 import { UpdateDescription } from "./../Pages/Products/Description/UpdateDescription";
-import { UpdateFinishGoods } from "./../Pages/Products/FinishGoods/UpdateFinishGoods";
 import { UpdateLeads } from "./../Pages/Leads/UpdateLeads";
 import { UpdatePackingUnit } from "./../Pages/Products/PackingUnit/UpdatePackingUnit";
 import { UpdateProductCode } from "./../Pages/Products/ProductCode/UpdateProductCode";
-import { UpdateRawMaterials } from "./../Pages/Products/RawMaterials/UpdateRawMaterials";
 import { UpdateUnit } from "./../Pages/Products/Unit/UpdateUnit";
 import { ViewBasicUnit } from "./../Pages/Products/BasicUnit/ViewBasicUnit";
 import { ViewBrand } from "./../Pages/Products/Brand/ViewBrand";
@@ -151,40 +145,16 @@ export const RouteScreen = () => {
               element={<UpdateProductCode />}
             />
             <Route
-              path="/products/create-consumable"
-              element={<CreateConsumable />}
-            />
-            <Route
               path="/products/view-consumable"
               element={<ViewConsumable />}
-            />
-            <Route
-              path="/products/update-consumable/:id"
-              element={<UpdateConsumable />}
-            />
-            <Route
-              path="/products/create-finish-goods"
-              element={<CreateFinishGoods />}
             />
             <Route
               path="/products/view-finish-goods"
               element={<ViewFinishGoods />}
             />
             <Route
-              path="/products/update-finish-goods/:id"
-              element={<UpdateFinishGoods />}
-            />
-            <Route
-              path="/products/create-raw-materials"
-              element={<CreateRawMaterials />}
-            />
-            <Route
               path="/products/view-raw-materials"
               element={<ViewRawMaterials />}
-            />
-            <Route
-              path="/products/update-raw-materials/:id"
-              element={<UpdateRawMaterials />}
             />
             <Route path="*" element={<PageNotFound />} />
           </>

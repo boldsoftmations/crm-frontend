@@ -20,6 +20,7 @@ import {
   TextField,
   TableFooter,
   TableContainer,
+  Pagination,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 
@@ -27,9 +28,9 @@ import { tableCellClasses } from "@mui/material/TableCell";
 import AddIcon from "@mui/icons-material/Add";
 
 import ProductService from "../../../services/ProductService";
-import { Paginate } from "../../../Components/Pagination/Paginate";
-import CustomAxios from "../../../services/api";
-import ReactPaginate from "react-paginate";
+import { Popup } from "./../../../Components/Popup";
+import { CreateFinishGoods } from "./CreateFinishGoods";
+import { UpdateFinishGoods } from "./UpdateFinishGoods";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -58,15 +59,26 @@ export const ViewFinishGoods = () => {
   const [errMsg, setErrMsg] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [pageCount, setpageCount] = useState(0);
-
+  const [currentPage, setCurrentPage] = useState(0);
+  const [openPopup, setOpenPopup] = useState(false);
+  const [openPopup2, setOpenPopup2] = useState(false);
+  const [recordForEdit, setRecordForEdit] = useState(null);
   const getFinishGoods = async () => {
     try {
       setOpen(true);
-      const response = await ProductService.getAllFinishGoods();
+      if (currentPage) {
+        const response = await ProductService.getAllFinishGoodsPaginate(
+          currentPage,
+          searchQuery
+        );
+        setFinishGood(response.data.results);
+      } else {
+        const response = await ProductService.getAllFinishGoods();
 
-      setFinishGood(response.data.results);
-      const total = response.data.count;
-      setpageCount(Math.ceil(total / 25));
+        setFinishGood(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      }
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -93,13 +105,14 @@ export const ViewFinishGoods = () => {
     getFinishGoods();
   }, []);
 
-  const handlePageChange = async (data) => {
+  const handlePageChange = async (event, value) => {
     try {
-      let currentPage = data.selected + 1;
+      const page = value;
+      setCurrentPage(page);
       setOpen(true);
 
       const response = await ProductService.getAllFinishGoodsPaginate(
-        currentPage,
+        page,
         searchQuery
       );
       if (response) {
@@ -144,6 +157,10 @@ export const ViewFinishGoods = () => {
     getFinishGoods();
   };
 
+  const openInPopup = (item) => {
+    setRecordForEdit(item);
+    setOpenPopup(true);
+  };
   return (
     <>
       <div>
@@ -219,8 +236,7 @@ export const ViewFinishGoods = () => {
             </Box>
             <Box flexGrow={0.5} align="right">
               <Button
-                component={Link}
-                to="/products/create-finish-goods"
+                onClick={() => setOpenPopup2(true)}
                 variant="contained"
                 color="success"
                 startIcon={<AddIcon />}
@@ -281,10 +297,12 @@ export const ViewFinishGoods = () => {
                         {row.gst ? `${row.gst}%` : "-"}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {" "}
-                        <Link to={"/products/update-finish-goods/" + row.id}>
+                        <Button
+                          variant="contained"
+                          onClick={() => openInPopup(row.id)}
+                        >
                           Edit
-                        </Link>{" "}
+                        </Button>
                       </StyledTableCell>
                     </StyledTableRow>
                   );
@@ -295,28 +313,37 @@ export const ViewFinishGoods = () => {
           <TableFooter
             sx={{ display: "flex", justifyContent: "center", marginTop: "2em" }}
           >
-            <ReactPaginate
-              previousLabel={"Previous"}
-              nextLabel={"Next"}
-              breakLabel={"..."}
-              pageCount={pageCount}
-              marginPagesDisplayed={2}
-              pageRangeDisplayed={3}
-              onPageChange={handlePageChange}
-              containerClassName={"pagination justify-content-center"}
-              pageClassName={"page-item"}
-              pageLinkClassName={"page-link"}
-              previousClassName={"page-item"}
-              previousLinkClassName={"page-link"}
-              nextClassName={"page-item"}
-              nextLinkClassName={"page-link"}
-              breakClassName={"page-item"}
-              breakLinkClassName={"page-link"}
-              activeClassName={"active"}
+            <Pagination
+              count={pageCount}
+              onChange={handlePageChange}
+              color={"primary"}
+              variant="outlined"
+              shape="circular"
             />
           </TableFooter>
         </Paper>
       </Grid>
+      <Popup
+        title={"Create FinishGoods"}
+        openPopup={openPopup2}
+        setOpenPopup={setOpenPopup2}
+      >
+        <CreateFinishGoods
+          getFinishGoods={getFinishGoods}
+          setOpenPopup={setOpenPopup2}
+        />
+      </Popup>
+      <Popup
+        title={"Update FinishGoods"}
+        openPopup={openPopup}
+        setOpenPopup={setOpenPopup}
+      >
+        <UpdateFinishGoods
+          recordForEdit={recordForEdit}
+          setOpenPopup={setOpenPopup}
+          getFinishGoods={getFinishGoods}
+        />
+      </Popup>
     </>
   );
 };
