@@ -13,15 +13,15 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import CloseIcon from "@mui/icons-material/Close";
 import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
-import ProductService from "../../services/ProductService";
-import { useParams } from "react-router-dom";
+
 import LeadServices from "../../services/LeadService";
-import CloseIcon from "@mui/icons-material/Close";
+import ProductService from "../../services/ProductService";
+
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
     padding: theme.spacing(2),
@@ -59,9 +59,10 @@ BootstrapDialogTitle.propTypes = {
   children: PropTypes.node,
   onClose: PropTypes.func.isRequired,
 };
-export const ViewAllPotential = () => {
+export const ViewAllPotential = (props) => {
   const [open, setOpen] = useState(false);
-  const { id } = useParams();
+  const { recordForEdit } = props;
+
   const [product, setProduct] = useState([]);
   const [potential, setPotential] = useState([]);
   const [productName, setProductName] = useState([]);
@@ -78,7 +79,7 @@ export const ViewAllPotential = () => {
   const getPotential = async () => {
     try {
       setOpen(true);
-      const res = await LeadServices.getLeadsById(id);
+      const res = await LeadServices.getLeadsById(recordForEdit);
 
       setPotentialData(res.data.potential);
 
@@ -118,7 +119,7 @@ export const ViewAllPotential = () => {
     try {
       event.preventDefault();
       const data = {
-        lead: id,
+        lead: recordForEdit,
         product: productName,
         current_brand: potential.currentBrand,
         current_buying_price: potential.currentBuyingPrice,
@@ -281,7 +282,15 @@ export const ViewAllPotential = () => {
 
       {potentialData && (
         <Box component="form" noValidate sx={{ mt: 1 }}>
-          <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
+          <Paper
+            sx={{
+              p: 2,
+              m: 4,
+              display: "flex",
+              flexDirection: "column",
+              backgroundColor: "#F5F5F5",
+            }}
+          >
             <Box display="flex">
               <Box flexGrow={0.9} align="left"></Box>
               <Box flexGrow={2.5} align="center">

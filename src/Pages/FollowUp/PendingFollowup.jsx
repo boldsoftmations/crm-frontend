@@ -25,8 +25,9 @@ import PropTypes from "prop-types";
 import CloseIcon from "@mui/icons-material/Close";
 
 import LeadServices from "../../services/LeadService";
-import { Link } from "react-router-dom";
 import moment from "moment";
+import { Popup } from "./../../Components/Popup";
+import { UpdateLeads } from "./../Leads/UpdateLeads";
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.common.black,
@@ -92,7 +93,8 @@ export const PendingFollowup = () => {
   const [errMsg, setErrMsg] = useState("");
   const [followupId, setFollowupId] = useState("");
   const [openModal, setOpenModal] = useState(false);
-
+  const [openPopup, setOpenPopup] = useState(false);
+  const [recordForEdit, setRecordForEdit] = useState(null);
   const pendingData = pendingFollowUp.filter((item) => {
     if (item.id == followupId) {
       return item;
@@ -154,8 +156,7 @@ export const PendingFollowup = () => {
         user: pendingData[0].user,
         is_followed_up: true,
       };
-      const res = await LeadServices.createFollowUps(followupId, data);
-      console.log("res", res);
+      await LeadServices.createFollowUps(followupId, data);
       setOpenModal(false);
       setOpen(false);
     } catch (err) {
@@ -164,6 +165,10 @@ export const PendingFollowup = () => {
     }
   };
 
+  const openInPopup = (item) => {
+    setRecordForEdit(item);
+    setOpenPopup(true);
+  };
   return (
     <>
       <div>
@@ -322,14 +327,11 @@ export const PendingFollowup = () => {
                         {row.notes ? row.notes : "-"}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {" "}
                         <Button
-                          component={Link}
-                          to={"/leads/update-lead/" + row.leads}
                           variant="contained"
-                          color="primary"
+                          onClick={() => openInPopup(row.leads)}
                         >
-                          leads
+                          View
                         </Button>
                         <Button
                           type="submit"
@@ -348,6 +350,18 @@ export const PendingFollowup = () => {
           </TableContainer>
         </Paper>
       </Grid>
+      <Popup
+        maxWidth={"lg"}
+        title={"Update Leads"}
+        openPopup={openPopup}
+        setOpenPopup={setOpenPopup}
+      >
+        <UpdateLeads
+          recordForEdit={recordForEdit}
+          setOpenPopup={setOpenPopup}
+          getleads={getFollowUp}
+        />
+      </Popup>
     </>
   );
 };

@@ -83,7 +83,8 @@ function getStyles(desc, personName, theme) {
   };
 }
 
-export const CreateLeads = () => {
+export const CreateLeads = (props) => {
+  const { setOpenPopup, getleads } = props;
   const theme = useTheme();
   const [activeStep, setActiveStep] = useState(0);
   const steps = getSteps();
@@ -95,7 +96,7 @@ export const CreateLeads = () => {
   const [assign, setAssign] = useState([]);
   const [businesTypes, setBusinesTypes] = useState("");
   const [descriptionMenuData, setDescriptionMenuData] = useState([]);
-  const navigate = useNavigate();
+
   const dispatch = useDispatch();
 
   const [users, setUsers] = useState("");
@@ -202,10 +203,11 @@ export const CreateLeads = () => {
           description: personName,
         };
 
-        const res = await LeadServices.createLeads(data);
-        console.log("res :>> ", res);
-        navigate("/leads/view-lead");
+        await LeadServices.createLeads(data);
+
+        setOpenPopup(false);
         setOpen(false);
+        getleads();
       } catch (error) {
         console.log("error :>> ", error);
         setOpen(false);
@@ -638,18 +640,15 @@ export const CreateLeads = () => {
   return (
     <div style={{ width: "100%" }}>
       <Grid item xs={12}>
-        <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
-          <Link
-            to={"/leads/view-lead"}
-            style={{
-              flexDirection: "column",
-              justifyContent: "flex-start",
-              marginTop: "10px",
-            }}
-            edge={"start"}
-          >
-            <KeyboardBackspaceIcon fontSize="large" />
-          </Link>
+        <Paper
+          sx={{
+            p: 2,
+            m: 4,
+            display: "flex",
+            flexDirection: "column",
+            backgroundColor: "#F5F5F5",
+          }}
+        >
           <Stepper alternativeLabel activeStep={activeStep}>
             {steps.map((label, index) => (
               <Step key={index}>

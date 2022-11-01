@@ -31,8 +31,9 @@ import LeadServices from "../../services/LeadService";
 import SearchIcon from "@mui/icons-material/Search";
 import "../CommonStyle.css";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
-import { Link } from "react-router-dom";
 import { styled } from "@mui/material/styles";
+import { Popup } from "./../../Components/Popup";
+import { UpdateLeads } from "./UpdateLeads";
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.common.black,
@@ -103,6 +104,8 @@ export const AssignTo = () => {
   const [assigned, setAssigned] = useState([]);
   const [pageCount, setpageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
+  const [openPopup, setOpenPopup] = useState(false);
+  const [recordForEdit, setRecordForEdit] = useState(null);
   useEffect(() => {
     getleads();
   }, []);
@@ -261,6 +264,11 @@ export const AssignTo = () => {
   };
   // Get current post
   const userEmail = assign ? assign : allDataByID.assigned_to;
+
+  const openInPopup = (item) => {
+    setRecordForEdit(item);
+    setOpenPopup(true);
+  };
 
   return (
     <>
@@ -440,10 +448,9 @@ export const AssignTo = () => {
                         <ul className="pagination ">
                           <li className="page-item">
                             <Button
-                              component={Link}
-                              to={"/leads/update-lead/" + row.lead_id}
                               variant="contained"
                               color="primary"
+                              onClick={() => openInPopup(row.lead_id)}
                             >
                               View
                             </Button>
@@ -480,6 +487,18 @@ export const AssignTo = () => {
           </TableFooter>
         </Paper>
       </Grid>
+      <Popup
+        maxWidth={"lg"}
+        title={"Update Leads"}
+        openPopup={openPopup}
+        setOpenPopup={setOpenPopup}
+      >
+        <UpdateLeads
+          recordForEdit={recordForEdit}
+          setOpenPopup={setOpenPopup}
+          getleads={getleads}
+        />
+      </Popup>
     </>
   );
 };

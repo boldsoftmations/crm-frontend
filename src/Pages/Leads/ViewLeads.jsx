@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import React, { useEffect, useRef, useState } from "react";
 
 import {
@@ -15,9 +14,9 @@ import {
   styled,
   TextField,
   Box,
-  IconButton,
   TableContainer,
   TableFooter,
+  Pagination,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
 import AddIcon from "@mui/icons-material/Add";
@@ -25,10 +24,9 @@ import LeadServices from "./../../services/LeadService";
 
 import SearchIcon from "@mui/icons-material/Search";
 import "../CommonStyle.css";
-import CustomAxios from "../../services/api";
-import ReactPaginate from "react-paginate";
-import { getLocalAccessToken } from "../../services/TokenService";
-import { getallLeads } from "../../Redux/Action/Action";
+import { CreateLeads } from "./CreateLeads";
+import { UpdateLeads } from "./UpdateLeads";
+import { Popup } from "./../../Components/Popup";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -57,17 +55,27 @@ export const Viewleads = () => {
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
   const [pageCount, setpageCount] = useState(0);
-
+  const [currentPage, setCurrentPage] = useState(0);
+  const [openPopup, setOpenPopup] = useState(false);
+  const [openPopup2, setOpenPopup2] = useState(false);
+  const [recordForEdit, setRecordForEdit] = useState(null);
   const getleads = async () => {
     try {
       setOpen(true);
-
-      let response = await LeadServices.getAllLeads();
-      if (response) {
+      if (currentPage) {
+        const response = await LeadServices.getAllPaginateLeads(
+          currentPage,
+          searchQuery
+        );
         setLeads(response.data.results);
+      } else {
+        let response = await LeadServices.getAllLeads();
+        if (response) {
+          setLeads(response.data.results);
 
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
+          const total = response.data.count;
+          setpageCount(Math.ceil(total / 25));
+        }
         setOpen(false);
       }
     } catch (err) {
@@ -118,36 +126,23 @@ export const Viewleads = () => {
     getleads();
   };
 
-  const fetchComments = async (currentPage) => {
-    if (searchQuery) {
-      const res = await CustomAxios.get(
-        `https://crmbackend-glutape.herokuapp.com/api/lead/list-lead/?page=${currentPage}&search=${searchQuery}`
-      );
-
-      const data = await res.data;
-      console.log("data", data);
-      return data;
-    } else {
-      const res = await CustomAxios.get(
-        `https://crmbackend-glutape.herokuapp.com/api/lead/list-lead/?page=${currentPage}`
-      );
-      const data = await res.data;
-      console.log("data", data);
-      return data;
-    }
+  const openInPopup = (item) => {
+    setRecordForEdit(item);
+    setOpenPopup(true);
   };
 
-  const handlePageClick = async (data) => {
+  const handlePageClick = async (event, value) => {
     try {
+      const page = value;
+      setCurrentPage(page);
       setOpen(true);
-
-      let currentPage = data.selected + 1;
-      const token = getLocalAccessToken();
-
-      const commentsFormServer = await fetchComments(currentPage, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setLeads(commentsFormServer.results);
+      if (page) {
+        const response = await LeadServices.getAllPaginateLeads(
+          page,
+          searchQuery
+        );
+        setLeads(response.data.results);
+      }
       setOpen(false);
     } catch (error) {
       console.log("error", error);
@@ -231,8 +226,7 @@ export const Viewleads = () => {
             </Box>
             <Box flexGrow={0.5} align="right">
               <Button
-                component={Link}
-                to="/leads/create-lead"
+                onClick={() => setOpenPopup2(true)}
                 variant="contained"
                 color="success"
                 startIcon={<AddIcon />}
@@ -290,10 +284,8 @@ export const Viewleads = () => {
 
                       <StyledTableCell align="center">
                         <Button
-                          component={Link}
-                          to={"/leads/update-lead/" + row.lead_id}
                           variant="contained"
-                          color="primary"
+                          onClick={() => openInPopup(row.lead_id)}
                         >
                           View
                         </Button>
@@ -307,28 +299,36 @@ export const Viewleads = () => {
           <TableFooter
             sx={{ display: "flex", justifyContent: "center", marginTop: "2em" }}
           >
-            <ReactPaginate
-              previousLabel={"previous"}
-              nextLabel={"next"}
-              breakLabel={"..."}
-              pageCount={pageCount}
-              marginPagesDisplayed={2}
-              pageRangeDisplayed={3}
-              onPageChange={handlePageClick}
-              containerClassName={"pagination justify-content-center"}
-              pageClassName={"page-item"}
-              pageLinkClassName={"page-link"}
-              previousClassName={"page-item"}
-              previousLinkClassName={"page-link"}
-              nextClassName={"page-item"}
-              nextLinkClassName={"page-link"}
-              breakClassName={"page-item"}
-              breakLinkClassName={"page-link"}
-              activeClassName={"active"}
+            <Pagination
+              count={pageCount}
+              onChange={handlePageClick}
+              color={"primary"}
+              variant="outlined"
+              shape="circular"
             />
           </TableFooter>
         </Paper>
       </Grid>
+      <Popup
+        maxWidth={"lg"}
+        title={"Create Leads"}
+        openPopup={openPopup2}
+        setOpenPopup={setOpenPopup2}
+      >
+        <CreateLeads getleads={getleads} setOpenPopup={setOpenPopup2} />
+      </Popup>
+      <Popup
+        maxWidth={"lg"}
+        title={"Update Leads"}
+        openPopup={openPopup}
+        setOpenPopup={setOpenPopup}
+      >
+        <UpdateLeads
+          recordForEdit={recordForEdit}
+          setOpenPopup={setOpenPopup}
+          getleads={getleads}
+        />
+      </Popup>
     </>
   );
 };

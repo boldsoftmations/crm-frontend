@@ -29,8 +29,6 @@ import moment from "moment";
 import { styled } from "@mui/material/styles";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { useParams } from "react-router-dom";
-
 import LeadServices from "../../services/LeadService";
 import { getProfileUser } from "../../Redux/Action/Action";
 
@@ -72,8 +70,8 @@ BootstrapDialogTitle.propTypes = {
   onClose: PropTypes.func.isRequired,
 };
 
-export const ViewAllFollowUp = () => {
-  const { id } = useParams();
+export const ViewAllFollowUp = (props) => {
+  const { recordForEdit } = props;
   const [followUp, setFollowUp] = useState([]);
   const [followUpData, setFollowUpData] = useState([]);
   const [open, setOpen] = useState(false);
@@ -96,7 +94,7 @@ export const ViewAllFollowUp = () => {
   const getFollowUp = async () => {
     try {
       setOpen(true);
-      const res = await LeadServices.getLeadsById(id);
+      const res = await LeadServices.getLeadsById(recordForEdit);
       setFollowUpData(res.data.followup);
       setOpen(false);
     } catch (err) {
@@ -127,7 +125,7 @@ export const ViewAllFollowUp = () => {
       e.preventDefault();
       setOpen(true);
       const data = {
-        leads: id,
+        leads: recordForEdit,
         user: userId,
         notes: followUp.note,
         next_followup_date: followUp.nextFollowUpDate,
@@ -215,7 +213,15 @@ export const ViewAllFollowUp = () => {
       </BootstrapDialog>
 
       <Box component="form" noValidate sx={{ mt: 1 }}>
-        <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
+        <Paper
+          sx={{
+            p: 2,
+            m: 4,
+            display: "flex",
+            flexDirection: "column",
+            backgroundColor: "#F5F5F5",
+          }}
+        >
           <Box display="flex">
             <Box flexGrow={0.9} align="left"></Box>
             <Box flexGrow={2.5} align="center">

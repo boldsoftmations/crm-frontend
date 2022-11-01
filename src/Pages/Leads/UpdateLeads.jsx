@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
+
 import "../CommonStyle.css";
+
 import {
   Autocomplete,
   Box,
@@ -21,7 +23,6 @@ import {
   useTheme,
 } from "@mui/material";
 import OutlinedInput from "@mui/material/OutlinedInput";
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import { CircularProgress } from "@mui/material";
 import { Backdrop } from "@mui/material";
 import "../CommonStyle.css";
@@ -103,7 +104,8 @@ function getStyles(desc, personName, theme) {
         : theme.typography.fontWeightMedium,
   };
 }
-export const UpdateLeads = () => {
+export const UpdateLeads = (props) => {
+  const { recordForEdit, setOpenPopup, getleads } = props;
   const theme = useTheme();
 
   const [activeStep, setActiveStep] = useState(0);
@@ -176,17 +178,17 @@ export const UpdateLeads = () => {
   }, []);
 
   useEffect(() => {
-    getLeadsData(id);
+    getLeadsData(recordForEdit);
   }, []);
 
   useEffect(() => {
     getLAssignedData();
   }, []);
 
-  const getLeadsData = async (id) => {
+  const getLeadsData = async (recordForEdit) => {
     try {
       setOpen(true);
-      const res = await LeadServices.getLeadsById(id);
+      const res = await LeadServices.getLeadsById(recordForEdit);
       setAssign(res.data.assigned_to);
       setInterests(res.data.interested);
       setBusinesTypes(res.data.business_type);
@@ -200,7 +202,7 @@ export const UpdateLeads = () => {
     }
   };
 
-  const getLAssignedData = async (id) => {
+  const getLAssignedData = async () => {
     try {
       setOpen(true);
       const res = await LeadServices.getAllAssignedUser();
@@ -232,7 +234,7 @@ export const UpdateLeads = () => {
             ? businessMismatchValue
             : "no",
           interested: interestedValue ? interestedValue : "yes",
-          assigned_to: assignValue,
+          assigned_to: assignValue ? assignValue : "",
           references: leads.references,
           company: leads.company ? leads.company : "",
           gst_number: leads.gst_number ? leads.gst_number : "",
@@ -243,11 +245,11 @@ export const UpdateLeads = () => {
           pincode: leads.pincode,
         };
 
-        const res = await LeadServices.updateLeads(leads.lead_id, data);
-        console.log("res :>> ", res);
-        navigate("/leads/view-lead");
+        await LeadServices.updateLeads(leads.lead_id, data);
+        setOpenPopup(false);
 
         setOpen(false);
+        getleads();
       } catch (error) {
         console.log("error :>> ", error);
         setOpen(false);
@@ -712,18 +714,15 @@ export const UpdateLeads = () => {
   return (
     <div style={{ width: "100%" }}>
       <Grid item xs={12}>
-        <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
-          <Link
-            to={"/leads/view-lead"}
-            style={{
-              flexDirection: "column",
-              justifyContent: "flex-start",
-              marginTop: "10px",
-            }}
-            edge={"start"}
-          >
-            <KeyboardBackspaceIcon fontSize="large" />
-          </Link>
+        <Paper
+          sx={{
+            p: 2,
+            m: 4,
+            display: "flex",
+            flexDirection: "column",
+            backgroundColor: "#F5F5F5",
+          }}
+        >
           <Stepper alternativeLabel activeStep={activeStep}>
             {steps.map((label, index) => (
               <Step key={label}>
@@ -767,7 +766,15 @@ export const UpdateLeads = () => {
 
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
+          <Paper
+            sx={{
+              p: 2,
+              m: 4,
+              display: "flex",
+              flexDirection: "column",
+              backgroundColor: "#F5F5F5",
+            }}
+          >
             <h3 className="Auth-form-title">View Query Product</h3>
 
             <TextField
@@ -797,13 +804,13 @@ export const UpdateLeads = () => {
 
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <ViewAllFollowUp />
+          <ViewAllFollowUp recordForEdit={recordForEdit} />
         </Grid>
       </Grid>
 
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <ViewAllPotential />
+          <ViewAllPotential recordForEdit={recordForEdit} />
         </Grid>
       </Grid>
     </div>
