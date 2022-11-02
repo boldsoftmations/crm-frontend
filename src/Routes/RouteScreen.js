@@ -109,7 +109,7 @@ export const RouteScreen = () => {
               path="/customers/warehouse-details"
               element={<WareHouseDetails />}
             />
-            <Route path="*" element={<PageNotFound />} />
+            <Route path="*" element={<Home />} />
           </>
         )}
       </Routes>
