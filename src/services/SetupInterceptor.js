@@ -4,6 +4,7 @@ import CustomAxios from "./api";
 import {
   getLocalAccessToken,
   getLocalRefreshToken,
+  removeUser,
   updateLocalAccessToken,
 } from "./TokenService";
 const navigate = useNavigate;
@@ -33,7 +34,7 @@ const SetupInterceptor = (store) => {
     async (err) => {
       console.log("err respoanse :>> ", err);
       if (err.response.data.code === "token_not_valid") {
-        navigate("/login");
+        removeUser();
       }
       const originalConfig = err.config;
 
