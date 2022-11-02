@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { refreshToken } from "../Redux/Action/Action";
 import CustomAxios from "./api";
 import {
@@ -5,7 +6,7 @@ import {
   getLocalRefreshToken,
   updateLocalAccessToken,
 } from "./TokenService";
-
+const navigate = useNavigate;
 const SetupInterceptor = (store) => {
   CustomAxios.interceptors.request.use(
     (config) => {
@@ -31,7 +32,9 @@ const SetupInterceptor = (store) => {
     },
     async (err) => {
       console.log("err respoanse :>> ", err);
-
+      if (err.response.data.code === "token_not_valid") {
+        navigate("/login");
+      }
       const originalConfig = err.config;
 
       if (err.response) {
