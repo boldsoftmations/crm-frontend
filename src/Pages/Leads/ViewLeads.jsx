@@ -76,8 +76,8 @@ export const Viewleads = () => {
           const total = response.data.count;
           setpageCount(Math.ceil(total / 25));
         }
-        setOpen(false);
       }
+      setOpen(false);
     } catch (err) {
       setOpen(false);
       if (!err.response) {
