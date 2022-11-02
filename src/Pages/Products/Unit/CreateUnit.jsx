@@ -6,18 +6,14 @@ import {
   Grid,
   TextField,
 } from "@mui/material";
-import { Link, useNavigate } from "react-router-dom";
 import { useRef, useState } from "react";
 import React from "react";
-
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
-
 import "../../CommonStyle.css";
 import ProductService from "../../../services/ProductService";
 
-export const CreateUnit = () => {
+export const CreateUnit = (props) => {
+  const { setOpenPopup, getUnits } = props;
   const [unit, setUnit] = useState([]);
-  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
@@ -36,10 +32,10 @@ export const CreateUnit = () => {
         short_name: unit.shortName,
       };
 
-      const res = await ProductService.createUnit(data);
-      console.log("res :>> ", res);
-      navigate("/products/view-unit");
+      await ProductService.createUnit(data);
+      setOpenPopup(false);
       setOpen(false);
+      getUnits();
     } catch (err) {
       console.log("error update color :>> ", err);
       setOpen(false);
@@ -70,34 +66,7 @@ export const CreateUnit = () => {
           <CircularProgress color="inherit" />
         </Backdrop>
       </div>
-      <Box
-        className="Auth-form-content"
-        component="form"
-        noValidate
-        onSubmit={(e) => createunit(e)}
-        sx={{
-          minWidth: "20em",
-          boxShadow: "rgb(0 0 0 / 16%) 1px 1px 10px",
-          marginTop: "2em",
-          marginLeft: "10em",
-          marginRight: "10em",
-          position: "relative",
-          paddingTop: "30px",
-          paddingBottom: "20px",
-          borderRadius: "8px",
-          backgroundColor: "white",
-        }}
-      >
-        <Box display="flex">
-          <Box sx={{ marginRight: "4em" }}>
-            <Link to="/products/view-unit" className="link-primary">
-              <KeyboardBackspaceIcon fontSize="large" />
-            </Link>
-          </Box>
-          <Box>
-            <h3 className="Auth-form-title">Create Unit</h3>
-          </Box>
-        </Box>
+      <Box component="form" noValidate onSubmit={(e) => createunit(e)}>
         <Grid container spacing={2}>
           <p
             style={{

@@ -301,7 +301,7 @@ export const ViewFinishGoods = () => {
                           variant="contained"
                           onClick={() => openInPopup(row.id)}
                         >
-                          Edit
+                          View
                         </Button>
                       </StyledTableCell>
                     </StyledTableRow>

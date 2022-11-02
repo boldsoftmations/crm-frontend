@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import React, { useEffect, useRef, useState } from "react";
 
 import "../../CommonStyle.css";
@@ -16,16 +15,16 @@ import {
   CircularProgress,
   styled,
   Box,
-  IconButton,
   TextField,
   TableContainer,
-  TableFooter,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
 import AddIcon from "@mui/icons-material/Add";
 import ProductService from "../../../services/ProductService";
 import SearchIcon from "@mui/icons-material/Search";
-import { Paginate } from "../../../Components/Pagination/Paginate";
+import { Popup } from "./../../../Components/Popup";
+import { CreateDescription } from "./CreateDescription";
+import { UpdateDescription } from "./UpdateDescription";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -53,7 +52,9 @@ export const ViewDescription = () => {
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-
+  const [openPopup, setOpenPopup] = useState(false);
+  const [openPopup2, setOpenPopup2] = useState(false);
+  const [recordForEdit, setRecordForEdit] = useState(null);
   const getDescriptions = async () => {
     try {
       setOpen(true);
@@ -110,6 +111,10 @@ export const ViewDescription = () => {
     getDescriptions();
   };
 
+  const openInPopup = (item) => {
+    setRecordForEdit(item);
+    setOpenPopup(true);
+  };
   return (
     <>
       <div>
@@ -184,17 +189,14 @@ export const ViewDescription = () => {
               </h3>
             </Box>
             <Box flexGrow={0.5} align="right">
-              <Link>
-                <Button
-                  component={Link}
-                  to="/products/create-description"
-                  variant="contained"
-                  color="success"
-                  startIcon={<AddIcon />}
-                >
-                  Add
-                </Button>
-              </Link>
+              <Button
+                onClick={() => setOpenPopup2(true)}
+                variant="contained"
+                color="success"
+                startIcon={<AddIcon />}
+              >
+                Add
+              </Button>
             </Box>
           </Box>
           <TableContainer sx={{ maxHeight: 440 }}>
@@ -225,13 +227,12 @@ export const ViewDescription = () => {
                         {row.consumable.toUpperCase()}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {" "}
-                        <Link
-                          to={"/products/update-description/" + row.id}
-                          // className="badge badge-warning"
+                        <Button
+                          variant="contained"
+                          onClick={() => openInPopup(row.id)}
                         >
-                          Edit
-                        </Link>{" "}
+                          View
+                        </Button>
                       </StyledTableCell>
                     </StyledTableRow>
                   );
@@ -241,6 +242,27 @@ export const ViewDescription = () => {
           </TableContainer>
         </Paper>
       </Grid>
+      <Popup
+        title={"Create Description"}
+        openPopup={openPopup2}
+        setOpenPopup={setOpenPopup2}
+      >
+        <CreateDescription
+          getDescriptions={getDescriptions}
+          setOpenPopup={setOpenPopup2}
+        />
+      </Popup>
+      <Popup
+        title={"Update Description"}
+        openPopup={openPopup}
+        setOpenPopup={setOpenPopup}
+      >
+        <UpdateDescription
+          recordForEdit={recordForEdit}
+          setOpenPopup={setOpenPopup}
+          getDescriptions={getDescriptions}
+        />
+      </Popup>
     </>
   );
 };

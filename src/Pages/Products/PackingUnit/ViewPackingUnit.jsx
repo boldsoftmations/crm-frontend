@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import React, { useEffect, useRef, useState } from "react";
 
 import "../../CommonStyle.css";
@@ -17,16 +16,16 @@ import {
   styled,
   Box,
   TextField,
-  IconButton,
   TableContainer,
-  TableFooter,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
 import AddIcon from "@mui/icons-material/Add";
 
 import ProductService from "../../../services/ProductService";
 import SearchIcon from "@mui/icons-material/Search";
-import { Paginate } from "../../../Components/Pagination/Paginate";
+import { CreatePackingUnit } from "./CreatePackingUnit";
+import { UpdatePackingUnit } from "./UpdatePackingUnit";
+import { Popup } from "./../../../Components/Popup";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -54,7 +53,9 @@ export const ViewPackingUnit = () => {
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-
+  const [openPopup, setOpenPopup] = useState(false);
+  const [openPopup2, setOpenPopup2] = useState(false);
+  const [recordForEdit, setRecordForEdit] = useState(null);
   const getPackingUnits = async () => {
     try {
       setOpen(true);
@@ -110,6 +111,11 @@ export const ViewPackingUnit = () => {
   const getResetData = () => {
     setSearchQuery("");
     getPackingUnits();
+  };
+
+  const openInPopup = (item) => {
+    setRecordForEdit(item);
+    setOpenPopup(true);
   };
 
   return (
@@ -187,8 +193,7 @@ export const ViewPackingUnit = () => {
             </Box>
             <Box flexGrow={0.5} align="right">
               <Button
-                component={Link}
-                to="/products/create-packing-unit"
+                onClick={() => setOpenPopup2(true)}
                 variant="contained"
                 color="success"
                 startIcon={<AddIcon />}
@@ -223,13 +228,12 @@ export const ViewPackingUnit = () => {
                         {row.short_name}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {" "}
-                        <Link
-                          to={"/products/update-packing-unit/" + row.id}
-                          // className="badge badge-warning"
+                        <Button
+                          variant="contained"
+                          onClick={() => openInPopup(row.id)}
                         >
-                          Edit
-                        </Link>{" "}
+                          View
+                        </Button>
                       </StyledTableCell>
                     </StyledTableRow>
                   );
@@ -239,6 +243,27 @@ export const ViewPackingUnit = () => {
           </TableContainer>
         </Paper>
       </Grid>
+      <Popup
+        title={"Create Packing Unit"}
+        openPopup={openPopup2}
+        setOpenPopup={setOpenPopup2}
+      >
+        <CreatePackingUnit
+          getPackingUnits={getPackingUnits}
+          setOpenPopup={setOpenPopup2}
+        />
+      </Popup>
+      <Popup
+        title={"Update Packing Unit"}
+        openPopup={openPopup}
+        setOpenPopup={setOpenPopup}
+      >
+        <UpdatePackingUnit
+          recordForEdit={recordForEdit}
+          setOpenPopup={setOpenPopup}
+          getPackingUnits={getPackingUnits}
+        />
+      </Popup>
     </>
   );
 };

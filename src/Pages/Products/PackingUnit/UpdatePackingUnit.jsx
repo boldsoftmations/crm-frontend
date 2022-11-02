@@ -7,25 +7,24 @@ import {
   TextField,
 } from "@mui/material";
 
-import { Link, useNavigate, useParams } from "react-router-dom";
 import { useRef, useState } from "react";
 import React, { useEffect } from "react";
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
-import "../../CommonStyle.css";
+
 import ProductService from "../../../services/ProductService";
 
-export const UpdatePackingUnit = () => {
-  const navigate = useNavigate();
+import "../../CommonStyle.css";
+
+export const UpdatePackingUnit = (props) => {
+  const { recordForEdit, setOpenPopup, getPackingUnits } = props;
   const [open, setOpen] = useState(false);
-  const { id } = useParams();
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
   const [unit, setUnit] = useState([]);
 
-  const getunit = async (id) => {
+  const getunit = async (recordForEdit) => {
     try {
       setOpen(true);
-      const res = await ProductService.getPackingUnitById(id);
+      const res = await ProductService.getPackingUnitById(recordForEdit);
 
       setUnit(res.data);
       setOpen(false);
@@ -49,12 +48,12 @@ export const UpdatePackingUnit = () => {
         short_name: unit.short_name,
       };
       console.log("data", data);
-      if (id) {
-        const res = await ProductService.updatePackingUnit(unit.id, data);
-        console.log("res :>> ", res);
-        navigate("/products/view-packing-unit");
+      if (recordForEdit) {
+        await ProductService.updatePackingUnit(unit.id, data);
+        setOpenPopup(false);
 
         setOpen(false);
+        getPackingUnits();
       }
     } catch (err) {
       console.log("error update color :>> ", err);
@@ -77,8 +76,8 @@ export const UpdatePackingUnit = () => {
   };
 
   useEffect(() => {
-    if (id) getunit(id);
-  }, [id]);
+    if (recordForEdit) getunit(recordForEdit);
+  }, [recordForEdit]);
 
   return (
     <>
@@ -93,34 +92,7 @@ export const UpdatePackingUnit = () => {
           <CircularProgress color="inherit" />
         </Backdrop>
       </div>
-      <Box
-        className="Auth-form-content"
-        component="form"
-        noValidate
-        onSubmit={(e) => updatePackingUnits(e)}
-        sx={{
-          minWidth: "35em",
-          boxShadow: "rgb(0 0 0 / 16%) 1px 1px 10px",
-          marginTop: "2em",
-          marginLeft: "10em",
-          marginRight: "10em",
-          position: "relative",
-          paddingTop: "30px",
-          paddingBottom: "20px",
-          borderRadius: "8px",
-          backgroundColor: "white",
-        }}
-      >
-        <Box display="flex">
-          <Box sx={{ marginRight: "5em" }}>
-            <Link to="/products/view-packing-unit" className="link-primary">
-              <KeyboardBackspaceIcon fontSize="large" />
-            </Link>
-          </Box>
-          <Box>
-            <h3 className="Auth-form-title">Update Packing Unit</h3>
-          </Box>
-        </Box>
+      <Box component="form" noValidate onSubmit={(e) => updatePackingUnits(e)}>
         <Grid container spacing={2}>
           <p
             style={{
@@ -142,11 +114,10 @@ export const UpdatePackingUnit = () => {
           <Grid item xs={12}>
             <TextField
               fullWidth
-              name="id"
               size="small"
               label="Id"
               variant="outlined"
-              value={id ? id : ""}
+              value={recordForEdit ? recordForEdit : ""}
             />
           </Grid>
           <Grid item xs={12}>

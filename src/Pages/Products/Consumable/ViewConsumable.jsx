@@ -103,11 +103,6 @@ export const ViewConsumable = () => {
     getconsumables();
   }, []);
 
-  const openInPopup = (item) => {
-    setRecordForEdit(item);
-    setOpenPopup(true);
-  };
-
   const handlePageChange = async (event, value) => {
     try {
       const page = value;
@@ -154,6 +149,11 @@ export const ViewConsumable = () => {
   const getResetData = () => {
     setSearchQuery("");
     getconsumables();
+  };
+
+  const openInPopup = (item) => {
+    setRecordForEdit(item);
+    setOpenPopup(true);
   };
 
   return (
@@ -296,12 +296,11 @@ export const ViewConsumable = () => {
                         {row.gst ? `${row.gst}%` : "-"}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {" "}
                         <Button
                           variant="contained"
                           onClick={() => openInPopup(row.id)}
                         >
-                          Edit
+                          View
                         </Button>
                       </StyledTableCell>
                     </StyledTableRow>

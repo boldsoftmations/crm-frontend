@@ -7,21 +7,20 @@ import {
   Grid,
   TextField,
 } from "@mui/material";
-import { Link, useNavigate, useParams } from "react-router-dom";
 
 import { useRef, useState } from "react";
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
+import { useSelector } from "react-redux";
 import React, { useEffect } from "react";
 
 import ProductService from "../../../services/ProductService";
 
 import "../../CommonStyle.css";
-import { useSelector } from "react-redux";
 
-export const UpdateProductCode = () => {
-  const navigate = useNavigate();
+export const UpdateProductCode = (props) => {
+  const { recordForEdit, setOpenPopup, getproductCodes } = props;
+
   const [open, setOpen] = useState(false);
-  const { id } = useParams();
+
   const desc = useSelector((state) => state.auth);
   const [description, setDescription] = useState([]);
   const [selectedDescription, setSelectedDescription] = useState([]);
@@ -32,7 +31,12 @@ export const UpdateProductCode = () => {
   const descriptionValue = selectedDescription.description
     ? selectedDescription.description
     : selectedDescription;
-
+  console.log(
+    "selectedDescription description :>> ",
+    selectedDescription.description
+  );
+  console.log("descriptionValue", descriptionValue);
+  console.log("selectedDescription", selectedDescription);
   useEffect(() => {
     getNoDescriptionData();
   }, []);
@@ -50,10 +54,10 @@ export const UpdateProductCode = () => {
     }
   };
 
-  const getproductCode = async (id) => {
+  const getproductCode = async (recordForEdit) => {
     try {
       setOpen(true);
-      const res = await ProductService.getProductCodeById(id);
+      const res = await ProductService.getProductCodeById(recordForEdit);
       setProductCode(res.data);
       setSelectedDescription(res.data);
       setOpen(false);
@@ -74,17 +78,17 @@ export const UpdateProductCode = () => {
       setOpen(true);
       const data = {
         code: productCode.code,
-        description: description,
+        description: descriptionValue,
       };
 
-      if (id) {
+      if (recordForEdit) {
         const res = await ProductService.updateProductCode(
           productCode.id,
           data
         );
-        console.log("res :>> ", res);
-        navigate("/products/view-product-code");
+        setOpenPopup(false);
         setOpen(false);
+        getproductCodes();
       }
     } catch (err) {
       console.log("error update product code :>> ", err);
@@ -107,8 +111,8 @@ export const UpdateProductCode = () => {
   };
   console.log("error", error);
   useEffect(() => {
-    if (id) getproductCode(id);
-  }, [id]);
+    if (recordForEdit) getproductCode(recordForEdit);
+  }, [recordForEdit]);
 
   return (
     <>
@@ -123,34 +127,7 @@ export const UpdateProductCode = () => {
           <CircularProgress color="inherit" />
         </Backdrop>
       </div>
-      <Box
-        className="Auth-form-content"
-        component="form"
-        noValidate
-        onSubmit={(e) => updatesproductCode(e)}
-        sx={{
-          minWidth: "35em",
-          boxShadow: "rgb(0 0 0 / 16%) 1px 1px 10px",
-          marginTop: "2em",
-          marginLeft: "10em",
-          marginRight: "10em",
-          position: "relative",
-          paddingTop: "30px",
-          paddingBottom: "20px",
-          borderRadius: "8px",
-          backgroundColor: "white",
-        }}
-      >
-        <Box display="flex">
-          <Box sx={{ marginRight: "5em" }}>
-            <Link to="/products/view-product-code" className="link-primary">
-              <KeyboardBackspaceIcon fontSize="large" />
-            </Link>
-          </Box>
-          <Box>
-            <h3 className="Auth-form-title">Update Product Code</h3>
-          </Box>
-        </Box>
+      <Box component="form" noValidate onSubmit={(e) => updatesproductCode(e)}>
         <Grid container spacing={2}>
           <p
             style={{
@@ -198,10 +175,6 @@ export const UpdateProductCode = () => {
                   name="description"
                   {...params}
                   label="Description"
-                  InputProps={{
-                    ...params.InputProps,
-                    type: "search",
-                  }}
                 />
               )}
             />

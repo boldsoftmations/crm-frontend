@@ -6,26 +6,22 @@ import {
   Grid,
   TextField,
 } from "@mui/material";
-
-import { Link, useNavigate, useParams } from "react-router-dom";
 import { useRef, useState } from "react";
 import React, { useEffect } from "react";
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
+
 import "../../CommonStyle.css";
 import ProductService from "../../../services/ProductService";
 
-export const UpdateBasicUnit = () => {
-  const navigate = useNavigate();
+export const UpdateBasicUnit = (props) => {
+  const { recordForEdit, setOpenPopup, getBasicUnit } = props;
   const [open, setOpen] = useState(false);
-  const { id } = useParams();
-
   const [brand, setBrand] = useState([]);
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
-  const getBrand = async (id) => {
+  const getBrand = async (recordForEdit) => {
     try {
       setOpen(true);
-      const res = await ProductService.getBasicUnitById(id);
+      const res = await ProductService.getBasicUnitById(recordForEdit);
 
       setBrand(res.data);
       setOpen(false);
@@ -49,12 +45,11 @@ export const UpdateBasicUnit = () => {
         short_name: brand.short_name,
       };
       console.log("data", data);
-      if (id) {
-        const res = await ProductService.updateBasicUnit(brand.id, data);
-        console.log("res :>> ", res);
-        setBrand("");
-        navigate("/products/view-basic-unit/");
+      if (recordForEdit) {
+        await ProductService.updateBasicUnit(brand.id, data);
+        setOpenPopup(false);
         setOpen(false);
+        getBasicUnit();
       }
     } catch (err) {
       console.log("error :>> ", err);
@@ -77,8 +72,8 @@ export const UpdateBasicUnit = () => {
   };
 
   useEffect(() => {
-    if (id) getBrand(id);
-  }, []);
+    if (recordForEdit) getBrand(recordForEdit);
+  }, [recordForEdit]);
 
   return (
     <>
@@ -93,35 +88,7 @@ export const UpdateBasicUnit = () => {
           <CircularProgress color="inherit" />
         </Backdrop>
       </div>
-      <Box
-        className="Auth-form-content"
-        component="form"
-        noValidate
-        onSubmit={(e) => updatesBrand(e)}
-        sx={{
-          minWidth: "20em",
-          boxShadow: "rgb(0 0 0 / 16%) 1px 1px 10px",
-          marginTop: "2em",
-          marginLeft: "10em",
-          marginRight: "10em",
-          position: "relative",
-          paddingTop: "30px",
-          paddingBottom: "20px",
-          borderRadius: "8px",
-          backgroundColor: "white",
-        }}
-      >
-        <Box display="flex">
-          <Box sx={{ marginRight: "4em" }}>
-            <Link to="/products/view-basic-unit" className="link-primary">
-              <KeyboardBackspaceIcon fontSize="large" />
-            </Link>
-          </Box>
-          <Box>
-            <h3 className="Auth-form-title"> Update Basic Unit</h3>
-          </Box>
-        </Box>
-
+      <Box component="form" noValidate onSubmit={(e) => updatesBrand(e)}>
         <Grid container spacing={2}>
           <p
             style={{
@@ -144,11 +111,10 @@ export const UpdateBasicUnit = () => {
           <Grid item xs={12}>
             <TextField
               fullWidth
-              name="id"
               size="small"
               label="Id"
               variant="outlined"
-              value={id ? id : ""}
+              value={recordForEdit ? recordForEdit : ""}
             />
           </Grid>
           <Grid item xs={12}>

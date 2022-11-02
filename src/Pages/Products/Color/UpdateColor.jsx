@@ -7,27 +7,23 @@ import {
   TextField,
 } from "@mui/material";
 
-import { Link, useNavigate, useParams } from "react-router-dom";
 import { useRef, useState } from "react";
 import React, { useEffect } from "react";
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 
 import ProductService from "../../../services/ProductService";
 
 import "../../CommonStyle.css";
 
-export const UpdateColor = () => {
-  const navigate = useNavigate();
+export const UpdateColor = (props) => {
+  const { recordForEdit, setOpenPopup, getColours } = props;
   const [open, setOpen] = useState(false);
-  const { id } = useParams();
-
   const [colour, setColour] = useState([]);
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
   const getcolor = async (id) => {
     try {
       setOpen(true);
-      const res = await ProductService.getColourById(id);
+      const res = await ProductService.getColourById(recordForEdit);
 
       setColour(res.data);
       setOpen(false);
@@ -49,12 +45,11 @@ export const UpdateColor = () => {
       const data = {
         name: colour.name,
       };
-      if (id) {
-        const res = await ProductService.updateColour(colour.id, data);
-        console.log("res :>> ", res);
-        navigate("/products/view-colors");
-        // window.location.reload(false);
+      if (recordForEdit) {
+        await ProductService.updateColour(colour.id, data);
+        setOpenPopup(false);
         setOpen(false);
+        getColours();
       }
     } catch (err) {
       console.log("error update color :>> ", err);
@@ -77,8 +72,8 @@ export const UpdateColor = () => {
   };
 
   useEffect(() => {
-    if (id) getcolor(id);
-  }, []);
+    if (recordForEdit) getcolor(recordForEdit);
+  }, [recordForEdit]);
 
   return (
     <>
@@ -90,34 +85,7 @@ export const UpdateColor = () => {
           <CircularProgress color="inherit" />
         </Backdrop>
       </div>
-      <Box
-        className="Auth-form-content"
-        component="form"
-        noValidate
-        onSubmit={(e) => updateColour(e)}
-        sx={{
-          minWidth: "20em",
-          boxShadow: "rgb(0 0 0 / 16%) 1px 1px 10px",
-          marginTop: "2em",
-          marginLeft: "10em",
-          marginRight: "10em",
-          position: "relative",
-          paddingTop: "30px",
-          paddingBottom: "20px",
-          borderRadius: "8px",
-          backgroundColor: "white",
-        }}
-      >
-        <Box display="flex">
-          <Box sx={{ marginRight: "4em" }}>
-            <Link to="/products/view-colors" className="link-primary">
-              <KeyboardBackspaceIcon fontSize="large" />
-            </Link>
-          </Box>
-          <Box>
-            <h3 className="Auth-form-title">Update Colour</h3>
-          </Box>
-        </Box>
+      <Box component="form" noValidate onSubmit={(e) => updateColour(e)}>
         <Grid container spacing={2}>
           <p
             style={{
@@ -140,11 +108,10 @@ export const UpdateColor = () => {
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              name="id"
               size="small"
               label="Id"
               variant="outlined"
-              value={id ? id : ""}
+              value={recordForEdit ? recordForEdit : ""}
             />
           </Grid>
           <Grid item xs={12} sm={6}>

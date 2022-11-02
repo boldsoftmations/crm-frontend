@@ -8,8 +8,6 @@ import {
   TextField,
 } from "@mui/material";
 
-import { Link, useNavigate } from "react-router-dom";
-
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import React, { useEffect, useRef, useState } from "react";
 
@@ -17,11 +15,12 @@ import ProductService from "../../../services/ProductService";
 
 import "../../CommonStyle.css";
 
-export const CreateProductCode = () => {
+export const CreateProductCode = (props) => {
+  const { setOpenPopup, getproductCodes } = props;
   const [description, setDescription] = useState([]);
   const [allDescription, seAllDescription] = useState([]);
   const [productCode, setProductCode] = useState([]);
-  const navigate = useNavigate();
+
   const [open, setOpen] = useState(false);
 
   const errRef = useRef();
@@ -41,7 +40,7 @@ export const CreateProductCode = () => {
       setOpen(true);
       const res = await ProductService.getNoDescription();
       seAllDescription(res.data);
-      console.log("desct :>> ", res.data);
+
       setOpen(false);
     } catch (error) {
       console.log("error", error);
@@ -57,10 +56,10 @@ export const CreateProductCode = () => {
         code: productCode.code,
         description: description,
       };
-      const res = await ProductService.createProductCode(data);
-      console.log("res :>> ", res);
-      navigate("/products/view-product-code");
+      await ProductService.createProductCode(data);
+      setOpenPopup(false);
       setOpen(false);
+      getproductCodes();
     } catch (err) {
       console.log("error update color :>> ", err);
       setOpen(false);
@@ -92,35 +91,7 @@ export const CreateProductCode = () => {
         </Backdrop>
       </div>
 
-      <Box
-        className="Auth-form-content"
-        component="form"
-        noValidate
-        onSubmit={(e) => createProductCode(e)}
-        sx={{
-          minWidth: "28em",
-          boxShadow: "rgb(0 0 0 / 16%) 1px 1px 10px",
-          marginTop: "2em",
-          marginLeft: "10em",
-          marginRight: "10em",
-          position: "relative",
-          paddingTop: "30px",
-          paddingBottom: "20px",
-
-          borderRadius: "8px",
-          backgroundColor: "white",
-        }}
-      >
-        <Box display="flex">
-          <Box sx={{ marginRight: "2em" }}>
-            <Link to="/products/view-product-code" className="link-primary">
-              <KeyboardBackspaceIcon fontSize="large" />
-            </Link>
-          </Box>
-          <Box>
-            <h3 className="Auth-form-title"> Create Product Code</h3>
-          </Box>
-        </Box>
+      <Box component="form" noValidate onSubmit={(e) => createProductCode(e)}>
         <Grid container spacing={2}>
           <p
             style={{

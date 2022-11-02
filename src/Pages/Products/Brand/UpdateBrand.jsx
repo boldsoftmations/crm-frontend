@@ -7,25 +7,23 @@ import {
   TextField,
 } from "@mui/material";
 
-import { Link, useNavigate, useParams } from "react-router-dom";
 import { useRef, useState } from "react";
 import React, { useEffect } from "react";
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
-import "../../CommonStyle.css";
+
 import ProductService from "../../../services/ProductService";
 
-export const UpdateBrand = () => {
-  const navigate = useNavigate();
-  const [open, setOpen] = useState(false);
-  const { id } = useParams();
+import "../../CommonStyle.css";
 
+export const UpdateBrand = (props) => {
+  const { recordForEdit, setOpenPopup, getBrandList } = props;
+  const [open, setOpen] = useState(false);
   const [brand, setBrand] = useState([]);
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
-  const getBrand = async (id) => {
+  const getBrand = async (recordForEdit) => {
     try {
       setOpen(true);
-      const res = await ProductService.getBrandById(id);
+      const res = await ProductService.getBrandById(recordForEdit);
 
       setBrand(res.data);
       setOpen(false);
@@ -48,13 +46,13 @@ export const UpdateBrand = () => {
         name: brand.name,
         short_name: brand.short_name,
       };
-      console.log("data", data);
-      if (id) {
-        const res = await ProductService.updateBrand(brand.id, data);
-        console.log("res :>> ", res);
-        setBrand("");
-        navigate("/products/view-brand/");
+
+      if (recordForEdit) {
+        await ProductService.updateBrand(brand.id, data);
+
+        setOpenPopup(false);
         setOpen(false);
+        getBrandList();
       }
     } catch (err) {
       console.log("error :>> ", err);
@@ -77,8 +75,8 @@ export const UpdateBrand = () => {
   };
 
   useEffect(() => {
-    if (id) getBrand(id);
-  }, []);
+    if (recordForEdit) getBrand(recordForEdit);
+  }, [recordForEdit]);
 
   return (
     <>
@@ -93,34 +91,7 @@ export const UpdateBrand = () => {
           <CircularProgress color="inherit" />
         </Backdrop>
       </div>
-      <Box
-        className="Auth-form-content"
-        component="form"
-        noValidate
-        onSubmit={(e) => updatesBrand(e)}
-        sx={{
-          minWidth: "20em",
-          boxShadow: "rgb(0 0 0 / 16%) 1px 1px 10px",
-          marginTop: "2em",
-          marginLeft: "10em",
-          marginRight: "10em",
-          position: "relative",
-          paddingTop: "30px",
-          paddingBottom: "20px",
-          borderRadius: "8px",
-          backgroundColor: "white",
-        }}
-      >
-        <Box display="flex">
-          <Box sx={{ marginRight: "4em" }}>
-            <Link to="/products/view-brand" className="link-primary">
-              <KeyboardBackspaceIcon fontSize="large" />
-            </Link>
-          </Box>
-          <Box>
-            <h3 className="Auth-form-title">Update Brand</h3>
-          </Box>
-        </Box>
+      <Box component="form" noValidate onSubmit={(e) => updatesBrand(e)}>
         <Grid container spacing={2}>
           <p
             style={{
@@ -143,11 +114,10 @@ export const UpdateBrand = () => {
           <Grid item xs={12}>
             <TextField
               fullWidth
-              name="id"
               size="small"
               label="Id"
               variant="outlined"
-              value={id ? id : ""}
+              value={recordForEdit ? recordForEdit : ""}
             />
           </Grid>
           <Grid item xs={12}>

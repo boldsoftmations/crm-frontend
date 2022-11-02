@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import React, { useEffect, useRef, useState } from "react";
 
 import "../../CommonStyle.css";
@@ -17,15 +16,16 @@ import {
   styled,
   Box,
   TextField,
-  IconButton,
   TableContainer,
-  TableFooter,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
 import AddIcon from "@mui/icons-material/Add";
 
 import ProductService from "../../../services/ProductService";
 import SearchIcon from "@mui/icons-material/Search";
+import { CreateColor } from "./CreateColor";
+import { UpdateColor } from "./UpdateColor";
+import { Popup } from "./../../../Components/Popup";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -53,6 +53,9 @@ export const ViewColors = () => {
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [openPopup, setOpenPopup] = useState(false);
+  const [openPopup2, setOpenPopup2] = useState(false);
+  const [recordForEdit, setRecordForEdit] = useState(null);
   const getColours = async () => {
     try {
       setOpen(true);
@@ -104,6 +107,11 @@ export const ViewColors = () => {
   const getResetData = () => {
     setSearchQuery("");
     getColours();
+  };
+
+  const openInPopup = (item) => {
+    setRecordForEdit(item);
+    setOpenPopup(true);
   };
 
   return (
@@ -181,8 +189,7 @@ export const ViewColors = () => {
             </Box>
             <Box flexGrow={0.5} align="right">
               <Button
-                component={Link}
-                to="/products/create-colors"
+                onClick={() => setOpenPopup2(true)}
                 variant="contained"
                 color="success"
                 startIcon={<AddIcon />}
@@ -213,13 +220,12 @@ export const ViewColors = () => {
                         {row.name}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {" "}
-                        <Link
-                          to={"/products/update-color/" + row.id}
-                          // className="badge badge-warning"
+                        <Button
+                          variant="contained"
+                          onClick={() => openInPopup(row.id)}
                         >
-                          Edit
-                        </Link>{" "}
+                          View
+                        </Button>
                       </StyledTableCell>
                     </StyledTableRow>
                   );
@@ -229,6 +235,24 @@ export const ViewColors = () => {
           </TableContainer>
         </Paper>
       </Grid>
+      <Popup
+        title={"Create Colour"}
+        openPopup={openPopup2}
+        setOpenPopup={setOpenPopup2}
+      >
+        <CreateColor getColours={getColours} setOpenPopup={setOpenPopup2} />
+      </Popup>
+      <Popup
+        title={"Update Colour"}
+        openPopup={openPopup}
+        setOpenPopup={setOpenPopup}
+      >
+        <UpdateColor
+          recordForEdit={recordForEdit}
+          setOpenPopup={setOpenPopup}
+          getColours={getColours}
+        />
+      </Popup>
     </>
   );
 };

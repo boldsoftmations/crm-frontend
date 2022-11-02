@@ -7,10 +7,8 @@ import {
   MenuItem,
   TextField,
 } from "@mui/material";
-import { Link, useNavigate, useParams } from "react-router-dom";
 
 import { useRef, useState } from "react";
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import React, { useEffect } from "react";
 
 import ProductService from "../../../services/ProductService";
@@ -29,20 +27,18 @@ const consume = [
   },
 ];
 
-export const UpdateDescription = () => {
-  const navigate = useNavigate();
+export const UpdateDescription = (props) => {
+  const { recordForEdit, setOpenPopup, getDescriptions } = props;
   const [open, setOpen] = useState(false);
-  const { id } = useParams();
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
   const [description, setDescription] = useState([]);
-  const [consumable, setConsumable] = useState([]);
 
-  const getdescription = async (id) => {
+  const getdescription = async (recordForEdit) => {
     try {
       setOpen(true);
-      const res = await ProductService.getDescriptionById(id);
-      setConsumable(res.data);
+      const res = await ProductService.getDescriptionById(recordForEdit);
+
       setDescription(res.data);
       setOpen(false);
     } catch (error) {
@@ -62,17 +58,14 @@ export const UpdateDescription = () => {
       setOpen(true);
       const data = {
         name: description.name,
-        consumable: consumable,
+        consumable: description.consumable,
       };
-      console.log("data", data);
-      if (id) {
-        const res = await ProductService.updateDescription(
-          description.id,
-          data
-        );
-        console.log("res :>> ", res);
-        navigate("/products/view-description");
+
+      if (recordForEdit) {
+        await ProductService.updateDescription(description.id, data);
+        setOpenPopup(false);
         setOpen(false);
+        getDescriptions();
       }
     } catch (err) {
       console.log("error update color :>> ", err);
@@ -95,8 +88,8 @@ export const UpdateDescription = () => {
   };
 
   useEffect(() => {
-    if (id) getdescription(id);
-  }, [id]);
+    if (recordForEdit) getdescription(recordForEdit);
+  }, [recordForEdit]);
 
   return (
     <>
@@ -112,34 +105,7 @@ export const UpdateDescription = () => {
         </Backdrop>
       </div>
 
-      <Box
-        className="Auth-form-content"
-        component="form"
-        noValidate
-        onSubmit={(e) => updatesdescription(e)}
-        sx={{
-          minWidth: "35em",
-          boxShadow: "rgb(0 0 0 / 16%) 1px 1px 10px",
-          marginTop: "2em",
-          marginLeft: "10em",
-          marginRight: "10em",
-          position: "relative",
-          paddingTop: "30px",
-          paddingBottom: "20px",
-          borderRadius: "8px",
-          backgroundColor: "white",
-        }}
-      >
-        <Box display="flex">
-          <Box sx={{ marginRight: "5em" }}>
-            <Link to="/products/view-description" className="link-primary">
-              <KeyboardBackspaceIcon fontSize="large" />
-            </Link>
-          </Box>
-          <Box>
-            <h3 className="Auth-form-title">Update Description</h3>
-          </Box>
-        </Box>
+      <Box component="form" noValidate onSubmit={(e) => updatesdescription(e)}>
         <Grid container spacing={2}>
           <p
             style={{
@@ -162,11 +128,10 @@ export const UpdateDescription = () => {
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              name="id"
               size="small"
               label="Id"
               variant="outlined"
-              value={id ? id : ""}
+              value={recordForEdit ? recordForEdit : ""}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -184,21 +149,11 @@ export const UpdateDescription = () => {
           <Grid item xs={12}>
             <TextField
               fullWidth
-              textAlign={"right"}
-              select
-              name="consumable"
               size="small"
               label="Consumable"
               variant="outlined"
-              value={consumable.consumable ? consumable.consumable : consumable}
-              onChange={(e) => setConsumable(e.target.value)}
-            >
-              {consume.map((option, i) => (
-                <MenuItem key={option.name} value={option.value}>
-                  {option.name}
-                </MenuItem>
-              ))}
-            </TextField>
+              value={description.consumable ? description.consumable : ""}
+            />
           </Grid>
         </Grid>
 

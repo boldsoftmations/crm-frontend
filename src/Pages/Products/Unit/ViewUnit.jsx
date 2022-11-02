@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import React, { useEffect, useRef, useState } from "react";
 
 import "../../CommonStyle.css";
@@ -16,10 +15,8 @@ import {
   CircularProgress,
   styled,
   Box,
-  IconButton,
   TextField,
   TableContainer,
-  TableFooter,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
 import AddIcon from "@mui/icons-material/Add";
@@ -27,6 +24,9 @@ import AddIcon from "@mui/icons-material/Add";
 import ProductService from "../../../services/ProductService";
 
 import SearchIcon from "@mui/icons-material/Search";
+import { CreateUnit } from "./CreateUnit";
+import { UpdateUnit } from "./UpdateUnit";
+import { Popup } from "./../../../Components/Popup";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -54,7 +54,9 @@ export const ViewUnit = () => {
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-
+  const [openPopup, setOpenPopup] = useState(false);
+  const [openPopup2, setOpenPopup2] = useState(false);
+  const [recordForEdit, setRecordForEdit] = useState(null);
   const getUnits = async () => {
     try {
       setOpen(true);
@@ -107,6 +109,11 @@ export const ViewUnit = () => {
   const getResetData = () => {
     setSearchQuery("");
     getUnits();
+  };
+
+  const openInPopup = (item) => {
+    setRecordForEdit(item);
+    setOpenPopup(true);
   };
 
   return (
@@ -184,8 +191,7 @@ export const ViewUnit = () => {
             </Box>
             <Box flexGrow={0.5} align="right">
               <Button
-                component={Link}
-                to="/products/create-unit"
+                onClick={() => setOpenPopup2(true)}
                 variant="contained"
                 color="success"
                 startIcon={<AddIcon />}
@@ -220,13 +226,12 @@ export const ViewUnit = () => {
                         {row.short_name}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {" "}
-                        <Link
-                          to={"/products/update-unit/" + row.id}
-                          // className="badge badge-warning"
+                        <Button
+                          variant="contained"
+                          onClick={() => openInPopup(row.id)}
                         >
-                          Edit
-                        </Link>{" "}
+                          View
+                        </Button>
                       </StyledTableCell>
                     </StyledTableRow>
                   );
@@ -236,6 +241,24 @@ export const ViewUnit = () => {
           </TableContainer>
         </Paper>
       </Grid>
+      <Popup
+        title={"Create Unit"}
+        openPopup={openPopup2}
+        setOpenPopup={setOpenPopup2}
+      >
+        <CreateUnit getUnits={getUnits} setOpenPopup={setOpenPopup2} />
+      </Popup>
+      <Popup
+        title={"Update Unit"}
+        openPopup={openPopup}
+        setOpenPopup={setOpenPopup}
+      >
+        <UpdateUnit
+          recordForEdit={recordForEdit}
+          setOpenPopup={setOpenPopup}
+          getUnits={getUnits}
+        />
+      </Popup>
     </>
   );
 };

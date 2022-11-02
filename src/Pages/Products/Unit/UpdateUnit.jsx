@@ -6,28 +6,25 @@ import {
   Grid,
   TextField,
 } from "@mui/material";
-import { Link, useNavigate, useParams } from "react-router-dom";
 
 import { useRef, useState } from "react";
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import React, { useEffect } from "react";
 
 import ProductService from "../../../services/ProductService";
 
 import "../../CommonStyle.css";
 
-export const UpdateUnit = () => {
-  const navigate = useNavigate();
+export const UpdateUnit = (props) => {
+  const { recordForEdit, setOpenPopup, getUnits } = props;
   const [open, setOpen] = useState(false);
-  const { id } = useParams();
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
   const [unit, setUnit] = useState([]);
 
-  const getunit = async (id) => {
+  const getunit = async (recordForEdit) => {
     try {
       setOpen(true);
-      const res = await ProductService.getUnitById(id);
+      const res = await ProductService.getUnitById(recordForEdit);
       console.log("res", res);
       setUnit(res.data);
       setOpen(false);
@@ -51,11 +48,11 @@ export const UpdateUnit = () => {
         short_name: unit.short_name,
       };
       console.log("data", data);
-      if (id) {
-        const res = await ProductService.updateUnit(unit.id, data);
-        console.log("res :>> ", res);
-        navigate("/products/view-unit");
+      if (recordForEdit) {
+        await ProductService.updateUnit(unit.id, data);
+        setOpenPopup(false);
         setOpen(false);
+        getUnits();
       }
     } catch (err) {
       console.log("error update color :>> ", err);
@@ -78,8 +75,8 @@ export const UpdateUnit = () => {
   };
 
   useEffect(() => {
-    if (id) getunit(id);
-  }, [id]);
+    if (recordForEdit) getunit(recordForEdit);
+  }, [recordForEdit]);
 
   return (
     <>
@@ -94,34 +91,7 @@ export const UpdateUnit = () => {
           <CircularProgress color="inherit" />
         </Backdrop>
       </div>
-      <Box
-        className="Auth-form-content"
-        component="form"
-        noValidate
-        onSubmit={(e) => updatesunit(e)}
-        sx={{
-          minWidth: "20em",
-          boxShadow: "rgb(0 0 0 / 16%) 1px 1px 10px",
-          marginTop: "2em",
-          marginLeft: "10em",
-          marginRight: "10em",
-          position: "relative",
-          paddingTop: "30px",
-          paddingBottom: "20px",
-          borderRadius: "8px",
-          backgroundColor: "white",
-        }}
-      >
-        <Box display="flex">
-          <Box sx={{ marginRight: "4em" }}>
-            <Link to="/products/view-unit" className="link-primary">
-              <KeyboardBackspaceIcon fontSize="large" />
-            </Link>
-          </Box>
-          <Box>
-            <h3 className="Auth-form-title">Update unit</h3>
-          </Box>
-        </Box>
+      <Box component="form" noValidate onSubmit={(e) => updatesunit(e)}>
         <Grid container spacing={2}>
           <p
             style={{
@@ -144,11 +114,10 @@ export const UpdateUnit = () => {
           <Grid item xs={12}>
             <TextField
               fullWidth
-              name="id"
               size="small"
               label="Id"
               variant="outlined"
-              value={id ? id : ""}
+              value={recordForEdit ? recordForEdit : ""}
             />
           </Grid>
           <Grid item xs={12}>

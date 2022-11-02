@@ -27,8 +27,9 @@ import AddIcon from "@mui/icons-material/Add";
 import ProductService from "../../../services/ProductService";
 
 import SearchIcon from "@mui/icons-material/Search";
-
-import { Paginate } from "../../../Components/Pagination/Paginate";
+import { Popup } from "./../../../Components/Popup";
+import { CreateBasicUnit } from "./CreateBasicUnit";
+import { UpdateBasicUnit } from "./UpdateBasicUnit";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -56,7 +57,9 @@ export const ViewBasicUnit = () => {
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-
+  const [openPopup, setOpenPopup] = useState(false);
+  const [openPopup2, setOpenPopup2] = useState(false);
+  const [recordForEdit, setRecordForEdit] = useState(null);
   const getBasicUnit = async () => {
     try {
       setOpen(true);
@@ -110,6 +113,11 @@ export const ViewBasicUnit = () => {
   const getResetData = () => {
     setSearchQuery("");
     getBasicUnit();
+  };
+
+  const openInPopup = (item) => {
+    setRecordForEdit(item);
+    setOpenPopup(true);
   };
 
   return (
@@ -188,8 +196,7 @@ export const ViewBasicUnit = () => {
             <Box flexGrow={0.5} align="right">
               <Link>
                 <Button
-                  component={Link}
-                  to="/products/create-basic-unit"
+                  onClick={() => setOpenPopup2(true)}
                   variant="contained"
                   color="success"
                   startIcon={<AddIcon />}
@@ -227,13 +234,12 @@ export const ViewBasicUnit = () => {
                         {row.short_name ? row.short_name : "-"}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {" "}
-                        <Link
-                          to={"/products/update-basic-unit/" + row.id}
-                          // className="badge badge-warning"
+                        <Button
+                          variant="contained"
+                          onClick={() => openInPopup(row.id)}
                         >
-                          Edit
-                        </Link>{" "}
+                          View
+                        </Button>
                       </StyledTableCell>
                     </StyledTableRow>
                   );
@@ -243,6 +249,27 @@ export const ViewBasicUnit = () => {
           </TableContainer>
         </Paper>
       </Grid>
+      <Popup
+        title={"Create Basic Unit"}
+        openPopup={openPopup2}
+        setOpenPopup={setOpenPopup2}
+      >
+        <CreateBasicUnit
+          getBasicUnit={getBasicUnit}
+          setOpenPopup={setOpenPopup2}
+        />
+      </Popup>
+      <Popup
+        title={"Update Basic Unit"}
+        openPopup={openPopup}
+        setOpenPopup={setOpenPopup}
+      >
+        <UpdateBasicUnit
+          recordForEdit={recordForEdit}
+          setOpenPopup={setOpenPopup}
+          getBasicUnit={getBasicUnit}
+        />
+      </Popup>
     </>
   );
 };

@@ -8,9 +8,7 @@ import {
   TextField,
 } from "@mui/material";
 
-import { Link, useNavigate } from "react-router-dom";
 import { useRef, useState } from "react";
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import React from "react";
 
 import ProductService from "../../../services/ProductService";
@@ -29,9 +27,9 @@ const consume = [
   },
 ];
 
-export const CreateDescription = () => {
+export const CreateDescription = (props) => {
+  const { setOpenPopup, getDescriptions } = props;
   const [description, setDescription] = useState([]);
-  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [consumable, setConsumable] = useState([]);
   const errRef = useRef();
@@ -50,10 +48,10 @@ export const CreateDescription = () => {
         name: description.name,
         consumable: consumable,
       };
-      const res = await ProductService.createDescription(data);
-      console.log("res :>> ", res);
-      navigate("/products/view-description");
+      await ProductService.createDescription(data);
+      setOpenPopup(false);
       setOpen(false);
+      getDescriptions();
     } catch (err) {
       console.log("error update color :>> ", err);
       setOpen(false);
@@ -84,34 +82,7 @@ export const CreateDescription = () => {
           <CircularProgress color="inherit" />
         </Backdrop>
       </div>
-      <Box
-        className="Auth-form-content"
-        component="form"
-        noValidate
-        onSubmit={(e) => createdescription(e)}
-        sx={{
-          minWidth: "35em",
-          boxShadow: "rgb(0 0 0 / 16%) 1px 1px 10px",
-          marginTop: "2em",
-          marginLeft: "10em",
-          marginRight: "10em",
-          position: "relative",
-          paddingTop: "30px",
-          paddingBottom: "20px",
-          borderRadius: "8px",
-          backgroundColor: "white",
-        }}
-      >
-        <Box display="flex">
-          <Box sx={{ marginRight: "5em" }}>
-            <Link to="/products/view-description" className="link-primary">
-              <KeyboardBackspaceIcon fontSize="large" />
-            </Link>
-          </Box>
-          <Box>
-            <h3 className="Auth-form-title"> Create Description</h3>
-          </Box>
-        </Box>
+      <Box component="form" noValidate onSubmit={(e) => createdescription(e)}>
         <Grid container spacing={2}>
           <p
             style={{

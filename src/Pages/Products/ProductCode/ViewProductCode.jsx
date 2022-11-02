@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import React, { useEffect, useRef, useState } from "react";
 
 import "../../CommonStyle.css";
@@ -15,18 +14,17 @@ import {
   Backdrop,
   CircularProgress,
   styled,
-  IconButton,
   Box,
   TextField,
   TableContainer,
-  TableFooter,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
 import AddIcon from "@mui/icons-material/Add";
 import ProductService from "../../../services/ProductService";
 import SearchIcon from "@mui/icons-material/Search";
-
-import { Paginate } from "../../../Components/Pagination/Paginate";
+import { Popup } from "./../../../Components/Popup";
+import { UpdateProductCode } from "./UpdateProductCode";
+import { CreateProductCode } from "./CreateProductCode";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -54,7 +52,9 @@ export const ViewProductCode = () => {
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-
+  const [openPopup, setOpenPopup] = useState(false);
+  const [openPopup2, setOpenPopup2] = useState(false);
+  const [recordForEdit, setRecordForEdit] = useState(null);
   const getproductCodes = async () => {
     try {
       setOpen(true);
@@ -109,6 +109,11 @@ export const ViewProductCode = () => {
   const getResetData = () => {
     setSearchQuery("");
     getproductCodes();
+  };
+
+  const openInPopup = (item) => {
+    setRecordForEdit(item);
+    setOpenPopup(true);
   };
 
   return (
@@ -186,8 +191,7 @@ export const ViewProductCode = () => {
             </Box>
             <Box flexGrow={0.5} align="right">
               <Button
-                component={Link}
-                to="/products/create-product-code"
+                onClick={() => setOpenPopup2(true)}
                 variant="contained"
                 color="success"
                 startIcon={<AddIcon />}
@@ -224,13 +228,12 @@ export const ViewProductCode = () => {
                       </StyledTableCell>
 
                       <StyledTableCell align="center">
-                        {" "}
-                        <Link
-                          to={"/products/update-product-code/" + row.id}
-                          // className="badge badge-warning"
+                        <Button
+                          variant="contained"
+                          onClick={() => openInPopup(row.id)}
                         >
-                          Edit
-                        </Link>{" "}
+                          View
+                        </Button>
                       </StyledTableCell>
                     </StyledTableRow>
                   );
@@ -240,6 +243,27 @@ export const ViewProductCode = () => {
           </TableContainer>
         </Paper>
       </Grid>
+      <Popup
+        title={"Create Product Code"}
+        openPopup={openPopup2}
+        setOpenPopup={setOpenPopup2}
+      >
+        <CreateProductCode
+          getproductCodes={getproductCodes}
+          setOpenPopup={setOpenPopup2}
+        />
+      </Popup>
+      <Popup
+        title={"Update Product Code"}
+        openPopup={openPopup}
+        setOpenPopup={setOpenPopup}
+      >
+        <UpdateProductCode
+          recordForEdit={recordForEdit}
+          setOpenPopup={setOpenPopup}
+          getproductCodes={getproductCodes}
+        />
+      </Popup>
     </>
   );
 };

@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import React, { useEffect, useRef, useState } from "react";
 
 import "../../CommonStyle.css";
@@ -15,11 +14,9 @@ import {
   Backdrop,
   CircularProgress,
   styled,
-  IconButton,
   TextField,
   Box,
   TableContainer,
-  TableFooter,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
 import AddIcon from "@mui/icons-material/Add";
@@ -27,8 +24,9 @@ import AddIcon from "@mui/icons-material/Add";
 import ProductService from "../../../services/ProductService";
 
 import SearchIcon from "@mui/icons-material/Search";
-
-import { Paginate } from "../../../Components/Pagination/Paginate";
+import { Popup } from "./../../../Components/Popup";
+import { CreateBrand } from "./CreateBrand";
+import { UpdateBrand } from "./UpdateBrand";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -56,7 +54,9 @@ export const ViewBrand = () => {
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-
+  const [openPopup, setOpenPopup] = useState(false);
+  const [openPopup2, setOpenPopup2] = useState(false);
+  const [recordForEdit, setRecordForEdit] = useState(null);
   const getBrandList = async () => {
     try {
       setOpen(true);
@@ -110,6 +110,11 @@ export const ViewBrand = () => {
   const getResetData = () => {
     setSearchQuery("");
     getBrandList();
+  };
+
+  const openInPopup = (item) => {
+    setRecordForEdit(item);
+    setOpenPopup(true);
   };
 
   return (
@@ -187,8 +192,7 @@ export const ViewBrand = () => {
             </Box>
             <Box flexGrow={0.5} align="right">
               <Button
-                component={Link}
-                to="/products/create-brand"
+                onClick={() => setOpenPopup2(true)}
                 variant="contained"
                 color="success"
                 startIcon={<AddIcon />}
@@ -226,13 +230,12 @@ export const ViewBrand = () => {
                         {row.short_name ? row.short_name : "-"}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {" "}
-                        <Link
-                          to={"/products/update-brand/" + row.id}
-                          // className="badge badge-warning"
+                        <Button
+                          variant="contained"
+                          onClick={() => openInPopup(row.id)}
                         >
-                          Edit
-                        </Link>{" "}
+                          View
+                        </Button>
                       </StyledTableCell>
                     </StyledTableRow>
                   );
@@ -242,6 +245,24 @@ export const ViewBrand = () => {
           </TableContainer>
         </Paper>
       </Grid>
+      <Popup
+        title={"Create Brand"}
+        openPopup={openPopup2}
+        setOpenPopup={setOpenPopup2}
+      >
+        <CreateBrand getBrandList={getBrandList} setOpenPopup={setOpenPopup2} />
+      </Popup>
+      <Popup
+        title={"Update Brand"}
+        openPopup={openPopup}
+        setOpenPopup={setOpenPopup}
+      >
+        <UpdateBrand
+          recordForEdit={recordForEdit}
+          setOpenPopup={setOpenPopup}
+          getBrandList={getBrandList}
+        />
+      </Popup>
     </>
   );
 };

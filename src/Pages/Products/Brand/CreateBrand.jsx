@@ -6,18 +6,16 @@ import {
   Grid,
   TextField,
 } from "@mui/material";
-import { Link, useNavigate } from "react-router-dom";
 import { useRef, useState } from "react";
 import React from "react";
 
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
-
-import "../../CommonStyle.css";
 import ProductService from "../../../services/ProductService";
 
-export const CreateBrand = () => {
+import "../../CommonStyle.css";
+
+export const CreateBrand = (props) => {
+  const { setOpenPopup, getBrandList } = props;
   const [brand, setBrand] = useState([]);
-  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
@@ -36,10 +34,10 @@ export const CreateBrand = () => {
         short_name: brand.shortName,
       };
 
-      const res = await ProductService.createBrand(data);
-      console.log("res :>> ", res);
-      navigate("/products/view-brand");
+      await ProductService.createBrand(data);
+      setOpenPopup(false);
       setOpen(false);
+      getBrandList();
     } catch (err) {
       console.log("error :>> ", err);
       setOpen(false);
@@ -70,34 +68,7 @@ export const CreateBrand = () => {
           <CircularProgress color="inherit" />
         </Backdrop>
       </div>
-      <Box
-        className="Auth-form-content"
-        component="form"
-        noValidate
-        onSubmit={(e) => createBrand(e)}
-        sx={{
-          minWidth: "20em",
-          boxShadow: "rgb(0 0 0 / 16%) 1px 1px 10px",
-          marginTop: "2em",
-          marginLeft: "10em",
-          marginRight: "10em",
-          position: "relative",
-          paddingTop: "30px",
-          paddingBottom: "20px",
-          borderRadius: "8px",
-          backgroundColor: "white",
-        }}
-      >
-        <Box display="flex">
-          <Box sx={{ marginRight: "4em" }}>
-            <Link to="/products/view-brand" className="link-primary">
-              <KeyboardBackspaceIcon fontSize="large" />
-            </Link>
-          </Box>
-          <Box>
-            <h3 className="Auth-form-title">Create Brands</h3>
-          </Box>
-        </Box>
+      <Box component="form" noValidate onSubmit={(e) => createBrand(e)}>
         <Grid container spacing={2}>
           <p
             style={{
