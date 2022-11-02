@@ -38,6 +38,7 @@ export const Header = () => {
   const [expand, setExpand] = useState(false);
   const [expandFollowUp, setExpandFollowUp] = useState(false);
   const [expandProduct, setExpandProduct] = useState(false);
+  const [expandCustomer, setExpandCustomer] = useState(false);
   const auth = useSelector((state) => state.auth);
   const [isHover, setIsHover] = useState(false);
   // const auth = sessionStorage.getItem("accessToken");
@@ -49,6 +50,10 @@ export const Header = () => {
   };
   const handleClickProduct = () => {
     setExpandProduct(!expandProduct);
+  };
+
+  const handleClickCustomer = () => {
+    setExpandCustomer(!expandCustomer);
   };
 
   const handleClickFollowUp = () => {
@@ -89,6 +94,7 @@ export const Header = () => {
           style={{ width: "100%", marginBottom: "2em" }}
           disablePadding
         >
+          {/* Products */}
           <ListItem button onClick={handleClickProduct} style={{ width: 300 }}>
             {/* <ListItemIcon style={menuItemIcon}></ListItemIcon> */}
             <ListItemText primary="Products" />
@@ -179,6 +185,7 @@ export const Header = () => {
               </ListItem>
             </List>
           </Collapse>
+          {/* Leads */}
           <ListItem button onClick={handleClick} style={{ width: 300 }}>
             <ListItemText primary="Leads" />
             {expand ? <ExpandLessIcon /> : <ExpandMoreIcon />}
@@ -239,6 +246,48 @@ export const Header = () => {
                   </ListItem>
                 </List>
               </Collapse>
+            </List>
+          </Collapse>
+          {/* Customer */}
+          <ListItem button onClick={handleClickCustomer} style={{ width: 300 }}>
+            <ListItemText primary="Customer" />
+            {expandCustomer ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          </ListItem>
+          <Collapse in={expandCustomer} timeout="auto" unmountOnExit>
+            <Divider />
+            <List component="div" disablePadding>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/customers/company-details"
+                style={{ width: 300 }}
+              >
+                <ListItemText inset primary="Company Details" />
+              </ListItem>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/customers/contact-details"
+                style={{ width: 300 }}
+              >
+                <ListItemText inset primary="Contact Details" />
+              </ListItem>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/customers/bank-details"
+                style={{ width: 300 }}
+              >
+                <ListItemText inset primary="Bank Details" />
+              </ListItem>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/customers/warehouse-details"
+                style={{ width: 300 }}
+              >
+                <ListItemText inset primary="WareHouse Details" />
+              </ListItem>
             </List>
           </Collapse>
         </List>

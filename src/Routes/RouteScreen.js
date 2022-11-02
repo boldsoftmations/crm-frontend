@@ -4,7 +4,6 @@ import React from "react";
 
 import { AssignTo } from "../Pages/Leads/AssignTo";
 import { ChangePassword } from "./../Pages/Auth/ChangePassword";
-import { Customers } from "../Pages/Customers";
 import { Dashboard } from "../Pages/Dashboard/Dashboard";
 import { ForgotPassword } from "./../Pages/Auth/ForgotPassword";
 import { Home } from "../Pages/Home";
@@ -27,6 +26,10 @@ import { ViewRawMaterials } from "./../Pages/Products/RawMaterials/ViewRawMateri
 import { ViewUnit } from "./../Pages/Products/Unit/ViewUnit";
 
 import "../App.css";
+import { CompanyDetails } from "../Pages/Cutomers/CompanyDetails/CompanyDetails";
+import { ContactDetails } from "./../Pages/Cutomers/ContactDetails";
+import { BankDetails } from "./../Pages/Cutomers/BankDetails/BankDetails";
+import { WareHouseDetails } from "./../Pages/Cutomers/WareHouseDetails";
 
 export const RouteScreen = () => {
   const token = useSelector((state) => state.auth);
@@ -60,7 +63,6 @@ export const RouteScreen = () => {
               element={<UpcomingFollowup />}
             />
             <Route path="/leads/view-assignedto" element={<AssignTo />} />
-            <Route path="/user/customer" element={<Customers />} />
             {/* Products Routes */}
             <Route path="/products/view-colors" element={<ViewColors />} />
             <Route path="/products/view-brand" element={<ViewBrand />} />
@@ -92,6 +94,20 @@ export const RouteScreen = () => {
             <Route
               path="/products/view-raw-materials"
               element={<ViewRawMaterials />}
+            />
+            {/* Customers Route */}
+            <Route
+              path="/customers/company-details"
+              element={<CompanyDetails />}
+            />
+            <Route
+              path="/customers/contact-details"
+              element={<ContactDetails />}
+            />
+            <Route path="/customers/bank-details" element={<BankDetails />} />
+            <Route
+              path="/customers/warehouse-details"
+              element={<WareHouseDetails />}
             />
             <Route path="*" element={<PageNotFound />} />
           </>
