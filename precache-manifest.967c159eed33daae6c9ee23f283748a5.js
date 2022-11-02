@@ -20,7 +20,7 @@ self.__precacheManifest = [
     "url": "/crm-frontend/static/js/2.5a81b481.chunk.js"
   },
   {
-    "revision": "23e26a7ce66a238128a1d32ca3707987",
+    "revision": "6c3c76ec567b93161d8faf292ac18c3f",
     "url": "/crm-frontend/index.html"
   }
 ];
