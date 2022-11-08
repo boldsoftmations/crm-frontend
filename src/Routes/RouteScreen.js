@@ -92,10 +92,10 @@ export const RouteScreen = () => {
               element={<ViewRawMaterials />}
             />
             {/* Customers Route */}
-            {/* <Route
+            <Route
               path="/customers/company-details"
               element={<CompanyDetails />}
-            /> */}
+            />
             <Route path="*" element={<PageNotFound />} />
           </>
         )}
