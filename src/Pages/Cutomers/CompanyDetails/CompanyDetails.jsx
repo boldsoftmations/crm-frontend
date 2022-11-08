@@ -15,7 +15,7 @@ import {
   TableRow,
   TextField,
   TableCell,
-  Button
+  Button,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
 import { Popup } from "./../../../Components/Popup";
@@ -246,7 +246,7 @@ export const CompanyDetails = () => {
         <CreateAllCompanyDetails
           setOpenPopup={setOpenPopup}
           getAllCompanyDetails={getAllCompanyDetails}
-          recordForEdit={recordForEdit}
+          idForEdit={idForEdit || null}
         />
       </Popup>
     </>

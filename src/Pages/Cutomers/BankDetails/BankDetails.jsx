@@ -223,7 +223,7 @@ export const BankDetails = (props) => {
         <UpdateBankDetails
           setOpenPopup={setOpenPopup}
           getAllBankDetailsByID={getAllBankDetailsByID}
-          idForEdit={idForEdit}
+          idForEdit={idForEdit || null}
         />
       </Popup>
     </>

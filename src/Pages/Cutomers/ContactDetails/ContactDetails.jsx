@@ -222,7 +222,7 @@ export const ContactDetails = (props) => {
       >
         <UpdateContactDetails
           setOpenPopup={setOpenPopup}
-          IDForEdit={IDForEdit}
+          idForEdit={idForEdit || null}
           getAllContactDetailsByID={getAllContactDetailsByID}
         />
       </Popup>

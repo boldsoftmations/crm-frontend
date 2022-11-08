@@ -218,7 +218,7 @@ export const WareHouseDetails = (props) => {
         setOpenPopup={setOpenPopup}
       >
         <UpdateWareHouseDetails
-          IDForEdit={IDForEdit}
+          idForEdit={idForEdit || null}
           setOpenPopup={setOpenPopup}
           getWareHouseDetailsByID={getWareHouseDetailsByID}
         />
