@@ -105,7 +105,7 @@ function getStyles(desc, personName, theme) {
   };
 }
 export const UpdateLeads = (props) => {
-  const { recordForEdit, setOpenPopup, getleads, getSearchData } = props;
+  const { recordForEdit, setOpenPopup, getleads } = props;
   const theme = useTheme();
 
   const [activeStep, setActiveStep] = useState(0);
@@ -249,7 +249,7 @@ export const UpdateLeads = (props) => {
         setOpenPopup(false);
 
         setOpen(false);
-        getSearchData();
+
 
         getleads();
       } catch (error) {

@@ -497,7 +497,7 @@ export const AssignTo = () => {
           recordForEdit={recordForEdit}
           setOpenPopup={setOpenPopup}
           getleads={getleads}
-          getSearchData={getSearchData}
+ 
         />
       </Popup>
     </>
