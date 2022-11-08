@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { UpdateCompanyDetails } from "./UpdateCompanyDetails";
+import React, { useState, useRef, useEffect } from "react";
+import { CreateAllCompanyDetails } from "./CreateAllCompanyDetails";
 import { CreateCompanyDetails } from "./CreateCompanyDetails";
 import {
   Backdrop,
@@ -20,6 +20,7 @@ import { tableCellClasses } from "@mui/material/TableCell";
 
 import { Button } from "@mui/material";
 import { Popup } from "./../../../Components/Popup";
+import CustomerServices from "../../../services/CustomerService";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -45,8 +46,41 @@ export const CompanyDetails = () => {
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [open, setOpen] = useState(false);
+  const errRef = useRef();
+  const [errMsg, setErrMsg] = useState("");
+  const [companyData, setCompanyData] = useState([]);
+  const [recordForEdit, setRecordForEdit] = useState(null);
 
-  // const [recordForEdit, setRecordForEdit] = useState(null);
+  useEffect(() => {
+    getAllCompanyDetails();
+  }, []);
+
+  const getAllCompanyDetails = async () => {
+    try {
+      setOpen(true);
+      const response = await CustomerServices.getAllCompanyData();
+      setCompanyData(response.data.results);
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      if (!err.response) {
+        setErrMsg(
+          "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
+        );
+      } else if (err.response.status === 400) {
+        setErrMsg(
+          err.response.data.errors.name
+            ? err.response.data.errors.name
+            : err.response.data.errors.non_field_errors
+        );
+      } else if (err.response.status === 401) {
+        setErrMsg(err.response.data.errors.code);
+      } else {
+        setErrMsg("Server Error");
+      }
+      errRef.current.focus();
+    }
+  };
 
   // const getResetData = () => {
   //   setSearchQuery("");
@@ -54,7 +88,7 @@ export const CompanyDetails = () => {
   // };
 
   const openInPopup = (item) => {
-    // setRecordForEdit(item);
+    setRecordForEdit(item);
     setOpenPopup(true);
   };
 
@@ -70,7 +104,7 @@ export const CompanyDetails = () => {
       </div>
 
       <Grid item xs={12}>
-        {/* <p
+        <p
           style={{
             width: "100%",
             padding: 10,
@@ -86,7 +120,7 @@ export const CompanyDetails = () => {
           aria-live="assertive"
         >
           {errMsg}
-        </p> */}
+        </p>
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
           <Box display="flex">
             <Box flexGrow={0.9}>
@@ -150,34 +184,44 @@ export const CompanyDetails = () => {
             >
               <TableHead>
                 <TableRow>
-                  <StyledTableCell align="center">ID</StyledTableCell>
                   <StyledTableCell align="center">NAME</StyledTableCell>
-                  <StyledTableCell align="center">EMAIL</StyledTableCell>
-                  <StyledTableCell align="center">GST</StyledTableCell>
+                  <StyledTableCell align="center">PAN NO.</StyledTableCell>
+                  <StyledTableCell align="center">GST NO.</StyledTableCell>
                   <StyledTableCell align="center">CITY</StyledTableCell>
                   <StyledTableCell align="center">STATE</StyledTableCell>
                   <StyledTableCell align="center">Action</StyledTableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {/* {unit.map((row, i) => {
-                  return ( */}
-                <StyledTableRow>
-                  <StyledTableCell align="center">1</StyledTableCell>
-                  <StyledTableCell align="center">Glutape</StyledTableCell>
-                  <StyledTableCell align="center">
-                    vivek@glutape.com
-                  </StyledTableCell>
-                  <StyledTableCell align="center">A1293238DHSA</StyledTableCell>
-                  <StyledTableCell align="center">Mumbai</StyledTableCell>
-                  <StyledTableCell align="center">Maharashtra</StyledTableCell>
-                  <StyledTableCell align="center">
-                    <Button variant="contained" onClick={() => openInPopup(1)}>
-                      View
-                    </Button>
-                  </StyledTableCell>
-                </StyledTableRow>
-                {/* );  })} */}
+                {companyData.map((row, i) => {
+                  return (
+                    <StyledTableRow key={i}>
+                      <StyledTableCell align="center">
+                        {row.name}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.pan_number}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.gst_number}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.city}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.state}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        <Button
+                          variant="contained"
+                          onClick={() => openInPopup(row.id)}
+                        >
+                          View
+                        </Button>
+                      </StyledTableCell>
+                    </StyledTableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </TableContainer>
@@ -189,14 +233,22 @@ export const CompanyDetails = () => {
         openPopup={openPopup2}
         setOpenPopup={setOpenPopup2}
       >
-        <CreateCompanyDetails setOpenPopup={setOpenPopup2} />
+        <CreateCompanyDetails
+          setOpenPopup={setOpenPopup2}
+          getAllCompanyDetails={getAllCompanyDetails}
+        />
       </Popup>
       <Popup
+        maxWidth={"xl"}
         title={"Update Company Details"}
         openPopup={openPopup}
         setOpenPopup={setOpenPopup}
       >
-        <UpdateCompanyDetails setOpenPopup={setOpenPopup} />
+        <CreateAllCompanyDetails
+          setOpenPopup={setOpenPopup}
+          getAllCompanyDetails={getAllCompanyDetails}
+          recordForEdit={recordForEdit}
+        />
       </Popup>
     </>
   );

@@ -353,7 +353,7 @@ export const UpcomingFollowup = () => {
         </Paper>
       </Grid>
       <Popup
-        maxWidth={"lg"}
+        maxWidth={"xl"}
         title={"Update Leads"}
         openPopup={openPopup}
         setOpenPopup={setOpenPopup}

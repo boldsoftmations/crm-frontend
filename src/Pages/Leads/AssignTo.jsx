@@ -488,7 +488,7 @@ export const AssignTo = () => {
         </Paper>
       </Grid>
       <Popup
-        maxWidth={"lg"}
+        maxWidth={"xl"}
         title={"Update Leads"}
         openPopup={openPopup}
         setOpenPopup={setOpenPopup}
@@ -497,6 +497,7 @@ export const AssignTo = () => {
           recordForEdit={recordForEdit}
           setOpenPopup={setOpenPopup}
           getleads={getleads}
+          getSearchData={getSearchData}
         />
       </Popup>
     </>

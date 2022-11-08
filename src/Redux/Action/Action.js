@@ -47,3 +47,9 @@ export const getProfileUser = (data) => {
   };
 };
 
+export const getCompanyName = (data) => {
+  return {
+    type: types.COMPANY_NAME,
+    payload: data,
+  };
+};

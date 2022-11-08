@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 import { refreshToken } from "../Redux/Action/Action";
 import CustomAxios from "./api";
 import {
@@ -7,7 +6,7 @@ import {
   removeUser,
   updateLocalAccessToken,
 } from "./TokenService";
-const navigate = useNavigate;
+
 const SetupInterceptor = (store) => {
   CustomAxios.interceptors.request.use(
     (config) => {

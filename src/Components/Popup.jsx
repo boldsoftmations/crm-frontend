@@ -52,6 +52,7 @@ BootstrapDialogTitle.propTypes = {
 
 export const Popup = (props) => {
   const { title, children, openPopup, setOpenPopup, maxWidth } = props;
+
   return (
     <BootstrapDialog
       maxWidth={maxWidth}

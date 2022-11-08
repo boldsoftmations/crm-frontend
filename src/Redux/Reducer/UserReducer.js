@@ -30,13 +30,6 @@ const userReducer = (state = initialState, action) => {
         ...state,
         user: null,
         profile: null,
-        description: null,
-        brand: null,
-        unit: null,
-        color: null,
-        packingUnit: null,
-        productCode: null,
-        potential: null,
       };
     case types.REFRESH_TOKEN:
       return {
@@ -50,7 +43,12 @@ const userReducer = (state = initialState, action) => {
         loading: false,
         profile: action.payload,
       };
-
+    case types.COMPANY_NAME:
+      return {
+        ...state,
+        loading: false,
+        companyName: action.payload,
+      };
     default:
       return state;
   }

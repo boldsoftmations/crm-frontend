@@ -18,8 +18,8 @@ import { tableCellClasses } from "@mui/material/TableCell";
 
 import { Button } from "@mui/material";
 import { Popup } from "./../../../Components/Popup";
-import { CreateBankDetails } from "./CreateBankDetails";
-import { UpdateBankDetails } from "./UpdateBankDetails";
+import { CreateContactDetails } from "./CreateContactDetails";
+import { UpdateContactDetails } from "./UpdateContactDetails";
 import CustomerServices from "../../../services/CustomerService";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -42,14 +42,13 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-export const BankDetails = (props) => {
+export const ContactDetails = (props) => {
   const { recordForEdit } = props;
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [open, setOpen] = useState(false);
-  const [bankData, setBankData] = useState([]);
-
-  const [idForEdit, setIDForEdit] = useState(null);
+  const [inputValue, setInputValue] = useState([]);
+  const [IDForEdit, setIDForEdit] = useState(null);
 
   // const getResetData = () => {
   //   setSearchQuery("");
@@ -62,23 +61,23 @@ export const BankDetails = (props) => {
   };
 
   useEffect(() => {
-    getAllBankDetailsByID();
-  }, [recordForEdit]);
+    getAllContactDetailsByID();
+  }, []);
 
-  const getAllBankDetailsByID = async () => {
+  const getAllContactDetailsByID = async () => {
     try {
       setOpen(true);
       const response = await CustomerServices.getCompanyDataById(recordForEdit);
       console.log("response", response);
+      setInputValue(response.data.contacts);
 
-      setBankData(response.data.bank);
       setOpen(false);
     } catch (err) {
       setOpen(false);
       console.log("company data by id error", err);
     }
   };
-  console.log("bankData :>> ", bankData);
+
   return (
     <>
       <div>
@@ -108,7 +107,7 @@ export const BankDetails = (props) => {
         >
           {errMsg}
         </p> */}
-
+        {/* <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}> */}
         <Box display="flex">
           <Box flexGrow={2}>
             {/* <TextField
@@ -129,8 +128,8 @@ export const BankDetails = (props) => {
               // startIcon={<SearchIcon />}
             >
               Search
-            </Button> */}
-            {/* <Button
+            </Button>
+            <Button
               // onClick={getResetData}
               sx={{ marginLeft: "1em" }}
               size="medium"
@@ -149,7 +148,7 @@ export const BankDetails = (props) => {
                 fontWeight: 800,
               }}
             >
-              Bank Details
+              Contact Details
             </h3>
           </Box>
           <Box flexGrow={0.5} align="right">
@@ -167,31 +166,32 @@ export const BankDetails = (props) => {
           <Table sx={{ minWidth: 1200 }} stickyHeader aria-label="sticky table">
             <TableHead>
               <TableRow>
-                <StyledTableCell align="center">ID</StyledTableCell>
-                <StyledTableCell align="center">BANK</StyledTableCell>
-                <StyledTableCell align="center">ACCOUNT NO.</StyledTableCell>
-                <StyledTableCell align="center">IFSC CODE</StyledTableCell>
-                <StyledTableCell align="center">BRANCH</StyledTableCell>
+                <StyledTableCell align="center">NAME</StyledTableCell>
+                <StyledTableCell align="center">COMPANY NAME</StyledTableCell>
+                <StyledTableCell align="center">DESIGNATION</StyledTableCell>
+                <StyledTableCell align="center">CONTACT</StyledTableCell>
+                <StyledTableCell align="center">ALT. CONTACT</StyledTableCell>
                 <StyledTableCell align="center">Action</StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {bankData.map((row, i) => {
+              {inputValue.map((row, i) => {
                 return (
-                  <StyledTableRow key={i}>
-                    <StyledTableCell align="center">{row.id}</StyledTableCell>
+                  <StyledTableRow>
+                    <StyledTableCell align="center">{row.name}</StyledTableCell>
                     <StyledTableCell align="center">
-                      {row.bank_name}
+                      {row.company}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {row.current_account_no}
+                      {row.designation}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {row.ifsc_code}
+                      {row.contact}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {row.branch}
+                      {row.alternate_contact}
                     </StyledTableCell>
+
                     <StyledTableCell align="center">
                       <Button
                         variant="contained"
@@ -206,26 +206,24 @@ export const BankDetails = (props) => {
             </TableBody>
           </Table>
         </TableContainer>
+        {/* </Paper> */}
       </Grid>
       <Popup
-        title={"Create Bank Details"}
+        title={"Create Contact Details"}
         openPopup={openPopup2}
         setOpenPopup={setOpenPopup2}
       >
-        <CreateBankDetails
-          setOpenPopup={setOpenPopup2}
-          getAllBankDetailsByID={getAllBankDetailsByID}
-        />
+        <CreateContactDetails setOpenPopup={setOpenPopup2} />
       </Popup>
       <Popup
-        title={"Update Bank Details"}
+        title={"Update Contact Details"}
         openPopup={openPopup}
         setOpenPopup={setOpenPopup}
       >
-        <UpdateBankDetails
+        <UpdateContactDetails
           setOpenPopup={setOpenPopup}
-          getAllBankDetailsByID={getAllBankDetailsByID}
-          idForEdit={idForEdit}
+          IDForEdit={IDForEdit}
+          getAllContactDetailsByID={getAllContactDetailsByID}
         />
       </Popup>
     </>

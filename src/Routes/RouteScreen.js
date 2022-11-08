@@ -27,10 +27,6 @@ import { ViewUnit } from "./../Pages/Products/Unit/ViewUnit";
 
 import "../App.css";
 import { CompanyDetails } from "../Pages/Cutomers/CompanyDetails/CompanyDetails";
-import { ContactDetails } from "./../Pages/Cutomers/ContactDetails";
-import { BankDetails } from "./../Pages/Cutomers/BankDetails/BankDetails";
-import { WareHouseDetails } from "./../Pages/Cutomers/WareHouseDetails";
-
 export const RouteScreen = () => {
   const token = useSelector((state) => state.auth);
   return (
@@ -100,16 +96,7 @@ export const RouteScreen = () => {
               path="/customers/company-details"
               element={<CompanyDetails />}
             />
-            <Route
-              path="/customers/contact-details"
-              element={<ContactDetails />}
-            />
-            <Route path="/customers/bank-details" element={<BankDetails />} />
-            <Route
-              path="/customers/warehouse-details"
-              element={<WareHouseDetails />}
-            />
-            <Route path="*" element={<Home />} />
+            <Route path="*" element={<PageNotFound />} />
           </>
         )}
       </Routes>

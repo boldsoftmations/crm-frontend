@@ -17,9 +17,9 @@ import {
 import { tableCellClasses } from "@mui/material/TableCell";
 
 import { Button } from "@mui/material";
-import { Popup } from "./../../../Components/Popup";
-import { CreateBankDetails } from "./CreateBankDetails";
-import { UpdateBankDetails } from "./UpdateBankDetails";
+import { Popup } from "../../../Components/Popup";
+import { CreateSecurityChequesDetails } from "./CreateSecurityChequesDetails";
+import { UpdateSecurityChequesDetails } from "./UpdateSecurityChequesDetails";
 import CustomerServices from "../../../services/CustomerService";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -42,43 +42,43 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-export const BankDetails = (props) => {
+export const SecurityChequesDetails = (props) => {
   const { recordForEdit } = props;
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [open, setOpen] = useState(false);
-  const [bankData, setBankData] = useState([]);
+  const [data, setData] = useState([]);
+  const [IDForEdit, setIDForEdit] = useState(null);
 
-  const [idForEdit, setIDForEdit] = useState(null);
+  // const [recordForEdit, setRecordForEdit] = useState(null);
 
   // const getResetData = () => {
   //   setSearchQuery("");
   //   // getUnits();
   // };
 
+  useEffect(() => {
+    getSecurityChequeDetailsByID();
+  }, []);
+
+  const getSecurityChequeDetailsByID = async () => {
+    try {
+      setOpen(true);
+      const response = await CustomerServices.getCompanyDataById(recordForEdit);
+      console.log("response security cheque :>> ", response);
+      setData(response.data.security_cheque);
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      console.log("err", err);
+    }
+  };
+
   const openInPopup = (item) => {
     setIDForEdit(item);
     setOpenPopup(true);
   };
 
-  useEffect(() => {
-    getAllBankDetailsByID();
-  }, [recordForEdit]);
-
-  const getAllBankDetailsByID = async () => {
-    try {
-      setOpen(true);
-      const response = await CustomerServices.getCompanyDataById(recordForEdit);
-      console.log("response", response);
-
-      setBankData(response.data.bank);
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("company data by id error", err);
-    }
-  };
-  console.log("bankData :>> ", bankData);
   return (
     <>
       <div>
@@ -108,7 +108,7 @@ export const BankDetails = (props) => {
         >
           {errMsg}
         </p> */}
-
+        {/* <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}> */}
         <Box display="flex">
           <Box flexGrow={2}>
             {/* <TextField
@@ -129,8 +129,8 @@ export const BankDetails = (props) => {
               // startIcon={<SearchIcon />}
             >
               Search
-            </Button> */}
-            {/* <Button
+            </Button>
+            <Button
               // onClick={getResetData}
               sx={{ marginLeft: "1em" }}
               size="medium"
@@ -149,7 +149,7 @@ export const BankDetails = (props) => {
                 fontWeight: 800,
               }}
             >
-              Bank Details
+              Security Cheques Details
             </h3>
           </Box>
           <Box flexGrow={0.5} align="right">
@@ -167,30 +167,33 @@ export const BankDetails = (props) => {
           <Table sx={{ minWidth: 1200 }} stickyHeader aria-label="sticky table">
             <TableHead>
               <TableRow>
-                <StyledTableCell align="center">ID</StyledTableCell>
+                <StyledTableCell align="center">COMPANY</StyledTableCell>
                 <StyledTableCell align="center">BANK</StyledTableCell>
-                <StyledTableCell align="center">ACCOUNT NO.</StyledTableCell>
-                <StyledTableCell align="center">IFSC CODE</StyledTableCell>
-                <StyledTableCell align="center">BRANCH</StyledTableCell>
+                <StyledTableCell align="center">CHEQUE NO.</StyledTableCell>
+                <StyledTableCell align="center">MICR CODE.</StyledTableCell>
+                <StyledTableCell align="center">ADDRESS</StyledTableCell>
                 <StyledTableCell align="center">Action</StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {bankData.map((row, i) => {
+              {data.map((row, i) => {
                 return (
-                  <StyledTableRow key={i}>
-                    <StyledTableCell align="center">{row.id}</StyledTableCell>
+                  <StyledTableRow>
+                    <StyledTableCell align="center">
+                      {row.company}
+                    </StyledTableCell>
+
                     <StyledTableCell align="center">
                       {row.bank_name}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {row.current_account_no}
+                      {row.cheque_no}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {row.ifsc_code}
+                      {row.micr_code}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {row.branch}
+                      {row.address}
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       <Button
@@ -206,26 +209,27 @@ export const BankDetails = (props) => {
             </TableBody>
           </Table>
         </TableContainer>
+        {/* </Paper> */}
       </Grid>
       <Popup
-        title={"Create Bank Details"}
+        title={"Create Security Cheques Details"}
         openPopup={openPopup2}
         setOpenPopup={setOpenPopup2}
       >
-        <CreateBankDetails
+        <CreateSecurityChequesDetails
+          getSecurityChequeDetailsByID={getSecurityChequeDetailsByID}
           setOpenPopup={setOpenPopup2}
-          getAllBankDetailsByID={getAllBankDetailsByID}
         />
       </Popup>
       <Popup
-        title={"Update Bank Details"}
+        title={"Update Security Cheques Details"}
         openPopup={openPopup}
         setOpenPopup={setOpenPopup}
       >
-        <UpdateBankDetails
+        <UpdateSecurityChequesDetails
+          IDForEdit={IDForEdit}
+          getSecurityChequeDetailsByID={getSecurityChequeDetailsByID}
           setOpenPopup={setOpenPopup}
-          getAllBankDetailsByID={getAllBankDetailsByID}
-          idForEdit={idForEdit}
         />
       </Popup>
     </>

@@ -318,7 +318,7 @@ export const Viewleads = () => {
         <CreateLeads getleads={getleads} setOpenPopup={setOpenPopup2} />
       </Popup>
       <Popup
-        maxWidth={"lg"}
+        maxWidth={"xl"}
         title={"Update Leads"}
         openPopup={openPopup}
         setOpenPopup={setOpenPopup}

@@ -7,8 +7,6 @@ import {
   Grid,
   TextField,
 } from "@mui/material";
-
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import React, { useEffect, useRef, useState } from "react";
 
 import ProductService from "../../../services/ProductService";

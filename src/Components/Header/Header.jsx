@@ -264,30 +264,6 @@ export const Header = () => {
               >
                 <ListItemText inset primary="Company Details" />
               </ListItem>
-              <ListItem
-                button
-                component={RouterLink}
-                to="/customers/contact-details"
-                style={{ width: 300 }}
-              >
-                <ListItemText inset primary="Contact Details" />
-              </ListItem>
-              <ListItem
-                button
-                component={RouterLink}
-                to="/customers/bank-details"
-                style={{ width: 300 }}
-              >
-                <ListItemText inset primary="Bank Details" />
-              </ListItem>
-              <ListItem
-                button
-                component={RouterLink}
-                to="/customers/warehouse-details"
-                style={{ width: 300 }}
-              >
-                <ListItemText inset primary="WareHouse Details" />
-              </ListItem>
             </List>
           </Collapse>
         </List>
