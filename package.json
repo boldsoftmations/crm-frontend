@@ -19,7 +19,6 @@
     "axios": "^0.27.2",
     "bootstrap": "^5.2.0",
     "formik": "^2.2.9",
-    "material-ui-phone-number": "^3.0.0",
     "moment": "^2.29.4",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
