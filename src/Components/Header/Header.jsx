@@ -249,7 +249,7 @@ export const Header = () => {
             </List>
           </Collapse>
           {/* Customer */}
-          {/* <ListItem button onClick={handleClickCustomer} style={{ width: 300 }}>
+          <ListItem button onClick={handleClickCustomer} style={{ width: 300 }}>
             <ListItemText primary="Customer" />
             {expandCustomer ? <ExpandLessIcon /> : <ExpandMoreIcon />}
           </ListItem>
@@ -265,7 +265,7 @@ export const Header = () => {
                 <ListItemText inset primary="Company Details" />
               </ListItem>
             </List>
-          </Collapse> */}
+          </Collapse>
         </List>
       </Drawer>
       <AppBar position="fixed" color="primary" className="not-scrolled">

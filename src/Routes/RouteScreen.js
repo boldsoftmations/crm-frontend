@@ -26,7 +26,7 @@ import { ViewRawMaterials } from "./../Pages/Products/RawMaterials/ViewRawMateri
 import { ViewUnit } from "./../Pages/Products/Unit/ViewUnit";
 
 import "../App.css";
-// import { CompanyDetails } from "../Pages/Cutomers/CompanyDetails/CompanyDetails";
+import { CompanyDetails } from "../Pages/Cutomers/CompanyDetails/CompanyDetails";
 export const RouteScreen = () => {
   const token = useSelector((state) => state.auth);
   return (
@@ -92,10 +92,10 @@ export const RouteScreen = () => {
               element={<ViewRawMaterials />}
             />
             {/* Customers Route */}
-            {/* <Route
+            <Route
               path="/customers/company-details"
               element={<CompanyDetails />}
-            /> */}
+            />
             <Route path="*" element={<PageNotFound />} />
           </>
         )}
