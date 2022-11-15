@@ -227,6 +227,32 @@ const updateRawMaterials = (id, data) => {
   return CustomAxios.patch(`/api/product/raw-materials/${id}`, data);
 };
 
+const getAllPriceList = () => {
+  return CustomAxios.get("/api/product/pricelist/");
+};
+
+const getAllSearchPriceList = (search) => {
+  return CustomAxios.get(`/api/product/pricelist/?search=${search}`);
+};
+
+const getAllPriceListPaginate = (currentPage, search) => {
+  return CustomAxios.get(
+    `/api/product/pricelist/?page=${currentPage}&search=${search}`
+  );
+};
+
+const createPriceList = (data) => {
+  return CustomAxios.post("/api/product/pricelist/", data);
+};
+
+const getPriceListById = (id) => {
+  return CustomAxios.get(`/api/product/pricelist/${id}`);
+};
+
+const updatePriceList = (id, data) => {
+  return CustomAxios.patch(`/api/product/pricelist/${id}`, data);
+};
+
 const getAllProduct = () => {
   return CustomAxios.get("/api/product/product/");
 };
@@ -287,7 +313,13 @@ const ProductService = {
   createRawMaterials,
   getRawMaterialsById,
   updateRawMaterials,
-
+  getAllPriceList,
+  getAllSearchPriceList,
+  getAllPriceListPaginate,
+  createPriceList,
+  getPriceListById,
+  updatePriceList,
+  
   getAllProduct,
 };
 

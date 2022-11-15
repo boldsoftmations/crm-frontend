@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import MuiPhoneNumber from "material-ui-phone-number";
-
+import React, { useState, useEffect,useRef } from "react";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/material.css";
 import {
   Backdrop,
   Box,
@@ -12,6 +12,7 @@ import {
   MenuItem,
   Select,
   TextField,
+  Typography,
 } from "@mui/material";
 import CustomerServices from "../../../services/CustomerService";
 
@@ -20,19 +21,18 @@ export const UpdateContactDetails = (props) => {
   const [open, setOpen] = useState(false);
   const [designation, setDesignation] = useState("");
   const [inputValue, setInputValue] = useState([]);
-  const [phone, setPhone] = useState();
-  const [phone2, setPhone2] = useState();
+  const [phone, setPhone] = useState("");
+  const [phone2, setPhone2] = useState("");
+  const errRef = useRef();
+  const [errMsg, setErrMsg] = useState("");
 
-  const handlePhoneChange = (value) => {
-    if (value) {
-      setPhone({ phone: value });
-    }
+
+  const handlePhoneChange = (newPhone) => {
+    setPhone(newPhone);
   };
 
-  const handlePhoneChange2 = (value) => {
-    if (value) {
-      setPhone2({ phone2: value });
-    }
+  const handlePhoneChange2 = (newPhone) => {
+    setPhone2(newPhone);
   };
 
   const handleInputChange = (event) => {
@@ -49,8 +49,8 @@ export const UpdateContactDetails = (props) => {
       setOpen(true);
       const response = await CustomerServices.getContactDataById(IDForEdit);
       setInputValue(response.data);
-      setPhone({ phone: response.data.contact });
-      setPhone2({ phone2: response.data.alternate_contact });
+      setPhone(response.data.contact);
+      setPhone2(response.data.alternate_contact);
       setDesignation(response.data.designation);
       setOpen(false);
     } catch (err) {
@@ -63,6 +63,20 @@ export const UpdateContactDetails = (props) => {
     try {
       e.preventDefault();
       setOpen(true);
+        let contact1 = phone.length === 12 ? `+${phone}` : phone;
+        let contact2 = phone2.length === 12 ? `+${phone2}` : phone2;
+
+        let aadhaarNumber =  designation === "director" ||
+        designation === "owner" ||
+        designation === "partner"
+          ? inputValue.aadhaar
+          : "";
+        let panNumber =  designation === "director" ||
+        designation === "owner" ||
+        designation === "partner"
+          ? inputValue.pan_number
+          : "";
+console.log('contact1 :>> ', contact1);
       const req = {
         name: inputValue.name ? inputValue.name : "",
         company: inputValue.company ? inputValue.company : "",
@@ -71,18 +85,34 @@ export const UpdateContactDetails = (props) => {
         alternate_email: inputValue.alternate_email
           ? inputValue.alternate_email
           : "",
-        contact: phone ? phone.phone : "",
-        alternate_contact: phone2 ? phone2.phone2 : "",
-        pan_number: inputValue.pan_number ? inputValue.pan_number : "",
-        aadhaar: inputValue.aadhaar ? inputValue.aadhaar : null,
+        contact: contact1 ? contact1 : "",
+        alternate_contact: contact2 ? contact2 : null,
+        pan_number:panNumber ? inputValue.pan_number : null,
+        aadhaar: aadhaarNumber ? aadhaarNumber : null,
       };
       await CustomerServices.updateContactData(IDForEdit, req);
       setOpenPopup(false);
       setOpen(false);
       getAllContactDetailsByID();
-    } catch (error) {
-      console.log("createing company detail error", error);
+    } catch (err) {
+      console.log("createing company detail error", err);
       setOpen(false);
+      if (!err.response) {
+        setErrMsg(
+          "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
+        );
+      } else if (err.response.status === 400) {
+        setErrMsg(
+          err.response.data.errors.alternate_contact
+            ? err.response.data.errors.alternate_contact
+            : err.response.data.errors.contact
+        );
+      } else if (err.response.status === 401) {
+        setErrMsg(err.response.data.errors.code);
+      } else {
+        setErrMsg("Server Error");
+      }
+      errRef.current.focus();
     }
   };
 
@@ -103,6 +133,23 @@ export const UpdateContactDetails = (props) => {
         onSubmit={(e) => UpdateContactDetails(e)}
       >
         <Grid container spacing={2}>
+        <p
+          style={{
+            width: "100%",
+            padding: 10,
+            marginBottom: 10,
+            borderRadius: 4,
+            backgroundColor: errMsg ? "red" : "offscreen",
+            textAlign: "center",
+            color: "white",
+            textTransform: "capitalize",
+          }}
+          ref={errRef}
+          className={errMsg ? "errmsg" : "offscreen"}
+          aria-live="assertive"
+        >
+          {errMsg}
+        </p>
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
@@ -132,35 +179,30 @@ export const UpdateContactDetails = (props) => {
                 <MenuItem value={"quality"}>Quality</MenuItem>
                 <MenuItem value={"stores"}>Stores</MenuItem>
               </Select>
-              {/* <FormHelperText>
-                Applicable Only For Distribution Customer
-              </FormHelperText> */}
             </FormControl>
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <MuiPhoneNumber
-              name="phone"
-              size="small"
-              fullWidth
-              variant="outlined"
-              label="Phone Number"
-              data-cy="user-phone"
-              defaultCountry={"in"}
-              value={phone ? phone.phone : ""}
+            <PhoneInput
+              specialLabel="Contact"
+              inputStyle={{
+                height: "15px",
+                width: "250px",
+              }}
+              country={"in"}
+              value={phone ? phone : ''}
               onChange={handlePhoneChange}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <MuiPhoneNumber
-              size="small"
-              fullWidth
-              name="phone"
-              variant="outlined"
-              label="Phone Number"
-              data-cy="user-phone"
-              defaultCountry={"in"}
-              value={phone2 ? phone2.phone2 : ""}
+            <PhoneInput
+              specialLabel="Alternate Contact"
+              inputStyle={{
+                height: "15px",
+                width: "250px",
+              }}
+              country={"in"}
+              value={phone2  ? phone2 : ''}
               onChange={handlePhoneChange2}
             />
           </Grid>

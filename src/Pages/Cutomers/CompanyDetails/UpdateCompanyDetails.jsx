@@ -19,7 +19,7 @@ import {
 import CustomerServices from "../../../services/CustomerService";
 import { useDispatch } from "react-redux";
 import { getCompanyName } from "../../../Redux/Action/Action";
-
+import axios from "axios";
 export const UpdateCompanyDetails = (props) => {
   const { setOpenPopup, getAllContactDetailsByID, recordForEdit } = props;
   const [open, setOpen] = useState(false);
@@ -27,6 +27,7 @@ export const UpdateCompanyDetails = (props) => {
   const [category, setCategory] = useState("");
   const [inputValue, setInputValue] = useState([]);
   const [businessType, setBusinessType] = useState("");
+  const [pinCodeData, setPinCodeData] = useState([]);
   const dispatch = useDispatch();
   const handleChange = (event) => {
     setTypeData(event.target.value);
@@ -35,6 +36,21 @@ export const UpdateCompanyDetails = (props) => {
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setInputValue({ ...inputValue, [name]: value });
+  };
+
+  const validatePinCode = async () => {
+    try {
+      setOpen(true);
+      const PINCODE = inputValue.pincode;
+      const response = await axios.get(
+        `https://api.postalpincode.in/pincode/${PINCODE}`
+      );
+      setPinCodeData(response.data[0].PostOffice[0]);
+      setOpen(false);
+    } catch (error) {
+      console.log("Creating Bank error ", error);
+      setOpen(false);
+    }
   };
 
   useEffect(() => {
@@ -67,8 +83,8 @@ export const UpdateCompanyDetails = (props) => {
         name: inputValue.name,
         address: inputValue.address,
         pincode: inputValue.pincode,
-        state: inputValue.state,
-        city: inputValue.city,
+        state: pinCodeData.State ? pinCodeData.State : inputValue.state,
+        city: pinCodeData.District ? pinCodeData.District : inputValue.city,
         website: inputValue.website,
         estd_date: inputValue.estd_date,
         gst_number: inputValue.gst_number,
@@ -166,7 +182,7 @@ export const UpdateCompanyDetails = (props) => {
           </Grid>
           <Grid item xs={12} sm={4}>
             <TextField
-              fullWidth
+              sx={{ minWidth: "200px" }}
               name="pincode"
               size="small"
               type={"number"}
@@ -178,6 +194,13 @@ export const UpdateCompanyDetails = (props) => {
                 shrink: true,
               }}
             />
+            <Button
+              onClick={() => validatePinCode()}
+              variant="contained"
+              sx={{ marginLeft: "1rem" }}
+            >
+              Validate
+            </Button>
           </Grid>
 
           <Grid item xs={12} sm={4}>
@@ -187,7 +210,7 @@ export const UpdateCompanyDetails = (props) => {
               name="state"
               label="State"
               variant="outlined"
-              value={inputValue.state ? inputValue.state : inputValue.state}
+              value={pinCodeData.State ? pinCodeData.State : inputValue.state}
               onChange={handleInputChange}
               InputLabelProps={{
                 shrink: true,
@@ -201,7 +224,9 @@ export const UpdateCompanyDetails = (props) => {
               size="small"
               label="City"
               variant="outlined"
-              value={inputValue.city ? inputValue.city : inputValue.city}
+              value={
+                pinCodeData.District ? pinCodeData.District : inputValue.city
+              }
               onChange={handleInputChange}
               InputLabelProps={{
                 shrink: true,

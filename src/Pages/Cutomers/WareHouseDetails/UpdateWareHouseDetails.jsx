@@ -1,42 +1,43 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import {
-  Autocomplete,
   Backdrop,
   Box,
   Button,
   CircularProgress,
   Grid,
   TextField,
+  Autocomplete
 } from "@mui/material";
 import CustomerServices from "../../../services/CustomerService";
+import axios from "axios";
 
 export const UpdateWareHouseDetails = (props) => {
-  const { IDForEdit, getWareHouseDetailsByID, setOpenPopup } = props;
+  const { IDForEdit, getWareHouseDetailsByID, setOpenPopup,contactData } = props;
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState([]);
-  // const [contact, setContact] = useState([]);
   const data = useSelector((state) => state.auth);
-
+  const [pinCodeData, setPinCodeData] = useState([]);
+  const [selectedcontact, setSelectedContact] = useState("");
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setInputValue({ ...inputValue, [name]: value });
   };
 
-  // useEffect(() => {
-  //   getAllCompanyDetails();
-  // }, []);
-
-  // const getAllCompanyDetails = async () => {
-  //   try {
-  //     setOpen(true);
-  //     const response = await CustomerServices.getAllContactData();
-  //     setContact(response.data.results);
-  //     setOpen(false);
-  //   } catch (err) {
-  //     setOpen(false);
-  //   }
-  // };
+  const validatePinCode = async () => {
+    try {
+      setOpen(true);
+      const PINCODE = inputValue.pincode;
+      const response = await axios.get(
+        `https://api.postalpincode.in/pincode/${PINCODE}`
+      );
+      setPinCodeData(response.data[0].PostOffice[0]);
+      setOpen(false);
+    } catch (error) {
+      console.log("Creating Bank error ", error);
+      setOpen(false);
+    }
+  };
 
   useEffect(() => {
     getWareHouseDataByID();
@@ -46,7 +47,6 @@ export const UpdateWareHouseDetails = (props) => {
     try {
       setOpen(true);
       const response = await CustomerServices.getWareHouseDataById(IDForEdit);
-      console.log("response update warehouse", response);
       setInputValue(response.data);
       setOpen(false);
     } catch (err) {
@@ -57,15 +57,16 @@ export const UpdateWareHouseDetails = (props) => {
 
   const UpdateWareHouseDetails = async (e) => {
     try {
+      
       e.preventDefault();
       setOpen(true);
       const req = {
         company: data ? data.companyName : "",
-        contact: inputValue.contact,
+        contact: selectedcontact.name ? selectedcontact.name : inputValue.contact,
         address: inputValue.address,
         pincode: inputValue.pincode,
-        state: inputValue.state,
-        city: inputValue.city,
+        state: pinCodeData.State ? pinCodeData.State : inputValue.state,
+        city: pinCodeData.District ? pinCodeData.District : inputValue.city,
       };
       await CustomerServices.updatetWareHouseData(IDForEdit, req);
       setOpenPopup(false);
@@ -94,11 +95,10 @@ export const UpdateWareHouseDetails = (props) => {
         noValidate
         onSubmit={(e) => UpdateWareHouseDetails(e)}
       >
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
+        <Grid container spacing={2} >
+          <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              onChange={handleInputChange}
               size="small"
               name="contact"
               label="Contact"
@@ -106,7 +106,22 @@ export const UpdateWareHouseDetails = (props) => {
               value={inputValue.contact ? inputValue.contact : ""}
             />
           </Grid>
-
+ 
+          <Grid item xs={12} sm={6}>
+            <Autocomplete
+              fullWidth
+              size="small"
+              id="grouped-demo"
+              onChange={(event, value) => setSelectedContact(value)}
+              options={contactData.map((option) => option)}
+              groupBy={(option) => option.designation}
+              getOptionLabel={(option) => option.name}
+              // sx={{ minWidth: 300 }}
+              renderInput={(params) => (
+                <TextField {...params} label="Update Contact" />
+              )}
+            />
+          </Grid>
           <Grid item xs={12}>
             <TextField
               fullWidth
@@ -119,9 +134,9 @@ export const UpdateWareHouseDetails = (props) => {
               value={inputValue.address ? inputValue.address : ""}
             />
           </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12}>
             <TextField
-              fullWidth
+              sx={{ minWidth: "400px" }}
               onChange={handleInputChange}
               size="small"
               name="pincode"
@@ -129,27 +144,40 @@ export const UpdateWareHouseDetails = (props) => {
               variant="outlined"
               value={inputValue.pincode ? inputValue.pincode : ""}
             />
+            <Button
+              onClick={() => validatePinCode()}
+              variant="contained"
+              sx={{ marginLeft: "1rem" }}
+            >
+              Validate
+            </Button>
           </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              onChange={handleInputChange}
               size="small"
               name="state"
               label="State"
               variant="outlined"
-              value={inputValue.state ? inputValue.state : ""}
+              value={pinCodeData.State ? pinCodeData.State : inputValue.state}
+              InputLabelProps={{
+                shrink: true,
+              }}
             />
           </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              onChange={handleInputChange}
               size="small"
               name="city"
               label="City"
               variant="outlined"
-              value={inputValue.city ? inputValue.city : ""}
+              value={
+                pinCodeData.District ? pinCodeData.District : inputValue.city
+              }
+              InputLabelProps={{
+                shrink: true,
+              }}
             />
           </Grid>
         </Grid>

@@ -42,7 +42,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 export const WareHouseDetails = (props) => {
-  const { getWareHouseDetailsByID,wareHousedata,open } = props;
+  const { getWareHouseDetailsByID,wareHousedata,open,contactData } = props;
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
  
@@ -194,6 +194,7 @@ export const WareHouseDetails = (props) => {
         <CreateWareHouseDetails
           getWareHouseDetailsByID={getWareHouseDetailsByID}
           setOpenPopup={setOpenPopup2}
+          contactData={contactData}
         />
       </Popup>
       <Popup
@@ -202,6 +203,7 @@ export const WareHouseDetails = (props) => {
         setOpenPopup={setOpenPopup}
       >
         <UpdateWareHouseDetails
+        contactData={contactData}
           IDForEdit={IDForEdit}
           setOpenPopup={setOpenPopup}
           getWareHouseDetailsByID={getWareHouseDetailsByID}

@@ -6,33 +6,25 @@ import {
   Autocomplete,
   Box,
   Button,
-  Checkbox,
   Chip,
-  FormControl,
   Grid,
-  InputLabel,
-  ListItemText,
   MenuItem,
   Paper,
-  Select,
   Step,
   StepLabel,
   Stepper,
   TextField,
   Typography,
-  useTheme,
 } from "@mui/material";
-import OutlinedInput from "@mui/material/OutlinedInput";
 import { CircularProgress } from "@mui/material";
 import { Backdrop } from "@mui/material";
 import "../CommonStyle.css";
 import LeadServices from "./../../services/LeadService";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
 import ProductService from "../../services/ProductService";
 import { ViewAllFollowUp } from "./../FollowUp/ViewAllFollowUp";
 import { ViewAllPotential } from "../Potential/ViewAllPotential";
-
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/material.css";
 function getSteps() {
   return [
     <b style={{ color: "purple" }}>'Enter Basic Details'</b>,
@@ -85,29 +77,8 @@ const interest = [
   },
 ];
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 3.5 + ITEM_PADDING_TOP,
-      minWidth: 250,
-    },
-  },
-};
-
-function getStyles(desc, personName, theme) {
-  return {
-    fontWeight:
-      personName.indexOf(desc) === -1
-        ? theme.typography.fontWeightRegular
-        : theme.typography.fontWeightMedium,
-  };
-}
 export const UpdateLeads = (props) => {
   const { recordForEdit, setOpenPopup, getleads } = props;
-  const theme = useTheme();
-
   const [activeStep, setActiveStep] = useState(0);
   const steps = getSteps();
   const [open, setOpen] = useState(false);
@@ -115,28 +86,20 @@ export const UpdateLeads = (props) => {
   const [interests, setInterests] = useState("");
   const [businessMismatch, setBusinessMismatch] = useState("");
   const [leads, setLeads] = useState([]);
-  const [description, setDescription] = useState([]);
   const [descriptionMenuData, setDescriptionMenuData] = useState([]);
   const [assigned, setAssigned] = useState([]);
   const [assign, setAssign] = useState([]);
-  const navigate = useNavigate();
-  const { id } = useParams();
-  const desc = useSelector((state) => state.auth);
   const [personName, setPersonName] = useState([]);
-
-  const handleChange = (event) => {
-    const {
-      target: { value },
-    } = event;
-    setPersonName(
-      // On autofill we get a stringified value.
-      typeof value === "string" ? value.split(",") : value
-    );
+  const [phone, setPhone] = useState("");
+  const [phone2, setPhone2] = useState("");
+  const handlePhoneChange = (newPhone) => {
+    setPhone(newPhone);
   };
 
-  const handleDelete = (data) => {
-    console.log("You clicked the delete icon.", data);
+  const handlePhoneChange2 = (newPhone) => {
+    setPhone2(newPhone);
   };
+
   const assignValue = assign ? assign : assign;
   const interestedValue = interests ? interests : interests;
   const businessMismatchValue = businessMismatch
@@ -145,20 +108,6 @@ export const UpdateLeads = (props) => {
   const descriptionValue = personName ? personName : leads.description;
 
   const businesTypesValue = businesTypes ? businesTypes : businesTypes;
-  const menuList = [
-    {
-      auto_number: 1000,
-      consumable: "yes",
-      id: 4,
-      name: "Tape",
-    },
-  ];
-  const auth = () => {
-    const user = desc.description ? desc.description : menuList;
-    return user;
-  };
-  const descMenu = auth();
-
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setLeads({ ...leads, [name]: value });
@@ -194,7 +143,10 @@ export const UpdateLeads = (props) => {
       setBusinesTypes(res.data.business_type);
       setBusinessMismatch(res.data.business_mismatch);
       setPersonName(res.data.description);
+      setPhone( res.data.contact );
+      setPhone2(res.data.alternate_contact);
       setLeads(res.data);
+     
       setOpen(false);
     } catch (error) {
       console.log("error", error);
@@ -214,11 +166,14 @@ export const UpdateLeads = (props) => {
     }
   };
 
+
   const updateLeadsData = async (e) => {
     if (activeStep === steps.length - 1) {
       try {
         e.preventDefault();
         setOpen(true);
+        let contact1 = phone.length === 12 ? `+${phone}` : phone;
+        let contact2 = phone2.length === 12 ? `+${phone2}` : phone2;
         const data = {
           name: leads.name,
           alternate_contact_name: leads.altContactName
@@ -226,9 +181,10 @@ export const UpdateLeads = (props) => {
             : "",
           email: leads.email ? leads.email : "",
           alternate_email: leads.alternate_email ? leads.alternate_email : "",
-          contact: leads.contact,
-          alternate_contact: leads.alternate_contact,
+          contact: contact1 ? contact1 : '',
+          alternate_contact: contact2 ? contact2 : '',
           description: descriptionValue,
+          target_date:leads.target_date,
           business_type: businesTypesValue ? businesTypesValue : "",
           business_mismatch: businessMismatchValue
             ? businessMismatchValue
@@ -249,7 +205,6 @@ export const UpdateLeads = (props) => {
         setOpenPopup(false);
 
         setOpen(false);
-
 
         getleads();
       } catch (error) {
@@ -336,28 +291,29 @@ export const UpdateLeads = (props) => {
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
-                    <TextField
-                      fullWidth
-                      required
-                      name="contact"
-                      size="small"
-                      label="Contact"
-                      variant="outlined"
-                      value={leads.contact ? leads.contact : ""}
-                      onChange={handleInputChange}
+                    <PhoneInput
+                      specialLabel="Contact"
+                      inputStyle={{
+                        backgroundColor: "#F5F5F5",
+                        height: "15px",
+                        minWidth: "500px",
+                      }}
+                      country={"in"}
+                      value={phone ? phone : ''}
+                      onChange={handlePhoneChange}
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
-                    <TextField
-                      fullWidth
-                      name="alternate_contact"
-                      size="small"
-                      label="Alternate Contact"
-                      variant="outlined"
-                      value={
-                        leads.alternate_contact ? leads.alternate_contact : ""
-                      }
-                      onChange={handleInputChange}
+                    <PhoneInput
+                      specialLabel="Alternate Contact"
+                      inputStyle={{
+                        backgroundColor: "#F5F5F5",
+                        height: "15px",
+                        minWidth: "500px",
+                      }}
+                      country={"in"}
+                      value={phone2 ? phone2 : ''}
+                      onChange={handlePhoneChange2}
                     />
                   </Grid>
 
@@ -421,64 +377,41 @@ export const UpdateLeads = (props) => {
                   </Grid>
 
                   <Grid item xs={12} sm={6}>
-                    <FormControl fullWidth sx={{ minWidth: 200 }}>
-                      <InputLabel id="demo-multiple-chip-label">
-                        Description
-                      </InputLabel>
-                      <Select
-                        labelId="demo-multiple-chip-label"
-                        id="demo-multiple-chip"
-                        multiple
-                        value={personName}
-                        onChange={handleChange}
-                        input={
-                          <OutlinedInput
-                            id="select-multiple-chip"
-                            fullWidth
-                            label="Description"
-                            required
-                            sx={{ minHeight: "40px" }}
+                    <Autocomplete
+                      size="small"
+                      value={personName}
+                      onChange={(event, newValue) => {
+                        setPersonName(newValue);
+                      }}
+                      multiple
+                      limitTags={3}
+                      id="multiple-limit-tags"
+                      options={descriptionMenuData.map((option) => option.name)}
+                      freeSolo
+                      renderTags={(value, getTagProps) =>
+                        value.map((option, index) => (
+                          <Chip
+                            variant="outlined"
+                            label={option}
+                            {...getTagProps({ index })}
                           />
-                        }
-                        renderValue={(selected) => (
-                          <Box
-                            sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}
-                          >
-                            {selected.map((value, i) => (
-                              <Chip
-                                size="small"
-                                key={i}
-                                label={value}
-                                color="primary"
-                                deleteIcon={(value) => handleDelete(value)}
-                                // onDelete={handleDelete}
-                              />
-                            ))}
-                          </Box>
-                        )}
-                        MenuProps={MenuProps}
-                      >
-                        {descriptionMenuData.map((desc, i) => (
-                          <MenuItem
-                            key={i}
-                            value={desc.name}
-                            style={getStyles(desc, personName, theme)}
-                          >
-                            <Checkbox
-                              checked={personName.indexOf(desc.name) > -1}
-                            />
-                            <ListItemText primary={desc.name} />
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
+                        ))
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Description"
+                          placeholder="Description"
+                        />
+                      )}
+                    />
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={3}>
                     <TextField
                       select
                       fullWidth
                       name="assign"
-                      size="medium"
+                      size="small"
                       label="Assignied To"
                       variant="outlined"
                       value={assignValue ? assignValue : ""}
@@ -491,14 +424,24 @@ export const UpdateLeads = (props) => {
                       ))}
                     </TextField>
                   </Grid>
+                  <Grid item xs={12} sm={3}>
+                  <TextField
+                  fullWidth
+                  type="date"
+                  name="target_date"
+                  size="small"
+                  label="Target Date"
+                  variant="outlined"
+                  value={
+                    leads.target_date ? leads.target_date : ""
+                  }
+                  onChange={handleInputChange}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
                 </Grid>
-                {/* <Button
-                  type="submit"
-                  variant="contained"
-                  sx={{ mt: 3, mb: 2, textAlign: "right" }}
-                >
-                  Submit
-                </Button> */}
+                </Grid>
               </Box>
             </Box>
           </>
@@ -606,13 +549,6 @@ export const UpdateLeads = (props) => {
                     />
                   </Grid>
                 </Grid>
-                {/* <Button
-                  type="submit"
-                  variant="contained"
-                  sx={{ mt: 3, mb: 2, textAlign: "right" }}
-                >
-                  Submit
-                </Button> */}
               </Box>
             </Box>
           </>
@@ -654,10 +590,10 @@ export const UpdateLeads = (props) => {
                     Alt. Email : {leads.alternate_email}
                   </Grid>
                   <Grid item xs={12} sm={6}>
-                    Contact : {leads.contact}
+                    Contact : {phone ? phone : ''}
                   </Grid>
                   <Grid item xs={12} sm={6}>
-                    Alt. Contact : {leads.alternate_contact}
+                    Alt. Contact : {phone2 ? phone2 : ''}
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     Busniess Type : {businesTypes}
@@ -671,6 +607,9 @@ export const UpdateLeads = (props) => {
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     Description : {descriptionValue ? descriptionValue : ""}
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    Target Date {leads.target_date}
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     Assign to : {assignValue}

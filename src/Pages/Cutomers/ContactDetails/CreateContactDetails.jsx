@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import {
   Backdrop,
   Box,
@@ -10,79 +10,104 @@ import {
   MenuItem,
   Select,
   TextField,
-
 } from "@mui/material";
-import MuiPhoneNumber from "material-ui-phone-number";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import CustomerServices from "../../../services/CustomerService";
 import { useSelector } from "react-redux";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/material.css";
 export const CreateContactDetails = (props) => {
-  const { setOpenPopup,getAllContactDetailsByID } = props;
+  const { setOpenPopup, getAllContactDetailsByID } = props;
   const [open, setOpen] = useState(false);
   const [designation, setDesignation] = useState("");
-  const [phone, setPhone] = useState();
-  const [phone2, setPhone2] = useState();
+  const [phone, setPhone] = useState("");
+  const [phone2, setPhone2] = useState("");
   const [inputValue, setInputValue] = useState([]);
   const data = useSelector((state) => state.auth);
+  const initialValues = { email: "", alternate_email: "" };
+  const [formValues, setFormValues] = useState(initialValues);
+  const [formErrors, setFormErrors] = useState({});
 
-  const handlePhoneChange = (value) => {
-    if (value) {
-      setPhone({ phone: value });
-    }
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormValues({ ...formValues, [name]: value });
   };
 
-  const handlePhoneChange2 = (value) => {
-    if (value) {
-      setPhone2({ phone2: value });
-    }
+  
+  const handlePhoneChange = (newPhone) => {
+    setPhone(newPhone);
+  };
+
+  const handlePhoneChange2 = (newPhone) => {
+    setPhone2(newPhone);
   };
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    setInputValue({ ...inputValue, [name]: value });
+    setInputValue({ ...inputValue, [name]: value.toUpperCase() });
   };
 
-  const validationSchema = Yup.object().shape({
-    email: Yup.string().required("Email is required").email("Email is invalid"),
+  const handleSubmit = async (e) => {
+    try {
+      e.preventDefault();
+      setFormErrors(validate(formValues));
+      let contact = phone.length === 12 ? `+${phone}` : phone;
+      let contact2 = phone2.length === 12 ? `+${phone2}` : phone2;
+      let panNumber =  inputValue.pan_no;
+      const req = {
+        company: data ? data.companyName : "",
+        name: inputValue.name,
+        designation: designation,
+        contact: contact ? contact : "",
+        alternate_contact: contact2 ? contact2 : "",
+        email: formValues.email,
+        alternate_email: formValues.alternate_email,
+        pan_number: panNumber ,
+        aadhaar: inputValue.aadhar_no,
+      };
+      setOpen(true);
+ await CustomerServices.createContactData(req);
 
-    alternate_email: Yup.string()
-      .required("Email is required")
-      .email("Email is invalid"),
-  });
+      setOpenPopup(false);
+      setOpen(false);
+      getAllContactDetailsByID();
+    } catch (error) {
+      console.log("error", error);
+      setOpen(false);
+    }
+  };
 
-  const formik = useFormik({
-    initialValues: {
-      email: "",
-      alternate_email: "",
-    },
-    validationSchema: validationSchema,
+  useEffect(() => {
+    console.log(formErrors);
+    if (Object.keys(formErrors).length === 0 ) {
+      console.log(formValues);
+    }
+  }, [formErrors]);
+  const validate = (values) => {
+    const errors = {};
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
+    const adharnumberRegex = /^[2-9]{1}[0-9]{3}\\s[0-9]{4}\\s[0-9]{4}$/i;
+    const pannoregex = /^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?$/i;
+    if (!values.email) {
+      errors.email = "Email is required!";
+    } else if (!regex.test(values.email)) {
+      errors.email = "This is not a valid email format!";
+    }
+    if (!values.alternate_email) {
+      errors.alternate_email = "Alternate Email is required!";
+    } else if (!regex.test(values.alternate_email)) {
+      errors.alternate_email = "This is not a valid alternate email format!";
+    }
+//  if (!pannoregex.test(values.pan_no)) {
+//       errors.pan_no = "pan no is not valid";
+//     }
+//    if (!adharnumberRegex.test(values.aadhaar)) {
+//       errors.aadhaar = "aadhaar is not valid";
+//     }
+    return errors;
+  };
 
-    onSubmit: async (values) => {
-      try {
-        const req = {
-          company: data ? data.companyName : "",
-          name: inputValue.name,
-          designation: designation,
-          contact: phone.phone,
-          alternate_contact: phone2.phone2,
-          email: values.email,
-          alternate_email: values.alternate_email,
-          pan_number: inputValue.pan_no,
-          aadhaar: inputValue.aadhar_no,
-        };
-        setOpen(true);
-        const res = await CustomerServices.createContactData(req);
-     
-        setOpenPopup(false);
-        setOpen(false);
-        getAllContactDetailsByID()
-      } catch (error) {
-        console.log("error", error);
-        setOpen(false);
-      }
-    },
-  });
 
   return (
     <div>
@@ -94,7 +119,7 @@ export const CreateContactDetails = (props) => {
           <CircularProgress color="inherit" />
         </Backdrop>
       </div>
-      <Box component="form" noValidate onSubmit={formik.handleSubmit}>
+      <Box component="form" noValidate onSubmit={(e) => handleSubmit(e)}>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
             <TextField
@@ -107,7 +132,7 @@ export const CreateContactDetails = (props) => {
               onChange={handleInputChange}
             />
           </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={6}>
             <FormControl fullWidth size="small">
               <InputLabel id="demo-select-small">Designation</InputLabel>
               <Select
@@ -125,34 +150,30 @@ export const CreateContactDetails = (props) => {
                 <MenuItem value={"quality"}>Quality</MenuItem>
                 <MenuItem value={"stores"}>Stores</MenuItem>
               </Select>
-      
             </FormControl>
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <MuiPhoneNumber
-              name="phone"
-              size="small"
-              fullWidth
-              variant="outlined"
-              label="Phone Number"
-              data-cy="user-phone"
-              defaultCountry={"in"}
-              // value={phone}
+            <PhoneInput
+              specialLabel="Contact"
+              inputStyle={{
+                height: "15px",
+                width: "250px",
+              }}
+              country={"in"}
               onChange={handlePhoneChange}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <MuiPhoneNumber
-              size="small"
-              fullWidth
-              name="phone"
-              variant="outlined"
-              label="Phone Number"
-              data-cy="user-phone"
-              defaultCountry={"in"}
-              // value={phone2}
+            <PhoneInput
+              specialLabel="Alternate Contact"
+              inputStyle={{
+                height: "15px",
+                width: "250px",
+              }}
+              country={"in"}
               onChange={handlePhoneChange2}
+              // onChange={phone => console.log( phone )}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -162,10 +183,10 @@ export const CreateContactDetails = (props) => {
               name="email"
               label="Email"
               variant="outlined"
-              value={formik.values.email}
-              onChange={formik.handleChange}
-              error={formik.touched.email && Boolean(formik.errors.email)}
-              helperText={formik.touched.email && formik.errors.email}
+              value={formValues.email}
+              onChange={handleChange}
+              error={Boolean(formErrors.email)}
+              helperText={formErrors.email}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -175,15 +196,10 @@ export const CreateContactDetails = (props) => {
               name="alternate_email"
               label="Alt Email"
               variant="outlined"
-              value={formik.values.alternate_email}
-              onChange={formik.handleChange}
-              error={
-                formik.touched.alternate_email &&
-                Boolean(formik.errors.alternate_email)
-              }
-              helperText={
-                formik.touched.alternate_email && formik.errors.alternate_email
-              }
+              value={formValues.alternate_email}
+              onChange={handleChange}
+              error={Boolean(formErrors.alternate_email)}
+              helperText={formErrors.alternate_email}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -194,13 +210,14 @@ export const CreateContactDetails = (props) => {
                 designation !== "owner" &&
                 designation !== "partner"
               }
-              onChange={handleInputChange}
               size="small"
               name="pan_no"
               label="Pan No."
               variant="outlined"
               value={inputValue.pan_no}
+              onChange={handleInputChange}
               helperText={
+                formErrors.pan_no &&
                 "Applicable Only if designation is Owner/Partner/Director"
               }
             />
@@ -213,14 +230,15 @@ export const CreateContactDetails = (props) => {
                 designation !== "owner" &&
                 designation !== "partner"
               }
-              onChange={handleInputChange}
               size="small"
               type={"number"}
               name="aadhar_no"
               label="Aadhar No."
               variant="outlined"
               value={inputValue.aadhar_no}
+              onChange={handleInputChange}
               helperText={
+            
                 "Applicable Only if designation is Owner/Partner/Director"
               }
             />

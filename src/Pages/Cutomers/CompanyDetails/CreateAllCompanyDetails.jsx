@@ -11,7 +11,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import PropTypes from "prop-types";
-// import { ContactDetails } from "../ContactDetails/ContactDetails";
+import { ContactDetails } from "../ContactDetails/ContactDetails";
 import { WareHouseDetails } from "../WareHouseDetails/WareHouseDetails";
 import { UpdateCompanyDetails } from "./UpdateCompanyDetails";
 import CustomerServices from "../../../services/CustomerService";
@@ -149,9 +149,9 @@ export const CreateAllCompanyDetails = (props) => {
         >
           <Tab label="Company" {...a11yProps(0)} />
           <Tab label="Bank" {...a11yProps(1)} />
-          {/* <Tab label="Contact" {...a11yProps(2)} /> */}
-          <Tab label="WareHouse" {...a11yProps(2)} />
-          <Tab label="Security Cheques" {...a11yProps(3)} />
+          <Tab label="Contact" {...a11yProps(2)} />
+          <Tab label="WareHouse" {...a11yProps(3)} />
+          <Tab label="Security Cheques" {...a11yProps(4)} />
         </Tabs>
       </AppBar>
 
@@ -169,11 +169,16 @@ export const CreateAllCompanyDetails = (props) => {
           getAllBankDetailsByID={getAllBankDetailsByID}
         />
       </TabPanel>
-      {/* <TabPanel value={value} index={2} dir={theme.direction}>
-        <ContactDetails contactData={contactData}  open={open} getAllContactDetailsByID={getAllContactDetailsByID} />
-      </TabPanel> */}
+      <TabPanel value={value} index={2} dir={theme.direction}>
+        <ContactDetails
+          contactData={contactData}
+          open={open}
+          getAllContactDetailsByID={getAllContactDetailsByID}
+        />
+      </TabPanel>
       <TabPanel value={value} index={3} dir={theme.direction}>
         <WareHouseDetails
+        contactData={contactData}
           wareHousedata={wareHousedata}
           open={open}
           getWareHouseDetailsByID={getWareHouseDetailsByID}

@@ -27,12 +27,13 @@ import { ViewUnit } from "./../Pages/Products/Unit/ViewUnit";
 
 import "../App.css";
 import { CompanyDetails } from "../Pages/Cutomers/CompanyDetails/CompanyDetails";
+import { PriceList } from "./../Pages/Products/PriceList/PriceList";
 export const RouteScreen = () => {
   const token = useSelector((state) => state.auth);
   return (
     <div className="appcontainer">
       <Routes>
-        <Route path="/crm-frontend" exact element={<Home />} />
+        <Route path="/crmfrontend-glutape" exact element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -91,6 +92,7 @@ export const RouteScreen = () => {
               path="/products/view-raw-materials"
               element={<ViewRawMaterials />}
             />
+            <Route path="/products/view-price-list" element={<PriceList />} />
             {/* Customers Route */}
             <Route
               path="/customers/company-details"

@@ -183,6 +183,14 @@ export const Header = () => {
               >
                 <ListItemText inset primary="Raw Materials" />
               </ListItem>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/products/view-price-list"
+                style={{ width: 300 }}
+              >
+                <ListItemText inset primary="Price List" />
+              </ListItem>
             </List>
           </Collapse>
           {/* Leads */}
