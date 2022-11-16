@@ -90,8 +90,10 @@ export const UpdateLeads = (props) => {
   const [assigned, setAssigned] = useState([]);
   const [assign, setAssign] = useState([]);
   const [personName, setPersonName] = useState([]);
-  const [phone, setPhone] = useState("");
-  const [phone2, setPhone2] = useState("");
+  const [phone, setPhone] = useState();
+  const [phone2, setPhone2] = useState();
+  const [contacts1, setContacts1] = useState('');
+  const [contacts2, setContacts2] = useState('');
   const handlePhoneChange = (newPhone) => {
     setPhone(newPhone);
   };
@@ -143,10 +145,10 @@ export const UpdateLeads = (props) => {
       setBusinesTypes(res.data.business_type);
       setBusinessMismatch(res.data.business_mismatch);
       setPersonName(res.data.description);
-      setPhone( res.data.contact );
-      setPhone2(res.data.alternate_contact);
+      setContacts1(res.data.contact);
+      setContacts2(res.data.alternate_contact);
       setLeads(res.data);
-     
+
       setOpen(false);
     } catch (error) {
       console.log("error", error);
@@ -172,8 +174,8 @@ export const UpdateLeads = (props) => {
       try {
         e.preventDefault();
         setOpen(true);
-        let contact1 = phone.length === 12 ? `+${phone}` : phone;
-        let contact2 = phone2.length === 12 ? `+${phone2}` : phone2;
+        const contact1 = phone !== undefined  ? `+${phone}` : contacts1  ;
+        const contact2 = phone2 !== undefined  ? `+${phone2}` : contacts2 ;
         const data = {
           name: leads.name,
           alternate_contact_name: leads.altContactName
@@ -181,10 +183,10 @@ export const UpdateLeads = (props) => {
             : "",
           email: leads.email ? leads.email : "",
           alternate_email: leads.alternate_email ? leads.alternate_email : "",
-          contact: contact1 ? contact1 : '',
-          alternate_contact: contact2 ? contact2 : '',
+          contact:  contact1 ,
+          alternate_contact: contact2,
           description: descriptionValue,
-          target_date:leads.target_date,
+          target_date: leads.target_date,
           business_type: businesTypesValue ? businesTypesValue : "",
           business_mismatch: businessMismatchValue
             ? businessMismatchValue
@@ -203,9 +205,7 @@ export const UpdateLeads = (props) => {
 
         await LeadServices.updateLeads(leads.lead_id, data);
         setOpenPopup(false);
-
         setOpen(false);
-
         getleads();
       } catch (error) {
         console.log("error :>> ", error);
@@ -299,7 +299,7 @@ export const UpdateLeads = (props) => {
                         minWidth: "500px",
                       }}
                       country={"in"}
-                      value={phone ? phone : ''}
+                      value={phone  ? `+${phone}` : contacts1}
                       onChange={handlePhoneChange}
                     />
                   </Grid>
@@ -312,7 +312,7 @@ export const UpdateLeads = (props) => {
                         minWidth: "500px",
                       }}
                       country={"in"}
-                      value={phone2 ? phone2 : ''}
+                      value={phone2  ? `+${phone2}` : contacts2}
                       onChange={handlePhoneChange2}
                     />
                   </Grid>
@@ -425,22 +425,20 @@ export const UpdateLeads = (props) => {
                     </TextField>
                   </Grid>
                   <Grid item xs={12} sm={3}>
-                  <TextField
-                  fullWidth
-                  type="date"
-                  name="target_date"
-                  size="small"
-                  label="Target Date"
-                  variant="outlined"
-                  value={
-                    leads.target_date ? leads.target_date : ""
-                  }
-                  onChange={handleInputChange}
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                />
-                </Grid>
+                    <TextField
+                      fullWidth
+                      type="date"
+                      name="target_date"
+                      size="small"
+                      label="Target Date"
+                      variant="outlined"
+                      value={leads.target_date ? leads.target_date : ""}
+                      onChange={handleInputChange}
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                    />
+                  </Grid>
                 </Grid>
               </Box>
             </Box>
@@ -590,10 +588,11 @@ export const UpdateLeads = (props) => {
                     Alt. Email : {leads.alternate_email}
                   </Grid>
                   <Grid item xs={12} sm={6}>
-                    Contact : {phone ? phone : ''}
+                    Contact : {phone ? `+${phone}` : contacts1}
                   </Grid>
                   <Grid item xs={12} sm={6}>
-                    Alt. Contact : {phone2 ? phone2 : ''}
+                    Alt. Contact :{" "}
+                    {phone2 ? `+${phone2}` : contacts2}
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     Busniess Type : {businesTypes}
