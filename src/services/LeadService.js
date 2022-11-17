@@ -35,6 +35,10 @@ const getAllSearchLeads = (search) => {
   return CustomAxios.get(`/api/lead/list-lead/?search=${search}`);
 };
 
+const getFilterSearchLeads = (filter, search) => {
+  return CustomAxios.get(`/api/lead/list-lead/?${filter}=${search}`);
+};
+
 const createLeads = (data) => {
   return CustomAxios.post("/api/lead/list-lead/", data);
 };
@@ -91,6 +95,7 @@ const LeadServices = {
   getAllSearchUnassignedData,
   getAllPaginateUnassigned,
   getAllSearchLeads,
+  getFilterSearchLeads,
   createLeads,
   getLeadsById,
   updateLeads,

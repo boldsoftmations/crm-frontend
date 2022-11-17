@@ -17,6 +17,7 @@ import {
   TableContainer,
   TableFooter,
   Pagination,
+  Autocomplete,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
 import AddIcon from "@mui/icons-material/Add";
@@ -27,7 +28,6 @@ import "../CommonStyle.css";
 import { CreateLeads } from "./CreateLeads";
 import { UpdateLeads } from "./UpdateLeads";
 import { Popup } from "./../../Components/Popup";
-
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.common.black,
@@ -52,6 +52,7 @@ export const Viewleads = () => {
   const [leads, setLeads] = useState([]);
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [filterQuery, setFilterQuery] = useState("");
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
   const [pageCount, setpageCount] = useState(0);
@@ -59,6 +60,7 @@ export const Viewleads = () => {
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [recordForEdit, setRecordForEdit] = useState(null);
+
   const getleads = async () => {
     try {
       setOpen(true);
@@ -102,17 +104,33 @@ export const Viewleads = () => {
   useEffect(() => {
     getleads();
   }, []);
+  console.log("filter", filterQuery);
 
   const getSearchData = async () => {
     try {
       setOpen(true);
-      const response = await LeadServices.getAllSearchLeads(searchQuery);
-      if (response) {
-        setLeads(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
+      console.log("filter", filterQuery);
+      if (filterQuery === null) {
+        const response = await LeadServices.getAllSearchLeads(searchQuery);
+        if (response) {
+          setLeads(response.data.results);
+          const total = response.data.count;
+          setpageCount(Math.ceil(total / 25));
+        } else {
+          getleads();
+        }
       } else {
-        getleads();
+        const response = await LeadServices.getFilterSearchLeads(
+          filterQuery.value,
+          searchQuery
+        );
+        if (response) {
+          setLeads(response.data.results);
+          const total = response.data.count;
+          setpageCount(Math.ceil(total / 25));
+        } else {
+          getleads();
+        }
       }
       setOpen(false);
     } catch (error) {
@@ -122,6 +140,7 @@ export const Viewleads = () => {
   };
 
   const getResetData = () => {
+    setFilterQuery("");
     setSearchQuery("");
     getleads();
   };
@@ -183,7 +202,20 @@ export const Viewleads = () => {
         </p>
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
           <Box display="flex">
-            <Box flexGrow={0.9} align="left">
+            <Box flexGrow={0.6}>
+              <Autocomplete
+                noOptionsText={"No Options"}
+                disablePortal
+                size="small"
+                id="combo-box-demo"
+                options={FilterOptions}
+                onChange={(event, value) => setFilterQuery(value)}
+                renderInput={(params) => (
+                  <TextField {...params} label="Fliter By" />
+                )}
+              />
+            </Box>
+            <Box flexGrow={1}>
               <TextField
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -191,7 +223,7 @@ export const Viewleads = () => {
                 size="small"
                 label="Search"
                 variant="outlined"
-                sx={{ backgroundColor: "#ffffff" }}
+                sx={{ backgroundColor: "#ffffff", marginLeft: "1em" }}
               />
               <Button
                 onClick={getSearchData}
@@ -211,7 +243,7 @@ export const Viewleads = () => {
                 Reset
               </Button>
             </Box>
-            <Box flexGrow={2} align="center">
+            <Box flexGrow={1} align="center">
               <h3
                 style={{
                   textAlign: "left",
@@ -332,3 +364,11 @@ export const Viewleads = () => {
     </>
   );
 };
+
+const FilterOptions = [
+  { label: "References", value: "references__source" },
+  { label: "Description", value: "description__name" },
+  { label: "Stage", value: "stage" },
+  { label: "Assigned To", value: "assigned_to__email" },
+  { label: "All", value: "search" },
+];
