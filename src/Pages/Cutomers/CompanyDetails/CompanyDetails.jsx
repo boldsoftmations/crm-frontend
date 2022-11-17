@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { CreateAllCompanyDetails } from "./CreateAllCompanyDetails";
+import { UpdateAllCompanyDetails } from "./UpdateAllCompanyDetails";
 import { CreateCompanyDetails } from "./CreateCompanyDetails";
 import {
   Backdrop,
@@ -243,7 +243,7 @@ export const CompanyDetails = () => {
         openPopup={openPopup}
         setOpenPopup={setOpenPopup}
       >
-        <CreateAllCompanyDetails
+        <UpdateAllCompanyDetails
           setOpenPopup={setOpenPopup}
           getAllCompanyDetails={getAllCompanyDetails}
           recordForEdit={recordForEdit}

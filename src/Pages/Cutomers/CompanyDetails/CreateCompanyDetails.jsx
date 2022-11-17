@@ -18,15 +18,20 @@ import {
 } from "@mui/material";
 import CustomerServices from "../../../services/CustomerService";
 import axios from "axios";
+import { Popup } from './../../../Components/Popup';
+import { CreateAllCompanyDetails } from './CreateAllCompanyDetails';
 
 export const CreateCompanyDetails = (props) => {
   const { setOpenPopup, getAllCompanyDetails } = props;
+  const [openPopup2, setOpenPopup2] = useState(false);
   const [open, setOpen] = useState(false);
   const [typeData, setTypeData] = useState("");
   const [category, setCategory] = useState("");
   const [businessType, setBusinessType] = useState("");
   const [inputValue, setInputValue] = useState([]);
   const [pinCodeData, setPinCodeData] = useState([]);
+  const [idForEdit, setIdForEdit] = useState("");
+
   const handleChange = (event) => {
     setTypeData(event.target.value);
   };
@@ -71,15 +76,19 @@ export const CreateCompanyDetails = (props) => {
         category: category,
         total_sales_turnover: inputValue.total_sale,
       };
-      await CustomerServices.createCompanyData(req);
-      setOpenPopup(false);
+      const response = await CustomerServices.createCompanyData(req);
+      setIdForEdit(response.data.company_id)
+      // setOpenPopup(false);
       setOpen(false);
-      getAllCompanyDetails();
+      setOpenPopup2(true)
+      // getAllCompanyDetails();
     } catch (error) {
       console.log("createing company detail error", error);
       setOpen(false);
     }
   };
+
+  console.log('idForEdit :>> ', idForEdit);
   return (
     <div>
       <div>
@@ -301,6 +310,18 @@ export const CreateCompanyDetails = (props) => {
           Submit
         </Button>
       </Box>
+      <Popup
+        maxWidth={"lg"}
+        title={"Create Company Details"}
+        openPopup={openPopup2}
+        setOpenPopup={setOpenPopup2}
+      >
+        <CreateAllCompanyDetails
+          setOpenPopup={setOpenPopup2}
+          getAllCompanyDetails={getAllCompanyDetails}
+          recordForEdit={idForEdit}
+        />
+      </Popup>
     </div>
   );
 };

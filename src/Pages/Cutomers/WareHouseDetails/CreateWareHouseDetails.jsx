@@ -41,14 +41,13 @@ export const CreateWareHouseDetails = (props) => {
     }
   };
 
-
   const createWareHouseDetails = async (e) => {
     try {
       e.preventDefault();
       setOpen(true);
       const req = {
         company: data ? data.companyName : "",
-        contact: selectedcontact.name,
+        contact: selectedcontact.id,
         address: inputValue.address,
         pincode: inputValue.pincode,
         state: pinCodeData.State,
