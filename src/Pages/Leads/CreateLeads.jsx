@@ -6,7 +6,6 @@ import {
   Button,
   Chip,
   Grid,
-  MenuItem,
   Paper,
   Step,
   StepLabel,
@@ -30,30 +29,6 @@ function getSteps() {
     <b style={{ color: "purple" }}>'Review'</b>,
   ];
 }
-
-const BusinessTypeData = [
-  {
-    id: 1,
-    value: "trader",
-    name: "Trader",
-  },
-
-  {
-    id: 2,
-    value: "distributor",
-    name: "Distributor",
-  },
-  {
-    id: 3,
-    value: "retailer",
-    name: "Retailer",
-  },
-  {
-    id: 4,
-    value: "end_user",
-    name: "End User",
-  },
-];
 
 export const CreateLeads = (props) => {
   const { setOpenPopup, getleads } = props;
@@ -162,7 +137,7 @@ export const CreateLeads = (props) => {
           alternate_email: leads.altEmail ? leads.altEmail : "",
           contact: contact1,
           alternate_contact: contact2,
-          business_type: businesTypes,
+          business_type: businesTypes.value,
           company: leads.companyName,
           gst_number: leads.gstNumber,
           address: leads.address,
@@ -292,21 +267,18 @@ export const CreateLeads = (props) => {
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
-                    <TextField
-                      select
-                      fullWidth
+                    <Autocomplete
                       name="business_type"
                       size="small"
-                      label="Business Type"
-                      variant="outlined"
-                      onChange={(e, value) => setBusinesTypes(value)}
-                    >
-                      {BusinessTypeData.map((option) => (
-                        <MenuItem key={option.id} value={option.value}>
-                          {option.name}
-                        </MenuItem>
-                      ))}
-                    </TextField>
+                      disablePortal
+                      id="combo-box-demo"
+                      onChange={(event, value) => setBusinesTypes(value)}
+                      options={BusinessTypeData}
+                      sx={{ minWidth: 300 }}
+                      renderInput={(params) => (
+                        <TextField {...params} label="Business Type" />
+                      )}
+                    />
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <Autocomplete
@@ -645,3 +617,23 @@ export const CreateLeads = (props) => {
     </div>
   );
 };
+
+const BusinessTypeData = [
+  {
+    value: "trader",
+    label: "Trader",
+  },
+
+  {
+    value: "distributor",
+    label: "Distributor",
+  },
+  {
+    value: "retailer",
+    label: "Retailer",
+  },
+  {
+    value: "end_user",
+    label: "End User",
+  },
+];
