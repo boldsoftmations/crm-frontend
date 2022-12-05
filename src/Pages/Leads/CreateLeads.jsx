@@ -5,8 +5,12 @@ import {
   Box,
   Button,
   Chip,
+  FormControl,
   Grid,
+  InputLabel,
+  MenuItem,
   Paper,
+  Select,
   Step,
   StepLabel,
   Stepper,
@@ -128,7 +132,7 @@ export const CreateLeads = (props) => {
         let REFERENCE = reference;
         let contact1 = phone ? `+${phone}` : phone;
         let contact2 = phone2 ? `+${phone2}` : phone2;
-        console.log("assign :>> ", assign ? assign.emp_id : "");
+
         const data = {
           name: leads.name,
           assigned_to: assign ? assign.email : "",
@@ -137,7 +141,7 @@ export const CreateLeads = (props) => {
           alternate_email: leads.altEmail ? leads.altEmail : "",
           contact: contact1,
           alternate_contact: contact2,
-          business_type: businesTypes.value,
+          business_type: businesTypes,
           company: leads.companyName,
           gst_number: leads.gstNumber,
           address: leads.address,
@@ -267,18 +271,24 @@ export const CreateLeads = (props) => {
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
-                    <Autocomplete
-                      name="business_type"
-                      size="small"
-                      disablePortal
-                      id="combo-box-demo"
-                      onChange={(event, value) => setBusinesTypes(value)}
-                      options={BusinessTypeData}
-                      sx={{ minWidth: 300 }}
-                      renderInput={(params) => (
-                        <TextField {...params} label="Business Type" />
-                      )}
-                    />
+                    <FormControl fullWidth size="small">
+                      <InputLabel id="demo-simple-select-label">
+                        Busniess Type
+                      </InputLabel>
+                      <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        // value={age}
+                        label="Busniess Type"
+                        onChange={(e, value) => setBusinesTypes(e.target.value)}
+                      >
+                        {BusinessTypeData.map((option, i) => (
+                          <MenuItem key={i} value={option.value}>
+                            {option.label}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <Autocomplete
