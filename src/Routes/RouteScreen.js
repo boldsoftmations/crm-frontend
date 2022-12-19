@@ -28,6 +28,10 @@ import { ViewUnit } from "./../Pages/Products/Unit/ViewUnit";
 import "../App.css";
 import { CompanyDetails } from "../Pages/Cutomers/CompanyDetails/CompanyDetails";
 import { PriceList } from "./../Pages/Products/PriceList/PriceList";
+import { SellerAccount } from "./../Pages/Invoice/Seller Account/SellerAccount";
+import { ViewCustomerProformaInvoice } from '../Pages/Invoice/CustomerPerformaInvoice/ViewCustomerProformaInvoice';
+import { ViewLeadsProformaInvoice } from './../Pages/Invoice/LeadsPerformaInvoice/ViewLeadsProformaInvoice';
+
 export const RouteScreen = () => {
   const token = useSelector((state) => state.auth);
   return (
@@ -97,6 +101,16 @@ export const RouteScreen = () => {
             <Route
               path="/customers/company-details"
               element={<CompanyDetails />}
+            />
+            {/* Invoice - Seller Account Route */}
+            <Route path="/invoice/seller-account" element={<SellerAccount />} />
+            <Route
+              path="/invoice/performa-invoice"
+              element={<ViewCustomerProformaInvoice />}
+            />
+             <Route
+              path="/invoice/leads-performa-invoice"
+              element={<ViewLeadsProformaInvoice />}
             />
             <Route path="*" element={<PageNotFound />} />
           </>
