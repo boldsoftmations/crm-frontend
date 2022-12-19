@@ -7,9 +7,14 @@ import {
   Box,
   Button,
   Chip,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
   Grid,
   MenuItem,
   Paper,
+  Radio,
+  RadioGroup,
   Step,
   StepLabel,
   Stepper,
@@ -25,60 +30,20 @@ import { ViewAllFollowUp } from "./../FollowUp/ViewAllFollowUp";
 import { ViewAllPotential } from "../Potential/ViewAllPotential";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/material.css";
+import axios from "axios";
+import InvoiceServices from "../../services/InvoiceService";
+
 function getSteps() {
   return [
     <b style={{ color: "purple" }}>'Enter Basic Details'</b>,
     <b style={{ color: "purple" }}>'Enter Company Details'</b>,
+    <b style={{ color: "purple" }}>'Enter Shipping Details'</b>,
     <b style={{ color: "purple" }}>'Review'</b>,
   ];
 }
 
-const businessType = [
-  {
-    value: "trader",
-    name: "trader",
-  },
-
-  {
-    value: "distributor",
-    name: "distributor",
-  },
-  {
-    value: "retailer",
-    name: "retailer",
-  },
-  {
-    value: "end_user",
-    name: "end_user",
-  },
-];
-
-const businessMismatchs = [
-  {
-    value: "yes",
-    name: "Yes",
-  },
-
-  {
-    value: "no",
-    name: "No",
-  },
-];
-
-const interest = [
-  {
-    value: "yes",
-    name: "Yes",
-  },
-
-  {
-    value: "no",
-    name: "No",
-  },
-];
-
 export const UpdateLeads = (props) => {
-  const { recordForEdit, setOpenPopup, getleads } = props;
+  const { recordForEdit, setOpenPopup, getleads, getAllleadsData } = props;
   const [activeStep, setActiveStep] = useState(0);
   const steps = getSteps();
   const [open, setOpen] = useState(false);
@@ -94,12 +59,18 @@ export const UpdateLeads = (props) => {
   const [phone2, setPhone2] = useState();
   const [contacts1, setContacts1] = useState("");
   const [contacts2, setContacts2] = useState("");
+  const [typeData, setTypeData] = useState("");
+  const [pinCodeData, setPinCodeData] = useState([]);
   const handlePhoneChange = (newPhone) => {
     setPhone(newPhone);
   };
 
   const handlePhoneChange2 = (newPhone) => {
     setPhone2(newPhone);
+  };
+
+  const handleChange = (event) => {
+    setTypeData(event.target.value);
   };
 
   const assignValue = assign ? assign : assign;
@@ -168,6 +139,22 @@ export const UpdateLeads = (props) => {
     }
   };
 
+  const validatePinCode = async () => {
+    try {
+      setOpen(true);
+      const PINCODE = leads.shipping_pincode;
+      const response = await axios.get(
+        `https://api.postalpincode.in/pincode/${PINCODE}`
+      );
+
+      setPinCodeData(response.data[0].PostOffice[0]);
+      setOpen(false);
+    } catch (error) {
+      console.log("Creating Bank error ", error);
+      setOpen(false);
+    }
+  };
+
   const updateLeadsData = async (e) => {
     if (activeStep === steps.length - 1) {
       try {
@@ -195,17 +182,29 @@ export const UpdateLeads = (props) => {
           references: leads.references,
           company: leads.company ? leads.company : "",
           gst_number: leads.gst_number ? leads.gst_number : "",
+          pan_number: leads.pan_number ? leads.pan_number : "",
           address: leads.address ? leads.address : "",
           city: leads.city ? leads.city : "",
           state: leads.state ? leads.state : "",
           country: leads.country ? leads.country : "",
           pincode: leads.pincode,
+          website: leads.website,
+          type_of_customer: typeData ? typeData : leads.type_of_customer,
+          shipping_address: leads.shipping_address,
+          shipping_city: pinCodeData.District
+            ? pinCodeData.District
+            : leads.shipping_city,
+          shipping_state: pinCodeData.State
+            ? pinCodeData.State
+            : leads.shipping_state,
+          shipping_pincode: leads.shipping_pincode,
         };
 
         await LeadServices.updateLeads(leads.lead_id, data);
         setOpenPopup(false);
         setOpen(false);
         getleads();
+        getAllleadsData();
       } catch (error) {
         console.log("error :>> ", error);
         setOpen(false);
@@ -214,6 +213,64 @@ export const UpdateLeads = (props) => {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     }
   };
+  // console.log("leads :>> ", leads);
+  // const createLeadProformaInvoiceDetails = async (e) => {
+  //   try {
+  //     console.log("e :>> ", e.preventDefault);
+  //     e.preventDefault();
+
+  //     const req = {
+  //       type: "lead",
+  //       raised_by: "admin@glutape.com",
+  //       // seller_account: inputValue.seller_account,
+  //       lead: leads.lead_id,
+  //       contact: leads.contact,
+  //       alternate_contact: leads.alternate_contact,
+  //       address: leads.shipping_address,
+  //       pincode: leads.shipping_pincode,
+  //       state: leads.shipping_state,
+  //       city: leads.shipping_city,
+  //       // requested_date: inputValue.requested_date,
+  //       // buyer_order_no: inputValue.buyer_order_no,
+  //       // buyer_order_date: inputValue.buyer_order_date,
+  //       // payment_terms: paymentTermData,
+  //       // delivery_terms: deliveryTermData,
+  //       status: "raised",
+  //       // amount: inputValue.amount,
+  //       // products: [
+  //       //   {
+  //       //     product: productName,
+  //       //     quantity: inputValue.quantity,
+  //       //     rate: inputValue.rate,
+  //       //     amount: inputValue.amount,
+  //       //   },
+  //       // ],
+  //     };
+  //     console.log("req", req);
+  //     console.log("after req");
+  //     setOpen(true);
+  //     if (
+  //       leads.address.length > 0 &&
+  //       leads.state.length > 0 &&
+  //       leads.city.length > 0 &&
+  //       leads.pincode.length > 0 &&
+  //       leads.shipping_address.length > 0 &&
+  //       leads.shipping_state.length > 0 &&
+  //       leads.shipping_city.length > 0 &&
+  //       leads.shipping_pincode.length > 0
+  //     ) {
+  //       await InvoiceServices.createLeadsProformaInvoiceData(req);
+  //       console.log("after api");
+  //       setOpen(false);
+  //     }
+  //     // setOpenPopup(false);
+  //     // getAllSellerAccountsDetails();
+  //   } catch (err) {
+  //     // setIDForEdit(leadIDData.lead_id);
+  //     setOpen(false);
+  //     // setOpenPopup2(true);
+  //   }
+  // };
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
@@ -492,6 +549,17 @@ export const UpdateLeads = (props) => {
                   <Grid item xs={12} sm={6}>
                     <TextField
                       fullWidth
+                      name="pan_number"
+                      size="small"
+                      label="Pan Number"
+                      variant="outlined"
+                      value={leads.pan_number ? leads.pan_number : ""}
+                      onChange={handleInputChange}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
                       name="address"
                       size="small"
                       label="Address"
@@ -545,12 +613,147 @@ export const UpdateLeads = (props) => {
                       onChange={handleInputChange}
                     />
                   </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      name="website"
+                      size="small"
+                      label="Website"
+                      variant="outlined"
+                      value={leads.website ? leads.website : ""}
+                      onChange={handleInputChange}
+                    />
+                  </Grid>
                 </Grid>
               </Box>
             </Box>
           </>
         );
       case 2:
+        return (
+          <>
+            <div className="Auth-form-container">
+              <Backdrop
+                sx={{
+                  color: "#fff",
+                  zIndex: (theme) => theme.zIndex.drawer + 1,
+                }}
+                open={open}
+              >
+                <CircularProgress color="inherit" />
+              </Backdrop>
+            </div>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            >
+              <h3 className="Auth-form-title">Create Shipping Detail</h3>
+              <Box
+                component="form"
+                noValidate
+                onSubmit={updateLeadsData}
+                sx={{ mt: 1 }}
+              >
+                <Grid container spacing={2}>
+                  <Grid item xs={12}>
+                    <>
+                      <FormControl>
+                        <FormLabel id="demo-row-radio-buttons-group-label">
+                          Type
+                        </FormLabel>
+                        <RadioGroup
+                          row
+                          aria-labelledby="demo-row-radio-buttons-group-label"
+                          name="row-radio-buttons-group"
+                          value={typeData ? typeData : leads.type_of_customer}
+                          defaultValue={leads.type_of_customer}
+                          onChange={handleChange}
+                        >
+                          <FormControlLabel
+                            value="industrial_customer"
+                            control={<Radio />}
+                            label="Industrial Customer"
+                          />
+                          <FormControlLabel
+                            value="distribution_customer"
+                            control={<Radio />}
+                            label="Distribution Customer"
+                          />
+                        </RadioGroup>
+                      </FormControl>
+                    </>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      name="shipping_address"
+                      size="small"
+                      label="Shipping Address"
+                      variant="outlined"
+                      value={
+                        leads.shipping_address ? leads.shipping_address : ""
+                      }
+                      onChange={handleInputChange}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      sx={{ minWidth: "300px" }}
+                      name="shipping_pincode"
+                      size="small"
+                      type={"number"}
+                      label="Pin Code"
+                      variant="outlined"
+                      value={
+                        leads.shipping_pincode ? leads.shipping_pincode : ""
+                      }
+                      onChange={handleInputChange}
+                    />
+                    <Button
+                      onClick={() => validatePinCode()}
+                      variant="contained"
+                      sx={{ marginLeft: "1rem" }}
+                    >
+                      Validate
+                    </Button>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      name="shipping_city"
+                      size="small"
+                      label="Shipping City"
+                      variant="outlined"
+                      value={
+                        pinCodeData.District
+                          ? pinCodeData.District
+                          : leads.shipping_city
+                      }
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      name="shipping_state"
+                      size="small"
+                      label="Shipping State"
+                      variant="outlined"
+                      value={
+                        pinCodeData.State
+                          ? pinCodeData.State
+                          : leads.shipping_state
+                      }
+                    />
+                  </Grid>
+                </Grid>
+              </Box>
+            </Box>
+          </>
+        );
+      case 3:
         return (
           <>
             <div className="Auth-form-container">
@@ -616,10 +819,13 @@ export const UpdateLeads = (props) => {
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     Gst Number : {leads.gst_number}
-                  </Grid>{" "}
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    Pan Number : {leads.pan_number}
+                  </Grid>
                   <Grid item xs={12} sm={6}>
                     Address : {leads.address}
-                  </Grid>{" "}
+                  </Grid>
                   <Grid item xs={12} sm={6}>
                     City : {leads.city}
                   </Grid>{" "}
@@ -669,36 +875,51 @@ export const UpdateLeads = (props) => {
             ))}
           </Stepper>
           <Typography>{getStepContent(activeStep)}</Typography>
-
-          <div style={{ display: "flex", justifyContent: "flex-end" }}>
-            {activeStep !== 0 && (
+     
+            {/* <div style={{ display: "flex", justifyContent: "flex-start" }}>
               <Button
                 variant="contained"
                 color="primary"
-                disabled={activeStep === 0}
-                onClick={handleBack}
+                disabled={activeStep !== steps.length - 1}
+                onClick={(e) => createLeadProformaInvoiceDetails(e)}
                 // className={classes.button}
                 style={{
                   marginTop: "1em",
                   marginRight: "1em",
                 }}
               >
-                Back
+                Generate PI
               </Button>
-            )}
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={(e) => updateLeadsData(e)}
-              // className={classes.button}
-              style={{
-                marginTop: "1em",
-                marginRight: "1em",
-              }}
-            >
-              {activeStep === steps.length - 1 ? "Finish" : "Next"}
-            </Button>
-          </div>
+            </div> */}
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              {activeStep !== 0 && (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  disabled={activeStep === 0}
+                  onClick={handleBack}
+                  // className={classes.button}
+                  style={{
+                    marginTop: "1em",
+                    marginRight: "1em",
+                  }}
+                >
+                  Back
+                </Button>
+              )}
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={(e) => updateLeadsData(e)}
+                // className={classes.button}
+                style={{
+                  marginTop: "1em",
+                  marginRight: "1em",
+                }}
+              >
+                {activeStep === steps.length - 1 ? "Finish" : "Next"}
+              </Button>
+            </div>
         </Paper>
       </Grid>
 
@@ -754,3 +975,47 @@ export const UpdateLeads = (props) => {
     </div>
   );
 };
+
+const businessType = [
+  {
+    value: "trader",
+    name: "trader",
+  },
+
+  {
+    value: "distributor",
+    name: "distributor",
+  },
+  {
+    value: "retailer",
+    name: "retailer",
+  },
+  {
+    value: "end_user",
+    name: "end_user",
+  },
+];
+
+const businessMismatchs = [
+  {
+    value: "yes",
+    name: "Yes",
+  },
+
+  {
+    value: "no",
+    name: "No",
+  },
+];
+
+const interest = [
+  {
+    value: "yes",
+    name: "Yes",
+  },
+
+  {
+    value: "no",
+    name: "No",
+  },
+];
