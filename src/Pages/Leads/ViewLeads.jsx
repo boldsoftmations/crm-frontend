@@ -188,7 +188,6 @@ export const Viewleads = () => {
 
   const getResetData = () => {
     setFilterSelectedQuery("");
-    setFilterQuery("");
     getleads();
   };
 
