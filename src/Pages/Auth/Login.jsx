@@ -20,7 +20,14 @@ import {
   TextField,
   Backdrop,
   CircularProgress,
+  OutlinedInput,
+  FormControl,
+  InputLabel,
+  IconButton,
+  InputAdornment
 } from "@mui/material";
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useDispatch } from "react-redux";
 import axios from "axios";
 import { setUserData } from "./../../services/TokenService";
@@ -36,7 +43,7 @@ export const Login = () => {
   const userRef = useRef();
   const errRef = useRef();
 
-  const [user, setUser] = useState("");
+  const [user, setUser] = useState({email: '' , password: '', showPassword: false,});
   const [pwd, setPwd] = useState("");
   const [errMsg, setErrMsg] = useState("");
 
@@ -46,7 +53,22 @@ export const Login = () => {
 
   useEffect(() => {
     setErrMsg("");
-  }, [user, pwd]);
+  }, [user,]);
+
+  const handleChange = (prop) => (event) => {
+    setUser({ ...user, [prop]: event.target.value });
+  };
+
+  const handleClickShowPassword = () => {
+    setUser({
+      ...user,
+      showPassword: !user.showPassword,
+    });
+  };
+
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -55,8 +77,8 @@ export const Login = () => {
       setOpen(true);
       dispatch(loginstart());
       const req = {
-        email: user,
-        password: pwd,
+        email: user.email,
+        password: user.password,
       };
       const response = await axios.post(LOGIN_URL, req);
       if (response.data.token.access) {
@@ -145,13 +167,35 @@ export const Login = () => {
                   variant="outlined"
                   ref={userRef}
                   autoComplete="off"
-                  onChange={(e) => setUser(e.target.value)}
-                  value={user}
+                  onChange={handleChange('email')}
+                  value={user.email}
                   required
                 />
               </Grid>
               <Grid rowSpacing={0.5} item xs={12}>
-                <TextField
+              <FormControl variant="outlined" size="small" fullWidth>
+          <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+          <OutlinedInput
+            id="outlined-adornment-password"
+            type={user.showPassword ? 'text' : 'password'}
+            value={user.password}
+            onChange={handleChange('password')}
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={handleClickShowPassword}
+                  onMouseDown={handleMouseDownPassword}
+                  edge="end"
+                >
+                  {user.showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            }
+            label="Password"
+          />
+        </FormControl>
+                {/* <TextField
                   fullWidth
                   name="password"
                   size="small"
@@ -161,7 +205,7 @@ export const Login = () => {
                   onChange={(e) => setPwd(e.target.value)}
                   value={pwd}
                   required
-                />
+                /> */}
               </Grid>
             </Grid>
             <Button
