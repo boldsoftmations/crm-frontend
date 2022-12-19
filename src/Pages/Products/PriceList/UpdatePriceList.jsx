@@ -64,14 +64,18 @@ export const UpdatePriceList = (props) => {
     const { name, value } = event.target;
     setInputValue({ ...inputValue, [name]: value });
   };
-
+  const validate = inputValue.slab1 < inputValue.slab2;
   const updatePriceList = async (e) => {
     try {
       e.preventDefault();
       setOpen(true);
       const req = {
         product: productName ? productName : "",
-        price: inputValue.price,
+        slab1: inputValue.slab1,
+        slab1_price: inputValue.slab1_price,
+        slab2: inputValue.slab2,
+        slab2_price: inputValue.slab2_price,
+        slab3_price: inputValue.slab3_price,
         validity: inputValue.validity,
         discontinued: checked,
       };
@@ -151,18 +155,70 @@ export const UpdatePriceList = (props) => {
               )}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              name="price"
+              name="slab1"
               size="small"
-              label="Price"
+              label="Slab 1"
               variant="outlined"
-              value={inputValue.price ? inputValue.price : ""}
+              value={inputValue.slab1 ? inputValue.slab1 : ''}
+              error={inputValue.slab1 === ""}
+              helperText={
+                inputValue.slab1 === "" ? "this field is required." : ""
+              }
               onChange={handleInputChange}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              name="slab1_price"
+              size="small"
+              label="Slab1 Price"
+              variant="outlined"
+              value={inputValue.slab1_price ? inputValue.slab1_price : ''}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              name="slab2"
+              size="small"
+              label="Slab 2"
+              variant="outlined"
+              value={inputValue.slab2 ? inputValue.slab2 : ''}
+              error={validate === false || validate === ""}
+              helperText={
+                validate === false || inputValue.slab2 === "" ? "slab2 must be greater than slab1" : " "
+              }
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              name="slab2_price"
+              size="small"
+              label="Slab2 Price"
+              variant="outlined"
+              value={inputValue.slab2_price ? inputValue.slab2_price : ''}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              name="slab2_price"
+              size="small"
+              label="Slab3  Price"
+              variant="outlined"
+              value={inputValue.slab2_price ? inputValue.slab2_price :''}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               type="date"
@@ -186,7 +242,7 @@ export const UpdatePriceList = (props) => {
                   name="validity"
                 />
               }
-              label="Validity"
+              label="Discontinued"
             />
           </Grid>
         </Grid>

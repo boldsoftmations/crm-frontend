@@ -8,7 +8,7 @@ import {
   TextField,
 } from "@mui/material";
 
-import React, { useRef,useEffect,useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 
 import ProductService from "../../../services/ProductService";
 
@@ -22,6 +22,7 @@ export const CreatePriceList = (props) => {
   const [errMsg, setErrMsg] = useState("");
   const [productName, setProductName] = useState([]);
   const [product, setProduct] = useState([]);
+  const [validation, setValidation] = useState();
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setInputValue({ ...inputValue, [name]: value });
@@ -30,6 +31,7 @@ export const CreatePriceList = (props) => {
   useEffect(() => {
     getProduct();
   }, []);
+
   const getProduct = async () => {
     try {
       setOpen(true);
@@ -42,14 +44,23 @@ export const CreatePriceList = (props) => {
     }
   };
 
+  const validate = inputValue.slab1 < inputValue.slab2;
+
   const createPriceListDetails = async (e) => {
     try {
       e.preventDefault();
+      let validate = inputValue.slab1 < inputValue.slab2;
+      setValidation(validate);
+      console.log("validate", validation);
       const req = {
         product: productName,
-        price: inputValue.price,
+        slab1: inputValue.slab1,
+        slab1_price: inputValue.slab1_price,
+        slab2: inputValue.slab2,
+        slab2_price: inputValue.slab2_price,
+        slab3_price: inputValue.slab3_price,
         validity: inputValue.validity,
-        discontinued: false
+        discontinued: false,
       };
 
       setOpen(true);
@@ -87,7 +98,11 @@ export const CreatePriceList = (props) => {
           <CircularProgress color="inherit" />
         </Backdrop>
       </div>
-      <Box component="form" noValidate onSubmit={(e) => createPriceListDetails(e)}>
+      <Box
+        component="form"
+        noValidate
+        onSubmit={(e) => createPriceListDetails(e)}
+      >
         <Grid container spacing={2}>
           <p
             style={{
@@ -121,18 +136,73 @@ export const CreatePriceList = (props) => {
               )}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={6}>
             <TextField
+              required
               fullWidth
-              name="price"
+              name="slab1"
               size="small"
-              label="Price"
+              label="Slab 1"
               variant="outlined"
-              value={inputValue.price}
+              value={inputValue.slab1}
+              error={inputValue.slab1 === ""}
+              helperText={
+                inputValue.slab1 === "" ? "this field is required." : ""
+              }
               onChange={handleInputChange}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              name="slab1_price"
+              size="small"
+              label="Slab1 Price"
+              variant="outlined"
+              value={inputValue.slab1_price}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              required
+              fullWidth
+              name="slab2"
+              size="small"
+              label="Slab 2"
+              type={"number"}
+              variant="outlined"
+              value={inputValue.slab2}
+              error={validate === false || validate === ""}
+              helperText={
+                validate === false || inputValue.slab2 === "" ? "slab2 must be greater than slab1" : " "
+              }
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              name="slab2_price"
+              size="small"
+              label="Slab2 Price"
+              variant="outlined"
+              value={inputValue.slab2_price}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              name="slab3_price"
+              size="small"
+              label="Slab3  Price"
+              variant="outlined"
+              value={inputValue.slab3_price}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               type="date"

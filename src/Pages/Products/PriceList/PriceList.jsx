@@ -63,7 +63,7 @@ export const PriceList = () => {
       setOpen(true);
 
       const response = await ProductService.getAllPriceList();
-      setPriceListData(response.data.results);
+      setPriceListData(response.data.valid_prices);
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -95,7 +95,7 @@ export const PriceList = () => {
       setOpen(true);
       const response = await ProductService.getAllSearchPriceList(searchQuery);
       if (response) {
-        setPriceListData(response.data.results);
+        setPriceListData(response.data.valid_prices);
       } else {
         getPriceList();
       }
@@ -209,7 +209,11 @@ export const PriceList = () => {
               <TableHead>
                 <TableRow>
                   <StyledTableCell align="center">PRODUCT</StyledTableCell>
-                  <StyledTableCell align="center">PRICE</StyledTableCell>
+                  <StyledTableCell align="center">SLAB1</StyledTableCell>
+                  <StyledTableCell align="center">SLAB1 PRICE</StyledTableCell>
+                  <StyledTableCell align="center">SLAB2</StyledTableCell>
+                  <StyledTableCell align="center">SLAB2 PRICE</StyledTableCell>
+                  <StyledTableCell align="center">SLAB3 PRICE</StyledTableCell>
                   <StyledTableCell align="center">VALIDITY</StyledTableCell>
                   <StyledTableCell align="center">DISCONTINUED</StyledTableCell>
                   <StyledTableCell align="center">ACTION</StyledTableCell>
@@ -222,8 +226,21 @@ export const PriceList = () => {
                       <StyledTableCell align="center">
                         {row.product}
                       </StyledTableCell>
+
                       <StyledTableCell align="center">
-                        {row.price}
+                        {row.slab1}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.slab1_price}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.slab2}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.slab2_price}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.slab3_price}
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         {row.validity}
