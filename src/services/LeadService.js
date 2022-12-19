@@ -8,11 +8,21 @@ const getAllLeads = () => {
   return CustomAxios.get(`/api/lead/list-lead/`);
 };
 
-const getAllPaginateLeads = (currentPage, search) => {
+const getAllPaginateLeads = (currentPage) => {
   return CustomAxios.get(
-    `/api/lead/list-lead/?page=${currentPage}&search=${search}`
+    `/api/lead/list-lead/?page=${currentPage}`
   );
 };
+
+const getAllSearchLeads = (filter,search) => {
+  return CustomAxios.get(`/api/lead/list-lead/?${filter}=${search}`);
+};
+
+const getFilterPaginateLeads = (currentPage,filter,search) => {
+  return CustomAxios.get(`/api/lead/list-lead/?page=${currentPage}&${filter}=${search}`);
+
+};
+
 const getAllUnassignedData = () => {
   return CustomAxios.get(`/api/lead/list-unassigned/`);
 };
@@ -23,21 +33,14 @@ const getAllPaginateUnassigned = (currentPage, search) => {
   );
 };
 
-const getAllSearchUnassignedData = (search) => {
-  return CustomAxios.get(`/api/lead/list-unassigned/?search=${search}`);
+const getAllSearchUnassignedData = (filter,search) => {
+  return CustomAxios.get(`/api/lead/list-unassigned/?${filter}=${search}`);
 };
 
 const getAllAssignedUser = () => {
   return CustomAxios.get(`/api/user/sales-user`);
 };
 
-const getAllSearchLeads = (search) => {
-  return CustomAxios.get(`/api/lead/list-lead/?search=${search}`);
-};
-
-const getFilterSearchLeads = (filter, search) => {
-  return CustomAxios.get(`/api/lead/list-lead/?${filter}=${search}`);
-};
 
 const createLeads = (data) => {
   return CustomAxios.post("/api/lead/list-lead/", data);
@@ -95,7 +98,7 @@ const LeadServices = {
   getAllSearchUnassignedData,
   getAllPaginateUnassigned,
   getAllSearchLeads,
-  getFilterSearchLeads,
+  getFilterPaginateLeads,
   createLeads,
   getLeadsById,
   updateLeads,
