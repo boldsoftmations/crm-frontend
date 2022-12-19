@@ -39,25 +39,12 @@ export const Header = () => {
   const [expandFollowUp, setExpandFollowUp] = useState(false);
   const [expandProduct, setExpandProduct] = useState(false);
   const [expandCustomer, setExpandCustomer] = useState(false);
+  const [expandInvoice, setExpandInvoice] = useState(false);
   const auth = useSelector((state) => state.auth);
   const [isHover, setIsHover] = useState(false);
   // const auth = sessionStorage.getItem("accessToken");
   const boxStyle = {
     backgroundColor: isHover ? "rgb(0, 191, 255)" : "rgb(0, 191, 255)",
-  };
-  const handleClick = () => {
-    setExpand(!expand);
-  };
-  const handleClickProduct = () => {
-    setExpandProduct(!expandProduct);
-  };
-
-  const handleClickCustomer = () => {
-    setExpandCustomer(!expandCustomer);
-  };
-
-  const handleClickFollowUp = () => {
-    setExpandFollowUp(!expandFollowUp);
   };
 
   const handleDrawerClose = () => {
@@ -95,7 +82,7 @@ export const Header = () => {
           disablePadding
         >
           {/* Products */}
-          <ListItem button onClick={handleClickProduct} style={{ width: 300 }}>
+          <ListItem button onClick={() => setExpandProduct(!expandProduct)} style={{ width: 300 }}>
             {/* <ListItemIcon style={menuItemIcon}></ListItemIcon> */}
             <ListItemText primary="Products" />
             {expandProduct ? <ExpandLessIcon /> : <ExpandMoreIcon />}
@@ -194,7 +181,7 @@ export const Header = () => {
             </List>
           </Collapse>
           {/* Leads */}
-          <ListItem button onClick={handleClick} style={{ width: 300 }}>
+          <ListItem button onClick={() => setExpand(!expand)} style={{ width: 300 }}>
             <ListItemText primary="Leads" />
             {expand ? <ExpandLessIcon /> : <ExpandMoreIcon />}
           </ListItem>
@@ -219,7 +206,7 @@ export const Header = () => {
               </ListItem>
               <ListItem
                 button
-                onClick={handleClickFollowUp}
+                onClick={() => setExpandFollowUp(!expandFollowUp)}
                 style={{ width: 300 }}
               >
                 <ListItemText inset primary="FollowUp" />
@@ -257,7 +244,7 @@ export const Header = () => {
             </List>
           </Collapse>
           {/* Customer */}
-          <ListItem button onClick={handleClickCustomer} style={{ width: 300 }}>
+          <ListItem button onClick={() => setExpandCustomer(!expandCustomer)} style={{ width: 300 }}>
             <ListItemText primary="Customer" />
             {expandCustomer ? <ExpandLessIcon /> : <ExpandMoreIcon />}
           </ListItem>
@@ -271,6 +258,40 @@ export const Header = () => {
                 style={{ width: 300 }}
               >
                 <ListItemText inset primary="Company Details" />
+              </ListItem>
+            </List>
+          </Collapse>
+              {/* Invoice  */}
+              <ListItem button onClick={() => setExpandInvoice(!expandInvoice)} style={{ width: 300 }}>
+            <ListItemText primary="Invoice" />
+            {expandInvoice ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          </ListItem>
+          <Collapse in={expandInvoice} timeout="auto" unmountOnExit>
+            <Divider />
+            <List component="div" disablePadding>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/invoice/seller-account"
+                style={{ width: 300 }}
+              >
+                <ListItemText inset primary="Seller Account" />
+              </ListItem>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/invoice/performa-invoice"
+                style={{ width: 300 }}
+              >
+                <ListItemText inset primary="Customer Performa Invoice" />
+              </ListItem>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/invoice/leads-performa-invoice"
+                style={{ width: 300 }}
+              >
+                <ListItemText inset primary="Leads Performa Invoice" />
               </ListItem>
             </List>
           </Collapse>
