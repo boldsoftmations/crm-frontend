@@ -91,6 +91,7 @@ export const UpdateCompanyDetails = (props) => {
         pan_number: inputValue.pan_number,
         business_type: businessType,
         category: category,
+        assigned_to: inputValue.assigned_to,
         total_sales_turnover: inputValue.total_sales_turnover,
       };
       await CustomerServices.updateCompanyData(recordForEdit, req);
@@ -333,6 +334,24 @@ export const UpdateCompanyDetails = (props) => {
                 Applicable Only For Distribution Customer
               </FormHelperText>
             </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextField
+              fullWidth
+              name="assigned_to"
+              size="small"
+              label="Assigned To"
+              variant="outlined"
+              value={
+                inputValue.assigned_to
+                  ? inputValue.assigned_to
+                  : ""
+              }
+              onChange={handleInputChange}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
           </Grid>
           <Grid item xs={12}>
             <TextField

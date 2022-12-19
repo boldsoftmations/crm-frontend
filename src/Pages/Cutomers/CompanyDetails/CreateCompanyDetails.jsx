@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Backdrop,
   Box,
@@ -15,11 +15,13 @@ import {
   RadioGroup,
   Select,
   TextField,
+  Autocomplete,
 } from "@mui/material";
 import CustomerServices from "../../../services/CustomerService";
 import axios from "axios";
-import { Popup } from './../../../Components/Popup';
-import { CreateAllCompanyDetails } from './CreateAllCompanyDetails';
+import { Popup } from "./../../../Components/Popup";
+import { CreateAllCompanyDetails } from "./CreateAllCompanyDetails";
+import LeadServices from "../../../services/LeadService";
 
 export const CreateCompanyDetails = (props) => {
   const { setOpenPopup, getAllCompanyDetails } = props;
@@ -31,7 +33,9 @@ export const CreateCompanyDetails = (props) => {
   const [inputValue, setInputValue] = useState([]);
   const [pinCodeData, setPinCodeData] = useState([]);
   const [idForEdit, setIdForEdit] = useState("");
-
+  const [assigned, setAssigned] = useState([]);
+  const [assign, setAssign] = useState([]);
+  const [users, setUsers] = useState("");
   const handleChange = (event) => {
     setTypeData(event.target.value);
   };
@@ -56,6 +60,38 @@ export const CreateCompanyDetails = (props) => {
       setOpen(false);
     }
   };
+  useEffect(() => {
+    getUsers();
+  }, []);
+
+  const getUsers = async () => {
+    try {
+      const res = await LeadServices.getProfile();
+
+      setUsers(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    if (users.is_staff === true) {
+      getLAssignedData();
+    }
+  }, [users]);
+
+  const getLAssignedData = async (id) => {
+    try {
+      setOpen(true);
+      const res = await LeadServices.getAllAssignedUser();
+
+      setAssigned(res.data);
+      setOpen(false);
+    } catch (error) {
+      console.log("error", error);
+      setOpen(false);
+    }
+  };
 
   const createCompanyDetails = async (e) => {
     try {
@@ -74,13 +110,14 @@ export const CreateCompanyDetails = (props) => {
         pan_number: inputValue.pan_no,
         business_type: businessType,
         category: category,
+        assigned_to: assign ? assign.email : "",
         total_sales_turnover: inputValue.total_sale,
       };
       const response = await CustomerServices.createCompanyData(req);
-      setIdForEdit(response.data.company_id)
+      setIdForEdit(response.data.company_id);
       // setOpenPopup(false);
       setOpen(false);
-      setOpenPopup2(true)
+      setOpenPopup2(true);
       // getAllCompanyDetails();
     } catch (error) {
       console.log("createing company detail error", error);
@@ -88,7 +125,6 @@ export const CreateCompanyDetails = (props) => {
     }
   };
 
-  console.log('idForEdit :>> ', idForEdit);
   return (
     <div>
       <div>
@@ -287,6 +323,24 @@ export const CreateCompanyDetails = (props) => {
                 Applicable Only For Distribution Customer
               </FormHelperText>
             </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            {users.is_staff === true && (
+              <Autocomplete
+                fullWidth
+                size="small"
+                id="grouped-demo"
+                onChange={(event, value) => setAssign(value)}
+                options={assigned.map((option) => option)}
+                getOptionLabel={(option) =>
+                  `${option.first_name}  ${option.last_name}`
+                }
+                // sx={{ minWidth: 300 }}
+                renderInput={(params) => (
+                  <TextField {...params} label="Assignied To" />
+                )}
+              />
+            )}
           </Grid>
           <Grid item xs={12}>
             <TextField
