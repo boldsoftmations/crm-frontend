@@ -731,6 +731,8 @@ export const UpdateLeads = (props) => {
                         pinCodeData.District
                           ? pinCodeData.District
                           : leads.shipping_city
+                          ? leads.shipping_city
+                          : ""
                       }
                     />
                   </Grid>
@@ -745,6 +747,8 @@ export const UpdateLeads = (props) => {
                         pinCodeData.State
                           ? pinCodeData.State
                           : leads.shipping_state
+                          ? leads.shipping_state
+                          : ""
                       }
                     />
                   </Grid>
@@ -875,8 +879,8 @@ export const UpdateLeads = (props) => {
             ))}
           </Stepper>
           <Typography>{getStepContent(activeStep)}</Typography>
-     
-            {/* <div style={{ display: "flex", justifyContent: "flex-start" }}>
+
+          {/* <div style={{ display: "flex", justifyContent: "flex-start" }}>
               <Button
                 variant="contained"
                 color="primary"
@@ -891,35 +895,35 @@ export const UpdateLeads = (props) => {
                 Generate PI
               </Button>
             </div> */}
-            <div style={{ display: "flex", justifyContent: "flex-end" }}>
-              {activeStep !== 0 && (
-                <Button
-                  variant="contained"
-                  color="primary"
-                  disabled={activeStep === 0}
-                  onClick={handleBack}
-                  // className={classes.button}
-                  style={{
-                    marginTop: "1em",
-                    marginRight: "1em",
-                  }}
-                >
-                  Back
-                </Button>
-              )}
+          <div style={{ display: "flex", justifyContent: "flex-end" }}>
+            {activeStep !== 0 && (
               <Button
                 variant="contained"
                 color="primary"
-                onClick={(e) => updateLeadsData(e)}
+                disabled={activeStep === 0}
+                onClick={handleBack}
                 // className={classes.button}
                 style={{
                   marginTop: "1em",
                   marginRight: "1em",
                 }}
               >
-                {activeStep === steps.length - 1 ? "Finish" : "Next"}
+                Back
               </Button>
-            </div>
+            )}
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={(e) => updateLeadsData(e)}
+              // className={classes.button}
+              style={{
+                marginTop: "1em",
+                marginRight: "1em",
+              }}
+            >
+              {activeStep === steps.length - 1 ? "Finish" : "Next"}
+            </Button>
+          </div>
         </Paper>
       </Grid>
 
