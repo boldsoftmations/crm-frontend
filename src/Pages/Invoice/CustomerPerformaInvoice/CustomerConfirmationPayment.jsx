@@ -16,7 +16,7 @@ import InvoiceServices from "../../../services/InvoiceService";
 const StatusOptions = [
   { label: "Partially Paid", value: "partially_paid" },
   { label: "Fully Paid", value: "fully_paid" },
-  { label: "credit", value: "credit" },
+  { label: "Credit", value: "credit" },
 ];
 
 export const CustomerConfirmationPayment = (props) => {
@@ -110,14 +110,14 @@ export const CustomerConfirmationPayment = (props) => {
                 }}
               >
                 {StatusOptions.map((option, i) => (
-                  <MenuItem key={i} value={option.value}>
+                  <MenuItem key={i} value={option.label}>
                     {option.label}
                   </MenuItem>
                 ))}
               </Select>
             </FormControl>
           </Grid>
-          {inputValue.status == "partially_paid" && (
+          {inputValue.status == "Partially Paid" && (
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -131,7 +131,7 @@ export const CustomerConfirmationPayment = (props) => {
               />
             </Grid>
           )}
-          {inputValue.status == "partially_paid" && (
+          {inputValue.status == "Partially Paid" && (
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
