@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
+  Autocomplete,
   Backdrop,
   Box,
   Button,
@@ -20,6 +21,7 @@ import CustomerServices from "../../../services/CustomerService";
 import { useDispatch } from "react-redux";
 import { getCompanyName } from "../../../Redux/Action/Action";
 import axios from "axios";
+import LeadServices from "../../../services/LeadService";
 export const UpdateCompanyDetails = (props) => {
   const { setOpenPopup, getAllContactDetailsByID, recordForEdit } = props;
   const [open, setOpen] = useState(false);
@@ -28,6 +30,8 @@ export const UpdateCompanyDetails = (props) => {
   const [inputValue, setInputValue] = useState([]);
   const [businessType, setBusinessType] = useState("");
   const [pinCodeData, setPinCodeData] = useState([]);
+  const [assigned, setAssigned] = useState([]);
+  const [assign, setAssign] = useState([]);
   const dispatch = useDispatch();
   const handleChange = (event) => {
     setTypeData(event.target.value);
@@ -36,6 +40,23 @@ export const UpdateCompanyDetails = (props) => {
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setInputValue({ ...inputValue, [name]: value });
+  };
+
+  useEffect(() => {
+    getLAssignedData();
+  }, []);
+
+  const getLAssignedData = async (id) => {
+    try {
+      setOpen(true);
+      const res = await LeadServices.getAllAssignedUser();
+
+      setAssigned(res.data);
+      setOpen(false);
+    } catch (error) {
+      console.log("error", error);
+      setOpen(false);
+    }
   };
 
   const validatePinCode = async () => {
@@ -67,6 +88,7 @@ export const UpdateCompanyDetails = (props) => {
       setTypeData(response.data.type);
       setBusinessType(response.data.business_type);
       setCategory(response.data.category);
+      setAssign(response.data.assigned_to);
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -91,7 +113,7 @@ export const UpdateCompanyDetails = (props) => {
         pan_number: inputValue.pan_number,
         business_type: businessType,
         category: category,
-        assigned_to: inputValue.assigned_to,
+        assigned_to: assign ? assign : "",
         total_sales_turnover: inputValue.total_sales_turnover,
       };
       await CustomerServices.updateCompanyData(recordForEdit, req);
@@ -135,12 +157,12 @@ export const UpdateCompanyDetails = (props) => {
                   onChange={handleChange}
                 >
                   <FormControlLabel
-                    value="industrial_customer"
+                    value="Industrial Customer"
                     control={<Radio />}
                     label="Industrial Customer"
                   />
                   <FormControlLabel
-                    value="distribution_customer"
+                    value="Distribution Customer"
                     control={<Radio />}
                     label="Distribution Customer"
                   />
@@ -174,10 +196,10 @@ export const UpdateCompanyDetails = (props) => {
                 label="Busniess Type"
                 onChange={(event) => setBusinessType(event.target.value)}
               >
-                <MenuItem value={"proprietor"}>Proprietor </MenuItem>
-                <MenuItem value={"pvt_ltd"}>Pvt.Ltd</MenuItem>
-                <MenuItem value={"partnership"}>Partnership</MenuItem>
-                <MenuItem value={"limited"}>Limited</MenuItem>
+                <MenuItem value={"Proprietor"}>Proprietor </MenuItem>
+                <MenuItem value={"Private Limited"}>Private Limited</MenuItem>
+                <MenuItem value={"Partnership"}>Partnership</MenuItem>
+                <MenuItem value={"Limited"}>Limited</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -322,13 +344,14 @@ export const UpdateCompanyDetails = (props) => {
                 label="Category"
                 onChange={(event) => setCategory(event.target.value)}
               >
-                <MenuItem value={"hardware"}>Hardware </MenuItem>
-                <MenuItem value={"electrical"}>Electrical</MenuItem>
-                <MenuItem value={"plywood"}>Plywood</MenuItem>
-                <MenuItem value={"auto_retail"}>Auto Retail</MenuItem>
-                <MenuItem value={"plumbing"}>Plumbing</MenuItem>
-                <MenuItem value={"stationary"}>Stationary</MenuItem>
-                <MenuItem value={"others"}>Others</MenuItem>
+                <MenuItem value={"Hardware & Electrical"}>
+                  Hardware & Electrical
+                </MenuItem>
+                <MenuItem value={"Plywood"}>Plywood</MenuItem>
+                <MenuItem value={"Plumbing"}>Plumbing</MenuItem>
+                <MenuItem value={"Auto Retail"}>Auto Retail</MenuItem>
+                <MenuItem value={"Stationary"}>Stationary</MenuItem>
+                <MenuItem value={"Others"}>Others</MenuItem>
               </Select>
               <FormHelperText>
                 Applicable Only For Distribution Customer
@@ -336,21 +359,18 @@ export const UpdateCompanyDetails = (props) => {
             </FormControl>
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <Autocomplete
               fullWidth
-              name="assigned_to"
               size="small"
-              label="Assigned To"
-              variant="outlined"
-              value={
-                inputValue.assigned_to
-                  ? inputValue.assigned_to
-                  : ""
-              }
-              onChange={handleInputChange}
-              InputLabelProps={{
-                shrink: true,
-              }}
+              id="grouped-demo"
+              value={assign ? assign : ""}
+              onChange={(event, value) => setAssign(value)}
+              options={assigned.map((option) => option.email)}
+              getOptionLabel={(option) => option}
+              // sx={{ minWidth: 300 }}
+              renderInput={(params) => (
+                <TextField {...params} label="Assignied To" />
+              )}
             />
           </Grid>
           <Grid item xs={12}>

@@ -75,10 +75,8 @@ export const CreateCompanyDetails = (props) => {
   };
 
   useEffect(() => {
-    if (users.is_staff === true) {
-      getLAssignedData();
-    }
-  }, [users]);
+    getLAssignedData();
+  }, []);
 
   const getLAssignedData = async (id) => {
     try {
@@ -156,12 +154,12 @@ export const CreateCompanyDetails = (props) => {
                   onChange={handleChange}
                 >
                   <FormControlLabel
-                    value="industrial_customer"
+                    value="Industrial Customer"
                     control={<Radio />}
                     label="Industrial Customer"
                   />
                   <FormControlLabel
-                    value="distribution_customer"
+                    value="Distribution Customer"
                     control={<Radio />}
                     label="Distribution Customer"
                   />
@@ -192,10 +190,10 @@ export const CreateCompanyDetails = (props) => {
                 label="Busniess Type"
                 onChange={(event) => setBusinessType(event.target.value)}
               >
-                <MenuItem value={"proprietor"}>Proprietor </MenuItem>
-                <MenuItem value={"pvt_ltd"}>Pvt.Ltd</MenuItem>
-                <MenuItem value={"partnership"}>Partnership</MenuItem>
-                <MenuItem value={"limited"}>Limited</MenuItem>
+                <MenuItem value={"Proprietor"}>Proprietor </MenuItem>
+                <MenuItem value={"Private Limited"}>Private Limited</MenuItem>
+                <MenuItem value={"Partnership"}>Partnership</MenuItem>
+                <MenuItem value={"Limited"}>Limited</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -311,13 +309,14 @@ export const CreateCompanyDetails = (props) => {
                 label="Category"
                 onChange={(event) => setCategory(event.target.value)}
               >
-                <MenuItem value={"hardware"}>Hardware </MenuItem>
-                <MenuItem value={"electrical"}>Electrical</MenuItem>
-                <MenuItem value={"plywood"}>Plywood</MenuItem>
-                <MenuItem value={"auto_retail"}>Auto Retail</MenuItem>
-                <MenuItem value={"plumbing"}>Plumbing</MenuItem>
-                <MenuItem value={"stationary"}>Stationary</MenuItem>
-                <MenuItem value={"others"}>Others</MenuItem>
+                <MenuItem value={"Hardware & Electrical"}>
+                  Hardware & Electrical
+                </MenuItem>
+                <MenuItem value={"Plywood"}>Plywood</MenuItem>
+                <MenuItem value={"Plumbing"}>Plumbing</MenuItem>
+                <MenuItem value={"Auto Retail"}>Auto Retail</MenuItem>
+                <MenuItem value={"Stationary"}>Stationary</MenuItem>
+                <MenuItem value={"Others"}>Others</MenuItem>
               </Select>
               <FormHelperText>
                 Applicable Only For Distribution Customer
@@ -325,22 +324,20 @@ export const CreateCompanyDetails = (props) => {
             </FormControl>
           </Grid>
           <Grid item xs={12} sm={4}>
-            {users.is_staff === true && (
-              <Autocomplete
-                fullWidth
-                size="small"
-                id="grouped-demo"
-                onChange={(event, value) => setAssign(value)}
-                options={assigned.map((option) => option)}
-                getOptionLabel={(option) =>
-                  `${option.first_name}  ${option.last_name}`
-                }
-                // sx={{ minWidth: 300 }}
-                renderInput={(params) => (
-                  <TextField {...params} label="Assignied To" />
-                )}
-              />
-            )}
+            <Autocomplete
+              fullWidth
+              size="small"
+              id="grouped-demo"
+              onChange={(event, value) => setAssign(value)}
+              options={assigned.map((option) => option)}
+              getOptionLabel={(option) =>
+                `${option.first_name}  ${option.last_name}`
+              }
+              // sx={{ minWidth: 300 }}
+              renderInput={(params) => (
+                <TextField {...params} label="Assignied To" />
+              )}
+            />
           </Grid>
           <Grid item xs={12}>
             <TextField
