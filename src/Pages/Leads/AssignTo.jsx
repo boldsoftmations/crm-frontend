@@ -23,12 +23,16 @@ import {
   DialogContent,
   DialogActions,
   Pagination,
+  Select,
+  FormControl,
+  InputLabel,
+  MenuItem
 } from "@mui/material";
 import PropTypes from "prop-types";
 import CloseIcon from "@mui/icons-material/Close";
 import { tableCellClasses } from "@mui/material/TableCell";
 import LeadServices from "../../services/LeadService";
-import SearchIcon from "@mui/icons-material/Search";
+import ClearIcon from "@mui/icons-material/Clear";
 import "../CommonStyle.css";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import { styled } from "@mui/material/styles";
@@ -97,7 +101,8 @@ export const AssignTo = () => {
   const [allDataByID, setAllDataByID] = useState([]);
   const [open, setOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [filterQuery, setFilterQuery] = useState("");
+  const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
   const [assign, setAssign] = useState("");
@@ -106,16 +111,57 @@ export const AssignTo = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [openPopup, setOpenPopup] = useState(false);
   const [recordForEdit, setRecordForEdit] = useState(null);
+  const [referenceData, setReferenceData] = useState([]);
+
+  const handleInputChange = (event) => {
+    setFilterSelectedQuery(event.target.value);
+    getSearchData(event.target.value);
+  };
+
   useEffect(() => {
-    getleads();
+    getReference();
   }, []);
 
-  const getleads = async () => {
+  const getReference = async () => {
+    try {
+      const res = await LeadServices.getAllRefernces();
+
+      setReferenceData(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+
+
+  useEffect(() => {
+    getLAssignedData();
+  }, []);
+
+  const getLAssignedData = async (id) => {
+    try {
+      setOpen(true);
+
+      const res = await LeadServices.getAllAssignedUser();
+      setAssigned(res.data);
+
+      setOpen(false);
+    } catch (error) {
+      console.log("error", error);
+      setOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    getUnassigned();
+  }, []);
+
+  const getUnassigned = async () => {
     try {
       if (currentPage) {
         const response = await LeadServices.getAllPaginateUnassigned(
           currentPage,
-          searchQuery
+          filterSelectedQuery
         );
         setLeads(response.data.results);
       } else {
@@ -150,29 +196,15 @@ export const AssignTo = () => {
     }
   };
 
-  const getLAssignedData = async (id) => {
+
+
+  const getSearchData = async (value) => {
     try {
       setOpen(true);
-
-      const res = await LeadServices.getAllAssignedUser();
-      setAssigned(res.data);
-
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
-  };
-
-  useEffect(() => {
-    getLAssignedData();
-  }, []);
-
-  const getSearchData = async () => {
-    try {
-      setOpen(true);
-      const response = await LeadServices.getAllSearchUnassignedData(
-        searchQuery
+      const filterSearch = value;
+      const response = await LeadServices.getAllFilterByUnassignedData(
+        filterQuery,
+        filterSearch
       );
 
       if (response) {
@@ -181,7 +213,8 @@ export const AssignTo = () => {
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
       } else {
-        getleads();
+        getUnassigned();
+        setFilterSelectedQuery("");
       }
       setOpen(false);
     } catch (error) {
@@ -191,8 +224,8 @@ export const AssignTo = () => {
   };
 
   const getResetData = () => {
-    setSearchQuery("");
-    getleads();
+    setFilterSelectedQuery("");
+    getUnassigned();
   };
 
   const handlePageChange = async (event, value) => {
@@ -200,11 +233,16 @@ export const AssignTo = () => {
       const page = value;
       setCurrentPage(page);
       setOpen(true);
-      if (page) {
-        const response = await LeadServices.getAllPaginateUnassigned(
+      if (filterSelectedQuery) {
+        const response = await LeadServices.getAllPaginateWithFilterUnassigned(
           page,
-          searchQuery
+          filterQuery,
+          filterSelectedQuery
         );
+        setLeads(response.data.results);
+      }
+      else {
+        const response = await LeadServices.getAllPaginateUnassigned(page);
         setLeads(response.data.results);
       }
       setOpen(false);
@@ -237,9 +275,9 @@ export const AssignTo = () => {
         contact: allDataByID.contact ? allDataByID.contact : null,
         business_mismatch: allDataByID.business_mismatch
           ? allDataByID.business_mismatch
-          : "no",
+          : "No",
         description: allDataByID.description,
-        interested: allDataByID.interested ? allDataByID.interested : "yes",
+        interested: allDataByID.interested ? allDataByID.interested : "Yes",
         assigned_to: assign ? assign : allDataByID.assigned_to,
         references: allDataByID.references
           ? allDataByID.references
@@ -249,7 +287,7 @@ export const AssignTo = () => {
       const res = await LeadServices.updateLeads(allDataByID.lead_id, data);
       console.log("res :>> ", res);
       setModalOpen(false);
-      getleads();
+      getUnassigned();
 
       setOpen(false);
     } catch (error) {
@@ -331,34 +369,126 @@ export const AssignTo = () => {
         </p>
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
           <Box display="flex">
-            <Box flexGrow={0.9}>
-              <TextField
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                name="search"
-                size="small"
-                label="Search"
-                variant="outlined"
-                sx={{ backgroundColor: "#ffffff" }}
-              />
+          <Box flexGrow={0.6}>
+              <FormControl fullWidth size="small">
+                <InputLabel id="demo-simple-select-label">Fliter By</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  name="values"
+                  label="Fliter By"
+                  value={filterQuery}
+                  onChange={(event) => setFilterQuery(event.target.value)}
+                >
+                  {FilterOptions.map((option, i) => (
+                    <MenuItem key={i} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
 
-              <Button
-                onClick={getSearchData}
-                size="medium"
-                sx={{ marginLeft: "1em" }}
-                variant="contained"
-                startIcon={<SearchIcon />}
-              >
-                Search
-              </Button>
-              <Button
-                onClick={getResetData}
-                sx={{ marginLeft: "1em" }}
-                size="medium"
-                variant="contained"
-              >
-                Reset
-              </Button>
+            </Box>
+            <Box flexGrow={1}>
+            {filterQuery === "references__source" && (
+                <FormControl
+                  sx={{ minWidth: "200px", marginLeft: "1em" }}
+                  size="small"
+                >
+                  <InputLabel id="demo-simple-select-label">
+                    Reference
+                  </InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    name="values"
+                    label="Reference"
+                    value={filterSelectedQuery}
+                    onChange={(event) => handleInputChange(event)}
+                    sx={{
+                      "& .MuiSelect-iconOutlined": {
+                        display: filterSelectedQuery ? "none" : "",
+                      },
+                      "&.Mui-focused .MuiIconButton-root": {
+                        color: "primary.main",
+                      },
+                    }}
+                    endAdornment={
+                      <IconButton
+                        sx={{
+                          visibility: filterSelectedQuery
+                            ? "visible"
+                            : "hidden",
+                        }}
+                        onClick={getResetData}
+                      >
+                        <ClearIcon />
+                      </IconButton>
+                    }
+                  >
+                    {referenceData.map((option) => (
+                      <MenuItem key={option.id} value={option.source}>
+                        {option.source}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              )}
+              {filterQuery === "search" && (
+                <>
+                  <TextField
+                    value={filterSelectedQuery}
+                    onChange={(event) => handleInputChange(event)}
+                    name="search"
+                    size="small"
+                    label="Search"
+                    variant="outlined"
+                    sx={{
+                      backgroundColor: "#ffffff",
+                      marginLeft: "1em",
+                      "& .MuiSelect-iconOutlined": {
+                        display: filterSelectedQuery ? "none" : "",
+                      },
+                      "&.Mui-focused .MuiIconButton-root": {
+                        color: "primary.main",
+                      },
+                    }}
+                    InputProps={{
+                      endAdornment: (
+                        <IconButton
+                          sx={{
+                            visibility: filterSelectedQuery
+                              ? "visible"
+                              : "hidden",
+                          }}
+                          onClick={getResetData}
+                        >
+                          <ClearIcon />
+                        </IconButton>
+                      ),
+                    }}
+                  />
+
+                  {/* <Button
+                    onClick={getSearchData}
+                    size="medium"
+                    sx={{ marginLeft: "1em" }}
+                    variant="contained"
+                    startIcon={<SearchIcon />}
+                  >
+                    Search
+                  </Button>
+                  <Button
+                    onClick={getResetData}
+                    sx={{ marginLeft: "1em" }}
+                    size="medium"
+                    variant="contained"
+                  >
+                    Reset
+                  </Button> */}
+                </>
+              )}
+
             </Box>
             <Box flexGrow={2}>
               <h3
@@ -496,10 +626,17 @@ export const AssignTo = () => {
         <UpdateLeads
           recordForEdit={recordForEdit}
           setOpenPopup={setOpenPopup}
-          getleads={getleads}
+          getUnassigned={getUnassigned}
  
         />
       </Popup>
     </>
   );
 };
+
+const FilterOptions = [
+  { label: "References", value: "references__source" },
+  { label: "Search", value: "search" },
+];
+
+
