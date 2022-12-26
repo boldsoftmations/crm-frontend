@@ -11,10 +11,12 @@ import {
   FormControlLabel,
   FormLabel,
   Grid,
+  InputLabel,
   MenuItem,
   Paper,
   Radio,
   RadioGroup,
+  Select,
   Step,
   StepLabel,
   Stepper,
@@ -31,7 +33,6 @@ import { ViewAllPotential } from "../Potential/ViewAllPotential";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/material.css";
 import axios from "axios";
-import InvoiceServices from "../../services/InvoiceService";
 
 function getSteps() {
   return [
@@ -43,7 +44,7 @@ function getSteps() {
 }
 
 export const UpdateLeads = (props) => {
-  const { recordForEdit, setOpenPopup, getleads, getAllleadsData } = props;
+  const { recordForEdit, setOpenPopup, getUnassigned, getAllleadsData } = props;
   const [activeStep, setActiveStep] = useState(0);
   const steps = getSteps();
   const [open, setOpen] = useState(false);
@@ -54,7 +55,7 @@ export const UpdateLeads = (props) => {
   const [descriptionMenuData, setDescriptionMenuData] = useState([]);
   const [assigned, setAssigned] = useState([]);
   const [assign, setAssign] = useState([]);
-  const [personName, setPersonName] = useState([]);
+  const [descriptionValue, setDescriptionValue] = useState([]);
   const [phone, setPhone] = useState();
   const [phone2, setPhone2] = useState();
   const [contacts1, setContacts1] = useState("");
@@ -73,14 +74,6 @@ export const UpdateLeads = (props) => {
     setTypeData(event.target.value);
   };
 
-  const assignValue = assign ? assign : assign;
-  const interestedValue = interests ? interests : interests;
-  const businessMismatchValue = businessMismatch
-    ? businessMismatch
-    : businessMismatch;
-  const descriptionValue = personName ? personName : leads.description;
-
-  const businesTypesValue = businesTypes ? businesTypes : businesTypes;
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setLeads({ ...leads, [name]: value });
@@ -115,7 +108,7 @@ export const UpdateLeads = (props) => {
       setInterests(res.data.interested);
       setBusinesTypes(res.data.business_type);
       setBusinessMismatch(res.data.business_mismatch);
-      setPersonName(res.data.description);
+      setDescriptionValue(res.data.description);
       setContacts1(res.data.contact);
       setContacts2(res.data.alternate_contact);
       setLeads(res.data);
@@ -171,14 +164,12 @@ export const UpdateLeads = (props) => {
           alternate_email: leads.alternate_email ? leads.alternate_email : "",
           contact: contact1,
           alternate_contact: contact2,
-          description: descriptionValue,
+          description: descriptionValue ? descriptionValue : "",
           target_date: leads.target_date,
-          business_type: businesTypesValue ? businesTypesValue : "",
-          business_mismatch: businessMismatchValue
-            ? businessMismatchValue
-            : "no",
-          interested: interestedValue ? interestedValue : "yes",
-          assigned_to: assignValue ? assignValue : "",
+          business_type: businesTypes ? businesTypes : "",
+          business_mismatch: businessMismatch ? businessMismatch : "No",
+          interested: interests ? interests : "Yes",
+          assigned_to: assign ? assign : "",
           references: leads.references,
           company: leads.company ? leads.company : "",
           gst_number: leads.gst_number ? leads.gst_number : "",
@@ -198,12 +189,13 @@ export const UpdateLeads = (props) => {
             ? pinCodeData.State
             : leads.shipping_state,
           shipping_pincode: leads.shipping_pincode,
+          lead_exists: leads.lead_exists,
         };
 
         await LeadServices.updateLeads(leads.lead_id, data);
         setOpenPopup(false);
         setOpen(false);
-        getleads();
+        getUnassigned();
         getAllleadsData();
       } catch (error) {
         console.log("error :>> ", error);
@@ -373,71 +365,82 @@ export const UpdateLeads = (props) => {
                     />
                   </Grid>
 
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      select
-                      fullWidth
-                      name="businessTypes"
+                  <Grid item xs={12} sm={3}>
+                    <Autocomplete
+                      style={{
+                        minWidth: 220,
+                      }}
                       size="small"
-                      label="Business Type"
-                      variant="outlined"
-                      value={businesTypesValue ? businesTypesValue : ""}
-                      onChange={(e, value) => setBusinesTypes(e.target.value)}
-                    >
-                      {businessType.map((option, i) => (
-                        <MenuItem key={i} value={option.value}>
-                          {option.name}
-                        </MenuItem>
-                      ))}
-                    </TextField>
+                      onChange={(event, value) => setBusinesTypes(value)}
+                      value={businesTypes ? businesTypes : ""}
+                      name="business_type"
+                      options={businessTypeOption.map((option) => option.label)}
+                      getOptionLabel={(option) => `${option}`}
+                      renderInput={(params) => (
+                        <TextField {...params} label="Business Types" />
+                      )}
+                    />
                   </Grid>
                   <Grid item xs={12} sm={3}>
                     <TextField
-                      select
                       fullWidth
-                      name="businessMismatch"
+                      name="lead_exists"
                       size="small"
-                      label="Business Mismatch"
+                      label="Lead Exists"
                       variant="outlined"
-                      value={
-                        businessMismatchValue ? businessMismatchValue : "No"
-                      }
-                      onChange={(e, value) =>
-                        setBusinessMismatch(e.target.value)
-                      }
-                    >
-                      {businessMismatchs.map((option, i) => (
-                        <MenuItem key={i} value={option.value}>
-                          {option.name}
-                        </MenuItem>
-                      ))}
-                    </TextField>
+                      value={leads.lead_exists ? leads.lead_exists : ""}
+                      onChange={handleInputChange}
+                    />
                   </Grid>
                   <Grid item xs={12} sm={3}>
-                    <TextField
-                      select
-                      fullWidth
-                      name="interested"
-                      size="small"
-                      label="Interested"
-                      variant="outlined"
-                      value={interestedValue ? interestedValue : "Yes"}
-                      onChange={(e, value) => setInterests(e.target.value)}
-                    >
-                      {interest.map((option, i) => (
-                        <MenuItem key={i} value={option.value}>
-                          {option.name}
-                        </MenuItem>
-                      ))}
-                    </TextField>
+                    <FormControl fullWidth size="small">
+                      <InputLabel id="demo-simple-select-label">
+                        Business Mismatch
+                      </InputLabel>
+                      <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        label="Business Mismatch"
+                        value={businessMismatch ? businessMismatch : "No"}
+                        onChange={(e, value) =>
+                          setBusinessMismatch(e.target.value)
+                        }
+                      >
+                        {businessMismatchsOption.map((option, i) => (
+                          <MenuItem key={i} value={option.label}>
+                            {option.label}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs={12} sm={3}>
+                    <FormControl fullWidth size="small">
+                      <InputLabel id="demo-simple-select-label">
+                        Interested
+                      </InputLabel>
+                      <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        label="Interested"
+                        value={interests ? interests : "Yes"}
+                        onChange={(e, value) => setInterests(e.target.value)}
+                      >
+                        {interestOption.map((option, i) => (
+                          <MenuItem key={i} value={option.label}>
+                            {option.label}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
                   </Grid>
 
                   <Grid item xs={12} sm={6}>
                     <Autocomplete
                       size="small"
-                      value={personName}
+                      value={descriptionValue ? descriptionValue : ""}
                       onChange={(event, newValue) => {
-                        setPersonName(newValue);
+                        setDescriptionValue(newValue);
                       }}
                       multiple
                       limitTags={3}
@@ -463,22 +466,20 @@ export const UpdateLeads = (props) => {
                     />
                   </Grid>
                   <Grid item xs={12} sm={3}>
-                    <TextField
-                      select
-                      fullWidth
-                      name="assign"
+                    <Autocomplete
+                      style={{
+                        minWidth: 220,
+                      }}
                       size="small"
-                      label="Assignied To"
-                      variant="outlined"
-                      value={assignValue ? assignValue : ""}
-                      onChange={(e) => setAssign(e.target.value)}
-                    >
-                      {assigned.map((option) => (
-                        <MenuItem key={option.emp_id} value={option.email}>
-                          {`${option.first_name}  ${option.last_name}`}
-                        </MenuItem>
-                      ))}
-                    </TextField>
+                      onChange={(event, value) => setAssign(value)}
+                      value={assign ? assign : ""}
+                      name="assign"
+                      options={assigned.map((option) => option.email)}
+                      getOptionLabel={(option) => option}
+                      renderInput={(params) => (
+                        <TextField {...params} label="Assignied To" />
+                      )}
+                    />
                   </Grid>
                   <Grid item xs={12} sm={3}>
                     <TextField
@@ -673,12 +674,12 @@ export const UpdateLeads = (props) => {
                           onChange={handleChange}
                         >
                           <FormControlLabel
-                            value="industrial_customer"
+                            value="Industrial Customer"
                             control={<Radio />}
                             label="Industrial Customer"
                           />
                           <FormControlLabel
-                            value="distribution_customer"
+                            value="Distribution Customer"
                             control={<Radio />}
                             label="Distribution Customer"
                           />
@@ -804,10 +805,10 @@ export const UpdateLeads = (props) => {
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     Busniess Mismatch :
-                    {businessMismatchValue ? businessMismatchValue : ""}
+                    {businessMismatch ? businessMismatch : "No"}
                   </Grid>
                   <Grid item xs={12} sm={6}>
-                    Interested : {interestedValue ? interestedValue : ""}
+                    Interested : {interests ? interests : ""}
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     Description : {descriptionValue ? descriptionValue : ""}
@@ -816,7 +817,7 @@ export const UpdateLeads = (props) => {
                     Target Date {leads.target_date}
                   </Grid>
                   <Grid item xs={12} sm={6}>
-                    Assign to : {assignValue}
+                    Assign to : {assign ? assign : ""}
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     Company Name : {leads.company}
@@ -858,6 +859,8 @@ export const UpdateLeads = (props) => {
         return "Unknown step";
     }
   }
+
+  console.log("assign", assign ? assign : "");
 
   return (
     <div style={{ width: "100%" }}>
@@ -980,46 +983,46 @@ export const UpdateLeads = (props) => {
   );
 };
 
-const businessType = [
+const businessTypeOption = [
   {
     value: "trader",
-    name: "trader",
+    label: "Trader",
   },
 
   {
     value: "distributor",
-    name: "distributor",
+    label: "Distributor",
   },
   {
     value: "retailer",
-    name: "retailer",
+    label: "Retailer",
   },
   {
     value: "end_user",
-    name: "end_user",
+    label: "End User",
   },
 ];
 
-const businessMismatchs = [
+const businessMismatchsOption = [
   {
     value: "yes",
-    name: "Yes",
+    label: "Yes",
   },
 
   {
     value: "no",
-    name: "No",
+    label: "No",
   },
 ];
 
-const interest = [
+const interestOption = [
   {
     value: "yes",
-    name: "Yes",
+    label: "Yes",
   },
 
   {
     value: "no",
-    name: "No",
+    label: "No",
   },
 ];

@@ -19,7 +19,7 @@ import {
   Stepper,
   TextField,
   Typography,
-  Select
+  Select,
 } from "@mui/material";
 import { CircularProgress } from "@mui/material";
 import { Backdrop } from "@mui/material";
@@ -97,7 +97,7 @@ export const CreateLeads = (props) => {
     const { name, value } = event.target;
     setLeads({ ...leads, [name]: value });
   };
- 
+
   useEffect(() => {
     getReference();
   }, []);
@@ -326,7 +326,7 @@ export const CreateLeads = (props) => {
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
-                    <FormControl fullWidth>
+                    <FormControl fullWidth size="small">
                       <InputLabel id="demo-simple-select-label">
                         Busniess Type
                       </InputLabel>
@@ -334,37 +334,34 @@ export const CreateLeads = (props) => {
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"
                         label="Busniess Type"
-                        onChange={(e, value) =>
-                          setBusinesTypes(e.target.value)
-                        }
+                        onChange={(e, value) => setBusinesTypes(e.target.value)}
                       >
                         {BusinessTypeData.map((option, i) => (
-                          <MenuItem key={i} value={option.value}>
+                          <MenuItem key={i} value={option.label}>
                             {option.label}
                           </MenuItem>
                         ))}
                       </Select>
                     </FormControl>
-        
                   </Grid>
-                  
-                  {referenceData &&
-                  <Grid item xs={12} sm={6}>
-                    <Autocomplete
-                      style={{
-                        minWidth: 220,
-                      }}
-                      size="small"
-                      onChange={(event, value) => setReference(value)}
-                      name="source"
-                      options={referenceData.map((option) => option.source)}
-                      getOptionLabel={(option) => `${option}`}
-                      renderInput={(params) => (
-                        <TextField {...params} label="Reference" />
-                      )}
-                    />
-                  </Grid>
-    }
+
+                  {referenceData && (
+                    <Grid item xs={12} sm={6}>
+                      <Autocomplete
+                        style={{
+                          minWidth: 220,
+                        }}
+                        size="small"
+                        onChange={(event, value) => setReference(value)}
+                        name="source"
+                        options={referenceData.map((option) => option.source)}
+                        getOptionLabel={(option) => `${option}`}
+                        renderInput={(params) => (
+                          <TextField {...params} label="Reference" />
+                        )}
+                      />
+                    </Grid>
+                  )}
                   <Grid item xs={12} sm={6}>
                     <Autocomplete
                       fullWidth
@@ -599,12 +596,12 @@ export const CreateLeads = (props) => {
                           onChange={handleChange}
                         >
                           <FormControlLabel
-                            value="industrial_customer"
+                            value="Industrial Customer"
                             control={<Radio />}
                             label="Industrial Customer"
                           />
                           <FormControlLabel
-                            value="distribution_customer"
+                            value="Distribution Customer"
                             control={<Radio />}
                             label="Distribution Customer"
                           />
