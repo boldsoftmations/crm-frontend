@@ -27,13 +27,19 @@ const getAllUnassignedData = () => {
   return CustomAxios.get(`/api/lead/list-unassigned/`);
 };
 
-const getAllPaginateUnassigned = (currentPage, search) => {
+const getAllPaginateUnassigned = (currentPage) => {
   return CustomAxios.get(
-    `/api/lead/list-unassigned/?page=${currentPage}&search=${search}`
+    `/api/lead/list-unassigned/?page=${currentPage}`
   );
 };
 
-const getAllSearchUnassignedData = (filter,search) => {
+const getAllPaginateWithFilterUnassigned = (currentPage, filter,search) => {
+  return CustomAxios.get(
+    `/api/lead/list-unassigned/?page=${currentPage}&${filter}=${search}`
+  );
+};
+
+const getAllFilterByUnassignedData = (filter,search) => {
   return CustomAxios.get(`/api/lead/list-unassigned/?${filter}=${search}`);
 };
 
@@ -95,8 +101,9 @@ const LeadServices = {
   getAllPaginateLeads,
   getAllAssignedUser,
   getAllUnassignedData,
-  getAllSearchUnassignedData,
+  getAllFilterByUnassignedData,
   getAllPaginateUnassigned,
+  getAllPaginateWithFilterUnassigned,
   getAllSearchLeads,
   getFilterPaginateLeads,
   createLeads,
