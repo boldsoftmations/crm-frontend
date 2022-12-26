@@ -31,6 +31,8 @@ import { PriceList } from "./../Pages/Products/PriceList/PriceList";
 import { SellerAccount } from "./../Pages/Invoice/Seller Account/SellerAccount";
 import { ViewCustomerProformaInvoice } from '../Pages/Invoice/CustomerPerformaInvoice/ViewCustomerProformaInvoice';
 import { ViewLeadsProformaInvoice } from './../Pages/Invoice/LeadsPerformaInvoice/ViewLeadsProformaInvoice';
+import { CustomerOrderBookDetails } from '../Pages/OrderBooks/CustomerOrderBookDetails';
+import { ProductOrderBookDetails } from './../Pages/OrderBooks/ProductOrderBookDetails';
 
 export const RouteScreen = () => {
   const token = useSelector((state) => state.auth);
@@ -112,6 +114,9 @@ export const RouteScreen = () => {
               path="/invoice/leads-performa-invoice"
               element={<ViewLeadsProformaInvoice />}
             />
+             {/* Order Book */}
+             <Route path="/invoice/customer-order-book" element={<CustomerOrderBookDetails />} />
+             <Route path="/invoice/product-order-book" element={<ProductOrderBookDetails />} />
             <Route path="*" element={<PageNotFound />} />
           </>
         )}
