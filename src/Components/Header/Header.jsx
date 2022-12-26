@@ -40,6 +40,8 @@ export const Header = () => {
   const [expandProduct, setExpandProduct] = useState(false);
   const [expandCustomer, setExpandCustomer] = useState(false);
   const [expandInvoice, setExpandInvoice] = useState(false);
+  const [expandOrderBook, setExpandOrderBook] = useState(false);
+  const [sellerAccount, setSellerAccount] = useState(false);
   const auth = useSelector((state) => state.auth);
   const [isHover, setIsHover] = useState(false);
   // const auth = sessionStorage.getItem("accessToken");
@@ -82,7 +84,11 @@ export const Header = () => {
           disablePadding
         >
           {/* Products */}
-          <ListItem button onClick={() => setExpandProduct(!expandProduct)} style={{ width: 300 }}>
+          <ListItem
+            button
+            onClick={() => setExpandProduct(!expandProduct)}
+            style={{ width: 300 }}
+          >
             {/* <ListItemIcon style={menuItemIcon}></ListItemIcon> */}
             <ListItemText primary="Products" />
             {expandProduct ? <ExpandLessIcon /> : <ExpandMoreIcon />}
@@ -181,7 +187,11 @@ export const Header = () => {
             </List>
           </Collapse>
           {/* Leads */}
-          <ListItem button onClick={() => setExpand(!expand)} style={{ width: 300 }}>
+          <ListItem
+            button
+            onClick={() => setExpand(!expand)}
+            style={{ width: 300 }}
+          >
             <ListItemText primary="Leads" />
             {expand ? <ExpandLessIcon /> : <ExpandMoreIcon />}
           </ListItem>
@@ -244,7 +254,11 @@ export const Header = () => {
             </List>
           </Collapse>
           {/* Customer */}
-          <ListItem button onClick={() => setExpandCustomer(!expandCustomer)} style={{ width: 300 }}>
+          <ListItem
+            button
+            onClick={() => setExpandCustomer(!expandCustomer)}
+            style={{ width: 300 }}
+          >
             <ListItemText primary="Customer" />
             {expandCustomer ? <ExpandLessIcon /> : <ExpandMoreIcon />}
           </ListItem>
@@ -261,22 +275,26 @@ export const Header = () => {
               </ListItem>
             </List>
           </Collapse>
-              {/* Invoice  */}
-              <ListItem button onClick={() => setExpandInvoice(!expandInvoice)} style={{ width: 300 }}>
+          {/* Invoice  */}
+          <ListItem
+            button
+            onClick={() => setExpandInvoice(!expandInvoice)}
+            style={{ width: 300 }}
+          >
             <ListItemText primary="Invoice" />
             {expandInvoice ? <ExpandLessIcon /> : <ExpandMoreIcon />}
           </ListItem>
           <Collapse in={expandInvoice} timeout="auto" unmountOnExit>
             <Divider />
             <List component="div" disablePadding>
-              <ListItem
+              {/* <ListItem
                 button
                 component={RouterLink}
                 to="/invoice/seller-account"
                 style={{ width: 300 }}
               >
                 <ListItemText inset primary="Seller Account" />
-              </ListItem>
+              </ListItem> */}
               <ListItem
                 button
                 component={RouterLink}
@@ -292,6 +310,58 @@ export const Header = () => {
                 style={{ width: 300 }}
               >
                 <ListItemText inset primary="Leads Performa Invoice" />
+              </ListItem>
+            </List>
+          </Collapse>
+          {/* Seller Account */}
+          <ListItem
+            button
+            onClick={() => setSellerAccount(!sellerAccount)}
+            style={{ width: 300 }}
+          >
+            <ListItemText primary="Seller Account Details" />
+            {sellerAccount ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          </ListItem>
+          <Collapse in={sellerAccount} timeout="auto" unmountOnExit>
+            <Divider />
+            <List component="div" disablePadding>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/invoice/seller-account"
+                style={{ width: 300 }}
+              >
+                <ListItemText inset primary="Seller Account" />
+              </ListItem>
+            </List>
+          </Collapse>
+          {/* Order book */}
+          <ListItem
+            button
+            onClick={() => setExpandOrderBook(!expandOrderBook)}
+            style={{ width: 300 }}
+          >
+            <ListItemText primary="Order Book" />
+            {expandOrderBook ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          </ListItem>
+          <Collapse in={expandOrderBook} timeout="auto" unmountOnExit>
+            <Divider />
+            <List component="div" disablePadding>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/invoice/customer-order-book"
+                style={{ width: 300 }}
+              >
+                <ListItemText inset primary="Customer Wise Order Book" />
+              </ListItem>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/invoice/product-order-book"
+                style={{ width: 300 }}
+              >
+                <ListItemText inset primary="Product Wise Order Book" />
               </ListItem>
             </List>
           </Collapse>
