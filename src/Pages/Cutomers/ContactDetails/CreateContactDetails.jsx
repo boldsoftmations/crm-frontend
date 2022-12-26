@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Backdrop,
   Box,
@@ -34,7 +34,6 @@ export const CreateContactDetails = (props) => {
     setFormValues({ ...formValues, [name]: value });
   };
 
-  
   const handlePhoneChange = (newPhone) => {
     setPhone(newPhone);
   };
@@ -54,7 +53,7 @@ export const CreateContactDetails = (props) => {
       setFormErrors(validate(formValues));
       let contact = phone.length === 12 ? `+${phone}` : phone;
       let contact2 = phone2.length === 12 ? `+${phone2}` : phone2;
-      let panNumber =  inputValue.pan_no;
+      let panNumber = inputValue.pan_no;
       const req = {
         company: data ? data.companyName : "",
         name: inputValue.name,
@@ -63,11 +62,11 @@ export const CreateContactDetails = (props) => {
         alternate_contact: contact2 ? contact2 : "",
         email: formValues.email,
         alternate_email: formValues.alternate_email,
-        pan_number: panNumber ,
+        pan_number: panNumber,
         aadhaar: inputValue.aadhar_no,
       };
       setOpen(true);
- await CustomerServices.createContactData(req);
+      await CustomerServices.createContactData(req);
 
       setOpenPopup(false);
       setOpen(false);
@@ -80,7 +79,7 @@ export const CreateContactDetails = (props) => {
 
   useEffect(() => {
     console.log(formErrors);
-    if (Object.keys(formErrors).length === 0 ) {
+    if (Object.keys(formErrors).length === 0) {
       console.log(formValues);
     }
   }, [formErrors]);
@@ -99,15 +98,14 @@ export const CreateContactDetails = (props) => {
     } else if (!regex.test(values.alternate_email)) {
       errors.alternate_email = "This is not a valid alternate email format!";
     }
-//  if (!pannoregex.test(values.pan_no)) {
-//       errors.pan_no = "pan no is not valid";
-//     }
-//    if (!adharnumberRegex.test(values.aadhaar)) {
-//       errors.aadhaar = "aadhaar is not valid";
-//     }
+    //  if (!pannoregex.test(values.pan_no)) {
+    //       errors.pan_no = "pan no is not valid";
+    //     }
+    //    if (!adharnumberRegex.test(values.aadhaar)) {
+    //       errors.aadhaar = "aadhaar is not valid";
+    //     }
     return errors;
   };
-
 
   return (
     <div>
@@ -142,13 +140,13 @@ export const CreateContactDetails = (props) => {
                 label="Designation"
                 onChange={(event) => setDesignation(event.target.value)}
               >
-                <MenuItem value={"owner"}>Owner </MenuItem>
-                <MenuItem value={"partner"}>Partner</MenuItem>
-                <MenuItem value={"director"}>Director</MenuItem>
-                <MenuItem value={"accounts"}>Accounts</MenuItem>
-                <MenuItem value={"purchase"}>Purchase</MenuItem>
-                <MenuItem value={"quality"}>Quality</MenuItem>
-                <MenuItem value={"stores"}>Stores</MenuItem>
+                <MenuItem value={"Owner"}>Owner </MenuItem>
+                <MenuItem value={"Partner"}>Partner</MenuItem>
+                <MenuItem value={"Director"}>Director</MenuItem>
+                <MenuItem value={"Accounts"}>Accounts</MenuItem>
+                <MenuItem value={"Purchase"}>Purchase</MenuItem>
+                <MenuItem value={"Quality"}>Quality</MenuItem>
+                <MenuItem value={"Stores"}>Stores</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -238,7 +236,6 @@ export const CreateContactDetails = (props) => {
               value={inputValue.aadhar_no}
               onChange={handleInputChange}
               helperText={
-            
                 "Applicable Only if designation is Owner/Partner/Director"
               }
             />

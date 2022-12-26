@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/material.css";
 import {
@@ -25,7 +25,6 @@ export const UpdateContactDetails = (props) => {
   const [phone2, setPhone2] = useState("");
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
-
 
   const handlePhoneChange = (newPhone) => {
     setPhone(newPhone);
@@ -63,20 +62,22 @@ export const UpdateContactDetails = (props) => {
     try {
       e.preventDefault();
       setOpen(true);
-        let contact1 = phone.length === 12 ? `+${phone}` : phone;
-        let contact2 = phone2.length === 12 ? `+${phone2}` : phone2;
+      let contact1 = phone.length === 12 ? `+${phone}` : phone;
+      let contact2 = phone2.length === 12 ? `+${phone2}` : phone2;
 
-        let aadhaarNumber =  designation === "director" ||
+      let aadhaarNumber =
+        designation === "director" ||
         designation === "owner" ||
         designation === "partner"
           ? inputValue.aadhaar
           : "";
-        let panNumber =  designation === "director" ||
+      let panNumber =
+        designation === "director" ||
         designation === "owner" ||
         designation === "partner"
           ? inputValue.pan_number
           : "";
-console.log('contact1 :>> ', contact1);
+
       const req = {
         name: inputValue.name ? inputValue.name : "",
         company: inputValue.company ? inputValue.company : "",
@@ -87,7 +88,7 @@ console.log('contact1 :>> ', contact1);
           : "",
         contact: contact1 ? contact1 : "",
         alternate_contact: contact2 ? contact2 : null,
-        pan_number:panNumber ? inputValue.pan_number : null,
+        pan_number: panNumber ? inputValue.pan_number : null,
         aadhaar: aadhaarNumber ? aadhaarNumber : null,
       };
       await CustomerServices.updateContactData(IDForEdit, req);
@@ -133,23 +134,23 @@ console.log('contact1 :>> ', contact1);
         onSubmit={(e) => UpdateContactDetails(e)}
       >
         <Grid container spacing={2}>
-        <p
-          style={{
-            width: "100%",
-            padding: 10,
-            marginBottom: 10,
-            borderRadius: 4,
-            backgroundColor: errMsg ? "red" : "offscreen",
-            textAlign: "center",
-            color: "white",
-            textTransform: "capitalize",
-          }}
-          ref={errRef}
-          className={errMsg ? "errmsg" : "offscreen"}
-          aria-live="assertive"
-        >
-          {errMsg}
-        </p>
+          <p
+            style={{
+              width: "100%",
+              padding: 10,
+              marginBottom: 10,
+              borderRadius: 4,
+              backgroundColor: errMsg ? "red" : "offscreen",
+              textAlign: "center",
+              color: "white",
+              textTransform: "capitalize",
+            }}
+            ref={errRef}
+            className={errMsg ? "errmsg" : "offscreen"}
+            aria-live="assertive"
+          >
+            {errMsg}
+          </p>
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
@@ -171,13 +172,13 @@ console.log('contact1 :>> ', contact1);
                 label="Designation"
                 onChange={(event) => setDesignation(event.target.value)}
               >
-                <MenuItem value={"owner"}>Owner </MenuItem>
-                <MenuItem value={"partner"}>Partner</MenuItem>
-                <MenuItem value={"director"}>Director</MenuItem>
-                <MenuItem value={"accounts"}>Accounts</MenuItem>
-                <MenuItem value={"purchase"}>Purchase</MenuItem>
-                <MenuItem value={"quality"}>Quality</MenuItem>
-                <MenuItem value={"stores"}>Stores</MenuItem>
+                <MenuItem value={"Owner"}>Owner </MenuItem>
+                <MenuItem value={"Partner"}>Partner</MenuItem>
+                <MenuItem value={"Director"}>Director</MenuItem>
+                <MenuItem value={"Accounts"}>Accounts</MenuItem>
+                <MenuItem value={"Purchase"}>Purchase</MenuItem>
+                <MenuItem value={"Quality"}>Quality</MenuItem>
+                <MenuItem value={"Stores"}>Stores</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -190,7 +191,7 @@ console.log('contact1 :>> ', contact1);
                 width: "250px",
               }}
               country={"in"}
-              value={phone ? phone : ''}
+              value={phone ? phone : ""}
               onChange={handlePhoneChange}
             />
           </Grid>
@@ -202,7 +203,7 @@ console.log('contact1 :>> ', contact1);
                 width: "250px",
               }}
               country={"in"}
-              value={phone2  ? phone2 : ''}
+              value={phone2 ? phone2 : ""}
               onChange={handlePhoneChange2}
             />
           </Grid>
