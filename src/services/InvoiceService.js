@@ -89,6 +89,16 @@ const createLeadsProformaInvoiceData = (data) => {
 const createCustomerProformaInvoiceData = (data) => {
   return CustomAxios.post("/api/invoice/list-company-pi/", data);
 };
+
+// All order Api
+const getOrderBookCustomerData = () => {
+  return CustomAxios.get(`/api/invoice/list-order-book`);
+};
+
+const getOrderBookProductsData = () => {
+  return CustomAxios.get(`/api/invoice/list-order-book-product`);
+};
+
  const InvoiceServices = {
     getAllSellerAccountData,
     getAllSearchSellerAccountData,
@@ -110,7 +120,9 @@ const createCustomerProformaInvoiceData = (data) => {
     sendForApprovalLeadsData,
     sendForApprovalData,
     createLeadsProformaInvoiceData,
-    createCustomerProformaInvoiceData
+    createCustomerProformaInvoiceData,
+    getOrderBookCustomerData,
+    getOrderBookProductsData
 };
 
 export default InvoiceServices;
