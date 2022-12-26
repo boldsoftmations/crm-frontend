@@ -43,6 +43,12 @@ const userReducer = (state = initialState, action) => {
         loading: false,
         profile: action.payload,
       };
+      case types.SELLER_ACCOUNT:
+        return {
+          ...state,
+          loading: false,
+          sellerAccount: action.payload,
+        };
     case types.COMPANY_NAME:
       return {
         ...state,

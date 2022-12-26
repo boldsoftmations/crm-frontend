@@ -47,6 +47,14 @@ export const getProfileUser = (data) => {
   };
 };
 
+
+export const getSellerAccountData = (data) => {
+  return {
+    type: types.SELLER_ACCOUNT,
+    payload: data,
+  };
+};
+
 export const getCompanyName = (data) => {
   return {
     type: types.COMPANY_NAME,

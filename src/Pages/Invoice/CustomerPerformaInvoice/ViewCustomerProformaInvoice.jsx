@@ -30,6 +30,8 @@ import { CustomerProformaInvoice } from "./CustomerProformaInvoice";
 import AddIcon from "@mui/icons-material/Add";
 import LeadServices from "../../../services/LeadService";
 import ClearIcon from "@mui/icons-material/Clear";
+import { getProfileUser, getSellerAccountData } from './../../../Redux/Action/Action';
+import { useDispatch } from 'react-redux';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -60,6 +62,7 @@ const StatusOptions = [
 ];
 
 export const ViewCustomerProformaInvoice = () => {
+  const dispatch = useDispatch();
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [idForEdit, setIDForEdit] = useState();
@@ -67,7 +70,6 @@ export const ViewCustomerProformaInvoice = () => {
   const [open, setOpen] = useState(false);
   const [errMsg, setErrMsg] = useState("");
   const [invoiceData, setInvoiceData] = useState([]);
-  const [users, setUsers] = useState([]);
   const [pageCount, setpageCount] = useState(0);
   const [filterQuery, setFilterQuery] = useState("status");
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
@@ -84,9 +86,24 @@ export const ViewCustomerProformaInvoice = () => {
   const getUsers = async () => {
     try {
       const res = await LeadServices.getProfile();
-      setUsers(res.data);
+      dispatch(getProfileUser(res.data));
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    getAllSellerAccountsDetails();
+  }, []);
+
+  const getAllSellerAccountsDetails = async () => {
+    try {
+      setOpen(true);
+      const response = await InvoiceServices.getAllSellerAccountData();
+      dispatch(getSellerAccountData(response.data.results));
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
     }
   };
 
@@ -286,33 +303,7 @@ export const ViewCustomerProformaInvoice = () => {
                 </FormControl>
               )}
 
-              {/* <TextField
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                name="search"
-                size="small"
-                label="Search"
-                variant="outlined"
-                sx={{ backgroundColor: "#ffffff" }}
-              /> */}
-
-              {/* <Button
-                onClick={getSearchData}
-                size="medium"
-                sx={{ marginLeft: "1em" }}
-                variant="contained"
-                startIcon={<SearchIcon />}
-              >
-                Search
-              </Button> */}
-              {/* <Button
-                onClick={getResetData}
-                sx={{ marginLeft: "1em" }}
-                size="medium"
-                variant="contained"
-              >
-                Reset
-              </Button> */}
+  
             </Box>
             <Box flexGrow={2}>
               <h3
@@ -346,6 +337,7 @@ export const ViewCustomerProformaInvoice = () => {
             >
               <TableHead>
                 <TableRow>
+                <StyledTableCell align="center">PI NUMBER</StyledTableCell>
                   <StyledTableCell align="center">COMPANY NAME</StyledTableCell>
                   <StyledTableCell align="center">CONTACT</StyledTableCell>
                   <StyledTableCell align="center">
@@ -359,6 +351,9 @@ export const ViewCustomerProformaInvoice = () => {
                 {invoiceData.map((row, i) => {
                   return (
                     <StyledTableRow key={i}>
+                               <StyledTableCell align="center">
+                        {row.pi_number}
+                      </StyledTableCell>
                       <StyledTableCell align="center">
                         {row.company}
                       </StyledTableCell>

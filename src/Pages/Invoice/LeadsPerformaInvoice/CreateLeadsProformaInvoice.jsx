@@ -5,13 +5,8 @@ import {
   Button,
   Checkbox,
   CircularProgress,
-  FormControl,
   FormControlLabel,
   Grid,
-  InputAdornment,
-  InputLabel,
-  MenuItem,
-  Select,
   TextField,
   Typography,
 } from "@mui/material";
@@ -25,6 +20,7 @@ import { UpdateLeads } from "./../../Leads/UpdateLeads";
 import InvoiceServices from "../../../services/InvoiceService";
 import LeadServices from "../../../services/LeadService";
 import ProductService from "../../../services/ProductService";
+import { useSelector } from "react-redux";
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -51,8 +47,6 @@ export const CreateLeadsProformaInvoice = (props) => {
   const [openPopup3, setOpenPopup3] = useState(false);
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState([]);
-  const [users, setUsers] = useState([]);
-  const [sellerData, setSellerData] = useState([]);
   const [selectedSellerData, setSelectedSellerData] = useState("");
   const [product, setProduct] = useState([]);
   const [leadIDData, setLeadIDData] = useState([]);
@@ -73,7 +67,10 @@ export const CreateLeadsProformaInvoice = (props) => {
       requested_date: values.someDate,
     },
   ]);
-
+  const data = useSelector((state) => state.auth);
+  const users = data.profile;
+  const sellerData = data.sellerAccount;
+  console.log("sellerData :>> ", sellerData);
   const handleFormChange = (index, event) => {
     setProductData(event.target.textContent);
     let data = [...products];
@@ -108,22 +105,6 @@ export const CreateLeadsProformaInvoice = (props) => {
     let data = [...products];
     data.splice(index, 1);
     setProducts(data);
-  };
-
-  useEffect(() => {
-    getAllSellerAccountsDetails();
-  }, []);
-
-  const getAllSellerAccountsDetails = async () => {
-    try {
-      setOpen(true);
-      const response = await InvoiceServices.getAllSellerAccountData();
-      setSellerData(response.data.results);
-
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-    }
   };
 
   useEffect(() => {
@@ -175,24 +156,11 @@ export const CreateLeadsProformaInvoice = (props) => {
     setInputValue({ ...inputValue, [name]: value });
   };
 
-  useEffect(() => {
-    getUsers();
-  }, []);
-
-  const getUsers = async () => {
-    try {
-      const res = await LeadServices.getProfile();
-      setUsers(res.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   const createLeadProformaInvoiceDetails = async (e) => {
     try {
       e.preventDefault();
       const req = {
-        type: "lead",
+        type: "Lead",
         raised_by: users.email,
         seller_account: selectedSellerData.gst_number,
         lead: leadIDData.lead_id,
@@ -206,9 +174,9 @@ export const CreateLeadsProformaInvoice = (props) => {
         buyer_order_date: inputValue.buyer_order_date
           ? inputValue.buyer_order_date
           : values.someDate,
-        payment_terms: paymentTermData.value,
-        delivery_terms: deliveryTermData.value,
-        status: "pending_approval",
+        payment_terms: paymentTermData,
+        delivery_terms: deliveryTermData,
+        status: "Pending Approval",
         products: products,
       };
       setOpen(true);
@@ -223,7 +191,7 @@ export const CreateLeadsProformaInvoice = (props) => {
         leadIDData.shipping_city !== null &&
         leadIDData.shipping_pincode !== null &&
         (leadIDData.pan_number !== null || leadIDData.gst_number !== null) &&
-        leadIDData.company !== null
+        leadIDData.company != null
       ) {
         await InvoiceServices.createLeadsProformaInvoiceData(req);
         setOpenPopup(false);
@@ -237,8 +205,10 @@ export const CreateLeadsProformaInvoice = (props) => {
     } catch (err) {
       if (err.response.status === 400) {
         setErrorMessage(err.response.data.errors.buyer_order_no);
-        setValidationPrice(err.response.data.errors);
+        setValidationPrice(err.response.data.errors.non_field_errors ? err.response.data.errors.non_field_errors : err.response.data.errors);
       }
+      setIDForEdit(leadIDData.lead_id);
+      setOpenPopup2(true);
       setOpen(false);
       setLeadIDData([]);
     }
@@ -282,23 +252,6 @@ export const CreateLeadsProformaInvoice = (props) => {
                 <TextField {...params} label="Seller Account" sx={tfStyle} />
               )}
             />
-            {/* <FormControl fullWidth size="small">
-              <InputLabel id="demo-simple-select-label">
-                Seller Account
-              </InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                label="Seller Account"
-                onChange={(e, value) => setSelectedSellerData(e.target.value)}
-              >
-                {sellerData.map((option, i) => (
-                  <MenuItem key={i} value={option.gst_number}>
-                    {option.state}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl> */}
           </Grid>
           <Grid item xs={12} sm={4}>
             <Autocomplete
@@ -307,30 +260,13 @@ export const CreateLeadsProformaInvoice = (props) => {
               disablePortal
               id="combo-box-demo"
               onChange={(event, value) => setPaymentTermData(value)}
-              options={paymentTermsOptions}
-              getOptionLabel={(option) => option.label}
+              options={paymentTermsOptions.map((option) => option.label)}
+              getOptionLabel={(option) => option}
               sx={{ minWidth: 300 }}
               renderInput={(params) => (
                 <TextField {...params} label="Payment Terms" sx={tfStyle} />
               )}
             />
-            {/* <FormControl fullWidth size="small">
-              <InputLabel id="demo-simple-select-label">
-                Payment Terms
-              </InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                label="Payment Terms"
-                onChange={(e, value) => setPaymentTermData(e.target.value)}
-              >
-                {paymentTermsOptions.map((option, i) => (
-                  <MenuItem key={i} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl> */}
           </Grid>
           <Grid item xs={12} sm={4}>
             <Autocomplete
@@ -339,30 +275,13 @@ export const CreateLeadsProformaInvoice = (props) => {
               disablePortal
               id="combo-box-demo"
               onChange={(event, value) => setDeliveryTermData(value)}
-              options={deliveryTermsOptions}
-              getOptionLabel={(option) => option.label}
+              options={deliveryTermsOptions.map((option) => option.label)}
+              getOptionLabel={(option) => option}
               sx={{ minWidth: 300 }}
               renderInput={(params) => (
                 <TextField {...params} label="Delivery Terms" sx={tfStyle} />
               )}
             />
-            {/* <FormControl fullWidth size="small">
-              <InputLabel id="demo-simple-select-label">
-                Delivery Terms
-              </InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                label="Delivery Terms"
-                onChange={(e, value) => setDeliveryTermData(e.target.value)}
-              >
-                {deliveryTermsOptions.map((option, i) => (
-                  <MenuItem key={i} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl> */}
           </Grid>
           <Grid item xs={12}>
             <Root>
@@ -379,7 +298,7 @@ export const CreateLeadsProformaInvoice = (props) => {
               id="combo-box-demo"
               onChange={(event, value) => setLeadIDData(value)}
               options={leadsOptions}
-              getOptionLabel={(option) => option.lead_id}
+              getOptionLabel={(option) => option.name}
               sx={{ minWidth: 300 }}
               renderInput={(params) => (
                 <TextField {...params} label="Lead ID" sx={tfStyle} />
@@ -618,24 +537,6 @@ export const CreateLeadsProformaInvoice = (props) => {
                       />
                     )}
                   />
-                  {/* <FormControl fullWidth size="small">
-                    <InputLabel id="demo-simple-select-label">
-                      Product Name
-                    </InputLabel>
-                    <Select
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      name="product"
-                      label="Product Name"
-                      onChange={(event) => handleFormChange(index, event)}
-                    >
-                      {product.map((option, i) => (
-                        <MenuItem key={i} value={option}>
-                          {option.product}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl> */}
                 </Grid>
                 <Grid item xs={12} sm={3}>
                   <TextField

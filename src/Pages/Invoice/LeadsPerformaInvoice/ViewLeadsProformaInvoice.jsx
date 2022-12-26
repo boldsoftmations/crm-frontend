@@ -31,6 +31,11 @@ import ClearIcon from "@mui/icons-material/Clear";
 import { Popup } from "./../../../Components/Popup";
 import { LeadsPerformaInvoice } from "./LeadsPerformaInvoice";
 import LeadServices from "../../../services/LeadService";
+import { useDispatch } from "react-redux";
+import {
+  getProfileUser,
+  getSellerAccountData,
+} from "./../../../Redux/Action/Action";
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.common.black,
@@ -60,6 +65,7 @@ const StatusOptions = [
 ];
 
 export const ViewLeadsProformaInvoice = () => {
+  const dispatch = useDispatch();
   const [openPopup, setOpenPopup] = useState(false);
   const [idForEdit, setIDForEdit] = useState();
   const [openPopup2, setOpenPopup2] = useState(false);
@@ -67,11 +73,9 @@ export const ViewLeadsProformaInvoice = () => {
   const [open, setOpen] = useState(false);
   const [errMsg, setErrMsg] = useState("");
   const [invoiceData, setInvoiceData] = useState([]);
-  const [users, setUsers] = useState([]);
   const [pageCount, setpageCount] = useState(0);
   const [filterQuery, setFilterQuery] = useState("status");
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
-
   const handleInputChange = (event) => {
     setFilterSelectedQuery(event.target.value);
     getSearchData(event.target.value);
@@ -84,9 +88,24 @@ export const ViewLeadsProformaInvoice = () => {
   const getUsers = async () => {
     try {
       const res = await LeadServices.getProfile();
-      setUsers(res.data);
+      dispatch(getProfileUser(res.data));
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    getAllSellerAccountsDetails();
+  }, []);
+
+  const getAllSellerAccountsDetails = async () => {
+    try {
+      setOpen(true);
+      const response = await InvoiceServices.getAllSellerAccountData();
+      dispatch(getSellerAccountData(response.data.results));
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
     }
   };
 
@@ -149,7 +168,7 @@ export const ViewLeadsProformaInvoice = () => {
     }
   };
 
-  const handlePageClick = async (event,value) => {
+  const handlePageClick = async (event, value) => {
     try {
       const page = value;
       setOpen(true);
@@ -285,34 +304,6 @@ export const ViewLeadsProformaInvoice = () => {
                   </Select>
                 </FormControl>
               )}
-
-              {/* <TextField
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                name="search"
-                size="small"
-                label="Search"
-                variant="outlined"
-                sx={{ backgroundColor: "#ffffff" }}
-              /> */}
-
-              {/* <Button
-                onClick={getSearchData}
-                size="medium"
-                sx={{ marginLeft: "1em" }}
-                variant="contained"
-                startIcon={<SearchIcon />}
-              >
-                Search
-              </Button> */}
-              {/* <Button
-                onClick={getResetData}
-                sx={{ marginLeft: "1em" }}
-                size="medium"
-                variant="contained"
-              >
-                Reset
-              </Button> */}
             </Box>
             <Box flexGrow={2}>
               <h3
@@ -346,7 +337,7 @@ export const ViewLeadsProformaInvoice = () => {
             >
               <TableHead>
                 <TableRow>
-                  {/* <StyledTableCell align="center">TYPE</StyledTableCell> */}
+                  <StyledTableCell align="center">PI NUMBER</StyledTableCell>
                   <StyledTableCell align="center">COMPANY NAME</StyledTableCell>
                   <StyledTableCell align="center">CONTACT</StyledTableCell>
                   <StyledTableCell align="center">
@@ -359,13 +350,10 @@ export const ViewLeadsProformaInvoice = () => {
               <TableBody>
                 {invoiceData.map((row, i) => {
                   return (
-                    // users.groups === "Accounts" &&
-                    //   row.status === "approved" ?
-
                     <StyledTableRow key={i}>
-                      {/* <StyledTableCell align="center">
-                        {row.type.toUpperCase()}
-                      </StyledTableCell> */}
+                      <StyledTableCell align="center">
+                        {row.pi_number}
+                      </StyledTableCell>
                       <StyledTableCell align="center">
                         {row.company}
                       </StyledTableCell>
@@ -377,7 +365,7 @@ export const ViewLeadsProformaInvoice = () => {
                       </StyledTableCell>
 
                       <StyledTableCell align="center">
-                        {row.status === "approved" ? row.status : ""}
+                        {row.status}
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         <Button
@@ -388,33 +376,6 @@ export const ViewLeadsProformaInvoice = () => {
                         </Button>
                       </StyledTableCell>
                     </StyledTableRow>
-                    //   ) : (
-                    //     <StyledTableRow key={i}>
-                    //       {/* <StyledTableCell align="center">
-                    //   {row.type.toUpperCase()}
-                    // </StyledTableCell> */}
-                    //       <StyledTableCell align="center">
-                    //         {row.company}
-                    //       </StyledTableCell>
-                    //       <StyledTableCell align="center">
-                    //         {row.contact}
-                    //       </StyledTableCell>
-                    //       <StyledTableCell align="center">
-                    //         {row.alternate_contact}
-                    //       </StyledTableCell>
-
-                    //       <StyledTableCell align="center">
-                    //         {row.status}
-                    //       </StyledTableCell>
-                    //       <StyledTableCell align="center">
-                    //         <Button
-                    //           variant="contained"
-                    //           onClick={() => openInPopup(row.pi_number)}
-                    //         >
-                    //           View
-                    //         </Button>
-                    //       </StyledTableCell>
-                    //     </StyledTableRow>
                   );
                 })}
               </TableBody>
