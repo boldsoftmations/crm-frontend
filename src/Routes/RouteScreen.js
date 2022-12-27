@@ -29,17 +29,17 @@ import "../App.css";
 import { CompanyDetails } from "../Pages/Cutomers/CompanyDetails/CompanyDetails";
 import { PriceList } from "./../Pages/Products/PriceList/PriceList";
 import { SellerAccount } from "./../Pages/Invoice/Seller Account/SellerAccount";
-import { ViewCustomerProformaInvoice } from '../Pages/Invoice/CustomerPerformaInvoice/ViewCustomerProformaInvoice';
-import { ViewLeadsProformaInvoice } from './../Pages/Invoice/LeadsPerformaInvoice/ViewLeadsProformaInvoice';
-import { CustomerOrderBookDetails } from '../Pages/OrderBooks/CustomerOrderBookDetails';
-import { ProductOrderBookDetails } from './../Pages/OrderBooks/ProductOrderBookDetails';
+import { ViewCustomerProformaInvoice } from "../Pages/Invoice/CustomerPerformaInvoice/ViewCustomerProformaInvoice";
+import { ViewLeadsProformaInvoice } from "./../Pages/Invoice/LeadsPerformaInvoice/ViewLeadsProformaInvoice";
+import { CustomerOrderBookDetails } from "../Pages/OrderBooks/CustomerOrderBookDetails";
+import { ProductOrderBookDetails } from "./../Pages/OrderBooks/ProductOrderBookDetails";
 
 export const RouteScreen = () => {
   const token = useSelector((state) => state.auth);
   return (
     <div className="appcontainer">
       <Routes>
-        <Route path="/crmfrontend-glutape" exact element={<Home />} />
+        <Route path="/crm-frontend" exact element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -110,13 +110,19 @@ export const RouteScreen = () => {
               path="/invoice/performa-invoice"
               element={<ViewCustomerProformaInvoice />}
             />
-             <Route
+            <Route
               path="/invoice/leads-performa-invoice"
               element={<ViewLeadsProformaInvoice />}
             />
-             {/* Order Book */}
-             <Route path="/invoice/customer-order-book" element={<CustomerOrderBookDetails />} />
-             <Route path="/invoice/product-order-book" element={<ProductOrderBookDetails />} />
+            {/* Order Book */}
+            <Route
+              path="/invoice/customer-order-book"
+              element={<CustomerOrderBookDetails />}
+            />
+            <Route
+              path="/invoice/product-order-book"
+              element={<ProductOrderBookDetails />}
+            />
             <Route path="*" element={<PageNotFound />} />
           </>
         )}
