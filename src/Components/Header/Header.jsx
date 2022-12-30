@@ -311,6 +311,14 @@ export const Header = () => {
               >
                 <ListItemText inset primary="Leads Performa Invoice" />
               </ListItem>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/invoice/sales-invoice"
+                style={{ width: 300 }}
+              >
+                <ListItemText inset primary="Sales Invoice" />
+              </ListItem>
             </List>
           </Collapse>
           {/* Seller Account */}

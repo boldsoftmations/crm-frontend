@@ -33,13 +33,14 @@ import { ViewCustomerProformaInvoice } from "../Pages/Invoice/CustomerPerformaIn
 import { ViewLeadsProformaInvoice } from "./../Pages/Invoice/LeadsPerformaInvoice/ViewLeadsProformaInvoice";
 import { CustomerOrderBookDetails } from "../Pages/OrderBooks/CustomerOrderBookDetails";
 import { ProductOrderBookDetails } from "./../Pages/OrderBooks/ProductOrderBookDetails";
+import { SalesInvoiceView } from "./../Pages/Invoice/SalesInvoice/SalesInvoiceView";
 
 export const RouteScreen = () => {
   const token = useSelector((state) => state.auth);
   return (
     <div className="appcontainer">
       <Routes>
-        <Route path="/crm-frontend" exact element={<Home />} />
+        <Route path="/crmfrontend-glutape" exact element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -113,6 +114,10 @@ export const RouteScreen = () => {
             <Route
               path="/invoice/leads-performa-invoice"
               element={<ViewLeadsProformaInvoice />}
+            />
+            <Route
+              path="/invoice/sales-invoice"
+              element={<SalesInvoiceView />}
             />
             {/* Order Book */}
             <Route
