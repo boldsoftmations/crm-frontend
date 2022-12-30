@@ -54,7 +54,6 @@ export const CustomerProformaInvoice = (props) => {
       const response = await InvoiceServices.getCompanyPerformaInvoiceByIDData(
         idForEdit
       );
-      console.log("object :>> ", response.data);
       setInvoiceData(response.data);
       setProductData(response.data.products);
       setApprove(response.data.approval);

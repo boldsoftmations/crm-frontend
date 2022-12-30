@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 
 import {
-  Backdrop,
   Box,
-  CircularProgress,
   Grid,
   styled,
   Table,
@@ -32,6 +30,7 @@ import LeadServices from "../../../services/LeadService";
 import ClearIcon from "@mui/icons-material/Clear";
 import { getProfileUser, getSellerAccountData } from './../../../Redux/Action/Action';
 import { useDispatch } from 'react-redux';
+import { CustomLoader } from "../../../Components/CustomLoader";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -211,14 +210,7 @@ export const ViewCustomerProformaInvoice = () => {
 
   return (
     <>
-      <div>
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={open}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </div>
+<CustomLoader open={open}/> 
 
       <Grid item xs={12}>
         <p

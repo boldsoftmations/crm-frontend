@@ -23,105 +23,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { CSVLink } from "react-csv";
 
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
 
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
-
-const headers = [
-  { label: "Customer", key: "company" },
-  { label: "Billing City", key: "billing_city" },
-  { label: "Shipping City", key: "shipping_city" },
-  {
-    label: "Product",
-    key: "product",
-  },
-  {
-    label: "Quantity",
-    key: "quantity",
-  },
-  {
-    label: "Amount",
-    key: "amount",
-  },
-  {
-    label: "Pending Quantity",
-    key: "pending_quantity",
-  },
-
-
-];
-
-
-function Row(props) {
-  const { row } = props;
-  const [tableExpand, setTableExpand] = useState(false);
-
-  return (
-    <React.Fragment>
-      <StyledTableRow sx={{ "& > *": { borderBottom: "unset" } }}>
-        <StyledTableCell>
-          <IconButton
-            aria-label="expand row"
-            size="small"
-            onClick={() => setTableExpand(!tableExpand)}
-          >
-            {tableExpand ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-          </IconButton>
-        </StyledTableCell>
-        <StyledTableCell align="center">{row.company}</StyledTableCell>
-        <StyledTableCell align="center">{row.billing_city}</StyledTableCell>
-        <StyledTableCell align="center">{row.shipping_city}</StyledTableCell>
-      </StyledTableRow>
-      <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-          <Collapse in={tableExpand} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1 }}>
-              <Typography variant="h6" gutterBottom component="div">
-                Product
-              </Typography>
-              <Table size="small" aria-label="purchases">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>PRODUCT CODE</TableCell>
-                    <TableCell>QUANTITY</TableCell>
-                    <TableCell align="right">AMOUNT</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {row.products.map((historyRow) => (
-                    <TableRow key={historyRow.date}>
-                      <TableCell component="th" scope="row">
-                        {historyRow.product}
-                      </TableCell>
-                      <TableCell>{historyRow.quantity}</TableCell>
-                      <TableCell align="right">{historyRow.amount}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </Box>
-          </Collapse>
-        </TableCell>
-      </TableRow>
-    </React.Fragment>
-  );
-}
 
 export const CustomerOrderBookDetails = () => {
   const [orderBookData, setOrderBookData] = useState([]);
@@ -196,16 +98,10 @@ export const CustomerOrderBookDetails = () => {
     }
   };
 
-  // let data = orderBookData.map(item => ({
-  //   company: item.company,
-  //   billing_city: item.billing_city,
-  //   shipping_city: item.shipping_city,
-  // }))
-
   const data = productOrderBookData.map(item => ({
-    company: item.orderbook.company,
-    billing_city: item.orderbook.billing_city,
-    shipping_city: item.orderbook.shipping_city,
+    company: item.company,
+    billing_city: item.billing_city,
+    shipping_city: item.shipping_city,
     product: item.product,
     quantity: item.quantity,
     amount: item.amount,
@@ -282,7 +178,7 @@ export const CustomerOrderBookDetails = () => {
               <TableHead>
                 <TableRow>
                   <StyledTableCell align="center"></StyledTableCell>
-                  <StyledTableCell align="center">CUSTOMER</StyledTableCell>
+                  <StyledTableCell align="left">CUSTOMER</StyledTableCell>
                   <StyledTableCell align="center">BILLING CITY</StyledTableCell>
                   <StyledTableCell align="center">
                     SHIPPING CITY
@@ -312,3 +208,106 @@ export const CustomerOrderBookDetails = () => {
     </div>
   );
 };
+
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  "&:nth-of-type(odd)": {
+    backgroundColor: theme.palette.action.hover,
+  },
+  // hide last border
+  "&:last-child td, &:last-child th": {
+    border: 0,
+  },
+}));
+
+const headers = [
+  { label: "Customer", key: "company" },
+  { label: "Billing City", key: "billing_city" },
+  { label: "Shipping City", key: "shipping_city" },
+  {
+    label: "Product",
+    key: "product",
+  },
+  {
+    label: "Quantity",
+    key: "quantity",
+  },
+  {
+    label: "Amount",
+    key: "amount",
+  },
+  {
+    label: "Pending Quantity",
+    key: "pending_quantity",
+  },
+
+
+];
+
+
+function Row(props) {
+  const { row } = props;
+  const [tableExpand, setTableExpand] = useState(false);
+
+  return (
+    <React.Fragment>
+      <StyledTableRow sx={{ "& > *": { borderBottom: "unset" } }}>
+        <StyledTableCell>
+          <IconButton
+            aria-label="expand row"
+            size="small"
+            onClick={() => setTableExpand(!tableExpand)}
+          >
+            {tableExpand ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+          </IconButton>
+        </StyledTableCell>
+        <StyledTableCell align="left">{row.company}</StyledTableCell>
+        <StyledTableCell align="center">{row.billing_city}</StyledTableCell>
+        <StyledTableCell align="center">{row.shipping_city}</StyledTableCell>
+      </StyledTableRow>
+      <TableRow>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+          <Collapse in={tableExpand} timeout="auto" unmountOnExit>
+            <Box sx={{ margin: 1 }}>
+              <Typography variant="h6" gutterBottom component="div">
+                Product
+              </Typography>
+              <Table size="small" aria-label="purchases">
+                <TableHead>
+                  <TableRow>
+                    <TableCell align="center">PRODUCT CODE</TableCell>
+                    <TableCell align="center" >QUANTITY</TableCell>
+                    <TableCell align="center">PENDING QUANTITY</TableCell>
+                    <TableCell align="center">AMOUNT</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {row.products.map((historyRow) => (
+                    <TableRow key={historyRow.date}>
+                      <TableCell component="th" scope="row" align="center">
+                        {historyRow.product}
+                      </TableCell>
+                      <TableCell align="center">{historyRow.quantity}</TableCell>
+                      <TableCell align="center">{historyRow.pending_quantity}</TableCell>
+                      <TableCell align="center">{historyRow.amount}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Box>
+          </Collapse>
+        </TableCell>
+      </TableRow>
+    </React.Fragment>
+  );
+}

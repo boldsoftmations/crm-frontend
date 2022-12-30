@@ -39,7 +39,6 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 const headers = [
-
   {
     label: "Product",
     key: "product",
@@ -60,7 +59,6 @@ const headers = [
   { label: "Billing City", key: "billing_city" },
   { label: "Shipping City", key: "shipping_city" },
 ];
-
 
 export const ProductOrderBookDetails = () => {
   const [orderBookData, setOrderBookData] = useState([]);
@@ -106,9 +104,9 @@ export const ProductOrderBookDetails = () => {
     quantity: item.quantity,
     amount: item.amount,
     pending_quantity: item.pending_quantity,
-    company: item.orderbook.company,
-    billing_city: item.orderbook.billing_city,
-    shipping_city: item.orderbook.shipping_city,
+    company: item.company,
+    billing_city: item.billing_city,
+    shipping_city: item.shipping_city,
   }));
 
   console.log(data);
@@ -186,14 +184,15 @@ export const ProductOrderBookDetails = () => {
                 <TableRow>
                   <StyledTableCell align="center">PRODUCT</StyledTableCell>
                   <StyledTableCell align="center">QUANTITY</StyledTableCell>
-                  <StyledTableCell align="center">AMOUNT</StyledTableCell>
-            
                   <StyledTableCell align="center">
                     PENDING QUANTITY
                   </StyledTableCell>
+                  <StyledTableCell align="center">AMOUNT</StyledTableCell>
                   <StyledTableCell align="center">COMPANY</StyledTableCell>
                   <StyledTableCell align="center">BILLING CITY</StyledTableCell>
-                  <StyledTableCell align="center">SHIPPING CITY</StyledTableCell>
+                  <StyledTableCell align="center">
+                    SHIPPING CITY
+                  </StyledTableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -222,18 +221,20 @@ export const ProductOrderBookDetails = () => {
                       {row.quantity}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {row.amount}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
                       {row.pending_quantity}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                        {row.orderbook.company}
-                     </StyledTableCell>
-                     <StyledTableCell align="center">{row.orderbook.billing_city}</StyledTableCell>
-                     <StyledTableCell align="center">
-                     {row.orderbook.shipping_city}
-                      </StyledTableCell>
+                      {row.amount}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.company}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.billing_city}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.shipping_city}
+                    </StyledTableCell>
                   </StyledTableRow>
                 ))}
               </TableBody>

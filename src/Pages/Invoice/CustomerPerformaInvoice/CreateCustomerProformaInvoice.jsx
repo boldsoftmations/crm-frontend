@@ -1,10 +1,10 @@
 import {
   Autocomplete,
-  Backdrop,
+  // Backdrop,
   Box,
   Button,
   Checkbox,
-  CircularProgress,
+  // CircularProgress,
   FormControl,
   FormControlLabel,
   Grid,
@@ -24,6 +24,7 @@ import { Popup } from "./../../../Components/Popup";
 import CustomerServices from "../../../services/CustomerService";
 import { UpdateCompanyDetails } from "../../Cutomers/CompanyDetails/UpdateCompanyDetails";
 import { useSelector } from "react-redux";
+import { CustomLoader } from "../../../Components/CustomLoader";
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -137,20 +138,18 @@ export const CreateCustomerProformaInvoice = (props) => {
   };
 
   useEffect(() => {
-     if(companyData) getAllCompanyDetailsByID();
-  }, [companyData ]);
+    if (companyData) getAllCompanyDetailsByID();
+  }, [companyData]);
 
   const getAllCompanyDetailsByID = async () => {
     try {
       setOpen(true);
       const ID = companyData.id;
-      if(ID) { 
-      const response = await CustomerServices.getCompanyDataById(
-        ID
-      );
-      setContactOptions(response.data.contacts);
-      setWarehouseOptions(response.data.warehouse);
-      setOpen(false);
+      if (ID) {
+        const response = await CustomerServices.getCompanyDataById(ID);
+        setContactOptions(response.data.contacts);
+        setWarehouseOptions(response.data.warehouse);
+        setOpen(false);
       }
     } catch (err) {
       setOpen(false);
@@ -233,7 +232,11 @@ export const CreateCustomerProformaInvoice = (props) => {
     } catch (err) {
       if (err.response.status === 400) {
         setErrorMessage(err.response.data.errors.buyer_order_no);
-        setValidationPrice(err.response.data.errors.non_field_errors ? err.response.data.errors.non_field_errors : err.response.data.errors);
+        setValidationPrice(
+          err.response.data.errors.non_field_errors
+            ? err.response.data.errors.non_field_errors
+            : err.response.data.errors
+        );
       }
       // setIDForEdit(leadIDData.lead_id);
       setOpen(false);
@@ -250,15 +253,7 @@ export const CreateCustomerProformaInvoice = (props) => {
 
   return (
     <div>
-      <div>
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={open}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </div>
-
+      <CustomLoader open={open} />
       <Box
         component="form"
         noValidate
