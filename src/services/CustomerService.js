@@ -8,10 +8,14 @@ const getAllSearchCompanyData = (search) => {
   return CustomAxios.get(`/api/customer/list-company/?search=${search}`);
 };
 
-const getAllCompanyDataPaginate = (currentPage, search) => {
+const getSearchCompanyPaginateData = (currentPage, search) => {
   return CustomAxios.get(
     `/api/customer/list-company/?page=${currentPage}&search=${search}`
   );
+};
+
+const getCompanyPaginateData = (currentPage) => {
+  return CustomAxios.get(`/api/customer/list-company/?page=${currentPage}`);
 };
 
 const createCompanyData = (data) => {
@@ -81,7 +85,8 @@ const updateSecurityChequeData = (id, data) => {
 const CustomerServices = {
   getAllCompanyData,
   getAllSearchCompanyData,
-  getAllCompanyDataPaginate,
+  getSearchCompanyPaginateData,
+  getCompanyPaginateData,
   createCompanyData,
   getCompanyDataById,
   updateCompanyData,
