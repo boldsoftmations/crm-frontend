@@ -1,0 +1,2 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[4],{539:function(n,a,e){},540:function(n,a,e){"use strict";e.r(a),e.d(a,"Dashboard",function(){return c});e(539);var t=e(0),r=e.n(t);e(24);function c(){return r.a.createElement("div",{className:"Auth-form-container"},r.a.createElement("div",{className:"text-primary"},"Dashboard"))}}}]);
+//# sourceMappingURL=4.dd0fd2e5.chunk.js.map
