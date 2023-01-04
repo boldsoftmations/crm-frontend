@@ -51,7 +51,7 @@ export const CreateSellerAccounts = (props) => {
         state: inputValue.state,
         city: inputValue.city,
         state_code: inputValue.state_code,
-        ci_number: inputValue.ci_number,
+        cin_number: inputValue.cin_number,
         email: inputValue.email,
         pan_number: inputValue.pan_number,
         ifsc_code: inputValue.ifsc_code,
@@ -183,7 +183,7 @@ export const CreateSellerAccounts = (props) => {
               size="small"
               label="CI Number"
               variant="outlined"
-              value={inputValue.ci_number ? inputValue.ci_number : ""}
+              value={inputValue.cin_number ? inputValue.cin_number : ""}
               onChange={handleInputChange}
             />
           </Grid>
