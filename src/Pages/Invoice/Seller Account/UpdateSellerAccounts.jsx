@@ -207,9 +207,9 @@ export const UpdateSellerAccounts = (props) => {
             <TextField
               multiline
               fullWidth
-              name="ci_number"
+              name="cin_number"
               size="small"
-              label="CI Number"
+              label="CIN Number"
               variant="outlined"
               value={inputValue.cin_number ? inputValue.cin_number : ""}
               onChange={handleInputChange}
