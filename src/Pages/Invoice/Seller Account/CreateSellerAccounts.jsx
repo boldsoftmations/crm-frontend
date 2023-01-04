@@ -50,6 +50,10 @@ export const CreateSellerAccounts = (props) => {
         pincode: inputValue.pincode,
         state: inputValue.state,
         city: inputValue.city,
+        state_code: inputValue.state_code,
+        ci_number: inputValue.ci_number,
+        email: inputValue.email,
+        pan_number: inputValue.pan_number,
         ifsc_code: inputValue.ifsc_code,
         bank_name: bankData.BANK,
         branch: bankData.BRANCH,
@@ -159,6 +163,54 @@ export const CreateSellerAccounts = (props) => {
               onChange={handleInputChange}
             />
           </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              multiline
+              fullWidth
+              name="state_code"
+              size="small"
+              label="State Code"
+              variant="outlined"
+              value={inputValue.state_code ? inputValue.state_code : ""}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              multiline
+              fullWidth
+              name="ci_number"
+              size="small"
+              label="CI Number"
+              variant="outlined"
+              value={inputValue.ci_number ? inputValue.ci_number : ""}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              multiline
+              fullWidth
+              name="email"
+              size="small"
+              label="Email"
+              variant="outlined"
+              value={inputValue.email ? inputValue.email : ""}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              multiline
+              fullWidth
+              name="pan_number"
+              size="small"
+              label="Pan Number"
+              variant="outlined"
+              value={inputValue.pan_number ? inputValue.pan_number : ""}
+              onChange={handleInputChange}
+            />
+          </Grid>
           <Grid item xs={12}>
             <TextField
               sx={{ minWidth: "400px" }}
@@ -179,7 +231,7 @@ export const CreateSellerAccounts = (props) => {
               Validate
             </Button>
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               size="small"
@@ -189,7 +241,7 @@ export const CreateSellerAccounts = (props) => {
               value={bankData.BANK ? bankData.BANK : ""}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               size="small"

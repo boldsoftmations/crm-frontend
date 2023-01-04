@@ -105,18 +105,16 @@ export const CompanyDetails = () => {
     try {
       setOpen(true);
       const filterSearch = value;
-      if (filterSelectedQuery) {
+      if (filterSearch !== "") {
         const response = await CustomerServices.getAllSearchCompanyData(
-          filterSelectedQuery
+          filterSearch
         );
-        if (response) {
-          setCompanyData(response.data.results);
-          const total = response.data.count;
-          setpageCount(Math.ceil(total / 25));
-        } else {
-          getAllCompanyDetails();
-          setFilterSelectedQuery("");
-        }
+        setCompanyData(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      } else {
+        getAllCompanyDetails();
+        setFilterSelectedQuery("");
       }
       setOpen(false);
     } catch (error) {
@@ -124,7 +122,6 @@ export const CompanyDetails = () => {
       setOpen(false);
     }
   };
-
   const handlePageClick = async (event, value) => {
     try {
       const page = value;

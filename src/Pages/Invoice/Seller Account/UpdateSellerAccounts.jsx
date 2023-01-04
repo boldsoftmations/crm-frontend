@@ -73,7 +73,11 @@ export const UpdateSellerAccounts = (props) => {
         pincode: inputValue.pincode,
         state: inputValue.state,
         city: inputValue.city,
-        ifsc_code: inputValue.ifsc_code ? inputValue.ifsc_code : '',
+        state_code: inputValue.state_code,
+        ci_number: inputValue.ci_number,
+        email: inputValue.email,
+        pan_number: inputValue.pan_number,
+        ifsc_code: inputValue.ifsc_code ? inputValue.ifsc_code : "",
         bank_name: bankData.BANK ? bankData.BANK : inputValue.bank_name,
         branch: bankData.BRANCH ? bankData.BRANCH : inputValue.branch,
       };
@@ -100,14 +104,14 @@ export const UpdateSellerAccounts = (props) => {
 
       <Box component="form" noValidate onSubmit={(e) => updateBankDetails(e)}>
         <Grid container spacing={2}>
-          <Grid item xs={12} >
+          <Grid item xs={12}>
             <TextField
               fullWidth
               size="small"
               name="name"
               label="Company Name"
               variant="outlined"
-              value={inputValue.name ? inputValue.name : ''}
+              value={inputValue.name ? inputValue.name : ""}
               onChange={handleInputChange}
             />
           </Grid>
@@ -187,6 +191,54 @@ export const UpdateSellerAccounts = (props) => {
               onChange={handleInputChange}
             />
           </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              multiline
+              fullWidth
+              name="state_code"
+              size="small"
+              label="State Code"
+              variant="outlined"
+              value={inputValue.state_code ? inputValue.state_code : ""}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              multiline
+              fullWidth
+              name="ci_number"
+              size="small"
+              label="CI Number"
+              variant="outlined"
+              value={inputValue.ci_number ? inputValue.ci_number : ""}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              multiline
+              fullWidth
+              name="email"
+              size="small"
+              label="Email"
+              variant="outlined"
+              value={inputValue.email ? inputValue.email : ""}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              multiline
+              fullWidth
+              name="pan_number"
+              size="small"
+              label="Pan Number"
+              variant="outlined"
+              value={inputValue.pan_number ? inputValue.pan_number : ""}
+              onChange={handleInputChange}
+            />
+          </Grid>
           <Grid item xs={12}>
             <TextField
               sx={{ minWidth: "400px" }}
@@ -207,7 +259,7 @@ export const UpdateSellerAccounts = (props) => {
               Validate
             </Button>
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               size="small"
@@ -220,7 +272,7 @@ export const UpdateSellerAccounts = (props) => {
               }}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               size="small"
