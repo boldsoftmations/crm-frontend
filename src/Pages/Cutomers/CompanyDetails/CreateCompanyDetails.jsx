@@ -75,7 +75,7 @@ export const CreateCompanyDetails = (props) => {
   };
 
   useEffect(() => {
-    getLAssignedData();
+      getLAssignedData();
   }, []);
 
   const getLAssignedData = async (id) => {
@@ -309,9 +309,7 @@ export const CreateCompanyDetails = (props) => {
                 label="Category"
                 onChange={(event) => setCategory(event.target.value)}
               >
-                <MenuItem value={"Hardware & Electrical"}>
-                  Hardware & Electrical
-                </MenuItem>
+                <MenuItem value={"Hardware & Electrical"}>Hardware & Electrical</MenuItem>
                 <MenuItem value={"Plywood"}>Plywood</MenuItem>
                 <MenuItem value={"Plumbing"}>Plumbing</MenuItem>
                 <MenuItem value={"Auto Retail"}>Auto Retail</MenuItem>
@@ -324,20 +322,22 @@ export const CreateCompanyDetails = (props) => {
             </FormControl>
           </Grid>
           <Grid item xs={12} sm={4}>
-            <Autocomplete
-              fullWidth
-              size="small"
-              id="grouped-demo"
-              onChange={(event, value) => setAssign(value)}
-              options={assigned.map((option) => option)}
-              getOptionLabel={(option) =>
-                `${option.first_name}  ${option.last_name}`
-              }
-              // sx={{ minWidth: 300 }}
-              renderInput={(params) => (
-                <TextField {...params} label="Assignied To" />
-              )}
-            />
+   
+              <Autocomplete
+                fullWidth
+                size="small"
+                id="grouped-demo"
+                onChange={(event, value) => setAssign(value)}
+                options={assigned.map((option) => option)}
+                getOptionLabel={(option) =>
+                  `${option.first_name}  ${option.last_name}`
+                }
+                // sx={{ minWidth: 300 }}
+                renderInput={(params) => (
+                  <TextField {...params} label="Assignied To" />
+                )}
+              />
+   
           </Grid>
           <Grid item xs={12}>
             <TextField

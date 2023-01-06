@@ -11,12 +11,8 @@ import {
   Grid,
   Button,
   Paper,
-  Backdrop,
-  CircularProgress,
   styled,
   Box,
-  IconButton,
-  TextField,
   TableFooter,
   TableContainer,
   Pagination,
@@ -25,10 +21,15 @@ import { tableCellClasses } from "@mui/material/TableCell";
 import AddIcon from "@mui/icons-material/Add";
 
 import ProductService from "../../../services/ProductService";
-import SearchIcon from "@mui/icons-material/Search";
 import { CreateRawMaterials } from "./CreateRawMaterials";
 import { UpdateRawMaterials } from "./UpdateRawMaterials";
 import { Popup } from "./../../../Components/Popup";
+import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
+import { CustomLoader } from "./../../../Components/CustomLoader";
+import { CustomSearch } from "./../../../Components/CustomSearch";
+import { useDispatch } from "react-redux";
+import { getBrandData, getUnitData } from "../../../Redux/Action/Action";
+import { getColourData, getProductCodeData } from './../../../Redux/Action/Action';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -51,6 +52,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 export const ViewRawMaterials = () => {
+  const dispatch = useDispatch();
   const [rawMaterials, setRawMaterials] = useState([]);
   const [open, setOpen] = useState(false);
   const errRef = useRef();
@@ -61,6 +63,58 @@ export const ViewRawMaterials = () => {
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [recordForEdit, setRecordForEdit] = useState(null);
+  useEffect(() => {
+    getBrandList();
+  }, []);
+
+  const getBrandList = async () => {
+    try {
+      const res = await ProductService.getAllPaginateBrand("all");
+      dispatch(getBrandData(res.data));
+    } catch (err) {
+      console.log("error finishGoods :>> ", err);
+    }
+  };
+
+  useEffect(() => {
+    getColours();
+  }, []);
+
+  const getColours = async () => {
+    try {
+      const res = await ProductService.getAllPaginateColour("all");
+      dispatch(getColourData(res.data));
+    } catch (err) {
+      console.log("err Colour FinishGoods :>> ", err);
+    }
+  };
+
+  useEffect(() => {
+    getproductCodes();
+  }, []);
+
+  const getproductCodes = async () => {
+    try {
+      const res = await ProductService.getAllPaginateProductCode("all");
+      dispatch(getProductCodeData(res.data));
+    } catch (err) {
+      console.log("error ProductCode finishGoods", err);
+    }
+  };
+
+  useEffect(() => {
+    getUnits();
+  }, []);
+
+  const getUnits = async () => {
+    try {
+      const res = await ProductService.getAllPaginateUnit("all");
+      dispatch(getUnitData(res.data));
+    } catch (err) {
+      console.log("error unit finishGoods", err);
+    }
+  };
+
   const getrawMaterials = async () => {
     try {
       setOpen(true);
@@ -126,12 +180,18 @@ export const ViewRawMaterials = () => {
     }
   };
 
-  const getSearchData = async () => {
+  const handleInputChange = (event) => {
+    setSearchQuery(event.target.value);
+    getSearchData(event.target.value);
+  };
+
+  const getSearchData = async (value) => {
     try {
       setOpen(true);
-      console.log("searchQuery", searchQuery);
+      const filterSearch = value;
+
       const response = await ProductService.getAllSearchRawMaterials(
-        searchQuery
+        filterSearch
       );
       if (response) {
         setRawMaterials(response.data.results);
@@ -158,63 +218,18 @@ export const ViewRawMaterials = () => {
   };
   return (
     <>
-      <div>
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={open}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </div>
+      <CustomLoader open={open} />
 
       <Grid item xs={12}>
-        <p
-          style={{
-            width: "100%",
-            padding: 10,
-            marginBottom: 10,
-            borderRadius: 4,
-            backgroundColor: errMsg ? "red" : "offscreen",
-            textAlign: "center",
-            color: "white",
-            textTransform: "capitalize",
-          }}
-          ref={errRef}
-          className={errMsg ? "errmsg" : "offscreen"}
-          aria-live="assertive"
-        >
-          {errMsg}
-        </p>
+        <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
           <Box display="flex">
             <Box flexGrow={0.9} align="left">
-              <TextField
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                name="search"
-                size="small"
-                label="Search"
-                variant="outlined"
-                sx={{ backgroundColor: "#ffffff" }}
+              <CustomSearch
+                filterSelectedQuery={searchQuery}
+                handleInputChange={handleInputChange}
+                getResetData={getResetData}
               />
-
-              <Button
-                onClick={getSearchData}
-                size="medium"
-                sx={{ marginLeft: "1em" }}
-                variant="contained"
-                startIcon={<SearchIcon />}
-              >
-                Search
-              </Button>
-              <Button
-                onClick={getResetData}
-                sx={{ marginLeft: "1em" }}
-                size="medium"
-                variant="contained"
-              >
-                Reset
-              </Button>
             </Box>
             <Box flexGrow={2} align="center">
               <h3

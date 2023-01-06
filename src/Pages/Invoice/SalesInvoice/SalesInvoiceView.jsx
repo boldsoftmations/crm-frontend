@@ -25,6 +25,7 @@ import AddIcon from "@mui/icons-material/Add";
 import { SalesInvoice } from "./SalesInvoice";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import { ErrorMessage } from './../../../Components/ErrorMessage/ErrorMessage';
 export const SalesInvoiceView = () => {
   const errRef = useRef();
   const [open, setOpen] = useState(false);
@@ -74,23 +75,7 @@ export const SalesInvoiceView = () => {
       <CustomLoader open={open} />
 
       <Grid item xs={12}>
-        <p
-          style={{
-            width: "100%",
-            padding: 10,
-            marginBottom: 10,
-            borderRadius: 4,
-            backgroundColor: errMsg ? "red" : "offscreen",
-            textAlign: "center",
-            color: "white",
-            textTransform: "capitalize",
-          }}
-          ref={errRef}
-          className={errMsg ? "errmsg" : "offscreen"}
-          aria-live="assertive"
-        >
-          {errMsg}
-        </p>
+      <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
           <Box display="flex">
             <Box flexGrow={1.6}></Box>
@@ -237,7 +222,7 @@ function Row(props) {
   const [tableExpand, setTableExpand] = useState(false);
 
   return (
-    <React.Fragment>
+    <>
       <StyledTableRow sx={{ "& > *": { borderBottom: "unset" } }}>
         <StyledTableCell>
           <IconButton
@@ -292,6 +277,6 @@ function Row(props) {
           </Collapse>
         </TableCell>
       </TableRow>
-    </React.Fragment>
+    </>
   );
 }

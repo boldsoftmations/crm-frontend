@@ -8,6 +8,10 @@ const getAllLeads = () => {
   return CustomAxios.get(`/api/lead/list-lead/`);
 };
 
+const getAllPaginatesLeads = (all) => {
+  return CustomAxios.get(`/api/lead/list-lead/?page=${all}`);
+};
+
 const getAllPaginateLeads = (currentPage) => {
   return CustomAxios.get(
     `/api/lead/list-lead/?page=${currentPage}`
@@ -98,6 +102,7 @@ const createFollowUps = (id, data) => {
 const LeadServices = {
   getProfile,
   getAllLeads,
+  getAllPaginatesLeads,
   getAllPaginateLeads,
   getAllAssignedUser,
   getAllUnassignedData,

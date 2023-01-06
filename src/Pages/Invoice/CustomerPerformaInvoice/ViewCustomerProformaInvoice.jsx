@@ -28,9 +28,13 @@ import { CustomerProformaInvoice } from "./CustomerProformaInvoice";
 import AddIcon from "@mui/icons-material/Add";
 import LeadServices from "../../../services/LeadService";
 import ClearIcon from "@mui/icons-material/Clear";
-import { getProfileUser, getSellerAccountData } from './../../../Redux/Action/Action';
-import { useDispatch } from 'react-redux';
+import {
+  getProfileUser,
+  getSellerAccountData,
+} from "./../../../Redux/Action/Action";
+import { useDispatch } from "react-redux";
 import { CustomLoader } from "../../../Components/CustomLoader";
+import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -98,8 +102,8 @@ export const ViewCustomerProformaInvoice = () => {
   const getAllSellerAccountsDetails = async () => {
     try {
       setOpen(true);
-      const response = await InvoiceServices.getAllSellerAccountData();
-      dispatch(getSellerAccountData(response.data.results));
+      const response = await InvoiceServices.getAllPaginateSellerAccountData('all');
+      dispatch(getSellerAccountData(response.data));
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -165,7 +169,7 @@ export const ViewCustomerProformaInvoice = () => {
     }
   };
 
-  const handlePageClick = async (event,value) => {
+  const handlePageClick = async (event, value) => {
     try {
       const page = value;
       setOpen(true);
@@ -210,26 +214,10 @@ export const ViewCustomerProformaInvoice = () => {
 
   return (
     <>
-<CustomLoader open={open}/> 
+      <CustomLoader open={open} />
 
       <Grid item xs={12}>
-        <p
-          style={{
-            width: "100%",
-            padding: 10,
-            marginBottom: 10,
-            borderRadius: 4,
-            backgroundColor: errMsg ? "red" : "offscreen",
-            textAlign: "center",
-            color: "white",
-            textTransform: "capitalize",
-          }}
-          ref={errRef}
-          className={errMsg ? "errmsg" : "offscreen"}
-          aria-live="assertive"
-        >
-          {errMsg}
-        </p>
+        <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
           <Box display="flex">
             <Box flexGrow={0.6}>
@@ -294,8 +282,6 @@ export const ViewCustomerProformaInvoice = () => {
                   </Select>
                 </FormControl>
               )}
-
-  
             </Box>
             <Box flexGrow={2}>
               <h3
@@ -329,7 +315,7 @@ export const ViewCustomerProformaInvoice = () => {
             >
               <TableHead>
                 <TableRow>
-                <StyledTableCell align="center">PI NUMBER</StyledTableCell>
+                  <StyledTableCell align="center">PI NUMBER</StyledTableCell>
                   <StyledTableCell align="center">COMPANY NAME</StyledTableCell>
                   <StyledTableCell align="center">CONTACT</StyledTableCell>
                   <StyledTableCell align="center">
@@ -343,7 +329,7 @@ export const ViewCustomerProformaInvoice = () => {
                 {invoiceData.map((row, i) => {
                   return (
                     <StyledTableRow key={i}>
-                               <StyledTableCell align="center">
+                      <StyledTableCell align="center">
                         {row.pi_number}
                       </StyledTableCell>
                       <StyledTableCell align="center">

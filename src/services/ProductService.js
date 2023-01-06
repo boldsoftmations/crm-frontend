@@ -4,6 +4,10 @@ const getAllColour = () => {
   return CustomAxios.get("/api/product/color");
 };
 
+const getAllPaginateColour = (all) => {
+  return CustomAxios.get(`/api/product/color/?page=${all}`);
+};
+
 const getColourById = (id) => {
   return CustomAxios.get(`/api/product/color/${id}`);
 };
@@ -22,6 +26,10 @@ const updateColour = (id, data) => {
 
 const getAllBrand = () => {
   return CustomAxios.get("/api/product/brand");
+};
+
+const getAllPaginateBrand = (all) => {
+  return CustomAxios.get(`/api/product/brand/?page=${all}`);
 };
 
 const getAllSearchBrand = (search) => {
@@ -45,6 +53,9 @@ const getAllBasicUnit = () => {
   return CustomAxios.get("/api/product/basic-unit");
 };
 
+const getAllPaginateBasicUnit = (all) => {
+  return CustomAxios.get(`/api/product/basic-unit/?page=${all}`);
+};
 const getAllSearchBasicUnit = (search) => {
   return CustomAxios.get(`/api/product/basic-unit/?search=${search}`);
 };
@@ -65,6 +76,10 @@ const getAllUnit = () => {
   return CustomAxios.get("/api/product/unit");
 };
 
+const getAllPaginateUnit = (all) => {
+  return CustomAxios.get(`/api/product/unit/?page=${all}`);
+};
+
 const getAllSearchUnit = (search) => {
   return CustomAxios.get(`/api/product/unit/?search=${search}`);
 };
@@ -83,6 +98,10 @@ const updateUnit = (id, data) => {
 
 const getAllPackingUnit = () => {
   return CustomAxios.get("/api/product/packing-unit");
+};
+
+const getAllPaginatePackingUnit = (all) => {
+  return CustomAxios.get(`/api/product/packing-unit/?page=${all}`);
 };
 
 const getAllSearchPackingUnit = (search) => {
@@ -131,6 +150,10 @@ const updateDescription = (id, data) => {
 
 const getAllProductCode = () => {
   return CustomAxios.get("/api/product/product-code");
+};
+
+const getAllPaginateProductCode = (all) => {
+  return CustomAxios.get(`/api/product/product-code/?page=${all}`);
 };
 
 const getAllSearchProductCode = (search) => {
@@ -231,6 +254,10 @@ const getAllPriceList = () => {
   return CustomAxios.get("/api/product/pricelist/");
 };
 
+const getAllPaginatePriceList = (filter,all) => {
+  return CustomAxios.get(`/api/product/pricelist/?${filter}=${all}`);
+};
+
 const getAllSearchPriceList = (search) => {
   return CustomAxios.get(`/api/product/pricelist/?search=${search}`);
 };
@@ -259,26 +286,31 @@ const getAllProduct = () => {
 
 const ProductService = {
   getAllColour,
+  getAllPaginateColour,
   getAllSearchColour,
   getColourById,
   createColour,
   updateColour,
   getAllBrand,
+  getAllPaginateBrand,
   getAllSearchBrand,
   getBrandById,
   createBrand,
   updateBrand,
   getAllBasicUnit,
+  getAllPaginateBasicUnit,
   getAllSearchBasicUnit,
   getBasicUnitById,
   createBasicUnit,
   updateBasicUnit,
   getAllUnit,
+  getAllPaginateUnit,
   getAllSearchUnit,
   createUnit,
   getUnitById,
   updateUnit,
   getAllPackingUnit,
+  getAllPaginatePackingUnit,
   getAllSearchPackingUnit,
   createPackingUnit,
   getPackingUnitById,
@@ -291,6 +323,7 @@ const ProductService = {
   getDescriptionById,
   updateDescription,
   getAllProductCode,
+  getAllPaginateProductCode,
   getAllSearchProductCode,
   createProductCode,
   getProductCodeById,
@@ -314,12 +347,12 @@ const ProductService = {
   getRawMaterialsById,
   updateRawMaterials,
   getAllPriceList,
+  getAllPaginatePriceList,
   getAllSearchPriceList,
   getAllPriceListPaginate,
   createPriceList,
   getPriceListById,
   updatePriceList,
-  
   getAllProduct,
 };
 

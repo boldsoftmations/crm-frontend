@@ -19,7 +19,7 @@ import {
   Stepper,
   TextField,
   Typography,
-  Select,
+  Select
 } from "@mui/material";
 import { CircularProgress } from "@mui/material";
 import { Backdrop } from "@mui/material";
@@ -97,7 +97,7 @@ export const CreateLeads = (props) => {
     const { name, value } = event.target;
     setLeads({ ...leads, [name]: value });
   };
-
+ 
   useEffect(() => {
     getReference();
   }, []);
@@ -334,7 +334,9 @@ export const CreateLeads = (props) => {
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"
                         label="Busniess Type"
-                        onChange={(e, value) => setBusinesTypes(e.target.value)}
+                        onChange={(e, value) =>
+                          setBusinesTypes(e.target.value)
+                        }
                       >
                         {BusinessTypeData.map((option, i) => (
                           <MenuItem key={i} value={option.label}>
@@ -343,25 +345,26 @@ export const CreateLeads = (props) => {
                         ))}
                       </Select>
                     </FormControl>
+        
                   </Grid>
-
-                  {referenceData && (
-                    <Grid item xs={12} sm={6}>
-                      <Autocomplete
-                        style={{
-                          minWidth: 220,
-                        }}
-                        size="small"
-                        onChange={(event, value) => setReference(value)}
-                        name="source"
-                        options={referenceData.map((option) => option.source)}
-                        getOptionLabel={(option) => `${option}`}
-                        renderInput={(params) => (
-                          <TextField {...params} label="Reference" />
-                        )}
-                      />
-                    </Grid>
-                  )}
+                  
+                  {referenceData &&
+                  <Grid item xs={12} sm={6}>
+                    <Autocomplete
+                      style={{
+                        minWidth: 220,
+                      }}
+                      size="small"
+                      onChange={(event, value) => setReference(value)}
+                      name="source"
+                      options={referenceData.map((option) => option.source)}
+                      getOptionLabel={(option) => `${option}`}
+                      renderInput={(params) => (
+                        <TextField {...params} label="Reference" />
+                      )}
+                    />
+                  </Grid>
+    }
                   <Grid item xs={12} sm={6}>
                     <Autocomplete
                       fullWidth
@@ -416,7 +419,7 @@ export const CreateLeads = (props) => {
       case 1:
         return (
           <>
-            <div className="Auth-form-container">
+            <div className="Auth-form-container" style={{ backgroundColor:'#aaa9ac'}}>
               <Backdrop
                 sx={{
                   color: "#fff",
@@ -432,6 +435,7 @@ export const CreateLeads = (props) => {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
+               
               }}
             >
               <h3 className="Auth-form-title">Create Company Detail</h3>
@@ -596,15 +600,15 @@ export const CreateLeads = (props) => {
                           onChange={handleChange}
                         >
                           <FormControlLabel
-                            value="Industrial Customer"
-                            control={<Radio />}
-                            label="Industrial Customer"
-                          />
-                          <FormControlLabel
-                            value="Distribution Customer"
-                            control={<Radio />}
-                            label="Distribution Customer"
-                          />
+                    value="Industrial Customer"
+                    control={<Radio />}
+                    label="Industrial Customer"
+                  />
+                  <FormControlLabel
+                    value="Distribution Customer"
+                    control={<Radio />}
+                    label="Distribution Customer"
+                  />
                         </RadioGroup>
                       </FormControl>
                     </>
@@ -800,7 +804,7 @@ export const CreateLeads = (props) => {
               </Step>
             ))}
           </Stepper>
-          <Typography>{getStepContent(activeStep)}</Typography>
+          <>{getStepContent(activeStep)}</>
           <div>
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
               {activeStep !== 0 && (

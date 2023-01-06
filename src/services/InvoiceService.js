@@ -1,7 +1,12 @@
 import CustomAxios from "./api";
 
+
 const getAllSellerAccountData = () => {
   return CustomAxios.get(`/api/invoice/list-seller-account`);
+};
+
+const getAllPaginateSellerAccountData = (all) => {
+  return CustomAxios.get(`/api/invoice/list-seller-account/?page=${all}`);
 };
 
 const getAllSearchSellerAccountData = (search) => {
@@ -31,7 +36,7 @@ const getCompanyPerformaInvoiceData = () => {
   return CustomAxios.get(`/api/invoice/list-company-pi`);
 };
 
-const getCompanyPIFilterBy = (filter, search) => {
+const getCompanyPIFilterBy = (filter,search) => {
   return CustomAxios.get(`/api/invoice/list-company-pi/?${filter}=${search}`);
 };
 
@@ -39,10 +44,8 @@ const getCompanyPIPagination = (currentPage) => {
   return CustomAxios.get(`/api/invoice/list-company-pi/?page=${currentPage}`);
 };
 
-const getCompanyPIPaginationWithFilterBy = (currentPage, filter, search) => {
-  return CustomAxios.get(
-    `/api/invoice/list-company-pi/?page=${currentPage}&${filter}=${search}`
-  );
+const getCompanyPIPaginationWithFilterBy = (currentPage,filter,search) => {
+  return CustomAxios.get(`/api/invoice/list-company-pi/?page=${currentPage}&${filter}=${search}`);
 };
 
 // All Lead Api
@@ -50,7 +53,7 @@ const getLeadsPerformaInvoiceData = () => {
   return CustomAxios.get(`/api/invoice/list-lead-pi`);
 };
 
-const getLeadsPerformaInvoiceFilterBy = (filter, search) => {
+const getLeadsPerformaInvoiceFilterBy = (filter,search) => {
   return CustomAxios.get(`/api/invoice/list-lead-pi/?${filter}=${search}`);
 };
 
@@ -58,11 +61,10 @@ const getLeadsPerformaInvoicePagination = (currentPage) => {
   return CustomAxios.get(`/api/invoice/list-lead-pi/?page=${currentPage}`);
 };
 
-const getLeadsPIPaginationWithFilterBy = (currentPage, filter, search) => {
-  return CustomAxios.get(
-    `/api/invoice/list-lead-pi/?page=${currentPage}&${filter}=${search}`
-  );
+const getLeadsPIPaginationWithFilterBy = (currentPage,filter,search) => {
+  return CustomAxios.get(`/api/invoice/list-lead-pi/?page=${currentPage}&${filter}=${search}`);
 };
+
 
 const getCompanyPerformaInvoiceByIDData = (id) => {
   return CustomAxios.get(`/api/invoice/list-company-pi/${id}`);
@@ -72,11 +74,11 @@ const getLeadsPerformaInvoiceByIDData = (id) => {
   return CustomAxios.get(`/api/invoice/list-lead-pi/${id}`);
 };
 
-const sendForApprovalCompanyData = (id, data) => {
+const sendForApprovalCompanyData = (id,data) => {
   return CustomAxios.patch(`/api/invoice/list-company-pi/${id}`, data);
 };
 
-const sendForApprovalLeadsData = (id, data) => {
+const sendForApprovalLeadsData = (id,data) => {
   return CustomAxios.patch(`/api/invoice/list-lead-pi/${id}`, data);
 };
 
@@ -113,33 +115,35 @@ const getSalesnvoiceDataById = (id) => {
   return CustomAxios.get(`/api/invoice/list-sales-invoice/${id}`);
 };
 
-const InvoiceServices = {
-  getAllSellerAccountData,
-  getAllSearchSellerAccountData,
-  getAllSellerAccountDataPaginate,
-  createSellerAccountData,
-  getSellerAccountDataById,
-  updateSellerAccountData,
-  getCompanyPerformaInvoiceData,
-  getCompanyPIFilterBy,
-  getCompanyPIPagination,
-  getCompanyPIPaginationWithFilterBy,
-  getLeadsPerformaInvoiceData,
-  getLeadsPerformaInvoiceFilterBy,
-  getLeadsPIPaginationWithFilterBy,
-  getLeadsPerformaInvoicePagination,
-  getCompanyPerformaInvoiceByIDData,
-  getLeadsPerformaInvoiceByIDData,
-  sendForApprovalCompanyData,
-  sendForApprovalLeadsData,
-  sendForApprovalData,
-  createLeadsProformaInvoiceData,
-  createCustomerProformaInvoiceData,
-  getOrderBookCustomerData,
-  getOrderBookProductsData,
-  getSalesInvoiceData,
-  createSalesnvoiceData,
-  getSalesnvoiceDataById,
+
+ const InvoiceServices = {
+    getAllSellerAccountData,
+    getAllPaginateSellerAccountData,
+    getAllSearchSellerAccountData,
+    getAllSellerAccountDataPaginate,
+    createSellerAccountData,
+    getSellerAccountDataById,
+    updateSellerAccountData,
+    getCompanyPerformaInvoiceData,
+    getCompanyPIFilterBy,
+    getCompanyPIPagination,
+    getCompanyPIPaginationWithFilterBy,
+    getLeadsPerformaInvoiceData,
+    getLeadsPerformaInvoiceFilterBy,
+    getLeadsPIPaginationWithFilterBy,
+    getLeadsPerformaInvoicePagination,
+    getCompanyPerformaInvoiceByIDData,
+    getLeadsPerformaInvoiceByIDData,
+    sendForApprovalCompanyData,
+    sendForApprovalLeadsData,
+    sendForApprovalData,
+    createLeadsProformaInvoiceData,
+    createCustomerProformaInvoiceData,
+    getOrderBookCustomerData,
+    getOrderBookProductsData,
+    getSalesInvoiceData,
+    createSalesnvoiceData,
+    getSalesnvoiceDataById
 };
 
 export default InvoiceServices;

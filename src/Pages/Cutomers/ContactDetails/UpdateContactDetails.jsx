@@ -77,7 +77,7 @@ export const UpdateContactDetails = (props) => {
         designation === "partner"
           ? inputValue.pan_number
           : "";
-
+      console.log("contact1 :>> ", contact1);
       const req = {
         name: inputValue.name ? inputValue.name : "",
         company: inputValue.company ? inputValue.company : "",

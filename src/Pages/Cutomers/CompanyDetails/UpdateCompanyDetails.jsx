@@ -22,6 +22,7 @@ import { useDispatch } from "react-redux";
 import { getCompanyName } from "../../../Redux/Action/Action";
 import axios from "axios";
 import LeadServices from "../../../services/LeadService";
+import { styled } from "@mui/material/styles";
 export const UpdateCompanyDetails = (props) => {
   const { setOpenPopup, getAllContactDetailsByID, recordForEdit } = props;
   const [open, setOpen] = useState(false);
@@ -113,7 +114,7 @@ export const UpdateCompanyDetails = (props) => {
         pan_number: inputValue.pan_number,
         business_type: businessType,
         category: category,
-        assigned_to: assign ? assign : "",
+        assigned_to: assign ? assign : '',
         total_sales_turnover: inputValue.total_sales_turnover,
       };
       await CustomerServices.updateCompanyData(recordForEdit, req);
@@ -353,9 +354,9 @@ export const UpdateCompanyDetails = (props) => {
                 <MenuItem value={"Stationary"}>Stationary</MenuItem>
                 <MenuItem value={"Others"}>Others</MenuItem>
               </Select>
-              <FormHelperText>
+              <HelperText>
                 Applicable Only For Distribution Customer
-              </FormHelperText>
+              </HelperText>
             </FormControl>
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -400,3 +401,13 @@ export const UpdateCompanyDetails = (props) => {
     </>
   );
 };
+
+const HelperText = styled(FormHelperText)(({ theme }) => ({
+  padding: '0px',
+MuiFormHelperText: {
+ root: {
+   padding: 0,
+   margin: 0
+ },
+},
+}));

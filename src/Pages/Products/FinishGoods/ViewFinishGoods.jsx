@@ -12,17 +12,12 @@ import {
   Grid,
   Button,
   Paper,
-  Backdrop,
-  CircularProgress,
   styled,
   Box,
-  IconButton,
-  TextField,
   TableFooter,
   TableContainer,
   Pagination,
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
 
 import { tableCellClasses } from "@mui/material/TableCell";
 import AddIcon from "@mui/icons-material/Add";
@@ -31,6 +26,18 @@ import ProductService from "../../../services/ProductService";
 import { Popup } from "./../../../Components/Popup";
 import { CreateFinishGoods } from "./CreateFinishGoods";
 import { UpdateFinishGoods } from "./UpdateFinishGoods";
+import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
+import { CustomSearch } from "./../../../Components/CustomSearch";
+import { CustomLoader } from "./../../../Components/CustomLoader";
+import { useDispatch } from "react-redux";
+import {
+  getBasicUnitData,
+  getBrandData,
+  getColourData,
+  getPackingUnitData,
+  getUnitData,
+} from "../../../Redux/Action/Action";
+import { getProductCodeData } from "./../../../Redux/Action/Action";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -53,6 +60,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 export const ViewFinishGoods = () => {
+  const dispatch = useDispatch();
   const [finishGood, setFinishGood] = useState([]);
   const [open, setOpen] = useState(false);
   const errRef = useRef();
@@ -63,6 +71,85 @@ export const ViewFinishGoods = () => {
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [recordForEdit, setRecordForEdit] = useState(null);
+
+  useEffect(() => {
+    getPackingUnits();
+  }, []);
+
+  const getPackingUnits = async () => {
+    try {
+      const res = await ProductService.getAllPaginatePackingUnit("all");
+      dispatch(getPackingUnitData(res.data));
+    } catch (err) {
+      console.log("error PackingUnit finishGoods", err);
+    }
+  };
+
+  useEffect(() => {
+    getBrandList();
+  }, []);
+
+  const getBrandList = async () => {
+    try {
+      const res = await ProductService.getAllPaginateBrand("all");
+      dispatch(getBrandData(res.data));
+    } catch (err) {
+      console.log("error finishGoods :>> ", err);
+    }
+  };
+
+  useEffect(() => {
+    getColours();
+  }, []);
+
+  const getColours = async () => {
+    try {
+      const res = await ProductService.getAllPaginateColour("all");
+      dispatch(getColourData(res.data));
+    } catch (err) {
+      console.log("err Colour FinishGoods :>> ", err);
+    }
+  };
+
+  useEffect(() => {
+    getproductCodes();
+  }, []);
+
+  const getproductCodes = async () => {
+    try {
+      const res = await ProductService.getAllPaginateProductCode("all");
+      dispatch(getProductCodeData(res.data));
+    } catch (err) {
+      console.log("error ProductCode finishGoods", err);
+    }
+  };
+
+  useEffect(() => {
+    getUnits();
+  }, []);
+
+  const getUnits = async () => {
+    try {
+      const res = await ProductService.getAllPaginateUnit("all");
+      dispatch(getUnitData(res.data));
+    } catch (err) {
+      console.log("error unit finishGoods", err);
+    }
+  };
+
+  useEffect(() => {
+    getBasicUnit();
+  }, []);
+
+  const getBasicUnit = async () => {
+    try {
+      const res = await ProductService.getAllPaginateBasicUnit("all");
+      dispatch(getBasicUnitData(res.data));
+    } catch (err) {
+      console.log("error :>> ", err);
+    }
+  };
+
   const getFinishGoods = async () => {
     try {
       setOpen(true);
@@ -129,12 +216,18 @@ export const ViewFinishGoods = () => {
     }
   };
 
-  const getSearchData = async () => {
+  const handleInputChange = (event) => {
+    setSearchQuery(event.target.value);
+    getSearchData(event.target.value);
+  };
+
+  const getSearchData = async (value) => {
     try {
       setOpen(true);
+      const filterSearch = value;
 
       const response = await ProductService.getAllSearchFinishGoods(
-        searchQuery
+        filterSearch
       );
       if (response) {
         setFinishGood(response.data.results);
@@ -163,63 +256,17 @@ export const ViewFinishGoods = () => {
   };
   return (
     <>
-      <div>
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={open}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </div>
-
+      <CustomLoader open={open} />
       <Grid item xs={12}>
-        <p
-          style={{
-            width: "100%",
-            padding: 10,
-            marginBottom: 10,
-            borderRadius: 4,
-            backgroundColor: errMsg ? "red" : "offscreen",
-            textAlign: "center",
-            color: "white",
-            textTransform: "capitalize",
-          }}
-          ref={errRef}
-          className={errMsg ? "errmsg" : "offscreen"}
-          aria-live="assertive"
-        >
-          {errMsg}
-        </p>
+        <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
           <Box display="flex">
             <Box flexGrow={0.9}>
-              <TextField
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                name="search"
-                size="small"
-                label="Search"
-                variant="outlined"
-                sx={{ backgroundColor: "#ffffff" }}
+              <CustomSearch
+                filterSelectedQuery={searchQuery}
+                handleInputChange={handleInputChange}
+                getResetData={getResetData}
               />
-
-              <Button
-                onClick={getSearchData}
-                size="medium"
-                sx={{ marginLeft: "1em" }}
-                variant="contained"
-                startIcon={<SearchIcon />}
-              >
-                Search
-              </Button>
-              <Button
-                onClick={getResetData}
-                sx={{ marginLeft: "1em" }}
-                size="medium"
-                variant="contained"
-              >
-                Reset
-              </Button>
             </Box>
             <Box flexGrow={2}>
               <h3

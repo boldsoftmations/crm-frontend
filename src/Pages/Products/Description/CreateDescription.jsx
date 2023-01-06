@@ -126,7 +126,7 @@ export const CreateDescription = (props) => {
               onChange={(e) => setConsumable(e.target.value)}
             >
               {consume.map((option, i) => (
-                <MenuItem key={option.name} value={option.name}>
+                <MenuItem key={option.name} value={option.label}>
                   {option.name}
                 </MenuItem>
               ))}

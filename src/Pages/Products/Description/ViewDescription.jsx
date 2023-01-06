@@ -11,20 +11,19 @@ import {
   Grid,
   Button,
   Paper,
-  Backdrop,
-  CircularProgress,
   styled,
   Box,
-  TextField,
   TableContainer,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
 import AddIcon from "@mui/icons-material/Add";
 import ProductService from "../../../services/ProductService";
-import SearchIcon from "@mui/icons-material/Search";
 import { Popup } from "./../../../Components/Popup";
 import { CreateDescription } from "./CreateDescription";
 import { UpdateDescription } from "./UpdateDescription";
+import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
+import { CustomLoader } from "./../../../Components/CustomLoader";
+import { CustomSearch } from "./../../../Components/CustomSearch";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -59,7 +58,7 @@ export const ViewDescription = () => {
     try {
       setOpen(true);
       const response = await ProductService.getAllDescription();
-      setDescription(response.data);
+      setDescription(response.data.results);
 
       setOpen(false);
     } catch (err) {
@@ -87,15 +86,21 @@ export const ViewDescription = () => {
     getDescriptions();
   }, []);
 
-  const getSearchData = async () => {
+  const handleInputChange = (event) => {
+    setSearchQuery(event.target.value);
+    getSearchData(event.target.value);
+  };
+
+  const getSearchData = async (value) => {
     try {
       setOpen(true);
+      const filterSearch = value;
       const response = await ProductService.getAllSearchDescription(
-        searchQuery
+        filterSearch
       );
 
       if (response) {
-        setDescription(response.data);
+        setDescription(response.data.results);
       } else {
         getDescriptions();
       }
@@ -117,63 +122,18 @@ export const ViewDescription = () => {
   };
   return (
     <>
-      <div>
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={open}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </div>
+      <CustomLoader open={open} />
 
       <Grid item xs={12}>
-        <p
-          style={{
-            width: "100%",
-            padding: 10,
-            marginBottom: 10,
-            borderRadius: 4,
-            backgroundColor: errMsg ? "red" : "offscreen",
-            textAlign: "center",
-            color: "white",
-            textTransform: "capitalize",
-          }}
-          ref={errRef}
-          className={errMsg ? "errmsg" : "offscreen"}
-          aria-live="assertive"
-        >
-          {errMsg}
-        </p>
+        <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
           <Box display="flex">
             <Box flexGrow={0.9}>
-              <TextField
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                name="search"
-                size="small"
-                label="Search"
-                variant="outlined"
-                sx={{ backgroundColor: "#ffffff" }}
+              <CustomSearch
+                filterSelectedQuery={searchQuery}
+                handleInputChange={handleInputChange}
+                getResetData={getResetData}
               />
-
-              <Button
-                onClick={getSearchData}
-                size="medium"
-                sx={{ marginLeft: "1em" }}
-                variant="contained"
-                startIcon={<SearchIcon />}
-              >
-                Search
-              </Button>
-              <Button
-                onClick={getResetData}
-                sx={{ marginLeft: "1em" }}
-                size="medium"
-                variant="contained"
-              >
-                Reset
-              </Button>
             </Box>
             <Box flexGrow={2}>
               <h3

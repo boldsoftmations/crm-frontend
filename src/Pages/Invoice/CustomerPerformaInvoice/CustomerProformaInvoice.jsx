@@ -89,24 +89,21 @@ export const CustomerProformaInvoice = (props) => {
     <Box>
       <Box noValidate sx={{ m: "2em", p: "2em" }} ref={componentRef}>
         <Grid container spacing={2} sx={{ border: 2 }}>
-          <Grid item xs={12} sm={2}>
+          <Grid item xs={12} sm={2} >
             <img
-              style={{ marginLeft: "2em", marginTop: "2em" }}
               src={logo}
               alt="Glutape India Pvt Ltd"
             />
-            <Typography sx={{ fontSize: "10px", marginTop: "1em" }}>
+            <p style={{ fontSize: "10px" }}>
               AN ISO 9001-2009 Certified Company
-            </Typography>
+            </p>
           </Grid>
-          <Grid item xs={10}>
-            <Typography
-              align="center"
-              variant="h5"
-              sx={{ ...typographyStyling, mb: "2em", mt: "1em" }}
+          <Grid item xs={12} sm={10}>
+            <h5
+              style={{ ...typographyStyling, mb: "2em", mt: "1em",display:'flex',justifyContent:'center' }}
             >
               PROFORMA INVOICE
-            </Typography>
+            </h5>
           </Grid>
           {/* seller Details */}
           {sellerData.map((row, i) => {
@@ -118,89 +115,87 @@ export const CustomerProformaInvoice = (props) => {
                   sm={6}
                   sx={{ pl: "2em",borderBottom: 2,borderRight:2, borderTop:2 }}
                 >
-                  <Typography sx={{ ...typographyStyling }}>
+                  <div style={{ ...typographyStyling }}>
                     Seller :-
-                  </Typography>
-                  <Typography>
-                    {row.name}, <br></br> {row.address},
-                  </Typography>
-                  <Typography>
+                  </div>
+                  <div >
+                    {row.name}, <br /> {row.address}, <br />
                     {row.city},{row.state}
-                  </Typography>
+                  </div>
                 </Grid>
               </>
             );
           })}
           {/* PI Details */}
           <Grid item xs={12} sm={4} sx={{ borderBottom: 2,borderRight:2, borderTop:2 }}>
-            <Typography>
+            <div>
               <Box sx={{ ...typographyStyling }} display="inline">
                 PI Number :-{" "}
               </Box>{" "}
               {invoiceData.pi_number}
-            </Typography>
-            <Typography>
+            </div>
+            <div>
               <Box sx={{ ...typographyStyling }}>Payment Terms :- </Box>
               {invoiceData.payment_terms}
-            </Typography>
+            </div>
           </Grid>
           <Grid item xs={12} sm={2} sx={{borderBottom: 2, borderTop:2 }}>
-            <Typography>
+            <div>
               <Box sx={{ ...typographyStyling }} display="inline">
                 Date :-{" "}
               </Box>
               {invoiceData.generation_date}
-            </Typography>
+            </div>
             {/* <Typography>
             <Box sx={{ ...typographyStyling }} display="inline">
               Advance :-
             </Box>
             {invoiceData.amount_recieved}
           </Typography> */}
-            <Typography>
+            <div>
               <Box sx={{ ...typographyStyling }} display="inline">
                 Balance :-{" "}
               </Box>
               {invoiceData.balance_amount}
-            </Typography>
+            </div>
           </Grid>
           {/* Buyer Details */}
           <Grid item xs={12} sm={6} sx={{  borderBottom: 2,borderRight:2}}>
-            <Typography>
+            <div>
               <Box sx={{ ...typographyStyling }} display="inline">
                 Buyer :-{" "}
               </Box>
               {invoiceData.company}
-            </Typography>
+            </div>
           </Grid>
           <Grid item xs={12} sm={6} sx={{  borderBottom: 2}}>
-            <Typography>
+            <div>
               <Box sx={{ ...typographyStyling }} display="inline">
                 {" "}
                 Buyer Order No. :-{" "}
               </Box>
               {invoiceData.buyer_order_no}
-            </Typography>
+            </div>
           </Grid>
           <Grid item xs={12} sm={6} sx={{ borderBottom: 2,borderRight:2 }}>
-            <Typography>{invoiceData.address}</Typography>
-            <Typography>
+            <div>{invoiceData.address}</div>
+            <div>
               {invoiceData.city},{invoiceData.state}
-            </Typography>
+            </div>
           </Grid>
           <Grid item xs={12} sm={6} sx={{ borderBottom: 2 }}>
-            <Typography>
+            <div>
               <Box sx={{ ...typographyStyling }} display="inline">
                 Delivery Terms :-{" "}
               </Box>
               {invoiceData.delivery_terms}
-            </Typography>
-            <Typography>
+            </div>
+            <div>
               <Box sx={{ ...typographyStyling }} display="inline">
                 Sales Person :-{" "}
               </Box>
               {invoiceData.raised_by}
-            </Typography>
+            </div>
           </Grid>
           <Grid item xs={12} sx={{ p: "2em" }}>
             <TableContainer component={Paper}>
@@ -283,63 +278,63 @@ export const CustomerProformaInvoice = (props) => {
             return (
               <>
                 <Grid item xs={12} sx={{ borderBottom: 2, borderTop:2}}>
-                  <Typography sx={{ ...typographyStyling, ml: "2em" }}>
+                  <div style={{ ...typographyStyling, ml: "2em" }}>
                     Bank Details :-
-                  </Typography>
-                  <Typography sx={{ ml: "2em" }}>
+                  </div>
+                  <div style={{ ml: "2em" }}>
                     {bankdata.bank_name}
-                  </Typography>
-                  <Typography sx={{ ml: "2em" }}>
+                  </div>
+                  <div style={{ ml: "2em" }}>
                     <Box sx={{ ...typographyStyling }} display="inline">
                       Account No.{" "}
                     </Box>{" "}
                     {bankdata.current_account_no}
-                  </Typography>
-                  <Typography sx={{ ml: "2em" }}>
+                  </div>
+                  <div style={{ ml: "2em" }}>
                     <Box sx={{ ...typographyStyling }} display="inline">
                       IFSC Code :{" "}
                     </Box>{" "}
                     {bankdata.ifsc_code}
-                  </Typography>
-                  <Typography sx={{ ml: "2em" }}>
+                  </div>
+                  <div style={{ ml: "2em" }}>
                     <Box sx={{ ...typographyStyling }} display="inline">
                       BRANCH :{" "}
                     </Box>{" "}
                     {bankdata.branch}
-                  </Typography>
+                  </div>
                 </Grid>
 
                 <Grid item xs={12} sm={6} sx={{ borderRight:2}}>
-                  <Typography sx={{ ml: "2em" }}>
+                  <div style={{ ml: "2em" }}>
                     <Box sx={{ ...typographyStyling }} display="inline">
                       Company GST No :-{" "}
                     </Box>
                     {bankdata.gst_number}
-                  </Typography>
-                  <Typography sx={{ ml: "2em" }}>
+                  </div>
+                  <div style={{ ml: "2em" }}>
                     <Box sx={{ ...typographyStyling }} display="inline">
                       {" "}
                       Buyer GST No :-{" "}
                     </Box>{" "}
                     {invoiceData.gst_number}
-                  </Typography>
+                  </div>
                 </Grid>
               </>
             );
           })}
 
           <Grid item xs={12} sm={6} >
-            <Typography align={"center"}>
+            <div align={"center"}>
               {approve !== null ? approve.approved_by : "Pending Approval"}
-            </Typography>
-            <Typography align={"center"}>
+            </div>
+            <div align={"center"}>
               {approve !== null ? approve.approval_date : ""}
-            </Typography>
-            <Typography align={"center"}>
+            </div>
+            <div align={"center"}>
               <Box sx={{ ...typographyStyling }} display="inline">
                 ATHORISED SIGNATORY
               </Box>
-            </Typography>
+            </div>
           </Grid>
         </Grid>
       </Box>

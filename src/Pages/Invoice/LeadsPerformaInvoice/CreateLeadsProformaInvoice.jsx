@@ -90,7 +90,7 @@ export const CreateLeadsProformaInvoice = (props) => {
   }
 
   const ID = searchUnit(productData, product);
-
+  console.log("product :>> ", product);
   const addFields = () => {
     let newfield = {
       product: "",
@@ -114,8 +114,8 @@ export const CreateLeadsProformaInvoice = (props) => {
   const getAllleadsData = async () => {
     try {
       setOpen(true);
-      let response = await LeadServices.getAllLeads();
-      setLeadsOptions(response.data.results);
+      let response = await LeadServices.getAllPaginatesLeads("all");
+      setLeadsOptions(response.data);
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -129,8 +129,11 @@ export const CreateLeadsProformaInvoice = (props) => {
   const getProduct = async () => {
     try {
       setOpen(true);
-      const res = await ProductService.getAllPriceList();
-      setProduct(res.data.valid_prices);
+      const res = await ProductService.getAllPaginatePriceList(
+        "validity",
+        "valid"
+      );
+      setProduct(res.data.results);
       setOpen(false);
     } catch (err) {
       console.error("error potential", err);
@@ -205,7 +208,11 @@ export const CreateLeadsProformaInvoice = (props) => {
     } catch (err) {
       if (err.response.status === 400) {
         setErrorMessage(err.response.data.errors.buyer_order_no);
-        setValidationPrice(err.response.data.errors.non_field_errors ? err.response.data.errors.non_field_errors : err.response.data.errors);
+        setValidationPrice(
+          err.response.data.errors.non_field_errors
+            ? err.response.data.errors.non_field_errors
+            : err.response.data.errors
+        );
       }
       setIDForEdit(leadIDData.lead_id);
       setOpenPopup2(true);

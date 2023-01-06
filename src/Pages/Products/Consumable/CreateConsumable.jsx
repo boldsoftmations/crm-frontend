@@ -13,20 +13,22 @@ import React, { useEffect, useRef, useState } from "react";
 import ProductService from "../../../services/ProductService";
 
 import "../../CommonStyle.css";
+import { useSelector } from "react-redux";
 
 export const CreateConsumable = (props) => {
   const { setOpenPopup, getconsumables } = props;
   const [description, setDescription] = useState([]);
   const [allDescription, seAllDescription] = useState([]);
   const [brand, setBrand] = useState([]);
-  const [brandData, setBrandData] = useState([]);
   const [unit, setUnit] = useState([]);
-  const [unitData, setUnitData] = useState([]);
   const [consumable, setConsumable] = useState([]);
   const [open, setOpen] = useState(false);
 
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
+  const user = useSelector((state) => state.auth);
+  const brandData = user.brandAllData;
+  const unitData = user.unitAllData;
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setConsumable({ ...consumable, [name]: value });
@@ -53,38 +55,6 @@ export const CreateConsumable = (props) => {
   const productName = `${description ? description : ""}-${
     autoNumber ? autoNumber : ""
   }-${shortName ? shortName : ""}`;
-
-  const getUnits = async () => {
-    try {
-      setOpen(true);
-      const res = await ProductService.getAllUnit();
-      setUnitData(res.data);
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("error unit consumable", err);
-    }
-  };
-
-  useEffect(() => {
-    getUnits();
-  }, []);
-
-  const getBrandList = async () => {
-    try {
-      setOpen(true);
-      const res = await ProductService.getAllBrand();
-      setBrandData(res.data);
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("error consumables :>> ", err);
-    }
-  };
-
-  useEffect(() => {
-    getBrandList();
-  }, []);
 
   useEffect(() => {
     getYesDescriptionData();

@@ -11,28 +11,30 @@ import {
   Button,
   Autocomplete,
 } from "@mui/material";
-
+import { useSelector } from "react-redux";
 export const UpdateFinishGoods = (props) => {
   const { recordForEdit, setOpenPopup, getFinishGoods } = props;
   const [finishGoods, setFinishGoods] = useState([]);
-  const [allBasicUnit, setAllBasicUnit] = useState([]);
   const [basicUnit, setBasicUnit] = useState([]);
   const [brand, setBrand] = useState([]);
-  const [brandData, setBrandData] = useState([]);
   const [color, setColor] = useState([]);
-  const [colorData, setColorData] = useState([]);
   const [productCode, setProductCode] = useState([]);
-  const [productCodeData, setProductCodeData] = useState([]);
   const [unit, setUnit] = useState([]);
-  const [unitData, setUnitData] = useState([]);
 
   const [packingUnit, setPackingUnit] = useState([]);
-  const [packingUnitData, setPackingUnitData] = useState([]);
 
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
 
   const [open, setOpen] = useState(false);
+  const user = useSelector((state) => state.auth)
+  const brandData = user.brandAllData;
+  const colorData = user.colourAllData;
+  const packingUnitData = user.packingunitAllData;
+  const productCodeData = user.productCodeAllData;
+  const allBasicUnit = user.basicunitAllData;
+  const unitData = user.unitAllData;
+
 
   const productCodeValue = productCode.productcode
     ? productCode.productcode
@@ -91,91 +93,6 @@ export const UpdateFinishGoods = (props) => {
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setFinishGoods({ ...finishGoods, [name]: value });
-  };
-
-  const getPackingUnits = async () => {
-    try {
-      const res = await ProductService.getAllPackingUnit();
-      setPackingUnitData(res.data);
-    } catch (err) {
-      console.log("error PackingUnit consumable", err);
-    }
-  };
-
-  useEffect(() => {
-    getPackingUnits();
-  }, []);
-
-  const getproductCodes = async () => {
-    try {
-      const res = await ProductService.getAllProductCode();
-      setProductCodeData(res.data);
-    } catch (err) {
-      console.log("error ProductCode finishGoods", err);
-    }
-  };
-
-  useEffect(() => {
-    getproductCodes();
-  }, []);
-
-  const getUnits = async () => {
-    try {
-      const res = await ProductService.getAllUnit();
-      setUnitData(res.data);
-    } catch (err) {
-      console.log("error unit finishGoods", err);
-    }
-  };
-
-  useEffect(() => {
-    getUnits();
-  }, []);
-
-  const getBrandList = async () => {
-    try {
-      const res = await ProductService.getAllBrand();
-      setBrandData(res.data);
-    } catch (err) {
-      console.log("error finishGoods :>> ", err);
-    }
-  };
-
-  useEffect(() => {
-    getBrandList();
-  }, []);
-
-  const getColours = async () => {
-    try {
-      const res = await ProductService.getAllColour();
-      setColorData(res.data);
-    } catch (err) {
-      console.log("err Colour FinishGoods :>> ", err);
-    }
-  };
-
-  useEffect(() => {
-    getColours();
-  }, []);
-
-  useEffect(() => {
-    getBasicUnit();
-  }, []);
-
-  useEffect(() => {
-    getBasicUnit();
-  }, []);
-
-  const getBasicUnit = async () => {
-    try {
-      setOpen(true);
-      const res = await ProductService.getAllBasicUnit();
-      setAllBasicUnit(res.data);
-      setOpen(false);
-    } catch (err) {
-      console.log("error basicunit finishGoods:>> ", err);
-      setOpen(false);
-    }
   };
 
   const getFinishGoodData = async (recordForEdit) => {

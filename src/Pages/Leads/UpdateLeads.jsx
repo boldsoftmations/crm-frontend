@@ -119,7 +119,7 @@ export const UpdateLeads = (props) => {
       setOpen(false);
     }
   };
-
+  
   const getLAssignedData = async () => {
     try {
       setOpen(true);
@@ -166,8 +166,10 @@ export const UpdateLeads = (props) => {
           alternate_contact: contact2,
           description: descriptionValue ? descriptionValue : "",
           target_date: leads.target_date,
-          business_type: businesTypes ? businesTypes : "",
-          business_mismatch: businessMismatch ? businessMismatch : "No",
+          business_type: businesTypes ? businesTypes : '',
+          business_mismatch: businessMismatch
+            ? businessMismatch
+            : "No",
           interested: interests ? interests : "Yes",
           assigned_to: assign ? assign : "",
           references: leads.references,
@@ -189,7 +191,7 @@ export const UpdateLeads = (props) => {
             ? pinCodeData.State
             : leads.shipping_state,
           shipping_pincode: leads.shipping_pincode,
-          lead_exists: leads.lead_exists,
+          lead_exists: leads.lead_exists
         };
 
         await LeadServices.updateLeads(leads.lead_id, data);
@@ -372,7 +374,9 @@ export const UpdateLeads = (props) => {
                       }}
                       size="small"
                       onChange={(event, value) => setBusinesTypes(value)}
-                      value={businesTypes ? businesTypes : ""}
+                      value={
+                       businesTypes ? businesTypes : ''
+                      }
                       name="business_type"
                       options={businessTypeOption.map((option) => option.label)}
                       getOptionLabel={(option) => `${option}`}
@@ -380,6 +384,7 @@ export const UpdateLeads = (props) => {
                         <TextField {...params} label="Business Types" />
                       )}
                     />
+                 
                   </Grid>
                   <Grid item xs={12} sm={3}>
                     <TextField
@@ -401,7 +406,9 @@ export const UpdateLeads = (props) => {
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"
                         label="Business Mismatch"
-                        value={businessMismatch ? businessMismatch : "No"}
+                        value={
+                          businessMismatch ? businessMismatch : "No"
+                        }
                         onChange={(e, value) =>
                           setBusinessMismatch(e.target.value)
                         }
@@ -413,6 +420,7 @@ export const UpdateLeads = (props) => {
                         ))}
                       </Select>
                     </FormControl>
+             
                   </Grid>
                   <Grid item xs={12} sm={3}>
                     <FormControl fullWidth size="small">
@@ -466,13 +474,16 @@ export const UpdateLeads = (props) => {
                     />
                   </Grid>
                   <Grid item xs={12} sm={3}>
-                    <Autocomplete
+                
+                  <Autocomplete
                       style={{
                         minWidth: 220,
                       }}
                       size="small"
                       onChange={(event, value) => setAssign(value)}
-                      value={assign ? assign : ""}
+                      value={
+                       assign ? assign : ''
+                      }
                       name="assign"
                       options={assigned.map((option) => option.email)}
                       getOptionLabel={(option) => option}
@@ -480,6 +491,7 @@ export const UpdateLeads = (props) => {
                         <TextField {...params} label="Assignied To" />
                       )}
                     />
+                   
                   </Grid>
                   <Grid item xs={12} sm={3}>
                     <TextField
@@ -817,7 +829,7 @@ export const UpdateLeads = (props) => {
                     Target Date {leads.target_date}
                   </Grid>
                   <Grid item xs={12} sm={6}>
-                    Assign to : {assign ? assign : ""}
+                    Assign to : {assign ? assign : ''}
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     Company Name : {leads.company}
@@ -860,7 +872,7 @@ export const UpdateLeads = (props) => {
     }
   }
 
-  console.log("assign", assign ? assign : "");
+  console.log('assign', assign ? assign : '')
 
   return (
     <div style={{ width: "100%" }}>

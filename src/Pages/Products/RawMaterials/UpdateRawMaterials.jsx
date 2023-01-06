@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 
 import ProductService from "../../../services/ProductService";
 
+import { useSelector } from "react-redux";
 import {
   Backdrop,
   Box,
@@ -17,16 +18,17 @@ export const UpdateRawMaterials = (props) => {
 
   const [rawMaterial, setRawMaterial] = useState([]);
   const [brand, setBrand] = useState([]);
-  const [brandData, setBrandData] = useState([]);
   const [color, setColor] = useState([]);
-  const [colorData, setColorData] = useState([]);
   const [productCode, setProductCode] = useState([]);
-  const [productCodeData, setProductCodeData] = useState([]);
   const [unit, setUnit] = useState([]);
-  const [unitData, setUnitData] = useState([]);
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
   const [open, setOpen] = useState(false);
+  const user = useSelector((state) => state.auth);
+  const brandData = user.brandAllData;
+  const colorData = user.colourAllData;
+  const productCodeData = user.productCodeAllData;
+  const unitData = user.unitAllData;
 
   const productCodeValue = productCode.productcode
     ? productCode.productcode
@@ -62,58 +64,6 @@ export const UpdateRawMaterials = (props) => {
     const { name, value } = event.target;
     setRawMaterial({ ...rawMaterial, [name]: value });
   };
-
-  const getproductCodes = async () => {
-    try {
-      const res = await ProductService.getAllProductCode();
-      setProductCodeData(res.data);
-    } catch (err) {
-      console.log("error ProductCode rawmaterial", err);
-    }
-  };
-
-  useEffect(() => {
-    getproductCodes();
-  }, []);
-
-  const getUnits = async () => {
-    try {
-      const res = await ProductService.getAllUnit();
-      setUnitData(res.data);
-    } catch (err) {
-      console.log("error unit rawmaterial", err);
-    }
-  };
-
-  useEffect(() => {
-    getUnits();
-  }, []);
-
-  const getBrandList = async () => {
-    try {
-      const res = await ProductService.getAllBrand();
-      setBrandData(res.data);
-    } catch (err) {
-      console.log("error rawmaterial :>> ", err);
-    }
-  };
-
-  useEffect(() => {
-    getBrandList();
-  }, []);
-
-  const getColours = async () => {
-    try {
-      const res = await ProductService.getAllColour();
-      setColorData(res.data);
-    } catch (err) {
-      console.log("err Colour rawmaterial :>> ", err);
-    }
-  };
-
-  useEffect(() => {
-    getColours();
-  }, []);
 
   const getRawMaterialData = async (recordForEdit) => {
     try {

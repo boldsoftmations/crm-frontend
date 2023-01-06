@@ -7,6 +7,7 @@ import {
   // CircularProgress,
   FormControl,
   FormControlLabel,
+  FormHelperText,
   Grid,
   InputLabel,
   MenuItem,
@@ -129,8 +130,8 @@ export const CreateCustomerProformaInvoice = (props) => {
   const getAllCompanyDetails = async () => {
     try {
       setOpen(true);
-      let response = await CustomerServices.getAllCompanyData();
-      setCompanyOptions(response.data.results);
+      let response = await CustomerServices.getAllPaginateCompanyData('all');
+      setCompanyOptions(response.data);
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -164,8 +165,11 @@ export const CreateCustomerProformaInvoice = (props) => {
   const getProduct = async () => {
     try {
       setOpen(true);
-      const res = await ProductService.getAllPriceList();
-      setProduct(res.data.valid_prices);
+      const res = await ProductService.getAllPaginatePriceList(
+        "validity",
+        "valid"
+      );
+      setProduct(res.data.results);
       setOpen(false);
     } catch (err) {
       console.error("error potential", err);
@@ -243,6 +247,7 @@ export const CreateCustomerProformaInvoice = (props) => {
       // setOpenPopup2(true);
     }
   };
+  console.log("companyData :>> ", companyData);
 
   const openInPopup = () => {
     setOpenPopup3(true);
@@ -329,13 +334,15 @@ export const CreateCustomerProformaInvoice = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <FormControl fullWidth size="small">
-              <InputLabel id="demo-simple-select-label">Contact</InputLabel>
+     
+                <FormControl required  fullWidth size="small" sx={{padding:'0',margin:'0'}}>
+              <InputLabel id="demo-simple-select-required-label">Contact</InputLabel>
               <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
+                labelId="demo-simple-select-required-label"
+                id="demo-simple-select-required"
                 label="Contact"
                 onChange={(e, value) => setContactData(e.target.value)}
+             
               >
                 {contactOptions &&
                   contactOptions.map((option, i) => (
@@ -344,11 +351,13 @@ export const CreateCustomerProformaInvoice = (props) => {
                     </MenuItem>
                   ))}
               </Select>
+              <HelperText>first select Company Name</HelperText>
             </FormControl>
           </Grid>
           <Grid item xs={12} sm={4}>
             <TextField
               fullWidth
+              disabled
               name="alternate_contact"
               size="small"
               label="Alt. Contact"
@@ -378,6 +387,7 @@ export const CreateCustomerProformaInvoice = (props) => {
                     </MenuItem>
                   ))}
               </Select>
+              <HelperText>first select Contact</HelperText>
             </FormControl>
           </Grid>
 
@@ -385,6 +395,7 @@ export const CreateCustomerProformaInvoice = (props) => {
             <TextField
               fullWidth
               required
+              disabled
               name="city"
               size="small"
               label="City"
@@ -402,6 +413,7 @@ export const CreateCustomerProformaInvoice = (props) => {
             <TextField
               fullWidth
               required
+              disabled
               name="state"
               size="small"
               label="State"
@@ -419,6 +431,7 @@ export const CreateCustomerProformaInvoice = (props) => {
             <TextField
               fullWidth
               required
+              disabled
               name="pincode"
               size="small"
               type={"number"}
@@ -711,3 +724,13 @@ const deliveryTermsOptions = [
     value: "courier_(freight_add_in_invoice",
   },
 ];
+
+const HelperText = styled(FormHelperText)(({ theme }) => ({
+     padding: '0px',
+  MuiFormHelperText: {
+		root: {
+			padding: 0,
+      margin: 0
+		},
+  },
+}));
