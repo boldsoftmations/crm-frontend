@@ -13,9 +13,7 @@ import {
   Paper,
   styled,
   Box,
-  TableFooter,
   TableContainer,
-  Pagination,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
 import AddIcon from "@mui/icons-material/Add";
@@ -29,7 +27,11 @@ import { CustomLoader } from "./../../../Components/CustomLoader";
 import { CustomSearch } from "./../../../Components/CustomSearch";
 import { useDispatch } from "react-redux";
 import { getBrandData, getUnitData } from "../../../Redux/Action/Action";
-import { getColourData, getProductCodeData } from './../../../Redux/Action/Action';
+import { CustomPagination } from "./../../../Components/CustomPagination";
+import {
+  getColourData,
+  getProductCodeData,
+} from "./../../../Redux/Action/Action";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -115,15 +117,20 @@ export const ViewRawMaterials = () => {
     }
   };
 
+  useEffect(() => {
+    getrawMaterials();
+  }, []);
+
   const getrawMaterials = async () => {
     try {
       setOpen(true);
       if (currentPage) {
-        const response = await ProductService.getAllRawMaterialsPaginate(
-          currentPage,
-          searchQuery
+        const response = await ProductService.getRawMaterialsPaginate(
+          currentPage
         );
         setRawMaterials(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
       } else {
         const response = await ProductService.getAllRawMaterials();
         setRawMaterials(response.data.results);
@@ -152,27 +159,31 @@ export const ViewRawMaterials = () => {
     }
   };
 
-  useEffect(() => {
-    getrawMaterials();
-  }, []);
-
   const handlePageChange = async (event, value) => {
     try {
       const page = value;
       setCurrentPage(page);
       setOpen(true);
-
-      const response = await ProductService.getAllRawMaterialsPaginate(
-        page,
-        searchQuery
-      );
-      if (response) {
+      if (searchQuery) {
+        const response = await ProductService.getRawMaterialsPaginateWithSearch(
+          page,
+          searchQuery
+        );
+        if (response) {
+          setRawMaterials(response.data.results);
+          const total = response.data.count;
+          setpageCount(Math.ceil(total / 25));
+        } else {
+          getrawMaterials();
+          setSearchQuery();
+        }
+      } else {
+        const response = await ProductService.getRawMaterialsPaginate(page);
         setRawMaterials(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
-      } else {
-        getrawMaterials();
       }
+
       setOpen(false);
     } catch (error) {
       console.log("error", error);
@@ -199,6 +210,7 @@ export const ViewRawMaterials = () => {
         setpageCount(Math.ceil(total / 25));
       } else {
         getrawMaterials();
+        setSearchQuery();
       }
       setOpen(false);
     } catch (error) {
@@ -316,17 +328,10 @@ export const ViewRawMaterials = () => {
               </TableBody>
             </Table>
           </TableContainer>
-          <TableFooter
-            sx={{ display: "flex", justifyContent: "center", marginTop: "2em" }}
-          >
-            <Pagination
-              count={pageCount}
-              onChange={handlePageChange}
-              color={"primary"}
-              variant="outlined"
-              shape="circular"
-            />
-          </TableFooter>
+          <CustomPagination
+            pageCount={pageCount}
+            handlePageClick={handlePageChange}
+          />
         </Paper>
       </Grid>
       <Popup

@@ -13,9 +13,7 @@ import {
   Paper,
   styled,
   Box,
-  TableFooter,
   TableContainer,
-  Pagination,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
 import AddIcon from "@mui/icons-material/Add";
@@ -27,8 +25,9 @@ import { UpdateConsumable } from "./UpdateConsumable";
 import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
 import { CustomLoader } from "./../../../Components/CustomLoader";
 import { CustomSearch } from "./../../../Components/CustomSearch";
-import { useDispatch } from 'react-redux';
+import { useDispatch } from "react-redux";
 import { getBrandData, getUnitData } from "../../../Redux/Action/Action";
+import { CustomPagination } from "./../../../Components/CustomPagination";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -94,11 +93,12 @@ export const ViewConsumable = () => {
       setOpen(true);
 
       if (currentPage) {
-        const response = await ProductService.getAllConsumablePaginate(
-          currentPage,
-          searchQuery
+        const response = await ProductService.getConsumablePaginate(
+          currentPage
         );
         setConsumable(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
       } else {
         const response = await ProductService.getAllConsumable();
         setConsumable(response.data.results);
@@ -136,17 +136,23 @@ export const ViewConsumable = () => {
       const page = value;
       setCurrentPage(page);
       setOpen(true);
-
-      const response = await ProductService.getAllConsumablePaginate(
-        page,
-        searchQuery
-      );
-      if (response) {
+      if (searchQuery) {
+        const response = await ProductService.getConsumablePaginateWithSearch(
+          page,
+          searchQuery
+        );
+        if (response) {
+          setConsumable(response.data.results);
+          const total = response.data.count;
+          setpageCount(Math.ceil(total / 25));
+        } else {
+          getconsumables();
+        }
+      } else {
+        const response = await ProductService.getConsumablePaginate(page);
         setConsumable(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
-      } else {
-        getconsumables();
       }
       setOpen(false);
     } catch (error) {
@@ -173,6 +179,7 @@ export const ViewConsumable = () => {
         setpageCount(Math.ceil(total / 25));
       } else {
         getconsumables();
+        setSearchQuery();
       }
       setOpen(false);
     } catch (error) {
@@ -299,17 +306,10 @@ export const ViewConsumable = () => {
               </TableBody>
             </Table>
           </TableContainer>
-          <TableFooter
-            sx={{ display: "flex", justifyContent: "center", marginTop: "2em" }}
-          >
-            <Pagination
-              count={pageCount}
-              onChange={handlePageChange}
-              color={"primary"}
-              variant="outlined"
-              shape="circular"
-            />
-          </TableFooter>
+          <CustomPagination
+            pageCount={pageCount}
+            handlePageClick={handlePageChange}
+          />
         </Paper>
       </Grid>
       <Popup

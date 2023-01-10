@@ -24,6 +24,7 @@ import { UpdateDescription } from "./UpdateDescription";
 import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
 import { CustomLoader } from "./../../../Components/CustomLoader";
 import { CustomSearch } from "./../../../Components/CustomSearch";
+import { CustomPagination } from "./../../../Components/CustomPagination";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -54,12 +55,24 @@ export const ViewDescription = () => {
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [recordForEdit, setRecordForEdit] = useState(null);
+  const [pageCount, setpageCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
   const getDescriptions = async () => {
     try {
       setOpen(true);
-      const response = await ProductService.getAllDescription();
-      setDescription(response.data.results);
-
+      if (currentPage) {
+        const response = await ProductService.getDescriptionPaginate(
+          currentPage
+        );
+        setDescription(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      } else {
+        const response = await ProductService.getAllDescription();
+        setDescription(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      }
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -101,12 +114,46 @@ export const ViewDescription = () => {
 
       if (response) {
         setDescription(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
       } else {
         getDescriptions();
+        setSearchQuery();
       }
       setOpen(false);
     } catch (error) {
       console.log("error Search leads", error);
+      setOpen(false);
+    }
+  };
+
+  const handlePageChange = async (event, value) => {
+    try {
+      const page = value;
+      setCurrentPage(page);
+      setOpen(true);
+      if (searchQuery) {
+        const response = await ProductService.getDescriptionPaginateWithSearch(
+          page,
+          searchQuery
+        );
+        if (response) {
+          setDescription(response.data.results);
+          const total = response.data.count;
+          setpageCount(Math.ceil(total / 25));
+        } else {
+          getDescriptions();
+          setSearchQuery();
+        }
+      } else {
+        const response = await ProductService.getDescriptionPaginate(page);
+        setDescription(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      }
+      setOpen(false);
+    } catch (error) {
+      console.log("error", error);
       setOpen(false);
     }
   };
@@ -200,6 +247,10 @@ export const ViewDescription = () => {
               </TableBody>
             </Table>
           </TableContainer>
+          <CustomPagination
+            pageCount={pageCount}
+            handlePageClick={handlePageChange}
+          />
         </Paper>
       </Grid>
       <Popup

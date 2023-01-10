@@ -14,9 +14,7 @@ import {
   Paper,
   styled,
   Box,
-  TableFooter,
   TableContainer,
-  Pagination,
 } from "@mui/material";
 
 import { tableCellClasses } from "@mui/material/TableCell";
@@ -38,6 +36,7 @@ import {
   getUnitData,
 } from "../../../Redux/Action/Action";
 import { getProductCodeData } from "./../../../Redux/Action/Action";
+import { CustomPagination } from "./../../../Components/CustomPagination";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -154,11 +153,12 @@ export const ViewFinishGoods = () => {
     try {
       setOpen(true);
       if (currentPage) {
-        const response = await ProductService.getAllFinishGoodsPaginate(
-          currentPage,
-          searchQuery
+        const response = await ProductService.getFinishGoodsPaginate(
+          currentPage
         );
         setFinishGood(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
       } else {
         const response = await ProductService.getAllFinishGoods();
 
@@ -197,17 +197,24 @@ export const ViewFinishGoods = () => {
       const page = value;
       setCurrentPage(page);
       setOpen(true);
-
-      const response = await ProductService.getAllFinishGoodsPaginate(
-        page,
-        searchQuery
-      );
-      if (response) {
+      if (searchQuery) {
+        const response = await ProductService.getFinishGoodsPaginateWithSearch(
+          page,
+          searchQuery
+        );
+        if (response) {
+          setFinishGood(response.data.results);
+          const total = response.data.count;
+          setpageCount(Math.ceil(total / 25));
+        } else {
+          getFinishGoods();
+          setSearchQuery("");
+        }
+      } else {
+        const response = await ProductService.getFinishGoodsPaginate(page);
         setFinishGood(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
-      } else {
-        getFinishGoods();
       }
       setOpen(false);
     } catch (error) {
@@ -235,6 +242,7 @@ export const ViewFinishGoods = () => {
         setpageCount(Math.ceil(total / 25));
       } else {
         getFinishGoods();
+        setSearchQuery("");
       }
 
       setOpen(false);
@@ -357,17 +365,10 @@ export const ViewFinishGoods = () => {
               </TableBody>
             </Table>
           </TableContainer>
-          <TableFooter
-            sx={{ display: "flex", justifyContent: "center", marginTop: "2em" }}
-          >
-            <Pagination
-              count={pageCount}
-              onChange={handlePageChange}
-              color={"primary"}
-              variant="outlined"
-              shape="circular"
-            />
-          </TableFooter>
+          <CustomPagination
+            pageCount={pageCount}
+            handlePageClick={handlePageChange}
+          />
         </Paper>
       </Grid>
       <Popup

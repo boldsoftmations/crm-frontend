@@ -4,6 +4,10 @@ const getAllColour = () => {
   return CustomAxios.get("/api/product/color");
 };
 
+const getColourPaginatewithSearch = (all, search) => {
+  return CustomAxios.get(`/api/product/color/?page=${all}&search=${search}`);
+};
+
 const getAllPaginateColour = (all) => {
   return CustomAxios.get(`/api/product/color/?page=${all}`);
 };
@@ -128,6 +132,16 @@ const getAllSearchDescription = (search) => {
   return CustomAxios.get(`/api/product/description/?search=${search}`);
 };
 
+const getDescriptionPaginateWithSearch = (currentPage, search) => {
+  return CustomAxios.get(
+    `/api/product/description/?page=${currentPage}&search=${search}`
+  );
+};
+
+const getDescriptionPaginate = (currentPage) => {
+  return CustomAxios.get(`/api/product/description/?page=${currentPage}`);
+};
+
 const getYesDescription = () => {
   return CustomAxios.get("/api/product/description-yes");
 };
@@ -160,6 +174,12 @@ const getAllSearchProductCode = (search) => {
   return CustomAxios.get(`/api/product/product-code/?search=${search}`);
 };
 
+const getSearchWithPaginateProductCode = (all, search) => {
+  return CustomAxios.get(
+    `/api/product/product-code/?page=${all}&search=${search}`
+  );
+};
+
 const createProductCode = (data) => {
   return CustomAxios.post("/api/product/product-code/", data);
 };
@@ -180,7 +200,11 @@ const getAllSearchConsumable = (search) => {
   return CustomAxios.get(`/api/product/consumables/?search=${search}`);
 };
 
-const getAllConsumablePaginate = (currentPage, search) => {
+const getConsumablePaginate = (currentPage) => {
+  return CustomAxios.get(`/api/product/consumables/?page=${currentPage}`);
+};
+
+const getConsumablePaginateWithSearch = (currentPage, search) => {
   return CustomAxios.get(
     `/api/product/consumables/?page=${currentPage}&search=${search}`
   );
@@ -206,7 +230,11 @@ const getAllSearchFinishGoods = (search) => {
   return CustomAxios.get(`/api/product/finished-goods/?search=${search}`);
 };
 
-const getAllFinishGoodsPaginate = (currentPage, search) => {
+const getFinishGoodsPaginate = (currentPage) => {
+  return CustomAxios.get(`/api/product/finished-goods/?page=${currentPage}`);
+};
+
+const getFinishGoodsPaginateWithSearch = (currentPage, search) => {
   return CustomAxios.get(
     `/api/product/finished-goods/?page=${currentPage}&search=${search}`
   );
@@ -232,7 +260,11 @@ const getAllSearchRawMaterials = (search) => {
   return CustomAxios.get(`/api/product/raw-materials/?search=${search}`);
 };
 
-const getAllRawMaterialsPaginate = (currentPage, search) => {
+const getRawMaterialsPaginate = (currentPage) => {
+  return CustomAxios.get(`/api/product/raw-materials/?page=${currentPage}`);
+};
+
+const getRawMaterialsPaginateWithSearch = (currentPage, search) => {
   return CustomAxios.get(
     `/api/product/raw-materials/?page=${currentPage}&search=${search}`
   );
@@ -254,7 +286,7 @@ const getAllPriceList = () => {
   return CustomAxios.get("/api/product/pricelist/");
 };
 
-const getAllPaginatePriceList = (filter,all) => {
+const getAllPaginatePriceList = (filter, all) => {
   return CustomAxios.get(`/api/product/pricelist/?${filter}=${all}`);
 };
 
@@ -286,6 +318,7 @@ const getAllProduct = () => {
 
 const ProductService = {
   getAllColour,
+  getColourPaginatewithSearch,
   getAllPaginateColour,
   getAllSearchColour,
   getColourById,
@@ -317,6 +350,8 @@ const ProductService = {
   updatePackingUnit,
   getAllDescription,
   getAllSearchDescription,
+  getDescriptionPaginateWithSearch,
+  getDescriptionPaginate,
   getYesDescription,
   getNoDescription,
   createDescription,
@@ -325,24 +360,28 @@ const ProductService = {
   getAllProductCode,
   getAllPaginateProductCode,
   getAllSearchProductCode,
+  getSearchWithPaginateProductCode,
   createProductCode,
   getProductCodeById,
   updateProductCode,
   getAllConsumable,
   getAllSearchConsumable,
-  getAllConsumablePaginate,
+  getConsumablePaginate,
+  getConsumablePaginateWithSearch,
   createConsumable,
   getConsumableById,
   updateConsumable,
   getAllFinishGoods,
   getAllSearchFinishGoods,
-  getAllFinishGoodsPaginate,
+  getFinishGoodsPaginate,
+  getFinishGoodsPaginateWithSearch,
   createFinishGoods,
   getFinishGoodsById,
   updateFinishGoods,
   getAllRawMaterials,
   getAllSearchRawMaterials,
-  getAllRawMaterialsPaginate,
+  getRawMaterialsPaginate,
+  getRawMaterialsPaginateWithSearch,
   createRawMaterials,
   getRawMaterialsById,
   updateRawMaterials,
