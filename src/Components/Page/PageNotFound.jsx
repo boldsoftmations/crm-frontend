@@ -11,13 +11,13 @@ export const PageNotFound = () => {
       </div>
       <div className="err2">4</div>
       <div className="msg">
-        <p>
+
           Let's go{" "}
-          <Link className="link" to={`/login`}>
+          <Link className="link" to={`/`}>
             Login
           </Link>{" "}
           and try from there.
-        </p>
+
       </div>
     </div>
   );
