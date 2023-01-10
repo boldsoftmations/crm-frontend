@@ -44,18 +44,18 @@ export const RouteScreen = () => {
   // const token = localStorage.getItem('user')
   return (
     <div className="appcontainer">
+      {!token && (
+        <>
+          <Route path="/" exact element={<Auths />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route
+            path="/change-password/:id/:token"
+            element={<ChangePassword />}
+          />
+        </>
+      )}
       {STAFF.is_staff === true ? (
         <Routes>
-          {!token && (
-            <>
-              <Route path="/" exact element={<Auths />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route
-                path="/change-password/:id/:token"
-                element={<ChangePassword />}
-              />
-            </>
-          )}
           {token && (
             <>
               {/* <Route path="/" exact element={<Dashboard />} /> */}
@@ -147,16 +147,6 @@ export const RouteScreen = () => {
         </Routes>
       ) : (
         <Routes>
-          {!token && (
-            <>
-              <Route path="/" exact element={<Auths />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route
-                path="/change-password/:id/:token"
-                element={<ChangePassword />}
-              />
-            </>
-          )}
           {token && (
             <>
               {/* <Route path="/" exact element={<Dashboard />} /> */}
