@@ -99,6 +99,12 @@ const deletePotentialLeadsById = (id) => {
 const createFollowUps = (id, data) => {
   return CustomAxios.patch(`/api/lead/view-followup/${id}`, data);
 };
+
+const BulkLeadAssign = (data) => {
+  return CustomAxios.post("/api/lead/assign-bulk-leads/", data);
+};
+
+
 const LeadServices = {
   getProfile,
   getAllLeads,
@@ -123,6 +129,7 @@ const LeadServices = {
   getReferncesById,
   updateRefernces,
   createFollowUps,
+  BulkLeadAssign,
 };
 
 export default LeadServices;

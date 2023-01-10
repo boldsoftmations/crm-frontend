@@ -21,6 +21,7 @@ import {
 import ClearIcon from "@mui/icons-material/Clear";
 import { tableCellClasses } from "@mui/material/TableCell";
 import AddIcon from "@mui/icons-material/Add";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import LeadServices from "./../../services/LeadService";
 import "../CommonStyle.css";
 import { CreateLeads } from "./CreateLeads";
@@ -30,7 +31,9 @@ import ProductService from "../../services/ProductService";
 import { ErrorMessage } from "./../../Components/ErrorMessage/ErrorMessage";
 import { CustomSearch } from "./../../Components/CustomSearch";
 import { CustomPagination } from "../../Components/CustomPagination";
-import { CustomLoader } from './../../Components/CustomLoader';
+import { CustomLoader } from "./../../Components/CustomLoader";
+import { BulkLeadAssign } from "./BulkLeadAssign";
+import { useSelector } from "react-redux";
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.common.black,
@@ -66,6 +69,18 @@ export const Viewleads = () => {
   const [assigned, setAssigned] = useState([]);
   const [referenceData, setReferenceData] = useState([]);
   const [descriptionMenuData, setDescriptionMenuData] = useState([]);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
+  const tokenData = useSelector((state) => state.auth);
+  const users = tokenData.profile;
+
+  const handleMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
   const handleInputChange = (event) => {
     setFilterSelectedQuery(event.target.value);
     getSearchData(event.target.value);
@@ -122,6 +137,8 @@ export const Viewleads = () => {
       if (currentPage) {
         const response = await LeadServices.getAllPaginateLeads(currentPage);
         setLeads(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
       } else {
         let response = await LeadServices.getAllLeads();
         if (response) {
@@ -229,8 +246,15 @@ export const Viewleads = () => {
   console.log("leads", leads.length);
   return (
     <>
-  <CustomLoader open={open} />
-
+      <CustomLoader open={open} />
+      <Popup
+        maxWidth={"lg"}
+        title={"Assign Bulk Lead to another Employee"}
+        openPopup={openModal}
+        setOpenPopup={setOpenModal}
+      >
+        <BulkLeadAssign setOpenPopup={setOpenModal} />
+      </Popup>
       <Grid item xs={12}>
         <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
@@ -488,7 +512,21 @@ export const Viewleads = () => {
                   <StyledTableCell align="center">
                     ALTERNATE CONTACT
                   </StyledTableCell>
-                  <StyledTableCell align="center">ASSIGNED TO</StyledTableCell>
+                  <StyledTableCell align="center">
+                    ASSIGNED TO
+                    {users.is_staff === true && (
+                      <IconButton
+                        size="large"
+                        aria-label="account of current user"
+                        aria-controls="menu-appbar"
+                        aria-haspopup="false"
+                        onClick={() => setOpenModal(true)}
+                        color="inherit"
+                      >
+                        <MoreVertIcon />
+                      </IconButton>
+                    )}
+                  </StyledTableCell>
                   <StyledTableCell align="center">COMPANY NAME</StyledTableCell>
 
                   <StyledTableCell align="center">ACTION</StyledTableCell>

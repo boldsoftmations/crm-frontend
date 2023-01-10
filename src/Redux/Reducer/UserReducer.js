@@ -30,6 +30,14 @@ const userReducer = (state = initialState, action) => {
         ...state,
         user: null,
         profile: null,
+        companyName: null,
+        brandAllData: null,
+        colourAllData: null,
+        unitAllData: null,
+        basicunitAllData: null,
+        packingunitAllData: null,
+        productCodeAllData: null,
+        sellerAccount: null,
       };
     case types.REFRESH_TOKEN:
       return {

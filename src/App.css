@@ -16,8 +16,8 @@
 
 .appcontainer {
   min-height: 100vh;
-  margin-top: 3%;
+  padding-top: 2.5%;
   width: 100%;
   position: absolute;
-  background-color: #aaa9ad;
+  background-color: #aaa9ac;
 }

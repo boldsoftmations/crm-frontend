@@ -25,8 +25,6 @@ import { CircularProgress } from "@mui/material";
 import { Backdrop } from "@mui/material";
 import "../CommonStyle.css";
 import LeadServices from "./../../services/LeadService";
-import { useDispatch } from "react-redux";
-import { getProfileUser } from "./../../Redux/Action/Action";
 import ProductService from "../../services/ProductService";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/material.css";
@@ -76,9 +74,6 @@ export const CreateLeads = (props) => {
   const [phone2, setPhone2] = useState();
   const [typeData, setTypeData] = useState("");
   const [pinCodeData, setPinCodeData] = useState([]);
-  const dispatch = useDispatch();
-
-  const [users, setUsers] = useState("");
   const [personName, setPersonName] = useState([]);
 
   const handleChange = (event) => {
@@ -145,20 +140,6 @@ export const CreateLeads = (props) => {
     }
   };
 
-  useEffect(() => {
-    getUsers();
-  }, []);
-
-  const getUsers = async () => {
-    try {
-      const res = await LeadServices.getProfile();
-
-      dispatch(getProfileUser(res.data));
-      setUsers(res.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
   const getDescriptionNoData = async () => {
     try {
       const res = await ProductService.getNoDescription();
