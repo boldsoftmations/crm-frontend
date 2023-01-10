@@ -1,47 +1,42 @@
 import React, { useState } from "react";
 import "../CommonStyle.css";
 import { Link, useNavigate } from "react-router-dom";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+
 import {
-  Avatar,
-  Container,
   ThemeProvider,
   createTheme,
   Box,
   Grid,
   Button,
   TextField,
-  Backdrop,
-  CircularProgress,
+  Paper,
+  Avatar,
   Modal,
   Typography,
 } from "@mui/material";
+import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
 import axios from "axios";
 import * as Yup from "yup";
 import { useFormik } from "formik";
+import { CustomButton } from "./../../Components/CustomButton";
+import { CustomLoader } from "../../Components/CustomLoader";
+import { styled } from '@mui/material/styles';
 
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-};
+// const HelperText = styled(FormHelperText)(() => ({
+//   padding: '0px',
+// }));
 
-const phoneRegExp =
-  /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
-const SIGNUP_URL = `${process.env.REACT_APP_DEPLOY_BACKEND_URL}/api/user/register/`;
-// const SIGNUP_URL = `${process.env.REACT_APP_TESTING_BACKEND_URL}/api/user/register/`;
-
-export const SignUp = () => {
+export const SignUp = (props) => {
+  const { handleChange } = props;
   let navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [message, setMessage] = useState("");
+
+  const paperStyle = { padding: 20, width: 340, margin: "0 auto" };
+  const headerStyle = { margin: 0 };
+  const avatarStyle = { backgroundColor: "#1bbd7e" };
+  const marginTop = { marginTop: 5 };
 
   const validationSchema = Yup.object().shape({
     first_name: Yup.string().required("first name is required"),
@@ -101,14 +96,8 @@ export const SignUp = () => {
   return (
     <div>
       <ThemeProvider theme={theme}>
-        <div>
-          <Backdrop
-            sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-            open={open}
-          >
-            <CircularProgress color="inherit" />
-          </Backdrop>
-        </div>
+        <CustomLoader open={open} />
+
         <Modal
           open={modalOpen}
           onClose={() => setModalOpen(false)}
@@ -130,36 +119,29 @@ export const SignUp = () => {
             </Button>
           </Box>
         </Modal>
-        <Container
-          className="Auth-form-container"
-          component="main"
-          maxWidth="xs"
-        >
-          <Box
-            className="Auth-form"
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
-            <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-              <LockOutlinedIcon />
-            </Avatar>
-            <h3 className="Auth-form-title">Sign Up</h3>
+        <Grid>
+          <Paper style={paperStyle}>
+            <Grid align="center">
+              <Avatar style={avatarStyle}>
+                <AddCircleOutlineOutlinedIcon />
+              </Avatar>
+              <h2 style={headerStyle}>Sign Up</h2>
+              <Typography variant="caption" gutterBottom>
+                Please fill this form to create an account !
+              </Typography>
+            </Grid>
             <Box
-              className="Auth-form-content"
+              // className="Auth-form-content"
               component="form"
               noValidate
               onSubmit={formik.handleSubmit}
-              sx={{ mt: 1 }}
+              sx={{ mt: "1em" }}
             >
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
                   <TextField
                     required
                     name="first_name"
-                    fullWidth={false}
                     size="small"
                     label="First Name"
                     variant="outlined"
@@ -262,25 +244,49 @@ export const SignUp = () => {
                   />
                 </Grid>
               </Grid>
-              <Button
+              <CustomButton
                 type="submit"
                 fullWidth
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
-              >
-                Sign Up
-              </Button>
+                text={"Sign Up"}
+              />
+              {/* <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+          >
+            Sign Up
+          </Button> */}
               <Grid container justifyContent="center">
                 <Grid item>
-                  <Link to="/login" className="link-primary">
+                  <Button onClick={() => handleChange("event",0)} variant="text">
                     Already have an account? Sign in
-                  </Link>
+                  </Button>
                 </Grid>
               </Grid>
             </Box>
-          </Box>
-        </Container>
+          </Paper>
+        </Grid>
       </ThemeProvider>
     </div>
   );
 };
+
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  border: "2px solid #000",
+  boxShadow: 24,
+  p: 4,
+};
+
+const phoneRegExp =
+  /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
+// const SIGNUP_URL = `${process.env.REACT_APP_DEPLOY_BACKEND_URL}/api/user/register/`;
+const SIGNUP_URL = `${process.env.REACT_APP_TESTING_BACKEND_URL}/api/user/register/`;

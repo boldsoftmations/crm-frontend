@@ -16,9 +16,10 @@ import {
 } from "@mui/material";
 import LockResetIcon from "@mui/icons-material/LockReset";
 import axios from "axios";
-
-const RESET_URL = `${process.env.REACT_APP_DEPLOY_BACKEND_URL}/api/user/send-reset-password-email/`;
-// const RESET_URL = `${process.env.REACT_APP_TESTING_BACKEND_URL}/api/user/send-reset-password-email/`;
+import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
+import { Link } from "react-router-dom";
+// const RESET_URL = `${process.env.REACT_APP_DEPLOY_BACKEND_URL}/api/user/send-reset-password-email/`;
+const RESET_URL = `${process.env.REACT_APP_TESTING_BACKEND_URL}/api/user/send-reset-password-email/`;
 
 const style = {
   position: "absolute",
@@ -89,17 +90,25 @@ export const ForgotPassword = () => {
         </Box>
       </Modal>
       <Container className="Auth-form-container" component="main" maxWidth="xs">
+       
         <Box
           className="Auth-form"
           sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
+            // display: "flex",
+            // flexDirection: "column",
+            // alignItems: "center",
           }}
         >
+          <Box sx={{ ml: 8 }} display={'flex'} justifyContent="flex-start">
+          <Link to={"/"}>
+          <KeyboardBackspaceIcon />Back To Login
+          </Link>
+          </Box>
+          <Box display={'flex'} justifyContent="center">
           <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
             <LockResetIcon />
           </Avatar>
+          </Box>
           <h3 className="Auth-form-title">Forgot Password</h3>
 
           <Box
@@ -136,3 +145,4 @@ export const ForgotPassword = () => {
     </ThemeProvider>
   );
 };
+
