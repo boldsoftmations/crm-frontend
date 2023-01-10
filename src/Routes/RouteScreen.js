@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
-import { useSelector } from "react-redux";
-import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect } from "react";
 
 import { AssignTo } from "../Pages/Leads/AssignTo";
 import { ChangePassword } from "./../Pages/Auth/ChangePassword";
@@ -33,15 +33,30 @@ import { ProductOrderBookDetails } from "./../Pages/OrderBooks/ProductOrderBookD
 import { SalesInvoiceView } from "./../Pages/Invoice/SalesInvoice/SalesInvoiceView";
 import { Auths } from "../Pages/Auth/Auths";
 import { Profile } from "./../Pages/Profile/Profile";
+import LeadServices from "./../services/LeadService";
+import { getProfileUser } from "./../Redux/Action/Action";
 
 export const RouteScreen = () => {
+  const dispatch = useDispatch();
   const tokenData = useSelector((state) => state.auth);
   const token = tokenData.user;
-  const STAFF = tokenData.profile ? tokenData.profile : [];
-  console.log("tokenData", tokenData);
-  const users = tokenData.profile ? tokenData.profile.groups.toString() : [];
-  console.log("users", users);
-  // const token = localStorage.getItem('user')
+
+  useEffect(() => {
+    if (token) {
+      getUsers();
+    }
+  }, [token]);
+
+  const getUsers = async () => {
+    try {
+      const res = await LeadServices.getProfile();
+      dispatch(getProfileUser(res.data));
+      // setUserData(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <div className="appcontainer">
       <Routes>
