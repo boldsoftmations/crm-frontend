@@ -26,10 +26,8 @@ import { CreateCustomerProformaInvoice } from "./CreateCustomerProformaInvoice";
 import { Popup } from "./../../../Components/Popup";
 import { CustomerProformaInvoice } from "./CustomerProformaInvoice";
 import AddIcon from "@mui/icons-material/Add";
-import LeadServices from "../../../services/LeadService";
 import ClearIcon from "@mui/icons-material/Clear";
 import {
-  getProfileUser,
   getSellerAccountData,
 } from "./../../../Redux/Action/Action";
 import { useDispatch } from "react-redux";
@@ -80,19 +78,6 @@ export const ViewCustomerProformaInvoice = () => {
   const handleInputChange = (event) => {
     setFilterSelectedQuery(event.target.value);
     getSearchData(event.target.value);
-  };
-
-  useEffect(() => {
-    getUsers();
-  }, []);
-
-  const getUsers = async () => {
-    try {
-      const res = await LeadServices.getProfile();
-      dispatch(getProfileUser(res.data));
-    } catch (err) {
-      console.error(err);
-    }
   };
 
   useEffect(() => {

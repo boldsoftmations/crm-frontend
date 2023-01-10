@@ -35,7 +35,6 @@ export const CreateCompanyDetails = (props) => {
   const [idForEdit, setIdForEdit] = useState("");
   const [assigned, setAssigned] = useState([]);
   const [assign, setAssign] = useState([]);
-  const [users, setUsers] = useState("");
   const handleChange = (event) => {
     setTypeData(event.target.value);
   };
@@ -58,19 +57,6 @@ export const CreateCompanyDetails = (props) => {
     } catch (error) {
       console.log("Creating Bank error ", error);
       setOpen(false);
-    }
-  };
-  useEffect(() => {
-    getUsers();
-  }, []);
-
-  const getUsers = async () => {
-    try {
-      const res = await LeadServices.getProfile();
-
-      setUsers(res.data);
-    } catch (err) {
-      console.error(err);
     }
   };
 

@@ -30,11 +30,9 @@ import SearchIcon from "@mui/icons-material/Search";
 import ClearIcon from "@mui/icons-material/Clear";
 import { Popup } from "./../../../Components/Popup";
 import { LeadsPerformaInvoice } from "./LeadsPerformaInvoice";
-import LeadServices from "../../../services/LeadService";
 import { useDispatch } from "react-redux";
 import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
 import {
-  getProfileUser,
   getSellerAccountData,
 } from "./../../../Redux/Action/Action";
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -80,19 +78,6 @@ export const ViewLeadsProformaInvoice = () => {
   const handleInputChange = (event) => {
     setFilterSelectedQuery(event.target.value);
     getSearchData(event.target.value);
-  };
-
-  useEffect(() => {
-    getUsers();
-  }, []);
-
-  const getUsers = async () => {
-    try {
-      const res = await LeadServices.getProfile();
-      dispatch(getProfileUser(res.data));
-    } catch (err) {
-      console.error(err);
-    }
   };
 
   useEffect(() => {

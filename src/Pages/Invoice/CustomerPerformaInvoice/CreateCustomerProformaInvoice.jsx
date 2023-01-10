@@ -725,12 +725,6 @@ const deliveryTermsOptions = [
   },
 ];
 
-const HelperText = styled(FormHelperText)(({ theme }) => ({
+const HelperText = styled(FormHelperText)(() => ({
      padding: '0px',
-  MuiFormHelperText: {
-		root: {
-			padding: 0,
-      margin: 0
-		},
-  },
 }));

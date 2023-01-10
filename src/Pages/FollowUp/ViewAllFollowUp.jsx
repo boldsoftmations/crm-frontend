@@ -21,16 +21,16 @@ import {
   TimelineContent,
   TimelineDot,
   TimelineItem,
-  timelineItemClasses,
+  TimelineOppositeContent,
+  timelineOppositeContentClasses,
   TimelineSeparator,
 } from "@mui/lab";
 
 import moment from "moment";
 import { styled } from "@mui/material/styles";
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
 import LeadServices from "../../services/LeadService";
-import { getProfileUser } from "../../Redux/Action/Action";
+import { useSelector } from 'react-redux';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -75,10 +75,9 @@ export const ViewAllFollowUp = (props) => {
   const [followUp, setFollowUp] = useState([]);
   const [followUpData, setFollowUpData] = useState([]);
   const [open, setOpen] = useState(false);
-  const [userId, setUserId] = useState("");
-  const dispatch = useDispatch();
   const [openModal, setOpenModal] = useState(false);
-
+  const data = useSelector((state) => state.auth);
+  const userId = data.profile.email;
   const handleClickOpen = () => {
     setOpenModal(true);
   };
@@ -105,19 +104,6 @@ export const ViewAllFollowUp = (props) => {
 
   useEffect(() => {
     getFollowUp();
-  }, []);
-
-  const getUsers = async () => {
-    try {
-      const res = await LeadServices.getProfile();
-      dispatch(getProfileUser(res.data));
-      setUserId(res.data.email);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-  useEffect(() => {
-    getUsers();
   }, []);
 
   const createFollowUpLeadsData = async (e) => {
@@ -253,14 +239,20 @@ export const ViewAllFollowUp = (props) => {
                   return (
                     <div key={data.id}>
                       <Timeline
-                        sx={{
-                          [`& .${timelineItemClasses.root}:before`]: {
-                            flex: 0,
-                            padding: 0,
+                         sx={{
+                          [`& .${timelineOppositeContentClasses.root}`]: {
+                            flex: 0.2,
                           },
                         }}
                       >
                         <TimelineItem>
+                          <TimelineOppositeContent sx={{  px: 2 }}>
+                          <Typography variant="h6" component="span">
+                          {moment(data.current_date).format(
+                                "DD/MM/YYYY h:mm:ss"
+                              )}
+                              </Typography>
+                          </TimelineOppositeContent>
                           <TimelineSeparator>
                             <TimelineDot />
                             <TimelineConnector />
