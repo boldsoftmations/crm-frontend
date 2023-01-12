@@ -18,8 +18,8 @@ import LockResetIcon from "@mui/icons-material/LockReset";
 import axios from "axios";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import { Link } from "react-router-dom";
-// const RESET_URL = `${process.env.REACT_APP_DEPLOY_BACKEND_URL}/api/user/send-reset-password-email/`;
-const RESET_URL = `${process.env.REACT_APP_TESTING_BACKEND_URL}/api/user/send-reset-password-email/`;
+const RESET_URL = `${process.env.REACT_APP_DEPLOY_BACKEND_URL}/api/user/send-reset-password-email/`;
+// const RESET_URL = `${process.env.REACT_APP_TESTING_BACKEND_URL}/api/user/send-reset-password-email/`;
 
 const style = {
   position: "absolute",
