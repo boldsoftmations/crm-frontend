@@ -162,7 +162,7 @@ export const UpdatePriceList = (props) => {
               size="small"
               label="Slab 1"
               variant="outlined"
-              value={inputValue.slab1 ? inputValue.slab1 : ''}
+              value={inputValue.slab1 ? inputValue.slab1 : ""}
               error={inputValue.slab1 === ""}
               helperText={
                 inputValue.slab1 === "" ? "this field is required." : ""
@@ -177,7 +177,7 @@ export const UpdatePriceList = (props) => {
               size="small"
               label="Slab1 Price"
               variant="outlined"
-              value={inputValue.slab1_price ? inputValue.slab1_price : ''}
+              value={inputValue.slab1_price ? inputValue.slab1_price : ""}
               onChange={handleInputChange}
             />
           </Grid>
@@ -188,10 +188,12 @@ export const UpdatePriceList = (props) => {
               size="small"
               label="Slab 2"
               variant="outlined"
-              value={inputValue.slab2 ? inputValue.slab2 : ''}
+              value={inputValue.slab2 ? inputValue.slab2 : ""}
               error={validate === false || validate === ""}
               helperText={
-                validate === false || inputValue.slab2 === "" ? "slab2 must be greater than slab1" : " "
+                validate === false || inputValue.slab2 === ""
+                  ? "slab2 must be greater than slab1"
+                  : " "
               }
               onChange={handleInputChange}
             />
@@ -203,18 +205,18 @@ export const UpdatePriceList = (props) => {
               size="small"
               label="Slab2 Price"
               variant="outlined"
-              value={inputValue.slab2_price ? inputValue.slab2_price : ''}
+              value={inputValue.slab2_price ? inputValue.slab2_price : ""}
               onChange={handleInputChange}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              name="slab2_price"
+              name="slab3_price"
               size="small"
               label="Slab3  Price"
               variant="outlined"
-              value={inputValue.slab2_price ? inputValue.slab2_price :''}
+              value={inputValue.slab3_price ? inputValue.slab3_price : ""}
               onChange={handleInputChange}
             />
           </Grid>
