@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import "../CommonStyle.css";
-import { Link, useNavigate } from "react-router-dom";
 
 import {
   ThemeProvider,
@@ -20,15 +19,9 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { CustomButton } from "./../../Components/CustomButton";
 import { CustomLoader } from "../../Components/CustomLoader";
-import { styled } from '@mui/material/styles';
-
-// const HelperText = styled(FormHelperText)(() => ({
-//   padding: '0px',
-// }));
 
 export const SignUp = (props) => {
   const { handleChange } = props;
-  let navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [message, setMessage] = useState("");
@@ -36,7 +29,6 @@ export const SignUp = (props) => {
   const paperStyle = { padding: 20, width: 340, margin: "0 auto" };
   const headerStyle = { margin: 0 };
   const avatarStyle = { backgroundColor: "#1bbd7e" };
-  const marginTop = { marginTop: 5 };
 
   const validationSchema = Yup.object().shape({
     first_name: Yup.string().required("first name is required"),
@@ -114,7 +106,10 @@ export const SignUp = (props) => {
             >
               {message}
             </Typography>
-            <Button variant="contained" component={Link} to="/login">
+            <Button
+              variant="contained"
+              onClick={() => handleChange("event", 0)}
+            >
               LOGIN
             </Button>
           </Box>
@@ -261,7 +256,10 @@ export const SignUp = (props) => {
           </Button> */}
               <Grid container justifyContent="center">
                 <Grid item>
-                  <Button onClick={() => handleChange("event",0)} variant="text">
+                  <Button
+                    onClick={() => handleChange("event", 0)}
+                    variant="text"
+                  >
                     Already have an account? Sign in
                   </Button>
                 </Grid>
