@@ -8,8 +8,8 @@ import { CustomLoader } from "../../../Components/CustomLoader";
 import logo from " ../../../public/images.ico";
 import ISO from "../../../Images/ISOLogo.ico";
 import AllLogo from "../../../Images/allLogo.jpg";
-import MSME from "../../../Images/msme.ico";
-import "../CustomerPiStyle.css";
+import MSME from "../../../Images/MSME.jpeg";
+// import "../CustomerPiStyle.css";
 
 export const CustomerProformaInvoice = (props) => {
   const { idForEdit, setOpenPopup, getCustomerPIDetails } = props;
@@ -113,15 +113,15 @@ export const CustomerProformaInvoice = (props) => {
         <div className="row">
           {/* <!-- BEGIN INVOICE --> */}
           <div className="col-xs-12">
-            <div className="grid invoice">
+            <div className="grid invoice" style={{ padding: "10px" }}>
               <div className="grid-body">
                 <div className="invoice-title">
                   <div
                     className="row"
-                    // style={{ borderBottom: "1px Solid #000000" }}
+                    style={{ borderBottom: "1px Solid #000000" }}
                   >
                     <div className="col-md-2 align-self-center">
-                      <img src={logo} alt="" height="50" width="120" />
+                      <img src={logo} alt="" height="100" width="180" />
                     </div>
                     <div className="col-md-7" style={{ marginRight: "1em" }}>
                       {/* seller Details */}
@@ -137,7 +137,7 @@ export const CustomerProformaInvoice = (props) => {
                       </div>
                     </div>
                     <div className="col-md-1 d-flex align-items-center justify-content-end">
-                      <img src={MSME} alt="" height="35" width="90" />
+                      <img src={MSME} alt="" height="50" width="90" />
                     </div>
                     <div className="col-md-1 d-flex align-items-center justify-content-start">
                       <img src={ISO} alt="" height="35" width="90" />
@@ -160,25 +160,26 @@ export const CustomerProformaInvoice = (props) => {
                   >
                     <div className="col-md-6">
                       <div>
-                        <span className="fw-bold">Proforma Invoice : </span>{" "}
+                        <strong className="fw-bold">Proforma Invoice : </strong>{" "}
                         {invoiceData.pi_number}
                       </div>
                       <div>
-                        <span className="fw-bold">Sales Person Name : </span>{" "}
-                        {invoiceData.raised_by}
+                        <strong className="fw-bold">Sales Person : </strong>{" "}
+                        {invoiceData.raised_by_first_name}
+                        {invoiceData.raised_by_last_name}
                       </div>
                       <div>
-                        <span className="fw-bold">
+                        <strong className="fw-bold">
                           Proforma Invoice Date :{" "}
-                        </span>{" "}
+                        </strong>{" "}
                         {invoiceData.generation_date}
                       </div>
                       <div>
-                        <span className="fw-bold">Customer Name : </span>{" "}
+                        <strong className="fw-bold">Customer Name : </strong>{" "}
                         {invoiceData.company}
                       </div>
                       <div>
-                        <span className="fw-bold">Valid Until : </span>{" "}
+                        <strong className="fw-bold">Valid Until : </strong>{" "}
                         {invoiceData.validity}
                       </div>
                     </div>
@@ -188,23 +189,23 @@ export const CustomerProformaInvoice = (props) => {
                       style={{ borderLeft: "1px Solid #000000" }}
                     >
                       <div>
-                        <span className="fw-bold">Place of Supply : </span>
+                        <strong className="fw-bold">Place of Supply : </strong>
                         Bhiwandi
                       </div>
                       <div>
-                        <span className="fw-bold">Buyer Order No : </span>{" "}
+                        <strong className="fw-bold">Buyer Order No : </strong>{" "}
                         {invoiceData.buyer_order_no}
                       </div>
                       <div>
-                        <span className="fw-bold">Buyer Order Date : </span>{" "}
+                        <strong className="fw-bold">Buyer Order Date : </strong>{" "}
                         {invoiceData.buyer_order_no_date}
                       </div>
                       <div>
-                        <span className="fw-bold">Payment Terms : </span>{" "}
+                        <strong className="fw-bold">Payment Terms : </strong>{" "}
                         {invoiceData.payment_terms}
                       </div>
                       <div>
-                        <span className="fw-bold">Delivery Terms : </span>{" "}
+                        <strong className="fw-bold">Delivery Terms : </strong>{" "}
                         {invoiceData.delivery_terms}
                       </div>
                     </div>
@@ -219,21 +220,33 @@ export const CustomerProformaInvoice = (props) => {
                       <strong>Billed To:</strong>
                       <br />
                       <div>
-                        <span className="fw-bold">Company : </span>
+                        <strong className="fw-bold">Company : </strong>
                         {invoiceData.company},
                       </div>
                       <div>
-                        <span className="fw-bold">Address : </span>
+                        <strong className="fw-bold">Address : </strong>
                         {invoiceData.billing_address},
                       </div>
                       <div>
-                        <span className="fw-bold">City & State: </span>
+                        <strong className="fw-bold">City & State: </strong>
                         {invoiceData.billing_city} & {invoiceData.billing_state}
                         ,
                       </div>
                       <div>
-                        <span className="fw-bold">Pin Code : </span>
+                        <strong className="fw-bold">Pin Code : </strong>
                         {invoiceData.billing_pincode}
+                      </div>
+                      <div>
+                        <strong className="fw-bold">Gst Number : </strong>
+                        {invoiceData.gst_number}
+                      </div>
+                      <div>
+                        <strong className="fw-bold">Pan Number : </strong>
+                        {invoiceData.pan_number}
+                      </div>
+                      <div>
+                        <strong className="fw-bold">Contact : </strong>
+                        {invoiceData.contact}
                       </div>
                     </address>
                   </div>
@@ -245,20 +258,32 @@ export const CustomerProformaInvoice = (props) => {
                       <strong>Shipped To:</strong>
                       <br />
                       <div>
-                        <span className="fw-bold">Company : </span>
+                        <strong className="fw-bold">Company : </strong>
                         {invoiceData.company},
                       </div>
                       <div>
-                        <span className="fw-bold">Address : </span>
+                        <strong className="fw-bold">Address : </strong>
                         {invoiceData.address}
                       </div>
                       <div>
-                        <span className="fw-bold">City & State: </span>
+                        <strong className="fw-bold">City & State: </strong>
                         {invoiceData.city} & {invoiceData.state},
                       </div>
                       <div>
-                        <span className="fw-bold">Pin Code : </span>
+                        <strong className="fw-bold">Pin Code : </strong>
                         {invoiceData.pincode}
+                      </div>
+                      <div>
+                        <strong className="fw-bold">Gst Number : </strong>
+                        {invoiceData.gst_number}
+                      </div>
+                      <div>
+                        <strong className="fw-bold">Pan Number : </strong>
+                        {invoiceData.pan_number}
+                      </div>
+                      <div>
+                        <strong className="fw-bold">Contact : </strong>
+                        {invoiceData.contact}
                       </div>
                     </address>
                   </div>
@@ -292,7 +317,7 @@ export const CustomerProformaInvoice = (props) => {
                           <td className="text-center">
                             <strong>RATE</strong>
                           </td>
-                          <td className="text-end">
+                          <td className="text-center">
                             <strong>AMOUNT</strong>
                           </td>
                         </tr>
@@ -311,12 +336,16 @@ export const CustomerProformaInvoice = (props) => {
                             <td className="text-center">{row.quantity}</td>
                             <td className="text-center">{row.unit}</td>
                             <td className="text-center">{row.rate}</td>
-                            <td className="text-end">{row.amount}</td>
+                            <td className="text-center">{row.amount}</td>
                           </tr>
                         ))}
                         <tr>
                           <td colspan="4.5" className="text-start">
                             <strong>Company Bank Details : </strong>
+                            <div>
+                              <strong>Company Name : </strong>
+                              Glutape India Pvt Ltd
+                            </div>
                             <div>
                               <strong>Bank : </strong>
                               {invoiceData.seller_bank_name}{" "}
@@ -329,6 +358,14 @@ export const CustomerProformaInvoice = (props) => {
                               <strong>Branch & IFSC Code : </strong>
                               {invoiceData.seller_branch} &{" "}
                               {invoiceData.seller_ifsc}{" "}
+                            </div>
+                            <div>
+                              <strong>Gst Number : </strong>
+                              {invoiceData.seller_gst}
+                            </div>
+                            <div>
+                              <strong>Pan Number : </strong>
+                              {invoiceData.seller_pan}
                             </div>
                           </td>
                           <td colspan="3">
@@ -382,10 +419,13 @@ export const CustomerProformaInvoice = (props) => {
                   <div className="col-md-4 d-flex align-items-end justify-content-center">
                     <div className="text-center">
                       {invoiceData.approval
-                        ? invoiceData.approval.approved_by
+                        ? invoiceData.approval.approver_first_name
                         : ""}
                       {invoiceData.approval
-                        ? invoiceData.approval.approved_date
+                        ? invoiceData.approval.approver_last_name
+                        : ""}
+                      {invoiceData.approval
+                        ? invoiceData.approval.approval_date
                         : ""}
                       <br />
                       <strong>Authorising Signatory</strong>
@@ -433,7 +473,7 @@ const Information = [
   },
   {
     id: "2)",
-    text: "Material is delivered at owner's risk and with no liability of transportation damage to glutape india Pvt Ltd. ",
+    text: "Material is delivered at owner's risk and with no liability of transportation damage to Glutape India Pvt Ltd. ",
   },
   {
     id: "3)",
