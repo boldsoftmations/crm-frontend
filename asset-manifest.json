@@ -1,19 +1,19 @@
 {
-  "main.css": "/crm-frontend/static/css/main.a33fad2b.chunk.css",
-  "main.js": "/crm-frontend/static/js/main.1c771c4e.chunk.js",
-  "main.js.map": "/crm-frontend/static/js/main.1c771c4e.chunk.js.map",
+  "main.css": "/crm-frontend/static/css/main.1ca157ab.chunk.css",
+  "main.js": "/crm-frontend/static/js/main.d3f29d3b.chunk.js",
+  "main.js.map": "/crm-frontend/static/js/main.d3f29d3b.chunk.js.map",
   "runtime~main.js": "/crm-frontend/static/js/runtime~main.c21cafe3.js",
   "runtime~main.js.map": "/crm-frontend/static/js/runtime~main.c21cafe3.js.map",
   "static/css/2.671a6f27.chunk.css": "/crm-frontend/static/css/2.671a6f27.chunk.css",
-  "static/js/2.225df945.chunk.js": "/crm-frontend/static/js/2.225df945.chunk.js",
-  "static/js/2.225df945.chunk.js.map": "/crm-frontend/static/js/2.225df945.chunk.js.map",
+  "static/js/2.1d1cd896.chunk.js": "/crm-frontend/static/js/2.1d1cd896.chunk.js",
+  "static/js/2.1d1cd896.chunk.js.map": "/crm-frontend/static/js/2.1d1cd896.chunk.js.map",
   "index.html": "/crm-frontend/index.html",
-  "precache-manifest.0fbb0aa0e37a8a6eabac456326a87fc0.js": "/crm-frontend/precache-manifest.0fbb0aa0e37a8a6eabac456326a87fc0.js",
+  "precache-manifest.db9bcb38089f1ecc42943041cc74e11e.js": "/crm-frontend/precache-manifest.db9bcb38089f1ecc42943041cc74e11e.js",
   "service-worker.js": "/crm-frontend/service-worker.js",
   "static/css/2.671a6f27.chunk.css.map": "/crm-frontend/static/css/2.671a6f27.chunk.css.map",
-  "static/css/main.a33fad2b.chunk.css.map": "/crm-frontend/static/css/main.a33fad2b.chunk.css.map",
+  "static/css/main.1ca157ab.chunk.css.map": "/crm-frontend/static/css/main.1ca157ab.chunk.css.map",
   "static/media/ISOLogo.ico": "/crm-frontend/static/media/ISOLogo.92da350d.ico",
+  "static/media/MSME.jpeg": "/crm-frontend/static/media/MSME.185e3428.jpeg",
   "static/media/allLogo.jpg": "/crm-frontend/static/media/allLogo.cc6c4577.jpg",
-  "static/media/images.ico": "/crm-frontend/static/media/images.ee53b9a4.ico",
-  "static/media/msme.ico": "/crm-frontend/static/media/msme.d20d5cdc.ico"
+  "static/media/images.ico": "/crm-frontend/static/media/images.ee53b9a4.ico"
 }
