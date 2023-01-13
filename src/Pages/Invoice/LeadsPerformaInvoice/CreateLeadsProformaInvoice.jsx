@@ -710,8 +710,8 @@ const paymentTermsOptions = [
   { label: "LC at Sight (Export)", value: "lc_at_sight_(export)" },
   { label: "LC 45 days (Export)", value: "lc_45_days_(export)" },
   { label: "TT in advance (Export)", value: "tt_in_advance_(export)" },
-  { label: "45 Days", value: "45_days" },
-  { label: "60 Days", value: "60_days" },
+  { label: "45 days", value: "45_days" },
+  { label: "60 days", value: "60_days" },
   { label: "Against Delivery", value: "against_delivery" },
 ];
 
