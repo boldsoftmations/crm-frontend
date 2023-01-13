@@ -135,7 +135,7 @@ export const LeadsPerformaInvoice = (props) => {
                         {invoiceData.seller_pincode}, CIN No ;-
                         {invoiceData.seller_cin}, P.No :-{" "}
                         {invoiceData.seller_contact} E:
-                        {invoiceData.email},W:www.glutape.com
+                        {invoiceData.seller_email},W:www.glutape.com
                       </div>
                     </div>
                     <div className="col-md-1 d-flex align-items-center justify-content-end">
