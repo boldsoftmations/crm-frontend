@@ -130,7 +130,7 @@ export const CreateCustomerProformaInvoice = (props) => {
   const getAllCompanyDetails = async () => {
     try {
       setOpen(true);
-      let response = await CustomerServices.getAllPaginateCompanyData('all');
+      let response = await CustomerServices.getAllPaginateCompanyData("all");
       setCompanyOptions(response.data);
       setOpen(false);
     } catch (err) {
@@ -334,15 +334,20 @@ export const CreateCustomerProformaInvoice = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-     
-                <FormControl required  fullWidth size="small" sx={{padding:'0',margin:'0'}}>
-              <InputLabel id="demo-simple-select-required-label">Contact</InputLabel>
+            <FormControl
+              required
+              fullWidth
+              size="small"
+              sx={{ padding: "0", margin: "0" }}
+            >
+              <InputLabel id="demo-simple-select-required-label">
+                Contact
+              </InputLabel>
               <Select
                 labelId="demo-simple-select-required-label"
                 id="demo-simple-select-required"
                 label="Contact"
                 onChange={(e, value) => setContactData(e.target.value)}
-             
               >
                 {contactOptions &&
                   contactOptions.map((option, i) => (
@@ -692,6 +697,9 @@ const paymentTermsOptions = [
   { label: "LC at Sight (Export)", value: "lc_at_sight_(export)" },
   { label: "LC 45 days (Export)", value: "lc_45_days_(export)" },
   { label: "TT in advance (Export)", value: "tt_in_advance_(export)" },
+  { label: "45 Days", value: "45_days" },
+  { label: "60 Days", value: "60_days" },
+  { label: "Against Delivery", value: "against_delivery" },
 ];
 
 const deliveryTermsOptions = [
@@ -726,5 +734,5 @@ const deliveryTermsOptions = [
 ];
 
 const HelperText = styled(FormHelperText)(() => ({
-     padding: '0px',
+  padding: "0px",
 }));
