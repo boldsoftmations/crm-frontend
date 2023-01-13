@@ -1,16 +1,19 @@
 {
-  "main.css": "/crm-frontend/static/css/main.1ca157ab.chunk.css",
-  "main.js": "/crm-frontend/static/js/main.8e29463f.chunk.js",
-  "main.js.map": "/crm-frontend/static/js/main.8e29463f.chunk.js.map",
+  "main.css": "/crm-frontend/static/css/main.a33fad2b.chunk.css",
+  "main.js": "/crm-frontend/static/js/main.3946f247.chunk.js",
+  "main.js.map": "/crm-frontend/static/js/main.3946f247.chunk.js.map",
   "runtime~main.js": "/crm-frontend/static/js/runtime~main.c21cafe3.js",
   "runtime~main.js.map": "/crm-frontend/static/js/runtime~main.c21cafe3.js.map",
   "static/css/2.671a6f27.chunk.css": "/crm-frontend/static/css/2.671a6f27.chunk.css",
-  "static/js/2.e8c11adc.chunk.js": "/crm-frontend/static/js/2.e8c11adc.chunk.js",
-  "static/js/2.e8c11adc.chunk.js.map": "/crm-frontend/static/js/2.e8c11adc.chunk.js.map",
+  "static/js/2.83a0b5a1.chunk.js": "/crm-frontend/static/js/2.83a0b5a1.chunk.js",
+  "static/js/2.83a0b5a1.chunk.js.map": "/crm-frontend/static/js/2.83a0b5a1.chunk.js.map",
   "index.html": "/crm-frontend/index.html",
-  "precache-manifest.096b0537db444d11467a6224525be779.js": "/crm-frontend/precache-manifest.096b0537db444d11467a6224525be779.js",
+  "precache-manifest.1a7f2e815a2652e7544d9233563a6d22.js": "/crm-frontend/precache-manifest.1a7f2e815a2652e7544d9233563a6d22.js",
   "service-worker.js": "/crm-frontend/service-worker.js",
   "static/css/2.671a6f27.chunk.css.map": "/crm-frontend/static/css/2.671a6f27.chunk.css.map",
-  "static/css/main.1ca157ab.chunk.css.map": "/crm-frontend/static/css/main.1ca157ab.chunk.css.map",
-  "static/media/images.ico": "/crm-frontend/static/media/images.ee53b9a4.ico"
+  "static/css/main.a33fad2b.chunk.css.map": "/crm-frontend/static/css/main.a33fad2b.chunk.css.map",
+  "static/media/ISOLogo.ico": "/crm-frontend/static/media/ISOLogo.92da350d.ico",
+  "static/media/allLogo.jpg": "/crm-frontend/static/media/allLogo.cc6c4577.jpg",
+  "static/media/images.ico": "/crm-frontend/static/media/images.ee53b9a4.ico",
+  "static/media/msme.ico": "/crm-frontend/static/media/msme.d20d5cdc.ico"
 }
