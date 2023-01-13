@@ -38,7 +38,7 @@ export const SalesInvoiceCreate = (props) => {
   const getAllCustomerWiseOrderBook = async () => {
     try {
       setOpen(true);
-      const response = await InvoiceServices.getOrderBookCustomerData();
+      const response = await InvoiceServices.getOrderBookData('customer');
       setCustomerOrderBookOption(response.data.results);
       setProducts(response.data.results.products);
       setOpen(false);

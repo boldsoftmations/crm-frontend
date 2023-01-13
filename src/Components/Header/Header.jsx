@@ -19,7 +19,7 @@ import { styled, useTheme } from "@mui/material/styles";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import MenuIcon from "@mui/icons-material/Menu";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { logoutUser } from "../../Redux/Action/Action";
 import "./Header.css";
 import { ListItems } from "./ListItems";
@@ -39,7 +39,7 @@ export const Header = () => {
   const theme = useTheme();
   const auth = useSelector((state) => state.auth);
   const [anchorEl, setAnchorEl] = useState(null);
-
+  const ProfileName = auth.profile ? auth.profile : [];
   const handleDrawerClose = () => {
     setOpen(false);
   };
@@ -102,7 +102,7 @@ export const Header = () => {
               <MenuIcon />
             </IconButton>
 
-            <Typography variant="h6" style={{ marginRight: "auto" }}>
+            <Typography variant="h6" sx={{ marginRight: "auto" }}>
               Bold-SoftMation
             </Typography>
             <>
@@ -114,7 +114,10 @@ export const Header = () => {
                 onClick={handleMenu}
                 color="inherit"
               >
-                <AccountCircleIcon />
+                 <span  style={{ marginRight: "auto",fontSize:'15px' }}>
+                {ProfileName.first_name}  {ProfileName.last_name}
+                </span>
+                <ExpandMoreIcon />
               </IconButton>
 
               <Menu

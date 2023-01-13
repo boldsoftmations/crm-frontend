@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import InvoiceServices from "../../services/InvoiceService";
 import {
-  Backdrop,
-  CircularProgress,
   styled,
   Table,
   TableBody,
@@ -17,7 +15,9 @@ import {
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
 import { CSVLink } from "react-csv";
-import { ErrorMessage } from './../../Components/ErrorMessage/ErrorMessage';
+import { ErrorMessage } from "./../../Components/ErrorMessage/ErrorMessage";
+import { CustomLoader } from "../../Components/CustomLoader";
+import { Popup } from "../../Components/Popup";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -44,6 +44,8 @@ const headers = [
     label: "Product",
     key: "product",
   },
+  { label: "PI Date", key: "pi_date" },
+  { label: "PI Numner", key: "proforma_invoice" },
   {
     label: "Quantity",
     key: "quantity",
@@ -63,9 +65,25 @@ const headers = [
 
 export const ProductOrderBookDetails = () => {
   const [orderBookData, setOrderBookData] = useState([]);
+  const [totalPendingQuantity, settotalPendingQuantity] = useState([]);
   const errRef = useRef();
   const [open, setOpen] = useState(false);
   const [errMsg, setErrMsg] = useState("");
+  const [openModal, setOpenModal] = useState(false);
+  useEffect(() => {
+    getTotalPendingQuantityDetails();
+  }, []);
+
+  const getTotalPendingQuantityDetails = async () => {
+    try {
+      setOpen(true);
+      const response = await InvoiceServices.getOTotalPendingQuantity();
+      settotalPendingQuantity(response.data);
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+    }
+  };
 
   useEffect(() => {
     getAllLeadsPIDetails();
@@ -74,7 +92,7 @@ export const ProductOrderBookDetails = () => {
   const getAllLeadsPIDetails = async () => {
     try {
       setOpen(true);
-      const response = await InvoiceServices.getOrderBookProductsData();
+      const response = await InvoiceServices.getOrderBookData("product");
       setOrderBookData(response.data.results);
       //   const total = response.data.count;
       //   setpageCount(Math.ceil(total / 25));
@@ -102,6 +120,8 @@ export const ProductOrderBookDetails = () => {
 
   const data = orderBookData.map((item) => ({
     product: item.product,
+    pi_date: item.pi_date,
+    proforma_invoice: item.proforma_invoice,
     quantity: item.quantity,
     amount: item.amount,
     pending_quantity: item.pending_quantity,
@@ -110,23 +130,11 @@ export const ProductOrderBookDetails = () => {
     shipping_city: item.shipping_city,
   }));
 
-  console.log(data);
-
-  console.log("data :>> ", data);
-
   return (
     <div>
-      {" "}
-      <div>
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={open}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </div>
+      <CustomLoader open={open} />
       <Grid item xs={12}>
-      <ErrorMessage errRef={errRef} errMsg={errMsg} />
+        <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
           <Box display="flex">
             <Box flexGrow={2}></Box>
@@ -143,7 +151,11 @@ export const ProductOrderBookDetails = () => {
                 Product Order Book Details
               </h3>
             </Box>
+
             <Box flexGrow={0.5}>
+              <Button variant="contained" onClick={() => setOpenModal(true)}>
+                Pending Quantity
+              </Button>
               <CSVLink
                 data={data}
                 headers={headers}
@@ -155,7 +167,7 @@ export const ProductOrderBookDetails = () => {
                   height: "5vh",
                 }}
               >
-                <Button variant="contained">Export to Excel</Button>
+                <Button color="success" variant="contained">Export to Excel</Button>
               </CSVLink>
             </Box>
           </Box>
@@ -168,6 +180,8 @@ export const ProductOrderBookDetails = () => {
               <TableHead>
                 <TableRow>
                   <StyledTableCell align="center">PRODUCT</StyledTableCell>
+                  <StyledTableCell align="center">PI DATE</StyledTableCell>
+                  <StyledTableCell align="center">PI NUMBER</StyledTableCell>
                   <StyledTableCell align="center">QUANTITY</StyledTableCell>
                   <StyledTableCell align="center">
                     PENDING QUANTITY
@@ -186,21 +200,14 @@ export const ProductOrderBookDetails = () => {
                     key={row.id}
                     sx={{ "& > *": { borderBottom: "unset" } }}
                   >
-                    {/* <StyledTableCell>
-                      <IconButton
-                        aria-label="expand row"
-                        size="small"
-                        onClick={() => setTableExpand(!tableExpand)}
-                      >
-                        {tableExpand ? (
-                          <KeyboardArrowUpIcon />
-                        ) : (
-                          <KeyboardArrowDownIcon />
-                        )}
-                      </IconButton>
-                    </StyledTableCell> */}
                     <StyledTableCell align="center">
                       {row.product}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.pi_date}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.proforma_invoice}
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.quantity}
@@ -225,19 +232,42 @@ export const ProductOrderBookDetails = () => {
               </TableBody>
             </Table>
           </TableContainer>
-          {/* <TableFooter
-            sx={{ display: "flex", justifyContent: "center", marginTop: "2em" }}
-          >
-            <Pagination
-              count={pageCount}
-              onChange={handlePageClick}
-              color={"primary"}
-              variant="outlined"
-              shape="circular"
-            />
-          </TableFooter> */}
         </Paper>
       </Grid>
+      <Popup
+        maxWidth={"lg"}
+        title={"View Product Wise Pending Quantity"}
+        openPopup={openModal}
+        setOpenPopup={setOpenModal}
+      >
+        <TableContainer sx={{ maxHeight: 440 }} component={Paper}>
+          <Table
+            sx={{ minWidth: 800 }}
+            stickyHeader
+            aria-label="collapsible table"
+          >
+            <TableHead>
+              <TableRow>
+                <StyledTableCell align="left">PRODUCT</StyledTableCell>
+                <StyledTableCell align="left">TOTAL</StyledTableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {totalPendingQuantity.map((row,i) => (
+                <StyledTableRow
+                  key={i}
+                  sx={{ "& > *": { borderBottom: "unset" } }}
+                >
+                  <StyledTableCell align="left">
+                    {row.product__name}
+                  </StyledTableCell>
+                  <StyledTableCell align="left">{row.total}</StyledTableCell>
+                </StyledTableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Popup>
     </div>
   );
 };

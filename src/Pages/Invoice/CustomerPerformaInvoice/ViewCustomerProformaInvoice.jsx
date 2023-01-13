@@ -368,7 +368,7 @@ export const ViewCustomerProformaInvoice = () => {
         />
       </Popup>
       <Popup
-        maxWidth={"xl"}
+        fullScreen={true}
         title={"View Proforma Invoice"}
         openPopup={openPopup2}
         setOpenPopup={setOpenPopup2}

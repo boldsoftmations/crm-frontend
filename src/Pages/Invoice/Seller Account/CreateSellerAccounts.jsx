@@ -54,6 +54,7 @@ export const CreateSellerAccounts = (props) => {
         cin_number: inputValue.cin_number,
         email: inputValue.email,
         pan_number: inputValue.pan_number,
+        contact: `+91${inputValue.contact}`,
         ifsc_code: inputValue.ifsc_code,
         bank_name: bankData.BANK,
         branch: bankData.BRANCH,
@@ -129,7 +130,6 @@ export const CreateSellerAccounts = (props) => {
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
-              multiline
               fullWidth
               name="pincode"
               size="small"
@@ -141,7 +141,6 @@ export const CreateSellerAccounts = (props) => {
           </Grid>{" "}
           <Grid item xs={12} sm={6}>
             <TextField
-              multiline
               fullWidth
               name="state"
               size="small"
@@ -153,7 +152,6 @@ export const CreateSellerAccounts = (props) => {
           </Grid>{" "}
           <Grid item xs={12} sm={6}>
             <TextField
-              multiline
               fullWidth
               name="city"
               size="small"
@@ -165,7 +163,6 @@ export const CreateSellerAccounts = (props) => {
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
-              multiline
               fullWidth
               name="state_code"
               size="small"
@@ -177,7 +174,6 @@ export const CreateSellerAccounts = (props) => {
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
-              multiline
               fullWidth
               name="cin_number"
               size="small"
@@ -189,7 +185,6 @@ export const CreateSellerAccounts = (props) => {
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
-              multiline
               fullWidth
               name="email"
               size="small"
@@ -201,13 +196,24 @@ export const CreateSellerAccounts = (props) => {
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
-              multiline
               fullWidth
               name="pan_number"
               size="small"
               label="Pan Number"
               variant="outlined"
               value={inputValue.pan_number ? inputValue.pan_number : ""}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+            type={'number'}
+              fullWidth
+              name="contact"
+              size="small"
+              label="Contact"
+              variant="outlined"
+              value={inputValue.contact}
               onChange={handleInputChange}
             />
           </Grid>

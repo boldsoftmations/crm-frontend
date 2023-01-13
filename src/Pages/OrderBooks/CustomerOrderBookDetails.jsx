@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import InvoiceServices from "../../services/InvoiceService";
 import {
-  Backdrop,
-  CircularProgress,
   styled,
   Table,
   TableBody,
@@ -12,59 +10,19 @@ import {
   TableCell,
   Button,
   Box,
-  Collapse,
-  Typography,
-  IconButton,
   Paper,
   Grid,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { CSVLink } from "react-csv";
-import { ErrorMessage } from './../../Components/ErrorMessage/ErrorMessage';
-
-
+import { ErrorMessage } from "./../../Components/ErrorMessage/ErrorMessage";
+import { CustomLoader } from "../../Components/CustomLoader";
 
 export const CustomerOrderBookDetails = () => {
   const [orderBookData, setOrderBookData] = useState([]);
-  const [productOrderBookData, setProductOrderBookData] = useState([]);
   const errRef = useRef();
   const [open, setOpen] = useState(false);
   const [errMsg, setErrMsg] = useState("");
-
-  useEffect(() => {
-    getAllProductWiseOrderBook();
-  }, []);
-
-  const getAllProductWiseOrderBook = async () => {
-    try {
-      setOpen(true);
-      const response = await InvoiceServices.getOrderBookProductsData();
-      setProductOrderBookData(response.data.results);
-      //   const total = response.data.count;
-      //   setpageCount(Math.ceil(total / 25));
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      if (!err.response) {
-        setErrMsg(
-          "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
-        );
-      } else if (err.response.status === 400) {
-        setErrMsg(
-          err.response.data.errors.name
-            ? err.response.data.errors.name
-            : err.response.data.errors.non_field_errors
-        );
-      } else if (err.response.status === 401) {
-        setErrMsg(err.response.data.errors.code);
-      } else {
-        setErrMsg("Server Error");
-      }
-      errRef.current.focus();
-    }
-  };
 
   useEffect(() => {
     getAllCustomerWiseOrderBook();
@@ -73,7 +31,7 @@ export const CustomerOrderBookDetails = () => {
   const getAllCustomerWiseOrderBook = async () => {
     try {
       setOpen(true);
-      const response = await InvoiceServices.getOrderBookCustomerData();
+      const response = await InvoiceServices.getOrderBookData("customer");
       setOrderBookData(response.data.results);
       //   const total = response.data.count;
       //   setpageCount(Math.ceil(total / 25));
@@ -99,8 +57,10 @@ export const CustomerOrderBookDetails = () => {
     }
   };
 
-  const data = productOrderBookData.map(item => ({
+  const data = orderBookData.map((item) => ({
     company: item.company,
+    pi_date: item.pi_date,
+    proforma_invoice: item.proforma_invoice,
     billing_city: item.billing_city,
     shipping_city: item.shipping_city,
     product: item.product,
@@ -108,51 +68,48 @@ export const CustomerOrderBookDetails = () => {
     amount: item.amount,
     pending_quantity: item.pending_quantity,
   }));
-  
 
   console.log(data);
 
   console.log("data :>> ", data);
   return (
     <div>
-      {" "}
-      <div>
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={open}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </div>
+      <CustomLoader open={open} />
       <Grid item xs={12}>
-      <ErrorMessage errRef={errRef} errMsg={errMsg} />
+        <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
-        <Box display="flex">
-        <Box flexGrow={2}></Box>
-          <Box flexGrow={2}>
-            <h3
-              style={{
-                textAlign: "left",
-                marginBottom: "1em",
-                fontSize: "24px",
-                color: "rgb(34, 34, 34)",
-                fontWeight: 800,
-              }}
-            >
-            Customer Order Book Details
-            </h3>
-          </Box>
-          <Box flexGrow={0.5}>
-          <CSVLink
-            data={data}
-            headers={headers}
-            filename={"my-file.csv"}
-            target="_blank"
-            style={{ textDecoration: 'none', outline: 'none', height: '5vh' }}
-          >
-            <Button variant="contained">Export to Excel</Button>
-          </CSVLink>
-          </Box>
+          <Box display="flex">
+            <Box flexGrow={2}></Box>
+            <Box flexGrow={2}>
+              <h3
+                style={{
+                  textAlign: "left",
+                  marginBottom: "1em",
+                  fontSize: "24px",
+                  color: "rgb(34, 34, 34)",
+                  fontWeight: 800,
+                }}
+              >
+                Customer Order Book Details
+              </h3>
+            </Box>
+            <Box flexGrow={0.5}>
+              <CSVLink
+                data={data}
+                headers={headers}
+                filename={"my-file.csv"}
+                target="_blank"
+                style={{
+                  textDecoration: "none",
+                  outline: "none",
+                  height: "5vh",
+                }}
+              >
+                <Button variant="contained" color="success">
+                  Export to Excel
+                </Button>
+              </CSVLink>
+            </Box>
           </Box>
           <TableContainer sx={{ maxHeight: 440 }} component={Paper}>
             <Table
@@ -161,39 +118,62 @@ export const CustomerOrderBookDetails = () => {
               aria-label="collapsible table"
             >
               <TableHead>
-                <TableRow>
-                  <StyledTableCell align="center"></StyledTableCell>
-                  <StyledTableCell align="left">CUSTOMER</StyledTableCell>
+                <StyledTableRow>
+                  <StyledTableCell align="center">COMPANY</StyledTableCell>
+                  <StyledTableCell align="center">PI DATE</StyledTableCell>
+                  <StyledTableCell align="center">PI NUMBER</StyledTableCell>
                   <StyledTableCell align="center">BILLING CITY</StyledTableCell>
                   <StyledTableCell align="center">
                     SHIPPING CITY
                   </StyledTableCell>
-                </TableRow>
+                  <StyledTableCell align="center">PRODUCT</StyledTableCell>
+                  <StyledTableCell align="center">QUANTITY</StyledTableCell>
+                  <StyledTableCell align="center">
+                    PENDING QUANTITY
+                  </StyledTableCell>
+                  <StyledTableCell align="center">AMOUNT</StyledTableCell>
+                </StyledTableRow>
               </TableHead>
               <TableBody>
-                {orderBookData.map((row) => (
-                  <Row key={row.id} row={row} />
+                {orderBookData.map((row, i) => (
+                  <StyledTableRow key={i}>
+                    <StyledTableCell align="center">
+                      {row.company}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.pi_date}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.proforma_invoice}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.billing_city}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.shipping_city}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.product}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.quantity}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.pending_quantity}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.amount}
+                    </StyledTableCell>
+                  </StyledTableRow>
                 ))}
               </TableBody>
             </Table>
           </TableContainer>
-          {/* <TableFooter
-            sx={{ display: "flex", justifyContent: "center", marginTop: "2em" }}
-          >
-            <Pagination
-              count={pageCount}
-              onChange={handlePageClick}
-              color={"primary"}
-              variant="outlined"
-              shape="circular"
-            />
-          </TableFooter> */}
         </Paper>
       </Grid>
     </div>
   );
 };
-
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -217,6 +197,8 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 const headers = [
   { label: "Customer", key: "company" },
+  { label: "PI Date", key: "pi_date" },
+  { label: "PI Numner", key: "proforma_invoice" },
   { label: "Billing City", key: "billing_city" },
   { label: "Shipping City", key: "shipping_city" },
   {
@@ -235,64 +217,4 @@ const headers = [
     label: "Pending Quantity",
     key: "pending_quantity",
   },
-
-
 ];
-
-
-function Row(props) {
-  const { row } = props;
-  const [tableExpand, setTableExpand] = useState(false);
-
-  return (
-    <React.Fragment>
-      <StyledTableRow sx={{ "& > *": { borderBottom: "unset" } }}>
-        <StyledTableCell>
-          <IconButton
-            aria-label="expand row"
-            size="small"
-            onClick={() => setTableExpand(!tableExpand)}
-          >
-            {tableExpand ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-          </IconButton>
-        </StyledTableCell>
-        <StyledTableCell align="left">{row.company}</StyledTableCell>
-        <StyledTableCell align="center">{row.billing_city}</StyledTableCell>
-        <StyledTableCell align="center">{row.shipping_city}</StyledTableCell>
-      </StyledTableRow>
-      <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-          <Collapse in={tableExpand} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1 }}>
-              <Typography variant="h6" gutterBottom component="div">
-                Product
-              </Typography>
-              <Table size="small" aria-label="purchases">
-                <TableHead>
-                  <TableRow>
-                    <TableCell align="center">PRODUCT CODE</TableCell>
-                    <TableCell align="center" >QUANTITY</TableCell>
-                    <TableCell align="center">PENDING QUANTITY</TableCell>
-                    <TableCell align="center">AMOUNT</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {row.products.map((historyRow) => (
-                    <TableRow key={historyRow.date}>
-                      <TableCell component="th" scope="row" align="center">
-                        {historyRow.product}
-                      </TableCell>
-                      <TableCell align="center">{historyRow.quantity}</TableCell>
-                      <TableCell align="center">{historyRow.pending_quantity}</TableCell>
-                      <TableCell align="center">{historyRow.amount}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </Box>
-          </Collapse>
-        </TableCell>
-      </TableRow>
-    </React.Fragment>
-  );
-}
