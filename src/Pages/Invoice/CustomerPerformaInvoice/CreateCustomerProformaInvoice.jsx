@@ -166,7 +166,7 @@ export const CreateCustomerProformaInvoice = (props) => {
     try {
       setOpen(true);
       const res = await ProductService.getAllValidPriceList("all");
-      setProduct(res.data.results);
+      setProduct(res.data);
       setOpen(false);
     } catch (err) {
       console.error("error potential", err);
