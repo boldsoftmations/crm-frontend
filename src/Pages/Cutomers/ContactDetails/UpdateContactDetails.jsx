@@ -62,8 +62,14 @@ export const UpdateContactDetails = (props) => {
     try {
       e.preventDefault();
       setOpen(true);
-      let contact1 = phone.length === 12 ? `+${phone}` : phone;
-      let contact2 = phone2.length === 12 ? `+${phone2}` : phone2;
+      let contact1 =
+        phone !== null ? (phone.length === 12 ? `+${phone}` : phone) : phone;
+      let contact2 =
+        phone2 !== null
+          ? phone2.length === 12
+            ? `+${phone2}`
+            : phone2
+          : phone2;
 
       let aadhaarNumber =
         designation === "director" ||

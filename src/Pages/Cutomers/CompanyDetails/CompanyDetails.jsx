@@ -124,12 +124,12 @@ export const CompanyDetails = () => {
   const handlePageClick = async (event, value) => {
     try {
       const page = value;
-      console.log("page", page);
+      console.log("filterSelectedQuery", filterSelectedQuery);
       setCurrentPage(page);
       setOpen(true);
 
       if (filterSelectedQuery) {
-        const response = await CustomerServices.getSearchCompanyPaginateData(
+        const response = await CustomerServices.getAllCompanyDataPaginate(
           page,
           filterSelectedQuery
         );
