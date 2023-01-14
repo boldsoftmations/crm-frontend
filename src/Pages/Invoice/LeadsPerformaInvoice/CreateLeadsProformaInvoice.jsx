@@ -733,8 +733,12 @@ const deliveryTermsOptions = [
     value: "customer_door_delivery_(freight_to_pay)",
   },
   {
-    label: "Customer Door Delivery (Freight to Prepaid)",
-    value: "customer_door_delivery_(freight_to_pay)",
+    label: "Customer Door Delivery (Prepaid)",
+    value: "customer_door_delivery_(prepaid)",
+  },
+  {
+    label: "Transporter Warehouse (Prepaid)",
+    value: "transporter_warehouse_(prepaid)",
   },
   {
     label: "Add actual freight in invoice",
