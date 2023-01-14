@@ -165,10 +165,7 @@ export const CreateCustomerProformaInvoice = (props) => {
   const getProduct = async () => {
     try {
       setOpen(true);
-      const res = await ProductService.getAllPaginatePriceList(
-        "validity",
-        "valid"
-      );
+      const res = await ProductService.getAllValidPriceList("all");
       setProduct(res.data.results);
       setOpen(false);
     } catch (err) {
@@ -700,6 +697,14 @@ const paymentTermsOptions = [
   { label: "45 days", value: "45_days" },
   { label: "60 days", value: "60_days" },
   { label: "Against Delivery", value: "against_delivery" },
+  {
+    label: "Transporter Warehouse (Prepaid)",
+    value: "transporter_warehouse_(prepaid)",
+  },
+  {
+    label: "Customer Door Delivery (Prepaid)",
+    value: "customer_door_delivery_(prepaid)",
+  },
 ];
 
 const deliveryTermsOptions = [

@@ -308,6 +308,10 @@ const getPriceListById = (id) => {
   return CustomAxios.get(`/api/product/pricelist/${id}`);
 };
 
+const getAllValidPriceList = (all) => {
+  return CustomAxios.get(`/api/product/pricelist/?page=${all}`);
+};
+
 const updatePriceList = (id, data) => {
   return CustomAxios.patch(`/api/product/pricelist/${id}`, data);
 };
@@ -391,6 +395,7 @@ const ProductService = {
   getAllPriceListPaginate,
   createPriceList,
   getPriceListById,
+  getAllValidPriceList,
   updatePriceList,
   getAllProduct,
 };
