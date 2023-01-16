@@ -101,6 +101,34 @@ const getOrderBookData = (type) => {
   return CustomAxios.get(`/api/invoice/list-order-book/?ordering=${type}`);
 };
 
+const getProductOrderBookDatawithPage = (type, data) => {
+  return CustomAxios.get(
+    `/api/invoice/list-order-book/?ordering=${type}&page=${data}`
+  );
+};
+
+const getAllOrderBookDatawithSearch = (type, data) => {
+  return CustomAxios.get(
+    `/api/invoice/list-order-book/?ordering=${type}&search=${data}`
+  );
+};
+
+const getAllOrderBookDatawithSearchWithPagination = (type, value, data) => {
+  return CustomAxios.get(
+    `/api/invoice/list-order-book/?ordering=${type}&page=${value}&search=${data}`
+  );
+};
+
+const getAllOrderBookDatawithPage = (type, data) => {
+  return CustomAxios.get(
+    `/api/invoice/list-order-book/?ordering=${type}&page=${data}`
+  );
+};
+
+const getAllcustomerOrderBookData = () => {
+  return CustomAxios.get(`/api/invoice/list-order-book-company`);
+};
+
 const getOTotalPendingQuantity = (type) => {
   return CustomAxios.get(`/api/invoice/pending-order-total`);
 };
@@ -141,6 +169,11 @@ const InvoiceServices = {
   createLeadsProformaInvoiceData,
   createCustomerProformaInvoiceData,
   getOrderBookData,
+  getProductOrderBookDatawithPage,
+  getAllOrderBookDatawithSearch,
+  getAllOrderBookDatawithSearchWithPagination,
+  getAllOrderBookDatawithPage,
+  getAllcustomerOrderBookData,
   getOTotalPendingQuantity,
   getSalesInvoiceData,
   createSalesnvoiceData,

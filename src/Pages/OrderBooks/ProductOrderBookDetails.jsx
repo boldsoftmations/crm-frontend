@@ -18,6 +18,7 @@ import { CSVLink } from "react-csv";
 import { ErrorMessage } from "./../../Components/ErrorMessage/ErrorMessage";
 import { CustomLoader } from "../../Components/CustomLoader";
 import { Popup } from "../../Components/Popup";
+import { CustomPagination } from "./../../Components/CustomPagination";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -70,6 +71,10 @@ export const ProductOrderBookDetails = () => {
   const [open, setOpen] = useState(false);
   const [errMsg, setErrMsg] = useState("");
   const [openModal, setOpenModal] = useState(false);
+  const [pageCount, setpageCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
+  // const [searchQuery, setSearchQuery] = useState("");
+
   useEffect(() => {
     getTotalPendingQuantityDetails();
   }, []);
@@ -86,16 +91,16 @@ export const ProductOrderBookDetails = () => {
   };
 
   useEffect(() => {
-    getAllLeadsPIDetails();
+    getAllProductDataOrderBook();
   }, []);
 
-  const getAllLeadsPIDetails = async () => {
+  const getAllProductDataOrderBook = async () => {
     try {
       setOpen(true);
       const response = await InvoiceServices.getOrderBookData("product");
       setOrderBookData(response.data.results);
-      //   const total = response.data.count;
-      //   setpageCount(Math.ceil(total / 25));
+      const total = response.data.count;
+      setpageCount(Math.ceil(total / 25));
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -115,6 +120,43 @@ export const ProductOrderBookDetails = () => {
         setErrMsg("Server Error");
       }
       errRef.current.focus();
+    }
+  };
+
+  const handlePageClick = async (event, value) => {
+    try {
+      const page = value;
+      setCurrentPage(page);
+      setOpen(true);
+
+      // if (searchQuery) {
+      //   const response =
+      //     await InvoiceServices.getAllOrderBookDatawithSearchWithPagination(
+      //       page,
+      //       searchQuery
+      //     );
+      //   if (response) {
+      //     setOrderBookData(response.data.results);
+      //     const total = response.data.count;
+      //     setpageCount(Math.ceil(total / 25));
+      //   } else {
+      //     getAllCustomerWiseOrderBook();
+      //     setSearchQuery("");
+      //   }
+      // } else {
+      const response = await InvoiceServices.getProductOrderBookDatawithPage(
+        "product",
+        page
+      );
+      setOrderBookData(response.data.results);
+      const total = response.data.count;
+      setpageCount(Math.ceil(total / 25));
+      // }
+
+      setOpen(false);
+    } catch (error) {
+      console.log("error", error);
+      setOpen(false);
     }
   };
 
@@ -167,7 +209,9 @@ export const ProductOrderBookDetails = () => {
                   height: "5vh",
                 }}
               >
-                <Button color="success" variant="contained">Export to Excel</Button>
+                <Button color="success" variant="contained">
+                  Export to Excel
+                </Button>
               </CSVLink>
             </Box>
           </Box>
@@ -232,6 +276,10 @@ export const ProductOrderBookDetails = () => {
               </TableBody>
             </Table>
           </TableContainer>
+          <CustomPagination
+            pageCount={pageCount}
+            handlePageClick={handlePageClick}
+          />
         </Paper>
       </Grid>
       <Popup
@@ -253,7 +301,7 @@ export const ProductOrderBookDetails = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {totalPendingQuantity.map((row,i) => (
+              {totalPendingQuantity.map((row, i) => (
                 <StyledTableRow
                   key={i}
                   sx={{ "& > *": { borderBottom: "unset" } }}

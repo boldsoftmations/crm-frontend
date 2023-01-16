@@ -17,12 +17,17 @@ import { tableCellClasses } from "@mui/material/TableCell";
 import { CSVLink } from "react-csv";
 import { ErrorMessage } from "./../../Components/ErrorMessage/ErrorMessage";
 import { CustomLoader } from "../../Components/CustomLoader";
+import { CustomSearch } from "./../../Components/CustomSearch";
+import { CustomPagination } from "./../../Components/CustomPagination";
 
 export const CustomerOrderBookDetails = () => {
   const [orderBookData, setOrderBookData] = useState([]);
   const errRef = useRef();
   const [open, setOpen] = useState(false);
   const [errMsg, setErrMsg] = useState("");
+  const [pageCount, setpageCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     getAllCustomerWiseOrderBook();
@@ -31,10 +36,19 @@ export const CustomerOrderBookDetails = () => {
   const getAllCustomerWiseOrderBook = async () => {
     try {
       setOpen(true);
-      const response = await InvoiceServices.getOrderBookData("customer");
-      setOrderBookData(response.data.results);
-      //   const total = response.data.count;
-      //   setpageCount(Math.ceil(total / 25));
+      if (currentPage) {
+        const response = await InvoiceServices.getAllOrderBookDatawithPage(
+          currentPage
+        );
+        setOrderBookData(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      } else {
+        const response = await InvoiceServices.getOrderBookData("customer");
+        setOrderBookData(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      }
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -57,6 +71,75 @@ export const CustomerOrderBookDetails = () => {
     }
   };
 
+  const getSearchData = async (value) => {
+    try {
+      setOpen(true);
+      const filterSearch = value;
+      const response = await InvoiceServices.getAllOrderBookDatawithSearch(
+        filterSearch
+      );
+      if (response) {
+        setOrderBookData(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      } else {
+        getAllCustomerWiseOrderBook();
+        setSearchQuery("");
+      }
+      setOpen(false);
+    } catch (error) {
+      console.log("error Search leads", error);
+      setOpen(false);
+    }
+  };
+
+  const handlePageClick = async (event, value) => {
+    try {
+      const page = value;
+      setCurrentPage(page);
+      setOpen(true);
+
+      if (searchQuery) {
+        const response =
+          await InvoiceServices.getAllOrderBookDatawithSearchWithPagination(
+            page,
+            searchQuery
+          );
+        if (response) {
+          setOrderBookData(response.data.results);
+          const total = response.data.count;
+          setpageCount(Math.ceil(total / 25));
+        } else {
+          getAllCustomerWiseOrderBook();
+          setSearchQuery("");
+        }
+      } else {
+        const response = await InvoiceServices.getAllOrderBookDatawithPage(
+          "customer",
+          page
+        );
+        setOrderBookData(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      }
+
+      setOpen(false);
+    } catch (error) {
+      console.log("error", error);
+      setOpen(false);
+    }
+  };
+
+  const getResetData = () => {
+    setSearchQuery("");
+    getAllCustomerWiseOrderBook();
+  };
+
+  const handleInputChange = (event) => {
+    setSearchQuery(event.target.value);
+    getSearchData(event.target.value);
+  };
+
   const data = orderBookData.map((item) => ({
     company: item.company,
     pi_date: item.pi_date,
@@ -69,9 +152,6 @@ export const CustomerOrderBookDetails = () => {
     pending_quantity: item.pending_quantity,
   }));
 
-  console.log(data);
-
-  console.log("data :>> ", data);
   return (
     <div>
       <CustomLoader open={open} />
@@ -79,7 +159,13 @@ export const CustomerOrderBookDetails = () => {
         <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
           <Box display="flex">
-            <Box flexGrow={2}></Box>
+            <Box flexGrow={2}>
+              {/* <CustomSearch
+                filterSelectedQuery={searchQuery}
+                handleInputChange={handleInputChange}
+                getResetData={getResetData}
+              /> */}
+            </Box>
             <Box flexGrow={2}>
               <h3
                 style={{
@@ -169,6 +255,10 @@ export const CustomerOrderBookDetails = () => {
               </TableBody>
             </Table>
           </TableContainer>
+          <CustomPagination
+            pageCount={pageCount}
+            handlePageClick={handlePageClick}
+          />
         </Paper>
       </Grid>
     </div>
