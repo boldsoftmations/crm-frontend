@@ -323,6 +323,7 @@ export const CreateCustomerProformaInvoice = (props) => {
               id="combo-box-demo"
               onChange={(event, value) => setCompanyData(value)}
               options={companyOptions}
+              noOptionsText={"Loading Option"}
               getOptionLabel={(option) => option.name}
               sx={{ minWidth: 300 }}
               renderInput={(params) => (
