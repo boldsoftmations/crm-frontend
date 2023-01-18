@@ -16,6 +16,7 @@ import {
   Select,
   TextField,
   Autocomplete,
+  Chip,
 } from "@mui/material";
 import CustomerServices from "../../../services/CustomerService";
 import axios from "axios";
@@ -61,7 +62,7 @@ export const CreateCompanyDetails = (props) => {
   };
 
   useEffect(() => {
-      getLAssignedData();
+    getLAssignedData();
   }, []);
 
   const getLAssignedData = async (id) => {
@@ -94,7 +95,7 @@ export const CreateCompanyDetails = (props) => {
         pan_number: inputValue.pan_no,
         business_type: businessType,
         category: category,
-        assigned_to: assign ? assign.email : "",
+        assigned_to: assign,
         total_sales_turnover: inputValue.total_sale,
       };
       const response = await CustomerServices.createCompanyData(req);
@@ -295,7 +296,9 @@ export const CreateCompanyDetails = (props) => {
                 label="Category"
                 onChange={(event) => setCategory(event.target.value)}
               >
-                <MenuItem value={"Hardware & Electrical"}>Hardware & Electrical</MenuItem>
+                <MenuItem value={"Hardware & Electrical"}>
+                  Hardware & Electrical
+                </MenuItem>
                 <MenuItem value={"Plywood"}>Plywood</MenuItem>
                 <MenuItem value={"Plumbing"}>Plumbing</MenuItem>
                 <MenuItem value={"Auto Retail"}>Auto Retail</MenuItem>
@@ -308,22 +311,34 @@ export const CreateCompanyDetails = (props) => {
             </FormControl>
           </Grid>
           <Grid item xs={12} sm={4}>
-   
-              <Autocomplete
-                fullWidth
-                size="small"
-                id="grouped-demo"
-                onChange={(event, value) => setAssign(value)}
-                options={assigned.map((option) => option)}
-                getOptionLabel={(option) =>
-                  `${option.first_name}  ${option.last_name}`
-                }
-                // sx={{ minWidth: 300 }}
-                renderInput={(params) => (
-                  <TextField {...params} label="Assignied To" />
-                )}
-              />
-   
+            <Autocomplete
+              size="small"
+              value={assign}
+              onChange={(event, newValue) => {
+                setAssign(newValue);
+              }}
+              multiple
+              limitTags={3}
+              id="multiple-limit-tags"
+              options={assigned.map((option) => option.email)}
+              freeSolo
+              renderTags={(value, getTagProps) =>
+                value.map((option, index) => (
+                  <Chip
+                    variant="outlined"
+                    label={option}
+                    {...getTagProps({ index })}
+                  />
+                ))
+              }
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Assign To"
+                  placeholder="Assign To"
+                />
+              )}
+            />
           </Grid>
           <Grid item xs={12}>
             <TextField

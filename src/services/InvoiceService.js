@@ -101,6 +101,16 @@ const getOrderBookData = (type) => {
   return CustomAxios.get(`/api/invoice/list-order-book/?ordering=${type}`);
 };
 
+const getAllOrderBookData = (data, type) => {
+  return CustomAxios.get(
+    `/api/invoice/list-order-book/?page=${data}&ordering=${type}`
+  );
+};
+
+const getcustomerOrderBookData = (data) => {
+  return CustomAxios.get(`/api/invoice/list-order-book-company/?page=${data}`);
+};
+
 const getProductOrderBookDatawithPage = (type, data) => {
   return CustomAxios.get(
     `/api/invoice/list-order-book/?ordering=${type}&page=${data}`
@@ -151,6 +161,9 @@ const InvoiceServices = {
   getAllSearchSellerAccountData,
   getAllSellerAccountDataPaginate,
   createSellerAccountData,
+  getAllOrderBookData,
+  getAllcustomerOrderBookData,
+  getcustomerOrderBookData,
   getSellerAccountDataById,
   updateSellerAccountData,
   getCompanyPerformaInvoiceData,

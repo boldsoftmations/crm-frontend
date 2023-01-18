@@ -162,19 +162,15 @@ export const LeadsPerformaInvoice = (props) => {
                   >
                     <div className="col-md-6">
                       <div>
-                        <strong className="fw-bold">Proforma Invoice : </strong>{" "}
-                        {invoiceData.pi_number}
+                        <strong className="fw-bold">
+                          Proforma Invoice No & Date :{" "}
+                        </strong>{" "}
+                        {invoiceData.pi_number} & {invoiceData.generation_date}
                       </div>
                       <div>
                         <strong className="fw-bold">Sales Person : </strong>{" "}
                         {invoiceData.raised_by_first_name}
                         {invoiceData.raised_by_last_name}
-                      </div>
-                      <div>
-                        <strong className="fw-bold">
-                          Proforma Invoice Date :{" "}
-                        </strong>{" "}
-                        {invoiceData.generation_date}
                       </div>
                       <div>
                         <strong className="fw-bold">Customer Name : </strong>{" "}
@@ -195,12 +191,15 @@ export const LeadsPerformaInvoice = (props) => {
                         Bhiwandi
                       </div>
                       <div>
-                        <strong className="fw-bold">Buyer Order No : </strong>{" "}
-                        {invoiceData.buyer_order_no}
+                        <strong className="fw-bold">
+                          Buyer Order No & Date :{" "}
+                        </strong>
+                        {invoiceData.buyer_order_no} &{" "}
+                        {invoiceData.buyer_order_date}
                       </div>
                       <div>
-                        <strong className="fw-bold">Buyer Order Date : </strong>{" "}
-                        {invoiceData.buyer_order_no_date}
+                        <strong className="fw-bold">Amount Receive : </strong>
+                        {invoiceData.amount_recieved}
                       </div>
                       <div>
                         <strong className="fw-bold">Payment Terms : </strong>{" "}
@@ -371,7 +370,7 @@ export const LeadsPerformaInvoice = (props) => {
                             </div>
                           </td>
                           <td colspan="3">
-                            <strong>Taxabale Amount</strong>
+                            <strong>Taxbale Amount</strong>
                             <br />
                             <strong>CGST Amount</strong> <br />
                             <strong>SGST Amount</strong> <br />
@@ -426,6 +425,7 @@ export const LeadsPerformaInvoice = (props) => {
                       {invoiceData.approval
                         ? invoiceData.approval.approver_last_name
                         : ""}
+                      <br />
                       {invoiceData.approval
                         ? invoiceData.approval.approval_date
                         : ""}

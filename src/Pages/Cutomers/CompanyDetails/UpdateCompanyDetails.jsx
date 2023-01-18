@@ -16,6 +16,7 @@ import {
   RadioGroup,
   Select,
   TextField,
+  Chip,
 } from "@mui/material";
 import CustomerServices from "../../../services/CustomerService";
 import { useDispatch } from "react-redux";
@@ -114,7 +115,7 @@ export const UpdateCompanyDetails = (props) => {
         pan_number: inputValue.pan_number,
         business_type: businessType,
         category: category,
-        assigned_to: assign ? assign : '',
+        assigned_to: assign ? assign : "",
         total_sales_turnover: inputValue.total_sales_turnover,
       };
       await CustomerServices.updateCompanyData(recordForEdit, req);
@@ -354,23 +355,36 @@ export const UpdateCompanyDetails = (props) => {
                 <MenuItem value={"Stationary"}>Stationary</MenuItem>
                 <MenuItem value={"Others"}>Others</MenuItem>
               </Select>
-              <HelperText>
-                Applicable Only For Distribution Customer
-              </HelperText>
+              <HelperText>Applicable Only For Distribution Customer</HelperText>
             </FormControl>
           </Grid>
           <Grid item xs={12} sm={4}>
             <Autocomplete
-              fullWidth
               size="small"
-              id="grouped-demo"
-              value={assign ? assign : ""}
-              onChange={(event, value) => setAssign(value)}
+              value={assign}
+              onChange={(event, newValue) => {
+                setAssign(newValue);
+              }}
+              multiple
+              limitTags={3}
+              id="multiple-limit-tags"
               options={assigned.map((option) => option.email)}
-              getOptionLabel={(option) => option}
-              // sx={{ minWidth: 300 }}
+              freeSolo
+              renderTags={(value, getTagProps) =>
+                value.map((option, index) => (
+                  <Chip
+                    variant="outlined"
+                    label={option}
+                    {...getTagProps({ index })}
+                  />
+                ))
+              }
               renderInput={(params) => (
-                <TextField {...params} label="Assignied To" />
+                <TextField
+                  {...params}
+                  label="Assign To"
+                  placeholder="Assign To"
+                />
               )}
             />
           </Grid>
@@ -403,11 +417,11 @@ export const UpdateCompanyDetails = (props) => {
 };
 
 const HelperText = styled(FormHelperText)(({ theme }) => ({
-  padding: '0px',
-MuiFormHelperText: {
- root: {
-   padding: 0,
-   margin: 0
- },
-},
+  padding: "0px",
+  MuiFormHelperText: {
+    root: {
+      padding: 0,
+      margin: 0,
+    },
+  },
 }));

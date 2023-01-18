@@ -74,6 +74,7 @@ export const ProductOrderBookDetails = () => {
   const [pageCount, setpageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   // const [searchQuery, setSearchQuery] = useState("");
+  const [exportOrderBookData, setExportOrderBookData] = useState([]);
 
   useEffect(() => {
     getTotalPendingQuantityDetails();
@@ -160,7 +161,43 @@ export const ProductOrderBookDetails = () => {
     }
   };
 
-  const data = orderBookData.map((item) => ({
+  useEffect(() => {
+    getAllCustomerWiseOrderBookExport();
+  }, []);
+
+  const getAllCustomerWiseOrderBookExport = async () => {
+    try {
+      setOpen(true);
+      const response = await InvoiceServices.getAllOrderBookData(
+        "all",
+        "product"
+      );
+      setExportOrderBookData(response.data);
+      //   const total = response.data.count;
+      //   setpageCount(Math.ceil(total / 25));
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      if (!err.response) {
+        setErrMsg(
+          "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
+        );
+      } else if (err.response.status === 400) {
+        setErrMsg(
+          err.response.data.errors.name
+            ? err.response.data.errors.name
+            : err.response.data.errors.non_field_errors
+        );
+      } else if (err.response.status === 401) {
+        setErrMsg(err.response.data.errors.code);
+      } else {
+        setErrMsg("Server Error");
+      }
+      errRef.current.focus();
+    }
+  };
+
+  const data = exportOrderBookData.map((item) => ({
     product: item.product,
     pi_date: item.pi_date,
     proforma_invoice: item.proforma_invoice,
