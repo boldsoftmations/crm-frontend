@@ -35,6 +35,8 @@ import { Auths } from "../Pages/Auth/Auths";
 import { Profile } from "./../Pages/Profile/Profile";
 import LeadServices from "./../services/LeadService";
 import { getProfileUser } from "./../Redux/Action/Action";
+import { ViewDispatch } from "./../Pages/Dispatch/ViewDispatch";
+import { Dispatched } from "./../Pages/Dispatch/Dispatched";
 
 export const RouteScreen = () => {
   const dispatch = useDispatch();
@@ -152,6 +154,9 @@ export const RouteScreen = () => {
               path="/invoice/product-order-book"
               element={<ProductOrderBookDetails />}
             />
+            {/* Dispatch Routes */}
+            <Route path="/dispatch/view-dispatch" element={<ViewDispatch />} />
+            <Route path="/dispatch/view-dispatched" element={<Dispatched />} />
             <Route path="*" element={<Dashboard />} />
           </>
         )}

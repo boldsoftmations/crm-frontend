@@ -161,6 +161,16 @@ const getSalesnvoiceDataById = (id) => {
   return CustomAxios.get(`/api/invoice/list-sales-invoice/${id}`);
 };
 
+const getDispatchData = (value) => {
+  return CustomAxios.get(
+    `/api/invoice/list-dispatch-book/?dispatched=${value}`
+  );
+};
+
+const updateDispatched = (id, data) => {
+  return CustomAxios.patch(`/api/invoice/list-dispatch-book/${id}`, data);
+};
+
 const InvoiceServices = {
   getAllSellerAccountData,
   getAllPaginateSellerAccountData,
@@ -198,6 +208,8 @@ const InvoiceServices = {
   getSalesInvoiceDataWithPagination,
   createSalesnvoiceData,
   getSalesnvoiceDataById,
+  getDispatchData,
+  updateDispatched,
 };
 
 export default InvoiceServices;

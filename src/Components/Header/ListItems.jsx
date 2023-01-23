@@ -13,6 +13,7 @@ export const ListItems = () => {
   const [expandInvoice, setExpandInvoice] = useState(false);
   const [expandOrderBook, setExpandOrderBook] = useState(false);
   const [sellerAccount, setSellerAccount] = useState(false);
+  const [dispatchDetails, setDispatchDetails] = useState(false);
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
   return (
@@ -306,6 +307,36 @@ export const ListItems = () => {
                 style={{ width: 300 }}
               >
                 <ListItemText inset primary="Product Wise Order Book" />
+              </ListItem>
+            </List>
+          </Collapse>
+          {/* Dispatch */}
+          <ListItem
+            button
+            onClick={() => setDispatchDetails(!dispatchDetails)}
+            style={{ width: 300 }}
+          >
+            <ListItemText primary="Dispatch" />
+            {dispatchDetails ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          </ListItem>
+          <Collapse in={dispatchDetails} timeout="auto" unmountOnExit>
+            <Divider />
+            <List component="div" disablePadding>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/dispatch/view-dispatch"
+                style={{ width: 300 }}
+              >
+                <ListItemText inset primary="Peding Dispatch" />
+              </ListItem>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/dispatch/view-dispatched"
+                style={{ width: 300 }}
+              >
+                <ListItemText inset primary="Dispatched" />
               </ListItem>
             </List>
           </Collapse>
@@ -605,6 +636,36 @@ export const ListItems = () => {
                 style={{ width: 300 }}
               >
                 <ListItemText inset primary="Product Wise Order Book" />
+              </ListItem>
+            </List>
+          </Collapse>
+          {/* Dispatch */}
+          <ListItem
+            button
+            onClick={() => setDispatchDetails(!dispatchDetails)}
+            style={{ width: 300 }}
+          >
+            <ListItemText primary="Dispatch" />
+            {dispatchDetails ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          </ListItem>
+          <Collapse in={dispatchDetails} timeout="auto" unmountOnExit>
+            <Divider />
+            <List component="div" disablePadding>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/dispatch/view-dispatch"
+                style={{ width: 300 }}
+              >
+                <ListItemText inset primary="Peding Dispatch" />
+              </ListItem>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/dispatch/view-dispatched"
+                style={{ width: 300 }}
+              >
+                <ListItemText inset primary="Dispatched" />
               </ListItem>
             </List>
           </Collapse>
