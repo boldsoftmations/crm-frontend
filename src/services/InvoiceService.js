@@ -167,6 +167,12 @@ const getDispatchData = (value) => {
   );
 };
 
+const getDispatchDataWithPagination = (value, currentPage) => {
+  return CustomAxios.get(
+    `/api/invoice/list-dispatch-book/?dispatched=${value}&page=${currentPage}`
+  );
+};
+
 const updateDispatched = (id, data) => {
   return CustomAxios.patch(`/api/invoice/list-dispatch-book/${id}`, data);
 };
@@ -209,6 +215,7 @@ const InvoiceServices = {
   createSalesnvoiceData,
   getSalesnvoiceDataById,
   getDispatchData,
+  getDispatchDataWithPagination,
   updateDispatched,
 };
 

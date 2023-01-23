@@ -22,11 +22,14 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { tableCellClasses } from "@mui/material/TableCell";
 import InvoiceServices from "../../services/InvoiceService";
 import { CustomLoader } from "./../../Components/CustomLoader";
+import { CustomPagination } from "./../../Components/CustomPagination";
 export const ViewDispatch = () => {
   const [dispatchData, setDispatchData] = useState([]);
   const [open, setOpen] = useState(false);
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
+  const [pageCount, setpageCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
 
   useEffect(() => {
     getAllDispatchDetails();
@@ -34,9 +37,20 @@ export const ViewDispatch = () => {
   const getAllDispatchDetails = async () => {
     try {
       setOpen(true);
-      const response = await InvoiceServices.getDispatchData("false");
-      setDispatchData(response.data.results);
-      console.log("response dispact", response);
+      if (currentPage) {
+        const response = await InvoiceServices.getDispatchDataWithPagination(
+          "false",
+          currentPage
+        );
+        setDispatchData(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      } else {
+        const response = await InvoiceServices.getDispatchData("false");
+        setDispatchData(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      }
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -56,6 +70,25 @@ export const ViewDispatch = () => {
         setErrMsg("Server Error");
       }
       errRef.current.focus();
+    }
+  };
+
+  const handlePageClick = async (event, value) => {
+    try {
+      const page = value;
+      setCurrentPage(page);
+      setOpen(true);
+      const response = await InvoiceServices.getDispatchDataWithPagination(
+        "false",
+        page
+      );
+      setDispatchData(response.data.results);
+      const total = response.data.count;
+      setpageCount(Math.ceil(total / 25));
+      setOpen(false);
+    } catch (error) {
+      console.log("error", error);
+      setOpen(false);
     }
   };
 
@@ -107,6 +140,10 @@ export const ViewDispatch = () => {
             </TableBody>
           </Table>
         </TableContainer>
+        <CustomPagination
+          pageCount={pageCount}
+          handlePageClick={handlePageClick}
+        />
       </Paper>
     </div>
   );
