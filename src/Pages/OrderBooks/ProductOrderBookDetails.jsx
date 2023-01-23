@@ -98,10 +98,20 @@ export const ProductOrderBookDetails = () => {
   const getAllProductDataOrderBook = async () => {
     try {
       setOpen(true);
-      const response = await InvoiceServices.getOrderBookData("product");
-      setOrderBookData(response.data.results);
-      const total = response.data.count;
-      setpageCount(Math.ceil(total / 25));
+      if (currentPage) {
+        const response = await InvoiceServices.getProductOrderBookDatawithPage(
+          "product",
+          currentPage
+        );
+        setOrderBookData(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      } else {
+        const response = await InvoiceServices.getOrderBookData("product");
+        setOrderBookData(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      }
       setOpen(false);
     } catch (err) {
       setOpen(false);

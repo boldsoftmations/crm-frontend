@@ -39,6 +39,7 @@ export const CustomerOrderBookDetails = () => {
       setOpen(true);
       if (currentPage) {
         const response = await InvoiceServices.getAllOrderBookDatawithPage(
+          "customer",
           currentPage
         );
         setOrderBookData(response.data.results);

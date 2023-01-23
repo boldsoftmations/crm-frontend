@@ -147,6 +147,12 @@ const getSalesInvoiceData = () => {
   return CustomAxios.get(`/api/invoice/list-sales-invoice`);
 };
 
+const getSalesInvoiceDataWithPagination = (currentPage) => {
+  return CustomAxios.get(
+    `/api/invoice/list-sales-invoice/?page=${currentPage}`
+  );
+};
+
 const createSalesnvoiceData = (data) => {
   return CustomAxios.post("/api/invoice/list-sales-invoice/", data);
 };
@@ -189,6 +195,7 @@ const InvoiceServices = {
   getAllcustomerOrderBookData,
   getOTotalPendingQuantity,
   getSalesInvoiceData,
+  getSalesInvoiceDataWithPagination,
   createSalesnvoiceData,
   getSalesnvoiceDataById,
 };

@@ -25,7 +25,9 @@ import AddIcon from "@mui/icons-material/Add";
 import { SalesInvoice } from "./SalesInvoice";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import { ErrorMessage } from './../../../Components/ErrorMessage/ErrorMessage';
+import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
+import { CustomPagination } from "../../../Components/CustomPagination";
+
 export const SalesInvoiceView = () => {
   const errRef = useRef();
   const [open, setOpen] = useState(false);
@@ -34,6 +36,9 @@ export const SalesInvoiceView = () => {
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [idForEdit, setIDForEdit] = useState();
+  const [pageCount, setpageCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
+
   useEffect(() => {
     getSalesInvoiceDetails();
   }, []);
@@ -41,8 +46,18 @@ export const SalesInvoiceView = () => {
   const getSalesInvoiceDetails = async () => {
     try {
       setOpen(true);
-      const response = await InvoiceServices.getSalesInvoiceData();
-      setSalesInvoiceData(response.data.results);
+      if (currentPage) {
+        const response =
+          await InvoiceServices.getSalesInvoiceDataWithPagination(currentPage);
+        setSalesInvoiceData(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      } else {
+        const response = await InvoiceServices.getSalesInvoiceData();
+        setSalesInvoiceData(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      }
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -65,6 +80,42 @@ export const SalesInvoiceView = () => {
     }
   };
 
+  const handlePageClick = async (event, value) => {
+    try {
+      const page = value;
+      setCurrentPage(page);
+      setOpen(true);
+
+      // if (searchQuery) {
+      //   const response =
+      //     await InvoiceServices.getSalesInvoiceDataWithPagination(
+      //       page,
+      //       searchQuery
+      //     );
+      //   if (response) {
+      //     setSalesInvoiceData(response.data.results);
+      //     const total = response.data.count;
+      //     setpageCount(Math.ceil(total / 25));
+      //   } else {
+      //     getSalesInvoiceDetails();
+      //     setSearchQuery("");
+      //   }
+      // } else {
+      const response = await InvoiceServices.getSalesInvoiceDataWithPagination(
+        page
+      );
+      setSalesInvoiceData(response.data.results);
+      const total = response.data.count;
+      setpageCount(Math.ceil(total / 25));
+      // }
+
+      setOpen(false);
+    } catch (error) {
+      console.log("error", error);
+      setOpen(false);
+    }
+  };
+
   const openInPopup = (item) => {
     setIDForEdit(item);
     setOpenPopup2(true);
@@ -75,7 +126,7 @@ export const SalesInvoiceView = () => {
       <CustomLoader open={open} />
 
       <Grid item xs={12}>
-      <ErrorMessage errRef={errRef} errMsg={errMsg} />
+        <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
           <Box display="flex">
             <Box flexGrow={1.6}></Box>
@@ -152,22 +203,15 @@ export const SalesInvoiceView = () => {
                   );
                 })} */}
                 {salesInvoiceData.map((row) => (
-                  <Row key={row.id} row={row} openInPopup={openInPopup}/>
+                  <Row key={row.id} row={row} openInPopup={openInPopup} />
                 ))}
               </TableBody>
             </Table>
           </TableContainer>
-          <TableFooter
-            sx={{ display: "flex", justifyContent: "center", marginTop: "2em" }}
-          >
-            {/* <Pagination
-                  count={pageCount}
-                  onChange={handlePageClick}
-                  color={"primary"}
-                  variant="outlined"
-                  shape="circular"
-                /> */}
-          </TableFooter>
+          <CustomPagination
+            pageCount={pageCount}
+            handlePageClick={handlePageClick}
+          />
         </Paper>
       </Grid>
       <Popup
