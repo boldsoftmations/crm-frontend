@@ -41,7 +41,7 @@ export const Dispatched = () => {
       setOpen(true);
       if (currentPage) {
         const response = await InvoiceServices.getDispatchDataWithPagination(
-          "false",
+          "true",
           currentPage
         );
         setDispatchData(response.data.results);
@@ -81,7 +81,7 @@ export const Dispatched = () => {
       setCurrentPage(page);
       setOpen(true);
       const response = await InvoiceServices.getDispatchDataWithPagination(
-        "false",
+        "true",
         page
       );
       setDispatchData(response.data.results);
