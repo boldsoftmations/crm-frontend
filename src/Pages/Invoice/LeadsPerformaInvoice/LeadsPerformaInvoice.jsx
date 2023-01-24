@@ -477,6 +477,10 @@ export const LeadsPerformaInvoice = (props) => {
                             </strong>{" "}
                             <br />
                             <strong style={{ ...typographyStyling }}>
+                              Round Off
+                            </strong>
+                            <br />
+                            <strong style={{ ...typographyStyling }}>
                               Total Amount
                             </strong>
                           </td>
@@ -496,12 +500,28 @@ export const LeadsPerformaInvoice = (props) => {
                             </span>
                             <br />
                             <strong style={{ ...typographyStyling }}>
-                              {invoiceData.total}
+                              {invoiceData.round_off}
+                            </strong>
+                            <br />
+                            <strong style={{ ...typographyStyling }}>
+                              {invoiceData.round_off_total}
                             </strong>
                           </td>
                         </tr>
                       </tbody>
                     </table>
+                  </div>
+                </div>
+                <div
+                  className="row mb-4"
+                  style={{
+                    ...typographyStyling,
+                    borderBottom: "1px Solid #000000",
+                  }}
+                >
+                  <div className="col-md-8 text-right">
+                    <strong>Amount in Words :-</strong>
+                    {invoiceData.amount_in_words}
                   </div>
                 </div>
                 <div
