@@ -167,7 +167,7 @@ export const CustomerProformaInvoice = (props) => {
                       </div>
                       <div>
                         <strong className="fw-bold">Sales Person : </strong>{" "}
-                        {invoiceData.raised_by_first_name}
+                        {invoiceData.raised_by_first_name}&nbsp;&nbsp;
                         {invoiceData.raised_by_last_name}
                       </div>
                       <div>
@@ -186,7 +186,7 @@ export const CustomerProformaInvoice = (props) => {
                     >
                       <div>
                         <strong className="fw-bold">Place of Supply : </strong>
-                        Bhiwandi
+                        {invoiceData.place_of_supply}
                       </div>
                       <div>
                         <strong className="fw-bold">
@@ -402,6 +402,7 @@ export const CustomerProformaInvoice = (props) => {
                   style={{ borderBottom: "1px Solid #000000" }}
                 >
                   <div className="col-md-8 text-right">
+                    <strong>Terms and Condition :-</strong>
                     {Information.map((data, i) => {
                       return (
                         <p
@@ -420,6 +421,7 @@ export const CustomerProformaInvoice = (props) => {
                       {invoiceData.approval
                         ? invoiceData.approval.approver_first_name
                         : ""}
+                      &nbsp;&nbsp;
                       {invoiceData.approval
                         ? invoiceData.approval.approver_last_name
                         : ""}
@@ -429,6 +431,8 @@ export const CustomerProformaInvoice = (props) => {
                         : ""}
                       <br />
                       <strong>Authorising Signatory</strong>
+                      <br />
+                      <strong>[Digitally Signed]</strong>
                     </div>
                   </div>
                 </div>

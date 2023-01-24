@@ -206,6 +206,7 @@ export const CreateCustomerProformaInvoice = (props) => {
         pincode: warehouseData.pincode,
         state: warehouseData.state,
         city: warehouseData.city,
+        place_of_supply: inputValue.place_of_supply,
         buyer_order_no: checked === true ? "verbal" : inputValue.buyer_order_no,
         buyer_order_date: inputValue.buyer_order_date,
         payment_terms: paymentTermData,
@@ -344,7 +345,7 @@ export const CreateCustomerProformaInvoice = (props) => {
               <Select
                 labelId="demo-simple-select-required-label"
                 id="demo-simple-select-required"
-                label="Contact"
+                label="Contact Name"
                 onChange={(e, value) => setContactData(e.target.value)}
               >
                 {contactOptions &&
@@ -357,7 +358,24 @@ export const CreateCustomerProformaInvoice = (props) => {
               <HelperText>first select Company Name</HelperText>
             </FormControl>
           </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={2}>
+            <TextField
+              fullWidth
+              disabled
+              name="contact"
+              size="small"
+              label="Contact"
+              variant="outlined"
+              value={
+                contactData
+                  ? contactData.contact
+                    ? contactData.contact
+                    : ""
+                  : ""
+              }
+            />
+          </Grid>
+          <Grid item xs={12} sm={2}>
             <TextField
               fullWidth
               disabled
@@ -495,6 +513,20 @@ export const CreateCustomerProformaInvoice = (props) => {
                   ? inputValue.buyer_order_date
                   : values.someDate
               }
+              onChange={handleInputChange}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextField
+              fullWidth
+              name="place_of_supply"
+              size="small"
+              label="Place of Suplly"
+              variant="outlined"
+              value={inputValue.place_of_supply}
               onChange={handleInputChange}
               InputLabelProps={{
                 shrink: true,

@@ -235,7 +235,22 @@ export const CustomerOrderBookDetails = () => {
               </CSVLink>
             </Box>
           </Box>
-          <TableContainer sx={{ maxHeight: 440 }} component={Paper}>
+          <TableContainer
+            sx={{
+              maxHeight: 440,
+              "&::-webkit-scrollbar": {
+                width: 10,
+              },
+              "&::-webkit-scrollbar-track": {
+                backgroundColor: "#0d6efd",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: "#000000",
+                borderRadius: 2,
+              },
+            }}
+            component={Paper}
+          >
             <Table
               sx={{ minWidth: 1200 }}
               stickyHeader

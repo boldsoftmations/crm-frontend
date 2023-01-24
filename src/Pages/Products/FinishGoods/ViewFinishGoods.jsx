@@ -300,7 +300,21 @@ export const ViewFinishGoods = () => {
               </Button>
             </Box>
           </Box>
-          <TableContainer sx={{ maxHeight: 440 }}>
+          <TableContainer
+            sx={{
+              maxHeight: 440,
+              "&::-webkit-scrollbar": {
+                width: 10,
+              },
+              "&::-webkit-scrollbar-track": {
+                backgroundColor: "#0d6efd",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: "#000000",
+                borderRadius: 2,
+              },
+            }}
+          >
             <Table
               sx={{ minWidth: 700 }}
               stickyHeader

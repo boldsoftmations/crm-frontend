@@ -42,7 +42,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 export const BankDetails = (props) => {
-  const { bankData,open,getAllBankDetailsByID } = props;
+  const { bankData, open, getAllBankDetailsByID } = props;
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [idForEdit, setIDForEdit] = useState();
@@ -56,7 +56,6 @@ export const BankDetails = (props) => {
     setIDForEdit(item);
     setOpenPopup(true);
   };
-
 
   console.log("bankData :>> ", bankData);
   return (
@@ -143,7 +142,21 @@ export const BankDetails = (props) => {
             </Button>
           </Box>
         </Box>
-        <TableContainer sx={{ maxHeight: 440 }}>
+        <TableContainer
+          sx={{
+            maxHeight: 440,
+            "&::-webkit-scrollbar": {
+              width: 10,
+            },
+            "&::-webkit-scrollbar-track": {
+              backgroundColor: "#0d6efd",
+            },
+            "&::-webkit-scrollbar-thumb": {
+              backgroundColor: "#000000",
+              borderRadius: 2,
+            },
+          }}
+        >
           <Table sx={{ minWidth: 1200 }} stickyHeader aria-label="sticky table">
             <TableHead>
               <TableRow>

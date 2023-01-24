@@ -11,17 +11,14 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-
   TableCell,
   Button,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
 
 import { Popup } from "./../../../Components/Popup";
-import { CreateContactDetails } from './CreateContactDetails';
-import { UpdateContactDetails } from './UpdateContactDetails';
-
-
+import { CreateContactDetails } from "./CreateContactDetails";
+import { UpdateContactDetails } from "./UpdateContactDetails";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -44,7 +41,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 export const ContactDetails = (props) => {
-  const { contactData,getAllContactDetailsByID,open } = props;
+  const { contactData, getAllContactDetailsByID, open } = props;
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [IDForEdit, setIDForEdit] = useState();
@@ -58,8 +55,6 @@ export const ContactDetails = (props) => {
     setIDForEdit(item);
     setOpenPopup(true);
   };
-
-
 
   return (
     <>
@@ -145,7 +140,21 @@ export const ContactDetails = (props) => {
             </Button>
           </Box>
         </Box>
-        <TableContainer sx={{ maxHeight: 440 }}>
+        <TableContainer
+          sx={{
+            maxHeight: 440,
+            "&::-webkit-scrollbar": {
+              width: 10,
+            },
+            "&::-webkit-scrollbar-track": {
+              backgroundColor: "#0d6efd",
+            },
+            "&::-webkit-scrollbar-thumb": {
+              backgroundColor: "#000000",
+              borderRadius: 2,
+            },
+          }}
+        >
           <Table sx={{ minWidth: 1200 }} stickyHeader aria-label="sticky table">
             <TableHead>
               <TableRow>
@@ -196,7 +205,10 @@ export const ContactDetails = (props) => {
         openPopup={openPopup2}
         setOpenPopup={setOpenPopup2}
       >
-        <CreateContactDetails getAllContactDetailsByID={getAllContactDetailsByID} setOpenPopup={setOpenPopup2} />
+        <CreateContactDetails
+          getAllContactDetailsByID={getAllContactDetailsByID}
+          setOpenPopup={setOpenPopup2}
+        />
       </Popup>
       <Popup
         title={"Update Contact Details"}

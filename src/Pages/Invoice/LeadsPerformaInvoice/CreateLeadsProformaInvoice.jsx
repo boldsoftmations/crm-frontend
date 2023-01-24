@@ -70,7 +70,7 @@ export const CreateLeadsProformaInvoice = (props) => {
   const data = useSelector((state) => state.auth);
   const users = data.profile;
   const sellerData = data.sellerAccount;
-  console.log("sellerData :>> ", sellerData);
+
   const handleFormChange = (index, event) => {
     setProductData(event.target.textContent);
     let data = [...products];
@@ -169,6 +169,7 @@ export const CreateLeadsProformaInvoice = (props) => {
         pincode: leadIDData.shipping_pincode,
         state: leadIDData.shipping_state,
         city: leadIDData.shipping_city,
+        place_of_supply: inputValue.place_of_supply,
         buyer_order_no: checked === true ? "verbal" : inputValue.buyer_order_no,
         buyer_order_date: inputValue.buyer_order_date
           ? inputValue.buyer_order_date
@@ -511,7 +512,17 @@ export const CreateLeadsProformaInvoice = (props) => {
               }}
             />
           </Grid>
-
+          <Grid item xs={12} sm={4}>
+            <TextField
+              fullWidth
+              name="place_of_supply"
+              size="small"
+              label="Place of Suplly"
+              variant="outlined"
+              value={inputValue.place_of_supply}
+              onChange={handleInputChange}
+            />
+          </Grid>
           <Grid item xs={12}>
             <Root>
               <Divider>

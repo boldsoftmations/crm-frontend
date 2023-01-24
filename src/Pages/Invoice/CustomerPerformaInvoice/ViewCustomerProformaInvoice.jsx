@@ -27,9 +27,7 @@ import { Popup } from "./../../../Components/Popup";
 import { CustomerProformaInvoice } from "./CustomerProformaInvoice";
 import AddIcon from "@mui/icons-material/Add";
 import ClearIcon from "@mui/icons-material/Clear";
-import {
-  getSellerAccountData,
-} from "./../../../Redux/Action/Action";
+import { getSellerAccountData } from "./../../../Redux/Action/Action";
 import { useDispatch } from "react-redux";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
@@ -87,7 +85,9 @@ export const ViewCustomerProformaInvoice = () => {
   const getAllSellerAccountsDetails = async () => {
     try {
       setOpen(true);
-      const response = await InvoiceServices.getAllPaginateSellerAccountData('all');
+      const response = await InvoiceServices.getAllPaginateSellerAccountData(
+        "all"
+      );
       dispatch(getSellerAccountData(response.data));
       setOpen(false);
     } catch (err) {
@@ -292,7 +292,21 @@ export const ViewCustomerProformaInvoice = () => {
               </Button>
             </Box>
           </Box>
-          <TableContainer sx={{ maxHeight: 440 }}>
+          <TableContainer
+            sx={{
+              maxHeight: 440,
+              "&::-webkit-scrollbar": {
+                width: 10,
+              },
+              "&::-webkit-scrollbar-track": {
+                backgroundColor: "#0d6efd",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: "#000000",
+                borderRadius: 2,
+              },
+            }}
+          >
             <Table
               sx={{ minWidth: 1200 }}
               stickyHeader
@@ -301,12 +315,15 @@ export const ViewCustomerProformaInvoice = () => {
               <TableHead>
                 <TableRow>
                   <StyledTableCell align="center">PI NUMBER</StyledTableCell>
+                  <StyledTableCell align="center">PI DATE</StyledTableCell>
                   <StyledTableCell align="center">COMPANY NAME</StyledTableCell>
+                  <StyledTableCell align="center">BILLING CITY</StyledTableCell>
                   <StyledTableCell align="center">CONTACT</StyledTableCell>
-                  <StyledTableCell align="center">
-                    ALT. CONTACT NO.
-                  </StyledTableCell>
                   <StyledTableCell align="center">STATUS</StyledTableCell>
+                  <StyledTableCell align="center">PI AMOUNT</StyledTableCell>
+                  <StyledTableCell align="center">
+                    BALANCE AMOUNT
+                  </StyledTableCell>
                   <StyledTableCell align="center">Action</StyledTableCell>
                 </TableRow>
               </TableHead>
@@ -318,16 +335,25 @@ export const ViewCustomerProformaInvoice = () => {
                         {row.pi_number}
                       </StyledTableCell>
                       <StyledTableCell align="center">
+                        {row.generation_date}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
                         {row.company}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.billing_city}
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         {row.contact}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {row.alternate_contact}
+                        {row.status}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {row.status}
+                        {row.total}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.balance_amount}
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         <Button

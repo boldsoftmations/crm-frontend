@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 import {
   Backdrop,
@@ -17,10 +17,10 @@ import {
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
 import { Popup } from "./../../../Components/Popup";
-import { CreateSellerAccounts } from './CreateSellerAccounts';
-import { UpdateSellerAccounts } from './UpdateSellerAccounts';
-import InvoiceServices from './../../../services/InvoiceService';
-import { ErrorMessage } from './../../../Components/ErrorMessage/ErrorMessage';
+import { CreateSellerAccounts } from "./CreateSellerAccounts";
+import { UpdateSellerAccounts } from "./UpdateSellerAccounts";
+import InvoiceServices from "./../../../services/InvoiceService";
+import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -42,70 +42,68 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-
 export const SellerAccount = () => {
-    const [openPopup, setOpenPopup] = useState(false);
-    const [openPopup2, setOpenPopup2] = useState(false);
-    const [idForEdit, setIDForEdit] = useState();
-    const errRef = useRef();
-    const [open, setOpen] = useState(false);
-    const [errMsg, setErrMsg] = useState("");
+  const [openPopup, setOpenPopup] = useState(false);
+  const [openPopup2, setOpenPopup2] = useState(false);
+  const [idForEdit, setIDForEdit] = useState();
+  const errRef = useRef();
+  const [open, setOpen] = useState(false);
+  const [errMsg, setErrMsg] = useState("");
   const [invoiceData, setInvoiceData] = useState([]);
-    useEffect(() => {
-        getAllSellerAccountsDetails();
-      }, []);
+  useEffect(() => {
+    getAllSellerAccountsDetails();
+  }, []);
 
-    const getAllSellerAccountsDetails = async () => {
-        try {
-          setOpen(true);
-          const response = await InvoiceServices.getAllSellerAccountData();
-          setInvoiceData(response.data.results);
-          setOpen(false);
-        } catch (err) {
-          setOpen(false);
-          if (!err.response) {
-            setErrMsg(
-              "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
-            );
-          } else if (err.response.status === 400) {
-            setErrMsg(
-              err.response.data.errors.name
-                ? err.response.data.errors.name
-                : err.response.data.errors.non_field_errors
-            );
-          } else if (err.response.status === 401) {
-            setErrMsg(err.response.data.errors.code);
-          } else {
-            setErrMsg("Server Error");
-          }
-          errRef.current.focus();
-        }
-      };
+  const getAllSellerAccountsDetails = async () => {
+    try {
+      setOpen(true);
+      const response = await InvoiceServices.getAllSellerAccountData();
+      setInvoiceData(response.data.results);
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      if (!err.response) {
+        setErrMsg(
+          "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
+        );
+      } else if (err.response.status === 400) {
+        setErrMsg(
+          err.response.data.errors.name
+            ? err.response.data.errors.name
+            : err.response.data.errors.non_field_errors
+        );
+      } else if (err.response.status === 401) {
+        setErrMsg(err.response.data.errors.code);
+      } else {
+        setErrMsg("Server Error");
+      }
+      errRef.current.focus();
+    }
+  };
 
-    // const getResetData = () => {
-    //   setSearchQuery("");
-    //   // getUnits();
-    // };
-  
-    const openInPopup = (item) => {
-      setIDForEdit(item);
-      setOpenPopup(true);
-    };
-  
-  
-    return (
-      <>
-        <div>
-          <Backdrop
-            sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-            open={open}
-          >
-            <CircularProgress color="inherit" />
-          </Backdrop>
-        </div>
-        
+  // const getResetData = () => {
+  //   setSearchQuery("");
+  //   // getUnits();
+  // };
+
+  const openInPopup = (item) => {
+    setIDForEdit(item);
+    setOpenPopup(true);
+  };
+
+  return (
+    <>
+      <div>
+        <Backdrop
+          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={open}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
+      </div>
+
       <Grid item xs={12}>
-      <ErrorMessage errRef={errRef} errMsg={errMsg} />
+        <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
           <Box display="flex">
             <Box flexGrow={2}>
@@ -161,8 +159,26 @@ export const SellerAccount = () => {
               </Button>
             </Box>
           </Box>
-          <TableContainer sx={{ maxHeight: 440 }}>
-            <Table sx={{ minWidth: 1200 }} stickyHeader aria-label="sticky table">
+          <TableContainer
+            sx={{
+              maxHeight: 440,
+              "&::-webkit-scrollbar": {
+                width: 10,
+              },
+              "&::-webkit-scrollbar-track": {
+                backgroundColor: "#0d6efd",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: "#000000",
+                borderRadius: 2,
+              },
+            }}
+          >
+            <Table
+              sx={{ minWidth: 1200 }}
+              stickyHeader
+              aria-label="sticky table"
+            >
               <TableHead>
                 <TableRow>
                   <StyledTableCell align="center">COMPANY NAME</StyledTableCell>
@@ -178,7 +194,9 @@ export const SellerAccount = () => {
                 {invoiceData.map((row, i) => {
                   return (
                     <StyledTableRow key={i}>
-                      <StyledTableCell align="center">{row.name}</StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.name}
+                      </StyledTableCell>
                       <StyledTableCell align="center">
                         {row.bank_name}
                       </StyledTableCell>
@@ -208,29 +226,29 @@ export const SellerAccount = () => {
               </TableBody>
             </Table>
           </TableContainer>
-    </Paper>
-    </Grid>
-        <Popup
-          title={"Create Seller Accounts Details"}
-          openPopup={openPopup2}
+        </Paper>
+      </Grid>
+      <Popup
+        title={"Create Seller Accounts Details"}
+        openPopup={openPopup2}
+        setOpenPopup={setOpenPopup2}
+      >
+        <CreateSellerAccounts
           setOpenPopup={setOpenPopup2}
-        >
-          <CreateSellerAccounts
-            setOpenPopup={setOpenPopup2}
-            getAllSellerAccountsDetails={getAllSellerAccountsDetails}
-          />
-        </Popup>
-        <Popup
-          title={"Update Seller Accounts Details"}
-          openPopup={openPopup}
+          getAllSellerAccountsDetails={getAllSellerAccountsDetails}
+        />
+      </Popup>
+      <Popup
+        title={"Update Seller Accounts Details"}
+        openPopup={openPopup}
+        setOpenPopup={setOpenPopup}
+      >
+        <UpdateSellerAccounts
           setOpenPopup={setOpenPopup}
-        >
-          <UpdateSellerAccounts
-            setOpenPopup={setOpenPopup}
-            getAllSellerAccountsDetails={getAllSellerAccountsDetails}
-            idForEdit={idForEdit}
-          />
-        </Popup>
-      </>
-    );
-}
+          getAllSellerAccountsDetails={getAllSellerAccountsDetails}
+          idForEdit={idForEdit}
+        />
+      </Popup>
+    </>
+  );
+};

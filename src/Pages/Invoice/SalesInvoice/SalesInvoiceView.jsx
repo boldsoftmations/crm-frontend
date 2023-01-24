@@ -154,7 +154,7 @@ export const SalesInvoiceView = () => {
               </Button>
             </Box>
           </Box>
-          <TableContainer sx={{ maxHeight: 440 }}>
+          <TableContainer v>
             <Table
               sx={{ minWidth: 1200 }}
               stickyHeader

@@ -77,7 +77,7 @@ export const UpdateSellerAccounts = (props) => {
         cin_number: inputValue.cin_number,
         email: inputValue.email,
         pan_number: inputValue.pan_number,
-        contact: `+91${inputValue.contact}`,
+        contact: inputValue.contact,
         ifsc_code: inputValue.ifsc_code ? inputValue.ifsc_code : "",
         bank_name: bankData.BANK ? bankData.BANK : inputValue.bank_name,
         branch: bankData.BRANCH ? bankData.BRANCH : inputValue.branch,

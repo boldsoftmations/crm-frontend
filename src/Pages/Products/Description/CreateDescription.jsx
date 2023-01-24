@@ -3,8 +3,11 @@ import {
   Box,
   Button,
   CircularProgress,
+  FormControl,
   Grid,
+  InputLabel,
   MenuItem,
+  Select,
   TextField,
 } from "@mui/material";
 
@@ -31,7 +34,6 @@ export const CreateDescription = (props) => {
   const { setOpenPopup, getDescriptions } = props;
   const [description, setDescription] = useState([]);
   const [open, setOpen] = useState(false);
-  const [consumable, setConsumable] = useState([]);
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
 
@@ -46,7 +48,7 @@ export const CreateDescription = (props) => {
       setOpen(true);
       const data = {
         name: description.name,
-        consumable: consumable,
+        consumable: description.consumable,
       };
       await ProductService.createDescription(data);
       setOpenPopup(false);
@@ -114,23 +116,19 @@ export const CreateDescription = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
-              textAlign={"right"}
-              select
-              fullWidth
-              name="consumable"
-              size="small"
-              label="Consumable"
-              variant="outlined"
-              value={consumable}
-              onChange={(e) => setConsumable(e.target.value)}
-            >
-              {consume.map((option, i) => (
-                <MenuItem key={option.name} value={option.label}>
-                  {option.name}
-                </MenuItem>
-              ))}
-            </TextField>
+            <FormControl fullWidth size="small">
+              <InputLabel id="demo-select-small">Consumable</InputLabel>
+              <Select
+                labelId="demo-select-small"
+                id="demo-select-small"
+                label="Consumable"
+                name="consumable"
+                onChange={handleInputChange}
+              >
+                <MenuItem value={"yes"}>Yes </MenuItem>
+                <MenuItem value={"no"}>No </MenuItem>
+              </Select>
+            </FormControl>
           </Grid>
         </Grid>
         <Button
