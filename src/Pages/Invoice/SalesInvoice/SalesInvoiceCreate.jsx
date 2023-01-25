@@ -10,6 +10,7 @@ export const SalesInvoiceCreate = (props) => {
   const [errMsg, setErrMsg] = useState("");
   const [customerorderBookData, setCustomerOrderBookData] = useState();
   const [customerorderBookOption, setCustomerOrderBookOption] = useState([]);
+  const [inputValue, setInputValue] = useState([]);
   const [products, setProducts] = useState([
     {
       product: "",
@@ -23,6 +24,11 @@ export const SalesInvoiceCreate = (props) => {
     data[index][event.target.name] = event.target.value;
 
     setProducts(data);
+  };
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setInputValue({ ...inputValue, [name]: value });
   };
 
   const removeFields = (index) => {
@@ -62,7 +68,7 @@ export const SalesInvoiceCreate = (props) => {
       errRef.current.focus();
     }
   };
-
+  console.log("customerorderBookOption", customerorderBookOption);
   const handleProductValue = (value) => {
     console.log("value", value);
     const Data = value;
@@ -82,6 +88,8 @@ export const SalesInvoiceCreate = (props) => {
       const req = {
         order_book: customerorderBookData.id,
         products: products,
+        place_of_supply: inputValue.place_of_supply,
+        transporter_name: inputValue.transporter_name,
       };
       setOpen(true);
 
@@ -121,12 +129,55 @@ export const SalesInvoiceCreate = (props) => {
               )}
             />
           </Grid>
+          <Grid item xs={12} sm={3}>
+            <TextField
+              fullWidth
+              name="company"
+              size="small"
+              label="Company"
+              variant="outlined"
+              value={customerorderBookData ? customerorderBookData.company : ""}
+            />
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <TextField
+              fullWidth
+              multiline
+              name="shipping_address"
+              size="small"
+              label="Shipping Address"
+              variant="outlined"
+              value={
+                customerorderBookData
+                  ? customerorderBookData.shipping_address
+                  : ""
+              }
+            />
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <TextField
+              fullWidth
+              name="transporter_name"
+              size="small"
+              label="Transporter Name"
+              variant="outlined"
+              value={inputValue.transporter_name}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <TextField
+              fullWidth
+              name="place_of_supply"
+              size="small"
+              label="Place of Supply"
+              variant="outlined"
+              value={inputValue.place_of_supply}
+              onChange={handleInputChange}
+            />
+          </Grid>
           {products && products.length > 0
             ? products.map((input, index) => {
-                console.log(
-                  "input :>> ",
-                  products[index].pending_quantity >= input.quantity
-                );
                 return (
                   <>
                     <Grid key={index} item xs={12} sm={4}>

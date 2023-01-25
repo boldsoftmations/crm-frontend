@@ -50,6 +50,7 @@ export const CustomerConfirmationPayment = (props) => {
         validity: invoiceData.validity,
         status: inputValue.status,
         amount: invoiceData.amount,
+        place_of_supply: invoiceData.place_of_supply,
         sgst: invoiceData.sgst ? invoiceData.sgst : null,
         cgst: invoiceData.cgst ? invoiceData.cgst : null,
         igst: invoiceData.igst ? invoiceData.igst : null,

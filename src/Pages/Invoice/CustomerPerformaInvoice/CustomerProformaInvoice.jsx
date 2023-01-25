@@ -10,6 +10,7 @@ import ISO from "../../../Images/ISOLogo.ico";
 import AllLogo from "../../../Images/allLogo.jpg";
 import MSME from "../../../Images/MSME.jpeg";
 // import "../CustomerPiStyle.css";
+import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
 
 export const CustomerProformaInvoice = (props) => {
   const { idForEdit, setOpenPopup, getCustomerPIDetails } = props;
@@ -17,6 +18,7 @@ export const CustomerProformaInvoice = (props) => {
   const [invoiceData, setInvoiceData] = useState([]);
   const [productData, setProductData] = useState([]);
   const [open, setOpen] = useState(false);
+  const [errMsg, setErrMsg] = useState("");
   const data = useSelector((state) => state.auth);
   const users = data.profile;
   useEffect(() => {
@@ -51,6 +53,11 @@ export const CustomerProformaInvoice = (props) => {
       getCustomerPIDetails();
     } catch (err) {
       setOpen(false);
+      setErrMsg(
+        err.response.data.errors.non_field_errors
+          ? err.response.data.errors.non_field_errors
+          : err.response.data.errors
+      );
     }
   };
   const componentRef = useRef();
@@ -62,6 +69,7 @@ export const CustomerProformaInvoice = (props) => {
   return (
     <>
       <CustomLoader open={open} />
+      <ErrorMessage errMsg={errMsg} />
       <div
         className="container-fluid mb-4"
         style={{ border: "1px Solid #000000" }}

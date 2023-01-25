@@ -21,6 +21,7 @@ import InvoiceServices from "../../../services/InvoiceService";
 import LeadServices from "../../../services/LeadService";
 import ProductService from "../../../services/ProductService";
 import { useSelector } from "react-redux";
+import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -517,7 +518,7 @@ export const CreateLeadsProformaInvoice = (props) => {
               fullWidth
               name="place_of_supply"
               size="small"
-              label="Place of Suplly"
+              label="Place of Supply"
               variant="outlined"
               value={inputValue.place_of_supply}
               onChange={handleInputChange}
@@ -530,6 +531,7 @@ export const CreateLeadsProformaInvoice = (props) => {
               </Divider>
             </Root>
           </Grid>
+          <ErrorMessage errMsg={validationPrice} />
           {products.map((input, index) => {
             return (
               <>
@@ -580,8 +582,8 @@ export const CreateLeadsProformaInvoice = (props) => {
                     size="small"
                     label="Rate"
                     variant="outlined"
-                    error={validationPrice}
-                    helperText={validationPrice}
+                    // error={validationPrice}
+                    // helperText={validationPrice}
                     // value={input.rate}
                     onChange={(event) => handleFormChange(index, event)}
                   />

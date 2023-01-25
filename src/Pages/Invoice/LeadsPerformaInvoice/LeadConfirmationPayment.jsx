@@ -51,11 +51,11 @@ export const LeadConfirmationPayment = (props) => {
         status: inputValue.status,
         amount_recieved: inputValue.amount_recieved,
         amount: invoiceData.amount,
+        place_of_supply: invoiceData.place_of_supply,
         sgst: invoiceData.sgst ? invoiceData.sgst : null,
         cgst: invoiceData.cgst ? invoiceData.cgst : null,
         igst: invoiceData.igst ? invoiceData.igst : null,
         total: invoiceData.total,
-        amount_recieved: inputValue.amount_recieved,
         gst_number: invoiceData.gst_number,
         pan_number: invoiceData.pan_number ? invoiceData.pan_number : null,
       };

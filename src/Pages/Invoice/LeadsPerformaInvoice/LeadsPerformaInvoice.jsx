@@ -10,6 +10,7 @@ import ISO from "../../../Images/ISOLogo.ico";
 import AllLogo from "../../../Images/allLogo.jpg";
 import MSME from "../../../Images/MSME.jpeg";
 // import "../CustomerPiStyle.css";
+import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
 
 export const LeadsPerformaInvoice = (props) => {
   const { idForEdit, setOpenPopup, getAllLeadsPIDetails } = props;
@@ -18,6 +19,7 @@ export const LeadsPerformaInvoice = (props) => {
   const [productData, setProductData] = useState([]);
   const [open, setOpen] = useState(false);
   const data = useSelector((state) => state.auth);
+  const [errMsg, setErrMsg] = useState("");
   const users = data.profile;
   useEffect(() => {
     getAllProformaInvoiceDetails();
@@ -51,6 +53,11 @@ export const LeadsPerformaInvoice = (props) => {
       getAllLeadsPIDetails();
     } catch (err) {
       setOpen(false);
+      setErrMsg(
+        err.response.data.errors.non_field_errors
+          ? err.response.data.errors.non_field_errors
+          : err.response.data.errors
+      );
     }
   };
 
@@ -63,6 +70,7 @@ export const LeadsPerformaInvoice = (props) => {
   return (
     <>
       <CustomLoader open={open} />
+      <ErrorMessage errMsg={errMsg} />
       <div
         className="container-fluid mb-4"
         style={{ border: "1px Solid #000000" }}

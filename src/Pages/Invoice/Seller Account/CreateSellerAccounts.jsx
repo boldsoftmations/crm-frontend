@@ -54,6 +54,8 @@ export const CreateSellerAccounts = (props) => {
         cin_number: inputValue.cin_number,
         email: inputValue.email,
         pan_number: inputValue.pan_number,
+        prefix: inputValue.prefix,
+        suffix: inputValue.suffix,
         contact: `+91${inputValue.contact}`,
         ifsc_code: inputValue.ifsc_code,
         bank_name: bankData.BANK,
@@ -207,7 +209,29 @@ export const CreateSellerAccounts = (props) => {
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
-            type={'number'}
+              fullWidth
+              name="prefix"
+              size="small"
+              label="Prefix"
+              variant="outlined"
+              value={inputValue.prefix ? inputValue.prefix : ""}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              name="suffix"
+              size="small"
+              label="Suffix"
+              variant="outlined"
+              value={inputValue.suffix ? inputValue.suffix : ""}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              type={"number"}
               fullWidth
               name="contact"
               size="small"

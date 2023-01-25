@@ -77,6 +77,8 @@ export const UpdateSellerAccounts = (props) => {
         cin_number: inputValue.cin_number,
         email: inputValue.email,
         pan_number: inputValue.pan_number,
+        prefix: inputValue.prefix,
+        suffix: inputValue.suffix,
         contact: inputValue.contact,
         ifsc_code: inputValue.ifsc_code ? inputValue.ifsc_code : "",
         bank_name: bankData.BANK ? bankData.BANK : inputValue.bank_name,
@@ -230,6 +232,28 @@ export const UpdateSellerAccounts = (props) => {
               label="Pan Number"
               variant="outlined"
               value={inputValue.pan_number ? inputValue.pan_number : ""}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              name="prefix"
+              size="small"
+              label="Prefix"
+              variant="outlined"
+              value={inputValue.prefix ? inputValue.prefix : ""}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              name="suffix"
+              size="small"
+              label="Suffix"
+              variant="outlined"
+              value={inputValue.suffix ? inputValue.suffix : ""}
               onChange={handleInputChange}
             />
           </Grid>
