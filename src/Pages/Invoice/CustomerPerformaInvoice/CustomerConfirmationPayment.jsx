@@ -55,7 +55,6 @@ export const CustomerConfirmationPayment = (props) => {
         igst: invoiceData.igst ? invoiceData.igst : null,
         total: invoiceData.total,
         amount_recieved: inputValue.amount_recieved || 0,
-        balance_amount: invoiceData.total - inputValue.amount_recieved || 0,
         gst_number: invoiceData.gst_number,
         pan_number: invoiceData.pan_number ? invoiceData.pan_number : null,
       };

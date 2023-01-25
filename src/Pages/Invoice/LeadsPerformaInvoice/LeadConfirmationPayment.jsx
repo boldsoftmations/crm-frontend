@@ -56,7 +56,6 @@ export const LeadConfirmationPayment = (props) => {
         igst: invoiceData.igst ? invoiceData.igst : null,
         total: invoiceData.total,
         amount_recieved: inputValue.amount_recieved,
-        balance_amount: invoiceData.total - inputValue.amount_recieved,
         gst_number: invoiceData.gst_number,
         pan_number: invoiceData.pan_number ? invoiceData.pan_number : null,
       };
@@ -119,36 +118,36 @@ export const LeadConfirmationPayment = (props) => {
             </FormControl>
           </Grid>
           {inputValue.status == "Partially Paid" && (
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              required
-              name="amount_recieved"
-              size="small"
-              label="Amount Recieved"
-              variant="outlined"
-              value={inputValue.amount_recieved}
-              onChange={handleInputChange}
-            />
-          </Grid>
-            )}
-              {inputValue.status == "Partially Paid" && (
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              required
-              name="balance_amount"
-              size="small"
-              label="Balance Amount"
-              variant="outlined"
-              value={
-                inputValue.amount_recieved
-                  ? invoiceData.total - inputValue.amount_recieved
-                  : ""
-              }
-            />
-          </Grid>
-              )}
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                required
+                name="amount_recieved"
+                size="small"
+                label="Amount Recieved"
+                variant="outlined"
+                value={inputValue.amount_recieved}
+                onChange={handleInputChange}
+              />
+            </Grid>
+          )}
+          {inputValue.status == "Partially Paid" && (
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                required
+                name="balance_amount"
+                size="small"
+                label="Balance Amount"
+                variant="outlined"
+                value={
+                  inputValue.amount_recieved
+                    ? invoiceData.total - inputValue.amount_recieved
+                    : ""
+                }
+              />
+            </Grid>
+          )}
         </Grid>
         <Button
           type="submit"

@@ -340,7 +340,7 @@ export const CreateCustomerProformaInvoice = (props) => {
               sx={{ padding: "0", margin: "0" }}
             >
               <InputLabel id="demo-simple-select-required-label">
-                Contact
+                Contact Name
               </InputLabel>
               <Select
                 labelId="demo-simple-select-required-label"
