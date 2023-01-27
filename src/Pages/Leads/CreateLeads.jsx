@@ -19,7 +19,8 @@ import {
   Stepper,
   TextField,
   Typography,
-  Select
+  Select,
+  Checkbox,
 } from "@mui/material";
 import { CircularProgress } from "@mui/material";
 import { Backdrop } from "@mui/material";
@@ -75,7 +76,7 @@ export const CreateLeads = (props) => {
   const [typeData, setTypeData] = useState("");
   const [pinCodeData, setPinCodeData] = useState([]);
   const [personName, setPersonName] = useState([]);
-
+  const [checked, setChecked] = useState(false);
   const handleChange = (event) => {
     setTypeData(event.target.value);
   };
@@ -92,7 +93,7 @@ export const CreateLeads = (props) => {
     const { name, value } = event.target;
     setLeads({ ...leads, [name]: value });
   };
- 
+
   useEffect(() => {
     getReference();
   }, []);
@@ -100,22 +101,6 @@ export const CreateLeads = (props) => {
   useEffect(() => {
     getLAssignedData();
   }, []);
-
-  const validatePinCode = async () => {
-    try {
-      setOpen(true);
-      const PINCODE = leads.shipping_pincode;
-      const response = await axios.get(
-        `https://api.postalpincode.in/pincode/${PINCODE}`
-      );
-
-      setPinCodeData(response.data[0].PostOffice[0]);
-      setOpen(false);
-    } catch (error) {
-      console.log("Creating Bank error ", error);
-      setOpen(false);
-    }
-  };
 
   const getLAssignedData = async (id) => {
     try {
@@ -148,7 +133,6 @@ export const CreateLeads = (props) => {
       console.error(err);
     }
   };
-  console.log("assign", assign);
 
   useEffect(() => {
     getDescriptionNoData();
@@ -183,10 +167,22 @@ export const CreateLeads = (props) => {
           references: REFERENCE,
           description: personName,
           type_of_customer: typeData,
-          shipping_address: leads.shipping_address,
-          shipping_city: pinCodeData.District,
-          shipping_state: pinCodeData.State,
-          shipping_pincode: leads.shipping_pincode,
+          shipping_address:
+            checked === true ? leads.address : leads.shipping_address,
+          shipping_city:
+            checked === true
+              ? leads.city
+              : leads.shipping_city
+              ? leads.shipping_city
+              : "",
+          shipping_state:
+            checked === true
+              ? leads.state
+              : leads.shipping_state
+              ? leads.shipping_state
+              : "",
+          shipping_pincode:
+            checked === true ? leads.pinCode : leads.shipping_pincode,
         };
 
         await LeadServices.createLeads(data);
@@ -202,7 +198,6 @@ export const CreateLeads = (props) => {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     }
   };
-
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
@@ -315,9 +310,7 @@ export const CreateLeads = (props) => {
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"
                         label="Busniess Type"
-                        onChange={(e, value) =>
-                          setBusinesTypes(e.target.value)
-                        }
+                        onChange={(e, value) => setBusinesTypes(e.target.value)}
                       >
                         {BusinessTypeData.map((option, i) => (
                           <MenuItem key={i} value={option.label}>
@@ -326,26 +319,25 @@ export const CreateLeads = (props) => {
                         ))}
                       </Select>
                     </FormControl>
-        
                   </Grid>
-                  
-                  {referenceData &&
-                  <Grid item xs={12} sm={6}>
-                    <Autocomplete
-                      style={{
-                        minWidth: 220,
-                      }}
-                      size="small"
-                      onChange={(event, value) => setReference(value)}
-                      name="source"
-                      options={referenceData.map((option) => option.source)}
-                      getOptionLabel={(option) => `${option}`}
-                      renderInput={(params) => (
-                        <TextField {...params} label="Reference" />
-                      )}
-                    />
-                  </Grid>
-    }
+
+                  {referenceData && (
+                    <Grid item xs={12} sm={6}>
+                      <Autocomplete
+                        style={{
+                          minWidth: 220,
+                        }}
+                        size="small"
+                        onChange={(event, value) => setReference(value)}
+                        name="source"
+                        options={referenceData.map((option) => option.source)}
+                        getOptionLabel={(option) => `${option}`}
+                        renderInput={(params) => (
+                          <TextField {...params} label="Reference" />
+                        )}
+                      />
+                    </Grid>
+                  )}
                   <Grid item xs={12} sm={6}>
                     <Autocomplete
                       fullWidth
@@ -400,7 +392,10 @@ export const CreateLeads = (props) => {
       case 1:
         return (
           <>
-            <div className="Auth-form-container" style={{ backgroundColor:'#aaa9ac'}}>
+            <div
+              className="Auth-form-container"
+              style={{ backgroundColor: "#aaa9ac" }}
+            >
               <Backdrop
                 sx={{
                   color: "#fff",
@@ -416,7 +411,6 @@ export const CreateLeads = (props) => {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-               
               }}
             >
               <h3 className="Auth-form-title">Create Company Detail</h3>
@@ -568,6 +562,18 @@ export const CreateLeads = (props) => {
               >
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={checked}
+                          onChange={(event) => setChecked(event.target.checked)}
+                          inputProps={{ "aria-label": "controlled" }}
+                        />
+                      }
+                      label="Same as Billing Address"
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
                     <>
                       <FormControl>
                         <FormLabel id="demo-row-radio-buttons-group-label">
@@ -581,15 +587,15 @@ export const CreateLeads = (props) => {
                           onChange={handleChange}
                         >
                           <FormControlLabel
-                    value="Industrial Customer"
-                    control={<Radio />}
-                    label="Industrial Customer"
-                  />
-                  <FormControlLabel
-                    value="Distribution Customer"
-                    control={<Radio />}
-                    label="Distribution Customer"
-                  />
+                            value="Industrial Customer"
+                            control={<Radio />}
+                            label="Industrial Customer"
+                          />
+                          <FormControlLabel
+                            value="Distribution Customer"
+                            control={<Radio />}
+                            label="Distribution Customer"
+                          />
                         </RadioGroup>
                       </FormControl>
                     </>
@@ -602,29 +608,28 @@ export const CreateLeads = (props) => {
                       label="Shipping Address"
                       variant="outlined"
                       value={
-                        leads.shipping_address ? leads.shipping_address : ""
+                        checked === true
+                          ? leads.address
+                          : leads.shipping_address
                       }
                       onChange={handleInputChange}
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <TextField
-                      sx={{ minWidth: "300px" }}
+                      fullwidth
                       name="shipping_pincode"
                       size="small"
                       type={"number"}
                       label="Pin Code"
                       variant="outlined"
-                      value={leads.shipping_pincode}
+                      value={
+                        checked === true
+                          ? leads.pinCode
+                          : leads.shipping_pincode
+                      }
                       onChange={handleInputChange}
                     />
-                    <Button
-                      onClick={() => validatePinCode()}
-                      variant="contained"
-                      sx={{ marginLeft: "1rem" }}
-                    >
-                      Validate
-                    </Button>
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <TextField
@@ -633,7 +638,14 @@ export const CreateLeads = (props) => {
                       size="small"
                       label="Shipping City"
                       variant="outlined"
-                      value={pinCodeData.District ? pinCodeData.District : ""}
+                      value={
+                        checked === true
+                          ? leads.city
+                          : leads.shipping_city
+                          ? leads.shipping_city
+                          : ""
+                      }
+                      onChange={handleInputChange}
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
@@ -643,7 +655,14 @@ export const CreateLeads = (props) => {
                       size="small"
                       label="Shipping State"
                       variant="outlined"
-                      value={pinCodeData.State ? pinCodeData.State : ""}
+                      value={
+                        checked === true
+                          ? leads.state
+                          : leads.shipping_state
+                          ? leads.shipping_state
+                          : ""
+                      }
+                      onChange={handleInputChange}
                     />
                   </Grid>
                 </Grid>

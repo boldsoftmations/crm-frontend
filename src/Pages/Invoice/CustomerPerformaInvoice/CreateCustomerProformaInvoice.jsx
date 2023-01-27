@@ -27,6 +27,7 @@ import { UpdateCompanyDetails } from "../../Cutomers/CompanyDetails/UpdateCompan
 import { useSelector } from "react-redux";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
+import { useNavigate } from "react-router-dom";
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -48,7 +49,8 @@ const values = {
 };
 
 export const CreateCustomerProformaInvoice = (props) => {
-  const { setOpenPopup, getCustomerPIDetails } = props;
+  const { setOpenPopup, CustomerData } = props;
+  const navigate = useNavigate();
   const [openPopup2, setOpenPopup2] = useState(false);
   const [openPopup3, setOpenPopup3] = useState(false);
   const [open, setOpen] = useState(false);
@@ -146,7 +148,7 @@ export const CreateCustomerProformaInvoice = (props) => {
   const getAllCompanyDetailsByID = async () => {
     try {
       setOpen(true);
-      const ID = companyData.id;
+      const ID = CustomerData.id;
       if (ID) {
         const response = await CustomerServices.getCompanyDataById(ID);
         setContactOptions(response.data.contacts);
@@ -200,7 +202,7 @@ export const CreateCustomerProformaInvoice = (props) => {
         type: "Customer",
         raised_by: users.email,
         seller_account: selectedSellerData.gst_number,
-        company: companyData.name,
+        company: CustomerData.name,
         contact: contactData.contact,
         alternate_contact: contactData.alternate_contact,
         address: warehouseData.address,
@@ -208,6 +210,7 @@ export const CreateCustomerProformaInvoice = (props) => {
         state: warehouseData.state,
         city: warehouseData.city,
         place_of_supply: inputValue.place_of_supply,
+        transporter_name: inputValue.transporter_name,
         buyer_order_no: checked === true ? "verbal" : inputValue.buyer_order_no,
         buyer_order_date: inputValue.buyer_order_date,
         payment_terms: paymentTermData,
@@ -226,7 +229,7 @@ export const CreateCustomerProformaInvoice = (props) => {
       ) {
         await InvoiceServices.createCustomerProformaInvoiceData(req);
         setOpenPopup(false);
-        getCustomerPIDetails();
+        navigate("/invoice/performa-invoice");
       } else {
         setIDForEdit(companyData.id);
         setOpenPopup2(true);
@@ -251,7 +254,6 @@ export const CreateCustomerProformaInvoice = (props) => {
   const openInPopup = () => {
     setOpenPopup3(true);
     setOpenPopup2(false);
-    setCompanyData([]);
     getAllCompanyDetails();
   };
 
@@ -318,19 +320,13 @@ export const CreateCustomerProformaInvoice = (props) => {
             </Root>
           </Grid>
           <Grid item xs={12} sm={4}>
-            <Autocomplete
-              name="name"
+            <TextField
+              fullWidth
+              name="company"
               size="small"
-              disablePortal
-              id="combo-box-demo"
-              onChange={(event, value) => setCompanyData(value)}
-              options={companyOptions}
-              noOptionsText={"Loading Option"}
-              getOptionLabel={(option) => option.name}
-              sx={{ minWidth: 300 }}
-              renderInput={(params) => (
-                <TextField {...params} label="Company Name" sx={tfStyle} />
-              )}
+              label="Company"
+              variant="outlined"
+              value={CustomerData.name}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -529,9 +525,17 @@ export const CreateCustomerProformaInvoice = (props) => {
               variant="outlined"
               value={inputValue.place_of_supply}
               onChange={handleInputChange}
-              InputLabelProps={{
-                shrink: true,
-              }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextField
+              fullWidth
+              name="transporter_name"
+              size="small"
+              label="Transporter Name"
+              variant="outlined"
+              value={inputValue.transporter_name}
+              onChange={handleInputChange}
             />
           </Grid>
           <Grid item xs={12}>

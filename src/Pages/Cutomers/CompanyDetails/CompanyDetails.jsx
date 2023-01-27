@@ -23,6 +23,9 @@ import { Popup } from "./../../../Components/Popup";
 import CustomerServices from "../../../services/CustomerService";
 import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
 import { CustomSearch } from "./../../../Components/CustomSearch";
+import { useDispatch } from "react-redux";
+import { getSellerAccountData } from "../../../Redux/Action/Action";
+import InvoiceServices from "../../../services/InvoiceService";
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.common.black,
@@ -44,6 +47,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 export const CompanyDetails = () => {
+  const dispatch = useDispatch();
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [open, setOpen] = useState(false);
@@ -58,6 +62,23 @@ export const CompanyDetails = () => {
   const handleInputChange = (event) => {
     setFilterSelectedQuery(event.target.value);
     getSearchData(event.target.value);
+  };
+
+  useEffect(() => {
+    getAllSellerAccountsDetails();
+  }, []);
+
+  const getAllSellerAccountsDetails = async () => {
+    try {
+      setOpen(true);
+      const response = await InvoiceServices.getAllPaginateSellerAccountData(
+        "all"
+      );
+      dispatch(getSellerAccountData(response.data));
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+    }
   };
 
   useEffect(() => {

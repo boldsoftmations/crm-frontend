@@ -24,8 +24,11 @@ import { getCompanyName } from "../../../Redux/Action/Action";
 import axios from "axios";
 import LeadServices from "../../../services/LeadService";
 import { styled } from "@mui/material/styles";
+import { Popup } from "./../../../Components/Popup";
+import { CreateCustomerProformaInvoice } from "./../../Invoice/CustomerPerformaInvoice/CreateCustomerProformaInvoice";
 export const UpdateCompanyDetails = (props) => {
   const { setOpenPopup, getAllContactDetailsByID, recordForEdit } = props;
+  const [openPopup2, setOpenPopup2] = useState(false);
   const [open, setOpen] = useState(false);
   const [typeData, setTypeData] = useState("");
   const [category, setCategory] = useState("");
@@ -145,7 +148,7 @@ export const UpdateCompanyDetails = (props) => {
         onSubmit={(e) => UpdateCompanyDetails(e)}
       >
         <Grid container spacing={2}>
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={6}>
             <>
               <FormControl>
                 <FormLabel id="demo-row-radio-buttons-group-label">
@@ -172,7 +175,21 @@ export const UpdateCompanyDetails = (props) => {
               </FormControl>
             </>
           </Grid>
-
+          <Grid item xs={12} sm={6} display="flex" justifyContent="flex-end">
+            {" "}
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => setOpenPopup2(true)}
+              // className={classes.button}
+              style={{
+                marginTop: "1em",
+                marginRight: "1em",
+              }}
+            >
+              Generate PI
+            </Button>
+          </Grid>
           <Grid item xs={12} sm={4}>
             <TextField
               fullWidth
@@ -412,6 +429,17 @@ export const UpdateCompanyDetails = (props) => {
           Submit
         </Button>
       </Box>
+      <Popup
+        maxWidth={"xl"}
+        title={"Create Customer Proforma Invoice"}
+        openPopup={openPopup2}
+        setOpenPopup={setOpenPopup2}
+      >
+        <CreateCustomerProformaInvoice
+          CustomerData={inputValue}
+          setOpenPopup={setOpenPopup2}
+        />
+      </Popup>
     </>
   );
 };

@@ -38,6 +38,12 @@ export const CustomerProformaInvoice = (props) => {
       setOpen(false);
     }
   };
+  const str = invoiceData.amount_in_words ? invoiceData.amount_in_words : "";
+  const arr = str.split(" ");
+  for (var i = 0; i < arr.length; i++) {
+    arr[i] = arr[i].charAt(0).toUpperCase() + arr[i].slice(1);
+  }
+  const AMOUNT_IN_WORDS = arr.join(" ");
 
   const SendForApprovalPI = async (e) => {
     try {
@@ -138,12 +144,12 @@ export const CustomerProformaInvoice = (props) => {
                           Glutape India Private Limited
                         </strong>
                         <br />
-                        <p style={{ fontSize: "0.60rem" }}>
+                        <p style={{ fontSize: "0.50rem" }}>
                           {invoiceData.seller_address},{invoiceData.seller_city}
                           ,{invoiceData.seller_state}-
-                          {invoiceData.seller_state_code},
+                          {invoiceData.seller_state_code},<br />
                           {invoiceData.seller_pincode}, CIN No ;-
-                          {invoiceData.seller_cin}, P.No :-{" "}
+                          {invoiceData.seller_cin}, P.No :- <br />
                           {invoiceData.seller_contact} E:
                           {invoiceData.seller_email},W:www.glutape.com
                         </p>
@@ -526,8 +532,8 @@ export const CustomerProformaInvoice = (props) => {
                   }}
                 >
                   <div className="col-md-8 text-right">
-                    <strong>Amount in Words :-</strong>
-                    {invoiceData.amount_in_words}
+                    <strong>Amount in Words :-</strong>&nbsp;&nbsp;
+                    {AMOUNT_IN_WORDS}
                   </div>
                 </div>
                 <div
@@ -545,7 +551,7 @@ export const CustomerProformaInvoice = (props) => {
                       return (
                         <p
                           key={i}
-                          style={{ margin: 0, padding: 0, fontSize: "0.60rem" }}
+                          style={{ margin: 0, padding: 0, fontSize: "0.50rem" }}
                         >
                           {data.id}
                           {data.text}
@@ -648,5 +654,5 @@ const Information = [
 ];
 
 const typographyStyling = {
-  fontSize: "0.90rem",
+  fontSize: "0.80rem",
 };

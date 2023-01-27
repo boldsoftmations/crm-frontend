@@ -63,6 +63,9 @@ const StatusOptions = [
   { label: "Raised", value: "raised" },
   { label: "Pending Approval", value: "pending_approval" },
   { label: "Approved", value: "approved" },
+  { label: "Partially Paid", value: "partially_paid" },
+  { label: "Fully Paid", value: "fully_paid" },
+  { label: "Credit", value: "credit" },
 ];
 
 export const ViewLeadsProformaInvoice = () => {
@@ -293,14 +296,14 @@ export const ViewLeadsProformaInvoice = () => {
               </h3>
             </Box>
             <Box flexGrow={0.5} align="right">
-              <Button
+              {/* <Button
                 onClick={() => setOpenPopup(true)}
                 variant="contained"
                 color="success"
                 startIcon={<AddIcon />}
               >
                 Generate PI
-              </Button>
+              </Button> */}
             </Box>
           </Box>
           <TableContainer

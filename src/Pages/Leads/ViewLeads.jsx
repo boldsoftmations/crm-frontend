@@ -33,7 +33,9 @@ import { CustomSearch } from "./../../Components/CustomSearch";
 import { CustomPagination } from "../../Components/CustomPagination";
 import { CustomLoader } from "./../../Components/CustomLoader";
 import { BulkLeadAssign } from "./BulkLeadAssign";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import InvoiceServices from "../../services/InvoiceService";
+import { getSellerAccountData } from "../../Redux/Action/Action";
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.common.black,
@@ -55,6 +57,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 export const Viewleads = () => {
+  const dispatch = useDispatch();
   const [leads, setLeads] = useState([]);
   const [open, setOpen] = useState(false);
   const [filterQuery, setFilterQuery] = useState("");
@@ -85,8 +88,23 @@ export const Viewleads = () => {
     setFilterSelectedQuery(event.target.value);
     getSearchData(event.target.value);
   };
-  console.log("filterSelectedQuery :>> ", filterSelectedQuery);
-  console.log("filterQuery :>> ", filterQuery);
+
+  useEffect(() => {
+    getAllSellerAccountsDetails();
+  }, []);
+
+  const getAllSellerAccountsDetails = async () => {
+    try {
+      setOpen(true);
+      const response = await InvoiceServices.getAllPaginateSellerAccountData(
+        "all"
+      );
+      dispatch(getSellerAccountData(response.data));
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+    }
+  };
 
   useEffect(() => {
     getAssignedData();

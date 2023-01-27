@@ -22,6 +22,7 @@ import LeadServices from "../../../services/LeadService";
 import ProductService from "../../../services/ProductService";
 import { useSelector } from "react-redux";
 import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
+import { useNavigate } from "react-router-dom";
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -43,17 +44,18 @@ const values = {
 };
 
 export const CreateLeadsProformaInvoice = (props) => {
-  const { setOpenPopup, getAllLeadsPIDetails } = props;
+  const { setOpenPopup, leads } = props;
+  const navigate = useNavigate();
   const [openPopup2, setOpenPopup2] = useState(false);
   const [openPopup3, setOpenPopup3] = useState(false);
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState([]);
   const [selectedSellerData, setSelectedSellerData] = useState("");
   const [product, setProduct] = useState([]);
-  const [leadIDData, setLeadIDData] = useState([]);
+  // const [leadIDData, setLeadIDData] = useState([]);
   const [paymentTermData, setPaymentTermData] = useState([]);
   const [deliveryTermData, setDeliveryTermData] = useState([]);
-  const [leadsOptions, setLeadsOptions] = useState([]);
+  // const [leadsOptions, setLeadsOptions] = useState([]);
   const [idForEdit, setIDForEdit] = useState();
   const [errorMessage, setErrorMessage] = useState();
   const [validationPrice, setValidationPrice] = useState("");
@@ -107,20 +109,20 @@ export const CreateLeadsProformaInvoice = (props) => {
     setProducts(data);
   };
 
-  useEffect(() => {
-    getAllleadsData();
-  }, [openPopup3]);
+  // useEffect(() => {
+  //   getAllleadsData();
+  // }, [openPopup3]);
 
-  const getAllleadsData = async () => {
-    try {
-      setOpen(true);
-      let response = await LeadServices.getAllPaginatesLeads("all");
-      setLeadsOptions(response.data);
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-    }
-  };
+  // const getAllleadsData = async () => {
+  //   try {
+  //     setOpen(true);
+  //     let response = await LeadServices.getAllPaginatesLeads("all");
+  //     setLeadsOptions(response.data);
+  //     setOpen(false);
+  //   } catch (err) {
+  //     setOpen(false);
+  //   }
+  // };
 
   useEffect(() => {
     getProduct();
@@ -163,14 +165,15 @@ export const CreateLeadsProformaInvoice = (props) => {
         type: "Lead",
         raised_by: users.email,
         seller_account: selectedSellerData.gst_number,
-        lead: leadIDData.lead_id,
-        contact: leadIDData.contact,
-        alternate_contact: leadIDData.alternate_contact,
-        address: leadIDData.shipping_address,
-        pincode: leadIDData.shipping_pincode,
-        state: leadIDData.shipping_state,
-        city: leadIDData.shipping_city,
+        lead: leads.lead_id,
+        contact: leads.contact,
+        alternate_contact: leads.alternate_contact,
+        address: leads.shipping_address,
+        pincode: leads.shipping_pincode,
+        state: leads.shipping_state,
+        city: leads.shipping_city,
         place_of_supply: inputValue.place_of_supply,
+        transporter_name: inputValue.transporter_name,
         buyer_order_no: checked === true ? "verbal" : inputValue.buyer_order_no,
         buyer_order_date: inputValue.buyer_order_date
           ? inputValue.buyer_order_date
@@ -182,24 +185,23 @@ export const CreateLeadsProformaInvoice = (props) => {
       };
       setOpen(true);
       if (
-        leadIDData.contact !== null &&
-        leadIDData.address !== null &&
-        leadIDData.state !== null &&
-        leadIDData.city !== null &&
-        leadIDData.pincode !== null &&
-        leadIDData.shipping_address !== null &&
-        leadIDData.shipping_state !== null &&
-        leadIDData.shipping_city !== null &&
-        leadIDData.shipping_pincode !== null &&
-        (leadIDData.pan_number !== null || leadIDData.gst_number !== null) &&
-        leadIDData.company != null
+        leads.contact !== null &&
+        leads.address !== null &&
+        leads.state !== null &&
+        leads.city !== null &&
+        leads.pincode !== null &&
+        leads.shipping_address !== null &&
+        leads.shipping_state !== null &&
+        leads.shipping_city !== null &&
+        leads.shipping_pincode !== null &&
+        (leads.pan_number !== null || leads.gst_number !== null) &&
+        leads.company != null
       ) {
         await InvoiceServices.createLeadsProformaInvoiceData(req);
         setOpenPopup(false);
-        getAllLeadsPIDetails();
+        navigate("/invoice/leads-performa-invoice");
       } else {
-        setIDForEdit(leadIDData.lead_id);
-        setLeadIDData([]);
+        setIDForEdit(leads.lead_id);
         setOpenPopup2(true);
       }
       setOpen(false);
@@ -212,18 +214,10 @@ export const CreateLeadsProformaInvoice = (props) => {
             : err.response.data.errors
         );
       }
-      setIDForEdit(leadIDData.lead_id);
+      setIDForEdit(leads.lead_id);
       setOpenPopup2(true);
       setOpen(false);
-      setLeadIDData([]);
     }
-  };
-
-  const openInPopup = () => {
-    setOpenPopup3(true);
-    setOpenPopup2(false);
-    setLeadIDData([]);
-    getAllleadsData();
   };
 
   return (
@@ -296,18 +290,14 @@ export const CreateLeadsProformaInvoice = (props) => {
             </Root>
           </Grid>
           <Grid item xs={12} sm={4}>
-            <Autocomplete
-              name="lead"
+            <TextField
+              fullWidth
+              required
+              name="Lead ID"
               size="small"
-              disablePortal
-              id="combo-box-demo"
-              onChange={(event, value) => setLeadIDData(value)}
-              options={leadsOptions}
-              getOptionLabel={(option) => option.name}
-              sx={{ minWidth: 300 }}
-              renderInput={(params) => (
-                <TextField {...params} label="Lead ID" sx={tfStyle} />
-              )}
+              label="Lead ID"
+              variant="outlined"
+              value={leads.lead_id}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -318,9 +308,7 @@ export const CreateLeadsProformaInvoice = (props) => {
               size="small"
               label="Contact"
               variant="outlined"
-              value={
-                leadIDData ? (leadIDData.contact ? leadIDData.contact : "") : ""
-              }
+              value={leads.contact}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -330,13 +318,7 @@ export const CreateLeadsProformaInvoice = (props) => {
               size="small"
               label="Alt. Contact"
               variant="outlined"
-              value={
-                leadIDData
-                  ? leadIDData.alternate_contact
-                    ? leadIDData.alternate_contact
-                    : ""
-                  : ""
-              }
+              value={leads.alternate_contact}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -348,9 +330,7 @@ export const CreateLeadsProformaInvoice = (props) => {
               size="small"
               label="Address"
               variant="outlined"
-              value={
-                leadIDData ? (leadIDData.address ? leadIDData.address : "") : ""
-              }
+              value={leads.address}
             />
           </Grid>
 
@@ -362,7 +342,7 @@ export const CreateLeadsProformaInvoice = (props) => {
               size="small"
               label="City"
               variant="outlined"
-              value={leadIDData ? (leadIDData.city ? leadIDData.city : "") : ""}
+              value={leads.city}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -373,9 +353,7 @@ export const CreateLeadsProformaInvoice = (props) => {
               size="small"
               label="State"
               variant="outlined"
-              value={
-                leadIDData ? (leadIDData.state ? leadIDData.state : "") : ""
-              }
+              value={leads.state}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -387,9 +365,7 @@ export const CreateLeadsProformaInvoice = (props) => {
               type={"number"}
               label="Pin Code"
               variant="outlined"
-              value={
-                leadIDData ? (leadIDData.pincode ? leadIDData.pincode : "") : ""
-              }
+              value={leads.pincode}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -400,13 +376,7 @@ export const CreateLeadsProformaInvoice = (props) => {
               size="small"
               label="Shipping Address"
               variant="outlined"
-              value={
-                leadIDData
-                  ? leadIDData.shipping_address
-                    ? leadIDData.shipping_address
-                    : ""
-                  : ""
-              }
+              value={leads.shipping_address}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -418,13 +388,7 @@ export const CreateLeadsProformaInvoice = (props) => {
               type={"number"}
               label="Pin Code"
               variant="outlined"
-              value={
-                leadIDData
-                  ? leadIDData.shipping_pincode
-                    ? leadIDData.shipping_pincode
-                    : ""
-                  : ""
-              }
+              value={leads.shipping_pincode}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -435,13 +399,7 @@ export const CreateLeadsProformaInvoice = (props) => {
               size="small"
               label="Shipping City"
               variant="outlined"
-              value={
-                leadIDData
-                  ? leadIDData.shipping_city
-                    ? leadIDData.shipping_city
-                    : ""
-                  : ""
-              }
+              value={leads.shipping_city}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -452,13 +410,7 @@ export const CreateLeadsProformaInvoice = (props) => {
               size="small"
               label="Shipping State"
               variant="outlined"
-              value={
-                leadIDData
-                  ? leadIDData.shipping_state
-                    ? leadIDData.shipping_state
-                    : ""
-                  : ""
-              }
+              value={leads.shipping_state}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -521,6 +473,17 @@ export const CreateLeadsProformaInvoice = (props) => {
               label="Place of Supply"
               variant="outlined"
               value={inputValue.place_of_supply}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextField
+              fullWidth
+              name="transporter_name"
+              size="small"
+              label="Transporter Name"
+              variant="outlined"
+              value={inputValue.transporter_name}
               onChange={handleInputChange}
             />
           </Grid>
@@ -657,9 +620,11 @@ export const CreateLeadsProformaInvoice = (props) => {
         setOpenPopup={setOpenPopup2}
       >
         <Typography>
-          Kindly update all Shipping Details & Laeds Details in required field
+          {validationPrice
+            ? validationPrice
+            : "Kindly update all Shipping Details & Laeds Details in required field"}
         </Typography>
-        <Button variant="contained" onClick={() => openInPopup()}>
+        <Button variant="contained" onClick={() => setOpenPopup(false)}>
           Update Leads
         </Button>
       </Popup>
@@ -670,7 +635,7 @@ export const CreateLeadsProformaInvoice = (props) => {
         setOpenPopup={setOpenPopup3}
       >
         <UpdateLeads
-          getAllleadsData={getAllleadsData}
+          // getAllleadsData={getAllleadsData}
           recordForEdit={idForEdit}
           setOpenPopup={setOpenPopup3}
         />
