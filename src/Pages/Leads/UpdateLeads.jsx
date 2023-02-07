@@ -481,6 +481,16 @@ export const UpdateLeads = (props) => {
                   <Grid item xs={12} sm={3}>
                     <TextField
                       fullWidth
+                      name="references"
+                      size="small"
+                      label="References"
+                      variant="outlined"
+                      value={leads.references ? leads.references : ""}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={3}>
+                    <TextField
+                      fullWidth
                       type="date"
                       name="target_date"
                       size="small"
@@ -820,6 +830,9 @@ export const UpdateLeads = (props) => {
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     Description : {descriptionValue ? descriptionValue : ""}
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    References : {leads.references ? leads.references : ""}
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     Target Date {leads.target_date}
