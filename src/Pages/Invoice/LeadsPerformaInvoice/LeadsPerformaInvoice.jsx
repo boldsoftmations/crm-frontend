@@ -477,7 +477,7 @@ export const LeadsPerformaInvoice = (props) => {
                           </td>
                           <td colspan="3">
                             <strong style={{ ...typographyStyling }}>
-                              Taxbale Amount
+                              Taxable Amount
                             </strong>
                             <br />
                             <strong style={{ ...typographyStyling }}>

@@ -341,7 +341,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 const headers = [
   { label: "Customer", key: "company" },
   { label: "PI Date", key: "pi_date" },
-  { label: "PI Numner", key: "proforma_invoice" },
+  { label: "PI Number", key: "proforma_invoice" },
   { label: "Billing City", key: "billing_city" },
   { label: "Shipping City", key: "shipping_city" },
   {

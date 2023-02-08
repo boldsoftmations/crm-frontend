@@ -10,7 +10,7 @@
 }
 
 body::-webkit-scrollbar {
-  width: 0.5em;
+  width: 0.5rem;
 }
 
 body::-webkit-scrollbar-track {

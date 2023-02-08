@@ -46,7 +46,7 @@ const headers = [
     key: "product",
   },
   { label: "PI Date", key: "pi_date" },
-  { label: "PI Numner", key: "proforma_invoice" },
+  { label: "PI Number", key: "proforma_invoice" },
   {
     label: "Quantity",
     key: "quantity",
