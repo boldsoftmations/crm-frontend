@@ -16,6 +16,7 @@ export const LeadsPerformaInvoice = (props) => {
   const { idForEdit, setOpenPopup, getAllLeadsPIDetails } = props;
   const [openPopup2, setOpenPopup2] = useState(false);
   const [invoiceData, setInvoiceData] = useState([]);
+  const [hsnData, setHsnData] = useState([]);
   const [productData, setProductData] = useState([]);
   const [open, setOpen] = useState(false);
   const data = useSelector((state) => state.auth);
@@ -33,6 +34,7 @@ export const LeadsPerformaInvoice = (props) => {
       );
       setInvoiceData(response.data);
       setProductData(response.data.products);
+      setHsnData(response.data.hsn_table);
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -395,6 +397,11 @@ export const LeadsPerformaInvoice = (props) => {
                           </td>
                           <td className="text-center">
                             <strong style={{ ...typographyStyling }}>
+                              REQUESTED DATE
+                            </strong>
+                          </td>
+                          <td className="text-center">
+                            <strong style={{ ...typographyStyling }}>
                               QTY
                             </strong>
                           </td>
@@ -425,7 +432,10 @@ export const LeadsPerformaInvoice = (props) => {
                               {row.product}
                             </td>
                             <td className="text-center">{row.brand}</td>
-                            <td className="text-center">{row.hsn_code}</td>
+                            <td className="text-center">{row.hsn_code}</td>{" "}
+                            <td className="text-center">
+                              {row.requested_date}
+                            </td>
                             <td className="text-center">{row.quantity}</td>
                             <td className="text-center">{row.unit}</td>
                             <td className="text-center">{row.rate}</td>
@@ -538,6 +548,79 @@ export const LeadsPerformaInvoice = (props) => {
                   <div className="col-md-8 text-right">
                     <strong>Amount in Words :-</strong>
                     {AMOUNT_IN_WORDS}
+                  </div>
+                </div>
+                <div
+                  className="row mb-4"
+                  style={{
+                    ...typographyStyling,
+                    borderBottom: "1px Solid #000000",
+                  }}
+                >
+                  <div className="col-md-8 text-right table-responsive">
+                    <table className="table table-bordered">
+                      <thead>
+                        <tr>
+                          <th>HSN</th>
+                          <th>TAXABLE AMOUNT</th>
+                          <th>CGST</th>
+                          <th>SGST</th>
+                          <th>IGST</th>
+                          <th>GST %</th>
+                          <th>TOTAL GST</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {hsnData.map((row, i) => (
+                          <tr key={i}>
+                            <td>{row.hsn_code}</td>
+                            <td>{row.amount}</td>
+                            <td>{row.cgst}</td>
+                            <td>{row.sgst}</td>
+                            <td>{row.igst}</td>
+                            <td>{row.gst_percentage}</td>
+                            <td>{row.total_gst}</td>
+                          </tr>
+                        ))}
+                        <tr>
+                          <td colspan="1" className="text-end">
+                            <strong style={{ ...typographyStyling }}>
+                              Total :
+                            </strong>
+                          </td>
+                          <td colspan="1" className="text-start">
+                            <strong style={{ ...typographyStyling }}>
+                              {invoiceData.amount}
+                            </strong>
+                          </td>
+                          <td colspan="1" className="text-start">
+                            <strong style={{ ...typographyStyling }}>
+                              {invoiceData.cgst}
+                            </strong>
+                          </td>
+                          <td colspan="1" className="text-start">
+                            <strong style={{ ...typographyStyling }}>
+                              {invoiceData.sgst}
+                            </strong>
+                          </td>
+                          <td colspan="1" className="text-start">
+                            <strong style={{ ...typographyStyling }}>
+                              {invoiceData.igst}
+                            </strong>
+                          </td>
+                          <td colspan="1" className="text-start">
+                            <strong style={{ ...typographyStyling }}>
+                              {/* {invoiceData.igst} */}
+                            </strong>
+                          </td>
+                          <td colspan="1" className="text-start">
+                            <strong style={{ ...typographyStyling }}>
+                              {invoiceData.total - invoiceData.amount}
+                            </strong>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
                 </div>
                 <div
