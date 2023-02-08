@@ -290,14 +290,18 @@ const getAllPaginatePriceList = (filter, all) => {
   return CustomAxios.get(`/api/product/pricelist/?${filter}=${all}`);
 };
 
-const getAllSearchPriceList = (search) => {
-  return CustomAxios.get(`/api/product/pricelist/?search=${search}`);
+const getAllSearchPriceList = (type, search) => {
+  return CustomAxios.get(`/api/product/pricelist/?${type}=${search}`);
 };
 
-const getAllPriceListPaginate = (currentPage, search) => {
+const getAllPriceListPaginate = (currentPage, type, search) => {
   return CustomAxios.get(
-    `/api/product/pricelist/?page=${currentPage}&search=${search}`
+    `/api/product/pricelist/?page=${currentPage}&${type}=${search}`
   );
+};
+
+const getPriceListPaginate = (currentPage) => {
+  return CustomAxios.get(`/api/product/pricelist/?page=${currentPage}`);
 };
 
 const createPriceList = (data) => {
@@ -393,6 +397,7 @@ const ProductService = {
   getAllPaginatePriceList,
   getAllSearchPriceList,
   getAllPriceListPaginate,
+  getPriceListPaginate,
   createPriceList,
   getPriceListById,
   getAllValidPriceList,

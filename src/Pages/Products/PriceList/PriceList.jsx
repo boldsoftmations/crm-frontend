@@ -15,12 +15,18 @@ import {
   Box,
   TableContainer,
   Switch,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  IconButton,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
 import AddIcon from "@mui/icons-material/Add";
 
 import ProductService from "../../../services/ProductService";
 import SearchIcon from "@mui/icons-material/Search";
+import ClearIcon from "@mui/icons-material/Clear";
 
 import { Popup } from "../../../Components/Popup";
 import { CreatePriceList } from "./CreatePriceList";
@@ -28,6 +34,7 @@ import { UpdatePriceList } from "./UpdatePriceList";
 import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
 import { CustomLoader } from "./../../../Components/CustomLoader";
 import { CustomSearch } from "./../../../Components/CustomSearch";
+import { CustomPagination } from "./../../../Components/CustomPagination";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -58,15 +65,24 @@ export const PriceList = () => {
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [recordForEdit, setRecordForEdit] = useState(null);
+  const [pageCount, setpageCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [filterSelectedQuerys, setFilterSelectedQuerys] = useState("");
+
   const getPriceList = async () => {
     try {
       setOpen(true);
-
-      const response = await ProductService.getAllPaginatePriceList(
-        "validity",
-        "valid"
-      );
-      setPriceListData(response.data.results);
+      if (currentPage) {
+        const response = await ProductService.getPriceListPaginate(currentPage);
+        setPriceListData(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      } else {
+        const response = await ProductService.getAllPriceList();
+        setPriceListData(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      }
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -95,6 +111,7 @@ export const PriceList = () => {
 
   const handleInputChange = (event) => {
     setSearchQuery(event.target.value);
+    setFilterSelectedQuerys(event.target.value);
     getSearchData(event.target.value);
   };
 
@@ -102,11 +119,26 @@ export const PriceList = () => {
     try {
       setOpen(true);
       const filterSearch = value;
-      const response = await ProductService.getAllSearchPriceList(filterSearch);
-      if (response) {
-        setPriceListData(response.data.results);
+      if (filterSearch === "search" && searchQuery) {
+        const response = await ProductService.getAllSearchPriceList(
+          filterSelectedQuerys,
+          filterSearch
+        );
+        if (response) {
+          setPriceListData(response.data.results);
+          const total = response.data.count;
+          setpageCount(Math.ceil(total / 25));
+        } else {
+          getPriceList();
+        }
       } else {
-        getPriceList();
+        const response = await ProductService.getAllPaginatePriceList(
+          "validity",
+          filterSearch
+        );
+        setPriceListData(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
       }
       setOpen(false);
     } catch (error) {
@@ -115,8 +147,57 @@ export const PriceList = () => {
     }
   };
 
+  const handlePageClick = async (value) => {
+    try {
+      const page = value;
+      setCurrentPage(page);
+      setOpen(true);
+
+      if (filterSelectedQuerys === "search" && searchQuery) {
+        const response = await ProductService.getAllPriceListPaginate(
+          page,
+          filterSelectedQuerys,
+          searchQuery
+        );
+        if (response) {
+          setPriceListData(response.data.results);
+          const total = response.data.count;
+          setpageCount(Math.ceil(total / 25));
+        } else {
+          getPriceList();
+          setFilterSelectedQuerys("");
+        }
+      } else if (filterSelectedQuerys !== "search") {
+        const response = await ProductService.getAllPriceListPaginate(
+          page,
+          "validity",
+          filterSelectedQuerys
+        );
+        setPriceListData(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      } else {
+        const response = await ProductService.getPriceListPaginate(page);
+        setPriceListData(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      }
+
+      setOpen(false);
+    } catch (error) {
+      console.log("error", error);
+      setOpen(false);
+    }
+  };
+
   const getResetData = () => {
+    setFilterSelectedQuerys("");
+    getPriceList();
+  };
+
+  const getResetDataSearch = () => {
     setSearchQuery("");
+    setFilterSelectedQuerys("");
     getPriceList();
   };
 
@@ -134,11 +215,49 @@ export const PriceList = () => {
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
           <Box display="flex">
             <Box flexGrow={0.9}>
-              <CustomSearch
-                filterSelectedQuery={searchQuery}
-                handleInputChange={handleInputChange}
-                getResetData={getResetData}
-              />
+              <FormControl
+                sx={{ minWidth: "200px", marginLeft: "1em" }}
+                size="small"
+              >
+                <InputLabel id="demo-simple-select-label">Filter By</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  name="values"
+                  label="Filter By"
+                  value={filterSelectedQuerys}
+                  onChange={(event) => handleInputChange(event)}
+                  sx={{
+                    "& .MuiSelect-iconOutlined": {
+                      display: filterSelectedQuerys ? "none" : "",
+                    },
+                    "&.Mui-focused .MuiIconButton-root": {
+                      color: "primary.main",
+                    },
+                  }}
+                  endAdornment={
+                    <IconButton
+                      sx={{
+                        visibility: filterSelectedQuerys ? "visible" : "hidden",
+                      }}
+                      onClick={getResetData}
+                    >
+                      <ClearIcon />
+                    </IconButton>
+                  }
+                >
+                  <MenuItem value={"valid"}>valid</MenuItem>
+                  <MenuItem value={"expired"}>expired</MenuItem>
+                  {/* <MenuItem value={"search"}>Search</MenuItem> */}
+                </Select>
+              </FormControl>
+              {/* {filterSelectedQuerys === "search" && (
+                <CustomSearch
+                  filterSelectedQuery={searchQuery}
+                  handleInputChange={handleInputChange}
+                  getResetData={getResetDataSearch}
+                />
+              )} */}
             </Box>
             <Box flexGrow={2}>
               <h3
@@ -244,6 +363,10 @@ export const PriceList = () => {
               </TableBody>
             </Table>
           </TableContainer>
+          <CustomPagination
+            pageCount={pageCount}
+            handlePageClick={handlePageClick}
+          />
         </Paper>
       </Grid>
       <Popup
