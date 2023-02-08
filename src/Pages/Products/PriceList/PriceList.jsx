@@ -147,9 +147,10 @@ export const PriceList = () => {
     }
   };
 
-  const handlePageClick = async (value) => {
+  const handlePageClick = async (event, value) => {
     try {
       const page = value;
+      console.log("page", page);
       setCurrentPage(page);
       setOpen(true);
 
