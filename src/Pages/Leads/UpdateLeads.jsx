@@ -146,8 +146,8 @@ export const UpdateLeads = (props) => {
         const contact2 = phone2 !== undefined ? `+${phone2}` : contacts2;
         const data = {
           name: leads.name,
-          alternate_contact_name: leads.altContactName
-            ? leads.altContactName
+          alternate_contact_name: leads.alternate_contact_name
+            ? leads.alternate_contact_name
             : "",
           email: leads.email ? leads.email : "",
           alternate_email: leads.alternate_email ? leads.alternate_email : "",
@@ -305,11 +305,15 @@ export const UpdateLeads = (props) => {
                   <Grid item xs={12} sm={6}>
                     <TextField
                       fullWidth
-                      name="altContactName"
+                      name="alternate_contact_name"
                       size="small"
                       label="Alternate Contact Name"
                       variant="outlined"
-                      value={leads.altContactName ? leads.altContactName : ""}
+                      value={
+                        leads.alternate_contact_name
+                          ? leads.alternate_contact_name
+                          : ""
+                      }
                       onChange={handleInputChange}
                     />
                   </Grid>
@@ -804,7 +808,7 @@ export const UpdateLeads = (props) => {
                     Name : {leads.name}
                   </Grid>
                   <Grid item xs={12} sm={6}>
-                    Alt. Contact Name : {leads.altContactName}
+                    Alt. Contact Name : {leads.alternate_contact_name}
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     Email : {leads.email}

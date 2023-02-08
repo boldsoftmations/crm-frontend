@@ -149,7 +149,7 @@ export const CreateLeads = (props) => {
         const data = {
           name: leads.name,
           assigned_to: assign ? assign.email : "",
-          alternate_contact_name: leads.altContactName,
+          alternate_contact_name: leads.alternate_contact_name,
           email: leads.email,
           alternate_email: leads.altEmail ? leads.altEmail : "",
           contact: contact1,
@@ -247,11 +247,15 @@ export const CreateLeads = (props) => {
                   <Grid item xs={12} sm={6}>
                     <TextField
                       fullWidth
-                      name="altContactName"
+                      name="alternate_contact_name"
                       size="small"
                       label="Alternate Contact Name"
                       variant="outlined"
-                      value={leads.altContactName ? leads.altContactName : ""}
+                      value={
+                        leads.alternate_contact_name
+                          ? leads.alternate_contact_name
+                          : ""
+                      }
                       onChange={handleInputChange}
                     />
                   </Grid>
@@ -703,7 +707,7 @@ export const CreateLeads = (props) => {
                     Name : {leads.name}
                   </Grid>
                   <Grid item xs={12} sm={6}>
-                    Alt. Contact Name : {leads.altContactName}
+                    Alt. Contact Name : {leads.alternate_contact_name}
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     Email : {leads.email}
