@@ -68,7 +68,6 @@ export const SalesInvoiceCreate = (props) => {
       errRef.current.focus();
     }
   };
-  console.log("customerorderBookOption", customerorderBookOption);
   const handleProductValue = (value) => {
     console.log("value", value);
     const Data = value;
@@ -77,6 +76,7 @@ export const SalesInvoiceCreate = (props) => {
     var arr = productData.map((fruit) => ({
       product: fruit.product,
       pending_quantity: fruit.pending_quantity,
+      requested_date: fruit.requested_date,
     }));
     setProducts(arr);
     setCustomerOrderBookData(value);
@@ -105,6 +105,7 @@ export const SalesInvoiceCreate = (props) => {
       }
     }
   };
+
   return (
     <div>
       <CustomLoader open={open} />
@@ -157,6 +158,105 @@ export const SalesInvoiceCreate = (props) => {
           <Grid item xs={12} sm={3}>
             <TextField
               fullWidth
+              multiline
+              name="shipping_state"
+              size="small"
+              label="Shipping State"
+              variant="outlined"
+              value={
+                customerorderBookData
+                  ? customerorderBookData.shipping_state
+                  : ""
+              }
+            />
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <TextField
+              fullWidth
+              multiline
+              name="shipping_city"
+              size="small"
+              label="Shipping City"
+              variant="outlined"
+              value={
+                customerorderBookData ? customerorderBookData.shipping_city : ""
+              }
+            />
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <TextField
+              fullWidth
+              multiline
+              name="shipping_pincode"
+              size="small"
+              label="Shipping Pincode"
+              variant="outlined"
+              value={
+                customerorderBookData
+                  ? customerorderBookData.shipping_pincode
+                  : ""
+              }
+            />
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <TextField
+              fullWidth
+              multiline
+              name="billing_address"
+              size="small"
+              label="Billing Address"
+              variant="outlined"
+              value={
+                customerorderBookData
+                  ? customerorderBookData.billing_address
+                  : ""
+              }
+            />
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <TextField
+              fullWidth
+              multiline
+              name="billing_state"
+              size="small"
+              label="Billing State"
+              variant="outlined"
+              value={
+                customerorderBookData ? customerorderBookData.billing_state : ""
+              }
+            />
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <TextField
+              fullWidth
+              multiline
+              name="billing_city"
+              size="small"
+              label="Billing City"
+              variant="outlined"
+              value={
+                customerorderBookData ? customerorderBookData.billing_city : ""
+              }
+            />
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <TextField
+              fullWidth
+              multiline
+              name="billing_pincode"
+              size="small"
+              label="Billing Pincode"
+              variant="outlined"
+              value={
+                customerorderBookData
+                  ? customerorderBookData.billing_pincode
+                  : ""
+              }
+            />
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <TextField
+              fullWidth
               name="transporter_name"
               size="small"
               label="Transporter Name"
@@ -198,6 +298,20 @@ export const SalesInvoiceCreate = (props) => {
                         label="Pending Quantity"
                         variant="outlined"
                         value={input.pending_quantity}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={3}>
+                      <TextField
+                        fullWidth
+                        type={"date"}
+                        name="requested_date"
+                        size="small"
+                        label="Requested Date"
+                        variant="outlined"
+                        value={input.requested_date}
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
                       />
                     </Grid>
                     <Grid item xs={12} sm={3}>
