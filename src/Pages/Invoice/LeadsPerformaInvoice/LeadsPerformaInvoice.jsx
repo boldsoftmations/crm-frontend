@@ -226,6 +226,12 @@ export const LeadsPerformaInvoice = (props) => {
                       </div>
                       <div>
                         <strong style={{ ...typographyStyling }}>
+                          Transporter Name :
+                        </strong>
+                        {invoiceData.transporter_name}
+                      </div>
+                      <div>
+                        <strong style={{ ...typographyStyling }}>
                           Buyer Order No & Date :{" "}
                         </strong>
                         {invoiceData.buyer_order_no} &{" "}
