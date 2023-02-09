@@ -13,7 +13,7 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 
 export const CreateWareHouseDetails = (props) => {
-  const { setOpenPopup, getWareHouseDetailsByID,contactData } = props;
+  const { setOpenPopup, getWareHouseDetailsByID, contactData } = props;
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState([]);
   const [pinCodeData, setPinCodeData] = useState([]);
@@ -88,7 +88,7 @@ export const CreateWareHouseDetails = (props) => {
               onChange={(event, value) => setSelectedContact(value)}
               options={contactData.map((option) => option)}
               groupBy={(option) => option.designation}
-              getOptionLabel={(option) => option.name}
+              getOptionLabel={(option) => `${option.name} ${option.contact}`}
               // sx={{ minWidth: 300 }}
               renderInput={(params) => (
                 <TextField {...params} label="Contact" />

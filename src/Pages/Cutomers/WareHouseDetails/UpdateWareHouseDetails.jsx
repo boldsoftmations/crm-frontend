@@ -7,13 +7,14 @@ import {
   CircularProgress,
   Grid,
   TextField,
-  Autocomplete
+  Autocomplete,
 } from "@mui/material";
 import CustomerServices from "../../../services/CustomerService";
 import axios from "axios";
 
 export const UpdateWareHouseDetails = (props) => {
-  const { IDForEdit, getWareHouseDetailsByID, setOpenPopup,contactData } = props;
+  const { IDForEdit, getWareHouseDetailsByID, setOpenPopup, contactData } =
+    props;
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState([]);
   const data = useSelector((state) => state.auth);
@@ -57,12 +58,11 @@ export const UpdateWareHouseDetails = (props) => {
 
   const UpdateWareHouseDetails = async (e) => {
     try {
-      
       e.preventDefault();
       setOpen(true);
       const req = {
         company: data ? data.companyName : "",
-        contact: selectedcontact.name ? selectedcontact.name : inputValue.contact,
+        contact: selectedcontact.id ? selectedcontact.id : inputValue.contact,
         address: inputValue.address,
         pincode: inputValue.pincode,
         state: pinCodeData.State ? pinCodeData.State : inputValue.state,
@@ -77,7 +77,6 @@ export const UpdateWareHouseDetails = (props) => {
       setOpen(false);
     }
   };
-  console.log("inputValue :>> ", inputValue);
 
   return (
     <div>
@@ -95,7 +94,7 @@ export const UpdateWareHouseDetails = (props) => {
         noValidate
         onSubmit={(e) => UpdateWareHouseDetails(e)}
       >
-        <Grid container spacing={2} >
+        <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
@@ -106,7 +105,7 @@ export const UpdateWareHouseDetails = (props) => {
               value={inputValue.contact ? inputValue.contact : ""}
             />
           </Grid>
- 
+
           <Grid item xs={12} sm={6}>
             <Autocomplete
               fullWidth
@@ -115,7 +114,7 @@ export const UpdateWareHouseDetails = (props) => {
               onChange={(event, value) => setSelectedContact(value)}
               options={contactData.map((option) => option)}
               groupBy={(option) => option.designation}
-              getOptionLabel={(option) => option.name}
+              getOptionLabel={(option) => `${option.name} ${option.contact}`}
               // sx={{ minWidth: 300 }}
               renderInput={(params) => (
                 <TextField {...params} label="Update Contact" />
