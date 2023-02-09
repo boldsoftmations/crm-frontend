@@ -15,6 +15,11 @@ import {
   IconButton,
   Collapse,
   Checkbox,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -167,26 +172,28 @@ function Row(props) {
   const { row, getAllDispatchDetails } = props;
   const [open, setOpen] = useState(false);
   const [checked, setChecked] = useState(row.dispatched);
+  const [openModal, setOpenModal] = useState(false);
+  const [id, setId] = useState("");
 
-  const handleChange = (event, row) => {
+  const handleChange = (event) => {
     setChecked(event.target.checked);
-    createLeadsData(event, event.target.checked, row);
   };
-
-  const createLeadsData = async (e, value, row) => {
+  console.log("checked", checked);
+  const createLeadsData = async (e) => {
     try {
-      console.log("e", e);
       e.preventDefault();
       setOpen(true);
-      console.log("value :>> ", value);
+      // const data = {
+      //   sales_invoice: id,
+      //   dispatched: checked,
+      // };
+      const data = new FormData();
+      data.append("dispatched", checked);
 
-      const data = {
-        sales_invoice: row.sales_invoice,
-        dispatched: value,
-      };
       await InvoiceServices.updateDispatched(row.id, data);
       getAllDispatchDetails();
       setOpen(false);
+      setOpenModal(false);
     } catch (error) {
       console.log("error :>> ", error);
       setOpen(false);
@@ -210,12 +217,16 @@ function Row(props) {
         <TableCell align="center">{row.date}</TableCell>
         <TableCell align="center">{row.dispatch_location}</TableCell>
         <TableCell align="center">
-          {" "}
-          <Checkbox
-            checked={checked}
-            onChange={(e) => handleChange(e, row)}
-            inputProps={{ "aria-label": "controlled" }}
-          />
+          <Button
+            onClick={() => {
+              setOpenModal(true);
+              setId(row.sales_invoice);
+            }}
+            variant="contained"
+            color="success"
+          >
+            View
+          </Button>
         </TableCell>
       </TableRow>
       <TableRow>
@@ -251,6 +262,29 @@ function Row(props) {
           </Collapse>
         </TableCell>
       </TableRow>
+      <Dialog
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Dispatch"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            <Checkbox
+              checked={checked}
+              onChange={(e) => handleChange(e, row)}
+              inputProps={{ "aria-label": "controlled" }}
+            />{" "}
+            Are you sure you want to dispatch the item with sales invoice
+            inumber : {id}?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={(e) => createLeadsData(e)}>Submit</Button>
+          <Button onClick={() => setOpenModal(false)}>Cancel</Button>
+        </DialogActions>
+      </Dialog>
     </React.Fragment>
   );
 }
