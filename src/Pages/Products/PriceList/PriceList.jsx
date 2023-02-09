@@ -110,36 +110,26 @@ export const PriceList = () => {
   }, []);
 
   const handleInputChange = (event) => {
-    setSearchQuery(event.target.value);
     setFilterSelectedQuerys(event.target.value);
+    getFilterData(event.target.value);
+  };
+
+  const handleInputChanges = (event) => {
+    setSearchQuery(event.target.value);
     getSearchData(event.target.value);
   };
 
-  const getSearchData = async (value) => {
+  const getFilterData = async (value) => {
     try {
       setOpen(true);
       const filterSearch = value;
-      if (filterSearch === "search" && searchQuery) {
-        const response = await ProductService.getAllSearchPriceList(
-          filterSelectedQuerys,
-          filterSearch
-        );
-        if (response) {
-          setPriceListData(response.data.results);
-          const total = response.data.count;
-          setpageCount(Math.ceil(total / 25));
-        } else {
-          getPriceList();
-        }
-      } else {
-        const response = await ProductService.getAllPaginatePriceList(
-          "validity",
-          filterSearch
-        );
-        setPriceListData(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      }
+      const response = await ProductService.getAllPaginatePriceList(
+        "validity",
+        filterSearch
+      );
+      setPriceListData(response.data.results);
+      const total = response.data.count;
+      setpageCount(Math.ceil(total / 25));
       setOpen(false);
     } catch (error) {
       console.log("error Search leads", error);
@@ -147,17 +137,39 @@ export const PriceList = () => {
     }
   };
 
+  const getSearchData = async (value) => {
+    try {
+      setOpen(true);
+      const filterSearch = value;
+      const response = await ProductService.getAllSearchPriceList(
+        "search",
+        filterSearch
+      );
+      if (response) {
+        setPriceListData(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      } else {
+        getPriceList();
+      }
+
+      setOpen(false);
+    } catch (error) {
+      console.log("error Search leads", error);
+      setOpen(false);
+    }
+  };
+  console.log("filterSelectedQuerys", filterSelectedQuerys);
   const handlePageClick = async (event, value) => {
     try {
       const page = value;
-      console.log("page", page);
       setCurrentPage(page);
       setOpen(true);
 
-      if (filterSelectedQuerys === "search" && searchQuery) {
+      if (searchQuery) {
         const response = await ProductService.getAllPriceListPaginate(
           page,
-          filterSelectedQuerys,
+          "search",
           searchQuery
         );
         if (response) {
@@ -198,7 +210,6 @@ export const PriceList = () => {
 
   const getResetDataSearch = () => {
     setSearchQuery("");
-    setFilterSelectedQuerys("");
     getPriceList();
   };
 
@@ -252,13 +263,14 @@ export const PriceList = () => {
                   {/* <MenuItem value={"search"}>Search</MenuItem> */}
                 </Select>
               </FormControl>
-              {/* {filterSelectedQuerys === "search" && (
-                <CustomSearch
-                  filterSelectedQuery={searchQuery}
-                  handleInputChange={handleInputChange}
-                  getResetData={getResetDataSearch}
-                />
-              )} */}
+              {filterSelectedQuerys !== "valid" &&
+                filterSelectedQuerys !== "expired" && (
+                  <CustomSearch
+                    filterSelectedQuery={searchQuery}
+                    handleInputChange={handleInputChanges}
+                    getResetData={getResetDataSearch}
+                  />
+                )}
             </Box>
             <Box flexGrow={2}>
               <h3
