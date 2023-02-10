@@ -69,6 +69,10 @@ const headers = [
   { label: "Customer", key: "company" },
   { label: "Billing City", key: "billing_city" },
   { label: "Shipping City", key: "shipping_city" },
+  {
+    label: "Seller State",
+    key: "seller_state",
+  },
 ];
 
 export const ProductOrderBookDetails = () => {
@@ -216,18 +220,28 @@ export const ProductOrderBookDetails = () => {
 
   useEffect(() => {
     getAllCustomerWiseOrderBookExport();
-  }, []);
+  }, [searchQuery]);
 
   const getAllCustomerWiseOrderBookExport = async () => {
     try {
       setOpen(true);
-      const response = await InvoiceServices.getAllOrderBookData(
-        "all",
-        "product"
-      );
-      setExportOrderBookData(response.data);
-      //   const total = response.data.count;
-      //   setpageCount(Math.ceil(total / 25));
+      if (searchQuery) {
+        const response =
+          await InvoiceServices.getAllOrderBookDatawithSearchWithPagination(
+            "product",
+            "all",
+            searchQuery
+          );
+        setExportOrderBookData(response.data);
+        //   const total = response.data.count;
+        //   setpageCount(Math.ceil(total / 25));
+      } else {
+        const response = await InvoiceServices.getAllOrderBookData(
+          "all",
+          "product"
+        );
+        setExportOrderBookData(response.data);
+      }
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -262,6 +276,7 @@ export const ProductOrderBookDetails = () => {
         company: item.company,
         billing_city: item.billing_city,
         shipping_city: item.shipping_city,
+        seller_state: item.seller_state,
       };
     } else {
       return {
@@ -274,6 +289,7 @@ export const ProductOrderBookDetails = () => {
         company: item.company,
         billing_city: item.billing_city,
         shipping_city: item.shipping_city,
+        seller_state: item.seller_state,
       };
     }
   });

@@ -154,18 +154,28 @@ export const CustomerOrderBookDetails = () => {
 
   useEffect(() => {
     getAllCustomerWiseOrderBookExport();
-  }, []);
+  }, [searchQuery]);
 
   const getAllCustomerWiseOrderBookExport = async () => {
     try {
       setOpen(true);
-      const response = await InvoiceServices.getAllOrderBookData(
-        "all",
-        "customer"
-      );
-      setExportOrderBookData(response.data);
-      //   const total = response.data.count;
-      //   setpageCount(Math.ceil(total / 25));
+      if (searchQuery) {
+        const response =
+          await InvoiceServices.getAllOrderBookDatawithSearchWithPagination(
+            "customer",
+            "all",
+            searchQuery
+          );
+        setExportOrderBookData(response.data);
+        //   const total = response.data.count;
+        //   setpageCount(Math.ceil(total / 25));
+      } else {
+        const response = await InvoiceServices.getAllOrderBookData(
+          "all",
+          "customer"
+        );
+        setExportOrderBookData(response.data);
+      }
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -200,6 +210,7 @@ export const CustomerOrderBookDetails = () => {
         quantity: item.quantity,
         // amount: item.amount,
         pending_quantity: item.pending_quantity,
+        seller_state: item.seller_state,
       };
     } else {
       return {
@@ -212,6 +223,7 @@ export const CustomerOrderBookDetails = () => {
         quantity: item.quantity,
         amount: item.amount,
         pending_quantity: item.pending_quantity,
+        seller_state: item.seller_state,
       };
     }
   });
@@ -435,5 +447,9 @@ const headers = [
   {
     label: "Pending Quantity",
     key: "pending_quantity",
+  },
+  {
+    label: "Seller State",
+    key: "seller_state",
   },
 ];
