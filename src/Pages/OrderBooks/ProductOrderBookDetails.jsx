@@ -12,13 +12,20 @@ import {
   Box,
   Paper,
   Grid,
+  FormControl,
+  InputLabel,
+  Select,
+  IconButton,
+  MenuItem,
 } from "@mui/material";
+import ClearIcon from "@mui/icons-material/Clear";
 import { tableCellClasses } from "@mui/material/TableCell";
 import { CSVLink } from "react-csv";
 import { ErrorMessage } from "./../../Components/ErrorMessage/ErrorMessage";
 import { CustomLoader } from "../../Components/CustomLoader";
 import { Popup } from "../../Components/Popup";
 import { CustomPagination } from "./../../Components/CustomPagination";
+import { useSelector } from "react-redux";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -73,8 +80,10 @@ export const ProductOrderBookDetails = () => {
   const [openModal, setOpenModal] = useState(false);
   const [pageCount, setpageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
-  // const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [exportOrderBookData, setExportOrderBookData] = useState([]);
+  const dataList = useSelector((state) => state.auth);
+  const userData = dataList.profile;
 
   useEffect(() => {
     getTotalPendingQuantityDetails();
@@ -89,6 +98,16 @@ export const ProductOrderBookDetails = () => {
     } catch (err) {
       setOpen(false);
     }
+  };
+
+  const getResetData = () => {
+    setSearchQuery("");
+    getAllProductDataOrderBook();
+  };
+
+  const handleInputChange = (event) => {
+    setSearchQuery(event.target.value);
+    getSearchData(event.target.value);
   };
 
   useEffect(() => {
@@ -134,35 +153,59 @@ export const ProductOrderBookDetails = () => {
     }
   };
 
+  const getSearchData = async (value) => {
+    try {
+      setOpen(true);
+      const filterSearch = value;
+      const response = await InvoiceServices.getAllOrderBookDatawithSearch(
+        "product",
+        filterSearch
+      );
+      if (response) {
+        setOrderBookData(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      } else {
+        getAllProductDataOrderBook();
+        setSearchQuery("");
+      }
+      setOpen(false);
+    } catch (error) {
+      console.log("error Search leads", error);
+      setOpen(false);
+    }
+  };
+
   const handlePageClick = async (event, value) => {
     try {
       const page = value;
       setCurrentPage(page);
       setOpen(true);
 
-      // if (searchQuery) {
-      //   const response =
-      //     await InvoiceServices.getAllOrderBookDatawithSearchWithPagination(
-      //       page,
-      //       searchQuery
-      //     );
-      //   if (response) {
-      //     setOrderBookData(response.data.results);
-      //     const total = response.data.count;
-      //     setpageCount(Math.ceil(total / 25));
-      //   } else {
-      //     getAllCustomerWiseOrderBook();
-      //     setSearchQuery("");
-      //   }
-      // } else {
-      const response = await InvoiceServices.getProductOrderBookDatawithPage(
-        "product",
-        page
-      );
-      setOrderBookData(response.data.results);
-      const total = response.data.count;
-      setpageCount(Math.ceil(total / 25));
-      // }
+      if (searchQuery) {
+        const response =
+          await InvoiceServices.getAllOrderBookDatawithSearchWithPagination(
+            "product",
+            page,
+            searchQuery
+          );
+        if (response) {
+          setOrderBookData(response.data.results);
+          const total = response.data.count;
+          setpageCount(Math.ceil(total / 25));
+        } else {
+          getAllProductDataOrderBook();
+          setSearchQuery("");
+        }
+      } else {
+        const response = await InvoiceServices.getProductOrderBookDatawithPage(
+          "product",
+          page
+        );
+        setOrderBookData(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      }
 
       setOpen(false);
     } catch (error) {
@@ -207,17 +250,45 @@ export const ProductOrderBookDetails = () => {
     }
   };
 
-  const data = exportOrderBookData.map((item) => ({
-    product: item.product,
-    pi_date: item.pi_date,
-    proforma_invoice: item.proforma_invoice,
-    quantity: item.quantity,
-    amount: item.amount,
-    pending_quantity: item.pending_quantity,
-    company: item.company,
-    billing_city: item.billing_city,
-    shipping_city: item.shipping_city,
-  }));
+  let data = exportOrderBookData.map((item) => {
+    if (userData.groups.toString() === "Factory") {
+      return {
+        product: item.product,
+        pi_date: item.pi_date,
+        proforma_invoice: item.proforma_invoice,
+        quantity: item.quantity,
+        // amount: item.amount,
+        pending_quantity: item.pending_quantity,
+        company: item.company,
+        billing_city: item.billing_city,
+        shipping_city: item.shipping_city,
+      };
+    } else {
+      return {
+        product: item.product,
+        pi_date: item.pi_date,
+        proforma_invoice: item.proforma_invoice,
+        quantity: item.quantity,
+        amount: item.amount,
+        pending_quantity: item.pending_quantity,
+        company: item.company,
+        billing_city: item.billing_city,
+        shipping_city: item.shipping_city,
+      };
+    }
+  });
+
+  // const data = exportOrderBookData.map((item) => ({
+  //   product: item.product,
+  //   pi_date: item.pi_date,
+  //   proforma_invoice: item.proforma_invoice,
+  //   quantity: item.quantity,
+  //   amount: item.amount,
+  //   pending_quantity: item.pending_quantity,
+  //   company: item.company,
+  //   billing_city: item.billing_city,
+  //   shipping_city: item.shipping_city,
+  // }));
 
   return (
     <div>
@@ -226,7 +297,46 @@ export const ProductOrderBookDetails = () => {
         <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
           <Box display="flex">
-            <Box flexGrow={2}></Box>
+            <Box flexGrow={2}>
+              {" "}
+              <FormControl
+                sx={{ minWidth: "200px", marginLeft: "1em" }}
+                size="small"
+              >
+                <InputLabel id="demo-simple-select-label">
+                  Filter By State
+                </InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  name="values"
+                  label="Filter By State"
+                  value={searchQuery}
+                  onChange={(event) => handleInputChange(event)}
+                  sx={{
+                    "& .MuiSelect-iconOutlined": {
+                      display: searchQuery ? "none" : "",
+                    },
+                    "&.Mui-focused .MuiIconButton-root": {
+                      color: "primary.main",
+                    },
+                  }}
+                  endAdornment={
+                    <IconButton
+                      sx={{
+                        visibility: searchQuery ? "visible" : "hidden",
+                      }}
+                      onClick={getResetData}
+                    >
+                      <ClearIcon />
+                    </IconButton>
+                  }
+                >
+                  <MenuItem value={"Delhi"}>Delhi</MenuItem>
+                  <MenuItem value={"Maharashtra"}>Maharashtra</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
             <Box flexGrow={2}>
               <h3
                 style={{
@@ -292,7 +402,9 @@ export const ProductOrderBookDetails = () => {
                   <StyledTableCell align="center">
                     PENDING QUANTITY
                   </StyledTableCell>
-                  <StyledTableCell align="center">AMOUNT</StyledTableCell>
+                  {userData.groups.toString() !== "Factory" && (
+                    <StyledTableCell align="center">AMOUNT</StyledTableCell>
+                  )}
                   <StyledTableCell align="center">COMPANY</StyledTableCell>
                   <StyledTableCell align="center">BILLING CITY</StyledTableCell>
                   <StyledTableCell align="center">
@@ -321,9 +433,11 @@ export const ProductOrderBookDetails = () => {
                     <StyledTableCell align="center">
                       {row.pending_quantity}
                     </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.amount}
-                    </StyledTableCell>
+                    {userData.groups.toString() !== "Factory" && (
+                      <StyledTableCell align="center">
+                        {row.amount}
+                      </StyledTableCell>
+                    )}
                     <StyledTableCell align="center">
                       {row.company}
                     </StyledTableCell>

@@ -119,13 +119,13 @@ const getProductOrderBookDatawithPage = (type, data) => {
 
 const getAllOrderBookDatawithSearch = (type, data) => {
   return CustomAxios.get(
-    `/api/invoice/list-order-book/?ordering=${type}&search=${data}`
+    `/api/invoice/list-order-book/?ordering=${type}&orderbook__proforma_invoice__seller_account__state=${data}`
   );
 };
 
 const getAllOrderBookDatawithSearchWithPagination = (type, value, data) => {
   return CustomAxios.get(
-    `/api/invoice/list-order-book/?ordering=${type}&page=${value}&search=${data}`
+    `/api/invoice/list-order-book/?ordering=${type}&page=${value}&orderbook__proforma_invoice__seller_account__state=${data}`
   );
 };
 

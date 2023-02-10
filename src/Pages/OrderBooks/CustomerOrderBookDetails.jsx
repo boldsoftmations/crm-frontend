@@ -12,13 +12,20 @@ import {
   Box,
   Paper,
   Grid,
+  InputLabel,
+  FormControl,
+  Select,
+  IconButton,
+  MenuItem,
 } from "@mui/material";
+import ClearIcon from "@mui/icons-material/Clear";
 import { tableCellClasses } from "@mui/material/TableCell";
 import { CSVLink } from "react-csv";
 import { ErrorMessage } from "./../../Components/ErrorMessage/ErrorMessage";
 import { CustomLoader } from "../../Components/CustomLoader";
 import { CustomSearch } from "./../../Components/CustomSearch";
 import { CustomPagination } from "./../../Components/CustomPagination";
+import { useSelector } from "react-redux";
 
 export const CustomerOrderBookDetails = () => {
   const [orderBookData, setOrderBookData] = useState([]);
@@ -29,7 +36,8 @@ export const CustomerOrderBookDetails = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [exportOrderBookData, setExportOrderBookData] = useState([]);
-
+  const dataList = useSelector((state) => state.auth);
+  const userData = dataList.profile;
   useEffect(() => {
     getAllCustomerWiseOrderBook();
   }, []);
@@ -78,6 +86,7 @@ export const CustomerOrderBookDetails = () => {
       setOpen(true);
       const filterSearch = value;
       const response = await InvoiceServices.getAllOrderBookDatawithSearch(
+        "customer",
         filterSearch
       );
       if (response) {
@@ -104,6 +113,7 @@ export const CustomerOrderBookDetails = () => {
       if (searchQuery) {
         const response =
           await InvoiceServices.getAllOrderBookDatawithSearchWithPagination(
+            "customer",
             page,
             searchQuery
           );
@@ -178,17 +188,47 @@ export const CustomerOrderBookDetails = () => {
     }
   };
 
-  const data = exportOrderBookData.map((item) => ({
-    company: item.company,
-    pi_date: item.pi_date,
-    proforma_invoice: item.proforma_invoice,
-    billing_city: item.billing_city,
-    shipping_city: item.shipping_city,
-    product: item.product,
-    quantity: item.quantity,
-    amount: item.amount,
-    pending_quantity: item.pending_quantity,
-  }));
+  let data = exportOrderBookData.map((item) => {
+    if (userData.groups.toString() === "Factory") {
+      return {
+        company: item.company,
+        pi_date: item.pi_date,
+        proforma_invoice: item.proforma_invoice,
+        billing_city: item.billing_city,
+        shipping_city: item.shipping_city,
+        product: item.product,
+        quantity: item.quantity,
+        // amount: item.amount,
+        pending_quantity: item.pending_quantity,
+      };
+    } else {
+      return {
+        company: item.company,
+        pi_date: item.pi_date,
+        proforma_invoice: item.proforma_invoice,
+        billing_city: item.billing_city,
+        shipping_city: item.shipping_city,
+        product: item.product,
+        quantity: item.quantity,
+        amount: item.amount,
+        pending_quantity: item.pending_quantity,
+      };
+    }
+  });
+
+  //   const data = exportOrderBookData.map(item =>
+  //     if (userData.groups.toString() === "Factory") {
+  //     company: item.company,
+  //     pi_date: item.pi_date,
+  //     proforma_invoice: item.proforma_invoice,
+  //     billing_city: item.billing_city,
+  //     shipping_city: item.shipping_city,
+  //     product: item.product,
+  //     quantity: item.quantity,
+  //     // amount: item.amount,
+  //     pending_quantity: item.pending_quantity,
+  //   });
+  // }
 
   return (
     <div>
@@ -198,11 +238,43 @@ export const CustomerOrderBookDetails = () => {
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
           <Box display="flex">
             <Box flexGrow={2}>
-              {/* <CustomSearch
-                filterSelectedQuery={searchQuery}
-                handleInputChange={handleInputChange}
-                getResetData={getResetData}
-              /> */}
+              <FormControl
+                sx={{ minWidth: "200px", marginLeft: "1em" }}
+                size="small"
+              >
+                <InputLabel id="demo-simple-select-label">
+                  Filter By State
+                </InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  name="values"
+                  label="Filter By State"
+                  value={searchQuery}
+                  onChange={(event) => handleInputChange(event)}
+                  sx={{
+                    "& .MuiSelect-iconOutlined": {
+                      display: searchQuery ? "none" : "",
+                    },
+                    "&.Mui-focused .MuiIconButton-root": {
+                      color: "primary.main",
+                    },
+                  }}
+                  endAdornment={
+                    <IconButton
+                      sx={{
+                        visibility: searchQuery ? "visible" : "hidden",
+                      }}
+                      onClick={getResetData}
+                    >
+                      <ClearIcon />
+                    </IconButton>
+                  }
+                >
+                  <MenuItem value={"Delhi"}>Delhi</MenuItem>
+                  <MenuItem value={"Maharashtra"}>Maharashtra</MenuItem>
+                </Select>
+              </FormControl>
             </Box>
             <Box flexGrow={2}>
               <h3
@@ -270,7 +342,9 @@ export const CustomerOrderBookDetails = () => {
                   <StyledTableCell align="center">
                     PENDING QUANTITY
                   </StyledTableCell>
-                  <StyledTableCell align="center">AMOUNT</StyledTableCell>
+                  {userData.groups.toString() !== "Factory" && (
+                    <StyledTableCell align="center">AMOUNT</StyledTableCell>
+                  )}
                 </StyledTableRow>
               </TableHead>
               <TableBody>
@@ -300,9 +374,11 @@ export const CustomerOrderBookDetails = () => {
                     <StyledTableCell align="center">
                       {row.pending_quantity}
                     </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.amount}
-                    </StyledTableCell>
+                    {userData.groups.toString() !== "Factory" && (
+                      <StyledTableCell align="center">
+                        {row.amount}
+                      </StyledTableCell>
+                    )}
                   </StyledTableRow>
                 ))}
               </TableBody>
