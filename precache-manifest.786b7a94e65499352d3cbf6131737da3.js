@@ -1,11 +1,11 @@
 self.__precacheManifest = [
   {
-    "revision": "985df722f2796d03a953",
+    "revision": "a61fc6c06213d1895e29",
     "url": "/crm-frontend/static/css/main.00d0828b.chunk.css"
   },
   {
-    "revision": "985df722f2796d03a953",
-    "url": "/crm-frontend/static/js/main.d3205d14.chunk.js"
+    "revision": "a61fc6c06213d1895e29",
+    "url": "/crm-frontend/static/js/main.dcb128f4.chunk.js"
   },
   {
     "revision": "68facbb7e7f2fb0f4ca0",
@@ -36,7 +36,7 @@ self.__precacheManifest = [
     "url": "/crm-frontend/static/media/MSME.185e3428.jpeg"
   },
   {
-    "revision": "f772d90a68e2ca81bbba15ac7e839798",
+    "revision": "d2744d2d449d7d99f9026d901dd42194",
     "url": "/crm-frontend/index.html"
   }
 ];
