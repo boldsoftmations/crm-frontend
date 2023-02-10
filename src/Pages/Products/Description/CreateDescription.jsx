@@ -125,8 +125,8 @@ export const CreateDescription = (props) => {
                 name="consumable"
                 onChange={handleInputChange}
               >
-                <MenuItem value={"yes"}>Yes </MenuItem>
-                <MenuItem value={"no"}>No </MenuItem>
+                <MenuItem value={"Yes"}>Yes </MenuItem>
+                <MenuItem value={"No"}>No </MenuItem>
               </Select>
             </FormControl>
           </Grid>
