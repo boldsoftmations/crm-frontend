@@ -421,6 +421,9 @@ export const ProductOrderBookDetails = () => {
                   {userData.groups.toString() !== "Factory" && (
                     <StyledTableCell align="center">AMOUNT</StyledTableCell>
                   )}
+                  <StyledTableCell align="center">
+                    SPECIAL INSTRUCTIONS
+                  </StyledTableCell>
                   <StyledTableCell align="center">COMPANY</StyledTableCell>
                   <StyledTableCell align="center">BILLING CITY</StyledTableCell>
                   <StyledTableCell align="center">
@@ -454,6 +457,9 @@ export const ProductOrderBookDetails = () => {
                         {row.amount}
                       </StyledTableCell>
                     )}
+                    <StyledTableCell align="center">
+                      {row.special_instructions}
+                    </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.company}
                     </StyledTableCell>
