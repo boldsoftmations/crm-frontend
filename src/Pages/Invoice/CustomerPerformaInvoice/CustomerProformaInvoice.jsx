@@ -20,6 +20,7 @@ export const CustomerProformaInvoice = (props) => {
   const [hsnData, setHsnData] = useState([]);
   const [open, setOpen] = useState(false);
   const [errMsg, setErrMsg] = useState("");
+  const [totalGst, setTotalGst] = useState("");
   const data = useSelector((state) => state.auth);
   const users = data.profile;
   useEffect(() => {
@@ -74,6 +75,8 @@ export const CustomerProformaInvoice = (props) => {
     documentTitle: `PI Number ${invoiceData.pi_number}`,
   });
 
+  const TOTAL_GST_DATA = invoiceData.total - invoiceData.amount;
+  const TOTAL_GST = TOTAL_GST_DATA.toFixed(2);
   return (
     <>
       <CustomLoader open={open} />
@@ -617,7 +620,7 @@ export const CustomerProformaInvoice = (props) => {
                           </td>
                           <td colspan="1" className="text-start">
                             <strong style={{ ...typographyStyling }}>
-                              {invoiceData.total - invoiceData.amount}
+                              {TOTAL_GST}
                             </strong>
                           </td>
                         </tr>
