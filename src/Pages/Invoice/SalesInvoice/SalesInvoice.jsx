@@ -45,6 +45,9 @@ export const SalesInvoice = (props) => {
     documentTitle: `Sales Invoice Number ${salesInvoiceData.order_book}`,
   });
 
+  const TOTAL_GST_DATA = salesInvoiceData.total - salesInvoiceData.amount;
+  const TOTAL_GST = TOTAL_GST_DATA.toFixed(2);
+
   return (
     <>
       {" "}
@@ -542,8 +545,7 @@ export const SalesInvoice = (props) => {
                             </td>
                             <td colspan="1" className="text-start">
                               <strong style={{ ...typographyStyling }}>
-                                {salesInvoiceData.total -
-                                  salesInvoiceData.amount}
+                                {TOTAL_GST}
                               </strong>
                             </td>
                           </tr>
