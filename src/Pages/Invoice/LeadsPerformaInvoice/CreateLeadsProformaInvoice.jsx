@@ -68,6 +68,7 @@ export const CreateLeadsProformaInvoice = (props) => {
       quantity: "",
       rate: "",
       requested_date: values.someDate,
+      special_instructions: "",
     },
   ]);
   const data = useSelector((state) => state.auth);
@@ -99,6 +100,7 @@ export const CreateLeadsProformaInvoice = (props) => {
       quantity: "",
       rate: "",
       requested_date: values.someDate,
+      special_instructions: "",
     };
     setProducts([...products, newfield]);
   };
@@ -563,7 +565,7 @@ export const CreateLeadsProformaInvoice = (props) => {
                     // onChange={(event) => handleFormChange(index, event)}
                   />
                 </Grid>
-                <Grid item xs={12} sm={4}>
+                <Grid item xs={12} sm={2}>
                   <TextField
                     fullWidth
                     type={"date"}
@@ -580,6 +582,21 @@ export const CreateLeadsProformaInvoice = (props) => {
                     InputLabelProps={{
                       shrink: true,
                     }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={2}>
+                  <TextField
+                    fullWidth
+                    name="special_instructions"
+                    size="small"
+                    label="Special Instructions"
+                    variant="outlined"
+                    value={
+                      input.special_instructions
+                        ? input.special_instructions
+                        : ""
+                    }
+                    onChange={(event) => handleFormChange(index, event)}
                   />
                 </Grid>
                 <Grid item xs={12} sm={4} alignContent="right">
