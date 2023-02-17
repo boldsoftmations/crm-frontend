@@ -36,7 +36,6 @@ export const UpdateDispatch = (props) => {
       e.preventDefault();
 
       const data = new FormData();
-      const dataFactory = new FormData();
       if (userData.groups.toString() === "Customer Service") {
         data.append("sales_invoice", idData.sales_invoice);
         data.append(
@@ -59,23 +58,23 @@ export const UpdateDispatch = (props) => {
         }
         data.append("dispatched", true);
       } else {
-        dataFactory.append("sales_invoice", idData.sales_invoice);
-        dataFactory.append(
+        data.append("sales_invoice", idData.sales_invoice);
+        data.append(
           "transporter",
           inputValue.transporter ? inputValue.transporter : idData.transporter
         );
-        dataFactory.append(
+        data.append(
           "lr_number",
           inputValue.lr_number ? inputValue.lr_number : idData.lr_number
         );
-        dataFactory.append(
+        data.append(
           "lr_date",
           inputValue.lr_date ? inputValue.lr_date : idData.lr_date
         );
         if (lrCopy !== "") {
-          dataFactory.append("lr_copy", lrCopy ? lrCopy : "");
+          data.append("lr_copy", lrCopy ? lrCopy : "");
         }
-        dataFactory.append("dispatched", true);
+        data.append("dispatched", true);
       }
       const LRDATE = inputValue.lr_date ? inputValue.lr_date : idData.lr_date;
       const LRNUMBER = inputValue.lr_number
@@ -107,7 +106,7 @@ export const UpdateDispatch = (props) => {
           (LRDATE !== null && LRNUMBER !== null && TRANSPORTER !== null)
         ) {
           setOpen(true);
-          await InvoiceServices.updateDispatched(idData.id, dataFactory);
+          await InvoiceServices.updateDispatched(idData.id, data);
 
           setOpenPopup(false);
 
