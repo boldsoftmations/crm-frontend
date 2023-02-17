@@ -167,6 +167,18 @@ const getDispatchData = (value) => {
   );
 };
 
+const getDispatchDataWithSearch = (value, search) => {
+  return CustomAxios.get(
+    `/api/invoice/list-dispatch-book/?dispatched=${value}&search=${search}`
+  );
+};
+
+const getDispatchSearchWithPagination = (value, search, currentPage) => {
+  return CustomAxios.get(
+    `/api/invoice/list-dispatch-book/?dispatched=${value}&search=${search}&page=${currentPage}`
+  );
+};
+
 const getDispatchDataWithPagination = (value, currentPage) => {
   return CustomAxios.get(
     `/api/invoice/list-dispatch-book/?dispatched=${value}&page=${currentPage}`
@@ -215,6 +227,8 @@ const InvoiceServices = {
   createSalesnvoiceData,
   getSalesnvoiceDataById,
   getDispatchData,
+  getDispatchSearchWithPagination,
+  getDispatchDataWithSearch,
   getDispatchDataWithPagination,
   updateDispatched,
 };

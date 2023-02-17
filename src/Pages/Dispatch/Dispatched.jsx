@@ -6,25 +6,25 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  Grid,
-  Button,
   Paper,
   styled,
   Box,
   TableContainer,
   IconButton,
   Collapse,
-  Checkbox,
 } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-
+// import { saveAs } from "file-saver";
+import FileSaver from "file-saver";
 import { tableCellClasses } from "@mui/material/TableCell";
 import InvoiceServices from "../../services/InvoiceService";
 import { CustomLoader } from "./../../Components/CustomLoader";
 import { Popup } from "./../../Components/Popup";
 import { UpdateDispatch } from "./UpdateDispatch";
 import { CustomPagination } from "./../../Components/CustomPagination";
+import { useSelector } from "react-redux";
+import { CustomSearch } from "./../../Components/CustomSearch";
 export const Dispatched = () => {
   const [dispatchData, setDispatchData] = useState([]);
   const [open, setOpen] = useState(false);
@@ -32,7 +32,9 @@ export const Dispatched = () => {
   const [errMsg, setErrMsg] = useState("");
   const [pageCount, setpageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
-
+  const [searchQuery, setSearchQuery] = useState("");
+  const data = useSelector((state) => state.auth);
+  const userData = data.profile;
   useEffect(() => {
     getAllDispatchDetails();
   }, []);
@@ -75,18 +77,67 @@ export const Dispatched = () => {
     }
   };
 
+  const handleInputChange = (event) => {
+    setSearchQuery(event.target.value);
+    getSearchData(event.target.value);
+  };
+
+  const getSearchData = async (value) => {
+    try {
+      setOpen(true);
+      const filterSearch = value;
+      const response = await InvoiceServices.getDispatchDataWithSearch(
+        "true",
+        filterSearch
+      );
+      if (response) {
+        setDispatchData(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      } else {
+        getAllDispatchDetails();
+        setSearchQuery("");
+      }
+      setOpen(false);
+    } catch (error) {
+      console.log("error Search leads", error);
+      setOpen(false);
+    }
+  };
+
+  const getResetData = () => {
+    setSearchQuery("");
+    getAllDispatchDetails();
+  };
+
   const handlePageClick = async (event, value) => {
     try {
       const page = value;
       setCurrentPage(page);
       setOpen(true);
-      const response = await InvoiceServices.getDispatchDataWithPagination(
-        "true",
-        page
-      );
-      setDispatchData(response.data.results);
-      const total = response.data.count;
-      setpageCount(Math.ceil(total / 25));
+      if (searchQuery) {
+        const response = await InvoiceServices.getDispatchSearchWithPagination(
+          "true",
+          page,
+          searchQuery
+        );
+        if (response) {
+          setDispatchData(response.data.results);
+          const total = response.data.count;
+          setpageCount(Math.ceil(total / 25));
+        } else {
+          getAllDispatchDetails();
+          setSearchQuery("");
+        }
+      } else {
+        const response = await InvoiceServices.getDispatchDataWithPagination(
+          "true",
+          page
+        );
+        setDispatchData(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      }
       setOpen(false);
     } catch (error) {
       console.log("error", error);
@@ -99,7 +150,14 @@ export const Dispatched = () => {
       <CustomLoader open={open} />
       <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
         <Box display="flex">
-          <Box flexGrow={2}></Box>
+          <Box flexGrow={2}>
+            {" "}
+            <CustomSearch
+              filterSelectedQuery={searchQuery}
+              handleInputChange={handleInputChange}
+              getResetData={getResetData}
+            />
+          </Box>
           <Box flexGrow={2}>
             <h3
               style={{
@@ -140,6 +198,12 @@ export const Dispatched = () => {
                 <StyledTableCell align="center">
                   Dispatch Location
                 </StyledTableCell>
+                {userData.groups.toString() === "Customer Service" && (
+                  <StyledTableCell align="center">LR COPY</StyledTableCell>
+                )}
+                {userData.groups.toString() === "Customer Service" && (
+                  <StyledTableCell align="center">POD COPY</StyledTableCell>
+                )}
                 <StyledTableCell align="center">ACTION</StyledTableCell>
               </TableRow>
             </TableHead>
@@ -149,6 +213,7 @@ export const Dispatched = () => {
                   key={row.id}
                   row={row}
                   getAllDispatchDetails={getAllDispatchDetails}
+                  userData={userData}
                 />
               ))}
             </TableBody>
@@ -164,7 +229,7 @@ export const Dispatched = () => {
 };
 
 function Row(props) {
-  const { row, getAllDispatchDetails } = props;
+  const { row, getAllDispatchDetails, userData } = props;
   const [open, setOpen] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [idData, setIdData] = useState("");
@@ -174,6 +239,15 @@ function Row(props) {
     setOpenModal(true);
   };
 
+  const handleClickLRCOPY = async (data) => {
+    let url = data.lr_copy ? data.lr_copy : "";
+    FileSaver.saveAs(url, "image");
+  };
+
+  const handleClickPODCOPY = async (data) => {
+    let url = data.pod_copy ? data.pod_copy : "";
+    FileSaver.saveAs(url, "image");
+  };
   return (
     <>
       <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
@@ -191,6 +265,28 @@ function Row(props) {
         <TableCell align="center">{row.customer}</TableCell>
         <TableCell align="center">{row.date}</TableCell>
         <TableCell align="center">{row.dispatch_location}</TableCell>
+        {userData.groups.toString() === "Customer Service" && (
+          <TableCell align="center">
+            <button
+              type="button"
+              class="btn btn-primary"
+              onClick={() => handleClickLRCOPY(row)}
+            >
+              Download
+            </button>
+          </TableCell>
+        )}
+        {userData.groups.toString() === "Customer Service" && (
+          <TableCell align="center">
+            <button
+              type="button"
+              class="btn btn-primary"
+              onClick={() => handleClickPODCOPY(row)}
+            >
+              Download
+            </button>
+          </TableCell>
+        )}
         <TableCell align="center">
           <button
             type="button"
@@ -244,6 +340,7 @@ function Row(props) {
           idData={idData}
           getAllDispatchDetails={getAllDispatchDetails}
           setOpenPopup={setOpenModal}
+          userData={userData}
         />
       </Popup>
     </>
