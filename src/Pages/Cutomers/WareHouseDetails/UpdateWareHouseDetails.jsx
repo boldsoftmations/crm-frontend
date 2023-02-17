@@ -102,7 +102,11 @@ export const UpdateWareHouseDetails = (props) => {
               name="contact"
               label="Contact"
               variant="outlined"
-              value={inputValue.contact ? inputValue.contact : ""}
+              value={
+                inputValue.contact_name
+                  ? `${inputValue.contact_name} ${inputValue.contact_number}`
+                  : ""
+              }
             />
           </Grid>
 

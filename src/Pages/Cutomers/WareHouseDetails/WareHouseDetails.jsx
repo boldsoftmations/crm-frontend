@@ -170,7 +170,7 @@ export const WareHouseDetails = (props) => {
                 return (
                   <StyledTableRow>
                     <StyledTableCell align="center">
-                      {row.contact}
+                      {row.contact_number}
                     </StyledTableCell>
 
                     <StyledTableCell align="center">
