@@ -25,12 +25,12 @@ import InvoiceServices from "../../../services/InvoiceService";
 import { CreateCustomerProformaInvoice } from "./CreateCustomerProformaInvoice";
 import { Popup } from "./../../../Components/Popup";
 import { CustomerProformaInvoice } from "./CustomerProformaInvoice";
-import AddIcon from "@mui/icons-material/Add";
 import ClearIcon from "@mui/icons-material/Clear";
 import { getSellerAccountData } from "./../../../Redux/Action/Action";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
+import { CustomSearch } from "./../../../Components/CustomSearch";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -52,7 +52,10 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-const FilterOptions = [{ label: "Status", value: "status" }];
+const FilterOptions = [
+  { label: "Status", value: "status" },
+  { label: "Search", value: "search" },
+];
 
 const StatusOptions = [
   { label: "Raised", value: "raised" },
@@ -270,6 +273,13 @@ export const ViewCustomerProformaInvoice = () => {
                   </Select>
                 </FormControl>
               )}
+              {filterQuery === "search" && (
+                <CustomSearch
+                  filterSelectedQuery={filterSelectedQuery}
+                  handleInputChange={handleInputChange}
+                  getResetData={getResetData}
+                />
+              )}
             </Box>
             <Box flexGrow={2}>
               <h3
@@ -323,7 +333,9 @@ export const ViewCustomerProformaInvoice = () => {
                   <StyledTableCell align="center">BILLING CITY</StyledTableCell>
                   <StyledTableCell align="center">CONTACT</StyledTableCell>
                   <StyledTableCell align="center">STATUS</StyledTableCell>
+
                   <StyledTableCell align="center">PI AMOUNT</StyledTableCell>
+
                   <StyledTableCell align="center">
                     BALANCE AMOUNT
                   </StyledTableCell>
@@ -355,9 +367,11 @@ export const ViewCustomerProformaInvoice = () => {
                       <StyledTableCell align="center">
                         {row.total}
                       </StyledTableCell>
+
                       <StyledTableCell align="center">
                         {row.balance_amount}
                       </StyledTableCell>
+
                       <StyledTableCell align="center">
                         <Button
                           variant="contained"

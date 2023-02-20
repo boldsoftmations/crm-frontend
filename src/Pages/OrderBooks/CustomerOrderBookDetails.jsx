@@ -27,6 +27,14 @@ import { CustomSearch } from "./../../Components/CustomSearch";
 import { CustomPagination } from "./../../Components/CustomPagination";
 import { useSelector } from "react-redux";
 
+const filterOption = [
+  {
+    label: "Search By State",
+    value: "orderbook__proforma_invoice__seller_account__state",
+  },
+  { label: "Search", value: "search" },
+];
+
 export const CustomerOrderBookDetails = () => {
   const [orderBookData, setOrderBookData] = useState([]);
   const errRef = useRef();
@@ -36,6 +44,8 @@ export const CustomerOrderBookDetails = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [exportOrderBookData, setExportOrderBookData] = useState([]);
+  const [filterQuery, setFilterQuery] = useState("search");
+  const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const dataList = useSelector((state) => state.auth);
   const userData = dataList.profile;
   useEffect(() => {
@@ -87,6 +97,7 @@ export const CustomerOrderBookDetails = () => {
       const filterSearch = value;
       const response = await InvoiceServices.getAllOrderBookDatawithSearch(
         "customer",
+        filterQuery,
         filterSearch
       );
       if (response) {
@@ -115,7 +126,24 @@ export const CustomerOrderBookDetails = () => {
           await InvoiceServices.getAllOrderBookDatawithSearchWithPagination(
             "customer",
             page,
+            filterQuery,
             searchQuery
+          );
+        if (response) {
+          setOrderBookData(response.data.results);
+          const total = response.data.count;
+          setpageCount(Math.ceil(total / 25));
+        } else {
+          getAllCustomerWiseOrderBook();
+          setSearchQuery("");
+        }
+      } else if (filterSelectedQuery) {
+        const response =
+          await InvoiceServices.getAllOrderBookDatawithSearchWithPagination(
+            "product",
+            page,
+            filterQuery,
+            filterSelectedQuery
           );
         if (response) {
           setOrderBookData(response.data.results);
@@ -144,11 +172,18 @@ export const CustomerOrderBookDetails = () => {
 
   const getResetData = () => {
     setSearchQuery("");
+    setFilterSelectedQuery("");
+    setFilterQuery("");
     getAllCustomerWiseOrderBook();
   };
 
   const handleInputChange = (event) => {
     setSearchQuery(event.target.value);
+    getSearchData(event.target.value);
+  };
+
+  const handleInputChanges = (event) => {
+    setFilterSelectedQuery(event.target.value);
     getSearchData(event.target.value);
   };
 
@@ -159,12 +194,12 @@ export const CustomerOrderBookDetails = () => {
   const getAllCustomerWiseOrderBookExport = async () => {
     try {
       setOpen(true);
-      if (searchQuery) {
+      if (filterSelectedQuery) {
         const response =
           await InvoiceServices.getAllOrderBookDatawithSearchWithPagination(
             "customer",
             "all",
-            searchQuery
+            filterSelectedQuery
           );
         setExportOrderBookData(response.data);
         //   const total = response.data.count;
@@ -252,44 +287,75 @@ export const CustomerOrderBookDetails = () => {
         <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
           <Box display="flex">
-            <Box flexGrow={2}>
-              <FormControl
-                sx={{ minWidth: "200px", marginLeft: "1em" }}
-                size="small"
-              >
-                <InputLabel id="demo-simple-select-label">
-                  Filter By State
-                </InputLabel>
+            <Box flexGrow={1}>
+              <FormControl fullWidth size="small">
+                <InputLabel id="demo-simple-select-label">Fliter By</InputLabel>
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
                   name="values"
-                  label="Filter By State"
-                  value={searchQuery}
-                  onChange={(event) => handleInputChange(event)}
-                  sx={{
-                    "& .MuiSelect-iconOutlined": {
-                      display: searchQuery ? "none" : "",
-                    },
-                    "&.Mui-focused .MuiIconButton-root": {
-                      color: "primary.main",
-                    },
-                  }}
-                  endAdornment={
-                    <IconButton
-                      sx={{
-                        visibility: searchQuery ? "visible" : "hidden",
-                      }}
-                      onClick={getResetData}
-                    >
-                      <ClearIcon />
-                    </IconButton>
-                  }
+                  label="Fliter By"
+                  value={filterQuery}
+                  onChange={(event) => setFilterQuery(event.target.value)}
                 >
-                  <MenuItem value={"Delhi"}>Delhi</MenuItem>
-                  <MenuItem value={"Maharashtra"}>Maharashtra</MenuItem>
+                  {filterOption.map((option, i) => (
+                    <MenuItem key={i} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
                 </Select>
               </FormControl>
+            </Box>
+            <Box flexGrow={1}>
+              {filterQuery ===
+                "orderbook__proforma_invoice__seller_account__state" && (
+                <FormControl
+                  sx={{ minWidth: "200px", marginLeft: "1em" }}
+                  size="small"
+                >
+                  <InputLabel id="demo-simple-select-label">
+                    Filter By State
+                  </InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    name="values"
+                    label="Filter By State"
+                    value={filterSelectedQuery}
+                    onChange={(event) => handleInputChanges(event)}
+                    sx={{
+                      "& .MuiSelect-iconOutlined": {
+                        display: filterSelectedQuery ? "none" : "",
+                      },
+                      "&.Mui-focused .MuiIconButton-root": {
+                        color: "primary.main",
+                      },
+                    }}
+                    endAdornment={
+                      <IconButton
+                        sx={{
+                          visibility: filterSelectedQuery
+                            ? "visible"
+                            : "hidden",
+                        }}
+                        onClick={getResetData}
+                      >
+                        <ClearIcon />
+                      </IconButton>
+                    }
+                  >
+                    <MenuItem value={"Delhi"}>Delhi</MenuItem>
+                    <MenuItem value={"Maharashtra"}>Maharashtra</MenuItem>
+                  </Select>
+                </FormControl>
+              )}
+              {filterQuery === "search" && (
+                <CustomSearch
+                  filterSelectedQuery={searchQuery}
+                  handleInputChange={handleInputChange}
+                  getResetData={getResetData}
+                />
+              )}
             </Box>
             <Box flexGrow={2}>
               <h3
