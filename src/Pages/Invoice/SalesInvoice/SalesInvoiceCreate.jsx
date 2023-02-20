@@ -91,11 +91,13 @@ export const SalesInvoiceCreate = (props) => {
         place_of_supply: inputValue.place_of_supply,
         transporter_name: inputValue.transporter_name,
       };
-      setOpen(true);
 
-      await InvoiceServices.createSalesnvoiceData(req);
-      setOpenPopup(false);
-      getSalesInvoiceDetails();
+      setOpen(true);
+      if (inputValue !== []) {
+        await InvoiceServices.createSalesnvoiceData(req);
+        setOpenPopup(false);
+        getSalesInvoiceDetails();
+      }
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -257,11 +259,14 @@ export const SalesInvoiceCreate = (props) => {
           <Grid item xs={12} sm={3}>
             <TextField
               fullWidth
+              required
               name="transporter_name"
               size="small"
               label="Transporter Name"
               variant="outlined"
               value={inputValue.transporter_name}
+              error={inputValue.transporter_name === ""}
+              // helperText={inputValue.transporter_name !== "" && "this field is required"}
               onChange={handleInputChange}
             />
           </Grid>

@@ -199,7 +199,10 @@ export const CustomerOrderBookDetails = () => {
   };
 
   let data = exportOrderBookData.map((item) => {
-    if (userData.groups.toString() === "Factory") {
+    if (
+      userData.groups.toString() === "Factory-Mumbai" ||
+      userData.groups.toString() === "Factory-Delhi"
+    ) {
       return {
         company: item.company,
         pi_date: item.pi_date,
@@ -354,9 +357,10 @@ export const CustomerOrderBookDetails = () => {
                   <StyledTableCell align="center">
                     PENDING QUANTITY
                   </StyledTableCell>
-                  {userData.groups.toString() !== "Factory" && (
-                    <StyledTableCell align="center">AMOUNT</StyledTableCell>
-                  )}
+                  {userData.groups.toString() !== "Factory-Mumbai" ||
+                    (userData.groups.toString() !== "Factory-Delhi" && (
+                      <StyledTableCell align="center">AMOUNT</StyledTableCell>
+                    ))}
                   <StyledTableCell align="center">
                     SPECIAL INSTRUCTIONS
                   </StyledTableCell>
@@ -389,11 +393,12 @@ export const CustomerOrderBookDetails = () => {
                     <StyledTableCell align="center">
                       {row.pending_quantity}
                     </StyledTableCell>
-                    {userData.groups.toString() !== "Factory" && (
-                      <StyledTableCell align="center">
-                        {row.amount}
-                      </StyledTableCell>
-                    )}
+                    {userData.groups.toString() !== "Factory-Mumbai" ||
+                      (userData.groups.toString() !== "Factory-Delhi" && (
+                        <StyledTableCell align="center">
+                          {row.amount}
+                        </StyledTableCell>
+                      ))}
                     <StyledTableCell align="center">
                       {row.special_instructions}
                     </StyledTableCell>

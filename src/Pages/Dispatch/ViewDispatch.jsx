@@ -232,6 +232,7 @@ function Row(props) {
   const [checked, setChecked] = useState(row.dispatched);
   const [openModal, setOpenModal] = useState(false);
   const [id, setId] = useState("");
+  const [customer, setCustomer] = useState("");
 
   const handleChange = (event) => {
     setChecked(event.target.checked);
@@ -280,6 +281,7 @@ function Row(props) {
             onClick={() => {
               setOpenModal(true);
               setId(row.sales_invoice);
+              setCustomer(row.customer);
             }}
             variant="contained"
             color="success"
@@ -331,8 +333,7 @@ function Row(props) {
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             <FormControlLabel
-              label={`Are you sure you want to dispatch the item with sales invoice
-             inumber : ${id}?`}
+              label={`Do you confirm that ${id} to ${customer} is dispatched. ?`}
               control={
                 <Checkbox
                   checked={checked}

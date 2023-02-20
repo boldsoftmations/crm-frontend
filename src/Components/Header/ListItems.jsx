@@ -350,7 +350,8 @@ export const ListItems = () => {
         </>
       ) : (
         <>
-          {userData.groups.toString() === "Factory" ||
+          {userData.groups.toString() === "Factory-Mumbai" ||
+          userData.groups.toString() === "Factory-Delhi" ||
           userData.groups.toString() === "Customer Service" ? (
             <>
               {userData.groups.toString() === "Customer Service" ? (
