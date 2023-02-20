@@ -161,6 +161,26 @@ const getSalesnvoiceDataById = (id) => {
   return CustomAxios.get(`/api/invoice/list-sales-invoice/${id}`);
 };
 
+const getAllSaleRegisterData = () => {
+  return CustomAxios.get(`/api/invoice/list-dispatch-book`);
+};
+
+const getSaleRegisterDataWithPagination = (currentPage) => {
+  return CustomAxios.get(
+    `/api/invoice/list-dispatch-book/?page=${currentPage}`
+  );
+};
+
+const getSaleRegisterDataWithSearch = (search) => {
+  return CustomAxios.get(`/api/invoice/list-dispatch-book/?search=${search}`);
+};
+
+const getSaleRegisterDataWithPaginationAndSearch = (currentPage, search) => {
+  return CustomAxios.get(
+    `/api/invoice/list-dispatch-book/?page=${currentPage}&search=${search}`
+  );
+};
+
 const getDispatchData = (value) => {
   return CustomAxios.get(
     `/api/invoice/list-dispatch-book/?dispatched=${value}`
@@ -226,6 +246,10 @@ const InvoiceServices = {
   getSalesInvoiceDataWithPagination,
   createSalesnvoiceData,
   getSalesnvoiceDataById,
+  getAllSaleRegisterData,
+  getSaleRegisterDataWithPagination,
+  getSaleRegisterDataWithSearch,
+  getSaleRegisterDataWithPaginationAndSearch,
   getDispatchData,
   getDispatchSearchWithPagination,
   getDispatchDataWithSearch,

@@ -27,6 +27,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
 import { CustomPagination } from "../../../Components/CustomPagination";
+import { CustomSearch } from "../../../Components/CustomSearch";
 
 export const SalesInvoiceView = () => {
   const errRef = useRef();
@@ -38,7 +39,7 @@ export const SalesInvoiceView = () => {
   const [idForEdit, setIDForEdit] = useState();
   const [pageCount, setpageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
-
+  const [searchQuery, setSearchQuery] = useState("");
   useEffect(() => {
     getSalesInvoiceDetails();
   }, []);
@@ -80,40 +81,71 @@ export const SalesInvoiceView = () => {
     }
   };
 
+  const handleInputChange = (event) => {
+    setSearchQuery(event.target.value);
+    getSearchData(event.target.value);
+  };
+
+  const getSearchData = async (value) => {
+    try {
+      setOpen(true);
+      const filterSearch = value;
+      const response = await InvoiceServices.getSalesInvoiceDataWithSearch(
+        filterSearch
+      );
+      if (response) {
+        setSalesInvoiceData(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      } else {
+        getSalesInvoiceDetails();
+        setSearchQuery("");
+      }
+      setOpen(false);
+    } catch (error) {
+      console.log("error Search sales invoice", error);
+      setOpen(false);
+    }
+  };
+
   const handlePageClick = async (event, value) => {
     try {
       const page = value;
       setCurrentPage(page);
       setOpen(true);
 
-      // if (searchQuery) {
-      //   const response =
-      //     await InvoiceServices.getSalesInvoiceDataWithPagination(
-      //       page,
-      //       searchQuery
-      //     );
-      //   if (response) {
-      //     setSalesInvoiceData(response.data.results);
-      //     const total = response.data.count;
-      //     setpageCount(Math.ceil(total / 25));
-      //   } else {
-      //     getSalesInvoiceDetails();
-      //     setSearchQuery("");
-      //   }
-      // } else {
-      const response = await InvoiceServices.getSalesInvoiceDataWithPagination(
-        page
-      );
-      setSalesInvoiceData(response.data.results);
-      const total = response.data.count;
-      setpageCount(Math.ceil(total / 25));
-      // }
+      if (searchQuery) {
+        const response =
+          await InvoiceServices.getSalesInvoiceDataWithPaginationAndSearch(
+            page,
+            searchQuery
+          );
+        if (response) {
+          setSalesInvoiceData(response.data.results);
+          const total = response.data.count;
+          setpageCount(Math.ceil(total / 25));
+        } else {
+          getSalesInvoiceDetails();
+          setSearchQuery("");
+        }
+      } else {
+        const response =
+          await InvoiceServices.getSalesInvoiceDataWithPagination(page);
+        setSalesInvoiceData(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      }
 
       setOpen(false);
     } catch (error) {
       console.log("error", error);
       setOpen(false);
     }
+  };
+
+  const getResetData = () => {
+    setSearchQuery("");
+    getSalesInvoiceDetails();
   };
 
   const openInPopup = (item) => {
@@ -129,7 +161,14 @@ export const SalesInvoiceView = () => {
         <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
           <Box display="flex">
-            <Box flexGrow={1.6}></Box>
+            <Box flexGrow={1.6}>
+              {" "}
+              <CustomSearch
+                filterSelectedQuery={searchQuery}
+                handleInputChange={handleInputChange}
+                getResetData={getResetData}
+              />
+            </Box>
             <Box flexGrow={1}>
               <h3
                 style={{

@@ -37,6 +37,7 @@ import LeadServices from "./../services/LeadService";
 import { getProfileUser } from "./../Redux/Action/Action";
 import { ViewDispatch } from "./../Pages/Dispatch/ViewDispatch";
 import { Dispatched } from "./../Pages/Dispatch/Dispatched";
+import { SalesRegisterView } from "./../Pages/Dispatch/SalesRegisterView";
 
 export const RouteScreen = () => {
   const dispatch = useDispatch();
@@ -157,6 +158,10 @@ export const RouteScreen = () => {
             {/* Dispatch Routes */}
             <Route path="/dispatch/view-dispatch" element={<ViewDispatch />} />
             <Route path="/dispatch/view-dispatched" element={<Dispatched />} />
+            <Route
+              path="/dispatch/view-sales-register"
+              element={<SalesRegisterView />}
+            />
             <Route path="*" element={<Dashboard />} />
           </>
         )}
