@@ -117,15 +117,20 @@ const getProductOrderBookDatawithPage = (type, data) => {
   );
 };
 
-const getAllOrderBookDatawithSearch = (type, data) => {
+const getAllOrderBookDatawithSearch = (type, searchType, data) => {
   return CustomAxios.get(
-    `/api/invoice/list-order-book/?ordering=${type}&orderbook__proforma_invoice__seller_account__state=${data}`
+    `/api/invoice/list-order-book/?ordering=${type}&${searchType}=${data}`
   );
 };
 
-const getAllOrderBookDatawithSearchWithPagination = (type, value, data) => {
+const getAllOrderBookDatawithSearchWithPagination = (
+  type,
+  value,
+  searchType,
+  data
+) => {
   return CustomAxios.get(
-    `/api/invoice/list-order-book/?ordering=${type}&page=${value}&orderbook__proforma_invoice__seller_account__state=${data}`
+    `/api/invoice/list-order-book/?ordering=${type}&page=${value}&${searchType}=${data}`
   );
 };
 
@@ -147,9 +152,19 @@ const getSalesInvoiceData = () => {
   return CustomAxios.get(`/api/invoice/list-sales-invoice`);
 };
 
+const getSalesInvoiceDataWithSearch = (search) => {
+  return CustomAxios.get(`/api/invoice/list-sales-invoice/?search=${search}`);
+};
+
 const getSalesInvoiceDataWithPagination = (currentPage) => {
   return CustomAxios.get(
     `/api/invoice/list-sales-invoice/?page=${currentPage}`
+  );
+};
+
+const getSalesInvoiceDataWithPaginationAndSearch = (currentPage, search) => {
+  return CustomAxios.get(
+    `/api/invoice/list-sales-invoice/?page=${currentPage}&search=${search}`
   );
 };
 
@@ -243,7 +258,9 @@ const InvoiceServices = {
   getAllcustomerOrderBookData,
   getOTotalPendingQuantity,
   getSalesInvoiceData,
+  getSalesInvoiceDataWithSearch,
   getSalesInvoiceDataWithPagination,
+  getSalesInvoiceDataWithPaginationAndSearch,
   createSalesnvoiceData,
   getSalesnvoiceDataById,
   getAllSaleRegisterData,
