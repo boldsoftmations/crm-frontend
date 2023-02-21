@@ -177,22 +177,22 @@ const getSalesnvoiceDataById = (id) => {
 };
 
 const getAllSaleRegisterData = () => {
-  return CustomAxios.get(`/api/invoice/list-dispatch-book`);
+  return CustomAxios.get(`/api/invoice/list-sales-register`);
 };
 
 const getSaleRegisterDataWithPagination = (currentPage) => {
   return CustomAxios.get(
-    `/api/invoice/list-dispatch-book/?page=${currentPage}`
+    `/api/invoice/list-sales-register/?page=${currentPage}`
   );
 };
 
 const getSaleRegisterDataWithSearch = (search) => {
-  return CustomAxios.get(`/api/invoice/list-dispatch-book/?search=${search}`);
+  return CustomAxios.get(`/api/invoice/list-sales-register/?search=${search}`);
 };
 
 const getSaleRegisterDataWithPaginationAndSearch = (currentPage, search) => {
   return CustomAxios.get(
-    `/api/invoice/list-dispatch-book/?page=${currentPage}&search=${search}`
+    `/api/invoice/list-sales-register/?page=${currentPage}&search=${search}`
   );
 };
 
