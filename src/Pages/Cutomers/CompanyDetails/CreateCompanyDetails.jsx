@@ -36,6 +36,7 @@ export const CreateCompanyDetails = (props) => {
   const [idForEdit, setIdForEdit] = useState("");
   const [assigned, setAssigned] = useState([]);
   const [assign, setAssign] = useState([]);
+  const [errorMessage, setErrorMessage] = useState([]);
   const handleChange = (event) => {
     setTypeData(event.target.value);
   };
@@ -77,7 +78,7 @@ export const CreateCompanyDetails = (props) => {
       setOpen(false);
     }
   };
-
+  const GST_NO = (gst_no) => gst_no.length <= 15;
   const createCompanyDetails = async (e) => {
     try {
       e.preventDefault();
@@ -91,8 +92,8 @@ export const CreateCompanyDetails = (props) => {
         city: pinCodeData.District,
         website: inputValue.website_url,
         estd_date: inputValue.estd_date,
-        gst_number: inputValue.gst_no,
-        pan_number: inputValue.pan_no,
+        gst_number: inputValue.gst_number,
+        pan_number: inputValue.pan_number,
         business_type: businessType,
         category: category,
         assigned_to: assign,
@@ -106,6 +107,11 @@ export const CreateCompanyDetails = (props) => {
       // getAllCompanyDetails();
     } catch (error) {
       console.log("createing company detail error", error);
+      setErrorMessage(
+        error.response.data.errors
+          ? error.response.data.errors.pan_number
+          : error.response.data.errors
+      );
       setOpen(false);
     }
   };
@@ -255,22 +261,35 @@ export const CreateCompanyDetails = (props) => {
             <TextField
               fullWidth
               size="small"
-              name="gst_no"
+              name="gst_number"
               label="GST No."
               variant="outlined"
-              value={inputValue.gst_no}
+              value={inputValue.gst_number}
               onChange={handleInputChange}
+              error={GST_NO(
+                inputValue.gst_number ? inputValue.gst_number.toString() : ""
+              )}
+              helperText={
+                GST_NO(
+                  inputValue.gst_number ? inputValue.gst_number.toString() : ""
+                )
+                  ? "GST NO should be less than or equal to 15 Digit"
+                  : ""
+              }
             />
           </Grid>
           <Grid item xs={12} sm={4}>
             <TextField
               fullWidth
+              required
               size="small"
-              name="pan_no"
+              name="pan_number"
               label="Pan No."
               variant="outlined"
-              value={inputValue.pan_no}
+              value={inputValue.pan_number}
               onChange={handleInputChange}
+              error={inputValue.pan_number === ""}
+              helperText={errorMessage}
             />
           </Grid>
           <Grid item xs={12} sm={4}>

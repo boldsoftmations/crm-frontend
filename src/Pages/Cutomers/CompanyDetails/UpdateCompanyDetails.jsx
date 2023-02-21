@@ -37,6 +37,7 @@ export const UpdateCompanyDetails = (props) => {
   const [pinCodeData, setPinCodeData] = useState([]);
   const [assigned, setAssigned] = useState([]);
   const [assign, setAssign] = useState([]);
+  const [errorMessage, setErrorMessage] = useState([]);
   const dispatch = useDispatch();
   const handleChange = (event) => {
     setTypeData(event.target.value);
@@ -101,6 +102,8 @@ export const UpdateCompanyDetails = (props) => {
     }
   };
 
+  const GST_NO = (gst_no) => gst_no.length <= 15;
+
   const UpdateCompanyDetails = async (e) => {
     try {
       e.preventDefault();
@@ -127,6 +130,9 @@ export const UpdateCompanyDetails = (props) => {
       getAllContactDetailsByID();
     } catch (error) {
       console.log("createing company detail error", error);
+      setErrorMessage(
+        error.response.data.errors ? error.response.data.errors.pan_number : ""
+      );
       setOpen(false);
     }
   };
@@ -317,17 +323,30 @@ export const UpdateCompanyDetails = (props) => {
               InputLabelProps={{
                 shrink: true,
               }}
+              error={GST_NO(
+                inputValue.gst_number ? inputValue.gst_number.toString() : ""
+              )}
+              helperText={
+                GST_NO(
+                  inputValue.gst_number ? inputValue.gst_number.toString() : ""
+                )
+                  ? "GST NO should be less than or equal to 15 Digit"
+                  : ""
+              }
             />
           </Grid>
           <Grid item xs={12} sm={4}>
             <TextField
               fullWidth
+              required
               size="small"
               name="pan_number"
               label="Pan No."
               variant="outlined"
               value={inputValue.pan_number ? inputValue.pan_number : ""}
               onChange={handleInputChange}
+              error={inputValue.pan_number === ""}
+              helperText={errorMessage}
               InputLabelProps={{
                 shrink: true,
               }}
