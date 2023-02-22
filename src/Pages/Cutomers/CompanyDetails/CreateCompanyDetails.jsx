@@ -78,7 +78,7 @@ export const CreateCompanyDetails = (props) => {
       setOpen(false);
     }
   };
-  const GST_NO = (gst_no) => gst_no.length <= 15;
+  const GST_NO = (gst_no) => gst_no.length <= 14;
   const createCompanyDetails = async (e) => {
     try {
       e.preventDefault();

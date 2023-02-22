@@ -102,7 +102,7 @@ export const UpdateCompanyDetails = (props) => {
     }
   };
 
-  const GST_NO = (gst_no) => gst_no.length <= 15;
+  const GST_NO = (gst_no) => gst_no.length <= 14;
 
   const UpdateCompanyDetails = async (e) => {
     try {
