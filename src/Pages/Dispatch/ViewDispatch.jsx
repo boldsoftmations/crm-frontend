@@ -260,7 +260,7 @@ function Row(props) {
   };
   return (
     <React.Fragment>
-      <CustomLoader open={open} />
+      {/* <CustomLoader open={open} /> */}
       <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
         <TableCell>
           <IconButton

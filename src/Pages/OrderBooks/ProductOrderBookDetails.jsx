@@ -301,8 +301,8 @@ export const ProductOrderBookDetails = () => {
 
   let data = exportOrderBookData.map((item) => {
     if (
-      userData.groups.toString() === "Factory-Mumbai" ||
-      userData.groups.toString() === "Factory-Delhi"
+      userData.groups.toString() === "Factory-Mumbai-OrderBook" ||
+      userData.groups.toString() === "Factory-Delhi-OrderBook"
     ) {
       return {
         product: item.product,
@@ -486,9 +486,12 @@ export const ProductOrderBookDetails = () => {
                   <StyledTableCell align="center">
                     PENDING QUANTITY
                   </StyledTableCell>
-                  {userData.groups.toString() !== "Factory-Mumbai" ||
-                    (userData.groups.toString() !== "Factory-Delhi" && (
+                  {userData.groups.toString() !== "Factory-Mumbai-OrderBook" &&
+                    (userData.groups.toString() !==
+                    "Factory-Delhi-OrderBook" ? (
                       <StyledTableCell align="center">AMOUNT</StyledTableCell>
+                    ) : (
+                      ""
                     ))}
                   <StyledTableCell align="center">
                     SPECIAL INSTRUCTIONS
@@ -521,11 +524,15 @@ export const ProductOrderBookDetails = () => {
                     <StyledTableCell align="center">
                       {row.pending_quantity}
                     </StyledTableCell>
-                    {userData.groups.toString() !== "Factory-Mumbai" ||
-                      (userData.groups.toString() !== "Factory-Delhi" && (
+                    {userData.groups.toString() !==
+                      "Factory-Mumbai-OrderBook" &&
+                      (userData.groups.toString() !==
+                      "Factory-Delhi-OrderBook" ? (
                         <StyledTableCell align="center">
                           {row.amount}
                         </StyledTableCell>
+                      ) : (
+                        ""
                       ))}
                     <StyledTableCell align="center">
                       {row.special_instructions}
