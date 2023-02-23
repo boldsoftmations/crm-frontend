@@ -13,17 +13,14 @@ import {
   createTheme,
   Box,
   Grid,
-  Button,
   TextField,
-  Backdrop,
-  CircularProgress,
   OutlinedInput,
   FormControl,
   InputLabel,
   IconButton,
   InputAdornment,
   Paper,
-  Avatar
+  Avatar,
 } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
@@ -35,10 +32,14 @@ import { ErrorMessage } from "./../../Components/ErrorMessage/ErrorMessage";
 import { CustomLoader } from "./../../Components/CustomLoader";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 
-
-const paperStyle={padding :20,height:'73vh',width:340, margin:"0 auto"}
-const avatarStyle={backgroundColor:'#1bbd7e'}
-const btnstyle={margin:'8px 0'}
+const paperStyle = {
+  padding: 20,
+  height: "73vh",
+  width: 340,
+  margin: "0 auto",
+};
+const avatarStyle = { backgroundColor: "#1bbd7e" };
+const btnstyle = { margin: "8px 0" };
 
 export const Login = () => {
   const [open, setOpen] = useState(false);
@@ -94,7 +95,7 @@ export const Login = () => {
         setUserData(response.data.token);
         dispatch(loginsucces(response.data));
       }
-      navigate("/user/dashoard");
+      navigate("/user/home");
       setUser("");
       setPwd("");
 

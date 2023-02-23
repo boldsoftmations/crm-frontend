@@ -38,6 +38,8 @@ import { getProfileUser } from "./../Redux/Action/Action";
 import { ViewDispatch } from "./../Pages/Dispatch/ViewDispatch";
 import { Dispatched } from "./../Pages/Dispatch/Dispatched";
 import { SalesRegisterView } from "./../Pages/Dispatch/SalesRegisterView";
+import { PIOrderBookDetails } from "../Pages/OrderBooks/PIOrderBookDetails";
+import { Home } from "../Pages/Home";
 
 export const RouteScreen = () => {
   const dispatch = useDispatch();
@@ -76,7 +78,7 @@ export const RouteScreen = () => {
 
         {token && (
           <>
-            {/* <Route path="/" exact element={<Dashboard />} /> */}
+            <Route path="/user/home" exact element={<Home />} />
             <Route path="/user/dashoard" element={<Dashboard />} />
             <Route path="/user/profile" exact element={<Profile />} />
             {/* Leads Routes */}
@@ -154,6 +156,10 @@ export const RouteScreen = () => {
             <Route
               path="/invoice/product-order-book"
               element={<ProductOrderBookDetails />}
+            />
+            <Route
+              path="/invoice/pi-order-book"
+              element={<PIOrderBookDetails />}
             />
             {/* Dispatch Routes */}
             <Route path="/dispatch/view-dispatch" element={<ViewDispatch />} />

@@ -224,6 +224,9 @@ const updateDispatched = (id, data) => {
   return CustomAxios.patch(`/api/invoice/list-dispatch-book/${id}`, data);
 };
 
+const getAllDashboardData = () => {
+  return CustomAxios.get("/api/invoice/list-dashboard");
+};
 const InvoiceServices = {
   getAllSellerAccountData,
   getAllPaginateSellerAccountData,
@@ -272,6 +275,7 @@ const InvoiceServices = {
   getDispatchDataWithSearch,
   getDispatchDataWithPagination,
   updateDispatched,
+  getAllDashboardData,
 };
 
 export default InvoiceServices;

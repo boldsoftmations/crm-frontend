@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 
 export const ListItems = () => {
   const [expand, setExpand] = useState(false);
+  const [expandDashboard, setExpandDashboard] = useState(false);
   const [expandFollowUp, setExpandFollowUp] = useState(false);
   const [expandProduct, setExpandProduct] = useState(false);
   const [expandCustomer, setExpandCustomer] = useState(false);
@@ -21,6 +22,28 @@ export const ListItems = () => {
     <div>
       {userData.is_staff === true ? (
         <>
+          {/* Seller Account */}
+          <ListItem
+            button
+            onClick={() => setExpandDashboard(!expandDashboard)}
+            style={{ width: 300 }}
+          >
+            <ListItemText primary="Dashboard Details" />
+            {expandDashboard ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          </ListItem>
+          <Collapse in={expandDashboard} timeout="auto" unmountOnExit>
+            <Divider />
+            <List component="div" disablePadding>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/user/dashoard"
+                style={{ width: 300 }}
+              >
+                <ListItemText inset primary="Dasboard" />
+              </ListItem>
+            </List>
+          </Collapse>
           {/* Products */}
           <ListItem
             button
@@ -315,6 +338,14 @@ export const ListItems = () => {
               >
                 <ListItemText inset primary="Product Wise Order Book" />
               </ListItem>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/invoice/pi-order-book"
+                style={{ width: 300 }}
+              >
+                <ListItemText inset primary="PI Wise Order Book" />
+              </ListItem>
             </List>
           </Collapse>
           {/* Dispatch */}
@@ -404,6 +435,14 @@ export const ListItems = () => {
                               inset
                               primary="Product Wise Order Book"
                             />
+                          </ListItem>
+                          <ListItem
+                            button
+                            component={RouterLink}
+                            to="/invoice/pi-order-book"
+                            style={{ width: 300 }}
+                          >
+                            <ListItemText inset primary="PI Wise Order Book" />
                           </ListItem>
                         </List>
                       </Collapse>
@@ -1133,6 +1172,14 @@ export const ListItems = () => {
                     style={{ width: 300 }}
                   >
                     <ListItemText inset primary="Product Wise Order Book" />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/invoice/pi-order-book"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText inset primary="PI Wise Order Book" />
                   </ListItem>
                 </List>
               </Collapse>
