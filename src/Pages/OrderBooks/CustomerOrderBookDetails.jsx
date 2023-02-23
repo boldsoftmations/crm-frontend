@@ -140,7 +140,7 @@ export const CustomerOrderBookDetails = () => {
       } else if (filterSelectedQuery) {
         const response =
           await InvoiceServices.getAllOrderBookDatawithSearchWithPagination(
-            "product",
+            "customer",
             page,
             filterQuery,
             filterSelectedQuery
