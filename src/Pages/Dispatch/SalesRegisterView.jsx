@@ -280,23 +280,23 @@ function Row(props) {
         <TableCell align="center">{row.date}</TableCell>
         <TableCell align="center">{row.dispatch_location}</TableCell>
         <TableCell align="center">
-          <button
-            type="button"
-            class="btn btn-primary"
+          <Button
+            color="success"
+            variant="outlined"
             onClick={() => handleClickLRCOPY(row)}
           >
             Download
-          </button>
+          </Button>
         </TableCell>
 
         <TableCell align="center">
-          <button
-            type="button"
-            class="btn btn-primary"
+          <Button
+            color="success"
+            variant="outlined"
             onClick={() => handleClickPODCOPY(row)}
           >
             Download
-          </button>
+          </Button>
         </TableCell>
       </TableRow>
       <TableRow>

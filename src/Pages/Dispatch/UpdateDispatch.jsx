@@ -186,22 +186,26 @@ export const UpdateDispatch = (props) => {
               }}
             />
           </Grid>
-          <Grid item xs={12}>
-            <input
-              type={"file"}
-              name="file"
-              // value={lrCopy ? lrCopy : idData.lr_copy}
-              onChange={handleImageLRCopy}
-            />
-            <img
-              src={lrCopyImage ? lrCopyImage : idData.lr_copy}
-              alt="image"
-              height="50px"
-              width="50px"
-            />
-          </Grid>
+          {userData.groups.toString() !== "Customer Service" && (
+            <Grid item xs={12}>
+              <label>LR Copy : </label>
+              <input
+                type={"file"}
+                name="file"
+                // value={lrCopy ? lrCopy : idData.lr_copy}
+                onChange={handleImageLRCopy}
+              />
+              <img
+                src={lrCopyImage ? lrCopyImage : idData.lr_copy}
+                alt="image"
+                height="50px"
+                width="50px"
+              />
+            </Grid>
+          )}
           {userData.groups.toString() === "Customer Service" && (
             <Grid item xs={12}>
+              <label>POD Copy : </label>
               <input
                 type={"file"}
                 name="file"

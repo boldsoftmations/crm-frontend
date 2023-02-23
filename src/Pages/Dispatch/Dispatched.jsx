@@ -12,6 +12,7 @@ import {
   TableContainer,
   IconButton,
   Collapse,
+  Button,
 } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -201,9 +202,9 @@ export const Dispatched = () => {
                 {userData.groups.toString() === "Customer Service" && (
                   <StyledTableCell align="center">LR COPY</StyledTableCell>
                 )}
-                {userData.groups.toString() === "Customer Service" && (
+                {/* {userData.groups.toString() === "Customer Service" && (
                   <StyledTableCell align="center">POD COPY</StyledTableCell>
-                )}
+                )} */}
                 <StyledTableCell align="center">ACTION</StyledTableCell>
               </TableRow>
             </TableHead>
@@ -267,26 +268,25 @@ function Row(props) {
         <TableCell align="center">{row.dispatch_location}</TableCell>
         {userData.groups.toString() === "Customer Service" && (
           <TableCell align="center">
-            <button
-              type="button"
-              class="btn btn-primary"
+            <Button
+              color="success"
+              variant="outlined"
               onClick={() => handleClickLRCOPY(row)}
             >
               Download
-            </button>
+            </Button>
           </TableCell>
         )}
-        {userData.groups.toString() === "Customer Service" && (
+        {/* {userData.groups.toString() === "Customer Service" && (
           <TableCell align="center">
-            <button
-              type="button"
-              class="btn btn-primary"
+          <Button
+              variant="outlined"
               onClick={() => handleClickPODCOPY(row)}
             >
               Download
-            </button>
+            </Button>
           </TableCell>
-        )}
+        )} */}
         <TableCell align="center">
           <button
             type="button"
