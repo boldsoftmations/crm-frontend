@@ -34,7 +34,7 @@ export const SalesPersonSummary = (props) => {
                   fontWeight: 800,
                 }}
               >
-                Current Order Book(Finish Goods)
+                Sales Person Summary
               </h3>
             </Box>
             <Box flexGrow={0.5} align="right"></Box>
@@ -102,7 +102,7 @@ export const SalesPersonSummary = (props) => {
                         {row.unpaid_pi_value}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {row.sales_invoice_value}
+                        {row.order_book_value}
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         {row.sales_invoice_value}
