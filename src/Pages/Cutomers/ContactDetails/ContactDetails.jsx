@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 import {
-  Backdrop,
   Box,
-  CircularProgress,
   Grid,
   styled,
   Table,
@@ -19,6 +17,7 @@ import { tableCellClasses } from "@mui/material/TableCell";
 import { Popup } from "./../../../Components/Popup";
 import { CreateContactDetails } from "./CreateContactDetails";
 import { UpdateContactDetails } from "./UpdateContactDetails";
+import { CustomLoader } from "../../../Components/CustomLoader";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -58,14 +57,7 @@ export const ContactDetails = (props) => {
 
   return (
     <>
-      <div>
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={open}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </div>
+      <CustomLoader open={open} />
 
       <Grid item xs={12}>
         {/* <p

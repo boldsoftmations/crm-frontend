@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
-  Backdrop,
   Box,
   Button,
-  CircularProgress,
   FormControl,
   FormControlLabel,
   FormHelperText,
@@ -23,6 +21,7 @@ import axios from "axios";
 import { Popup } from "./../../../Components/Popup";
 import { CreateAllCompanyDetails } from "./CreateAllCompanyDetails";
 import LeadServices from "../../../services/LeadService";
+import { CustomLoader } from "../../../Components/CustomLoader";
 
 export const CreateCompanyDetails = (props) => {
   const { setOpenPopup, getAllCompanyDetails } = props;
@@ -118,14 +117,7 @@ export const CreateCompanyDetails = (props) => {
 
   return (
     <div>
-      <div>
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={open}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </div>
+      <CustomLoader open={open} />
 
       <Box
         component="form"

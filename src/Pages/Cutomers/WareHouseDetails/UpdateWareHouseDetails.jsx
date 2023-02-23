@@ -1,16 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import {
-  Backdrop,
-  Box,
-  Button,
-  CircularProgress,
-  Grid,
-  TextField,
-  Autocomplete,
-} from "@mui/material";
+import { Box, Button, Grid, TextField, Autocomplete } from "@mui/material";
 import CustomerServices from "../../../services/CustomerService";
 import axios from "axios";
+import { CustomLoader } from "../../../Components/CustomLoader";
 
 export const UpdateWareHouseDetails = (props) => {
   const { IDForEdit, getWareHouseDetailsByID, setOpenPopup, contactData } =
@@ -80,14 +73,7 @@ export const UpdateWareHouseDetails = (props) => {
 
   return (
     <div>
-      <div>
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={open}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </div>
+      <CustomLoader open={open} />
 
       <Box
         component="form"

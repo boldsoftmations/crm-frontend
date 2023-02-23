@@ -26,6 +26,7 @@ import LeadServices from "../../../services/LeadService";
 import { styled } from "@mui/material/styles";
 import { Popup } from "./../../../Components/Popup";
 import { CreateCustomerProformaInvoice } from "./../../Invoice/CustomerPerformaInvoice/CreateCustomerProformaInvoice";
+import { CustomLoader } from "../../../Components/CustomLoader";
 export const UpdateCompanyDetails = (props) => {
   const { setOpenPopup, getAllContactDetailsByID, recordForEdit } = props;
   const [openPopup2, setOpenPopup2] = useState(false);
@@ -139,14 +140,7 @@ export const UpdateCompanyDetails = (props) => {
 
   return (
     <>
-      <div>
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={open}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </div>
+      <CustomLoader open={open} />
 
       <Box
         component="form"

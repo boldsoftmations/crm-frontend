@@ -1,15 +1,9 @@
 import React, { useState } from "react";
-import {
-  Backdrop,
-  Box,
-  Button,
-  CircularProgress,
-  Grid,
-  TextField,
-} from "@mui/material";
+import { Box, Button, Grid, TextField } from "@mui/material";
 import axios from "axios";
 import CustomerServices from "../../../services/CustomerService";
 import { useSelector } from "react-redux";
+import { CustomLoader } from "../../../Components/CustomLoader";
 
 export const CreateBankDetails = (props) => {
   const { setOpenPopup, getAllBankDetailsByID } = props;
@@ -68,14 +62,7 @@ export const CreateBankDetails = (props) => {
 
   return (
     <div>
-      <div>
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={open}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </div>
+      <CustomLoader open={open} />
 
       <Box component="form" noValidate onSubmit={(e) => createBankDetails(e)}>
         <Grid container spacing={2}>

@@ -2,9 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { UpdateAllCompanyDetails } from "./UpdateAllCompanyDetails";
 import { CreateCompanyDetails } from "./CreateCompanyDetails";
 import {
-  Backdrop,
   Box,
-  CircularProgress,
   Grid,
   Paper,
   styled,
@@ -26,6 +24,7 @@ import { CustomSearch } from "./../../../Components/CustomSearch";
 import { useDispatch } from "react-redux";
 import { getSellerAccountData } from "../../../Redux/Action/Action";
 import InvoiceServices from "../../../services/InvoiceService";
+import { CustomLoader } from "../../../Components/CustomLoader";
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.common.black,
@@ -186,14 +185,7 @@ export const CompanyDetails = () => {
 
   return (
     <>
-      <div>
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={open}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </div>
+      <CustomLoader open={open} />
 
       <Grid item xs={12}>
         <ErrorMessage errRef={errRef} errMsg={errMsg} />

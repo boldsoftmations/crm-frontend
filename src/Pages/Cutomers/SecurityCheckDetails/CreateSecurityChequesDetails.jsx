@@ -1,14 +1,8 @@
 import React, { useState } from "react";
-import {
-  Backdrop,
-  Box,
-  Button,
-  CircularProgress,
-  Grid,
-  TextField,
-} from "@mui/material";
+import { Box, Button, Grid, TextField } from "@mui/material";
 import CustomerServices from "../../../services/CustomerService";
 import { useSelector } from "react-redux";
+import { CustomLoader } from "../../../Components/CustomLoader";
 
 export const CreateSecurityChequesDetails = (props) => {
   const { setOpenPopup, getSecurityChequeDetailsByID } = props;
@@ -44,14 +38,7 @@ export const CreateSecurityChequesDetails = (props) => {
 
   return (
     <div>
-      <div>
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={open}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </div>
+      <CustomLoader open={open} />
 
       <Box
         component="form"

@@ -2,10 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/material.css";
 import {
-  Backdrop,
   Box,
   Button,
-  CircularProgress,
   FormControl,
   Grid,
   InputLabel,
@@ -15,6 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 import CustomerServices from "../../../services/CustomerService";
+import { CustomLoader } from "../../../Components/CustomLoader";
 
 export const UpdateContactDetails = (props) => {
   const { setOpenPopup, getAllContactDetailsByID, IDForEdit } = props;
@@ -125,14 +124,7 @@ export const UpdateContactDetails = (props) => {
 
   return (
     <div>
-      <div>
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={open}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </div>
+      <CustomLoader open={open} />
 
       <Box
         component="form"

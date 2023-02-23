@@ -1,9 +1,7 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
-  Backdrop,
   Box,
   Button,
-  CircularProgress,
   FormControl,
   Grid,
   InputLabel,
@@ -11,12 +9,11 @@ import {
   Select,
   TextField,
 } from "@mui/material";
-import * as Yup from "yup";
-import { useFormik } from "formik";
 import CustomerServices from "../../../services/CustomerService";
 import { useSelector } from "react-redux";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/material.css";
+import { CustomLoader } from "../../../Components/CustomLoader";
 export const CreateContactDetails = (props) => {
   const { setOpenPopup, getAllContactDetailsByID } = props;
   const [open, setOpen] = useState(false);
@@ -34,7 +31,6 @@ export const CreateContactDetails = (props) => {
     setFormValues({ ...formValues, [name]: value });
   };
 
-  
   const handlePhoneChange = (newPhone) => {
     setPhone(newPhone);
   };
@@ -54,7 +50,7 @@ export const CreateContactDetails = (props) => {
       setFormErrors(validate(formValues));
       let contact = phone.length === 12 ? `+${phone}` : phone;
       let contact2 = phone2.length === 12 ? `+${phone2}` : phone2;
-      let panNumber =  inputValue.pan_no;
+      let panNumber = inputValue.pan_no;
       const req = {
         company: data ? data.companyName : "",
         name: inputValue.name,
@@ -63,11 +59,11 @@ export const CreateContactDetails = (props) => {
         alternate_contact: contact2 ? contact2 : "",
         email: formValues.email,
         alternate_email: formValues.alternate_email,
-        pan_number: panNumber ,
+        pan_number: panNumber,
         aadhaar: inputValue.aadhar_no,
       };
       setOpen(true);
- await CustomerServices.createContactData(req);
+      await CustomerServices.createContactData(req);
 
       setOpenPopup(false);
       setOpen(false);
@@ -80,7 +76,7 @@ export const CreateContactDetails = (props) => {
 
   useEffect(() => {
     console.log(formErrors);
-    if (Object.keys(formErrors).length === 0 ) {
+    if (Object.keys(formErrors).length === 0) {
       console.log(formValues);
     }
   }, [formErrors]);
@@ -99,26 +95,18 @@ export const CreateContactDetails = (props) => {
     } else if (!regex.test(values.alternate_email)) {
       errors.alternate_email = "This is not a valid alternate email format!";
     }
-//  if (!pannoregex.test(values.pan_no)) {
-//       errors.pan_no = "pan no is not valid";
-//     }
-//    if (!adharnumberRegex.test(values.aadhaar)) {
-//       errors.aadhaar = "aadhaar is not valid";
-//     }
+    //  if (!pannoregex.test(values.pan_no)) {
+    //       errors.pan_no = "pan no is not valid";
+    //     }
+    //    if (!adharnumberRegex.test(values.aadhaar)) {
+    //       errors.aadhaar = "aadhaar is not valid";
+    //     }
     return errors;
   };
 
-
   return (
     <div>
-      <div>
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={open}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </div>
+      <CustomLoader open={open} />
       <Box component="form" noValidate onSubmit={(e) => handleSubmit(e)}>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
@@ -238,7 +226,6 @@ export const CreateContactDetails = (props) => {
               value={inputValue.aadhar_no}
               onChange={handleInputChange}
               helperText={
-            
                 "Applicable Only if designation is Owner/Partner/Director"
               }
             />

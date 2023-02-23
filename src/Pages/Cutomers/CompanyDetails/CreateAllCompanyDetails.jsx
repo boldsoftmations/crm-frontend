@@ -1,14 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-import {
-  Box,
-  useTheme,
-  Tab,
-  Tabs,
-  AppBar,
-  Backdrop,
-  CircularProgress,
-} from "@mui/material";
+import { Box, useTheme, Tab, Tabs, AppBar } from "@mui/material";
 import PropTypes from "prop-types";
 import CustomerServices from "../../../services/CustomerService";
 import { BankDetails } from "./../BankDetails/BankDetails";
@@ -17,6 +9,7 @@ import { WareHouseDetails } from "./../WareHouseDetails/WareHouseDetails";
 import { SecurityChequesDetails } from "./../SecurityCheckDetails/SecurityChequesDetails";
 import { useDispatch } from "react-redux";
 import { getCompanyName } from "../../../Redux/Action/Action";
+import { CustomLoader } from "../../../Components/CustomLoader";
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -148,14 +141,7 @@ export const CreateAllCompanyDetails = (props) => {
 
   return (
     <div>
-      <div>
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={open}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </div>
+      <CustomLoader open={open} />
       <AppBar position="static">
         <Tabs
           value={value}
