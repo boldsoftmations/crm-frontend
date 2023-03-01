@@ -14,11 +14,11 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import CategoryIcon from "@mui/icons-material/Category";
-import LeaderboardIcon from "@mui/icons-material/Leaderboard";
-import PersonIcon from "@mui/icons-material/Person";
+import CallIcon from "@mui/icons-material/Call";
+import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import PaymentIcon from "@mui/icons-material/Payment";
 import ReceiptIcon from "@mui/icons-material/Receipt";
-import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import FactoryIcon from "@mui/icons-material/Factory";
 import BookIcon from "@mui/icons-material/Book";
 import TransferWithinAStationIcon from "@mui/icons-material/TransferWithinAStation";
 export const ListItems = (props) => {
@@ -231,7 +231,7 @@ export const ListItems = (props) => {
             style={{ width: 300 }}
           >
             <ListItemIcon>
-              <LeaderboardIcon />
+              <CallIcon />
             </ListItemIcon>
             <ListItemText primary="Leads" />
             {expand ? <ExpandLessIcon /> : <ExpandMoreIcon />}
@@ -331,7 +331,7 @@ export const ListItems = (props) => {
             style={{ width: 300 }}
           >
             <ListItemIcon>
-              <PersonIcon />
+              <PeopleAltIcon />
             </ListItemIcon>
             <ListItemText primary="Customer" />
             {expandCustomer ? <ExpandLessIcon /> : <ExpandMoreIcon />}
@@ -434,7 +434,7 @@ export const ListItems = (props) => {
             style={{ width: 300 }}
           >
             <ListItemIcon>
-              <AccountBalanceIcon />
+              <FactoryIcon />
             </ListItemIcon>
             <ListItemText primary="Seller Account Details" />
             {sellerAccount ? <ExpandLessIcon /> : <ExpandMoreIcon />}
@@ -864,7 +864,7 @@ export const ListItems = (props) => {
                       style={{ width: 300 }}
                     >
                       <ListItemIcon>
-                        <LeaderboardIcon />
+                        <CallIcon />
                       </ListItemIcon>
                       <ListItemText primary="Leads" />
                       {expand ? <ExpandLessIcon /> : <ExpandMoreIcon />}
@@ -973,7 +973,7 @@ export const ListItems = (props) => {
                     style={{ width: 300 }}
                   >
                     <ListItemIcon>
-                      <PersonIcon />
+                      <PeopleAltIcon />
                     </ListItemIcon>
                     <ListItemText primary="Customer" />
                     {expandCustomer ? <ExpandLessIcon /> : <ExpandMoreIcon />}
@@ -1095,7 +1095,7 @@ export const ListItems = (props) => {
                       style={{ width: 300 }}
                     >
                       <ListItemIcon>
-                        <AccountBalanceIcon />
+                        <FactoryIcon />
                       </ListItemIcon>
                       <ListItemText primary="Seller Account Details" />
                       {sellerAccount ? <ExpandLessIcon /> : <ExpandMoreIcon />}
@@ -1389,7 +1389,7 @@ export const ListItems = (props) => {
                   style={{ width: 300 }}
                 >
                   <ListItemIcon>
-                    <LeaderboardIcon />
+                    <CallIcon />
                   </ListItemIcon>
                   <ListItemText primary="Leads" />
                   {expand ? <ExpandLessIcon /> : <ExpandMoreIcon />}
@@ -1490,7 +1490,7 @@ export const ListItems = (props) => {
                 style={{ width: 300 }}
               >
                 <ListItemIcon>
-                  <PersonIcon />
+                  <PeopleAltIcon />
                 </ListItemIcon>
                 <ListItemText primary="Customer" />
                 {expandCustomer ? <ExpandLessIcon /> : <ExpandMoreIcon />}
@@ -1598,7 +1598,7 @@ export const ListItems = (props) => {
                   style={{ width: 300 }}
                 >
                   <ListItemIcon>
-                    <AccountBalanceIcon />
+                    <FactoryIcon />
                   </ListItemIcon>
                   <ListItemText primary="Seller Account Details" />
                   {sellerAccount ? <ExpandLessIcon /> : <ExpandMoreIcon />}
