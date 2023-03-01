@@ -151,7 +151,7 @@ export const CreateLeads = (props) => {
           assigned_to: assign ? assign.email : "",
           alternate_contact_name: leads.alternate_contact_name,
           email: leads.email,
-          alternate_email: leads.altEmail ? leads.altEmail : "",
+          alternate_email: leads.alternate_email ? leads.alternate_email : "",
           contact: contact1,
           alternate_contact: contact2,
           business_type: businesTypes,
@@ -703,73 +703,73 @@ export const CreateLeads = (props) => {
                 sx={{ mt: 1 }}
               >
                 <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     Name : {leads.name}
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     Alt. Contact Name : {leads.alternate_contact_name}
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     Email : {leads.email}
                   </Grid>
-                  <Grid item xs={12} sm={6}>
-                    Alt. Email : {leads.altEmail}
+                  <Grid item xs={12} sm={4}>
+                    Alt. Email : {leads.alternate_email}
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     Contact : {phone}
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     Alt. Contact : {phone2}
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     Business Type : {businesTypes}
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     Reference : {reference}
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     Company Name : {leads.companyName}
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     Gst Number : {leads.gstNumber}
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     Pan Number : {leads.pan_number}
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     Address : {leads.address}
                   </Grid>{" "}
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     City : {leads.city}
                   </Grid>{" "}
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     State : {leads.state}
                   </Grid>{" "}
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     Country : {leads.country}
                   </Grid>{" "}
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     Pin Code : {leads.pinCode}
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     Assigned to :{" "}
                     {assign.first_name
                       ? `${assign.first_name}  ${assign.last_name}`
                       : ""}
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     type : {typeData}
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     Shipping Address : {leads.shipping_address}
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     Shipping City : {pinCodeData.District}
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     Shipping State : {pinCodeData.State}
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     Shipping Pincode : {leads.shipping_pincode}
                   </Grid>{" "}
                 </Grid>

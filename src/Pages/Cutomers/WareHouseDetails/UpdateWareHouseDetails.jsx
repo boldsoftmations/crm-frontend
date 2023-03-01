@@ -6,7 +6,7 @@ import axios from "axios";
 import { CustomLoader } from "../../../Components/CustomLoader";
 
 export const UpdateWareHouseDetails = (props) => {
-  const { IDForEdit, getWareHouseDetailsByID, setOpenPopup, contactData } =
+  const { IDForEdit, getAllCompanyDetailsByID, setOpenPopup, contactData } =
     props;
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState([]);
@@ -64,7 +64,7 @@ export const UpdateWareHouseDetails = (props) => {
       await CustomerServices.updatetWareHouseData(IDForEdit, req);
       setOpenPopup(false);
       setOpen(false);
-      getWareHouseDetailsByID();
+      getAllCompanyDetailsByID();
     } catch (error) {
       console.log("createing company detail error", error);
       setOpen(false);

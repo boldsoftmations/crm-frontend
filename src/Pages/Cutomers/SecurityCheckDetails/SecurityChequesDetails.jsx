@@ -39,7 +39,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 export const SecurityChequesDetails = (props) => {
-  const { securityChequedata, getSecurityChequeDetailsByID, open } = props;
+  const { securityChequedata, getAllCompanyDetailsByID, open } = props;
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [IDForEdit, setIDForEdit] = useState();
@@ -93,14 +93,13 @@ export const SecurityChequesDetails = (props) => {
           sx={{
             maxHeight: 440,
             "&::-webkit-scrollbar": {
-              width: 10,
+              width: 15,
             },
             "&::-webkit-scrollbar-track": {
-              backgroundColor: "#0d6efd",
+              backgroundColor: "#f2f2f2",
             },
             "&::-webkit-scrollbar-thumb": {
-              backgroundColor: "#000000",
-              borderRadius: 2,
+              backgroundColor: "#aaa9ac",
             },
           }}
         >
@@ -157,7 +156,7 @@ export const SecurityChequesDetails = (props) => {
         setOpenPopup={setOpenPopup2}
       >
         <CreateSecurityChequesDetails
-          getSecurityChequeDetailsByID={getSecurityChequeDetailsByID}
+          getAllCompanyDetailsByID={getAllCompanyDetailsByID}
           setOpenPopup={setOpenPopup2}
         />
       </Popup>
@@ -168,7 +167,7 @@ export const SecurityChequesDetails = (props) => {
       >
         <UpdateSecurityChequesDetails
           IDForEdit={IDForEdit}
-          getSecurityChequeDetailsByID={getSecurityChequeDetailsByID}
+          getAllCompanyDetailsByID={getAllCompanyDetailsByID}
           setOpenPopup={setOpenPopup}
         />
       </Popup>

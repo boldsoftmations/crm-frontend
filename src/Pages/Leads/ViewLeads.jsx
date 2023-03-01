@@ -521,14 +521,13 @@ export const Viewleads = () => {
             sx={{
               maxHeight: 440,
               "&::-webkit-scrollbar": {
-                width: 10,
+                width: 15,
               },
               "&::-webkit-scrollbar-track": {
-                backgroundColor: "#0d6efd",
+                backgroundColor: "#f2f2f2",
               },
               "&::-webkit-scrollbar-thumb": {
-                backgroundColor: "#000000",
-                borderRadius: 2,
+                backgroundColor: "#aaa9ac",
               },
             }}
           >
@@ -633,7 +632,7 @@ export const Viewleads = () => {
         </Paper>
       </Grid>
       <Popup
-        maxWidth={"lg"}
+        fullScreen={true}
         title={"Create Leads"}
         openPopup={openPopup2}
         setOpenPopup={setOpenPopup2}
@@ -641,7 +640,7 @@ export const Viewleads = () => {
         <CreateLeads getleads={getleads} setOpenPopup={setOpenPopup2} />
       </Popup>
       <Popup
-        maxWidth={"xl"}
+        fullScreen={true}
         title={"Update Leads"}
         openPopup={openPopup}
         setOpenPopup={setOpenPopup}

@@ -321,10 +321,10 @@ export const ViewLeadsProformaInvoice = () => {
             sx={{
               maxHeight: 440,
               "&::-webkit-scrollbar": {
-                width: 10,
+                width: 15,
               },
               "&::-webkit-scrollbar-track": {
-                backgroundColor: "#0d6efd",
+                backgroundColor: "#aaa9ac",
               },
               "&::-webkit-scrollbar-thumb": {
                 backgroundColor: "#000000",

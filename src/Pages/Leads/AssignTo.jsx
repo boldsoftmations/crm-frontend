@@ -437,19 +437,20 @@ export const AssignTo = () => {
             </Box>
           </Box>
 
-          <TableContainer  sx={{
-        maxHeight: 440,
-        "&::-webkit-scrollbar": {
-          width: 10,
-        },
-        "&::-webkit-scrollbar-track": {
-          backgroundColor: "#0d6efd",
-        },
-        "&::-webkit-scrollbar-thumb": {
-          backgroundColor: "#000000",
-          borderRadius: 2,
-        },
-      }}>
+          <TableContainer
+            sx={{
+              maxHeight: 440,
+              "&::-webkit-scrollbar": {
+                width: 15,
+              },
+              "&::-webkit-scrollbar-track": {
+                backgroundColor: "#f2f2f2",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: "#aaa9ac",
+              },
+            }}
+          >
             <Table
               sx={{ minWidth: 700 }}
               stickyHeader

@@ -804,68 +804,68 @@ export const UpdateLeads = (props) => {
               <h3 className="Auth-form-title">Review Detail</h3>
               <Box component="form" noValidate sx={{ mt: 1 }}>
                 <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     Name : {leads.name}
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     Alt. Contact Name : {leads.alternate_contact_name}
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     Email : {leads.email}
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     Alt. Email : {leads.alternate_email}
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     Contact : {phone ? `+${phone}` : contacts1}
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     Alt. Contact : {phone2 ? `+${phone2}` : contacts2}
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     Busniess Type : {businesTypes}
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     Busniess Mismatch :
                     {businessMismatch ? businessMismatch : "No"}
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     Interested : {interests ? interests : ""}
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     Description : {descriptionValue ? descriptionValue : ""}
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     References : {leads.references ? leads.references : ""}
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     Target Date {leads.target_date}
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     Assign to : {assign ? assign : ""}
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     Company Name : {leads.company}
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     Gst Number : {leads.gst_number}
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     Pan Number : {leads.pan_number}
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     Address : {leads.address}
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     City : {leads.city}
                   </Grid>{" "}
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     State : {leads.state}
                   </Grid>{" "}
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     Country : {leads.country}
                   </Grid>{" "}
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     Pin Code : {leads.pincode}
                   </Grid>
                 </Grid>

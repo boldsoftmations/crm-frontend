@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import { CustomLoader } from "../../../Components/CustomLoader";
 
 export const UpdateBankDetails = (props) => {
-  const { setOpenPopup, getAllBankDetailsByID, idForEdit } = props;
+  const { setOpenPopup, getAllCompanyDetailsByID, idForEdit } = props;
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState([]);
   const [bankData, setBankData] = useState([]);
@@ -72,7 +72,7 @@ export const UpdateBankDetails = (props) => {
       await CustomerServices.updateBankData(idForEdit, req);
       setOpenPopup(false);
       setOpen(false);
-      getAllBankDetailsByID();
+      getAllCompanyDetailsByID();
     } catch (error) {
       console.log("createing company detail error", error);
       setOpen(false);

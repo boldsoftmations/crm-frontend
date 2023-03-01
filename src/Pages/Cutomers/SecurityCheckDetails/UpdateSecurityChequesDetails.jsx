@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { CustomLoader } from "./../../../Components/CustomLoader";
 
 export const UpdateSecurityChequesDetails = (props) => {
-  const { IDForEdit, getSecurityChequeDetailsByID, setOpenPopup } = props;
+  const { IDForEdit, getAllCompanyDetailsByID, setOpenPopup } = props;
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState([]);
   const data = useSelector((state) => state.auth);
@@ -48,7 +48,7 @@ export const UpdateSecurityChequesDetails = (props) => {
       await CustomerServices.updateSecurityChequeData(IDForEdit, req);
       setOpenPopup(false);
       setOpen(false);
-      getSecurityChequeDetailsByID();
+      getAllCompanyDetailsByID();
     } catch (error) {
       console.log("createing company detail error", error);
       setOpen(false);

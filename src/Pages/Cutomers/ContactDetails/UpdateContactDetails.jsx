@@ -16,7 +16,7 @@ import CustomerServices from "../../../services/CustomerService";
 import { CustomLoader } from "../../../Components/CustomLoader";
 
 export const UpdateContactDetails = (props) => {
-  const { setOpenPopup, getAllContactDetailsByID, IDForEdit } = props;
+  const { setOpenPopup, getAllCompanyDetailsByID, IDForEdit } = props;
   const [open, setOpen] = useState(false);
   const [designation, setDesignation] = useState("");
   const [inputValue, setInputValue] = useState([]);
@@ -99,7 +99,7 @@ export const UpdateContactDetails = (props) => {
       await CustomerServices.updateContactData(IDForEdit, req);
       setOpenPopup(false);
       setOpen(false);
-      getAllContactDetailsByID();
+      getAllCompanyDetailsByID();
     } catch (err) {
       console.log("createing company detail error", err);
       setOpen(false);

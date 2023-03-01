@@ -309,14 +309,13 @@ export const ViewCustomerProformaInvoice = () => {
             sx={{
               maxHeight: 440,
               "&::-webkit-scrollbar": {
-                width: 10,
+                width: 15,
               },
               "&::-webkit-scrollbar-track": {
-                backgroundColor: "#0d6efd",
+                backgroundColor: "#f2f2f2",
               },
               "&::-webkit-scrollbar-thumb": {
-                backgroundColor: "#000000",
-                borderRadius: 2,
+                backgroundColor: "#aaa9ac",
               },
             }}
           >

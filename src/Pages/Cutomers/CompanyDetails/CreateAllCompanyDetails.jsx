@@ -49,15 +49,20 @@ export const CreateAllCompanyDetails = (props) => {
   const [wareHousedata, setWareHouseData] = useState([]);
   const [securityChequedata, setSecurityChequeData] = useState([]);
   const dispatch = useDispatch();
+  // All Company Details Api
   useEffect(() => {
-    getAllCompanyDetailsByID();
-  }, []);
+    if (recordForEdit) getAllCompanyDetailsByID();
+  }, [recordForEdit]);
 
   const getAllCompanyDetailsByID = async () => {
     try {
       setOpen(true);
       const response = await CustomerServices.getCompanyDataById(recordForEdit);
-      dispatch(getCompanyName(response.data.name));
+
+      setBankData(response.data.bank);
+      setContactData(response.data.contacts);
+      setWareHouseData(response.data.warehouse);
+      setSecurityChequeData(response.data.security_cheque);
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -67,76 +72,6 @@ export const CreateAllCompanyDetails = (props) => {
 
   const handleChangeTab = (event, newValue) => {
     setValue(newValue);
-  };
-
-  // Bank Api
-  useEffect(() => {
-    if (recordForEdit) getAllBankDetailsByID();
-  }, [recordForEdit]);
-
-  const getAllBankDetailsByID = async () => {
-    try {
-      setOpen(true);
-      const response = await CustomerServices.getCompanyDataById(recordForEdit);
-
-      setBankData(response.data.bank);
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("company data by id error", err);
-    }
-  };
-
-  // Contact api
-  useEffect(() => {
-    if (recordForEdit) getAllContactDetailsByID();
-  }, [recordForEdit]);
-
-  const getAllContactDetailsByID = async () => {
-    try {
-      setOpen(true);
-      const response = await CustomerServices.getCompanyDataById(recordForEdit);
-
-      setContactData(response.data.contacts);
-
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("company data by id error", err);
-    }
-  };
-
-  useEffect(() => {
-    if (recordForEdit) getWareHouseDetailsByID();
-  }, [recordForEdit]);
-
-  const getWareHouseDetailsByID = async () => {
-    try {
-      setOpen(true);
-      const response = await CustomerServices.getCompanyDataById(recordForEdit);
-
-      setWareHouseData(response.data.warehouse);
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("err", err);
-    }
-  };
-
-  useEffect(() => {
-    if (recordForEdit) getSecurityChequeDetailsByID();
-  }, [recordForEdit]);
-
-  const getSecurityChequeDetailsByID = async () => {
-    try {
-      setOpen(true);
-      const response = await CustomerServices.getCompanyDataById(recordForEdit);
-      setSecurityChequeData(response.data.security_cheque);
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("err", err);
-    }
   };
 
   return (
@@ -162,14 +97,14 @@ export const CreateAllCompanyDetails = (props) => {
         <BankDetails
           bankData={bankData}
           open={open}
-          getAllBankDetailsByID={getAllBankDetailsByID}
+          getAllCompanyDetailsByID={getAllCompanyDetailsByID}
         />
       </TabPanel>
       <TabPanel value={value} index={1} dir={theme.direction}>
         <ContactDetails
           contactData={contactData}
           open={open}
-          getAllContactDetailsByID={getAllContactDetailsByID}
+          getAllCompanyDetailsByID={getAllCompanyDetailsByID}
         />
       </TabPanel>
       <TabPanel value={value} index={2} dir={theme.direction}>
@@ -177,14 +112,14 @@ export const CreateAllCompanyDetails = (props) => {
           contactData={contactData}
           wareHousedata={wareHousedata}
           open={open}
-          getWareHouseDetailsByID={getWareHouseDetailsByID}
+          getAllCompanyDetailsByID={getAllCompanyDetailsByID}
         />
       </TabPanel>
       <TabPanel value={value} index={3} dir={theme.direction}>
         <SecurityChequesDetails
           securityChequedata={securityChequedata}
           open={open}
-          getSecurityChequeDetailsByID={getSecurityChequeDetailsByID}
+          getAllCompanyDetailsByID={getAllCompanyDetailsByID}
         />
       </TabPanel>
     </div>

@@ -39,7 +39,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 export const WareHouseDetails = (props) => {
-  const { getWareHouseDetailsByID, wareHousedata, open, contactData } = props;
+  const { getAllCompanyDetailsByID, wareHousedata, open, contactData } = props;
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
 
@@ -136,14 +136,13 @@ export const WareHouseDetails = (props) => {
           sx={{
             maxHeight: 440,
             "&::-webkit-scrollbar": {
-              width: 10,
+              width: 15,
             },
             "&::-webkit-scrollbar-track": {
-              backgroundColor: "#0d6efd",
+              backgroundColor: "#f2f2f2",
             },
             "&::-webkit-scrollbar-thumb": {
-              backgroundColor: "#000000",
-              borderRadius: 2,
+              backgroundColor: "#aaa9ac",
             },
           }}
         >
@@ -194,7 +193,7 @@ export const WareHouseDetails = (props) => {
         setOpenPopup={setOpenPopup2}
       >
         <CreateWareHouseDetails
-          getWareHouseDetailsByID={getWareHouseDetailsByID}
+          getAllCompanyDetailsByID={getAllCompanyDetailsByID}
           setOpenPopup={setOpenPopup2}
           contactData={contactData}
         />
@@ -208,7 +207,7 @@ export const WareHouseDetails = (props) => {
           contactData={contactData}
           IDForEdit={IDForEdit}
           setOpenPopup={setOpenPopup}
-          getWareHouseDetailsByID={getWareHouseDetailsByID}
+          getAllCompanyDetailsByID={getAllCompanyDetailsByID}
         />
       </Popup>
     </>

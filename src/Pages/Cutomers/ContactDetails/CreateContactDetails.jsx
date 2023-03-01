@@ -15,7 +15,7 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/material.css";
 import { CustomLoader } from "../../../Components/CustomLoader";
 export const CreateContactDetails = (props) => {
-  const { setOpenPopup, getAllContactDetailsByID } = props;
+  const { setOpenPopup, getAllCompanyDetailsByID } = props;
   const [open, setOpen] = useState(false);
   const [designation, setDesignation] = useState("");
   const [phone, setPhone] = useState("");
@@ -67,7 +67,7 @@ export const CreateContactDetails = (props) => {
 
       setOpenPopup(false);
       setOpen(false);
-      getAllContactDetailsByID();
+      getAllCompanyDetailsByID();
     } catch (error) {
       console.log("error", error);
       setOpen(false);
