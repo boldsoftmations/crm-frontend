@@ -77,7 +77,7 @@ export const Header = () => {
           style={{ width: "100%", marginBottom: "2em" }}
           disablePadding
         >
-          <ListItems />
+          <ListItems setOpen={setOpen} />
         </List>
       </Drawer>
       {/* Header */}
@@ -114,8 +114,8 @@ export const Header = () => {
                 onClick={handleMenu}
                 color="inherit"
               >
-                 <span  style={{ marginRight: "auto",fontSize:'15px' }}>
-                {ProfileName.first_name}  {ProfileName.last_name}
+                <span style={{ marginRight: "auto", fontSize: "15px" }}>
+                  {ProfileName.first_name} {ProfileName.last_name}
                 </span>
                 <ExpandMoreIcon />
               </IconButton>
