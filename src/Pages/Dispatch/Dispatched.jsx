@@ -26,6 +26,7 @@ import { UpdateDispatch } from "./UpdateDispatch";
 import { CustomPagination } from "./../../Components/CustomPagination";
 import { useSelector } from "react-redux";
 import { CustomSearch } from "./../../Components/CustomSearch";
+import moment from "moment";
 export const Dispatched = () => {
   const [dispatchData, setDispatchData] = useState([]);
   const [open, setOpen] = useState(false);
@@ -263,7 +264,9 @@ function Row(props) {
         </TableCell>
         <TableCell align="center">{row.sales_invoice}</TableCell>
         <TableCell align="center">{row.customer}</TableCell>
-        <TableCell align="center">{row.date}</TableCell>
+        <TableCell align="center">
+          {moment(row.date).format("DD-MM-YYYY")}
+        </TableCell>
         <TableCell align="center">{row.dispatch_location}</TableCell>
         {userData.groups.toString() === "Customer Service" && (
           <TableCell align="center">

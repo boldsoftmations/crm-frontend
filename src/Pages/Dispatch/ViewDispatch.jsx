@@ -30,6 +30,7 @@ import InvoiceServices from "../../services/InvoiceService";
 import { CustomLoader } from "./../../Components/CustomLoader";
 import { CustomPagination } from "./../../Components/CustomPagination";
 import { CustomSearch } from "./../../Components/CustomSearch";
+import moment from "moment";
 export const ViewDispatch = () => {
   const [dispatchData, setDispatchData] = useState([]);
   const [open, setOpen] = useState(false);
@@ -236,7 +237,7 @@ function Row(props) {
   const handleChange = (event) => {
     setChecked(event.target.checked);
   };
-  console.log("checked", checked);
+
   const createLeadsData = async (e) => {
     try {
       e.preventDefault();
@@ -246,7 +247,6 @@ function Row(props) {
       //   dispatched: checked,
       // };
       const data = new FormData();
-      data.append("dispatched", checked);
 
       await InvoiceServices.updateDispatched(row.id, data);
       getAllDispatchDetails();
@@ -273,7 +273,9 @@ function Row(props) {
         </TableCell>
         <TableCell align="center">{row.sales_invoice}</TableCell>
         <TableCell align="center">{row.customer}</TableCell>
-        <TableCell align="center">{row.date}</TableCell>
+        <TableCell align="center">
+          {moment(row.date).format("DD-MM-YYYY")}
+        </TableCell>
         <TableCell align="center">{row.dispatch_location}</TableCell>
         <TableCell align="center">
           <Button
