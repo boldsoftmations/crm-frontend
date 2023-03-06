@@ -270,12 +270,7 @@ export const ListItems = (props) => {
                 onClick={() => setExpandFollowUp(!expandFollowUp)}
                 style={{ width: 300 }}
               >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="FollowUp"
-                />
+                <ListItemText inset primary="FollowUp" />
                 {expandFollowUp ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
               <Collapse in={expandFollowUp} timeout="auto" unmountOnExit>
@@ -904,12 +899,7 @@ export const ListItems = (props) => {
                         onClick={() => setExpandFollowUp(!expandFollowUp)}
                         style={{ width: 300 }}
                       >
-                        <ListItemText
-                          component={Button}
-                          onClick={() => setOpen(false)}
-                          inset
-                          primary="FollowUp"
-                        />
+                        <ListItemText inset primary="FollowUp" />
                         {expandFollowUp ? (
                           <ExpandLessIcon />
                         ) : (
@@ -1429,12 +1419,7 @@ export const ListItems = (props) => {
                     onClick={() => setExpandFollowUp(!expandFollowUp)}
                     style={{ width: 300 }}
                   >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="FollowUp"
-                    />
+                    <ListItemText inset primary="FollowUp" />
                     {expandFollowUp ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                   </ListItem>
                   <Collapse in={expandFollowUp} timeout="auto" unmountOnExit>
