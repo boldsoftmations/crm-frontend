@@ -84,6 +84,7 @@ export const ViewLeadsProformaInvoice = () => {
   const [pageCount, setpageCount] = useState(0);
   const [filterQuery, setFilterQuery] = useState("status");
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(0);
   const handleInputChange = (event) => {
     setFilterSelectedQuery(event.target.value);
     getSearchData(event.target.value);
@@ -113,10 +114,19 @@ export const ViewLeadsProformaInvoice = () => {
   const getAllLeadsPIDetails = async () => {
     try {
       setOpen(true);
-      const response = await InvoiceServices.getLeadsPerformaInvoiceData();
-      setInvoiceData(response.data.results);
-      const total = response.data.count;
-      setpageCount(Math.ceil(total / 25));
+      if (currentPage) {
+        const response = await InvoiceServices.getCompanyPIPagination(
+          currentPage
+        );
+        setInvoiceData(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      } else {
+        const response = await InvoiceServices.getLeadsPerformaInvoiceData();
+        setInvoiceData(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      }
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -168,6 +178,7 @@ export const ViewLeadsProformaInvoice = () => {
   const handlePageClick = async (event, value) => {
     try {
       const page = value;
+      setCurrentPage(page);
       setOpen(true);
 
       if (filterSelectedQuery) {
