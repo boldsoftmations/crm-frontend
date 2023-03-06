@@ -247,7 +247,7 @@ function Row(props) {
       //   dispatched: checked,
       // };
       const data = new FormData();
-
+      data.append("dispatched", checked);
       await InvoiceServices.updateDispatched(row.id, data);
       getAllDispatchDetails();
       setOpen(false);
