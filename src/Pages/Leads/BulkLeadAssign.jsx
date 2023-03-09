@@ -5,7 +5,7 @@ import { CustomLoader } from "../../Components/CustomLoader";
 import { CustomButton } from "../../Components/CustomButton";
 
 export const BulkLeadAssign = (props) => {
-    const {setOpenModal} = props;
+  const { setOpenPopup } = props;
   const [open, setOpen] = useState(false);
   const [assignFrom, setAssignFrom] = useState("");
   const [assignTo, setAssignTo] = useState("");
@@ -37,7 +37,7 @@ export const BulkLeadAssign = (props) => {
         assign_to: assignTo,
       };
       await LeadServices.BulkLeadAssign(req);
-      setOpenModal(false)
+      setOpenPopup(false);
       setOpen(false);
     } catch (err) {
       console.error(err);
