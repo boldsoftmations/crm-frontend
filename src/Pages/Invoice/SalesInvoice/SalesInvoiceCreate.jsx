@@ -88,8 +88,18 @@ export const SalesInvoiceCreate = (props) => {
       const req = {
         order_book: customerorderBookData.id,
         products: products,
-        place_of_supply: inputValue.place_of_supply,
-        transporter_name: inputValue.transporter_name,
+        place_of_supply:
+          inputValue.place_of_supply !== undefined
+            ? inputValue.place_of_supply
+            : customerorderBookData
+            ? customerorderBookData.place_of_supply
+            : "",
+        transporter_name:
+          inputValue.transporter_name !== undefined
+            ? inputValue.transporter_name
+            : customerorderBookData
+            ? customerorderBookData.transporter_name
+            : "",
       };
 
       setOpen(true);
@@ -107,7 +117,14 @@ export const SalesInvoiceCreate = (props) => {
       }
     }
   };
-
+  console.log(
+    "transporter_name",
+    inputValue.transporter_name !== undefined
+      ? inputValue.transporter_name
+      : customerorderBookData
+      ? customerorderBookData.transporter_name
+      : ""
+  );
   return (
     <div>
       <CustomLoader open={open} />
@@ -264,7 +281,13 @@ export const SalesInvoiceCreate = (props) => {
               size="small"
               label="Transporter Name"
               variant="outlined"
-              value={inputValue.transporter_name}
+              value={
+                inputValue.transporter_name !== undefined
+                  ? inputValue.transporter_name
+                  : customerorderBookData
+                  ? customerorderBookData.transporter_name
+                  : ""
+              }
               error={inputValue.transporter_name === ""}
               // helperText={inputValue.transporter_name !== "" && "this field is required"}
               onChange={handleInputChange}
@@ -277,7 +300,13 @@ export const SalesInvoiceCreate = (props) => {
               size="small"
               label="Place of Supply"
               variant="outlined"
-              value={inputValue.place_of_supply}
+              value={
+                inputValue.place_of_supply !== undefined
+                  ? inputValue.place_of_supply
+                  : customerorderBookData
+                  ? customerorderBookData.place_of_supply
+                  : ""
+              }
               onChange={handleInputChange}
             />
           </Grid>
