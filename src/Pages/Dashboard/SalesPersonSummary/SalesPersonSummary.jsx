@@ -29,7 +29,6 @@ export const SalesPersonSummary = (props) => {
   }
 
   const Sale_Invoice_Value_Total = salesInvoiceValue(salesPersonSummary);
-  console.log("Sale_Invoice_Value_Total", Sale_Invoice_Value_Total);
 
   function orderBookValue(items) {
     return items
@@ -38,7 +37,6 @@ export const SalesPersonSummary = (props) => {
   }
 
   const Order_Book_Value_Total = orderBookValue(salesPersonSummary);
-  console.log("Order_Book_Value_Total", Order_Book_Value_Total);
 
   function unpaidPiValue(items) {
     return items
@@ -47,7 +45,6 @@ export const SalesPersonSummary = (props) => {
   }
 
   const Unpaid_PI_Value_Total = unpaidPiValue(salesPersonSummary);
-  console.log("Unpaid_PI_Value_Total", Unpaid_PI_Value_Total);
 
   function piUnpaid(items) {
     return items
@@ -56,7 +53,6 @@ export const SalesPersonSummary = (props) => {
   }
 
   const PI_Unpaid_Total = piUnpaid(salesPersonSummary);
-  console.log("PI_Unpaid_Total", PI_Unpaid_Total);
 
   function piDropped(items) {
     return items
@@ -65,7 +61,6 @@ export const SalesPersonSummary = (props) => {
   }
 
   const PI_Dropped_Total = piDropped(salesPersonSummary);
-  console.log("PI_Dropped_Total", PI_Dropped_Total);
 
   function piRaised(items) {
     return items
@@ -74,7 +69,6 @@ export const SalesPersonSummary = (props) => {
   }
 
   const PI_Raised_Total = piRaised(salesPersonSummary);
-  console.log("PI_Raised_Total", PI_Raised_Total);
 
   function newCustomer(items) {
     return items
@@ -83,7 +77,6 @@ export const SalesPersonSummary = (props) => {
   }
 
   const New_Customer_Total = newCustomer(salesPersonSummary);
-  console.log("New_Customer_Total", New_Customer_Total);
 
   return (
     <>
