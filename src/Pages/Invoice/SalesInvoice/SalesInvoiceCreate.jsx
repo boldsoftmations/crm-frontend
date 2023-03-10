@@ -1,11 +1,21 @@
 import { Autocomplete, Box, Button, Grid, TextField } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
+import { styled } from "@mui/material/styles";
+import Divider from "@mui/material/Divider";
+import Chip from "@mui/material/Chip";
 import InvoiceServices from "../../../services/InvoiceService";
 import { CustomLoader } from "./../../../Components/CustomLoader";
 
+const Root = styled("div")(({ theme }) => ({
+  width: "100%",
+  ...theme.typography.body2,
+  "& > :not(style) + :not(style)": {
+    marginTop: theme.spacing(2),
+  },
+}));
+
 export const SalesInvoiceCreate = (props) => {
   const { setOpenPopup, getSalesInvoiceDetails } = props;
-  const errRef = useRef();
   const [open, setOpen] = useState(false);
   const [errMsg, setErrMsg] = useState("");
   const [customerorderBookData, setCustomerOrderBookData] = useState();
@@ -16,6 +26,8 @@ export const SalesInvoiceCreate = (props) => {
       product: "",
       pending_quantity: "",
       quantity: "",
+      rate: "",
+      total: "",
     },
   ]);
 
@@ -37,49 +49,42 @@ export const SalesInvoiceCreate = (props) => {
     setProducts(data);
   };
 
-  useEffect(() => {
-    getAllCustomerWiseOrderBook();
-  }, []);
+  // useEffect(() => {
+  //   getAllCustomerWiseOrderBook();
+  // }, []);
 
-  const getAllCustomerWiseOrderBook = async () => {
+  const getAllCustomerWiseOrderBook = async (e) => {
     try {
+      e.preventDefault();
       setOpen(true);
-      const response = await InvoiceServices.getcustomerOrderBookData("all");
-      setCustomerOrderBookOption(response.data);
-      setProducts(response.data.products);
+      const response = await InvoiceServices.getcustomerOrderBookDataByID(
+        inputValue.proforma_invoice
+        // data
+      );
+      var productData;
+      response.data.results.map((name) => {
+        setCustomerOrderBookData(name);
+        {
+          productData = name.products.map((data) => data);
+        }
+      });
+
+      var arr = [];
+      var arr = productData.map((fruit) => ({
+        product: fruit.product,
+        pending_quantity: fruit.pending_quantity,
+        requested_date: fruit.requested_date,
+        rate: fruit.rate,
+        total: fruit.amount,
+      }));
+      setProducts(arr);
+
       setOpen(false);
     } catch (err) {
       setOpen(false);
-      if (!err.response) {
-        setErrMsg(
-          "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
-        );
-      } else if (err.response.status === 400) {
-        setErrMsg(
-          err.response.data.errors.name
-            ? err.response.data.errors.name
-            : err.response.data.errors.non_field_errors
-        );
-      } else if (err.response.status === 401) {
-        setErrMsg(err.response.data.errors.code);
-      } else {
-        setErrMsg("Server Error");
-      }
-      errRef.current.focus();
+      console.log("err", err);
+      alert(err.response.data.errors.proforma_invoice);
     }
-  };
-  const handleProductValue = (value) => {
-    console.log("value", value);
-    const Data = value;
-    const productData = Data.products.map((name) => name);
-    var arr = [];
-    var arr = productData.map((fruit) => ({
-      product: fruit.product,
-      pending_quantity: fruit.pending_quantity,
-      requested_date: fruit.requested_date,
-    }));
-    setProducts(arr);
-    setCustomerOrderBookData(value);
   };
 
   const createSalesInvoiceDetails = async (e) => {
@@ -117,14 +122,7 @@ export const SalesInvoiceCreate = (props) => {
       }
     }
   };
-  console.log(
-    "transporter_name",
-    inputValue.transporter_name !== undefined
-      ? inputValue.transporter_name
-      : customerorderBookData
-      ? customerorderBookData.transporter_name
-      : ""
-  );
+
   return (
     <div>
       <CustomLoader open={open} />
@@ -134,8 +132,8 @@ export const SalesInvoiceCreate = (props) => {
         onSubmit={(e) => createSalesInvoiceDetails(e)}
       >
         <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <Autocomplete
+          <Grid item xs={12} sm={6}>
+            {/* <Autocomplete
               name="seller_account"
               size="small"
               disablePortal
@@ -147,6 +145,33 @@ export const SalesInvoiceCreate = (props) => {
               renderInput={(params) => (
                 <TextField {...params} label="PI Number" sx={tfStyle} />
               )}
+            /> */}
+            <TextField
+              sx={{ minWidth: "30rem", marginRight: "1rem" }}
+              name="proforma_invoice"
+              size="small"
+              label="Proforma Invoice"
+              variant="outlined"
+              onChange={handleInputChange}
+              value={inputValue.proforma_invoice}
+            />
+            <Button
+              onClick={(e) => getAllCustomerWiseOrderBook(e)}
+              variant="contained"
+            >
+              Submit
+            </Button>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              name="seller_state"
+              size="small"
+              label="Seller State"
+              variant="outlined"
+              value={
+                customerorderBookData ? customerorderBookData.seller_state : ""
+              }
             />
           </Grid>
           <Grid item xs={12} sm={3}>
@@ -310,11 +335,18 @@ export const SalesInvoiceCreate = (props) => {
               onChange={handleInputChange}
             />
           </Grid>
+          <Grid item xs={12}>
+            <Root>
+              <Divider>
+                <Chip label="PRODUCT" />
+              </Divider>
+            </Root>
+          </Grid>
           {products && products.length > 0
             ? products.map((input, index) => {
                 return (
                   <>
-                    <Grid key={index} item xs={12} sm={4}>
+                    <Grid key={index} item xs={12} sm={3}>
                       <TextField
                         fullWidth
                         name="product"
@@ -337,16 +369,6 @@ export const SalesInvoiceCreate = (props) => {
                     <Grid item xs={12} sm={2}>
                       <TextField
                         fullWidth
-                        name="requested_date"
-                        size="small"
-                        label="Requested Date"
-                        variant="outlined"
-                        value={input.requested_date}
-                      />
-                    </Grid>
-                    <Grid item xs={12} sm={2}>
-                      <TextField
-                        fullWidth
                         name="quantity"
                         size="small"
                         label="Quantity"
@@ -361,8 +383,41 @@ export const SalesInvoiceCreate = (props) => {
                         }
                       />
                     </Grid>
+                    {/* <Grid item xs={12} sm={4}>
+                      <TextField
+                        fullWidth
+                        name="requested_date"
+                        size="small"
+                        label="Requested Date"
+                        variant="outlined"
+                        value={input.requested_date}
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                      />
+                    </Grid> */}
 
                     <Grid item xs={12} sm={2}>
+                      <TextField
+                        fullWidth
+                        name="rate"
+                        size="small"
+                        label="Rate"
+                        variant="outlined"
+                        value={input.rate}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={2}>
+                      <TextField
+                        fullWidth
+                        name="total"
+                        size="small"
+                        label="Total"
+                        variant="outlined"
+                        value={input.total}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={1}>
                       <Button
                         onClick={() => removeFields(index)}
                         variant="contained"

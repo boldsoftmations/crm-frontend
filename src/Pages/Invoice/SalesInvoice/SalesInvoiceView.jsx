@@ -223,7 +223,7 @@ export const SalesInvoiceView = () => {
                   <StyledTableCell align="center">
                     TAXABLE AMOUNT
                   </StyledTableCell>
-                  <StyledTableCell align="center">IGST</StyledTableCell>
+                  <StyledTableCell align="center">GST</StyledTableCell>
                   <StyledTableCell align="center">TOTAL</StyledTableCell>
                   <StyledTableCell align="center">COMPANY</StyledTableCell>
 
@@ -338,7 +338,7 @@ function Row(props) {
         <StyledTableCell align="center">{row.generation_date}</StyledTableCell>
         <StyledTableCell align="center">{row.invoice_no}</StyledTableCell>
         <StyledTableCell align="center">{row.amount}</StyledTableCell>
-        <StyledTableCell align="center">{row.igst}</StyledTableCell>
+        <StyledTableCell align="center">{row.gst}</StyledTableCell>
         <StyledTableCell align="center">{row.total}</StyledTableCell>
         <StyledTableCell align="center">{row.company}</StyledTableCell>
         <StyledTableCell align="center">
