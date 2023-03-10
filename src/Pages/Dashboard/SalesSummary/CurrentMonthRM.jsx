@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Grid,
@@ -15,6 +15,25 @@ import { tableCellClasses } from "@mui/material/TableCell";
 
 export const CurrentMonthRM = (props) => {
   const { currentSalesSummaryRM } = props;
+  const [sum, setSum] = useState(0);
+  const numberFormat = (value) =>
+    new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+    }).format(value);
+
+  function calculateSum(data) {
+    let sum = 0;
+    data.forEach((row) => {
+      sum += row.total_amount;
+    });
+    setSum(sum);
+  }
+
+  useEffect(() => {
+    calculateSum(currentSalesSummaryRM);
+  }, [currentSalesSummaryRM]);
+
   return (
     <>
       {" "}
@@ -82,11 +101,18 @@ export const CurrentMonthRM = (props) => {
                         {row.product__unit__name}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {row.total_amount}
+                        {numberFormat(row.total_amount)}
                       </StyledTableCell>
                     </StyledTableRow>
                   );
                 })}
+                <StyledTableRow>
+                  <StyledTableCell align="center">Total</StyledTableCell>
+                  <StyledTableCell colSpan={2}></StyledTableCell>
+                  <StyledTableCell align="center">
+                    {numberFormat(sum)}
+                  </StyledTableCell>
+                </StyledTableRow>
               </TableBody>
             </Table>
           </TableContainer>

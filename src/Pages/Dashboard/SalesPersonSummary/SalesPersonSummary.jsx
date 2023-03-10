@@ -15,6 +15,76 @@ import { tableCellClasses } from "@mui/material/TableCell";
 
 export const SalesPersonSummary = (props) => {
   const { salesPersonSummary } = props;
+
+  const numberFormat = (value) =>
+    new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+    }).format(value);
+
+  function salesInvoiceValue(items) {
+    return items
+      .map(({ sales_invoice_value }) => sales_invoice_value)
+      .reduce((sum, i) => sum + i, 0);
+  }
+
+  const Sale_Invoice_Value_Total = salesInvoiceValue(salesPersonSummary);
+  console.log("Sale_Invoice_Value_Total", Sale_Invoice_Value_Total);
+
+  function orderBookValue(items) {
+    return items
+      .map(({ order_book_value }) => order_book_value)
+      .reduce((sum, i) => sum + i, 0);
+  }
+
+  const Order_Book_Value_Total = orderBookValue(salesPersonSummary);
+  console.log("Order_Book_Value_Total", Order_Book_Value_Total);
+
+  function unpaidPiValue(items) {
+    return items
+      .map(({ unpaid_pi_value }) => unpaid_pi_value)
+      .reduce((sum, i) => sum + i, 0);
+  }
+
+  const Unpaid_PI_Value_Total = unpaidPiValue(salesPersonSummary);
+  console.log("Unpaid_PI_Value_Total", Unpaid_PI_Value_Total);
+
+  function piUnpaid(items) {
+    return items
+      .map(({ pi_unpaid }) => pi_unpaid)
+      .reduce((sum, i) => sum + i, 0);
+  }
+
+  const PI_Unpaid_Total = piUnpaid(salesPersonSummary);
+  console.log("PI_Unpaid_Total", PI_Unpaid_Total);
+
+  function piDropped(items) {
+    return items
+      .map(({ pi_dropped }) => pi_dropped)
+      .reduce((sum, i) => sum + i, 0);
+  }
+
+  const PI_Dropped_Total = piDropped(salesPersonSummary);
+  console.log("PI_Dropped_Total", PI_Dropped_Total);
+
+  function piRaised(items) {
+    return items
+      .map(({ pi_raised }) => pi_raised)
+      .reduce((sum, i) => sum + i, 0);
+  }
+
+  const PI_Raised_Total = piRaised(salesPersonSummary);
+  console.log("PI_Raised_Total", PI_Raised_Total);
+
+  function newCustomer(items) {
+    return items
+      .map(({ new_customer }) => new_customer)
+      .reduce((sum, i) => sum + i, 0);
+  }
+
+  const New_Customer_Total = newCustomer(salesPersonSummary);
+  console.log("New_Customer_Total", New_Customer_Total);
+
   return (
     <>
       {" "}
@@ -98,17 +168,41 @@ export const SalesPersonSummary = (props) => {
                         {row.pi_unpaid}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {row.unpaid_pi_value}
+                        {numberFormat(row.unpaid_pi_value)}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {row.order_book_value}
+                        {numberFormat(row.order_book_value)}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {row.sales_invoice_value}
+                        {numberFormat(row.sales_invoice_value)}
                       </StyledTableCell>
                     </StyledTableRow>
                   );
                 })}
+                <StyledTableRow>
+                  <StyledTableCell align="center">Total</StyledTableCell>
+                  <StyledTableCell align="center">
+                    {New_Customer_Total}
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    {PI_Raised_Total}
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    {PI_Dropped_Total}
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    {PI_Unpaid_Total}
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    {numberFormat(Unpaid_PI_Value_Total)}
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    {numberFormat(Order_Book_Value_Total)}
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    {numberFormat(Sale_Invoice_Value_Total)}
+                  </StyledTableCell>
+                </StyledTableRow>
               </TableBody>
             </Table>
           </TableContainer>
