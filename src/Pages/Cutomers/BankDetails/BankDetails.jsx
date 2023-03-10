@@ -41,7 +41,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 export const BankDetails = (props) => {
-  const { bankData, open, getAllBankDetailsByID } = props;
+  const { bankData, open, getAllCompanyDetailsByID } = props;
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [idForEdit, setIDForEdit] = useState();
@@ -198,7 +198,7 @@ export const BankDetails = (props) => {
       >
         <CreateBankDetails
           setOpenPopup={setOpenPopup2}
-          getAllBankDetailsByID={getAllBankDetailsByID}
+          getAllCompanyDetailsByID={getAllCompanyDetailsByID}
         />
       </Popup>
       <Popup
@@ -208,7 +208,7 @@ export const BankDetails = (props) => {
       >
         <UpdateBankDetails
           setOpenPopup={setOpenPopup}
-          getAllBankDetailsByID={getAllBankDetailsByID}
+          getAllCompanyDetailsByID={getAllCompanyDetailsByID}
           idForEdit={idForEdit}
         />
       </Popup>

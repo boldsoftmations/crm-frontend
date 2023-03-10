@@ -92,6 +92,26 @@ const updateSecurityChequeData = (id, data) => {
   return CustomAxios.patch(`/api/customer/list-securitycheque/${id}`, data);
 };
 
+const createForecastData = (data) => {
+  return CustomAxios.post("/api/forecast/list-product-forecast/", data);
+};
+
+const getForecastDataById = (id) => {
+  return CustomAxios.get(`/api/forecast/list-product-forecast/${id}`);
+};
+
+const updateForecastData = (id, data) => {
+  return CustomAxios.patch(`/api/forecast/list-quantity-forecast/${id}`, data);
+};
+
+const createProductForecastData = (data) => {
+  return CustomAxios.post("/api/forecast/list-quantity-forecast/", data);
+};
+
+const updateProductForecastData = (id, data) => {
+  return CustomAxios.patch(`/api/forecast/list-quantity-forecast/${id}`, data);
+};
+
 const CustomerServices = {
   getAllCompanyData,
   getAllPaginateCompanyData,
@@ -115,6 +135,11 @@ const CustomerServices = {
   createSecurityChequeData,
   getSecurityChequeDataById,
   updateSecurityChequeData,
+  createForecastData,
+  getForecastDataById,
+  updateForecastData,
+  createProductForecastData,
+  updateProductForecastData,
 };
 
 export default CustomerServices;

@@ -16,7 +16,7 @@ import { WareHouseDetails } from "../WareHouseDetails/WareHouseDetails";
 import { UpdateCompanyDetails } from "./UpdateCompanyDetails";
 import CustomerServices from "../../../services/CustomerService";
 import { SecurityChequesDetails } from "../SecurityCheckDetails/SecurityChequesDetails";
-// import { ForecastView } from "../ForecastDetails/ForecastView";
+import { ForecastView } from "../ForecastDetails/ForecastView";
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -55,7 +55,7 @@ export const UpdateAllCompanyDetails = (props) => {
   const [contactData, setContactData] = useState([]);
   const [wareHousedata, setWareHouseData] = useState([]);
   const [securityChequedata, setSecurityChequeData] = useState([]);
-  // const [forecastdata, setForecastData] = useState([]);
+  const [forecastdata, setForecastData] = useState([]);
   // All Company Details Api
   useEffect(() => {
     if (recordForEdit) getAllCompanyDetailsByID();
@@ -70,7 +70,8 @@ export const UpdateAllCompanyDetails = (props) => {
       setContactData(response.data.contacts);
       setWareHouseData(response.data.warehouse);
       setSecurityChequeData(response.data.security_cheque);
-      // setForecastData(response.data.forecast);
+      setForecastData(response.data.forecast);
+
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -106,7 +107,7 @@ export const UpdateAllCompanyDetails = (props) => {
           <Tab label="Contact" {...a11yProps(2)} />
           <Tab label="WareHouse" {...a11yProps(3)} />
           <Tab label="Security Cheques" {...a11yProps(4)} />
-          {/* <Tab label="Forecast" {...a11yProps(5)} /> */}
+          <Tab label="Forecast" {...a11yProps(5)} />
         </Tabs>
       </AppBar>
 
@@ -146,13 +147,13 @@ export const UpdateAllCompanyDetails = (props) => {
           getAllCompanyDetailsByID={getAllCompanyDetailsByID}
         />
       </TabPanel>
-      {/* <TabPanel value={value} index={5} dir={theme.direction}>
+      <TabPanel value={value} index={5} dir={theme.direction}>
         <ForecastView
           forecastdata={forecastdata}
           open={open}
           getAllCompanyDetailsByID={getAllCompanyDetailsByID}
         />
-      </TabPanel> */}
+      </TabPanel>
     </div>
   );
 };

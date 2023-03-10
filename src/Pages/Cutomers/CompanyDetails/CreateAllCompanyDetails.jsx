@@ -58,7 +58,6 @@ export const CreateAllCompanyDetails = (props) => {
     try {
       setOpen(true);
       const response = await CustomerServices.getCompanyDataById(recordForEdit);
-
       setBankData(response.data.bank);
       setContactData(response.data.contacts);
       setWareHouseData(response.data.warehouse);

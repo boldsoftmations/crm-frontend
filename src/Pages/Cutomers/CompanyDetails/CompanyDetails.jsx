@@ -15,6 +15,7 @@ import {
   Button,
   TableFooter,
   Pagination,
+  Chip,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
 import { Popup } from "./../../../Components/Popup";
@@ -268,7 +269,11 @@ export const CompanyDetails = () => {
                         {row.city}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {row.state}
+                        <Chip
+                          label={row.state}
+                          color="success"
+                          variant="outlined"
+                        />
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         <Button
