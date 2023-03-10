@@ -158,8 +158,8 @@ const getSalesInvoiceData = () => {
   return CustomAxios.get(`/api/invoice/list-sales-invoice`);
 };
 
-const getSalesInvoiceDataWithSearch = (search) => {
-  return CustomAxios.get(`/api/invoice/list-sales-invoice/?search=${search}`);
+const getSalesInvoiceDataWithSearch = (type, search) => {
+  return CustomAxios.get(`/api/invoice/list-sales-invoice/?${type}=${search}`);
 };
 
 const getSalesInvoiceDataWithPagination = (currentPage) => {
@@ -168,9 +168,13 @@ const getSalesInvoiceDataWithPagination = (currentPage) => {
   );
 };
 
-const getSalesInvoiceDataWithPaginationAndSearch = (currentPage, search) => {
+const getSalesInvoiceDataWithPaginationAndSearch = (
+  currentPage,
+  type,
+  search
+) => {
   return CustomAxios.get(
-    `/api/invoice/list-sales-invoice/?page=${currentPage}&search=${search}`
+    `/api/invoice/list-sales-invoice/?page=${currentPage}&${type}=${search}`
   );
 };
 

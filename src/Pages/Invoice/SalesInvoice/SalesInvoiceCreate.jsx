@@ -162,7 +162,8 @@ export const SalesInvoiceCreate = (props) => {
               Submit
             </Button>
           </Grid>
-          <Grid item xs={12} sm={6}>
+
+          <Grid item xs={12} sm={3}>
             <TextField
               fullWidth
               name="seller_state"
@@ -171,6 +172,20 @@ export const SalesInvoiceCreate = (props) => {
               variant="outlined"
               value={
                 customerorderBookData ? customerorderBookData.seller_state : ""
+              }
+            />
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <TextField
+              fullWidth
+              name="seller_auto_number"
+              size="small"
+              label="Seller Auto Number"
+              variant="outlined"
+              value={
+                customerorderBookData
+                  ? customerorderBookData.seller_auto_number
+                  : ""
               }
             />
           </Grid>
