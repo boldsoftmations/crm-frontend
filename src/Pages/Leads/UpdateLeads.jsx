@@ -757,6 +757,7 @@ export const UpdateLeads = (props) => {
                           ? leads.shipping_city
                           : ""
                       }
+                      onChange={handleInputChange}
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
@@ -773,6 +774,7 @@ export const UpdateLeads = (props) => {
                           ? leads.shipping_state
                           : ""
                       }
+                      onChange={handleInputChange}
                     />
                   </Grid>
                 </Grid>

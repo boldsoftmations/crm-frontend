@@ -425,11 +425,12 @@ export const SalesInvoiceCreate = (props) => {
                     <Grid item xs={12} sm={2}>
                       <TextField
                         fullWidth
-                        name="total"
+                        type={"number"}
+                        name="amount"
                         size="small"
-                        label="Total"
+                        label="Amount"
                         variant="outlined"
-                        value={input.total}
+                        value={(input.quantity * input.rate).toFixed(2)}
                       />
                     </Grid>
                     <Grid item xs={12} sm={1}>
