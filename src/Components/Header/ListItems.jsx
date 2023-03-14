@@ -549,6 +549,19 @@ export const ListItems = (props) => {
                   primary="Dispatched"
                 />
               </ListItem>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/dispatch/view-sales-register"
+                style={{ width: 300 }}
+              >
+                <ListItemText
+                  component={Button}
+                  onClick={() => setOpen(false)}
+                  inset
+                  primary="Sales Register"
+                />
+              </ListItem>
             </List>
           </Collapse>
         </>
