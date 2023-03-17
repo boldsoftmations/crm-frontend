@@ -168,7 +168,7 @@ export const RouteScreen = () => {
               path="/dispatch/view-sales-register"
               element={<SalesRegisterView />}
             />
-            <Route path="*" element={<Dashboard />} />
+            <Route path="*" element={<Home />} />
           </>
         )}
         <Route path="*" element={<Auths />} />
