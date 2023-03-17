@@ -22,7 +22,7 @@ import { Popup } from "./../../../Components/Popup";
 import CustomerServices from "../../../services/CustomerService";
 import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
 import { CustomSearch } from "./../../../Components/CustomSearch";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getSellerAccountData } from "../../../Redux/Action/Action";
 import InvoiceServices from "../../../services/InvoiceService";
 import { CustomLoader } from "../../../Components/CustomLoader";
@@ -58,7 +58,8 @@ export const CompanyDetails = () => {
   const [pageCount, setpageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
-
+  const data = useSelector((state) => state.auth);
+  const users = data.profile;
   const handleInputChange = (event) => {
     setFilterSelectedQuery(event.target.value);
     getSearchData(event.target.value);
@@ -249,7 +250,10 @@ export const CompanyDetails = () => {
                   <StyledTableCell align="center">GST NO.</StyledTableCell>
                   <StyledTableCell align="center">CITY</StyledTableCell>
                   <StyledTableCell align="center">STATE</StyledTableCell>
-                  <StyledTableCell align="center">Action</StyledTableCell>
+                  {users.groups.toString() !== "Sales" &&
+                    users.groups.toString() !== "Customer Service" && (
+                      <StyledTableCell align="center">Action</StyledTableCell>
+                    )}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -275,14 +279,17 @@ export const CompanyDetails = () => {
                           variant="outlined"
                         />
                       </StyledTableCell>
-                      <StyledTableCell align="center">
-                        <Button
-                          variant="contained"
-                          onClick={() => openInPopup(row.id)}
-                        >
-                          View
-                        </Button>
-                      </StyledTableCell>
+                      {users.groups.toString() !== "Sales" &&
+                        users.groups.toString() !== "Customer Service" && (
+                          <StyledTableCell align="center">
+                            <Button
+                              variant="contained"
+                              onClick={() => openInPopup(row.id)}
+                            >
+                              View
+                            </Button>
+                          </StyledTableCell>
+                        )}
                     </StyledTableRow>
                   );
                 })}

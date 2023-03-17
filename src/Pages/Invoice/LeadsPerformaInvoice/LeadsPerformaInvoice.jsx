@@ -186,9 +186,22 @@ export const LeadsPerformaInvoice = (props) => {
               )}
           </div>
           <div className="col-xs-6 ">
-            {(invoiceData.status === "Pending Approval" ||
-              invoiceData.status === "Approved") &&
-              (users.is_staff === true || users.groups[0] === "Accounts") && (
+            {invoiceData.status === "Pending Approval" &&
+              users.is_staff === true && (
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={(e) => {
+                    SendForRaisedlPI(e);
+                  }}
+                >
+                  Back To Raised
+                </button>
+              )}
+          </div>
+          <div className="col-xs-6 ">
+            {invoiceData.status === "Approved" &&
+              users.groups[0] === "Accounts" && (
                 <button
                   type="button"
                   className="btn btn-primary"
