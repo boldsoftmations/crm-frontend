@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Backdrop,
   Box,
@@ -117,7 +117,7 @@ export const LeadConfirmationPayment = (props) => {
               </Select>
             </FormControl>
           </Grid>
-          {inputValue.status == "Partially Paid" && (
+          {inputValue.status === "Partially Paid" && (
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -131,7 +131,7 @@ export const LeadConfirmationPayment = (props) => {
               />
             </Grid>
           )}
-          {inputValue.status == "Partially Paid" && (
+          {inputValue.status === "Partially Paid" && (
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth

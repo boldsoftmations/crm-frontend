@@ -59,7 +59,7 @@ export const CreateCustomerProformaInvoice = (props) => {
   const [product, setProduct] = useState([]);
   const [paymentTermData, setPaymentTermData] = useState([]);
   const [deliveryTermData, setDeliveryTermData] = useState([]);
-  const [companyOptions, setCompanyOptions] = useState([]);
+  // const [companyOptions, setCompanyOptions] = useState([]);
   const [contactOptions, setContactOptions] = useState([]);
   const [warehouseOptions, setWarehouseOptions] = useState([]);
   const [companyData, setCompanyData] = useState([]);
@@ -90,7 +90,6 @@ export const CreateCustomerProformaInvoice = (props) => {
   // let AddressOption = companyData
   //   ? companyData.warehouse
   //   : "Please Select First Company";
-
   const handleFormChange = (index, event) => {
     setProductData(event.target.textContent);
     let data = [...products];
@@ -136,7 +135,7 @@ export const CreateCustomerProformaInvoice = (props) => {
     try {
       setOpen(true);
       let response = await CustomerServices.getAllPaginateCompanyData("all");
-      setCompanyOptions(response.data);
+      // setCompanyOptions(response.data);
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -203,10 +202,35 @@ export const CreateCustomerProformaInvoice = (props) => {
       const req = {
         type: "Customer",
         raised_by: users.email,
+        raised_by_first_name: users.first_name,
+        raised_by_last_name: users.last_name,
         seller_account: selectedSellerData.gst_number,
-        company: CustomerData.name,
+        seller_address: selectedSellerData.address,
+        seller_pincode: selectedSellerData.pincode,
+        seller_state: selectedSellerData.state,
+        seller_city: selectedSellerData.city,
+        seller_gst: selectedSellerData.gst_number,
+        seller_pan: selectedSellerData.pan_number,
+        seller_state_code: selectedSellerData.state_code,
+        seller_cin: selectedSellerData.cin_number,
+        seller_email: selectedSellerData.email,
+        seller_contact: selectedSellerData.contact,
+        seller_bank_name: selectedSellerData.bank_name,
+        seller_account_no: selectedSellerData.current_account_no,
+        seller_ifsc_code: selectedSellerData.ifsc_code,
+        seller_branch: selectedSellerData.branch,
+        company: CustomerData.id,
+        company_name: CustomerData.name,
         contact: contactData.contact,
+        contact_person_name: contactData.name,
         alternate_contact: contactData.alternate_contact,
+        company_name: CustomerData.name,
+        gst_number: CustomerData.gst_number,
+        pan_number: CustomerData.pan_number,
+        billing_address: CustomerData.address,
+        billing_state: CustomerData.state,
+        billing_city: CustomerData.city,
+        billing_pincode: CustomerData.pincode,
         address: warehouseData.address,
         pincode: warehouseData.pincode,
         state: warehouseData.state,
@@ -217,8 +241,7 @@ export const CreateCustomerProformaInvoice = (props) => {
         buyer_order_date: inputValue.buyer_order_date,
         payment_terms: paymentTermData,
         delivery_terms: deliveryTermData,
-        status: "Pending Approval",
-        // amount: Amount,
+        status: "Raised",
         products: products,
       };
       setOpen(true);
@@ -251,7 +274,6 @@ export const CreateCustomerProformaInvoice = (props) => {
       // setOpenPopup2(true);
     }
   };
-  console.log("companyData :>> ", companyData);
 
   const openInPopup = () => {
     setOpenPopup3(true);
@@ -392,12 +414,61 @@ export const CreateCustomerProformaInvoice = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
+            <TextField
+              fullWidth
+              multiline
+              required
+              name="address"
+              size="small"
+              label="Billing Address"
+              variant="outlined"
+              value={CustomerData.address ? CustomerData.address : ""}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={4}>
+            <TextField
+              fullWidth
+              required
+              name="city"
+              size="small"
+              label="Billing City"
+              variant="outlined"
+              value={CustomerData.city ? CustomerData.city : ""}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextField
+              fullWidth
+              required
+              name="state"
+              size="small"
+              label="Billing State"
+              variant="outlined"
+              value={CustomerData.state ? CustomerData.state : ""}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextField
+              fullWidth
+              required
+              name="pincode"
+              size="small"
+              type={"number"}
+              label="Billing Pin Code"
+              variant="outlined"
+              value={CustomerData.pincode ? CustomerData.pincode : ""}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
             <FormControl fullWidth size="small">
-              <InputLabel id="demo-simple-select-label">Address</InputLabel>
+              <InputLabel id="demo-simple-select-label">
+                Shipping Address
+              </InputLabel>
               <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
-                label="Address"
+                label="Shipping Address"
                 onChange={(e, value) => setWarehouseData(e.target.value)}
               >
                 {warehouseOptions &&
@@ -418,7 +489,7 @@ export const CreateCustomerProformaInvoice = (props) => {
               disabled
               name="city"
               size="small"
-              label="City"
+              label="Shipping City"
               variant="outlined"
               value={
                 warehouseData
@@ -436,7 +507,7 @@ export const CreateCustomerProformaInvoice = (props) => {
               disabled
               name="state"
               size="small"
-              label="State"
+              label="Shipping State"
               variant="outlined"
               value={
                 warehouseData
@@ -455,7 +526,7 @@ export const CreateCustomerProformaInvoice = (props) => {
               name="pincode"
               size="small"
               type={"number"}
-              label="Pin Code"
+              label="Shipping Pin Code"
               variant="outlined"
               value={
                 warehouseData
@@ -753,14 +824,6 @@ const paymentTermsOptions = [
   { label: "45 days", value: "45_days" },
   { label: "60 days", value: "60_days" },
   { label: "Against Delivery", value: "against_delivery" },
-  {
-    label: "Transporter Warehouse (Prepaid)",
-    value: "transporter_warehouse_(prepaid)",
-  },
-  {
-    label: "Customer Door Delivery (Prepaid)",
-    value: "customer_door_delivery_(prepaid)",
-  },
 ];
 
 const deliveryTermsOptions = [

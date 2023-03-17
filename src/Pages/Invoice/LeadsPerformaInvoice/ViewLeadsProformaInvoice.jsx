@@ -30,14 +30,11 @@ import { CreateLeadsProformaInvoice } from "./CreateLeadsProformaInvoice";
 import ClearIcon from "@mui/icons-material/Clear";
 import { Popup } from "./../../../Components/Popup";
 import { LeadsPerformaInvoice } from "./LeadsPerformaInvoice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
-import {
-  getAllLeadData,
-  getSellerAccountData,
-} from "./../../../Redux/Action/Action";
-import LeadServices from "../../../services/LeadService";
+import { getSellerAccountData } from "./../../../Redux/Action/Action";
 import { CustomSearch } from "./../../../Components/CustomSearch";
+import { UpdateLeadsProformaInvoice } from "./UpdateLeadsProformaInvoice";
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.common.black,
@@ -85,6 +82,8 @@ export const ViewLeadsProformaInvoice = () => {
   const [filterQuery, setFilterQuery] = useState("status");
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
+  const data = useSelector((state) => state.auth);
+  const users = data.profile;
   const handleInputChange = (event) => {
     setFilterSelectedQuery(event.target.value);
     getSearchData(event.target.value);
@@ -213,6 +212,11 @@ export const ViewLeadsProformaInvoice = () => {
     setOpenPopup2(true);
   };
 
+  const openInPopup2 = (item) => {
+    setIDForEdit(item);
+    setOpenPopup(true);
+  };
+
   const getResetData = () => {
     // setSearchQuery("");
     setFilterSelectedQuery("");
@@ -335,11 +339,10 @@ export const ViewLeadsProformaInvoice = () => {
                 width: 15,
               },
               "&::-webkit-scrollbar-track": {
-                backgroundColor: "#aaa9ac",
+                backgroundColor: "#f2f2f2",
               },
               "&::-webkit-scrollbar-thumb": {
-                backgroundColor: "#000000",
-                borderRadius: 2,
+                backgroundColor: "#aaa9ac",
               },
             }}
           >
@@ -374,7 +377,7 @@ export const ViewLeadsProformaInvoice = () => {
                         {row.generation_date}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {row.company}
+                        {row.company_name}
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         {row.billing_city}
@@ -398,6 +401,16 @@ export const ViewLeadsProformaInvoice = () => {
                         >
                           View
                         </Button>
+                        {users.groups.toString() === "Sales" &&
+                          row.status === "Raised" && (
+                            <Button
+                              variant="contained"
+                              color="success"
+                              onClick={() => openInPopup2(row.pi_number)}
+                            >
+                              Edit
+                            </Button>
+                          )}
                       </StyledTableCell>
                     </StyledTableRow>
                   );
@@ -419,14 +432,15 @@ export const ViewLeadsProformaInvoice = () => {
         </Paper>
       </Grid>
       <Popup
-        maxWidth={"xl"}
-        title={"Create Lead Proforma Invoice"}
+        fullScreen={true}
+        title={"Update Lead Proforma Invoice"}
         openPopup={openPopup}
         setOpenPopup={setOpenPopup}
       >
-        <CreateLeadsProformaInvoice
+        <UpdateLeadsProformaInvoice
           getAllLeadsPIDetails={getAllLeadsPIDetails}
           setOpenPopup={setOpenPopup}
+          idForEdit={idForEdit}
         />
       </Popup>
       <Popup

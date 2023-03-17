@@ -33,7 +33,6 @@ import { ViewAllFollowUp } from "./../FollowUp/ViewAllFollowUp";
 import { ViewAllPotential } from "../Potential/ViewAllPotential";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/material.css";
-import axios from "axios";
 import { Popup } from "./../../Components/Popup";
 import { CreateLeadsProformaInvoice } from "./../Invoice/LeadsPerformaInvoice/CreateLeadsProformaInvoice";
 
@@ -65,7 +64,6 @@ export const UpdateLeads = (props) => {
   const [contacts1, setContacts1] = useState("");
   const [contacts2, setContacts2] = useState("");
   const [typeData, setTypeData] = useState("");
-  const [pinCodeData, setPinCodeData] = useState([]);
   const [checked, setChecked] = useState(false);
   const handlePhoneChange = (newPhone) => {
     setPhone(newPhone);
@@ -1019,7 +1017,7 @@ export const UpdateLeads = (props) => {
         </Grid>
       </Grid>
       <Popup
-        maxWidth={"xl"}
+        fullScreen={true}
         title={"Create Leads Proforma Invoice"}
         openPopup={openPopup2}
         setOpenPopup={setOpenPopup2}

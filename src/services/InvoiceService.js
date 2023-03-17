@@ -92,8 +92,24 @@ const createLeadsProformaInvoiceData = (data) => {
   return CustomAxios.post("/api/invoice/list-lead-pi/", data);
 };
 
+const getLeadsProformaInvoiceDataByID = (id) => {
+  return CustomAxios.get(`/api/invoice/list-lead-pi/${id}`);
+};
+
+const updateLeadsProformaInvoiceData = (id, data) => {
+  return CustomAxios.patch(`/api/invoice/list-lead-pi/${id}`, data);
+};
+
 const createCustomerProformaInvoiceData = (data) => {
   return CustomAxios.post("/api/invoice/list-company-pi/", data);
+};
+
+const getCustomerProformaInvoiceDataByID = (id) => {
+  return CustomAxios.get(`/api/invoice/list-company-pi/${id}`);
+};
+
+const updateCustomerProformaInvoiceData = (id, data) => {
+  return CustomAxios.patch(`/api/invoice/list-company-pi/${id}`, data);
 };
 
 // All order Api
@@ -150,7 +166,7 @@ const getAllcustomerOrderBookData = () => {
   return CustomAxios.get(`/api/invoice/list-order-book-company`);
 };
 
-const getOTotalPendingQuantity = (type) => {
+const getOTotalPendingQuantity = () => {
   return CustomAxios.get(`/api/invoice/pending-order-total`);
 };
 
@@ -263,13 +279,17 @@ const InvoiceServices = {
   sendForApprovalLeadsData,
   sendForApprovalData,
   createLeadsProformaInvoiceData,
+  getLeadsProformaInvoiceDataByID,
+  updateLeadsProformaInvoiceData,
   createCustomerProformaInvoiceData,
+  getCustomerProformaInvoiceDataByID,
+  updateCustomerProformaInvoiceData,
   getOrderBookData,
   getProductOrderBookDatawithPage,
   getAllOrderBookDatawithSearch,
   getAllOrderBookDatawithSearchWithPagination,
   getAllOrderBookDatawithPage,
-  getAllcustomerOrderBookData,
+  // getAllcustomerOrderBookData,
   getOTotalPendingQuantity,
   getSalesInvoiceData,
   getSalesInvoiceDataWithSearch,

@@ -303,7 +303,7 @@ export const CompanyDetails = () => {
         </Paper>
       </Grid>
       <Popup
-        maxWidth={"lg"}
+        fullScreen={true}
         title={"Create Company Details"}
         openPopup={openPopup2}
         setOpenPopup={setOpenPopup2}
@@ -314,7 +314,7 @@ export const CompanyDetails = () => {
         />
       </Popup>
       <Popup
-        maxWidth={"xl"}
+        fullScreen={true}
         title={"Update Company Details"}
         openPopup={openPopup}
         setOpenPopup={setOpenPopup}
