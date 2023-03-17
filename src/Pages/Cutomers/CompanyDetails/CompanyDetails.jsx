@@ -250,10 +250,10 @@ export const CompanyDetails = () => {
                   <StyledTableCell align="center">GST NO.</StyledTableCell>
                   <StyledTableCell align="center">CITY</StyledTableCell>
                   <StyledTableCell align="center">STATE</StyledTableCell>
-                  {users.groups.toString() !== "Sales" &&
-                    users.groups.toString() !== "Customer Service" && (
-                      <StyledTableCell align="center">Action</StyledTableCell>
-                    )}
+                  {/* {users.groups.toString() !== "Sales" &&
+                    users.groups.toString() !== "Customer Service" && ( */}
+                  <StyledTableCell align="center">Action</StyledTableCell>
+                  {/* )} */}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -279,17 +279,17 @@ export const CompanyDetails = () => {
                           variant="outlined"
                         />
                       </StyledTableCell>
-                      {users.groups.toString() !== "Sales" &&
-                        users.groups.toString() !== "Customer Service" && (
-                          <StyledTableCell align="center">
-                            <Button
-                              variant="contained"
-                              onClick={() => openInPopup(row.id)}
-                            >
-                              View
-                            </Button>
-                          </StyledTableCell>
-                        )}
+                      {/* {users.groups.toString() !== "Sales" &&
+                        users.groups.toString() !== "Customer Service" && ( */}
+                      <StyledTableCell align="center">
+                        <Button
+                          variant="contained"
+                          onClick={() => openInPopup(row.id)}
+                        >
+                          View
+                        </Button>
+                      </StyledTableCell>
+                      {/* )} */}
                     </StyledTableRow>
                   );
                 })}
