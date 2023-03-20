@@ -355,6 +355,9 @@ export const ViewLeadsProformaInvoice = () => {
                 <TableRow>
                   <StyledTableCell align="center">PI NUMBER</StyledTableCell>
                   <StyledTableCell align="center">PI DATE</StyledTableCell>
+                  <StyledTableCell align="center">
+                    COMPANY NAME OLD
+                  </StyledTableCell>
                   <StyledTableCell align="center">COMPANY NAME</StyledTableCell>
                   <StyledTableCell align="center">BILLING CITY</StyledTableCell>
                   <StyledTableCell align="center">CONTACT</StyledTableCell>
@@ -375,6 +378,9 @@ export const ViewLeadsProformaInvoice = () => {
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         {row.generation_date}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.name_of_party}
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         {row.company_name}
