@@ -231,7 +231,7 @@ export const SalesInvoiceCreate = (props) => {
               id="combo-box-demo"
               onChange={(event, value) => getCustomerWiseOrderBook(value)}
               options={customerorderBookOption}
-              loading={loading}
+              // loading={loading}
               getOptionLabel={(option) =>
                 `${option.proforma_invoice} - ${option.company}`
               }
@@ -240,17 +240,17 @@ export const SalesInvoiceCreate = (props) => {
                 <TextField
                   {...params}
                   label="PI Number"
-                  InputProps={{
-                    ...params.InputProps,
-                    endAdornment: (
-                      <>
-                        {loading ? (
-                          <CircularProgress color="inherit" size={20} />
-                        ) : null}
-                        {params.InputProps.endAdornment}
-                      </>
-                    ),
-                  }}
+                  // InputProps={{
+                  //   ...params.InputProps,
+                  //   endAdornment: (
+                  //     <>
+                  //       {loading ? (
+                  //         <CircularProgress color="inherit" size={20} />
+                  //       ) : null}
+                  //       {params.InputProps.endAdornment}
+                  //     </>
+                  //   ),
+                  // }}
                 />
               )}
             />
