@@ -440,7 +440,7 @@ export const ViewCustomerProformaInvoice = () => {
       </Grid>
       <Popup
         maxWidth={"xl"}
-        title={"Create Customer Proforma Invoice"}
+        title={"Update Customer Proforma Invoice"}
         openPopup={openPopup}
         setOpenPopup={setOpenPopup}
       >

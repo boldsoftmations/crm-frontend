@@ -38,7 +38,9 @@ export const UpdateCustomerProformaInvoice = (props) => {
   const [deliveryTermData, setDeliveryTermData] = useState([]);
   const [selectedSellerData, setSelectedSellerData] = useState("");
   const [customerData, setCustomerData] = useState([]);
-  const [checked, setChecked] = useState(true);
+  const [checked, setChecked] = useState(
+    customerPIdataByID.buyer_order_no === ""
+  );
   const [unit, setUnit] = useState("");
   const [productEdit, setProductEdit] = useState(false);
   const [warehouseOptions, setWarehouseOptions] = useState([]);
@@ -258,16 +260,21 @@ export const UpdateCustomerProformaInvoice = (props) => {
         pincode: warehouseData.pincode,
         state: warehouseData.state,
         city: warehouseData.city,
-        place_of_supply: customerPIdataByID.place_of_supply
-          ? customerPIdataByID.place_of_supply
-          : inputValue.place_of_supply,
-        transporter_name: customerPIdataByID.transporter_name
-          ? customerPIdataByID.transporter_name
-          : inputValue.transporter_name,
-        buyer_order_no: checked === true ? "verbal" : inputValue.buyer_order_no,
-        buyer_order_date: inputValue.buyer_order_date
-          ? inputValue.buyer_order_date
-          : values.someDate,
+        place_of_supply:
+          inputValue.place_of_supply || customerPIdataByID.place_of_supply,
+        transporter_name:
+          inputValue.transporter_name || customerPIdataByID.transporter_name,
+        buyer_order_no: checked
+          ? "Verbal"
+          : inputValue.buyer_order_no !== undefined
+          ? inputValue.buyer_order_no
+          : customerPIdataByID.buyer_order_no !== undefined
+          ? customerPIdataByID.buyer_order_no
+          : "",
+        buyer_order_date:
+          inputValue.buyer_order_date ||
+          customerPIdataByID.buyer_order_date ||
+          values.someDate,
         payment_terms: paymentTermData,
         delivery_terms: deliveryTermData,
         status: "Raised",
@@ -578,12 +585,14 @@ export const UpdateCustomerProformaInvoice = (props) => {
               size="small"
               label="Buyer Order No"
               variant="outlined"
-              disabled={checked === true}
+              disabled={checked}
               value={
-                checked === true
+                checked
                   ? "Verbal"
-                  : inputValue.buyer_order_no
+                  : inputValue.buyer_order_no !== undefined
                   ? inputValue.buyer_order_no
+                  : customerPIdataByID.buyer_order_no !== undefined
+                  ? customerPIdataByID.buyer_order_no
                   : ""
               }
               onChange={handleInputChange}
@@ -603,10 +612,15 @@ export const UpdateCustomerProformaInvoice = (props) => {
               label="Buyer Order Date"
               variant="outlined"
               value={
-                inputValue.buyer_order_date
-                  ? inputValue.buyer_order_date
-                  : values.someDate
+                inputValue.buyer_order_date ||
+                customerPIdataByID.buyer_order_date ||
+                values.someDate
               }
+              // value={
+              //   inputValue.buyer_order_date
+              //     ? inputValue.buyer_order_date
+              //     : values.someDate
+              // }
               onChange={handleInputChange}
               InputLabelProps={{
                 shrink: true,
@@ -621,10 +635,13 @@ export const UpdateCustomerProformaInvoice = (props) => {
               label="Place of Supply"
               variant="outlined"
               value={
-                customerPIdataByID.place_of_supply
-                  ? customerPIdataByID.place_of_supply
-                  : inputValue.place_of_supply
+                inputValue.place_of_supply || customerPIdataByID.place_of_supply
               }
+              // value={
+              //   inputValue.place_of_supply
+              //     ? inputValue.place_of_supply
+              //     : customerPIdataByID.place_of_supply
+              // }
               InputLabelProps={{
                 shrink: true,
               }}
@@ -639,10 +656,14 @@ export const UpdateCustomerProformaInvoice = (props) => {
               label="Transporter Name"
               variant="outlined"
               value={
+                inputValue.transporter_name ||
                 customerPIdataByID.transporter_name
-                  ? customerPIdataByID.transporter_name
-                  : inputValue.transporter_name
               }
+              // value={
+              //   customerPIdataByID.transporter_name
+              //     ? customerPIdataByID.transporter_name
+              //     : inputValue.transporter_name
+              // }
               InputLabelProps={{
                 shrink: true,
               }}
