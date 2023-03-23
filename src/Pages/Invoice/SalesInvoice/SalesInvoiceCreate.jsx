@@ -1,10 +1,19 @@
-import { Autocomplete, Box, Button, Grid, TextField } from "@mui/material";
-import React, { useEffect, useRef, useState } from "react";
+import {
+  Autocomplete,
+  Box,
+  Button,
+  Grid,
+  Snackbar,
+  TextField,
+} from "@mui/material";
+import { Alert, AlertTitle } from "@mui/material";
+import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
 import Divider from "@mui/material/Divider";
 import Chip from "@mui/material/Chip";
 import InvoiceServices from "../../../services/InvoiceService";
 import { CustomLoader } from "./../../../Components/CustomLoader";
+import { useSelector } from "react-redux";
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -15,11 +24,14 @@ const Root = styled("div")(({ theme }) => ({
 }));
 
 export const SalesInvoiceCreate = (props) => {
-  const { setOpenPopup, getSalesInvoiceDetails } = props;
+  const { setOpenPopup, getSalesInvoiceDetails, getAllCustomerWiseOrderBook } =
+    props;
   const [open, setOpen] = useState(false);
+  const [errorOpen, setErrorOpen] = useState(false);
   const [errMsg, setErrMsg] = useState("");
   const [customerorderBookData, setCustomerOrderBookData] = useState();
-  const [customerorderBookOption, setCustomerOrderBookOption] = useState([]);
+  // const [customerorderBookOption, setCustomerOrderBookOption] = useState([]);
+  const [orderBookID, setOrderBookID] = useState([]);
   const [inputValue, setInputValue] = useState([]);
   const [products, setProducts] = useState([
     {
@@ -27,14 +39,17 @@ export const SalesInvoiceCreate = (props) => {
       pending_quantity: "",
       quantity: "",
       rate: "",
-      total: "",
+      proforma_invoice: "",
+      id: "",
+      user: "",
     },
   ]);
+  const data = useSelector((state) => state.auth);
+  const CustomerOrderBookData = data.customerOrderBookData;
 
   const handleFormChange = (index, event) => {
     let data = [...products];
     data[index][event.target.name] = event.target.value;
-
     setProducts(data);
   };
 
@@ -49,36 +64,39 @@ export const SalesInvoiceCreate = (props) => {
     setProducts(data);
   };
 
-  // useEffect(() => {
-  //   getAllCustomerWiseOrderBook();
-  // }, []);
-
-  const getAllCustomerWiseOrderBook = async (e) => {
+  const getCustomerWiseOrderBook = (data) => {
     try {
-      e.preventDefault();
-      setOpen(true);
-      const response = await InvoiceServices.getcustomerOrderBookDataByID(
-        inputValue.proforma_invoice
-        // data
-      );
-      var productData;
-      response.data.results.map((name) => {
+      var productData = [];
+      var ORDERBOOKID = [];
+      data.map((name) => {
         setCustomerOrderBookData(name);
+        ORDERBOOKID.push(name.id);
+        setOrderBookID(ORDERBOOKID);
         {
-          productData = name.products.map((data) => data);
+          name.products.map((data) => {
+            productData.push({
+              product: data.product,
+              pending_quantity: data.pending_quantity,
+              requested_date: data.requested_date,
+              rate: data.rate,
+              proforma_invoice: data.proforma_invoice,
+              id: data.id,
+              raised_by: data.raised_by,
+            });
+          });
         }
       });
-
       var arr = [];
-      var arr = productData.map((fruit) => ({
+      arr = productData.map((fruit) => ({
         product: fruit.product,
         pending_quantity: fruit.pending_quantity,
         requested_date: fruit.requested_date,
         rate: fruit.rate,
-        total: fruit.amount,
+        proforma_invoice: fruit.proforma_invoice,
+        id: fruit.id,
+        user: fruit.raised_by,
       }));
       setProducts(arr);
-
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -90,9 +108,15 @@ export const SalesInvoiceCreate = (props) => {
   const createSalesInvoiceDetails = async (e) => {
     try {
       e.preventDefault();
+      const PRODUCTS = products.map(
+        ({ pending_quantity, rate, requested_date, ...rest }) => rest
+      );
+
+      console.log(PRODUCTS);
       const req = {
         order_book: customerorderBookData.id,
-        products: products,
+        order_book_list: orderBookID,
+        products: PRODUCTS,
         place_of_supply:
           inputValue.place_of_supply !== undefined
             ? inputValue.place_of_supply
@@ -112,15 +136,25 @@ export const SalesInvoiceCreate = (props) => {
         await InvoiceServices.createSalesnvoiceData(req);
         setOpenPopup(false);
         getSalesInvoiceDetails();
+        getAllCustomerWiseOrderBook();
       }
       setOpen(false);
     } catch (err) {
       setOpen(false);
-      alert(err.response.data.errors.non_field_errors);
-      if (err.response.status === 400) {
-        setErrMsg(err.response.data.errors.non_field_errors);
+      setErrorOpen(true);
+      if (err.response && err.response.data) {
+        if (err.response.status === 400) {
+          setErrMsg(err.response.data.errors.non_field_errors);
+        }
+      } else {
+        setErrMsg(err.response.data);
       }
     }
+  };
+
+  const handleClose = () => {
+    setErrorOpen(false); // set errorOpen to false to close the Alert component
+    setErrMsg("");
   };
 
   return (
@@ -131,22 +165,36 @@ export const SalesInvoiceCreate = (props) => {
         noValidate
         onSubmit={(e) => createSalesInvoiceDetails(e)}
       >
+        <Snackbar
+          open={errorOpen}
+          autoHideDuration={10000}
+          onClose={handleClose}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }} // set the position to top center
+        >
+          <Alert severity="error" onClose={handleClose} sx={{ width: "100%" }}>
+            <AlertTitle>Error</AlertTitle>
+            {errMsg}
+          </Alert>
+        </Snackbar>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
-            {/* <Autocomplete
+            <Autocomplete
               name="seller_account"
+              multiple
               size="small"
               disablePortal
               id="combo-box-demo"
-              onChange={(event, value) => handleProductValue(value)}
-              options={customerorderBookOption}
-              getOptionLabel={(option) => option.proforma_invoice}
+              onChange={(event, value) => getCustomerWiseOrderBook(value)}
+              options={CustomerOrderBookData}
+              getOptionLabel={(option) =>
+                `${option.proforma_invoice} - ${option.company}`
+              }
               sx={{ minWidth: 300 }}
               renderInput={(params) => (
-                <TextField {...params} label="PI Number" sx={tfStyle} />
+                <TextField {...params} label="PI Number" />
               )}
-            /> */}
-            <TextField
+            />
+            {/* <TextField
               sx={{ minWidth: "30rem", marginRight: "1rem" }}
               name="proforma_invoice"
               size="small"
@@ -156,13 +204,12 @@ export const SalesInvoiceCreate = (props) => {
               value={inputValue.proforma_invoice}
             />
             <Button
-              onClick={(e) => getAllCustomerWiseOrderBook(e)}
+              onClick={(e) => getCustomerWiseOrderBook(e)}
               variant="contained"
             >
               Submit
-            </Button>
+            </Button> */}
           </Grid>
-
           <Grid item xs={12} sm={3}>
             <TextField
               fullWidth
@@ -350,6 +397,7 @@ export const SalesInvoiceCreate = (props) => {
               onChange={handleInputChange}
             />
           </Grid>
+
           <Grid item xs={12}>
             <Root>
               <Divider>
@@ -398,19 +446,6 @@ export const SalesInvoiceCreate = (props) => {
                         }
                       />
                     </Grid>
-                    {/* <Grid item xs={12} sm={4}>
-                      <TextField
-                        fullWidth
-                        name="requested_date"
-                        size="small"
-                        label="Requested Date"
-                        variant="outlined"
-                        value={input.requested_date}
-                        InputLabelProps={{
-                          shrink: true,
-                        }}
-                      />
-                    </Grid> */}
 
                     <Grid item xs={12} sm={2}>
                       <TextField
@@ -425,7 +460,7 @@ export const SalesInvoiceCreate = (props) => {
                     <Grid item xs={12} sm={2}>
                       <TextField
                         fullWidth
-                        type={"number"}
+                        // type={"number"}
                         name="amount"
                         size="small"
                         label="Amount"
@@ -433,6 +468,7 @@ export const SalesInvoiceCreate = (props) => {
                         value={(input.quantity * input.rate).toFixed(2)}
                       />
                     </Grid>
+
                     <Grid item xs={12} sm={1}>
                       <Button
                         onClick={() => removeFields(index)}
@@ -446,6 +482,7 @@ export const SalesInvoiceCreate = (props) => {
               })
             : null}
         </Grid>
+
         <Button
           type="submit"
           fullWidth
@@ -459,9 +496,9 @@ export const SalesInvoiceCreate = (props) => {
   );
 };
 
-const tfStyle = {
-  "& .MuiButtonBase-root.MuiAutocomplete-clearIndicator": {
-    color: "blue",
-    visibility: "visible",
-  },
-};
+// const tfStyle = {
+//   "& .MuiButtonBase-root.MuiAutocomplete-clearIndicator": {
+//     color: "blue",
+//     visibility: "visible",
+//   },
+// };

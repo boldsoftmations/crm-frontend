@@ -14,3 +14,4 @@ export const UNIT = "UNIT";
 export const BASIC_UNIT = "BASIC_UNIT";
 export const PACKING_UNIT = "PACKING_UNIT";
 export const PRODUCT_CODE = "PRODUCT_CODE";
+export const CUSTOMER_ORDERBOOK_DATA = "CUSTOMER_ORDERBOOK_DATA";

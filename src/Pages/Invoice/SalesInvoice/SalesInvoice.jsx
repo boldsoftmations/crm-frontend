@@ -7,8 +7,9 @@ import logo from "../../../Images/LOGOS3.png";
 import ISO from "../../../Images/ISOLogo.ico";
 import AllLogo from "../../../Images/allLogo.jpg";
 import MSME from "../../../Images/MSME.jpeg";
+import { CustomLoader } from "../../../Components/CustomLoader";
 export const SalesInvoice = (props) => {
-  const { idForEdit, getSalesInvoiceDetails, setOpenPopup } = props;
+  const { idForEdit } = props;
   const [salesInvoiceData, setSalesInvoiceData] = useState([]);
   const [productData, setProductData] = useState([]);
   const [hsnData, setHsnData] = useState([]);
@@ -22,12 +23,41 @@ export const SalesInvoice = (props) => {
       setOpen(true);
       const response = await InvoiceServices.getSalesnvoiceDataById(idForEdit);
       setSalesInvoiceData(response.data);
-      setProductData(response.data.products);
+      getCombieProductData(response.data.products_si);
       setHsnData(response.data.hsn_table);
       setOpen(false);
     } catch (err) {
       setOpen(false);
     }
+  };
+
+  const getCombieProductData = (products) => {
+    let product_json = [];
+
+    for (let i = 0; i < products.length; i++) {
+      let found = false;
+      for (let j = 0; j < product_json.length; j++) {
+        if (
+          product_json[j].product === products[i].product &&
+          parseInt(product_json[j].rate) === parseInt(products[i].rate)
+        ) {
+          product_json[j].quantity =
+            parseInt(product_json[j].quantity) + parseInt(products[i].quantity);
+          product_json[j].amount =
+            parseFloat(product_json[j].amount) + parseFloat(products[i].amount);
+          product_json[j].total =
+            parseFloat(product_json[j].amount) + parseFloat(products[i].total);
+          product_json[j].gst =
+            parseFloat(product_json[j].amount) + parseFloat(products[i].gst);
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        product_json.push(products[i]);
+      }
+    }
+    setProductData(product_json);
   };
 
   const str = salesInvoiceData.amount_in_words
@@ -50,7 +80,7 @@ export const SalesInvoice = (props) => {
 
   return (
     <>
-      {" "}
+      <CustomLoader open={open} />
       <div
         className="container-fluid mb-4"
         style={{ border: "1px Solid #000000" }}

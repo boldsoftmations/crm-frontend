@@ -102,3 +102,10 @@ export const getProductCodeData = (data) => {
     payload: data,
   };
 };
+
+export const getCustomerOrderBookData = (data) => {
+  return {
+    type: types.CUSTOMER_ORDERBOOK_DATA,
+    payload: data,
+  };
+};

@@ -1,4 +1,5 @@
 import * as types from "../Action/actiontypes";
+import { CUSTOMER_ORDERBOOK_DATA } from "./../Action/actiontypes";
 
 const initialState = {
   user: null,
@@ -38,6 +39,7 @@ const userReducer = (state = initialState, action) => {
         packingunitAllData: null,
         productCodeAllData: null,
         sellerAccount: null,
+        customerOrderBookData: null,
       };
     case types.REFRESH_TOKEN:
       return {
@@ -98,6 +100,12 @@ const userReducer = (state = initialState, action) => {
         ...state,
         loading: false,
         productCodeAllData: action.payload,
+      };
+    case types.CUSTOMER_ORDERBOOK_DATA:
+      return {
+        ...state,
+        loading: false,
+        customerOrderBookData: action.payload,
       };
     default:
       return state;

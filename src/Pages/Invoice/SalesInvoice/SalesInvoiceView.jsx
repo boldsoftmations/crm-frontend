@@ -13,7 +13,6 @@ import {
   TableCell,
   Button,
   Paper,
-  TableFooter,
   IconButton,
   Collapse,
   Typography,
@@ -33,6 +32,8 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
 import { CustomPagination } from "../../../Components/CustomPagination";
 import { CustomSearch } from "../../../Components/CustomSearch";
+import { useDispatch } from "react-redux";
+import { getCustomerOrderBookData } from "../../../Redux/Action/Action";
 
 const filterOption = [
   {
@@ -55,9 +56,38 @@ export const SalesInvoiceView = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterQuery, setFilterQuery] = useState("search");
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
+  const dispatch = useDispatch();
   useEffect(() => {
     getSalesInvoiceDetails();
   }, []);
+
+  useEffect(() => {
+    getAllCustomerWiseOrderBook();
+  }, []);
+
+  const getAllCustomerWiseOrderBook = async () => {
+    try {
+      const response = await InvoiceServices.getcustomerOrderBookData("all");
+      dispatch(getCustomerOrderBookData(response.data));
+    } catch (err) {
+      if (!err.response) {
+        setErrMsg(
+          "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
+        );
+      } else if (err.response.status === 400) {
+        setErrMsg(
+          err.response.data.errors.name
+            ? err.response.data.errors.name
+            : err.response.data.errors.non_field_errors
+        );
+      } else if (err.response.status === 401) {
+        setErrMsg(err.response.data.errors.code);
+      } else {
+        setErrMsg("Server Error");
+      }
+      errRef.current.focus();
+    }
+  };
 
   const getSalesInvoiceDetails = async () => {
     try {
@@ -133,7 +163,6 @@ export const SalesInvoiceView = () => {
     try {
       const page = value;
       setCurrentPage(page);
-      setOpen(true);
       if (searchQuery) {
         const response =
           await InvoiceServices.getSalesInvoiceDataWithPaginationAndSearch(
@@ -326,6 +355,9 @@ export const SalesInvoiceView = () => {
                   <StyledTableCell align="center">GST</StyledTableCell>
                   <StyledTableCell align="center">TOTAL</StyledTableCell>
                   <StyledTableCell align="center">COMPANY</StyledTableCell>
+                  <StyledTableCell align="center">
+                    PROFORMA INVOICE LIST
+                  </StyledTableCell>
 
                   <StyledTableCell align="center">Action</StyledTableCell>
                 </TableRow>
@@ -373,12 +405,13 @@ export const SalesInvoiceView = () => {
         </Paper>
       </Grid>
       <Popup
-        maxWidth={"xl"}
+        fullScreen={true}
         title={"Create Sales Invoice"}
         openPopup={openPopup}
         setOpenPopup={setOpenPopup}
       >
         <SalesInvoiceCreate
+          getAllCustomerWiseOrderBook={getAllCustomerWiseOrderBook}
           getSalesInvoiceDetails={getSalesInvoiceDetails}
           setOpenPopup={setOpenPopup}
         />
@@ -441,6 +474,13 @@ function Row(props) {
         <StyledTableCell align="center">{row.gst}</StyledTableCell>
         <StyledTableCell align="center">{row.total}</StyledTableCell>
         <StyledTableCell align="center">{row.company}</StyledTableCell>
+        {row.proforma_invoice_list !== null ? (
+          <StyledTableCell align="center">
+            {`${row.proforma_invoice_list},`}
+          </StyledTableCell>
+        ) : (
+          <StyledTableCell align="center"></StyledTableCell>
+        )}
         <StyledTableCell align="center">
           <Button
             variant="contained"
@@ -466,7 +506,7 @@ function Row(props) {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {row.products.map((historyRow) => (
+                  {row.products_si.map((historyRow) => (
                     <TableRow key={historyRow.date}>
                       <TableCell component="th" scope="row">
                         {historyRow.product}
