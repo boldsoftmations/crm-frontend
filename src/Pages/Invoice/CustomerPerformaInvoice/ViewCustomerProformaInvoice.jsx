@@ -407,17 +407,17 @@ export const ViewCustomerProformaInvoice = () => {
                         >
                           View
                         </Button>
-                        {users.groups.toString() === "Sales" ||
-                          (users.groups.toString() === "Customer Service" &&
-                            row.status === "Raised" && (
-                              <Button
-                                variant="contained"
-                                color="success"
-                                onClick={() => openInPopup2(row.pi_number)}
-                              >
-                                Edit
-                              </Button>
-                            ))}
+                        {(users.groups.toString() === "Sales" ||
+                          users.groups.toString() === "Customer Service") &&
+                          row.status === "Raised" && (
+                            <Button
+                              variant="contained"
+                              color="success"
+                              onClick={() => openInPopup2(row.pi_number)}
+                            >
+                              Edit
+                            </Button>
+                          )}
                       </StyledTableCell>
                     </StyledTableRow>
                   );
