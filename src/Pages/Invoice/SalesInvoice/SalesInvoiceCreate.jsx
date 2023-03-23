@@ -35,7 +35,7 @@ export const SalesInvoiceCreate = (props) => {
   const [errorOpen, setErrorOpen] = useState(false);
   const [errMsg, setErrMsg] = useState("");
   const [customerorderBookData, setCustomerOrderBookData] = useState();
-  // const [customerorderBookOption, setCustomerOrderBookOption] = useState([]);
+  const [customerorderBookOption, setCustomerOrderBookOption] = useState([]);
   const [orderBookID, setOrderBookID] = useState([]);
   const [inputValue, setInputValue] = useState([]);
   const [products, setProducts] = useState([
@@ -69,8 +69,34 @@ export const SalesInvoiceCreate = (props) => {
     setProducts(data);
   };
 
-  const getCustomerWiseOrderBook = (data) => {
+  const getsearchByCompany = async (e) => {
     try {
+      e.preventDefault();
+      setOpen(true);
+      const response = await InvoiceServices.getAllOrderBookDataWithSearch(
+        "all",
+        "customer",
+        inputValue.company
+      );
+      setCustomerOrderBookOption(response.data);
+      console.log("response.data.results by company", response.data.results);
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      console.log("err", err);
+      alert(err.response.data.errors.proforma_invoice);
+    }
+  };
+
+  const getCustomerWiseOrderBook = async (value) => {
+    try {
+      // e.preventDefault();
+      setOpen(true);
+      const data = value;
+      console.log("data", data);
+      // const response = await InvoiceServices.getcustomerOrderBookDataByID(
+      //   inputValue.proforma_invoice
+      // );
       var productData = [];
       var ORDERBOOKID = [];
       data.map((name) => {
@@ -182,7 +208,21 @@ export const SalesInvoiceCreate = (props) => {
           </Alert>
         </Snackbar>
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={3}>
+            <TextField
+              sx={{ minWidth: "8rem" }}
+              name="company"
+              size="small"
+              label="search By Company Name"
+              variant="outlined"
+              onChange={handleInputChange}
+              value={inputValue.company}
+            />
+            <Button onClick={(e) => getsearchByCompany(e)} variant="contained">
+              Submit
+            </Button>
+          </Grid>
+          <Grid item xs={12} sm={3}>
             <Autocomplete
               name="pi_number"
               multiple
@@ -190,7 +230,7 @@ export const SalesInvoiceCreate = (props) => {
               disablePortal
               id="combo-box-demo"
               onChange={(event, value) => getCustomerWiseOrderBook(value)}
-              options={CustomerOrderBookData}
+              options={customerorderBookOption}
               loading={loading}
               getOptionLabel={(option) =>
                 `${option.proforma_invoice} - ${option.company}`
@@ -214,21 +254,6 @@ export const SalesInvoiceCreate = (props) => {
                 />
               )}
             />
-            {/* <TextField
-              sx={{ minWidth: "30rem", marginRight: "1rem" }}
-              name="proforma_invoice"
-              size="small"
-              label="Proforma Invoice"
-              variant="outlined"
-              onChange={handleInputChange}
-              value={inputValue.proforma_invoice}
-            />
-            <Button
-              onClick={(e) => getCustomerWiseOrderBook(e)}
-              variant="contained"
-            >
-              Submit
-            </Button> */}
           </Grid>
           <Grid item xs={12} sm={3}>
             <TextField
