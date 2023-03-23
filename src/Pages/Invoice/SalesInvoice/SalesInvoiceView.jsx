@@ -56,6 +56,7 @@ export const SalesInvoiceView = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterQuery, setFilterQuery] = useState("search");
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
+  const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
   useEffect(() => {
     getSalesInvoiceDetails();
@@ -69,6 +70,7 @@ export const SalesInvoiceView = () => {
     try {
       const response = await InvoiceServices.getcustomerOrderBookData("all");
       dispatch(getCustomerOrderBookData(response.data));
+      setLoading(false);
     } catch (err) {
       if (!err.response) {
         setErrMsg(
@@ -414,6 +416,7 @@ export const SalesInvoiceView = () => {
           getAllCustomerWiseOrderBook={getAllCustomerWiseOrderBook}
           getSalesInvoiceDetails={getSalesInvoiceDetails}
           setOpenPopup={setOpenPopup}
+          loading={loading}
         />
       </Popup>
       <Popup

@@ -2,6 +2,7 @@ import {
   Autocomplete,
   Box,
   Button,
+  CircularProgress,
   Grid,
   Snackbar,
   TextField,
@@ -24,8 +25,12 @@ const Root = styled("div")(({ theme }) => ({
 }));
 
 export const SalesInvoiceCreate = (props) => {
-  const { setOpenPopup, getSalesInvoiceDetails, getAllCustomerWiseOrderBook } =
-    props;
+  const {
+    setOpenPopup,
+    getSalesInvoiceDetails,
+    getAllCustomerWiseOrderBook,
+    loading,
+  } = props;
   const [open, setOpen] = useState(false);
   const [errorOpen, setErrorOpen] = useState(false);
   const [errMsg, setErrMsg] = useState("");
@@ -179,19 +184,34 @@ export const SalesInvoiceCreate = (props) => {
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
             <Autocomplete
-              name="seller_account"
+              name="pi_number"
               multiple
               size="small"
               disablePortal
               id="combo-box-demo"
               onChange={(event, value) => getCustomerWiseOrderBook(value)}
               options={CustomerOrderBookData}
+              loading={loading}
               getOptionLabel={(option) =>
                 `${option.proforma_invoice} - ${option.company}`
               }
               sx={{ minWidth: 300 }}
               renderInput={(params) => (
-                <TextField {...params} label="PI Number" />
+                <TextField
+                  {...params}
+                  label="PI Number"
+                  InputProps={{
+                    ...params.InputProps,
+                    endAdornment: (
+                      <>
+                        {loading ? (
+                          <CircularProgress color="inherit" size={20} />
+                        ) : null}
+                        {params.InputProps.endAdornment}
+                      </>
+                    ),
+                  }}
+                />
               )}
             />
             {/* <TextField
