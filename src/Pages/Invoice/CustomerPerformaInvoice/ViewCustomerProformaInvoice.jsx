@@ -359,6 +359,9 @@ export const ViewCustomerProformaInvoice = () => {
                   <StyledTableCell align="center">
                     BALANCE AMOUNT
                   </StyledTableCell>
+                  <StyledTableCell align="center">
+                    PAYMENT TERMS
+                  </StyledTableCell>
                   <StyledTableCell align="center">Action</StyledTableCell>
                 </TableRow>
               </TableHead>
@@ -394,7 +397,9 @@ export const ViewCustomerProformaInvoice = () => {
                       <StyledTableCell align="center">
                         {row.balance_amount}
                       </StyledTableCell>
-
+                      <StyledTableCell align="center">
+                        {row.payment_terms}
+                      </StyledTableCell>
                       <StyledTableCell align="center">
                         <Button
                           variant="contained"
@@ -402,16 +407,17 @@ export const ViewCustomerProformaInvoice = () => {
                         >
                           View
                         </Button>
-                        {users.groups.toString() === "Sales" &&
-                          row.status === "Raised" && (
-                            <Button
-                              variant="contained"
-                              color="success"
-                              onClick={() => openInPopup2(row.pi_number)}
-                            >
-                              Edit
-                            </Button>
-                          )}
+                        {users.groups.toString() === "Sales" ||
+                          (users.groups.toString() === "Customer Service" &&
+                            row.status === "Raised" && (
+                              <Button
+                                variant="contained"
+                                color="success"
+                                onClick={() => openInPopup2(row.pi_number)}
+                              >
+                                Edit
+                              </Button>
+                            ))}
                       </StyledTableCell>
                     </StyledTableRow>
                   );

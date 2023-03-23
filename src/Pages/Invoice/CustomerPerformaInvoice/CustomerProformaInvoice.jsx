@@ -167,7 +167,8 @@ export const CustomerProformaInvoice = (props) => {
               )}
           </div>
           <div className="col-xs-6 ">
-            {users.groups.toString() === "Sales" &&
+            {(users.groups.toString() === "Sales" ||
+              users.groups.toString() === "Customer Service") &&
               invoiceData.status === "Raised" && (
                 <button
                   type="button"
