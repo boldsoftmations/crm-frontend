@@ -232,39 +232,62 @@ export const CustomerOrderBookDetails = () => {
       errRef.current.focus();
     }
   };
-
-  let data = exportOrderBookData.map((item) => {
-    if (
-      userData.groups.toString() === "Factory-Mumbai-OrderBook" ||
-      userData.groups.toString() === "Factory-Delhi-OrderBook"
-    ) {
-      return {
-        company: item.company,
-        pi_date: item.pi_date,
-        proforma_invoice: item.proforma_invoice,
-        billing_city: item.billing_city,
-        shipping_city: item.shipping_city,
-        product: item.product,
-        quantity: item.quantity,
-        // amount: item.amount,
-        pending_quantity: item.pending_quantity,
-        seller_state: item.seller_state,
-      };
-    } else {
-      return {
-        company: item.company,
-        pi_date: item.pi_date,
-        proforma_invoice: item.proforma_invoice,
-        billing_city: item.billing_city,
-        shipping_city: item.shipping_city,
-        product: item.product,
-        quantity: item.quantity,
-        amount: item.amount,
-        pending_quantity: item.pending_quantity,
-        seller_state: item.seller_state,
-      };
-    }
-  });
+  
+  let data = exportOrderBookData
+    .map((item) => {
+      if (
+        userData.groups.toString() === "Factory-Mumbai-OrderBook" ||
+        userData.groups.toString() === "Factory-Delhi-OrderBook"
+      ) {
+        return {
+          company: item.company,
+          pi_date: item.pi_date,
+          proforma_invoice: item.proforma_invoice,
+          billing_city: item.billing_city,
+          shipping_city: item.shipping_city,
+          product: item.product,
+          quantity: item.quantity,
+          // amount: item.amount,
+          pending_quantity: item.pending_quantity,
+          seller_state: item.seller_state,
+        };
+      } else if (userData.groups.toString() === "Customer Service") {
+        return {
+          company: item.company,
+          pi_date: item.pi_date,
+          proforma_invoice: item.proforma_invoice,
+          billing_city: item.billing_city,
+          shipping_city: item.shipping_city,
+          product: item.product,
+          quantity: item.quantity,
+          amount: item.amount,
+          pending_quantity: item.pending_quantity,
+          seller_state: item.seller_state,
+          billing_address: item.billing_address,
+          shipping_address: item.shipping_address,
+          payment_terms: item.payment_terms,
+          delivery_terms: item.delivery_terms,
+          transporter_name: item.transporter_name,
+          place_of_supply: item.place_of_supply,
+          buyer_order_no: item.buyer_order_no,
+          buyer_order_date: item.buyer_order_date,
+        };
+      } else {
+        return {
+          company: item.company,
+          pi_date: item.pi_date,
+          proforma_invoice: item.proforma_invoice,
+          billing_city: item.billing_city,
+          shipping_city: item.shipping_city,
+          product: item.product,
+          quantity: item.quantity,
+          amount: item.amount,
+          pending_quantity: item.pending_quantity,
+          seller_state: item.seller_state,
+        };
+      }
+    })
+    .filter((item) => item !== null);
 
   //   const data = exportOrderBookData.map(item =>
   //     if (userData.groups.toString() === "Factory") {
@@ -534,5 +557,28 @@ const headers = [
   {
     label: "Seller State",
     key: "seller_state",
+  },
+  { label: "Billing Address", key: "billing_address" },
+  { label: "Shipping Address", key: "shipping_address" },
+  { label: "Payment Terms", key: "payment_terms" },
+  {
+    label: "Delivery Terms",
+    key: "delivery_terms",
+  },
+  {
+    label: "Transporter Name",
+    key: "transporter_name",
+  },
+  {
+    label: "Place Of Supply",
+    key: "place_of_supply",
+  },
+  {
+    label: "Buyer Order No",
+    key: "buyer_order_no",
+  },
+  {
+    label: "Buyer Order Date",
+    key: "buyer_order_date",
   },
 ];
