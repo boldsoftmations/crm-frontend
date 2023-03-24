@@ -26,6 +26,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getSellerAccountData } from "../../../Redux/Action/Action";
 import InvoiceServices from "../../../services/InvoiceService";
 import { CustomLoader } from "../../../Components/CustomLoader";
+import { CreateCustomerProformaInvoice } from "../../Invoice/CustomerPerformaInvoice/CreateCustomerProformaInvoice";
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.common.black,
@@ -50,6 +51,7 @@ export const CompanyDetails = () => {
   const dispatch = useDispatch();
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
+  const [openPopup3, setOpenPopup3] = useState(false);
   const [open, setOpen] = useState(false);
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
@@ -59,7 +61,7 @@ export const CompanyDetails = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const data = useSelector((state) => state.auth);
-  const users = data.profile;
+  const userData = data.profile;
   const handleInputChange = (event) => {
     setFilterSelectedQuery(event.target.value);
     getSearchData(event.target.value);
@@ -185,6 +187,11 @@ export const CompanyDetails = () => {
     setOpenPopup(true);
   };
 
+  const openInPopup2 = (item) => {
+    setRecordForEdit(item);
+    setOpenPopup3(true);
+  };
+
   return (
     <>
       <CustomLoader open={open} />
@@ -214,14 +221,16 @@ export const CompanyDetails = () => {
               </h3>
             </Box>
             <Box flexGrow={0.5} align="right">
-              <Button
-                onClick={() => setOpenPopup2(true)}
-                variant="contained"
-                color="success"
-                // startIcon={<AddIcon />}
-              >
-                Add
-              </Button>
+              {userData.groups.toString() !== "Sales" && (
+                <Button
+                  onClick={() => setOpenPopup2(true)}
+                  variant="contained"
+                  color="success"
+                  // startIcon={<AddIcon />}
+                >
+                  Add
+                </Button>
+              )}
             </Box>
           </Box>
           <TableContainer
@@ -279,8 +288,7 @@ export const CompanyDetails = () => {
                           variant="outlined"
                         />
                       </StyledTableCell>
-                      {/* {users.groups.toString() !== "Sales" &&
-                        users.groups.toString() !== "Customer Service" && ( */}
+
                       <StyledTableCell align="center">
                         <Button
                           variant="contained"
@@ -288,8 +296,15 @@ export const CompanyDetails = () => {
                         >
                           View
                         </Button>
+
+                        <Button
+                          variant="contained"
+                          color="success"
+                          onClick={() => openInPopup2(row.id)}
+                        >
+                          Generate PI
+                        </Button>
                       </StyledTableCell>
-                      {/* )} */}
                     </StyledTableRow>
                   );
                 })}
@@ -330,6 +345,17 @@ export const CompanyDetails = () => {
           setOpenPopup={setOpenPopup}
           getAllCompanyDetails={getAllCompanyDetails}
           recordForEdit={recordForEdit}
+        />
+      </Popup>
+      <Popup
+        maxWidth={"xl"}
+        title={"Create Customer Proforma Invoice"}
+        openPopup={openPopup3}
+        setOpenPopup={setOpenPopup3}
+      >
+        <CreateCustomerProformaInvoice
+          recordForEdit={recordForEdit}
+          setOpenPopup={setOpenPopup3}
         />
       </Popup>
     </>

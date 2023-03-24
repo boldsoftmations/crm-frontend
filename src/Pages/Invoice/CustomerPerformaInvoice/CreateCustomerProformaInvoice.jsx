@@ -49,7 +49,7 @@ const values = {
 };
 
 export const CreateCustomerProformaInvoice = (props) => {
-  const { setOpenPopup, CustomerData } = props;
+  const { setOpenPopup, recordForEdit } = props;
   const navigate = useNavigate();
   const [openPopup2, setOpenPopup2] = useState(false);
   const [openPopup3, setOpenPopup3] = useState(false);
@@ -59,7 +59,7 @@ export const CreateCustomerProformaInvoice = (props) => {
   const [product, setProduct] = useState([]);
   const [paymentTermData, setPaymentTermData] = useState([]);
   const [deliveryTermData, setDeliveryTermData] = useState([]);
-  // const [companyOptions, setCompanyOptions] = useState([]);
+  const [customerData, setCustomerData] = useState([]);
   const [contactOptions, setContactOptions] = useState([]);
   const [warehouseOptions, setWarehouseOptions] = useState([]);
   const [companyData, setCompanyData] = useState([]);
@@ -143,19 +143,18 @@ export const CreateCustomerProformaInvoice = (props) => {
   };
 
   useEffect(() => {
-    if (companyData) getAllCompanyDetailsByID();
-  }, [companyData]);
+    getAllCompanyDetailsByID();
+  }, [openPopup3]);
 
   const getAllCompanyDetailsByID = async () => {
     try {
       setOpen(true);
-      const ID = CustomerData.id;
-      if (ID) {
-        const response = await CustomerServices.getCompanyDataById(ID);
-        setContactOptions(response.data.contacts);
-        setWarehouseOptions(response.data.warehouse);
-        setOpen(false);
-      }
+
+      const response = await CustomerServices.getCompanyDataById(recordForEdit);
+      setCustomerData(response.data);
+      setContactOptions(response.data.contacts);
+      setWarehouseOptions(response.data.warehouse);
+      setOpen(false);
     } catch (err) {
       setOpen(false);
       console.log("company data by id error", err);
@@ -219,18 +218,18 @@ export const CreateCustomerProformaInvoice = (props) => {
         seller_account_no: selectedSellerData.current_account_no,
         seller_ifsc_code: selectedSellerData.ifsc_code,
         seller_branch: selectedSellerData.branch,
-        company: CustomerData.id,
-        company_name: CustomerData.name,
+        company: customerData.id,
+        company_name: customerData.name,
         contact: contactData.contact,
         contact_person_name: contactData.name,
         alternate_contact: contactData.alternate_contact,
-        company_name: CustomerData.name,
-        gst_number: CustomerData.gst_number,
-        pan_number: CustomerData.pan_number,
-        billing_address: CustomerData.address,
-        billing_state: CustomerData.state,
-        billing_city: CustomerData.city,
-        billing_pincode: CustomerData.pincode,
+        company_name: customerData.name,
+        gst_number: customerData.gst_number,
+        pan_number: customerData.pan_number,
+        billing_address: customerData.address,
+        billing_state: customerData.state,
+        billing_city: customerData.city,
+        billing_pincode: customerData.pincode,
         address: warehouseData.address,
         pincode: warehouseData.pincode,
         state: warehouseData.state,
@@ -350,7 +349,7 @@ export const CreateCustomerProformaInvoice = (props) => {
               size="small"
               label="Company"
               variant="outlined"
-              value={CustomerData.name}
+              value={customerData.name ? customerData.name : ""}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -422,7 +421,7 @@ export const CreateCustomerProformaInvoice = (props) => {
               size="small"
               label="Billing Address"
               variant="outlined"
-              value={CustomerData.address ? CustomerData.address : ""}
+              value={customerData.address ? customerData.address : ""}
             />
           </Grid>
 
@@ -434,7 +433,7 @@ export const CreateCustomerProformaInvoice = (props) => {
               size="small"
               label="Billing City"
               variant="outlined"
-              value={CustomerData.city ? CustomerData.city : ""}
+              value={customerData.city ? customerData.city : ""}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -445,7 +444,7 @@ export const CreateCustomerProformaInvoice = (props) => {
               size="small"
               label="Billing State"
               variant="outlined"
-              value={CustomerData.state ? CustomerData.state : ""}
+              value={customerData.state ? customerData.state : ""}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -457,7 +456,7 @@ export const CreateCustomerProformaInvoice = (props) => {
               type={"number"}
               label="Billing Pin Code"
               variant="outlined"
-              value={CustomerData.pincode ? CustomerData.pincode : ""}
+              value={customerData.pincode ? customerData.pincode : ""}
             />
           </Grid>
           <Grid item xs={12} sm={4}>

@@ -518,7 +518,7 @@ export const CustomerProformaInvoice = (props) => {
                           </td>
                           <td className="text-center">
                             <strong style={{ ...typographyStyling }}>
-                              HSN COCE
+                              HSN CODE
                             </strong>
                           </td>
                           <td className="text-center">

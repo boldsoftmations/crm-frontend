@@ -83,8 +83,8 @@ export const CreateContactDetails = (props) => {
   const validate = (values) => {
     const errors = {};
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
-    const adharnumberRegex = /^[2-9]{1}[0-9]{3}\\s[0-9]{4}\\s[0-9]{4}$/i;
-    const pannoregex = /^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?$/i;
+    // const adharnumberRegex = /^[2-9]{1}[0-9]{3}\\s[0-9]{4}\\s[0-9]{4}$/i;
+    // const pannoregex = /^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?$/i;
     if (!values.email) {
       errors.email = "Email is required!";
     } else if (!regex.test(values.email)) {
@@ -194,9 +194,9 @@ export const CreateContactDetails = (props) => {
             <TextField
               fullWidth
               disabled={
-                designation !== "director" &&
-                designation !== "owner" &&
-                designation !== "partner"
+                designation !== "Director" &&
+                designation !== "Owner" &&
+                designation !== "Partner"
               }
               size="small"
               name="pan_no"
@@ -214,9 +214,9 @@ export const CreateContactDetails = (props) => {
             <TextField
               fullWidth
               disabled={
-                designation !== "director" &&
-                designation !== "owner" &&
-                designation !== "partner"
+                designation !== "Director" &&
+                designation !== "Owner" &&
+                designation !== "Partner"
               }
               size="small"
               type={"number"}

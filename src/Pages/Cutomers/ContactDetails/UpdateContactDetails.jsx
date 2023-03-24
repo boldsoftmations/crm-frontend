@@ -10,7 +10,7 @@ import {
   MenuItem,
   Select,
   TextField,
-  Typography,
+  // Typography,
 } from "@mui/material";
 import CustomerServices from "../../../services/CustomerService";
 import { CustomLoader } from "../../../Components/CustomLoader";
@@ -70,19 +70,6 @@ export const UpdateContactDetails = (props) => {
             : phone2
           : phone2;
 
-      let aadhaarNumber =
-        designation === "director" ||
-        designation === "owner" ||
-        designation === "partner"
-          ? inputValue.aadhaar
-          : "";
-      let panNumber =
-        designation === "director" ||
-        designation === "owner" ||
-        designation === "partner"
-          ? inputValue.pan_number
-          : "";
-      console.log("contact1 :>> ", contact1);
       const req = {
         name: inputValue.name ? inputValue.name : "",
         company: inputValue.company ? inputValue.company : "",
@@ -93,8 +80,8 @@ export const UpdateContactDetails = (props) => {
           : "",
         contact: contact1 ? contact1 : "",
         alternate_contact: contact2 ? contact2 : null,
-        pan_number: panNumber ? inputValue.pan_number : null,
-        aadhaar: aadhaarNumber ? aadhaarNumber : null,
+        pan_number: inputValue.pan_number ? inputValue.pan_number : null,
+        aadhaar: inputValue.aadhar_no ? inputValue.aadhar_no : null,
       };
       await CustomerServices.updateContactData(IDForEdit, req);
       setOpenPopup(false);
@@ -220,7 +207,7 @@ export const UpdateContactDetails = (props) => {
             <TextField
               fullWidth
               size="small"
-              name="email"
+              name="alternate_email"
               label="Alt Email"
               variant="outlined"
               value={
@@ -230,15 +217,15 @@ export const UpdateContactDetails = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            {designation === "director" ||
-            designation === "owner" ||
-            designation === "partner" ? (
+            {designation === "Director" ||
+            designation === "Owner" ||
+            designation === "Partner" ? (
               <TextField
                 fullWidth
                 disabled={
-                  designation !== "director" &&
-                  designation !== "owner" &&
-                  designation !== "partner"
+                  designation !== "Director" &&
+                  designation !== "Owner" &&
+                  designation !== "Partner"
                 }
                 onChange={handleInputChange}
                 size="small"
@@ -253,15 +240,15 @@ export const UpdateContactDetails = (props) => {
             ) : null}
           </Grid>
           <Grid item xs={12} sm={6}>
-            {designation === "director" ||
-            designation === "owner" ||
-            designation === "partner" ? (
+            {designation === "Director" ||
+            designation === "Owner" ||
+            designation === "Partner" ? (
               <TextField
                 fullWidth
                 disabled={
-                  designation !== "director" &&
-                  designation !== "owner" &&
-                  designation !== "partner"
+                  designation !== "Director" &&
+                  designation !== "Owner" &&
+                  designation !== "Partner"
                 }
                 onChange={handleInputChange}
                 size="small"

@@ -1,10 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Autocomplete,
-  Backdrop,
   Box,
   Button,
-  CircularProgress,
   FormControl,
   FormControlLabel,
   FormHelperText,
@@ -19,17 +17,15 @@ import {
   Chip,
 } from "@mui/material";
 import CustomerServices from "../../../services/CustomerService";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getCompanyName } from "../../../Redux/Action/Action";
 import axios from "axios";
 import LeadServices from "../../../services/LeadService";
 import { styled } from "@mui/material/styles";
-import { Popup } from "./../../../Components/Popup";
-import { CreateCustomerProformaInvoice } from "./../../Invoice/CustomerPerformaInvoice/CreateCustomerProformaInvoice";
 import { CustomLoader } from "../../../Components/CustomLoader";
 export const UpdateCompanyDetails = (props) => {
   const { setOpenPopup, getAllContactDetailsByID, recordForEdit } = props;
-  const [openPopup2, setOpenPopup2] = useState(false);
+
   const [open, setOpen] = useState(false);
   const [typeData, setTypeData] = useState("");
   const [category, setCategory] = useState("");
@@ -40,6 +36,8 @@ export const UpdateCompanyDetails = (props) => {
   const [assign, setAssign] = useState([]);
   const [errorMessage, setErrorMessage] = useState([]);
   const dispatch = useDispatch();
+  const data = useSelector((state) => state.auth);
+  const userData = data.profile;
   const handleChange = (event) => {
     setTypeData(event.target.value);
   };
@@ -148,7 +146,7 @@ export const UpdateCompanyDetails = (props) => {
         onSubmit={(e) => UpdateCompanyDetails(e)}
       >
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12}>
             <>
               <FormControl>
                 <FormLabel id="demo-row-radio-buttons-group-label">
@@ -175,21 +173,7 @@ export const UpdateCompanyDetails = (props) => {
               </FormControl>
             </>
           </Grid>
-          <Grid item xs={12} sm={6} display="flex" justifyContent="flex-end">
-            {" "}
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => setOpenPopup2(true)}
-              // className={classes.button}
-              style={{
-                marginTop: "1em",
-                marginRight: "1em",
-              }}
-            >
-              Generate PI
-            </Button>
-          </Grid>
+
           <Grid item xs={12} sm={4}>
             <TextField
               fullWidth
@@ -433,26 +417,17 @@ export const UpdateCompanyDetails = (props) => {
             />
           </Grid>
         </Grid>
-        <Button
-          type="submit"
-          fullWidth
-          variant="contained"
-          sx={{ mt: 3, mb: 2 }}
-        >
-          Submit
-        </Button>
+        {userData.groups.toString() !== "Sales" && (
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+          >
+            Submit
+          </Button>
+        )}
       </Box>
-      <Popup
-        maxWidth={"xl"}
-        title={"Create Customer Proforma Invoice"}
-        openPopup={openPopup2}
-        setOpenPopup={setOpenPopup2}
-      >
-        <CreateCustomerProformaInvoice
-          CustomerData={inputValue}
-          setOpenPopup={setOpenPopup2}
-        />
-      </Popup>
     </>
   );
 };
