@@ -417,7 +417,11 @@ export const UpdateCompanyDetails = (props) => {
             />
           </Grid>
         </Grid>
-        {userData.groups.toString() !== "Sales" && (
+        {((userData.is_staff === true &&
+          userData.groups.toString() === "Sales") ||
+          userData.is_staff === true ||
+          userData.groups.toString() === "Accounts" ||
+          userData.groups.toString() === "Customer Service") && (
           <Button
             type="submit"
             fullWidth
