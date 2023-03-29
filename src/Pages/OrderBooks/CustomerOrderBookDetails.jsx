@@ -232,7 +232,7 @@ export const CustomerOrderBookDetails = () => {
       errRef.current.focus();
     }
   };
-  
+  console.log("exportOrderBookData", exportOrderBookData);
   let data = exportOrderBookData
     .map((item) => {
       if (
@@ -260,7 +260,7 @@ export const CustomerOrderBookDetails = () => {
           shipping_city: item.shipping_city,
           product: item.product,
           quantity: item.quantity,
-          amount: item.amount,
+          rate: item.rate,
           pending_quantity: item.pending_quantity,
           seller_state: item.seller_state,
           billing_address: item.billing_address,
@@ -396,7 +396,11 @@ export const CustomerOrderBookDetails = () => {
             <Box flexGrow={0.5}>
               <CSVLink
                 data={data}
-                headers={headers}
+                headers={
+                  userData.groups.toString() === "Customer Service"
+                    ? headers
+                    : headers2
+                }
                 filename={"my-file.csv"}
                 target="_blank"
                 style={{
@@ -533,6 +537,62 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 const headers = [
+  {
+    label: "Seller State",
+    key: "seller_state",
+  },
+  { label: "PI Date", key: "pi_date" },
+  { label: "PI Number", key: "proforma_invoice" },
+  { label: "Customer", key: "company" },
+
+  { label: "Billing City", key: "billing_city" },
+  { label: "Billing Address", key: "billing_address" },
+  { label: "Shipping City", key: "shipping_city" },
+  { label: "Shipping Address", key: "shipping_address" },
+  {
+    label: "Product",
+    key: "product",
+  },
+  {
+    label: "Pending Quantity",
+    key: "pending_quantity",
+  },
+  {
+    label: "Invoice Quantity",
+    key: "",
+  },
+  {
+    label: "Rate",
+    key: "rate",
+  },
+  {
+    label: "Amount",
+    key: "",
+  },
+  { label: "Payment Terms", key: "payment_terms" },
+  {
+    label: "Delivery Terms",
+    key: "delivery_terms",
+  },
+  {
+    label: "Transporter Name",
+    key: "transporter_name",
+  },
+  {
+    label: "Place Of Supply",
+    key: "place_of_supply",
+  },
+  {
+    label: "Buyer Order No",
+    key: "buyer_order_no",
+  },
+  {
+    label: "Buyer Order Date",
+    key: "buyer_order_date",
+  },
+];
+
+const headers2 = [
   { label: "Customer", key: "company" },
   { label: "PI Date", key: "pi_date" },
   { label: "PI Number", key: "proforma_invoice" },
@@ -557,28 +617,5 @@ const headers = [
   {
     label: "Seller State",
     key: "seller_state",
-  },
-  { label: "Billing Address", key: "billing_address" },
-  { label: "Shipping Address", key: "shipping_address" },
-  { label: "Payment Terms", key: "payment_terms" },
-  {
-    label: "Delivery Terms",
-    key: "delivery_terms",
-  },
-  {
-    label: "Transporter Name",
-    key: "transporter_name",
-  },
-  {
-    label: "Place Of Supply",
-    key: "place_of_supply",
-  },
-  {
-    label: "Buyer Order No",
-    key: "buyer_order_no",
-  },
-  {
-    label: "Buyer Order Date",
-    key: "buyer_order_date",
   },
 ];
