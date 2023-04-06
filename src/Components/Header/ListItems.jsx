@@ -40,6 +40,7 @@ export const ListItems = (props) => {
   const [expandInventory, setExpandInventory] = useState(false);
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
+
   return (
     <div>
       {userData.is_staff === true ? (
@@ -602,16 +603,18 @@ export const ListItems = (props) => {
         </>
       ) : (
         <>
-          {userData.groups.toString() === "Factory-Mumbai-OrderBook" ||
-          userData.groups.toString() === "Factory-Delhi-OrderBook" ||
-          userData.groups.toString() === "Factory-Mumbai-Dispatch" ||
-          userData.groups.toString() === "Factory-Delhi-Dispatch" ||
-          userData.groups.toString() === "Customer Service" ? (
+          {userData.groups.includes("Factory-Mumbai-Dispatch") ||
+          userData.groups.includes("Factory-Delhi-Dispatch") ||
+          userData.groups.includes("Factory-Delhi-OrderBook") ||
+          userData.groups.includes("Factory-Mumbai-OrderBook", "Production") ||
+          userData.groups.includes("Production") ||
+          userData.groups.includes("Customer Service") ? (
             <>
-              {userData.groups.toString() !== "Customer Service" ? (
+              {!userData.groups.includes("Customer Service") ? (
                 <>
-                  {userData.groups.toString() === "Factory-Mumbai-OrderBook" ||
-                  userData.groups.toString() === "Factory-Delhi-OrderBook" ? (
+                  {(userData.groups.includes("Factory-Mumbai-OrderBook") &&
+                    userData.groups.includes("Production")) ||
+                  userData.groups.includes("Factory-Delhi-OrderBook") ? (
                     // userData.groups.toString() !== "Factory-Delhi-Dispatch" ||
                     // userData.groups.toString() !== "Factory-Mumbai-Dispatch" ? (
                     <>
@@ -675,6 +678,97 @@ export const ListItems = (props) => {
                               onClick={() => setOpen(false)}
                               inset
                               primary="PI Wise Order Book"
+                            />
+                          </ListItem>
+                        </List>
+                      </Collapse>
+
+                      {/* For PRODUCTION Role */}
+                      <ListItem
+                        button
+                        onClick={() => setExpandInventory(!expandInventory)}
+                        style={{ width: 300 }}
+                      >
+                        <ListItemIcon>
+                          <Inventory2Icon />
+                        </ListItemIcon>
+                        <ListItemText primary="Inventory" />
+                        {expandInventory ? (
+                          <ExpandLessIcon />
+                        ) : (
+                          <ExpandMoreIcon />
+                        )}
+                      </ListItem>
+                      <Collapse
+                        in={expandInventory}
+                        timeout="auto"
+                        unmountOnExit
+                      >
+                        <Divider />
+                        <List component="div" disablePadding>
+                          <ListItem
+                            button
+                            component={RouterLink}
+                            to="/inventory/view-production-inventory-cons"
+                            style={{ width: 300 }}
+                          >
+                            <ListItemText
+                              component={Button}
+                              onClick={() => setOpen(false)}
+                              inset
+                              primary="Production Inventory (Cons)"
+                            />
+                          </ListItem>
+                          <ListItem
+                            button
+                            component={RouterLink}
+                            to="/inventory/view-material-requisition-form"
+                            style={{ width: 300 }}
+                          >
+                            <ListItemText
+                              component={Button}
+                              onClick={() => setOpen(false)}
+                              inset
+                              primary="Material Requisition Form"
+                            />
+                          </ListItem>
+                          <ListItem
+                            button
+                            component={RouterLink}
+                            to="/inventory/view-bill-of-materials"
+                            style={{ width: 300 }}
+                          >
+                            <ListItemText
+                              component={Button}
+                              onClick={() => setOpen(false)}
+                              inset
+                              primary="Bill of Materials"
+                            />
+                          </ListItem>
+                          <ListItem
+                            button
+                            component={RouterLink}
+                            to="/inventory/view-production-entry"
+                            style={{ width: 300 }}
+                          >
+                            <ListItemText
+                              component={Button}
+                              onClick={() => setOpen(false)}
+                              inset
+                              primary="ProductionEntry"
+                            />
+                          </ListItem>
+                          <ListItem
+                            button
+                            component={RouterLink}
+                            to="/inventory/view-material-transfer-note"
+                            style={{ width: 300 }}
+                          >
+                            <ListItemText
+                              component={Button}
+                              onClick={() => setOpen(false)}
+                              inset
+                              primary="Material Transfer Note"
                             />
                           </ListItem>
                         </List>
