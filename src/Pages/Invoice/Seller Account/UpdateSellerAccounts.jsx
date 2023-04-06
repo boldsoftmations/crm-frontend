@@ -8,8 +8,8 @@ import {
   TextField,
 } from "@mui/material";
 import axios from "axios";
-import CustomerServices from "../../../services/CustomerService";
-import { useSelector } from "react-redux";
+// import CustomerServices from "../../../services/CustomerService";
+// import { useSelector } from "react-redux";
 import InvoiceServices from "./../../../services/InvoiceService";
 
 export const UpdateSellerAccounts = (props) => {
@@ -18,7 +18,7 @@ export const UpdateSellerAccounts = (props) => {
   const [inputValue, setInputValue] = useState([]);
   const [bankData, setBankData] = useState([]);
   const [errMsg, setErrMsg] = useState("");
-  const data = useSelector((state) => state.auth);
+  // const data = useSelector((state) => state.auth);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -70,6 +70,7 @@ export const UpdateSellerAccounts = (props) => {
         current_account_no: inputValue.current_account_no,
         address: inputValue.address,
         gst_number: inputValue.gst_number,
+        grn_prefix: inputValue.grn_prefix,
         pincode: inputValue.pincode,
         state: inputValue.state,
         city: inputValue.city,
@@ -107,9 +108,10 @@ export const UpdateSellerAccounts = (props) => {
 
       <Box component="form" noValidate onSubmit={(e) => updateBankDetails(e)}>
         <Grid container spacing={2}>
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
+              multiline
               size="small"
               name="name"
               label="Company Name"
@@ -118,6 +120,7 @@ export const UpdateSellerAccounts = (props) => {
               onChange={handleInputChange}
             />
           </Grid>
+
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
@@ -142,6 +145,17 @@ export const UpdateSellerAccounts = (props) => {
               label="Gst Number"
               variant="outlined"
               value={inputValue.gst_number ? inputValue.gst_number : ""}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              name="grn_prefix"
+              size="small"
+              label="GRN Prefix"
+              variant="outlined"
+              value={inputValue.grn_prefix ? inputValue.grn_prefix : ""}
               onChange={handleInputChange}
             />
           </Grid>

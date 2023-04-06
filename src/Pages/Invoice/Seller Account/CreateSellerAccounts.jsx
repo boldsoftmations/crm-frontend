@@ -47,6 +47,7 @@ export const CreateSellerAccounts = (props) => {
         current_account_no: inputValue.current_account_no,
         address: inputValue.address,
         gst_number: inputValue.gst_number,
+        grn_prefix: inputValue.grn_prefix,
         pincode: inputValue.pincode,
         state: inputValue.state,
         city: inputValue.city,
@@ -84,8 +85,9 @@ export const CreateSellerAccounts = (props) => {
 
       <Box component="form" noValidate onSubmit={(e) => createBankDetails(e)}>
         <Grid container spacing={2}>
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={6}>
             <TextField
+              multiline
               fullWidth
               size="small"
               name="name"
@@ -115,6 +117,17 @@ export const CreateSellerAccounts = (props) => {
               label="Gst Number"
               variant="outlined"
               value={inputValue.gst_number ? inputValue.gst_number : ""}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              name="grn_prefix"
+              size="small"
+              label="GRN Prefix"
+              variant="outlined"
+              value={inputValue.grn_prefix ? inputValue.grn_prefix : ""}
               onChange={handleInputChange}
             />
           </Grid>
