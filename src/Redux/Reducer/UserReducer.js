@@ -40,6 +40,10 @@ const userReducer = (state = initialState, action) => {
         productCodeAllData: null,
         sellerAccount: null,
         customerOrderBookData: null,
+        vendorName: null,
+        finishgoodsProduct: null,
+        rawMaterialProduct: null,
+        consumableProduct: null,
       };
     case types.REFRESH_TOKEN:
       return {
@@ -106,6 +110,30 @@ const userReducer = (state = initialState, action) => {
         ...state,
         loading: false,
         customerOrderBookData: action.payload,
+      };
+    case types.VENDOR_NAME:
+      return {
+        ...state,
+        loading: false,
+        vendorName: action.payload,
+      };
+    case types.FINISHGOODS_PRODUCT:
+      return {
+        ...state,
+        loading: false,
+        finishgoodsProduct: action.payload,
+      };
+    case types.RAWMATERIAL_PRODUCT:
+      return {
+        ...state,
+        loading: false,
+        rawMaterialProduct: action.payload,
+      };
+    case types.CONSUMABLE_PRODUCT:
+      return {
+        ...state,
+        loading: false,
+        consumableProduct: action.payload,
       };
     default:
       return state;

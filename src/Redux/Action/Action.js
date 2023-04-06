@@ -109,3 +109,31 @@ export const getCustomerOrderBookData = (data) => {
     payload: data,
   };
 };
+
+export const getVendorName = (data) => {
+  return {
+    type: types.VENDOR_NAME,
+    payload: data,
+  };
+};
+
+export const getFinishGoodProduct = (data) => {
+  return {
+    type: types.FINISHGOODS_PRODUCT,
+    payload: data,
+  };
+};
+
+export const getRawMaterialProduct = (data) => {
+  return {
+    type: types.RAWMATERIAL_PRODUCT,
+    payload: data,
+  };
+};
+
+export const getConsumableProduct = (data) => {
+  return {
+    type: types.CONSUMABLE_PRODUCT,
+    payload: data,
+  };
+};

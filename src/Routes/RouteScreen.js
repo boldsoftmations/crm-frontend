@@ -6,7 +6,7 @@ import { AssignTo } from "../Pages/Leads/AssignTo";
 import { ChangePassword } from "./../Pages/Auth/ChangePassword";
 import { Dashboard } from "../Pages/Dashboard/Dashboard";
 import { ForgotPassword } from "./../Pages/Auth/ForgotPassword";
-import { PageNotFound } from "../Components/Page/PageNotFound";
+// import { PageNotFound } from "../Components/Page/PageNotFound";
 import { PendingFollowup } from "../Pages/FollowUp/PendingFollowup";
 import { TodayFollowup } from "../Pages/FollowUp/TodayFollowup";
 import { UpcomingFollowup } from "../Pages/FollowUp/UpcomingFollowup";
@@ -33,18 +33,30 @@ import { ProductOrderBookDetails } from "./../Pages/OrderBooks/ProductOrderBookD
 import { SalesInvoiceView } from "./../Pages/Invoice/SalesInvoice/SalesInvoiceView";
 import { Auths } from "../Pages/Auth/Auths";
 import { Profile } from "./../Pages/Profile/Profile";
-import LeadServices from "./../services/LeadService";
-import { getProfileUser } from "./../Redux/Action/Action";
 import { ViewDispatch } from "./../Pages/Dispatch/ViewDispatch";
 import { Dispatched } from "./../Pages/Dispatch/Dispatched";
 import { SalesRegisterView } from "./../Pages/Dispatch/SalesRegisterView";
 import { PIOrderBookDetails } from "../Pages/OrderBooks/PIOrderBookDetails";
 import { Home } from "../Pages/Home";
+import { VendorView } from "../Pages/Inventory/VendorInventoryDetail/VendorView";
+import { PackingListView } from "../Pages/Inventory/PackingList/PackingListView";
+import { GRNView } from "../Pages/Inventory/GRN/GRNView";
+import { PurchaseInvoiceView } from "../Pages/Inventory/Purchase Invoice/PurchaseInvoiceView";
+import { StoresInventoryView } from "../Pages/Inventory/Stores Inventory/StoresInventoryView";
+import { MaterialRequisitionFormView } from "../Pages/Inventory/Material Requisition Form/MaterialRequisitionFormView";
+import { BillofMaterialsView } from "../Pages/Inventory/Bill of Materials/BillofMaterialsView";
+import { ProductionEntryView } from "../Pages/Inventory/Production Entry/ProductionEntryView";
+import { MaterialTransferNoteView } from "../Pages/Inventory/Material Transfer Note/MaterialTransferNoteView";
+import { ProductionInventoryView } from "../Pages/Inventory/Production Inventory/ProductionInventoryView";
+import { ProductionInventoryConsView } from "../Pages/Inventory/Production Inventory/ProductionInventoryConsView";
+import { StoresInventoryConsView } from "../Pages/Inventory/Stores Inventory/StoresInventoryConsView";
+import LeadServices from "../services/LeadService";
+import { getProfileUser } from "../Redux/Action/Action";
 
 export const RouteScreen = () => {
-  const dispatch = useDispatch();
   const tokenData = useSelector((state) => state.auth);
   const token = tokenData.user;
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (token) {
@@ -61,7 +73,6 @@ export const RouteScreen = () => {
       console.error(err);
     }
   };
-
   return (
     <div className="appcontainer">
       <Routes>
@@ -167,6 +178,49 @@ export const RouteScreen = () => {
             <Route
               path="/dispatch/view-sales-register"
               element={<SalesRegisterView />}
+            />
+            {/* inventory Routes */}
+            <Route path="/inventory/view-vendor" element={<VendorView />} />
+            <Route
+              path="/inventory/view-packing_list"
+              element={<PackingListView />}
+            />
+            <Route path="/inventory/view-grn" element={<GRNView />} />
+            <Route
+              path="/inventory/view-purchase-invoice"
+              element={<PurchaseInvoiceView />}
+            />
+            <Route
+              path="/inventory/view-stores-inventory"
+              element={<StoresInventoryView />}
+            />
+            <Route
+              path="/inventory/view-stores-inventory-cons"
+              element={<StoresInventoryConsView />}
+            />
+            <Route
+              path="/inventory/view-material-requisition-form"
+              element={<MaterialRequisitionFormView />}
+            />
+            <Route
+              path="/inventory/view-bill-of-materials"
+              element={<BillofMaterialsView />}
+            />
+            <Route
+              path="/inventory/view-production-entry"
+              element={<ProductionEntryView />}
+            />
+            <Route
+              path="/inventory/view-material-transfer-note"
+              element={<MaterialTransferNoteView />}
+            />
+            <Route
+              path="/inventory/view-production-inventory"
+              element={<ProductionInventoryView />}
+            />
+            <Route
+              path="/inventory/view-production-inventory-cons"
+              element={<ProductionInventoryConsView />}
             />
             <Route path="*" element={<Home />} />
           </>
