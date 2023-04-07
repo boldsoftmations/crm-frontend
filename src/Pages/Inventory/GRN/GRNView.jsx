@@ -324,6 +324,7 @@ function Row(props) {
                 <TableHead>
                   <TableRow>
                     <TableCell align="center">PRODUCT</TableCell>
+                    <TableCell align="center">UNIT</TableCell>
                     <TableCell align="center">DESCRIPTION</TableCell>
                     <TableCell align="center">QUANTITY</TableCell>
                     <TableCell align="center">QA REJECTED</TableCell>
@@ -336,6 +337,7 @@ function Row(props) {
                       <TableCell align="center">
                         {ProductsData.products}
                       </TableCell>
+                      <TableCell align="center">{ProductsData.unit}</TableCell>
                       <TableCell align="center">
                         {ProductsData.description}
                       </TableCell>

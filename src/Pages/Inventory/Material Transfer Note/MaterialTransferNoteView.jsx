@@ -272,6 +272,7 @@ export const MaterialTransferNoteView = () => {
                 <StyledTableRow>
                   <StyledTableCell align="center">USER</StyledTableCell>
                   <StyledTableCell align="center">PRODUCT</StyledTableCell>
+                  <StyledTableCell align="center">UNIT</StyledTableCell>
                   <StyledTableCell align="center">QUANTITY</StyledTableCell>
                   <StyledTableCell align="center">ACCEPTED</StyledTableCell>
 
@@ -285,6 +286,7 @@ export const MaterialTransferNoteView = () => {
                     <StyledTableCell align="center">
                       {row.product}
                     </StyledTableCell>
+                    <StyledTableCell align="center">{row.unit}</StyledTableCell>
                     <StyledTableCell align="center">
                       {row.quantity}
                     </StyledTableCell>

@@ -165,6 +165,7 @@ export const ProductionInventoryConsView = () => {
               <TableHead>
                 <TableRow>
                   <StyledTableCell align="center">PRODUCT</StyledTableCell>
+                  <StyledTableCell align="center">UNIT</StyledTableCell>
                   <StyledTableCell align="center">QUANTITY</StyledTableCell>
                 </TableRow>
               </TableHead>
@@ -174,7 +175,9 @@ export const ProductionInventoryConsView = () => {
                     <StyledTableCell align="center">
                       {row.product__name}
                     </StyledTableCell>
-
+                    <StyledTableCell align="center">
+                      {row.product__unit}
+                    </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.quantity}
                     </StyledTableCell>
