@@ -43,9 +43,9 @@ export const ListItems = (props) => {
 
   return (
     <div>
-      {userData.is_staff === true ? (
+      {userData.is_staff ? (
         <>
-          {/* Seller Account */}
+          {/* Dashbpoard */}
           <ListItem
             button
             onClick={() => setExpandDashboard(!expandDashboard)}
@@ -1576,6 +1576,48 @@ export const ListItems = (props) => {
                 </>
               ) : (
                 <>
+                  {/* Dashbpoard */}
+                  {userData.email === "accounts2@glutape.com" && (
+                    <>
+                      <ListItem
+                        button
+                        onClick={() => setExpandDashboard(!expandDashboard)}
+                        style={{ width: 300 }}
+                      >
+                        <ListItemIcon>
+                          <DashboardIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Dashboard Details" />
+                        {expandDashboard ? (
+                          <ExpandLessIcon />
+                        ) : (
+                          <ExpandMoreIcon />
+                        )}
+                      </ListItem>
+                      <Collapse
+                        in={expandDashboard}
+                        timeout="auto"
+                        unmountOnExit
+                      >
+                        <Divider />
+                        <List component="div" disablePadding>
+                          <ListItem
+                            button
+                            component={RouterLink}
+                            to="/user/dashoard"
+                            style={{ width: 300 }}
+                          >
+                            <ListItemText
+                              component={Button}
+                              onClick={() => setOpen(false)}
+                              inset
+                              primary="Dasboard"
+                            />
+                          </ListItem>
+                        </List>
+                      </Collapse>
+                    </>
+                  )}
                   {/* Products */}
                   {userData.groups.toString() !== "Sales" && (
                     <ListItem
