@@ -13,7 +13,7 @@ import React, { useEffect, useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import InventoryServices from "../../../services/InventoryService";
-import ProductService from "../../../services/ProductService";
+
 import { styled } from "@mui/material/styles";
 import { useSelector } from "react-redux";
 
@@ -31,13 +31,28 @@ export const BillofMaterialsUpdate = (props) => {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState(null);
   const data = useSelector((state) => state.auth);
-  const RawAndConsumableProduct = data.rawandconsumableProduct;
+  const ConsumableProduct = data.consumableProduct;
+  const RawMaterialProduct = data.rawMaterialProduct;
+  const RawAndConsumableProduct = [...ConsumableProduct, ...RawMaterialProduct];
   const [products, setProducts] = useState([
     {
       product: "",
       quantity: "",
+      unit: "",
     },
   ]);
+
+  const handleAutocompleteChange = (index, event, value) => {
+    let data = [...products];
+    const productObj = RawAndConsumableProduct.find(
+      (item) => item.product === value
+    );
+    console.log("productObj", productObj);
+    data[index]["product"] = value;
+    data[index]["unit"] = productObj ? productObj.unit : "";
+    setProducts(data);
+  };
+
   const handleFormChange = (index, event) => {
     let data = [...products];
     data[index][event.target.name ? event.target.name : "product"] = event
@@ -51,6 +66,7 @@ export const BillofMaterialsUpdate = (props) => {
     let newfield = {
       product: "",
       quantity: "",
+      unit: "",
     };
     setProducts([...products, newfield]);
   };
@@ -76,6 +92,7 @@ export const BillofMaterialsUpdate = (props) => {
       var arr = response.data.products_data.map((fruit) => ({
         product: fruit.product,
         quantity: fruit.quantity,
+        unit: fruit.unit,
       }));
       setProducts(arr);
 
@@ -162,14 +179,16 @@ export const BillofMaterialsUpdate = (props) => {
           {products.map((input, index) => {
             return (
               <>
-                <Grid key={index} item xs={12} sm={4}>
+                <Grid key={index} item xs={12} sm={3}>
                   <Autocomplete
                     name="product"
                     size="small"
                     disablePortal
                     id="combo-box-demo"
                     value={input.product ? input.product : ""}
-                    onChange={(event, value) => handleFormChange(index, event)}
+                    onChange={(event, value) =>
+                      handleAutocompleteChange(index, event, value)
+                    }
                     options={RawAndConsumableProduct.map(
                       (option) => option.product
                     )}
@@ -180,7 +199,7 @@ export const BillofMaterialsUpdate = (props) => {
                     )}
                   />
                 </Grid>
-                <Grid item xs={12} sm={4}>
+                <Grid item xs={12} sm={3}>
                   <TextField
                     fullWidth
                     name="quantity"
@@ -191,8 +210,17 @@ export const BillofMaterialsUpdate = (props) => {
                     onChange={(event) => handleFormChange(index, event)}
                   />
                 </Grid>
-
-                <Grid item xs={12} sm={4} alignContent="right">
+                <Grid item xs={12} sm={3}>
+                  <TextField
+                    fullWidth
+                    name="unit"
+                    size="small"
+                    label="Unit"
+                    variant="outlined"
+                    value={input.unit ? input.unit : ""}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={3} alignContent="right">
                   {index !== 0 && (
                     <Button
                       disabled={index === 0}

@@ -94,6 +94,7 @@ export const GRNCreate = (props) => {
       var arr = response.data.products.map((fruit) => ({
         products: fruit.product,
         order_quantity: fruit.quantity,
+        unit: fruit.unit,
       }));
       setProducts(arr);
 
@@ -206,7 +207,7 @@ export const GRNCreate = (props) => {
               value={grnDataByID.id ? grnDataByID.id : ""}
             />
           </Grid>
-      
+
           <Grid item xs={12}>
             <Root>
               <Divider>
@@ -217,7 +218,7 @@ export const GRNCreate = (props) => {
           {products.map((input, index) => {
             return (
               <>
-                <Grid key={index} item xs={12} sm={3}>
+                <Grid key={index} item xs={12} sm={4}>
                   <TextField
                     fullWidth
                     name="products"
@@ -228,7 +229,16 @@ export const GRNCreate = (props) => {
                     onChange={(event) => handleFormChange(index, event)}
                   />
                 </Grid>
-                <Grid item xs={12} sm={3}>
+                <Grid item xs={12} sm={2}>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="Unit"
+                    variant="outlined"
+                    value={input.unit ? input.unit : ""}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={2}>
                   <TextField
                     fullWidth
                     name="order_quantity"
@@ -239,7 +249,7 @@ export const GRNCreate = (props) => {
                     onChange={(event) => handleFormChange(index, event)}
                   />
                 </Grid>
-                <Grid item xs={12} sm={3}>
+                <Grid item xs={12} sm={2}>
                   <TextField
                     fullWidth
                     name="qa_rejected"
@@ -250,7 +260,7 @@ export const GRNCreate = (props) => {
                     onChange={(event) => handleFormChange(index, event)}
                   />
                 </Grid>
-                <Grid item xs={12} sm={3}>
+                <Grid item xs={12} sm={2}>
                   <TextField
                     fullWidth
                     name="qa_accepted"

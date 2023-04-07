@@ -366,6 +366,7 @@ export const ViewLeadsProformaInvoice = () => {
                   <StyledTableCell align="center">
                     BALANCE AMOUNT
                   </StyledTableCell>
+
                   <StyledTableCell align="center">
                     PAYMENT TERMS
                   </StyledTableCell>

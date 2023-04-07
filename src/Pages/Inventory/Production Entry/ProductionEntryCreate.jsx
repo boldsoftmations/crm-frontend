@@ -2,8 +2,10 @@ import {
   Autocomplete,
   Box,
   Button,
+  Checkbox,
   Chip,
   Divider,
+  FormControlLabel,
   Grid,
   IconButton,
   Snackbar,
@@ -31,6 +33,7 @@ export const ProductionEntryCreate = (props) => {
   const [selectedBOM, setSelectedBOM] = useState([]);
   const [quantity, setQuantity] = useState(0);
   const [error, setError] = useState(null);
+  const [checked, setChecked] = useState(false);
   const data = useSelector((state) => state.auth);
   const users = data.profile;
   const FinishGoodsProduct = data.finishgoodsProduct;
@@ -42,31 +45,28 @@ export const ProductionEntryCreate = (props) => {
   ]);
 
   const handleFormChange = (index, event) => {
-    const { name, value } = event.target;
-    const updatedProducts = [...products];
-    updatedProducts[index].product = value;
-    setProducts(updatedProducts);
-  };
-
-  const addFields = () => {
-    let newfield = {
-      product: "",
-      quantity: "",
-    };
-    setProducts([...products, newfield]);
-  };
-
-  const removeFields = (index) => {
     let data = [...products];
-    data.splice(index, 1);
+    let value = event.target.value;
+    // check if the input is a valid number
+    if (!isNaN(value)) {
+      value = parseFloat(value);
+    } else {
+      value = 0; // set default value for non-numeric input
+    }
+    data[index][event.target.name] = value;
     setProducts(data);
   };
 
+  const handleQuantityChange = (event) => {
+    const { name, value } = event.target;
+    setQuantity({ ...quantity, [name]: value });
+  };
   const fetchProductOptions = async (value) => {
     try {
       setOpen(true);
-      const response = await InventoryServices.getAllSearchBillofMaterialsData(
-        value
+      const response = await InventoryServices.getFilterhBillofMaterialsData(
+        value,
+        "true"
       );
       setSelectedProduct(response.data.results);
       setOpen(false);
@@ -80,6 +80,7 @@ export const ProductionEntryCreate = (props) => {
     setSelectedBOM(value);
     var arr = value.products_data.map((fruit) => ({
       product: fruit.product,
+      unit: fruit.unit,
       quantity: fruit.quantity,
     }));
     setProducts(arr);
@@ -90,18 +91,26 @@ export const ProductionEntryCreate = (props) => {
       e.preventDefault();
 
       setOpen(true);
-      const productData = products.map((product) => ({
-        product: product.product,
-        quantity: (parseFloat(product.quantity) * parseFloat(quantity)).toFixed(
-          2
-        ),
-      }));
+      const productData = checked
+        ? products.map((product) => ({
+            product: product.product,
+            quantity: product.parseFloat(quantity),
+          }))
+        : products.map((product) => ({
+            product: product.product,
+            quantity: (
+              parseFloat(product.quantity) * parseFloat(quantity)
+            ).toFixed(2),
+          }));
+
       console.log("productData", productData);
       const req = {
         user: users.email,
         bom: selectedBOM.bom_id,
         product: selectedBOM.product,
-        quantity: quantity,
+        production_gnl: checked,
+        expected_quantity: quantity.expected_quantity || 0,
+        quantity: quantity.quantity,
         products_data: productData,
       };
       await InventoryServices.createProductionEntryData(req);
@@ -182,16 +191,41 @@ export const ProductionEntryCreate = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
+            <FormControlLabel
+              label={"Gain And Loss"}
+              control={
+                <Checkbox
+                  checked={checked}
+                  onChange={(e) => setChecked(e.target.checked)}
+                  inputProps={{ "aria-label": "controlled" }}
+                />
+              }
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
             <TextField
               fullWidth
               name="quantity"
               size="small"
               label="Quantity"
               variant="outlined"
-              value={quantity}
-              onChange={(event) => setQuantity(event.target.value)}
+              value={quantity.quantity}
+              onChange={(event) => handleQuantityChange(event)}
             />
           </Grid>
+          {checked === true && (
+            <Grid item xs={12} sm={4}>
+              <TextField
+                fullWidth
+                name="expected_quantity"
+                size="small"
+                label="Ecpected Quantity"
+                variant="outlined"
+                value={quantity.expected_quantity}
+                onChange={(event) => handleQuantityChange(event)}
+              />
+            </Grid>
+          )}
           <Grid item xs={12}>
             <Root>
               <Divider>
@@ -211,49 +245,53 @@ export const ProductionEntryCreate = (props) => {
                     value={input.product ? input.product : ""}
                   />
                 </Grid>
-                <Grid item xs={12} sm={4}>
+                <Grid key={index} item xs={12} sm={4}>
                   <TextField
                     fullWidth
-                    name="quantity"
                     size="small"
-                    label="Quantity"
+                    label="Unit"
                     variant="outlined"
-                    value={
-                      quantity && input.quantity
-                        ? (
-                            parseFloat(input.quantity) * parseFloat(quantity)
-                          ).toFixed(2)
-                        : input.quantity || ""
-                    }
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
+                    value={input.unit ? input.unit : ""}
                   />
                 </Grid>
-
-                <Grid item xs={12} sm={4} alignContent="right">
-                  {index !== 0 && (
-                    <Button
-                      disabled={index === 0}
-                      onClick={() => removeFields(index)}
-                      variant="contained"
-                    >
-                      Remove
-                    </Button>
-                  )}
-                </Grid>
+                {checked === false ? (
+                  <Grid item xs={12} sm={4}>
+                    <TextField
+                      fullWidth
+                      name="quantity"
+                      size="small"
+                      label="Quantity"
+                      variant="outlined"
+                      value={
+                        quantity.quantity && input.quantity
+                          ? (
+                              parseFloat(input.quantity) *
+                              parseFloat(quantity.quantity)
+                            ).toFixed(2)
+                          : input.quantity || ""
+                      }
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      disabled
+                    />
+                  </Grid>
+                ) : (
+                  <Grid item xs={12} sm={4}>
+                    <TextField
+                      fullWidth
+                      name="quantity"
+                      size="small"
+                      label="Quantity"
+                      variant="outlined"
+                      value={input.quantity ? parseFloat(input.quantity) : ""}
+                      onChange={(event) => handleFormChange(index, event)}
+                    />
+                  </Grid>
+                )}
               </>
             );
           })}
-          <Grid item xs={12} sm={4} alignContent="right">
-            <Button
-              onClick={addFields}
-              variant="contained"
-              sx={{ marginRight: "1em" }}
-            >
-              Add More...
-            </Button>
-          </Grid>
         </Grid>
         <Button
           type="submit"

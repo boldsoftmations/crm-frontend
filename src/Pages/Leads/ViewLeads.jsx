@@ -72,18 +72,18 @@ export const Viewleads = () => {
   const [assigned, setAssigned] = useState([]);
   const [referenceData, setReferenceData] = useState([]);
   const [descriptionMenuData, setDescriptionMenuData] = useState([]);
-  const [anchorEl, setAnchorEl] = useState(null);
+  // const [anchorEl, setAnchorEl] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const tokenData = useSelector((state) => state.auth);
   const users = tokenData.profile;
 
-  const handleMenu = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+  // const handleMenu = (event) => {
+  //   setAnchorEl(event.currentTarget);
+  // };
 
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  // const handleClose = () => {
+  //   setAnchorEl(null);
+  // };
   const handleInputChange = (event) => {
     setFilterSelectedQuery(event.target.value);
     getSearchData(event.target.value);
@@ -648,7 +648,7 @@ export const Viewleads = () => {
         <UpdateLeads
           recordForEdit={recordForEdit}
           setOpenPopup={setOpenPopup}
-          getleads={getleads}
+          getAllleadsData={getleads}
         />
       </Popup>
     </>

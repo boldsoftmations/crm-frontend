@@ -355,6 +355,16 @@ const getAllSearchBillofMaterialsData = (search) => {
   );
 };
 
+const getAllFilterBillofMaterialsData = (val) => {
+  return CustomAxios.get(
+    `/api/inventory/list-bill-of-materials/?approved=${val}`
+  );
+};
+const getFilterhBillofMaterialsData = (search, filter) => {
+  return CustomAxios.get(
+    `/api/inventory/list-bill-of-materials/?search=${search}&approved=${filter}`
+  );
+};
 const getAllBillofMaterialsDataPaginate = (currentPage, search) => {
   return CustomAxios.get(
     `/api/inventory/list-bill-of-materials/?page=${currentPage}&search=${search}`
@@ -617,6 +627,8 @@ const InventoryServices = {
   getAllPaginateBillofMaterialsData,
   getAllPaginateBillofMaterialsDataWithSearch,
   getAllSearchBillofMaterialsData,
+  getAllFilterBillofMaterialsData,
+  getFilterhBillofMaterialsData,
   getAllBillofMaterialsDataPaginate,
   getBillofMaterialsPaginateData,
   createBillofMaterialsData,

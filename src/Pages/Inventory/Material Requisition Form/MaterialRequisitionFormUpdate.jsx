@@ -13,7 +13,7 @@ import React, { useEffect, useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import InventoryServices from "../../../services/InventoryService";
-import ProductService from "../../../services/ProductService";
+
 import { styled } from "@mui/material/styles";
 
 const Root = styled("div")(({ theme }) => ({
@@ -34,20 +34,30 @@ export const MaterialRequisitionFormUpdate = (props) => {
   const [materialRequisitionDataByID, setMaterialRequisitionDataByID] =
     useState([]);
   const [open, setOpen] = useState(false);
-  const [productOption, setProductOption] = useState([]);
   const [error, setError] = useState(null);
   const [products, setProducts] = useState([
     {
       product: "",
       quantity: "",
+      unit: "",
     },
   ]);
+
+  const handleAutocompleteChange = (index, event, value) => {
+    let data = [...products];
+    const productObj = storesInventoryData.find(
+      (item) => item.product__name === value
+    );
+
+    data[index]["product"] = value;
+    data[index]["unit"] = productObj ? productObj.product__unit : "";
+    setProducts(data);
+  };
+
   const handleFormChange = (index, event) => {
     let data = [...products];
-    data[index][event.target.name ? event.target.name : "product"] = event
-      .target.value
-      ? event.target.value
-      : event.target.textContent;
+    data[index][event.target.name] = event.target.value;
+
     setProducts(data);
   };
 
@@ -55,6 +65,7 @@ export const MaterialRequisitionFormUpdate = (props) => {
     let newfield = {
       product: "",
       quantity: "",
+      unit: "",
     };
     setProducts([...products, newfield]);
   };
@@ -63,22 +74,6 @@ export const MaterialRequisitionFormUpdate = (props) => {
     let data = [...products];
     data.splice(index, 1);
     setProducts(data);
-  };
-
-  useEffect(() => {
-    getProduct();
-  }, []);
-
-  const getProduct = async () => {
-    try {
-      setOpen(true);
-      const res = await ProductService.getAllProduct();
-      setProductOption(res.data);
-      setOpen(false);
-    } catch (err) {
-      console.error("error potential", err);
-      setOpen(false);
-    }
   };
 
   useEffect(() => {
@@ -95,6 +90,7 @@ export const MaterialRequisitionFormUpdate = (props) => {
       var arr = response.data.products_data.map((fruit) => ({
         product: fruit.product,
         quantity: fruit.quantity,
+        unit: fruit.unit,
       }));
       setProducts(arr);
 
@@ -182,14 +178,16 @@ export const MaterialRequisitionFormUpdate = (props) => {
           {products.map((input, index) => {
             return (
               <>
-                <Grid key={index} item xs={12} sm={4}>
+                <Grid key={index} item xs={12} sm={3}>
                   <Autocomplete
                     name="product"
                     size="small"
                     disablePortal
                     id="combo-box-demo"
                     value={input.product ? input.product : ""}
-                    onChange={(event, value) => handleFormChange(index, event)}
+                    onChange={(event, value) =>
+                      handleAutocompleteChange(index, event, value)
+                    }
                     options={storesInventoryData.map(
                       (option) => option.product__name
                     )}
@@ -200,7 +198,17 @@ export const MaterialRequisitionFormUpdate = (props) => {
                     )}
                   />
                 </Grid>
-                <Grid item xs={12} sm={4}>
+                <Grid item xs={12} sm={3}>
+                  <TextField
+                    fullWidth
+                    name="unit"
+                    size="small"
+                    label="Unit"
+                    variant="outlined"
+                    value={input.unit ? input.unit : ""}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={3}>
                   <TextField
                     fullWidth
                     name="quantity"
@@ -212,7 +220,7 @@ export const MaterialRequisitionFormUpdate = (props) => {
                   />
                 </Grid>
 
-                <Grid item xs={12} sm={4} alignContent="right">
+                <Grid item xs={12} sm={3} alignContent="right">
                   <Button
                     onClick={addFields}
                     variant="contained"

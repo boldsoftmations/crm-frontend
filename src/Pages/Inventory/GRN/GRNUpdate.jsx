@@ -291,7 +291,16 @@ export const GRNUpdate = (props) => {
                     onChange={(event) => handleFormChange(index, event)}
                   />
                 </Grid>
-                <Grid item xs={12} sm={3}>
+                <Grid item xs={12} sm={4}>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="Unit"
+                    variant="outlined"
+                    value={input.unit ? input.unit : ""}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={2}>
                   <TextField
                     fullWidth
                     name="order_quantity"
@@ -302,7 +311,7 @@ export const GRNUpdate = (props) => {
                     onChange={(event) => handleFormChange(index, event)}
                   />
                 </Grid>
-                <Grid item xs={12} sm={3}>
+                <Grid item xs={12} sm={2}>
                   <TextField
                     fullWidth
                     name="qa_rejected"
@@ -313,7 +322,7 @@ export const GRNUpdate = (props) => {
                     onChange={(event) => handleFormChange(index, event)}
                   />
                 </Grid>
-                <Grid item xs={12} sm={3}>
+                <Grid item xs={12} sm={2}>
                   <TextField
                     fullWidth
                     name="qa_accepted"

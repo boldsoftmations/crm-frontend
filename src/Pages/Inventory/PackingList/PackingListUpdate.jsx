@@ -11,13 +11,11 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { CustomLoader } from "../../../Components/CustomLoader";
-import CloseIcon from "@mui/icons-material/Close";
-
 import InventoryServices from "../../../services/InventoryService";
 import ProductService from "../../../services/ProductService";
 import { styled } from "@mui/material/styles";
 import { useSelector } from "react-redux";
-
+import CloseIcon from "@mui/icons-material/Close";
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
   ...theme.typography.body2,
@@ -26,14 +24,14 @@ const Root = styled("div")(({ theme }) => ({
   },
 }));
 
-export const PackingListCreate = (props) => {
-  const { setOpenPopup, getAllPackingListDetails } = props;
-  const [inputValue, setInputValue] = useState([]);
+export const PackingListUpdate = (props) => {
+  const { setOpenPopup, getAllPackingListDetails, idForEdit } = props;
+  const [PackingListDataByID, setPackingListDataByID] = useState([]);
   const [open, setOpen] = useState(false);
   const [vendorOption, setVendorOption] = useState([]);
-  const [vendor, setVendor] = useState("");
   const [productOption, setProductOption] = useState([]);
-  const [selectedSellerData, setSelectedSellerData] = useState("");
+  const [selectedSellerData, setSelectedSellerData] = useState(null);
+  const [vendor, setVendor] = useState("");
   const data = useSelector((state) => state.auth);
   const sellerData = data.sellerAccount;
   const today = new Date().toISOString().slice(0, 10); // Get current date in YYYY-MM-DD format
@@ -45,10 +43,6 @@ export const PackingListCreate = (props) => {
       unit: "",
     },
   ]);
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setInputValue({ ...inputValue, [name]: value });
-  };
 
   const handleAutocompleteChange = (index, event, value) => {
     let data = [...products];
@@ -96,6 +90,11 @@ export const PackingListCreate = (props) => {
     setProducts(data);
   };
 
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setPackingListDataByID({ ...PackingListDataByID, [name]: value });
+  };
+
   useEffect(() => {
     getProduct();
   }, []);
@@ -116,9 +115,9 @@ export const PackingListCreate = (props) => {
     try {
       e.preventDefault();
       setOpen(true);
-      console.log("inputValue.vendor_name", inputValue.vendor_name);
+      console.log("inputValue.vendor_name", PackingListDataByID.vendor_name);
       const response = await InventoryServices.getAllSearchVendorData(
-        inputValue.vendor_name
+        PackingListDataByID.vendor_name
       );
       setVendorOption(response.data.results);
       console.log("after api");
@@ -129,23 +128,53 @@ export const PackingListCreate = (props) => {
     }
   };
 
-  const createPackingListDetails = async (e) => {
+  useEffect(() => {
+    if (idForEdit) getAllPackingListDetailsByID();
+  }, [idForEdit]);
+
+  const getAllPackingListDetailsByID = async () => {
+    try {
+      setOpen(true);
+      const response = await InventoryServices.getPackingListDataById(
+        idForEdit
+      );
+
+      setPackingListDataByID(response.data);
+      setSelectedSellerData(response.data.seller_account);
+      var arr = response.data.products.map((fruit) => ({
+        product: fruit.product,
+        quantity: fruit.quantity,
+        unit: fruit.unit,
+      }));
+      setProducts(arr);
+
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      console.log("company data by id error", err);
+    }
+  };
+
+  const updateLeadProformaInvoiceDetails = async (e) => {
     try {
       e.preventDefault();
       setOpen(true);
       const req = {
-        packing_list_no: inputValue.packing_list_no, //Normal text field
-        invoice_date: inputValue.invoice_date ? inputValue.invoice_date : today,
-        vendor: vendor.name,
-        seller_account: selectedSellerData.state,
+        packing_list_no: PackingListDataByID.packing_list_no, //Normal text field
+        invoice_date: PackingListDataByID.invoice_date
+          ? PackingListDataByID.invoice_date
+          : today,
+        vendor: vendor.name ? vendor.name : PackingListDataByID.vendor,
+        seller_account: selectedSellerData,
         products: products,
       };
-      await InventoryServices.createPackingListData(req);
+      await InventoryServices.updatePackingListData(idForEdit, req);
+
       setOpenPopup(false);
       getAllPackingListDetails();
       setOpen(false);
-    } catch (error) {
-      console.log("createing Packing list error", error);
+    } catch (err) {
+      console.log("err", err);
       setOpen(false);
     }
   };
@@ -161,7 +190,7 @@ export const PackingListCreate = (props) => {
       <Box
         component="form"
         noValidate
-        onSubmit={(e) => createPackingListDetails(e)}
+        onSubmit={(e) => updateLeadProformaInvoiceDetails(e)}
       >
         <Snackbar
           open={Boolean(error)}
@@ -182,13 +211,26 @@ export const PackingListCreate = (props) => {
         <Grid container spacing={2}>
           <Grid item xs={12} sm={3}>
             <TextField
+              fullWidth
+              size="small"
+              name="vendor"
+              label="Vendor"
+              variant="outlined"
+              value={
+                PackingListDataByID.vendor ? PackingListDataByID.vendor : ""
+              }
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <TextField
               sx={{ minWidth: "8rem" }}
               name="vendor_name"
               size="small"
-              label="search By Vendor Name"
+              label="search By vendor_name"
               variant="outlined"
               onChange={handleInputChange}
-              value={inputValue.vendor_name}
+              value={PackingListDataByID.vendor_name}
             />
             <Button onClick={(e) => fetchVendorOptions(e)} variant="contained">
               Submit
@@ -204,28 +246,14 @@ export const PackingListCreate = (props) => {
                 onChange={(event, value) => setVendor(value)}
                 options={vendorOption}
                 getOptionLabel={(option) => option.name}
-                sx={{ minWidth: 300 }}
+                sx={{ minWidth: 100 }}
                 renderInput={(params) => (
-                  <TextField {...params} label="Vendor" />
+                  <TextField {...params} label="Update Vendor" />
                 )}
               />
             </Grid>
           )}
-          <Grid item xs={12} sm={3}>
-            <Autocomplete
-              name="seller_account"
-              size="small"
-              disablePortal
-              id="combo-box-demo"
-              onChange={(event, value) => setSelectedSellerData(value)}
-              options={sellerData}
-              getOptionLabel={(option) => option.state}
-              sx={{ minWidth: 300 }}
-              renderInput={(params) => (
-                <TextField {...params} label="Seller Account" />
-              )}
-            />
-          </Grid>
+
           <Grid item xs={12} sm={3}>
             <TextField
               fullWidth
@@ -233,8 +261,28 @@ export const PackingListCreate = (props) => {
               name="packing_list_no"
               label="Invoice No."
               variant="outlined"
-              value={inputValue.packing_list_no}
+              value={
+                PackingListDataByID.packing_list_no
+                  ? PackingListDataByID.packing_list_no
+                  : ""
+              }
               onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <Autocomplete
+              name="seller_account"
+              size="small"
+              disablePortal
+              id="combo-box-demo"
+              value={selectedSellerData}
+              onChange={(event, value) => setSelectedSellerData(value)}
+              options={sellerData.map((option) => option.state)}
+              getOptionLabel={(option) => option}
+              sx={{ minWidth: 300 }}
+              renderInput={(params) => (
+                <TextField {...params} label="Seller Account" />
+              )}
             />
           </Grid>
           <Grid item xs={12} sm={3}>
@@ -245,8 +293,13 @@ export const PackingListCreate = (props) => {
               size="small"
               label="Invoice Date"
               variant="outlined"
-              value={inputValue.invoice_date ? inputValue.invoice_date : today}
+              value={
+                PackingListDataByID.invoice_date
+                  ? PackingListDataByID.invoice_date
+                  : today
+              }
               onChange={handleInputChange}
+              inputProps={{ max: today }}
             />
           </Grid>
           <Grid item xs={12}>
@@ -294,7 +347,7 @@ export const PackingListCreate = (props) => {
                     size="small"
                     label="Quantity"
                     variant="outlined"
-                    value={input.quantity}
+                    value={input.quantity ? input.quantity : ""}
                     onChange={(event) => handleFormChange(index, event)}
                   />
                 </Grid>

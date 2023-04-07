@@ -15,8 +15,15 @@ import {
   Collapse,
   Typography,
   IconButton,
+  Snackbar,
+  Switch,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
+import CloseIcon from "@mui/icons-material/Close";
 import React, { useEffect, useRef, useState } from "react";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -28,7 +35,7 @@ import InventoryServices from "../../../services/InventoryService";
 import { BillofMaterialsCreate } from "./BillofMaterialsCreate";
 import { BillofMaterialsUpdate } from "./BillofMaterialsUpdate";
 import ProductService from "../../../services/ProductService";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   getConsumableProduct,
   getFinishGoodProduct,
@@ -65,12 +72,12 @@ export const BillofMaterialsView = () => {
   const [pageCount, setpageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
+  const [filterType, setFilterType] = useState("");
   const [idForEdit, setIDForEdit] = useState("");
   const dispatch = useDispatch();
-  const handleInputChange = (event) => {
-    setFilterSelectedQuery(event.target.value);
-    getSearchData(event.target.value);
-  };
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [filterApproved, setFilterApproved] = useState(null);
+  const users = useSelector((state) => state.auth.profile);
 
   useEffect(() => {
     getFinishGoods();
@@ -82,6 +89,7 @@ export const BillofMaterialsView = () => {
       const response = await ProductService.getFinishGoodsPaginate("all");
       var arr = response.data.map((ProductData) => ({
         product: ProductData.name,
+        unit: ProductData.unit,
       }));
       dispatch(getFinishGoodProduct(arr));
       setOpen(false);
@@ -102,6 +110,7 @@ export const BillofMaterialsView = () => {
       console.log("raw material", response.data);
       var arr = response.data.map((ProductData) => ({
         product: ProductData.name,
+        unit: ProductData.unit,
       }));
       dispatch(getRawMaterialProduct(arr));
       setOpen(false);
@@ -122,6 +131,7 @@ export const BillofMaterialsView = () => {
       console.log("consumable", response.data);
       var arr = response.data.map((ProductData) => ({
         product: ProductData.name,
+        unit: ProductData.unit,
       }));
       dispatch(getConsumableProduct(arr));
       setOpen(false);
@@ -135,53 +145,54 @@ export const BillofMaterialsView = () => {
     getAllBillofMaterialsDetails();
   }, []);
 
+  const handleInputChange = (event) => {
+    setFilterSelectedQuery(event.target.value);
+    getSearchData(event.target.value, filterApproved);
+  };
+
+  const handleApprovedFilterChange = (event) => {
+    setFilterApproved(event.target.value);
+    getSearchData(filterSelectedQuery, event.target.value);
+  };
+
   const getAllBillofMaterialsDetails = async () => {
     try {
       setOpen(true);
-      const response = currentPage
+      let response;
+      response = currentPage
         ? await InventoryServices.getBillofMaterialsPaginateData(currentPage)
         : await InventoryServices.getAllBillofMaterialsData();
+
       setBillofMaterials(response.data.results);
       const total = response.data.count;
       setpageCount(Math.ceil(total / 25));
     } catch (err) {
-      if (!err.response) {
-        setErrMsg(
-          "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
-        );
-      } else if (err.response.status === 400) {
-        setErrMsg(
-          err.response.data.errors.name ||
-            err.response.data.errors.non_field_errors
-        );
-      } else if (err.response.status === 401) {
-        setErrMsg(err.response.data.errors.code);
-      } else if (err.response.status === 404 || !err.response.data) {
-        setErrMsg("Data not found or request was null/empty");
-      } else {
-        setErrMsg("Server Error");
-      }
+      // handle error
     } finally {
       setOpen(false);
     }
   };
 
-  const getSearchData = async (value) => {
+  const getSearchData = async (value, filterApproved) => {
     try {
       setOpen(true);
-      const filterSearch = value;
-      if (filterSearch !== "") {
+      if (filterApproved === null) {
         const response =
-          await InventoryServices.getAllSearchBillofMaterialsData(filterSearch);
+          await InventoryServices.getAllSearchBillofMaterialsData(value);
         setBillofMaterials(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
       } else {
-        await getAllBillofMaterialsDetails();
-        setFilterSelectedQuery("");
+        const response =
+          await InventoryServices.getAllFilterBillofMaterialsData(
+            filterApproved
+          );
+        setBillofMaterials(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
       }
     } catch (error) {
-      console.log("error Search leads", error);
+      // handle error
     } finally {
       setOpen(false);
     }
@@ -193,12 +204,21 @@ export const BillofMaterialsView = () => {
       setCurrentPage(page);
       setOpen(true);
 
-      const response = filterSelectedQuery
-        ? await InventoryServices.getAllBillofMaterialsDataPaginate(
+      let response;
+      if (filterSelectedQuery) {
+        response = await InventoryServices.getAllBillofMaterialsDataPaginate(
+          page,
+          filterSelectedQuery
+        );
+      } else if (filterApproved === null) {
+        response = await InventoryServices.getBillofMaterialsPaginateData(page);
+      } else {
+        response =
+          await InventoryServices.getBillofMaterialsPaginateDataByApproval(
             page,
-            filterSelectedQuery
-          )
-        : await InventoryServices.getBillofMaterialsPaginateData(page);
+            filterApproved
+          );
+      }
 
       if (response) {
         setBillofMaterials(response.data.results);
@@ -209,20 +229,45 @@ export const BillofMaterialsView = () => {
         setFilterSelectedQuery("");
       }
     } catch (error) {
-      console.log("error", error);
+      // handle error
     } finally {
+      setOpen(false);
+    }
+  };
+
+  const updateBillofMaterialsDetails = async (data) => {
+    try {
+      setOpen(true);
+      const req = {
+        approved: true,
+        product: data.product,
+      };
+      await InventoryServices.updateBillofMaterialsData(data.id, req);
+
+      setOpenPopup(false);
+      getAllBillofMaterialsDetails();
+      setOpen(false);
+      // Show success snackbar
+      setOpenSnackbar(true);
+    } catch (error) {
+      console.log("error Store Accepting", error);
       setOpen(false);
     }
   };
 
   const getResetData = async () => {
     setFilterSelectedQuery("");
+    setFilterType(null);
     await getAllBillofMaterialsDetails();
   };
 
   const openInPopup = (item) => {
     setIDForEdit(item);
     setOpenPopup(true);
+  };
+
+  const handleSnackbarClose = () => {
+    setOpenSnackbar(false);
   };
 
   return (
@@ -233,14 +278,64 @@ export const BillofMaterialsView = () => {
         <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
           <Box display="flex">
-            <Box flexGrow={0.9}>
-              <CustomSearch
-                filterSelectedQuery={filterSelectedQuery}
-                handleInputChange={handleInputChange}
-                getResetData={getResetData}
-              />
-            </Box>
             <Box flexGrow={2}>
+              <FormControl fullWidth size="small" style={{ maxWidth: 200 }}>
+                <InputLabel id="demo-select-small">Filter By</InputLabel>
+                <Select
+                  labelId="demo-select-small"
+                  id="demo-select-small"
+                  value={filterType}
+                  label="Filter By"
+                  onChange={(event) => setFilterType(event.target.value)}
+                >
+                  <MenuItem value={"search"}>Search </MenuItem>
+                  <MenuItem value={"approved"}>Approved</MenuItem>
+                </Select>
+              </FormControl>
+              {filterType === "search" && (
+                <CustomSearch
+                  filterSelectedQuery={filterSelectedQuery}
+                  handleInputChange={handleInputChange}
+                  getResetData={getResetData}
+                />
+              )}
+              {filterType === "approved" && (
+                <FormControl
+                  fullWidth
+                  size="small"
+                  style={{ maxWidth: 200, marginLeft: "1em" }}
+                >
+                  <InputLabel id="demo-select-small">
+                    Filter By Approved
+                  </InputLabel>
+                  <Select
+                    labelId="demo-select-small"
+                    id="demo-select-small"
+                    value={filterApproved}
+                    label="Filter By Approved"
+                    onChange={(event) => handleApprovedFilterChange(event)}
+                    endAdornment={
+                      filterApproved !== null && (
+                        <IconButton
+                          onClick={() => {
+                            setFilterApproved(null);
+                            getAllBillofMaterialsDetails();
+                            setFilterType("");
+                          }}
+                        >
+                          <CloseIcon />
+                        </IconButton>
+                      )
+                    }
+                  >
+                    <MenuItem value={true}>True </MenuItem>
+                    <MenuItem value={false}>False</MenuItem>
+                  </Select>
+                </FormControl>
+              )}
+            </Box>
+
+            <Box flexGrow={1}>
               <h3
                 style={{
                   textAlign: "left",
@@ -278,6 +373,22 @@ export const BillofMaterialsView = () => {
               },
             }}
           >
+            <Snackbar
+              open={openSnackbar}
+              onClose={handleSnackbarClose}
+              message={"Bill Of Material details Accepted successfully!"}
+              anchorOrigin={{ vertical: "top", horizontal: "center" }}
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  sx={{ p: 0.5 }}
+                  onClick={handleSnackbarClose}
+                >
+                  <CloseIcon />
+                </IconButton>
+              }
+            />
             <Table
               sx={{ minWidth: 700 }}
               stickyHeader
@@ -290,12 +401,19 @@ export const BillofMaterialsView = () => {
                   <StyledTableCell align="center">PRODUCT</StyledTableCell>
                   <StyledTableCell align="center">QUANTITY</StyledTableCell>
                   <StyledTableCell align="center">DATE</StyledTableCell>
+                  <StyledTableCell align="center">APPROVED</StyledTableCell>
                   <StyledTableCell align="center">Action</StyledTableCell>
                 </StyledTableRow>
               </TableHead>
               <TableBody>
                 {billofMaterials.map((row, i) => (
-                  <Row key={i} row={row} openInPopup={openInPopup} />
+                  <Row
+                    key={i}
+                    row={row}
+                    openInPopup={openInPopup}
+                    users={users}
+                    updateBillofMaterialsDetails={updateBillofMaterialsDetails}
+                  />
                 ))}
               </TableBody>{" "}
             </Table>
@@ -341,7 +459,7 @@ export const BillofMaterialsView = () => {
 };
 
 function Row(props) {
-  const { row, openInPopup } = props;
+  const { row, openInPopup, users, updateBillofMaterialsDetails } = props;
   const [open, setOpen] = useState(false);
 
   return (
@@ -363,15 +481,27 @@ function Row(props) {
         <TableCell align="center">{row.product}</TableCell>
         <TableCell align="center">{row.quantity}</TableCell>
         <TableCell align="center">{row.created_on}</TableCell>
-
+        <StyledTableCell align="center">
+          <Switch
+            checked={row.approved}
+            inputProps={{ "aria-label": "controlled" }}
+          />
+        </StyledTableCell>
         <TableCell align="center">
-          <Button
-            onClick={() => openInPopup(row.id)}
-            variant="contained"
-            color="success"
-          >
-            Edit
-          </Button>
+          {users.groups.includes("Accounts") && row.approved === false ? (
+            <Button
+              onClick={() => updateBillofMaterialsDetails(row)}
+              variant="contained"
+              color="success"
+            >
+              Accept
+            </Button>
+          ) : null}
+          {users.groups.includes("Production") && row.approved === false ? (
+            <Button onClick={() => openInPopup(row.id)} variant="contained">
+              Edit
+            </Button>
+          ) : null}
         </TableCell>
       </TableRow>
       <TableRow>

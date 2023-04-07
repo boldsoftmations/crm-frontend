@@ -11,7 +11,7 @@ import React, { useEffect, useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import InventoryServices from "../../../services/InventoryService";
-import ProductService from "../../../services/ProductService";
+
 import { useSelector } from "react-redux";
 
 export const MaterialTransferNoteCreate = (props) => {
@@ -46,7 +46,7 @@ export const MaterialTransferNoteCreate = (props) => {
       setOpen(true);
       const req = {
         user: users.email,
-        product: product,
+        product: product.product__name,
         quantity: quantity,
       };
       await InventoryServices.createMaterialTransferNoteData(req);
@@ -100,12 +100,22 @@ export const MaterialTransferNoteCreate = (props) => {
               disablePortal
               id="combo-box-demo"
               onChange={(event, value) => setProduct(value)}
-              options={productOption.map((option) => option.product__name)}
-              getOptionLabel={(option) => option}
+              options={productOption}
+              getOptionLabel={(option) => option.product__name}
               sx={{ minWidth: 300 }}
               renderInput={(params) => (
                 <TextField {...params} label="Product Name" />
               )}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextField
+              fullWidth
+              name="unit"
+              size="small"
+              label="Unit"
+              variant="outlined"
+              value={product ? product.product__unit : ""}
             />
           </Grid>
           <Grid item xs={12} sm={4}>

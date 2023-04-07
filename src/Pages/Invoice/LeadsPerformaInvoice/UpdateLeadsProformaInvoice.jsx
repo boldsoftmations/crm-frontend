@@ -26,7 +26,6 @@ export const UpdateLeadsProformaInvoice = (props) => {
   const [errorMessage, setErrorMessage] = useState();
   const [leadPIdataByID, setLeadPIdataByID] = useState([]);
   const [validationPrice, setValidationPrice] = useState("");
-  const [productData, setProductData] = useState("");
   const [productOption, setProductOption] = useState([]);
   const [inputValue, setInputValue] = useState([]);
   const [paymentTermData, setPaymentTermData] = useState([]);
@@ -34,11 +33,11 @@ export const UpdateLeadsProformaInvoice = (props) => {
   const [selectedSellerData, setSelectedSellerData] = useState("");
   const [leads, setLeads] = useState([]);
   const [checked, setChecked] = useState(leadPIdataByID.buyer_order_no === "");
-  const [unit, setUnit] = useState("");
   const [productEdit, setProductEdit] = useState(false);
   const [products, setProducts] = useState([
     {
       product: "",
+      unit: "",
       quantity: "",
       rate: "",
       requested_date: values.someDate,
@@ -50,8 +49,16 @@ export const UpdateLeadsProformaInvoice = (props) => {
 
   const sellerData = data.sellerAccount;
 
+  const handleAutocompleteChange = (index, event, value) => {
+    let data = [...products];
+    const productObj = productOption.find((item) => item.product === value);
+
+    data[index]["product"] = value;
+    data[index]["unit"] = productObj ? productObj.unit : "";
+    setProducts(data);
+  };
+
   const handleFormChange = (index, event) => {
-    setProductData(event.target.textContent);
     let data = [...products];
     data[index][event.target.name ? event.target.name : "product"] = event
       .target.value
@@ -64,6 +71,7 @@ export const UpdateLeadsProformaInvoice = (props) => {
   const addFields = () => {
     let newfield = {
       product: "",
+      unit: "",
       quantity: "",
       rate: "",
       requested_date: values.someDate,
@@ -76,29 +84,6 @@ export const UpdateLeadsProformaInvoice = (props) => {
     let data = [...products];
     data.splice(index, 1);
     setProducts(data);
-  };
-
-  function searchUnit(nameKey, myArray) {
-    for (var i = 0; i < myArray.length; i++) {
-      if (myArray[i].product === nameKey) {
-        return myArray[i].id;
-      }
-    }
-  }
-
-  const ID = searchUnit(productData, productOption);
-
-  useEffect(() => {
-    if (ID) getPriceListData(ID);
-  }, [ID]);
-
-  const getPriceListData = async () => {
-    try {
-      const response = await ProductService.getPriceListById(ID);
-      setUnit(response.data.unit);
-    } catch (error) {
-      console.log("error", error);
-    }
   };
 
   useEffect(() => {
@@ -150,10 +135,6 @@ export const UpdateLeadsProformaInvoice = (props) => {
       console.log("err", err);
     }
   };
-
-  //   useEffect(() => {
-  //     if (leadPIdataByID.lead) getLeadsData();
-  //   }, []);
 
   const getLeadsData = async (value) => {
     try {
@@ -597,7 +578,9 @@ export const UpdateLeadsProformaInvoice = (props) => {
                     size="small"
                     disablePortal
                     id="combo-box-demo"
-                    onChange={(event, value) => handleFormChange(index, event)}
+                    onChange={(event, value) =>
+                      handleAutocompleteChange(index, event, value)
+                    }
                     value={input.product ? input.product : ""}
                     options={productOption.map((option) => option.product)}
                     getOptionLabel={(option) => option}
@@ -628,7 +611,7 @@ export const UpdateLeadsProformaInvoice = (props) => {
                     size="small"
                     label="Unit"
                     variant="outlined"
-                    value={input.unit ? input.unit : unit}
+                    value={input.unit ? input.unit : ""}
                   />
                 </Grid>
                 <Grid item xs={12} sm={3}>

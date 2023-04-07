@@ -30,10 +30,23 @@ export const MaterialTransferNoteUpdate = (props) => {
   const [open, setOpen] = useState(false);
   const [productOption, setProductOption] = useState([]);
   const [error, setError] = useState(null);
-
+  const [product, setProduct] = useState();
+  const [unit, setUnit] = useState();
   const handleInputChange = (event) => {
     const { name, value } = event.target;
+    console.log("name", name, value);
     setInputValue({ ...inputValue, [name]: value });
+  };
+
+  const handleAutocompleteChange = (event, value) => {
+    setProduct(value);
+    const productObj = productOption.find(
+      (item) => item.product__name === value
+    );
+
+    let data = [...unit];
+    data = productObj ? productObj.product__unit : "";
+    setUnit(data);
   };
 
   useEffect(() => {
@@ -64,6 +77,8 @@ export const MaterialTransferNoteUpdate = (props) => {
         idForEdit
       );
 
+      setProduct(response.data.product);
+      setUnit(response.data.unit);
       setInputValue(response.data);
       setOpen(false);
     } catch (err) {
@@ -78,7 +93,7 @@ export const MaterialTransferNoteUpdate = (props) => {
       setOpen(true);
       const req = {
         user: inputValue.user,
-        product: inputValue.product,
+        product: product ? product : "",
         quantity: inputValue.quantity,
       };
       await InventoryServices.updateMaterialTransferNoteData(idForEdit, req);
@@ -132,14 +147,26 @@ export const MaterialTransferNoteUpdate = (props) => {
               size="small"
               disablePortal
               id="combo-box-demo"
-              value={inputValue.product ? inputValue.product : ""}
-              onChange={(event, value) => handleInputChange(event)}
+              value={product ? product : ""}
+              onChange={(event, value) =>
+                handleAutocompleteChange(event, value)
+              }
               options={productOption.map((option) => option.product__name)}
               getOptionLabel={(option) => option}
               sx={{ minWidth: 300 }}
               renderInput={(params) => (
                 <TextField {...params} label="Product Name" />
               )}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextField
+              fullWidth
+              name="unit"
+              size="small"
+              label="Unit"
+              variant="outlined"
+              value={unit ? unit : ""}
             />
           </Grid>
           <Grid item xs={12} sm={4}>

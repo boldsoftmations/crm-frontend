@@ -25,7 +25,7 @@ import { CustomSearch } from "../../../Components/CustomSearch";
 import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 import { Popup } from "../../../Components/Popup";
 import InventoryServices from "../../../services/InventoryService";
-import { PackijngListUpdate } from "./PackijngListUpdate";
+import { PackingListUpdate } from "./PackingListUpdate";
 import { PackingListCreate } from "./PackingListCreate";
 import InvoiceServices from "../../../services/InvoiceService";
 import { useDispatch } from "react-redux";
@@ -286,7 +286,7 @@ export const PackingListView = () => {
         openPopup={openPopup}
         setOpenPopup={setOpenPopup}
       >
-        <PackijngListUpdate
+        <PackingListUpdate
           setOpenPopup={setOpenPopup}
           getAllPackingListDetails={getAllPackingListDetails}
           idForEdit={idForEdit}

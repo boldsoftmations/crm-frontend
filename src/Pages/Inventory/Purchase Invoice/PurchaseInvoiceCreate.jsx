@@ -77,6 +77,7 @@ export const PurchaseInvoiceCreate = (props) => {
       setPurchaseInvoiceDataByID(response.data);
       var arr = response.data.products.map((fruit) => ({
         product: fruit.products,
+        unit: fruit.unit,
         quantity: fruit.qa_accepted,
         rate: fruit.rate,
       }));
@@ -122,7 +123,7 @@ export const PurchaseInvoiceCreate = (props) => {
               sx={{ minWidth: "12rem" }}
               name="vendor_name"
               size="small"
-              label="search By vendor_name Name"
+              label="search By vendor Name"
               variant="outlined"
               onChange={handleInputChange}
               value={inputValue.vendor_name}
@@ -180,7 +181,7 @@ export const PurchaseInvoiceCreate = (props) => {
           {products.map((input, index) => {
             return (
               <>
-                <Grid key={index} item xs={12} sm={3}>
+                <Grid key={index} item xs={12} sm={4}>
                   <TextField
                     fullWidth
                     name="product"
@@ -191,7 +192,16 @@ export const PurchaseInvoiceCreate = (props) => {
                     onChange={(event) => handleFormChange(index, event)}
                   />
                 </Grid>
-                <Grid item xs={12} sm={3}>
+                <Grid key={index} item xs={12} sm={2}>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="Unit"
+                    variant="outlined"
+                    value={input.unit ? input.unit : ""}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={2}>
                   <TextField
                     fullWidth
                     name="quantity"
@@ -202,7 +212,7 @@ export const PurchaseInvoiceCreate = (props) => {
                     onChange={(event) => handleFormChange(index, event)}
                   />
                 </Grid>
-                <Grid item xs={12} sm={3}>
+                <Grid item xs={12} sm={2}>
                   <TextField
                     fullWidth
                     name="rate"
@@ -213,7 +223,7 @@ export const PurchaseInvoiceCreate = (props) => {
                     onChange={(event) => handleFormChange(index, event)}
                   />
                 </Grid>
-                <Grid item xs={12} sm={3}>
+                <Grid item xs={12} sm={2}>
                   <TextField
                     fullWidth
                     name="amount"

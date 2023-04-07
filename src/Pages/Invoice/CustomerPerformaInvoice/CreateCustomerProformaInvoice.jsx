@@ -69,11 +69,10 @@ export const CreateCustomerProformaInvoice = (props) => {
   const [errorMessage, setErrorMessage] = useState();
   const [validationPrice, setValidationPrice] = useState("");
   const [checked, setChecked] = useState(true);
-  const [productData, setProductData] = useState();
-  const [unit, setUnit] = useState("");
   const [products, setProducts] = useState([
     {
       product: "",
+      unit: "",
       quantity: "",
       rate: "",
       requested_date: values.someDate,
@@ -83,15 +82,17 @@ export const CreateCustomerProformaInvoice = (props) => {
   const data = useSelector((state) => state.auth);
   const users = data.profile;
   const sellerData = data.sellerAccount;
-  // let ContactOptions = companyData
-  //   ? companyData.contacts
-  //   : "Please Select First Company";
 
-  // let AddressOption = companyData
-  //   ? companyData.warehouse
-  //   : "Please Select First Company";
+  const handleAutocompleteChange = (index, event, value) => {
+    let data = [...products];
+    const productObj = product.find((item) => item.product === value);
+    console.log("productObj", productObj);
+    data[index]["product"] = value;
+    data[index]["unit"] = productObj ? productObj.unit : "";
+    setProducts(data);
+  };
+
   const handleFormChange = (index, event) => {
-    setProductData(event.target.textContent);
     let data = [...products];
     data[index][event.target.name ? event.target.name : "product"] = event
       .target.value
@@ -100,19 +101,10 @@ export const CreateCustomerProformaInvoice = (props) => {
     setProducts(data);
   };
 
-  function searchUnit(nameKey, myArray) {
-    for (var i = 0; i < myArray.length; i++) {
-      if (myArray[i].product === nameKey) {
-        return myArray[i].id;
-      }
-    }
-  }
-
-  const ID = searchUnit(productData, product);
-
   const addFields = () => {
     let newfield = {
       product: "",
+      unit: "",
       quantity: "",
       rate: "",
       requested_date: values.someDate,
@@ -174,19 +166,6 @@ export const CreateCustomerProformaInvoice = (props) => {
     } catch (err) {
       console.error("error potential", err);
       setOpen(false);
-    }
-  };
-
-  useEffect(() => {
-    if (ID) getPriceListData(ID);
-  }, [ID]);
-
-  const getPriceListData = async () => {
-    try {
-      const response = await ProductService.getPriceListById(ID);
-      setUnit(response.data.unit);
-    } catch (error) {
-      console.log("error", error);
     }
   };
 
@@ -627,7 +606,9 @@ export const CreateCustomerProformaInvoice = (props) => {
                     size="small"
                     disablePortal
                     id="combo-box-demo"
-                    onChange={(event, value) => handleFormChange(index, event)}
+                    onChange={(event, value) =>
+                      handleAutocompleteChange(index, event, value)
+                    }
                     options={product.map((option) => option.product)}
                     getOptionLabel={(option) => option}
                     sx={{ minWidth: 300 }}
@@ -657,7 +638,7 @@ export const CreateCustomerProformaInvoice = (props) => {
                     size="small"
                     label="Unit"
                     variant="outlined"
-                    value={unit ? unit : ""}
+                    value={input.unit ? input.unit : ""}
                   />
                 </Grid>
                 <Grid item xs={12} sm={3}>

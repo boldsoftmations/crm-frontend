@@ -37,17 +37,27 @@ export const BillofMaterialsCreate = (props) => {
 
   const [products, setProducts] = useState([
     {
-      product: null,
-      quantity: null,
+      product: "",
+      quantity: "",
+      unit: "",
     },
   ]);
 
+  const handleAutocompleteChange = (index, event, value) => {
+    let data = [...products];
+    const productObj = RawAndConsumableProduct.find(
+      (item) => item.product === value
+    );
+    console.log("productObj", productObj);
+    data[index]["product"] = value;
+    data[index]["unit"] = productObj ? productObj.unit : "";
+    setProducts(data);
+  };
+
   const handleFormChange = (index, event) => {
     let data = [...products];
-    data[index][event.target.name ? event.target.name : "product"] = event
-      .target.value
-      ? event.target.value
-      : event.target.textContent;
+
+    data[index][event.target.name] = event.target.value;
     setProducts(data);
   };
 
@@ -55,6 +65,7 @@ export const BillofMaterialsCreate = (props) => {
     let newfield = {
       product: "",
       quantity: "",
+      unit: "",
     };
     setProducts([...products, newfield]);
   };
@@ -87,7 +98,8 @@ export const BillofMaterialsCreate = (props) => {
       setOpen(false);
     }
   };
-
+  console.log("products", products);
+  console.log("RawAndConsumableProduct", RawAndConsumableProduct);
   const handleCloseSnackbar = () => {
     setError(null);
   };
@@ -141,15 +153,19 @@ export const BillofMaterialsCreate = (props) => {
             </Root>
           </Grid>
           {products.map((input, index) => {
+            console.log("input", input);
             return (
               <>
-                <Grid key={index} item xs={12} sm={4}>
+                <Grid key={index} item xs={12} sm={3}>
                   <Autocomplete
                     name="product"
                     size="small"
                     disablePortal
                     id="combo-box-demo"
-                    onChange={(event, value) => handleFormChange(index, event)}
+                    value={input.product ? input.product : ""}
+                    onChange={(event, value) =>
+                      handleAutocompleteChange(index, event, value)
+                    }
                     options={RawAndConsumableProduct.map(
                       (option) => option.product
                     )}
@@ -160,7 +176,7 @@ export const BillofMaterialsCreate = (props) => {
                     )}
                   />
                 </Grid>
-                <Grid item xs={12} sm={4}>
+                <Grid item xs={12} sm={3}>
                   <TextField
                     fullWidth
                     name="quantity"
@@ -171,8 +187,17 @@ export const BillofMaterialsCreate = (props) => {
                     onChange={(event) => handleFormChange(index, event)}
                   />
                 </Grid>
-
-                <Grid item xs={12} sm={4} alignContent="right">
+                <Grid item xs={12} sm={3}>
+                  <TextField
+                    fullWidth
+                    name="unit"
+                    size="small"
+                    label="Unit"
+                    variant="outlined"
+                    value={input.unit ? input.unit : ""}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={3} alignContent="right">
                   {index !== 0 && (
                     <Button
                       disabled={index === 0}
@@ -186,6 +211,7 @@ export const BillofMaterialsCreate = (props) => {
               </>
             );
           })}
+
           <Grid item xs={12} sm={4} alignContent="right">
             <Button
               onClick={addFields}
