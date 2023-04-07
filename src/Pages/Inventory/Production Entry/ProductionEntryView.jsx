@@ -315,6 +315,7 @@ function Row(props) {
                 <TableHead>
                   <TableRow>
                     <TableCell align="center">PRODUCT</TableCell>
+                    <TableCell align="center">UNIT</TableCell>
                     <TableCell align="center">QUANTITY</TableCell>
                   </TableRow>
                 </TableHead>
@@ -322,6 +323,7 @@ function Row(props) {
                   {row.products_data.map((historyRow, i) => (
                     <TableRow key={i}>
                       <TableCell align="center">{historyRow.product}</TableCell>
+                      <TableCell align="center">{historyRow.unit}</TableCell>
                       <TableCell align="center">
                         {historyRow.quantity}
                       </TableCell>
