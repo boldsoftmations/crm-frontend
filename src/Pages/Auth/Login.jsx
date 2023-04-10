@@ -5,6 +5,7 @@ import {
   loginstart,
   loginsucces,
   loginfail,
+  getProfileUser,
 } from "./../../Redux/Action/Action";
 import "../CommonStyle.css";
 
@@ -31,6 +32,7 @@ import { CustomButton } from "../../Components/CustomButton";
 import { ErrorMessage } from "./../../Components/ErrorMessage/ErrorMessage";
 import { CustomLoader } from "./../../Components/CustomLoader";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import LeadServices from "../../services/LeadService";
 
 const paperStyle = {
   padding: 20,
@@ -39,10 +41,11 @@ const paperStyle = {
   margin: "0 auto",
 };
 const avatarStyle = { backgroundColor: "#1bbd7e" };
-const btnstyle = { margin: "8px 0" };
+// const btnstyle = { margin: "8px 0" };
 
 export const Login = () => {
   const [open, setOpen] = useState(false);
+  const [token, setToken] = useState([]);
   const theme = createTheme();
   let navigate = useNavigate();
   const dispatch = useDispatch();
@@ -54,7 +57,6 @@ export const Login = () => {
     password: "",
     showPassword: false,
   });
-  const [pwd, setPwd] = useState("");
   const [errMsg, setErrMsg] = useState("");
 
   useEffect(() => {
@@ -94,10 +96,12 @@ export const Login = () => {
       if (response.data.token.access) {
         setUserData(response.data.token);
         dispatch(loginsucces(response.data));
+        setToken(response.data.token);
+        getUsers();
       }
+
       navigate("/user/home");
       setUser("");
-      setPwd("");
 
       setOpen(false);
     } catch (err) {
@@ -116,6 +120,26 @@ export const Login = () => {
       }
       dispatch(loginfail(errMsg));
       errRef.current.focus();
+    }
+  };
+
+  useEffect(() => {
+    if (token) {
+      getUsers();
+    }
+  }, [token]);
+
+  const getUsers = async () => {
+    try {
+      setOpen(true);
+      const res = await LeadServices.getProfile();
+      dispatch(getProfileUser(res.data));
+      // setUserData(res.data);
+      setOpen(false);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setOpen(false);
     }
   };
 
@@ -223,5 +247,5 @@ export const Login = () => {
   );
 };
 
-const LOGIN_URL = `${process.env.REACT_APP_DEPLOY_BACKEND_URL}/api/user/login/`;
-// const LOGIN_URL = `${process.env.REACT_APP_TESTING_BACKEND_URL}/api/user/login/`;
+// const LOGIN_URL = `${process.env.REACT_APP_DEPLOY_BACKEND_URL}/api/user/login/`;
+const LOGIN_URL = `${process.env.REACT_APP_TESTING_BACKEND_URL}/api/user/login/`;
