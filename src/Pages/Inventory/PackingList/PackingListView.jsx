@@ -338,6 +338,7 @@ function Row(props) {
               <Table size="small" aria-label="purchases">
                 <TableHead>
                   <TableRow>
+                    <TableCell align="center">SR.NO</TableCell>
                     <TableCell align="center">PRODUCT</TableCell>
                     <TableCell align="center">UNIT</TableCell>
                     <TableCell align="center">QUANTITY</TableCell>
@@ -346,6 +347,7 @@ function Row(props) {
                 <TableBody>
                   {row.products.map((historyRow, i) => (
                     <TableRow key={i}>
+                      <TableCell align="center">{i + 1}</TableCell>
                       <TableCell align="center">{historyRow.product}</TableCell>
                       <TableCell align="center">{historyRow.unit}</TableCell>
                       <TableCell align="center">

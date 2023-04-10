@@ -241,6 +241,7 @@ export const ProductionEntryView = () => {
                   <StyledTableCell align="center"></StyledTableCell>
                   <StyledTableCell align="center">ID</StyledTableCell>
                   <StyledTableCell align="center">PRODUCT</StyledTableCell>
+
                   <StyledTableCell align="center">QUANTITY</StyledTableCell>
                   <StyledTableCell align="center">DATE</StyledTableCell>
                 </StyledTableRow>

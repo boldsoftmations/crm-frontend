@@ -205,9 +205,9 @@ export const ProductionInventoryView = () => {
               <TableHead>
                 <TableRow>
                   <StyledTableCell align="center">PRODUCT</StyledTableCell>
-                  <StyledTableCell align="center">UNIT</StyledTableCell>
                   <StyledTableCell align="center">DESCRIPTION</StyledTableCell>
                   <StyledTableCell align="center">DATE</StyledTableCell>
+                  <StyledTableCell align="center">UNIT</StyledTableCell>
                   <StyledTableCell align="center">QUANTITY</StyledTableCell>
                   <StyledTableCell align="center">
                     PENDING QUANTITY
@@ -222,13 +222,13 @@ export const ProductionInventoryView = () => {
                     <StyledTableCell align="center">
                       {row.product}
                     </StyledTableCell>
-                    <StyledTableCell align="center">{row.unit}</StyledTableCell>
                     <StyledTableCell align="center">
                       {row.description}
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.created_on}
                     </StyledTableCell>
+                    <StyledTableCell align="center">{row.unit}</StyledTableCell>
                     <StyledTableCell align="center">
                       {row.quantity}
                     </StyledTableCell>
