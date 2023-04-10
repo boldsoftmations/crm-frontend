@@ -1,3 +1,4 @@
+import React, { useEffect, useRef, useState } from "react";
 import {
   Box,
   Grid,
@@ -16,9 +17,10 @@ import {
   Typography,
   IconButton,
   Switch,
+  Snackbar,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
-import React, { useEffect, useRef, useState } from "react";
+import CloseIcon from "@mui/icons-material/Close";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { CustomLoader } from "../../../Components/CustomLoader";
@@ -62,6 +64,7 @@ export const MaterialRequisitionFormView = () => {
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const [idForEdit, setIDForEdit] = useState("");
   const [storesInventoryData, setStoresInventoryData] = useState([]);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
   const users = useSelector((state) => state.auth.profile);
   const handleInputChange = (event) => {
     setFilterSelectedQuery(event.target.value);
@@ -185,6 +188,8 @@ export const MaterialRequisitionFormView = () => {
       setOpenPopup(false);
       getAllMaterialRequisitionFormDetails();
       setOpen(false);
+      // Show success snackbar
+      setOpenSnackbar(true);
     } catch (error) {
       console.log("error Store Accepting", error);
       setOpen(false);
@@ -199,6 +204,10 @@ export const MaterialRequisitionFormView = () => {
   const openInPopup = (item) => {
     setIDForEdit(item);
     setOpenPopup(true);
+  };
+
+  const handleSnackbarClose = () => {
+    setOpenSnackbar(false);
   };
 
   return (
@@ -256,6 +265,24 @@ export const MaterialRequisitionFormView = () => {
               },
             }}
           >
+            <Snackbar
+              open={openSnackbar}
+              onClose={handleSnackbarClose}
+              message={
+                "Materail Requisition Form details Accepted successfully!"
+              }
+              anchorOrigin={{ vertical: "top", horizontal: "center" }}
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  sx={{ p: 0.5 }}
+                  onClick={handleSnackbarClose}
+                >
+                  <CloseIcon />
+                </IconButton>
+              }
+            />
             <Table
               sx={{ minWidth: 700 }}
               stickyHeader
@@ -377,7 +404,7 @@ function Row(props) {
               variant="contained"
               color="success"
             >
-              Accepted
+              Accept
             </Button>
           )}
         </TableCell>
