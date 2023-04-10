@@ -68,9 +68,11 @@ export const GRNCreate = (props) => {
     try {
       e.preventDefault();
       setOpen(true);
-      const response = await InventoryServices.getAllSearchPackingListData(
-        inputValue.vendor_name
-      );
+      const response =
+        await InventoryServices.getAllSearchWithFilterPackingListData(
+          false,
+          inputValue.vendor_name
+        );
       setVendorOption(response.data.results);
       setOpen(false);
     } catch (err) {

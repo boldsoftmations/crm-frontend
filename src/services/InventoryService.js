@@ -100,6 +100,12 @@ const getAllSearchPackingListData = (search) => {
   return CustomAxios.get(`/api/inventory/list-packing-list/?search=${search}`);
 };
 
+const getAllSearchWithFilterPackingListData = (type, search) => {
+  return CustomAxios.get(
+    `/api/inventory/list-packing-list/?accept=${type}&search=${search}`
+  );
+};
+
 const getAllPackingListDataPaginate = (currentPage, search) => {
   return CustomAxios.get(
     `/api/inventory/list-packing-list/?page=${currentPage}&search=${search}`
@@ -142,6 +148,12 @@ const getAllPaginateGRNDataWithSearch = (all, search) => {
 
 const getAllSearchGRNData = (search) => {
   return CustomAxios.get(`/api/inventory/list-grn/?search=${search}`);
+};
+
+const getAllSearchWithFilterGRNData = (type, search) => {
+  return CustomAxios.get(
+    `/api/inventory/list-grn/?accepted=${type}&search=${search}`
+  );
 };
 
 const getAllGRNDataPaginate = (currentPage, search) => {
@@ -614,6 +626,7 @@ const InventoryServices = {
   getAllPaginatePackingListData,
   getAllPaginatePackingListDataWithSearch,
   getAllSearchPackingListData,
+  getAllSearchWithFilterPackingListData,
   getAllPackingListDataPaginate,
   getPackingListPaginateData,
   createPackingListData,
@@ -623,6 +636,7 @@ const InventoryServices = {
   getAllPaginateGRNData,
   getAllPaginateGRNDataWithSearch,
   getAllSearchGRNData,
+  getAllSearchWithFilterGRNData,
   getAllGRNDataPaginate,
   getGRNPaginateData,
   createGRNData,

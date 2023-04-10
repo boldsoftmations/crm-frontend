@@ -59,7 +59,8 @@ export const PurchaseInvoiceCreate = (props) => {
   const fetchVendorOptions = async () => {
     try {
       setOpen(true);
-      const response = await InventoryServices.getAllSearchGRNData(
+      const response = await InventoryServices.getAllSearchWithFilterGRNData(
+        false,
         inputValue.vendor_name
       );
       setVendorOption(response.data.results);
