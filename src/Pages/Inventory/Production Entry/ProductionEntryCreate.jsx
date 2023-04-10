@@ -17,7 +17,6 @@ import { CustomLoader } from "../../../Components/CustomLoader";
 import InventoryServices from "../../../services/InventoryService";
 import { useSelector } from "react-redux";
 import { styled } from "@mui/material/styles";
-import { useEffect } from "react";
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -41,6 +40,7 @@ export const ProductionEntryCreate = (props) => {
     {
       product: null,
       quantity: null,
+      expected_quantity: null,
     },
   ]);
 
@@ -82,6 +82,7 @@ export const ProductionEntryCreate = (props) => {
       product: fruit.product,
       unit: fruit.unit,
       quantity: fruit.quantity,
+      expected_quantity: fruit.quantity,
     }));
     setProducts(arr);
   };
@@ -89,27 +90,39 @@ export const ProductionEntryCreate = (props) => {
   const createMaterialRequisitionFormDetails = async (e) => {
     try {
       e.preventDefault();
-
       setOpen(true);
+
       const productData = checked
         ? products.map((product) => ({
             product: product.product,
-            quantity: product.parseFloat(quantity),
-          }))
-        : products.map((product) => ({
-            product: product.product,
-            quantity: (
-              parseFloat(product.quantity) * parseFloat(quantity)
+            quantity: parseFloat(product.quantity) || 0,
+            expected_quantity: (
+              parseFloat(product.expected_quantity) *
+              parseFloat(quantity.quantity)
             ).toFixed(2),
-          }));
+          }))
+        : products.map((product) => {
+            const productQuantity = parseFloat(product.quantity);
+            const totalQuantity = parseFloat(quantity.quantity) || 0;
+            return {
+              product: product.product,
+              quantity:
+                isNaN(productQuantity) || isNaN(totalQuantity)
+                  ? 0
+                  : (productQuantity * totalQuantity).toFixed(2),
+              expected_quantity: (
+                parseFloat(product.expected_quantity) *
+                parseFloat(quantity.quantity)
+              ).toFixed(2),
+            };
+          });
 
-      console.log("productData", productData);
       const req = {
         user: users.email,
         bom: selectedBOM.bom_id,
         product: selectedBOM.product,
         production_gnl: checked,
-        expected_quantity: quantity.expected_quantity || 0,
+
         quantity: quantity.quantity,
         products_data: productData,
       };
@@ -118,11 +131,10 @@ export const ProductionEntryCreate = (props) => {
       getAllProductionEntryDetails();
       setOpen(false);
     } catch (error) {
-      setError(
-        error.response.data.errors
-          ? error.response.data.errors.non_field_errors
-          : ""
-      );
+      if (error.response && error.response.data && error.response.data.errors) {
+        setError(error.response.data.errors.non_field_errors);
+      }
+
       setOpen(false);
     }
   };
@@ -131,9 +143,6 @@ export const ProductionEntryCreate = (props) => {
     setError(null);
   };
 
-  console.log(
-    parseInt(products.quantity).toFixed(2) * parseInt(quantity).toFixed(2)
-  );
   return (
     <div>
       <CustomLoader open={open} />
@@ -167,7 +176,11 @@ export const ProductionEntryCreate = (props) => {
               disablePortal
               id="combo-box-demo"
               onChange={(event, value) => fetchProductOptions(value)}
-              options={FinishGoodsProduct.map((option) => option.product)}
+              options={
+                FinishGoodsProduct
+                  ? FinishGoodsProduct.map((option) => option.product)
+                  : []
+              }
               getOptionLabel={(option) => option}
               sx={{ minWidth: 300 }}
               renderInput={(params) => (
@@ -213,19 +226,6 @@ export const ProductionEntryCreate = (props) => {
               onChange={(event) => handleQuantityChange(event)}
             />
           </Grid>
-          {checked === true && (
-            <Grid item xs={12} sm={4}>
-              <TextField
-                fullWidth
-                name="expected_quantity"
-                size="small"
-                label="Ecpected Quantity"
-                variant="outlined"
-                value={quantity.expected_quantity}
-                onChange={(event) => handleQuantityChange(event)}
-              />
-            </Grid>
-          )}
           <Grid item xs={12}>
             <Root>
               <Divider>
@@ -245,7 +245,7 @@ export const ProductionEntryCreate = (props) => {
                     value={input.product ? input.product : ""}
                   />
                 </Grid>
-                <Grid key={index} item xs={12} sm={4}>
+                <Grid key={index} item xs={12} sm={2}>
                   <TextField
                     fullWidth
                     size="small"
@@ -255,7 +255,7 @@ export const ProductionEntryCreate = (props) => {
                   />
                 </Grid>
                 {checked === false ? (
-                  <Grid item xs={12} sm={4}>
+                  <Grid item xs={12} sm={3}>
                     <TextField
                       fullWidth
                       name="quantity"
@@ -277,15 +277,35 @@ export const ProductionEntryCreate = (props) => {
                     />
                   </Grid>
                 ) : (
-                  <Grid item xs={12} sm={4}>
+                  <Grid item xs={12} sm={3}>
                     <TextField
                       fullWidth
                       name="quantity"
+                      zz
                       size="small"
                       label="Quantity"
                       variant="outlined"
                       value={input.quantity ? parseFloat(input.quantity) : ""}
                       onChange={(event) => handleFormChange(index, event)}
+                    />
+                  </Grid>
+                )}
+                {checked && (
+                  <Grid item xs={12} sm={3}>
+                    <TextField
+                      fullWidth
+                      name="expected_quantity"
+                      size="small"
+                      label="Expected Quantity"
+                      variant="outlined"
+                      value={
+                        quantity.quantity && input.expected_quantity
+                          ? (
+                              parseFloat(input.expected_quantity) *
+                              parseFloat(quantity.quantity)
+                            ).toFixed(2)
+                          : ""
+                      }
                     />
                   </Grid>
                 )}
