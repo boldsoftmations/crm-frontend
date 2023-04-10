@@ -23,7 +23,6 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import DescriptionIcon from "@mui/icons-material/Description";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
-import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRight";
 
 export const ListItems = (props) => {
   const { setOpen } = props;
@@ -43,9 +42,9 @@ export const ListItems = (props) => {
 
   return (
     <div>
-      {userData.is_staff ? (
+      {userData.is_staff === true ? (
         <>
-          {/* Dashbpoard */}
+          {/* Seller Account */}
           <ListItem
             button
             onClick={() => setExpandDashboard(!expandDashboard)}
@@ -596,6 +595,19 @@ export const ListItems = (props) => {
                   onClick={() => setOpen(false)}
                   inset
                   primary="Stores Inventory (Cons)"
+                />
+              </ListItem>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/inventory/view-production-inventory-g&l"
+                style={{ width: 300 }}
+              >
+                <ListItemText
+                  component={Button}
+                  onClick={() => setOpen(false)}
+                  inset
+                  primary="Production Inventory (G&L)"
                 />
               </ListItem>
             </List>
@@ -1576,48 +1588,6 @@ export const ListItems = (props) => {
                 </>
               ) : (
                 <>
-                  {/* Dashbpoard */}
-                  {userData.email === "accounts2@glutape.com" && (
-                    <>
-                      <ListItem
-                        button
-                        onClick={() => setExpandDashboard(!expandDashboard)}
-                        style={{ width: 300 }}
-                      >
-                        <ListItemIcon>
-                          <DashboardIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Dashboard Details" />
-                        {expandDashboard ? (
-                          <ExpandLessIcon />
-                        ) : (
-                          <ExpandMoreIcon />
-                        )}
-                      </ListItem>
-                      <Collapse
-                        in={expandDashboard}
-                        timeout="auto"
-                        unmountOnExit
-                      >
-                        <Divider />
-                        <List component="div" disablePadding>
-                          <ListItem
-                            button
-                            component={RouterLink}
-                            to="/user/dashoard"
-                            style={{ width: 300 }}
-                          >
-                            <ListItemText
-                              component={Button}
-                              onClick={() => setOpen(false)}
-                              inset
-                              primary="Dasboard"
-                            />
-                          </ListItem>
-                        </List>
-                      </Collapse>
-                    </>
-                  )}
                   {/* Products */}
                   {userData.groups.toString() !== "Sales" && (
                     <ListItem
@@ -2257,6 +2227,19 @@ export const ListItems = (props) => {
                               onClick={() => setOpen(false)}
                               inset
                               primary="Material Transfer Note"
+                            />
+                          </ListItem>
+                          <ListItem
+                            button
+                            component={RouterLink}
+                            to="/inventory/view-production-inventory-g&l"
+                            style={{ width: 300 }}
+                          >
+                            <ListItemText
+                              component={Button}
+                              onClick={() => setOpen(false)}
+                              inset
+                              primary="Production Inventory (G&L)"
                             />
                           </ListItem>
                         </List>

@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import React, { useEffect } from "react";
 
 import { AssignTo } from "../Pages/Leads/AssignTo";
@@ -50,29 +50,12 @@ import { MaterialTransferNoteView } from "../Pages/Inventory/Material Transfer N
 import { ProductionInventoryView } from "../Pages/Inventory/Production Inventory/ProductionInventoryView";
 import { ProductionInventoryConsView } from "../Pages/Inventory/Production Inventory/ProductionInventoryConsView";
 import { StoresInventoryConsView } from "../Pages/Inventory/Stores Inventory/StoresInventoryConsView";
-import LeadServices from "../services/LeadService";
-import { getProfileUser } from "../Redux/Action/Action";
+import { ProductionInventoryGAndLView } from "../Pages/Inventory/Production Entry/ProductionInventoryGAndLView";
 
 export const RouteScreen = () => {
   const tokenData = useSelector((state) => state.auth);
   const token = tokenData.user;
-  const dispatch = useDispatch();
 
-  useEffect(() => {
-    if (token) {
-      getUsers();
-    }
-  }, [token]);
-
-  const getUsers = async () => {
-    try {
-      const res = await LeadServices.getProfile();
-      dispatch(getProfileUser(res.data));
-      // setUserData(res.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
   return (
     <div className="appcontainer">
       <Routes>
@@ -221,6 +204,10 @@ export const RouteScreen = () => {
             <Route
               path="/inventory/view-production-inventory-cons"
               element={<ProductionInventoryConsView />}
+            />
+            <Route
+              path="/inventory/view-production-inventory-g&l"
+              element={<ProductionInventoryGAndLView />}
             />
             <Route path="*" element={<Home />} />
           </>

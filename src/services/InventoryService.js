@@ -555,6 +555,41 @@ const getProductionInventoryPaginateData = (currentPage) => {
     `/api/inventory/list-production-inventory/?page=${currentPage}`
   );
 };
+
+// Production Inventory G&L List Api
+
+const getAllProductionGAndLInventoryData = () => {
+  return CustomAxios.get(`/api/inventory/list-production-gnl/`);
+};
+
+const getAllPaginateProductionGAndLInventoryData = (all) => {
+  return CustomAxios.get(`/api/inventory/list-production-gnl/?page=${all}`);
+};
+
+const getAllPaginateProductionGAndLInventoryDataWithSearch = (all, search) => {
+  return CustomAxios.get(
+    `/api/inventory/list-production-gnl/?page=${all}&search=${search}`
+  );
+};
+
+const getAllSearchProductionGAndLInventoryData = (search) => {
+  return CustomAxios.get(
+    `/api/inventory/list-production-gnl/?search=${search}`
+  );
+};
+
+const getAllProductionGAndLInventoryDataPaginate = (currentPage, search) => {
+  return CustomAxios.get(
+    `/api/inventory/list-production-gnl/?page=${currentPage}&search=${search}`
+  );
+};
+
+const getProductionGAndLInventoryPaginateData = (currentPage) => {
+  return CustomAxios.get(
+    `/api/inventory/list-production-gnl/?page=${currentPage}`
+  );
+};
+
 const InventoryServices = {
   getAllVendorData,
   getAllPaginateVendorData,
@@ -664,6 +699,12 @@ const InventoryServices = {
   getAllSearchConsProductionInventoryData,
   getAllConsProductionInventoryDataPaginate,
   getConsProductionInventoryPaginateData,
+  getAllProductionGAndLInventoryData,
+  getAllPaginateProductionGAndLInventoryData,
+  getAllPaginateProductionGAndLInventoryDataWithSearch,
+  getAllSearchProductionGAndLInventoryData,
+  getAllProductionGAndLInventoryDataPaginate,
+  getProductionGAndLInventoryPaginateData,
 };
 
 export default InventoryServices;
