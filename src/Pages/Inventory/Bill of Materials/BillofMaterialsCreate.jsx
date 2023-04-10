@@ -13,7 +13,6 @@ import React, { useEffect, useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import InventoryServices from "../../../services/InventoryService";
-import ProductService from "../../../services/ProductService";
 import { useSelector } from "react-redux";
 import { styled } from "@mui/material/styles";
 
@@ -33,7 +32,10 @@ export const BillofMaterialsCreate = (props) => {
   const FinishGoodsProduct = data.finishgoodsProduct;
   const ConsumableProduct = data.consumableProduct;
   const RawMaterialProduct = data.rawMaterialProduct;
-  const RawAndConsumableProduct = [...ConsumableProduct, ...RawMaterialProduct];
+  const RawAndConsumableProduct = [
+    ...(ConsumableProduct || []),
+    ...(RawMaterialProduct || []),
+  ];
 
   const [products, setProducts] = useState([
     {
@@ -137,7 +139,11 @@ export const BillofMaterialsCreate = (props) => {
               disablePortal
               id="combo-box-demo"
               onChange={(event, value) => setSelectedProduct(value)}
-              options={FinishGoodsProduct.map((option) => option.product)}
+              options={
+                FinishGoodsProduct
+                  ? FinishGoodsProduct.map((option) => option.product)
+                  : []
+              }
               getOptionLabel={(option) => option}
               sx={{ minWidth: 300 }}
               renderInput={(params) => (
@@ -166,9 +172,13 @@ export const BillofMaterialsCreate = (props) => {
                     onChange={(event, value) =>
                       handleAutocompleteChange(index, event, value)
                     }
-                    options={RawAndConsumableProduct.map(
-                      (option) => option.product
-                    )}
+                    options={
+                      RawAndConsumableProduct
+                        ? RawAndConsumableProduct.map(
+                            (option) => option.product
+                          )
+                        : []
+                    }
                     getOptionLabel={(option) => option}
                     sx={{ minWidth: 300 }}
                     renderInput={(params) => (

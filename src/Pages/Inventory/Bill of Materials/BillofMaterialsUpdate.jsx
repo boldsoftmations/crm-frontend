@@ -33,7 +33,11 @@ export const BillofMaterialsUpdate = (props) => {
   const data = useSelector((state) => state.auth);
   const ConsumableProduct = data.consumableProduct;
   const RawMaterialProduct = data.rawMaterialProduct;
-  const RawAndConsumableProduct = [...ConsumableProduct, ...RawMaterialProduct];
+  const RawAndConsumableProduct = [
+    ...(ConsumableProduct || []),
+    ...(RawMaterialProduct || []),
+  ];
+
   const [products, setProducts] = useState([
     {
       product: "",
@@ -189,9 +193,13 @@ export const BillofMaterialsUpdate = (props) => {
                     onChange={(event, value) =>
                       handleAutocompleteChange(index, event, value)
                     }
-                    options={RawAndConsumableProduct.map(
-                      (option) => option.product
-                    )}
+                    options={
+                      RawAndConsumableProduct
+                        ? RawAndConsumableProduct.map(
+                            (option) => option.product
+                          )
+                        : []
+                    }
                     getOptionLabel={(option) => option}
                     sx={{ minWidth: 300 }}
                     renderInput={(params) => (
