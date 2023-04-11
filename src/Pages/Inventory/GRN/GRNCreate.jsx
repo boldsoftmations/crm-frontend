@@ -25,16 +25,12 @@ const Root = styled("div")(({ theme }) => ({
 
 export const GRNCreate = (props) => {
   const { setOpenPopup, getAllGRNDetails } = props;
-  const [inputValue, setInputValue] = useState([]);
   const [open, setOpen] = useState(false);
-  const [vendorOption, setVendorOption] = useState([]);
-  const [vendor, setVendor] = useState("");
+  const [vendor, setVendor] = useState(null);
   const [grnDataByID, setGRNDataByID] = useState([]);
-
   const [error, setError] = useState(null);
   const data = useSelector((state) => state.auth);
-  const sellerData = data.sellerAccount;
-
+  const vendorOption = data.packingList;
   const [products, setProducts] = useState([
     {
       products: "",
@@ -43,11 +39,6 @@ export const GRNCreate = (props) => {
       qa_accepted: "",
     },
   ]);
-  // this is for search vendor name only
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setInputValue({ ...inputValue, [name]: value });
-  };
 
   const handleFormChange = (index, event) => {
     const { name, value } = event.target;
@@ -64,26 +55,11 @@ export const GRNCreate = (props) => {
     setProducts(list);
   };
 
-  const fetchVendorOptions = async (e) => {
-    try {
-      e.preventDefault();
-      setOpen(true);
-      const response =
-        await InventoryServices.getAllSearchWithFilterPackingListData(
-          false,
-          inputValue.vendor_name
-        );
-      setVendorOption(response.data.results);
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("err all vendor", err);
-    }
-  };
-
   useEffect(() => {
-    if (vendor.id) getGRNDetailsByID();
-  }, [vendor.id]);
+    if (vendor !== null && vendor !== undefined && vendor.id) {
+      getGRNDetailsByID();
+    }
+  }, [vendor]);
 
   const getGRNDetailsByID = async () => {
     try {
@@ -91,7 +67,6 @@ export const GRNCreate = (props) => {
       const response = await InventoryServices.getPackingListDataById(
         vendor.id
       );
-
       setGRNDataByID(response.data);
       var arr = response.data.products.map((fruit) => ({
         products: fruit.product,
@@ -99,7 +74,6 @@ export const GRNCreate = (props) => {
         unit: fruit.unit,
       }));
       setProducts(arr);
-
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -113,7 +87,6 @@ export const GRNCreate = (props) => {
       setOpen(true);
       const req = {
         packing_list: grnDataByID.id, //Normal text field
-
         products: products,
       };
       await InventoryServices.createGRNData(req);
@@ -165,41 +138,22 @@ export const GRNCreate = (props) => {
           }
         />
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={3}>
-            <TextField
-              sx={{ minWidth: "8rem" }}
-              name="vendor_name"
+          <Grid item xs={12} sm={6}>
+            <Autocomplete
+              name="vendor"
               size="small"
-              label="search By vendor Name"
-              variant="outlined"
-              onChange={handleInputChange}
-              value={inputValue.vendor_name}
+              disablePortal
+              id="combo-box-demo"
+              onChange={(event, value) => setVendor(value)}
+              options={vendorOption ? vendorOption.map((option) => option) : []}
+              getOptionLabel={(option) =>
+                `${option.vendor} ${option.packing_list_no}`
+              }
+              sx={{ minWidth: 300 }}
+              renderInput={(params) => <TextField {...params} label="Vendor" />}
             />
-            <Button onClick={(e) => fetchVendorOptions(e)} variant="contained">
-              Submit
-            </Button>
           </Grid>
-          {vendorOption && vendorOption.length > 0 && (
-            <Grid item xs={12} sm={3}>
-              <Autocomplete
-                name="vendor"
-                size="small"
-                disablePortal
-                id="combo-box-demo"
-                onChange={(event, value) => setVendor(value)}
-                options={vendorOption.map((option) => option)}
-                getOptionLabel={(option) =>
-                  `${option.vendor} ${option.packing_list_no}`
-                }
-                sx={{ minWidth: 300 }}
-                renderInput={(params) => (
-                  <TextField {...params} label="Vendor" />
-                )}
-              />
-            </Grid>
-          )}
-
-          <Grid item xs={12} sm={3}>
+          <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               size="small"
@@ -270,7 +224,10 @@ export const GRNCreate = (props) => {
                     label="QA Accepted"
                     variant="outlined"
                     value={
-                      input.qa_rejected !== "" && input.order_quantity !== ""
+                      input.qa_rejected !== "" &&
+                      input.order_quantity !== "" &&
+                      !isNaN(input.order_quantity) &&
+                      !isNaN(input.qa_rejected)
                         ? parseInt(input.order_quantity) -
                           parseInt(input.qa_rejected)
                         : ""

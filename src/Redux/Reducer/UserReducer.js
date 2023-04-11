@@ -44,6 +44,8 @@ const userReducer = (state = initialState, action) => {
         finishgoodsProduct: null,
         rawMaterialProduct: null,
         consumableProduct: null,
+        packingList: null,
+        grnList: null,
       };
     case types.REFRESH_TOKEN:
       return {
@@ -134,6 +136,18 @@ const userReducer = (state = initialState, action) => {
         ...state,
         loading: false,
         consumableProduct: action.payload,
+      };
+    case types.PACKINGLISTNO:
+      return {
+        ...state,
+        loading: false,
+        packingList: action.payload,
+      };
+    case types.GRNLIST:
+      return {
+        ...state,
+        loading: false,
+        grnList: action.payload,
       };
     default:
       return state;

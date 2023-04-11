@@ -22,12 +22,10 @@ const Root = styled("div")(({ theme }) => ({
 
 export const PurchaseInvoiceCreate = (props) => {
   const { setOpenPopup, getAllPurchaseInvoiceDetails } = props;
-  const [inputValue, setInputValue] = useState([]);
   const [open, setOpen] = useState(false);
-  const [vendorOption, setVendorOption] = useState([]);
-  const [vendor, setVendor] = useState("");
   const [purchaseInvoiceDataByID, setPurchaseInvoiceDataByID] = useState([]);
-
+  const data = useSelector((state) => state.auth);
+  const vendorOption = data.grnList;
   const [products, setProducts] = useState([
     {
       product: "",
@@ -36,11 +34,6 @@ export const PurchaseInvoiceCreate = (props) => {
       amount: "",
     },
   ]);
-  // this is for search vendor name only
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setInputValue({ ...inputValue, [name]: value });
-  };
 
   const handleFormChange = (index, event) => {
     const { name, value } = event.target;
@@ -49,26 +42,10 @@ export const PurchaseInvoiceCreate = (props) => {
 
     // If quantity and rate values exist, update the amount value
     if (list[index].quantity !== "" && list[index].rate !== "") {
-      list[index].amount =
-        parseInt(list[index].quantity) * parseInt(list[index].rate);
+      list[index].amount = (list[index].quantity * list[index].rate).toFixed(2);
     }
 
     setProducts(list);
-  };
-
-  const fetchVendorOptions = async () => {
-    try {
-      setOpen(true);
-      const response = await InventoryServices.getAllSearchWithFilterGRNData(
-        false,
-        inputValue.vendor_name
-      );
-      setVendorOption(response.data.results);
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("err all vendor", err);
-    }
   };
 
   const getPurchaseInvoiceDetailsByID = async (value) => {
@@ -83,7 +60,6 @@ export const PurchaseInvoiceCreate = (props) => {
         rate: fruit.rate,
       }));
       setProducts(arr);
-
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -119,21 +95,6 @@ export const PurchaseInvoiceCreate = (props) => {
         onSubmit={(e) => createPackingListDetails(e)}
       >
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={4}>
-            <TextField
-              sx={{ minWidth: "12rem" }}
-              name="vendor_name"
-              size="small"
-              label="search By vendor Name"
-              variant="outlined"
-              onChange={handleInputChange}
-              value={inputValue.vendor_name}
-            />
-
-            <Button onClick={fetchVendorOptions} variant="contained">
-              Submit
-            </Button>
-          </Grid>
           {vendorOption && vendorOption.length > 0 && (
             <Grid item xs={12} sm={4}>
               <Autocomplete
@@ -142,7 +103,6 @@ export const PurchaseInvoiceCreate = (props) => {
                 disablePortal
                 id="combo-box-demo"
                 onChange={(event, value) => {
-                  setVendor(value);
                   if (value && value.grn_id) {
                     getPurchaseInvoiceDetailsByID(value.grn_id);
                   }
@@ -233,7 +193,7 @@ export const PurchaseInvoiceCreate = (props) => {
                     variant="outlined"
                     value={
                       input.quantity !== "" && input.rate !== ""
-                        ? parseInt(input.quantity) * parseInt(input.rate)
+                        ? (input.quantity * input.rate).toFixed(2)
                         : ""
                     }
                     onChange={(event) => handleFormChange(index, event)}

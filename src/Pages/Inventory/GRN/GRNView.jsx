@@ -27,6 +27,8 @@ import { Popup } from "../../../Components/Popup";
 import InventoryServices from "../../../services/InventoryService";
 import { GRNUpdate } from "./GRNUpdate";
 import { GRNCreate } from "./GRNCreate";
+import { useDispatch } from "react-redux";
+import { getPackingListNo } from "../../../Redux/Action/Action";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -59,10 +61,28 @@ export const GRNView = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const [idForEdit, setIDForEdit] = useState();
-
+  const dispatch = useDispatch();
   const handleInputChange = (event) => {
     setFilterSelectedQuery(event.target.value);
     getSearchData(event.target.value);
+  };
+
+  useEffect(() => {
+    getPackingListNoDetails();
+  }, []);
+
+  const getPackingListNoDetails = async () => {
+    try {
+      setOpen(true);
+      const response =
+        await InventoryServices.getAllSearchWithFilterPackingListData(false);
+      dispatch(getPackingListNo(response.data.results));
+
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      console.log("err all vendor", err);
+    }
   };
 
   useEffect(() => {

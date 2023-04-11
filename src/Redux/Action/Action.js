@@ -137,3 +137,17 @@ export const getConsumableProduct = (data) => {
     payload: data,
   };
 };
+
+export const getPackingListNo = (data) => {
+  return {
+    type: types.PACKINGLISTNO,
+    payload: data,
+  };
+};
+
+export const getGRNList = (data) => {
+  return {
+    type: types.GRNLIST,
+    payload: data,
+  };
+};

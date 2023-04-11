@@ -100,10 +100,8 @@ const getAllSearchPackingListData = (search) => {
   return CustomAxios.get(`/api/inventory/list-packing-list/?search=${search}`);
 };
 
-const getAllSearchWithFilterPackingListData = (type, search) => {
-  return CustomAxios.get(
-    `/api/inventory/list-packing-list/?accept=${type}&search=${search}`
-  );
+const getAllSearchWithFilterPackingListData = (type) => {
+  return CustomAxios.get(`/api/inventory/list-packing-list/?accept=${type}`);
 };
 
 const getAllPackingListDataPaginate = (currentPage, search) => {
@@ -151,9 +149,7 @@ const getAllSearchGRNData = (search) => {
 };
 
 const getAllSearchWithFilterGRNData = (type, search) => {
-  return CustomAxios.get(
-    `/api/inventory/list-grn/?accepted=${type}&search=${search}`
-  );
+  return CustomAxios.get(`/api/inventory/list-grn/?accepted=${type}`);
 };
 
 const getAllGRNDataPaginate = (currentPage, search) => {

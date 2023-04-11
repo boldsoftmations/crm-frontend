@@ -27,6 +27,8 @@ import { Popup } from "../../../Components/Popup";
 import InventoryServices from "../../../services/InventoryService";
 import { PurchaseInvoiceCreate } from "./PurchaseInvoiceCreate";
 import { PurchaseInvoice } from "./PurchaseInvoice";
+import { useDispatch } from "react-redux";
+import { getGRNList } from "../../../Redux/Action/Action";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -59,9 +61,28 @@ export const PurchaseInvoiceView = () => {
   const [pageCount, setpageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
+  const dispatch = useDispatch();
   const handleInputChange = (event) => {
     setFilterSelectedQuery(event.target.value);
     getSearchData(event.target.value);
+  };
+
+  useEffect(() => {
+    getGRNDetails();
+  }, []);
+
+  const getGRNDetails = async () => {
+    try {
+      setOpen(true);
+      const response = await InventoryServices.getAllSearchWithFilterGRNData(
+        false
+      );
+      dispatch(getGRNList(response.data.results));
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      console.log("err all vendor", err);
+    }
   };
 
   useEffect(() => {

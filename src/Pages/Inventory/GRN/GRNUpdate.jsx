@@ -25,13 +25,11 @@ const Root = styled("div")(({ theme }) => ({
 }));
 export const GRNUpdate = (props) => {
   const { setOpenPopup, getAllGRNDetails, idForEdit } = props;
-  console.log("idForEdit", idForEdit);
   const [grnDataByID, setGRNDataByID] = useState([]);
   const [open, setOpen] = useState(false);
-  const [vendorOption, setVendorOption] = useState([]);
-
   const [vendor, setVendor] = useState("");
-  const sellerData = useSelector((state) => state.auth.sellerAccount);
+  const data = useSelector((state) => state.auth);
+  const vendorOption = data.packingList;
   const [error, setError] = useState(null);
   const [products, setProducts] = useState([
     {
@@ -73,6 +71,7 @@ export const GRNUpdate = (props) => {
       setGRNDataByID(response.data);
       var arr = response.data.products.map((fruit) => ({
         products: fruit.products,
+        unit: fruit.unit,
         order_quantity: fruit.order_quantity,
         qa_rejected: fruit.qa_rejected,
         qa_accepted: fruit.qa_accepted,
@@ -86,28 +85,11 @@ export const GRNUpdate = (props) => {
     }
   };
 
-  const fetchVendorOptions = async () => {
-    try {
-      setOpen(true);
-      const splitString = grnDataByID.vendor_name
-        ? grnDataByID.vendor_name
-        : grnDataByID.vendor.split(" ");
-      const data = splitString[0];
-      const response = await InventoryServices.getAllSearchPackingListData(
-        data
-      );
-      setVendorOption(response.data.results);
-      console.log("after api");
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("err all vendor", err);
-    }
-  };
-
   useEffect(() => {
-    if (vendor.id) getGRNDetailsByID();
-  }, [vendor.id]);
+    if (vendor !== null && vendor !== undefined && vendor.id) {
+      getGRNDetailsByID();
+    }
+  }, [vendor]);
 
   const getGRNDetailsByID = async () => {
     try {
@@ -119,6 +101,7 @@ export const GRNUpdate = (props) => {
       setGRNDataByID(response.data);
       var arr = response.data.products.map((fruit) => ({
         products: fruit.product,
+        unit: fruit.unit,
         order_quantity: fruit.quantity,
       }));
       setProducts(arr);
@@ -196,7 +179,7 @@ export const GRNUpdate = (props) => {
           }
         />
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={4}>
+          {/* <Grid item xs={12} sm={4}>
             <TextField
               sx={{ minWidth: "8rem" }}
               name="vendor_name"
@@ -215,7 +198,7 @@ export const GRNUpdate = (props) => {
             <Button onClick={fetchVendorOptions} variant="contained">
               Submit
             </Button>
-          </Grid>
+          </Grid> */}
           {vendorOption && vendorOption.length > 0 && (
             <Grid item xs={12} sm={4}>
               <Autocomplete
@@ -244,9 +227,9 @@ export const GRNUpdate = (props) => {
               label="Packing List No."
               variant="outlined"
               value={
-                vendor.packing_list_no
+                vendor && vendor.packing_list_no
                   ? vendor.packing_list_no
-                  : grnDataByID.packing_list_no
+                  : grnDataByID && grnDataByID.packing_list_no
                   ? grnDataByID.packing_list_no
                   : ""
               }
@@ -262,9 +245,9 @@ export const GRNUpdate = (props) => {
               label="Vendor"
               variant="outlined"
               value={
-                vendor.vendor
+                vendor && vendor.vendor
                   ? vendor.vendor
-                  : grnDataByID.vendor
+                  : grnDataByID && grnDataByID.vendor
                   ? grnDataByID.vendor
                   : ""
               }
@@ -280,7 +263,7 @@ export const GRNUpdate = (props) => {
           {products.map((input, index) => {
             return (
               <>
-                <Grid key={index} item xs={12} sm={3}>
+                <Grid key={index} item xs={12} sm={4}>
                   <TextField
                     fullWidth
                     name="products"
@@ -291,7 +274,7 @@ export const GRNUpdate = (props) => {
                     onChange={(event) => handleFormChange(index, event)}
                   />
                 </Grid>
-                <Grid item xs={12} sm={4}>
+                <Grid item xs={12} sm={2}>
                   <TextField
                     fullWidth
                     size="small"
@@ -330,7 +313,10 @@ export const GRNUpdate = (props) => {
                     label="QA Accepted"
                     variant="outlined"
                     value={
-                      input.qa_rejected !== "" && input.order_quantity !== ""
+                      input.qa_rejected !== "" &&
+                      input.order_quantity !== "" &&
+                      !isNaN(input.order_quantity) &&
+                      !isNaN(input.qa_rejected)
                         ? parseInt(input.order_quantity) -
                           parseInt(input.qa_rejected)
                         : ""
