@@ -602,7 +602,7 @@ export const LeadsPerformaInvoice = (props) => {
                                 Branch & IFSC Code :{" "}
                               </strong>
                               {invoiceData.seller_branch} &{" "}
-                              {invoiceData.seller_ifsc}{" "}
+                              {invoiceData.seller_ifsc_code}{" "}
                             </div>
                             <div>
                               <strong style={{ ...typographyStyling }}>
