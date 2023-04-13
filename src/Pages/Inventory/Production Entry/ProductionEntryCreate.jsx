@@ -285,6 +285,7 @@ export const ProductionEntryCreate = (props) => {
                       size="small"
                       label="Quantity"
                       variant="outlined"
+                      type="number"
                       value={input.quantity ? parseFloat(input.quantity) : ""}
                       onChange={(event) => handleFormChange(index, event)}
                     />
