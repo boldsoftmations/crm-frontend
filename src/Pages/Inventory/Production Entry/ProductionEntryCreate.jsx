@@ -99,7 +99,7 @@ export const ProductionEntryCreate = (props) => {
             expected_quantity: (
               parseFloat(product.expected_quantity) *
               parseFloat(quantity.quantity)
-            ).toFixed(2),
+            ).toFixed(4),
           }))
         : products.map((product) => {
             const productQuantity = parseFloat(product.quantity);
@@ -109,11 +109,11 @@ export const ProductionEntryCreate = (props) => {
               quantity:
                 isNaN(productQuantity) || isNaN(totalQuantity)
                   ? 0
-                  : (productQuantity * totalQuantity).toFixed(2),
+                  : (productQuantity * totalQuantity).toFixed(4),
               expected_quantity: (
                 parseFloat(product.expected_quantity) *
                 parseFloat(quantity.quantity)
-              ).toFixed(2),
+              ).toFixed(4),
             };
           });
 
@@ -267,7 +267,7 @@ export const ProductionEntryCreate = (props) => {
                           ? (
                               parseFloat(input.quantity) *
                               parseFloat(quantity.quantity)
-                            ).toFixed(2)
+                            ).toFixed(4)
                           : input.quantity || ""
                       }
                       InputLabelProps={{
@@ -303,7 +303,7 @@ export const ProductionEntryCreate = (props) => {
                           ? (
                               parseFloat(input.expected_quantity) *
                               parseFloat(quantity.quantity)
-                            ).toFixed(2)
+                            ).toFixed(4)
                           : ""
                       }
                     />
