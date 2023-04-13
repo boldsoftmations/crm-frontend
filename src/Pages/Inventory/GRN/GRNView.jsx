@@ -27,8 +27,6 @@ import { Popup } from "../../../Components/Popup";
 import InventoryServices from "../../../services/InventoryService";
 import { GRNUpdate } from "./GRNUpdate";
 import { GRNCreate } from "./GRNCreate";
-import { useDispatch } from "react-redux";
-import { getPackingListNo } from "../../../Redux/Action/Action";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -61,7 +59,7 @@ export const GRNView = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const [idForEdit, setIDForEdit] = useState();
-  const dispatch = useDispatch();
+  const [vendorOption, setVendorOption] = useState([]);
   const handleInputChange = (event) => {
     setFilterSelectedQuery(event.target.value);
     getSearchData(event.target.value);
@@ -76,8 +74,7 @@ export const GRNView = () => {
       setOpen(true);
       const response =
         await InventoryServices.getAllSearchWithFilterPackingListData(false);
-      dispatch(getPackingListNo(response.data.results));
-
+      setVendorOption(response.data.results);
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -282,6 +279,8 @@ export const GRNView = () => {
         <GRNCreate
           getAllGRNDetails={getAllGRNDetails}
           setOpenPopup={setOpenPopup2}
+          vendorOption={vendorOption}
+          getPackingListNoDetails={getPackingListNoDetails}
         />
       </Popup>
       <Popup
@@ -294,6 +293,8 @@ export const GRNView = () => {
           setOpenPopup={setOpenPopup}
           getAllGRNDetails={getAllGRNDetails}
           idForEdit={idForEdit}
+          vendorOption={vendorOption}
+          getPackingListNoDetails={getPackingListNoDetails}
         />
       </Popup>
     </>

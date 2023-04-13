@@ -1,8 +1,10 @@
 import React, { useEffect, useState, useRef } from "react";
+import DownloadIcon from "@mui/icons-material/Download";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 import InvoiceServices from "../../../services/InvoiceService";
 import { Popup } from "./../../../Components/Popup";
 import { useSelector } from "react-redux";
-import { useReactToPrint } from "react-to-print";
 import { LeadConfirmationPayment } from "./LeadConfirmationPayment";
 import { CustomLoader } from "./../../../Components/CustomLoader";
 import logo from "../../../Images/LOGOS3.png";
@@ -141,11 +143,36 @@ export const LeadsPerformaInvoice = (props) => {
     }
   };
 
-  const componentRef = useRef();
-  const handlePrint = useReactToPrint({
-    content: () => componentRef.current,
-    documentTitle: `PI Number ${invoiceData.pi_number}`,
-  });
+  const handlePrint = (e) => {
+    try {
+      e.preventDefault();
+      setOpen(true);
+      // get the HTML content to be converted to PDF
+      const invoiceHtml = document.getElementById("invoice");
+
+      // use html2canvas to capture the HTML content as an image
+      html2canvas(invoiceHtml, {
+        scale: 1, // set the scale of the image to reduce its size
+        allowTaint: true, // allow images from external domains to be captured
+      }).then((canvas) => {
+        const imgData = canvas.toDataURL("image/png");
+
+        // initialize a new jsPDF object
+        const pdf = new jsPDF("p", "mm", "a4");
+
+        // add the image to the PDF document
+        pdf.addImage(imgData, "PNG", 0, 0, 210, 297);
+
+        // save the PDF file
+        pdf.save(`PI Number ${invoiceData.pi_number}.pdf`);
+        setOpen(false); // hide the loader after the PDF file is saved
+      });
+    } catch (error) {
+      console.log("error export pdf", error);
+    } finally {
+      // setOpen(false); // don't call setOpen(false) here
+    }
+  };
 
   const TOTAL_GST_DATA = invoiceData.total - invoiceData.amount;
   const TOTAL_GST = TOTAL_GST_DATA.toFixed(2);
@@ -165,9 +192,10 @@ export const LeadsPerformaInvoice = (props) => {
                 <button
                   type="button"
                   className="btn btn-primary"
-                  onClick={handlePrint}
+                  onClick={(e) => handlePrint(e)}
                 >
-                  Export
+                  Download
+                  <DownloadIcon />
                 </button>
               )}
           </div>
@@ -246,7 +274,7 @@ export const LeadsPerformaInvoice = (props) => {
       <div
         className="container-fluid m-0 p-0"
         style={{ border: "1px Solid #000000" }}
-        ref={componentRef}
+        id="invoice"
       >
         <div className="row">
           {/* <!-- BEGIN INVOICE --> */}

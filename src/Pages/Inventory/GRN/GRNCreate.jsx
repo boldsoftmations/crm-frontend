@@ -11,7 +11,6 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
-import { useSelector } from "react-redux";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import InventoryServices from "../../../services/InventoryService";
 import { styled } from "@mui/material/styles";
@@ -24,13 +23,16 @@ const Root = styled("div")(({ theme }) => ({
 }));
 
 export const GRNCreate = (props) => {
-  const { setOpenPopup, getAllGRNDetails } = props;
+  const {
+    setOpenPopup,
+    getAllGRNDetails,
+    vendorOption,
+    getPackingListNoDetails,
+  } = props;
   const [open, setOpen] = useState(false);
   const [vendor, setVendor] = useState(null);
   const [grnDataByID, setGRNDataByID] = useState([]);
   const [error, setError] = useState(null);
-  const data = useSelector((state) => state.auth);
-  const vendorOption = data.packingList;
   const [products, setProducts] = useState([
     {
       products: "",
@@ -92,6 +94,7 @@ export const GRNCreate = (props) => {
       await InventoryServices.createGRNData(req);
       setOpenPopup(false);
       getAllGRNDetails();
+      getPackingListNoDetails();
       setOpen(false);
     } catch (error) {
       console.log("createing Packing list error", error);

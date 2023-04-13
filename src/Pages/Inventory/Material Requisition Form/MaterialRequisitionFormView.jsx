@@ -20,6 +20,8 @@ import {
   Snackbar,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
+import DownloadIcon from "@mui/icons-material/Download";
+import jsPDF from "jspdf";
 import CloseIcon from "@mui/icons-material/Close";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -31,6 +33,135 @@ import InventoryServices from "../../../services/InventoryService";
 import { MaterialRequisitionFormCreate } from "./MaterialRequisitionFormCreate";
 import { MaterialRequisitionFormUpdate } from "./MaterialRequisitionFormUpdate";
 import { useSelector } from "react-redux";
+import logo from "../../../Images/LOGOS3.png";
+import {
+  pdf,
+  Image,
+  Document,
+  Page,
+  View,
+  Text,
+  StyleSheet,
+} from "@react-pdf/renderer";
+
+const style = StyleSheet.create({
+  container: {
+    // margin: "50pt",
+    // padding: "10pt",
+    border: "1pt solid #ccc",
+  },
+  row: {
+    display: "flex",
+    flexDirection: "row",
+    borderBottom: "1pt solid #ccc",
+    padding: "5pt",
+  },
+  header: {
+    backgroundColor: "#eee",
+    fontWeight: "bold",
+  },
+  cell: {
+    flex: 1,
+    flexGrow: 1,
+    textAlign: "center",
+    padding: "5pt",
+  },
+  logo: {
+    height: "auto",
+    width: "100pt",
+  },
+  lightText: {
+    color: "#777", // set the color to a light gray color
+  },
+});
+
+const MyDocument = ({ materialRequisitionDataByID }) => (
+  <Document>
+    <Page style={{ fontFamily: "Helvetica", fontSize: "12pt" }}>
+      <View style={{ padding: "20pt" }}>
+        <View style={style.container}>
+          <View style={style.row}>
+            <View style={style.cell}>
+              <Image style={style.logo} src={logo} />
+            </View>
+            <View
+              style={{
+                ...style.cell,
+                justifyContent: "center",
+                alignItems: "flex-start",
+              }}
+            >
+              <Text style={{ fontSize: "18pt", fontWeight: "bold" }}>
+                Material Requisition Form
+              </Text>
+            </View>
+          </View>
+
+          <View style={style.row}>
+            <View style={style.cell}>
+              <Text>Date</Text>
+            </View>
+            <View style={style.cell}>
+              <Text style={style.lightText}>
+                {materialRequisitionDataByID.created_on}
+              </Text>
+            </View>
+          </View>
+          <View style={style.row}>
+            <View style={style.cell}>
+              <Text>User</Text>
+            </View>
+            <View style={style.cell}>
+              <Text style={style.lightText}>
+                {materialRequisitionDataByID.user}
+              </Text>
+            </View>
+          </View>
+          <View style={style.row}>
+            <View style={style.cell}>
+              <Text>Accepted</Text>
+            </View>
+            <View style={style.cell}>
+              <Text style={style.lightText}>
+                {materialRequisitionDataByID.accepted ? "Yes" : "No"}
+              </Text>
+            </View>
+          </View>
+          {/* Empty row */}
+          <View style={style.row}>
+            <View style={style.cell}></View>
+            <View style={style.cell}></View>
+          </View>
+          <View style={{ ...style.row, ...style.header }}>
+            <View style={style.cell}>
+              <Text>PRODUCT</Text>
+            </View>
+            <View style={style.cell}>
+              <Text>UNIT</Text>
+            </View>
+            <View style={style.cell}>
+              <Text>QUANTITY</Text>
+            </View>
+          </View>
+          {materialRequisitionDataByID &&
+            materialRequisitionDataByID.products_data.map((historyRow, i) => (
+              <View style={style.row} key={i}>
+                <View style={style.cell}>
+                  <Text style={style.lightText}>{historyRow.product}</Text>
+                </View>
+                <View style={style.cell}>
+                  <Text style={style.lightText}>{historyRow.unit}</Text>
+                </View>
+                <View style={style.cell}>
+                  <Text style={style.lightText}>{historyRow.quantity}</Text>
+                </View>
+              </View>
+            ))}
+        </View>
+      </View>
+    </Page>
+  </Document>
+);
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -55,22 +186,27 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 export const MaterialRequisitionFormView = () => {
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
+  const [openPopup3, setOpenPopup3] = useState(false);
   const [open, setOpen] = useState(false);
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
   const [materialRequisitionData, setMaterialRequisitionData] = useState([]);
+  const [materialRequisitionDataByID, setMaterialRequisitionDataByID] =
+    useState(null);
   const [pageCount, setpageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const [idForEdit, setIDForEdit] = useState("");
   const [storesInventoryData, setStoresInventoryData] = useState([]);
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [downloadLink, setDownloadLink] = useState(null);
+  // rest of your code here
   const users = useSelector((state) => state.auth.profile);
   const handleInputChange = (event) => {
     setFilterSelectedQuery(event.target.value);
     getSearchData(event.target.value);
   };
-
+  console.log("materialRequisitionDataByID", materialRequisitionDataByID);
   useEffect(() => {
     getAllStoresInventoryDetails();
   }, []);
@@ -210,6 +346,42 @@ export const MaterialRequisitionFormView = () => {
     setOpenSnackbar(false);
   };
 
+  const handlePrint = async (data) => {
+    try {
+      setOpen(true);
+
+      // create a new jsPDF instance
+      const pdfDoc = new jsPDF();
+
+      // generate the PDF document
+      const pdfData = await pdf(
+        <MyDocument materialRequisitionDataByID={data} />,
+        pdfDoc,
+        {
+          // set options here if needed
+        }
+      ).toBlob();
+
+      // create a temporary link element to trigger the download
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(pdfData);
+      link.download = `ID Number ${data.id}.pdf`;
+      document.body.appendChild(link);
+
+      // trigger the download
+      link.click();
+
+      // clean up the temporary link element
+      document.body.removeChild(link);
+
+      setOpen(false);
+    } catch (error) {
+      console.log("error exporting pdf", error);
+    } finally {
+      setOpen(false);
+    }
+  };
+
   return (
     <>
       <CustomLoader open={open} />
@@ -306,6 +478,11 @@ export const MaterialRequisitionFormView = () => {
                     row={row}
                     openInPopup={openInPopup}
                     users={users}
+                    setOpenPopup3={setOpenPopup3}
+                    handlePrint={handlePrint}
+                    setMaterialRequisitionDataByID={
+                      setMaterialRequisitionDataByID
+                    }
                     updateMaterialRequisitionFormDetails={
                       updateMaterialRequisitionFormDetails
                     }
@@ -356,13 +533,79 @@ export const MaterialRequisitionFormView = () => {
           idForEdit={idForEdit}
         />
       </Popup>
+      <Popup
+        maxWidth="xl"
+        title={"View Material Transfer Note"}
+        openPopup={openPopup3}
+        setOpenPopup={setOpenPopup3}
+      >
+        {materialRequisitionDataByID !== null && (
+          <>
+            <div id="invoice">
+              <div style={style.container}>
+                <div style={styles.row}>
+                  <div id="invoice">
+                    <Image style={style.logo} src={logo} />
+                  </div>
+                  <div style={{ ...styles.cell, textAlign: "left" }}>
+                    <strong>Date</strong>
+                  </div>
+                  <div style={styles.cell}>
+                    {materialRequisitionDataByID.created_on}
+                  </div>
+                </div>
+                <div style={styles.row}>
+                  <div style={{ ...styles.cell, textAlign: "left" }}>
+                    <strong>User</strong>
+                  </div>
+                  <div style={styles.cell}>
+                    {materialRequisitionDataByID.user}
+                  </div>
+                </div>
+                <div style={{ ...styles.row, ...styles.header }}>
+                  <div style={styles.cell}>PRODUCT</div>
+                  <div style={styles.cell}>UNIT</div>
+                  <div style={styles.cell}>QUANTITY</div>
+                </div>
+                {materialRequisitionDataByID &&
+                  materialRequisitionDataByID.products_data.map(
+                    (historyRow, i) => (
+                      <div style={styles.row} key={i}>
+                        <div style={styles.cell}>{historyRow.product}</div>
+                        <div style={styles.cell}>{historyRow.unit}</div>
+                        <div style={styles.cell}>{historyRow.quantity}</div>
+                      </div>
+                    )
+                  )}
+              </div>
+            </div>
+            <Button
+              onClick={() =>
+                updateMaterialRequisitionFormDetails(
+                  materialRequisitionDataByID
+                )
+              }
+              variant="contained"
+              color="success"
+            >
+              Accept
+            </Button>
+          </>
+        )}
+      </Popup>
     </>
   );
 };
 
 function Row(props) {
-  const { row, openInPopup, users, updateMaterialRequisitionFormDetails } =
-    props;
+  const {
+    row,
+    openInPopup,
+    users,
+    setOpenPopup3,
+    setMaterialRequisitionDataByID,
+    handlePrint,
+  } = props;
   const [open, setOpen] = useState(false);
 
   return (
@@ -390,7 +633,7 @@ function Row(props) {
         </TableCell>
 
         <TableCell align="center">
-          {users.groups.toString() !== "Stores" ? (
+          {users.groups.toString() !== "Stores" && (
             <Button
               onClick={() => openInPopup(row.id)}
               variant="contained"
@@ -398,9 +641,23 @@ function Row(props) {
             >
               Edit
             </Button>
-          ) : (
+          )}
+          <Button
+            onClick={() => {
+              handlePrint(row);
+              setMaterialRequisitionDataByID(row);
+            }}
+            variant="contained"
+            endIcon={<DownloadIcon />}
+          >
+            Download
+          </Button>
+          {users.groups.toString() === "Stores" && row.accepted === false && (
             <Button
-              onClick={() => updateMaterialRequisitionFormDetails(row)}
+              onClick={() => {
+                setOpenPopup3(true);
+                setMaterialRequisitionDataByID(row);
+              }}
               variant="contained"
               color="success"
             >
@@ -443,3 +700,28 @@ function Row(props) {
     </>
   );
 }
+
+const styles = {
+  container: {
+    borderCollapse: "collapse",
+    width: "100%",
+    marginBottom: "1rem",
+  },
+  row: {
+    display: "flex",
+    borderBottom: "1px solid #dee2e6",
+  },
+  lastRow: {
+    borderBottom: "none",
+  },
+  header: {
+    fontWeight: "bold",
+    backgroundColor: "#f2f2f2",
+  },
+  cell: {
+    flexBasis: 0,
+    flexGrow: 1,
+    padding: "0.5rem",
+    textAlign: "center",
+  },
+};

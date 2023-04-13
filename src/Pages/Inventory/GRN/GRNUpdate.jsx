@@ -24,12 +24,17 @@ const Root = styled("div")(({ theme }) => ({
   },
 }));
 export const GRNUpdate = (props) => {
-  const { setOpenPopup, getAllGRNDetails, idForEdit } = props;
+  const {
+    setOpenPopup,
+    getAllGRNDetails,
+    idForEdit,
+    vendorOption,
+    getPackingListNoDetails,
+  } = props;
   const [grnDataByID, setGRNDataByID] = useState([]);
   const [open, setOpen] = useState(false);
   const [vendor, setVendor] = useState("");
-  const data = useSelector((state) => state.auth);
-  const vendorOption = data.packingList;
+
   const [error, setError] = useState(null);
   const [products, setProducts] = useState([
     {
@@ -134,6 +139,7 @@ export const GRNUpdate = (props) => {
 
       setOpenPopup(false);
       getAllGRNDetails();
+      getPackingListNoDetails();
       setOpen(false);
     } catch (error) {
       setError(

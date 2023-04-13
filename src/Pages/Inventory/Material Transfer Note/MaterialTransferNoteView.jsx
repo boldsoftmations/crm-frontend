@@ -19,6 +19,18 @@ import {
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
 import CloseIcon from "@mui/icons-material/Close";
+import DownloadIcon from "@mui/icons-material/Download";
+import jsPDF from "jspdf";
+import {
+  pdf,
+  Image,
+  Document,
+  Page,
+  View,
+  Text,
+  StyleSheet,
+} from "@react-pdf/renderer";
+import logo from "../../../Images/LOGOS3.png";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { CustomSearch } from "../../../Components/CustomSearch";
 import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
@@ -28,6 +40,126 @@ import InventoryServices from "../../../services/InventoryService";
 import { useSelector } from "react-redux";
 import { MaterialTransferNoteCreate } from "./MaterialTransferNoteCreate";
 import { MaterialTransferNoteUpdate } from "./MaterialTransferNoteUpdate";
+
+const style = StyleSheet.create({
+  container: {
+    // margin: "50pt",
+    // padding: "10pt",
+    border: "1pt solid #ccc",
+  },
+  row: {
+    display: "flex",
+    flexDirection: "row",
+    borderBottom: "1pt solid #ccc",
+    padding: "5pt",
+  },
+  header: {
+    backgroundColor: "#eee",
+    fontWeight: "bold",
+  },
+  cell: {
+    flex: 1,
+    flexGrow: 1,
+    textAlign: "center",
+    padding: "5pt",
+  },
+  logo: {
+    height: "auto",
+    width: "100pt",
+  },
+  lightText: {
+    color: "#777", // set the color to a light gray color
+  },
+});
+
+const MyDocument = ({ materialTransferNoteByID }) => (
+  <Document>
+    <Page style={{ fontFamily: "Helvetica", fontSize: "12pt" }}>
+      <View style={{ padding: "20pt" }}>
+        <View style={style.container}>
+          <View style={style.row}>
+            <View style={style.cell}>
+              <Image style={style.logo} src={logo} />
+            </View>
+            <View
+              style={{
+                ...style.cell,
+                justifyContent: "center",
+                alignItems: "flex-start",
+              }}
+            >
+              <Text style={{ fontSize: "18pt", fontWeight: "bold" }}>
+                Material Transfer Note
+              </Text>
+            </View>
+          </View>
+
+          <View style={style.row}>
+            <View style={style.cell}>
+              <Text>Date</Text>
+            </View>
+            <View style={style.cell}>
+              <Text style={style.lightText}>
+                {materialTransferNoteByID.created_on}
+              </Text>
+            </View>
+          </View>
+          <View style={style.row}>
+            <View style={style.cell}>
+              <Text>User</Text>
+            </View>
+            <View style={style.cell}>
+              <Text style={style.lightText}>
+                {materialTransferNoteByID.user}
+              </Text>
+            </View>
+          </View>
+          <View style={style.row}>
+            <View style={style.cell}>
+              <Text>Product</Text>
+            </View>
+            <View style={style.cell}>
+              <Text style={style.lightText}>
+                {materialTransferNoteByID.product}
+              </Text>
+            </View>
+          </View>
+          <View style={style.row}>
+            <View style={style.cell}>
+              <Text>Quantity</Text>
+            </View>
+            <View style={style.cell}>
+              <Text style={style.lightText}>
+                {materialTransferNoteByID.quantity}
+              </Text>
+            </View>
+          </View>
+          <View style={style.row}>
+            <View style={style.cell}>
+              <Text>Unit</Text>
+            </View>
+            <View style={style.cell}>
+              <Text style={style.lightText}>
+                {materialTransferNoteByID.unit}
+              </Text>
+            </View>
+          </View>
+
+          <View style={style.row}>
+            <View style={style.cell}>
+              <Text>Accepted</Text>
+            </View>
+            <View style={style.cell}>
+              <Text style={style.lightText}>
+                {materialTransferNoteByID.accepted ? "Yes" : "No"}
+              </Text>
+            </View>
+          </View>
+        </View>
+      </View>
+    </Page>
+  </Document>
+);
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -52,10 +184,12 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 export const MaterialTransferNoteView = () => {
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
+  const [openPopup3, setOpenPopup3] = useState(false);
   const [open, setOpen] = useState(false);
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
   const [materialTransferNote, setMaterialTransferNote] = useState([]);
+  const [materialTransferNoteByID, setMaterialTransferNoteByID] = useState([]);
   const [pageCount, setpageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
@@ -167,6 +301,7 @@ export const MaterialTransferNoteView = () => {
       await InventoryServices.updateMaterialTransferNoteData(data.id, req);
 
       setOpenPopup(false);
+      setOpenPopup3(false);
       getAllMaterialTransferNoteDetails();
       setOpen(false);
       // Show success snackbar
@@ -191,6 +326,41 @@ export const MaterialTransferNoteView = () => {
     setOpenSnackbar(false);
   };
 
+  const handlePrint = async (data) => {
+    try {
+      setOpen(true);
+
+      // create a new jsPDF instance
+      const pdfDoc = new jsPDF();
+
+      // generate the PDF document
+      const pdfData = await pdf(
+        <MyDocument materialTransferNoteByID={data} />,
+        pdfDoc,
+        {
+          // set options here if needed
+        }
+      ).toBlob();
+
+      // create a temporary link element to trigger the download
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(pdfData);
+      link.download = `ID Number ${data.id}.pdf`;
+      document.body.appendChild(link);
+
+      // trigger the download
+      link.click();
+
+      // clean up the temporary link element
+      document.body.removeChild(link);
+
+      setOpen(false);
+    } catch (error) {
+      console.log("error exporting pdf", error);
+    } finally {
+      setOpen(false);
+    }
+  };
   return (
     <>
       <CustomLoader open={open} />
@@ -297,7 +467,7 @@ export const MaterialTransferNoteView = () => {
                       />
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {users.groups.toString() !== "Stores" ? (
+                      {users.groups.toString() !== "Stores" && (
                         <Button
                           onClick={() => openInPopup(row.id)}
                           variant="contained"
@@ -305,15 +475,30 @@ export const MaterialTransferNoteView = () => {
                         >
                           Edit
                         </Button>
-                      ) : (
-                        <Button
-                          onClick={() => updateMaterialTransferNoteDetails(row)}
-                          variant="contained"
-                          color="success"
-                        >
-                          Accept
-                        </Button>
                       )}
+                      {users.groups.toString() === "Stores" &&
+                        row.accepted === false && (
+                          <Button
+                            onClick={() => {
+                              setOpenPopup3(true);
+                              setMaterialTransferNoteByID(row);
+                            }}
+                            variant="contained"
+                            color="success"
+                          >
+                            View
+                          </Button>
+                        )}
+                      <Button
+                        onClick={() => {
+                          handlePrint(row);
+                          setMaterialTransferNoteByID(row);
+                        }}
+                        variant="contained"
+                        endIcon={<DownloadIcon />}
+                      >
+                        Download
+                      </Button>
                     </StyledTableCell>
                   </StyledTableRow>
                 ))}
@@ -356,6 +541,62 @@ export const MaterialTransferNoteView = () => {
           idForEdit={idForEdit}
         />
       </Popup>
+      <Popup
+        maxWidth="xl"
+        title={"View Material Transfer Note"}
+        openPopup={openPopup3}
+        setOpenPopup={setOpenPopup3}
+      >
+        <div className="my-4">
+          <table className="table table-bordered">
+            <tbody>
+              <tr>
+                <td>
+                  <strong>Date</strong>
+                </td>
+                <td>{materialTransferNoteByID.created_on}</td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>Product</strong>
+                </td>
+                <td>{materialTransferNoteByID.product}</td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>Quantity</strong>
+                </td>
+                <td>{materialTransferNoteByID.quantity}</td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>User</strong>
+                </td>
+                <td>{materialTransferNoteByID.user}</td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>Unit</strong>
+                </td>
+                <td>{materialTransferNoteByID.unit}</td>
+              </tr>
+            </tbody>
+          </table>
+          <Button
+            onClick={() =>
+              updateMaterialTransferNoteDetails(materialTransferNoteByID)
+            }
+            variant="contained"
+            color="success"
+          >
+            Accept
+          </Button>
+        </div>
+      </Popup>
     </>
   );
+};
+
+const typographyStyling = {
+  fontSize: "0.80rem",
 };

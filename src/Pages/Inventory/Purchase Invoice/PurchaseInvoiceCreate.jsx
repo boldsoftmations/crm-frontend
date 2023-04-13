@@ -21,11 +21,14 @@ const Root = styled("div")(({ theme }) => ({
 }));
 
 export const PurchaseInvoiceCreate = (props) => {
-  const { setOpenPopup, getAllPurchaseInvoiceDetails } = props;
+  const {
+    setOpenPopup,
+    getAllPurchaseInvoiceDetails,
+    vendorOption,
+    getGRNDetails,
+  } = props;
   const [open, setOpen] = useState(false);
   const [purchaseInvoiceDataByID, setPurchaseInvoiceDataByID] = useState([]);
-  const data = useSelector((state) => state.auth);
-  const vendorOption = data.grnList;
   const [products, setProducts] = useState([
     {
       product: "",
@@ -78,6 +81,7 @@ export const PurchaseInvoiceCreate = (props) => {
       await InventoryServices.createPurchaseInvoiceData(req);
       setOpenPopup(false);
       getAllPurchaseInvoiceDetails();
+      getGRNDetails();
       setOpen(false);
     } catch (error) {
       console.log("createing Packing list error", error);
@@ -104,7 +108,7 @@ export const PurchaseInvoiceCreate = (props) => {
                 id="combo-box-demo"
                 onChange={(event, value) => {
                   if (value && value.grn_id) {
-                    getPurchaseInvoiceDetailsByID(value.grn_id);
+                    getPurchaseInvoiceDetailsByID(value.grn_no);
                   }
                 }}
                 options={vendorOption.map((option) => option)}

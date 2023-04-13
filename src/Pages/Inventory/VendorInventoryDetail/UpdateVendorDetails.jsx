@@ -132,9 +132,9 @@ export const UpdateVendorDetails = (props) => {
         total_sales_turnover: inputValue.total_sales_turnover,
         country:
           typeData === "Domestic"
-            ? "India"
+            ? { name: "India" }
             : inputValue.country
-            ? inputValue.country
+            ? { name: inputValue.country }
             : null,
       };
       await InventoryServices.updateVendorData(recordForEdit, req);
@@ -195,9 +195,9 @@ export const UpdateVendorDetails = (props) => {
               getOptionLabel={(option) => option.name}
               value={
                 typeData === "Domestic"
-                  ? "India"
+                  ? { name: "India" }
                   : inputValue.country
-                  ? inputValue.country
+                  ? { name: inputValue.country }
                   : null
               }
               onChange={(event, value) => handleInputChange(event, value)}

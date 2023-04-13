@@ -73,6 +73,7 @@ export const CreateVendorDetails = (props) => {
     }
   };
 
+  console.log("inputValue", inputValue);
   const validatePinCode = async (pinCode) => {
     try {
       const response = await axios.get(
@@ -210,9 +211,9 @@ export const CreateVendorDetails = (props) => {
               getOptionLabel={(option) => option.name}
               value={
                 typeData === "Domestic"
-                  ? "India"
+                  ? { name: "India" }
                   : inputValue.country
-                  ? inputValue.country
+                  ? { name: inputValue.country }
                   : null
               }
               onChange={(event, value) => handleInputChange(event, value)}
