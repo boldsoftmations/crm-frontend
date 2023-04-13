@@ -31,6 +31,7 @@ import {
   StyleSheet,
 } from "@react-pdf/renderer";
 import logo from "../../../Images/LOGOS3.png";
+import moment from "moment";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { CustomSearch } from "../../../Components/CustomSearch";
 import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
@@ -100,7 +101,9 @@ const MyDocument = ({ materialTransferNoteByID }) => (
             </View>
             <View style={style.cell}>
               <Text style={style.lightText}>
-                {materialTransferNoteByID.created_on}
+                {moment(materialTransferNoteByID.created_on).format(
+                  "DD-MM-YYYY"
+                )}
               </Text>
             </View>
           </View>
@@ -116,42 +119,45 @@ const MyDocument = ({ materialTransferNoteByID }) => (
           </View>
           <View style={style.row}>
             <View style={style.cell}>
-              <Text>Product</Text>
+              <Text>Accepted</Text>
             </View>
+            <View style={style.cell}>
+              <Text style={style.lightText}>
+                {materialTransferNoteByID.accepted ? "Yes" : "No"}
+              </Text>
+            </View>
+          </View>
+          {/* Empty row */}
+          <View style={style.row}>
+            <View style={style.cell}></View>
+            <View style={style.cell}></View>
+          </View>
+          <View style={{ ...style.row, ...style.header }}>
+            <View style={style.cell}>
+              <Text>PRODUCT</Text>
+            </View>
+            <View style={style.cell}>
+              <Text>UNIT</Text>
+            </View>
+            <View style={style.cell}>
+              <Text>QUANTITY</Text>
+            </View>
+          </View>
+
+          <View style={style.row}>
             <View style={style.cell}>
               <Text style={style.lightText}>
                 {materialTransferNoteByID.product}
               </Text>
-            </View>
-          </View>
-          <View style={style.row}>
-            <View style={style.cell}>
-              <Text>Quantity</Text>
-            </View>
-            <View style={style.cell}>
-              <Text style={style.lightText}>
-                {materialTransferNoteByID.quantity}
-              </Text>
-            </View>
-          </View>
-          <View style={style.row}>
-            <View style={style.cell}>
-              <Text>Unit</Text>
             </View>
             <View style={style.cell}>
               <Text style={style.lightText}>
                 {materialTransferNoteByID.unit}
               </Text>
             </View>
-          </View>
-
-          <View style={style.row}>
-            <View style={style.cell}>
-              <Text>Accepted</Text>
-            </View>
             <View style={style.cell}>
               <Text style={style.lightText}>
-                {materialTransferNoteByID.accepted ? "Yes" : "No"}
+                {materialTransferNoteByID.quantity}
               </Text>
             </View>
           </View>

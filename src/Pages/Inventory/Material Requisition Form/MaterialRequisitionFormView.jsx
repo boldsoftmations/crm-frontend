@@ -43,6 +43,7 @@ import {
   Text,
   StyleSheet,
 } from "@react-pdf/renderer";
+import moment from "moment";
 
 const style = StyleSheet.create({
   container: {
@@ -103,7 +104,9 @@ const MyDocument = ({ materialRequisitionDataByID }) => (
             </View>
             <View style={style.cell}>
               <Text style={style.lightText}>
-                {materialRequisitionDataByID.created_on}
+                {moment(materialRequisitionDataByID.created_on).format(
+                  "DD-MM-YYYY"
+                )}
               </Text>
             </View>
           </View>
@@ -199,8 +202,6 @@ export const MaterialRequisitionFormView = () => {
   const [idForEdit, setIDForEdit] = useState("");
   const [storesInventoryData, setStoresInventoryData] = useState([]);
   const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [downloadLink, setDownloadLink] = useState(null);
-  // rest of your code here
   const users = useSelector((state) => state.auth.profile);
   const handleInputChange = (event) => {
     setFilterSelectedQuery(event.target.value);
@@ -642,6 +643,19 @@ function Row(props) {
               Edit
             </Button>
           )}
+
+          {users.groups.toString() === "Stores" && row.accepted === false && (
+            <Button
+              onClick={() => {
+                setOpenPopup3(true);
+                setMaterialRequisitionDataByID(row);
+              }}
+              variant="contained"
+              color="success"
+            >
+              View
+            </Button>
+          )}
           <Button
             onClick={() => {
               handlePrint(row);
@@ -652,18 +666,6 @@ function Row(props) {
           >
             Download
           </Button>
-          {users.groups.toString() === "Stores" && row.accepted === false && (
-            <Button
-              onClick={() => {
-                setOpenPopup3(true);
-                setMaterialRequisitionDataByID(row);
-              }}
-              variant="contained"
-              color="success"
-            >
-              Accept
-            </Button>
-          )}
         </TableCell>
       </TableRow>
       <TableRow>
