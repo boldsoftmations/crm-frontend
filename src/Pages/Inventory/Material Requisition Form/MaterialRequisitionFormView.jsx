@@ -45,147 +45,6 @@ import {
 } from "@react-pdf/renderer";
 import moment from "moment";
 
-const style = StyleSheet.create({
-  container: {
-    // margin: "50pt",
-    // padding: "10pt",
-    border: "1pt solid #ccc",
-  },
-  row: {
-    display: "flex",
-    flexDirection: "row",
-    borderBottom: "1pt solid #ccc",
-    padding: "5pt",
-  },
-  header: {
-    backgroundColor: "#eee",
-    fontWeight: "bold",
-  },
-  cell: {
-    flex: 1,
-    flexGrow: 1,
-    textAlign: "center",
-    padding: "5pt",
-  },
-  logo: {
-    height: "auto",
-    width: "100pt",
-  },
-  lightText: {
-    color: "#777", // set the color to a light gray color
-  },
-});
-
-const MyDocument = ({ materialRequisitionDataByID }) => (
-  <Document>
-    <Page style={{ fontFamily: "Helvetica", fontSize: "12pt" }}>
-      <View style={{ padding: "20pt" }}>
-        <View style={style.container}>
-          <View style={style.row}>
-            <View style={style.cell}>
-              <Image style={style.logo} src={logo} />
-            </View>
-            <View
-              style={{
-                ...style.cell,
-                justifyContent: "center",
-                alignItems: "flex-start",
-              }}
-            >
-              <Text style={{ fontSize: "18pt", fontWeight: "bold" }}>
-                Material Requisition Form
-              </Text>
-            </View>
-          </View>
-
-          <View style={style.row}>
-            <View style={style.cell}>
-              <Text>Date</Text>
-            </View>
-            <View style={style.cell}>
-              <Text style={style.lightText}>
-                {moment(materialRequisitionDataByID.created_on).format(
-                  "DD-MM-YYYY"
-                )}
-              </Text>
-            </View>
-          </View>
-          <View style={style.row}>
-            <View style={style.cell}>
-              <Text>User</Text>
-            </View>
-            <View style={style.cell}>
-              <Text style={style.lightText}>
-                {materialRequisitionDataByID.user}
-              </Text>
-            </View>
-          </View>
-          <View style={style.row}>
-            <View style={style.cell}>
-              <Text>Accepted</Text>
-            </View>
-            <View style={style.cell}>
-              <Text style={style.lightText}>
-                {materialRequisitionDataByID.accepted ? "Yes" : "No"}
-              </Text>
-            </View>
-          </View>
-          {/* Empty row */}
-          <View style={style.row}>
-            <View style={style.cell}></View>
-            <View style={style.cell}></View>
-          </View>
-          <View style={{ ...style.row, ...style.header }}>
-            <View style={style.cell}>
-              <Text>PRODUCT</Text>
-            </View>
-            <View style={style.cell}>
-              <Text>UNIT</Text>
-            </View>
-            <View style={style.cell}>
-              <Text>QUANTITY</Text>
-            </View>
-          </View>
-          {materialRequisitionDataByID &&
-            materialRequisitionDataByID.products_data.map((historyRow, i) => (
-              <View style={style.row} key={i}>
-                <View style={style.cell}>
-                  <Text style={style.lightText}>{historyRow.product}</Text>
-                </View>
-                <View style={style.cell}>
-                  <Text style={style.lightText}>{historyRow.unit}</Text>
-                </View>
-                <View style={style.cell}>
-                  <Text style={style.lightText}>{historyRow.quantity}</Text>
-                </View>
-              </View>
-            ))}
-        </View>
-      </View>
-    </Page>
-  </Document>
-);
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
-
 export const MaterialRequisitionFormView = () => {
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
@@ -316,6 +175,9 @@ export const MaterialRequisitionFormView = () => {
     try {
       setOpen(true);
       const req = {
+        seller_account: users.groups.includes("Stores Delhi")
+          ? "Delhi"
+          : "Maharashtra",
         user: data.user,
         accepted: true,
         products_data: data.products_data,
@@ -323,6 +185,7 @@ export const MaterialRequisitionFormView = () => {
       await InventoryServices.updateMaterialRequisitionFormData(data.id, req);
 
       setOpenPopup(false);
+      setOpenPopup3(false);
       getAllMaterialRequisitionFormDetails();
       setOpen(false);
       // Show success snackbar
@@ -412,7 +275,8 @@ export const MaterialRequisitionFormView = () => {
               </h3>
             </Box>
             <Box flexGrow={0.5} align="right">
-              {users.groups.toString() !== "Stores" ? (
+              {!users.groups.includes("Stores") &&
+              !users.groups.includes("Stores Delhi") ? (
                 <Button
                   onClick={() => setOpenPopup2(true)}
                   variant="contained"
@@ -466,6 +330,7 @@ export const MaterialRequisitionFormView = () => {
                   <StyledTableCell align="center"></StyledTableCell>
                   <StyledTableCell align="center">ID</StyledTableCell>
                   <StyledTableCell align="center">USER</StyledTableCell>
+                  <StyledTableCell align="center">SELLER STATE</StyledTableCell>
                   <StyledTableCell align="center">DATE</StyledTableCell>
                   <StyledTableCell align="center">ACCEPTED</StyledTableCell>
 
@@ -542,7 +407,7 @@ export const MaterialRequisitionFormView = () => {
       >
         {materialRequisitionDataByID !== null && (
           <>
-            <div id="invoice">
+            <div>
               <div style={style.container}>
                 <div style={styles.row}>
                   <div id="invoice">
@@ -625,6 +490,7 @@ function Row(props) {
         </TableCell>
         <TableCell align="center">{row.id}</TableCell>
         <TableCell align="center">{row.user}</TableCell>
+        <TableCell align="center">{row.seller_account}</TableCell>
         <TableCell align="center">{row.created_on}</TableCell>
         <TableCell align="center">
           <Switch
@@ -634,28 +500,31 @@ function Row(props) {
         </TableCell>
 
         <TableCell align="center">
-          {users.groups.toString() !== "Stores" && (
-            <Button
-              onClick={() => openInPopup(row.id)}
-              variant="contained"
-              color="success"
-            >
-              Edit
-            </Button>
-          )}
+          {!users.groups.includes("Stores") &&
+            !users.groups.includes("Stores Delhi") && (
+              <Button
+                onClick={() => openInPopup(row.id)}
+                variant="contained"
+                color="success"
+              >
+                Edit
+              </Button>
+            )}
 
-          {users.groups.toString() === "Stores" && row.accepted === false && (
-            <Button
-              onClick={() => {
-                setOpenPopup3(true);
-                setMaterialRequisitionDataByID(row);
-              }}
-              variant="contained"
-              color="success"
-            >
-              View
-            </Button>
-          )}
+          {users.groups.includes("Stores") ||
+            (users.groups.includes("Stores Delhi") &&
+              row.accepted === false && (
+                <Button
+                  onClick={() => {
+                    setOpenPopup3(true);
+                    setMaterialRequisitionDataByID(row);
+                  }}
+                  variant="contained"
+                  color="success"
+                >
+                  View
+                </Button>
+              ))}
           <Button
             onClick={() => {
               handlePrint(row);
@@ -703,6 +572,127 @@ function Row(props) {
   );
 }
 
+const style = StyleSheet.create({
+  container: {
+    // margin: "50pt",
+    // padding: "10pt",
+    border: "1pt solid #ccc",
+  },
+  row: {
+    display: "flex",
+    flexDirection: "row",
+    borderBottom: "1pt solid #ccc",
+    padding: "5pt",
+  },
+  header: {
+    backgroundColor: "#eee",
+    fontWeight: "bold",
+  },
+  cell: {
+    flex: 1,
+    flexGrow: 1,
+    textAlign: "center",
+    padding: "5pt",
+  },
+  logo: {
+    height: "auto",
+    width: "100pt",
+  },
+  lightText: {
+    color: "#777", // set the color to a light gray color
+  },
+});
+
+const MyDocument = ({ materialRequisitionDataByID }) => (
+  <Document>
+    <Page style={{ fontFamily: "Helvetica", fontSize: "12pt" }}>
+      <View style={{ padding: "20pt" }}>
+        <View style={style.container}>
+          <View style={style.row}>
+            <View style={style.cell}>
+              <Image style={style.logo} src={logo} />
+            </View>
+            <View
+              style={{
+                ...style.cell,
+                justifyContent: "center",
+                alignItems: "flex-start",
+              }}
+            >
+              <Text style={{ fontSize: "18pt", fontWeight: "bold" }}>
+                Material Requisition Form
+              </Text>
+            </View>
+          </View>
+
+          <View style={style.row}>
+            <View style={style.cell}>
+              <Text>Date</Text>
+            </View>
+            <View style={style.cell}>
+              <Text style={style.lightText}>
+                {moment(materialRequisitionDataByID.created_on).format(
+                  "DD-MM-YYYY"
+                )}
+              </Text>
+            </View>
+          </View>
+          <View style={style.row}>
+            <View style={style.cell}>
+              <Text>User</Text>
+            </View>
+            <View style={style.cell}>
+              <Text style={style.lightText}>
+                {materialRequisitionDataByID.user}
+              </Text>
+            </View>
+          </View>
+          <View style={style.row}>
+            <View style={style.cell}>
+              <Text>Accepted</Text>
+            </View>
+            <View style={style.cell}>
+              <Text style={style.lightText}>
+                {materialRequisitionDataByID.accepted ? "Yes" : "No"}
+              </Text>
+            </View>
+          </View>
+          {/* Empty row */}
+          <View style={style.row}>
+            <View style={style.cell}></View>
+            <View style={style.cell}></View>
+          </View>
+          <View style={{ ...style.row, ...style.header }}>
+            <View style={style.cell}>
+              <Text>PRODUCT</Text>
+            </View>
+            <View style={style.cell}>
+              <Text>UNIT</Text>
+            </View>
+            <View style={style.cell}>
+              <Text>QUANTITY</Text>
+            </View>
+          </View>
+          {materialRequisitionDataByID &&
+            materialRequisitionDataByID.products_data.map((historyRow, i) => (
+              <View style={style.row} key={i}>
+                <View style={style.cell}>
+                  <Text style={style.lightText}>{historyRow.product}</Text>
+                </View>
+                <View style={style.cell}>
+                  <Text style={style.lightText}>{historyRow.unit}</Text>
+                </View>
+                <View style={style.cell}>
+                  <Text style={style.lightText}>{historyRow.quantity}</Text>
+                </View>
+              </View>
+            ))}
+        </View>
+      </View>
+    </Page>
+  </Document>
+);
+
 const styles = {
   container: {
     borderCollapse: "collapse",
@@ -727,3 +717,23 @@ const styles = {
     textAlign: "center",
   },
 };
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  "&:nth-of-type(odd)": {
+    backgroundColor: theme.palette.action.hover,
+  },
+  // hide last border
+  "&:last-child td, &:last-child th": {
+    border: 0,
+  },
+}));

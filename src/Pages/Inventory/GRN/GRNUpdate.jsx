@@ -14,7 +14,6 @@ import React, { useEffect, useState } from "react";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import InventoryServices from "../../../services/InventoryService";
 import { styled } from "@mui/material/styles";
-import { useSelector } from "react-redux";
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",

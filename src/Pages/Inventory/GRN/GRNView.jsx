@@ -237,7 +237,7 @@ export const GRNView = () => {
               aria-label="sticky table"
             >
               <TableHead>
-                <TableRow>
+                <StyledTableRow>
                   <StyledTableCell align="center"></StyledTableCell>
                   <StyledTableCell align="center">VENDOR</StyledTableCell>
                   <StyledTableCell align="center">
@@ -248,7 +248,7 @@ export const GRNView = () => {
                   <StyledTableCell align="center">PACKING LIST</StyledTableCell>
 
                   <StyledTableCell align="center">Action</StyledTableCell>
-                </TableRow>
+                </StyledTableRow>
               </TableHead>
               <TableBody>
                 {grnData.map((row, i) => (

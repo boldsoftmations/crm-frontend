@@ -8,13 +8,9 @@ import {
   FormHelperText,
   FormLabel,
   Grid,
-  InputLabel,
-  MenuItem,
   Radio,
   RadioGroup,
-  Select,
   TextField,
-  Chip,
 } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { getVendorName } from "../../../Redux/Action/Action";
@@ -44,7 +40,7 @@ export const UpdateVendorDetails = (props) => {
   const timeoutRef = useRef(null);
   const dispatch = useDispatch();
   const handleChange = (event) => {
-    const { name, value } = event.target;
+    const { value } = event.target;
     setTypeData(value);
     if (value === "Domestic") {
       setInputValue({ ...inputValue, country: "India" });
@@ -403,13 +399,3 @@ export const UpdateVendorDetails = (props) => {
     </>
   );
 };
-
-const HelperText = styled(FormHelperText)(({ theme }) => ({
-  padding: "0px",
-  MuiFormHelperText: {
-    root: {
-      padding: 0,
-      margin: 0,
-    },
-  },
-}));

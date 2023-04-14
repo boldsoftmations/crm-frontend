@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import {
   Autocomplete,
   Box,
@@ -43,7 +43,7 @@ export const CreateVendorDetails = (props) => {
   const [idForEdit, setIdForEdit] = useState("");
   const timeoutRef = useRef(null);
   const handleChange = (event) => {
-    const { name, value } = event.target;
+    const { value } = event.target;
     setTypeData(value);
 
     if (value === "Domestic") {

@@ -19,7 +19,7 @@ import { tableCellClasses } from "@mui/material/TableCell";
 import { Popup } from "../../../Components/Popup";
 import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 import { CustomSearch } from "../../../Components/CustomSearch";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { getSellerAccountData } from "../../../Redux/Action/Action";
 import InvoiceServices from "../../../services/InvoiceService";
 import { CustomLoader } from "../../../Components/CustomLoader";
@@ -58,8 +58,7 @@ export const VendorView = () => {
   const [pageCount, setpageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
-  const data = useSelector((state) => state.auth);
-  const users = data.profile;
+
   const handleInputChange = (event) => {
     const inputValue = event.target.value;
     setFilterSelectedQuery(inputValue);

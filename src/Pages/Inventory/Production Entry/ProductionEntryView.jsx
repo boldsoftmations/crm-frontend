@@ -240,6 +240,7 @@ export const ProductionEntryView = () => {
                 <StyledTableRow>
                   <StyledTableCell align="center"></StyledTableCell>
                   <StyledTableCell align="center">ID</StyledTableCell>
+                  <StyledTableCell align="center">SELLER STATE</StyledTableCell>
                   <StyledTableCell align="center">PRODUCT</StyledTableCell>
 
                   <StyledTableCell align="center">QUANTITY</StyledTableCell>
@@ -301,6 +302,7 @@ function Row(props) {
         </TableCell>
 
         <TableCell align="center">{row.bom}</TableCell>
+        <TableCell align="center">{row.seller_account}</TableCell>
         <TableCell align="center">{row.product}</TableCell>
         <TableCell align="center">{row.quantity}</TableCell>
         <TableCell align="center">{row.created_on}</TableCell>

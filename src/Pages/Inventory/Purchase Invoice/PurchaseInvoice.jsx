@@ -7,20 +7,12 @@ import ISO from "../../../Images/ISOLogo.ico";
 import AllLogo from "../../../Images/allLogo.jpg";
 import MSME from "../../../Images/MSME.jpeg";
 
-const Root = styled("div")(({ theme }) => ({
-  width: "100%",
-  ...theme.typography.body2,
-  "& > :not(style) + :not(style)": {
-    marginTop: theme.spacing(2),
-  },
-}));
 export const PurchaseInvoice = (props) => {
   const { idForEdit } = props;
   console.log("idForEdit", idForEdit);
   const [purchaseInvoiceDataByID, setPurchaseInvoiceDataByID] = useState([]);
   const [open, setOpen] = useState(false);
   const [productData, setProductData] = useState([]);
-  const [hsnData, setHsnData] = useState(null);
   useEffect(() => {
     if (idForEdit) getAllPackingListDetailsByID();
   }, [idForEdit]);

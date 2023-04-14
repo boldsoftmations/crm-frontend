@@ -19,7 +19,6 @@ import { CustomLoader } from "../../../Components/CustomLoader";
 import { CustomSearch } from "../../../Components/CustomSearch";
 import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 import InventoryServices from "../../../services/InventoryService";
-import { useSelector } from "react-redux";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -49,8 +48,7 @@ export const ProductionInventoryView = () => {
   const [pageCount, setpageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
-  const data = useSelector((state) => state.auth);
-  const users = data.profile;
+
   const handleInputChange = (event) => {
     setFilterSelectedQuery(event.target.value);
     getSearchData(event.target.value);
@@ -205,6 +203,7 @@ export const ProductionInventoryView = () => {
               <TableHead>
                 <TableRow>
                   <StyledTableCell align="center">PRODUCT</StyledTableCell>
+                  <StyledTableCell align="center">SELLER STATE</StyledTableCell>
                   <StyledTableCell align="center">DESCRIPTION</StyledTableCell>
                   <StyledTableCell align="center">DATE</StyledTableCell>
                   <StyledTableCell align="center">UNIT</StyledTableCell>
@@ -221,6 +220,9 @@ export const ProductionInventoryView = () => {
                   <StyledTableRow key={i}>
                     <StyledTableCell align="center">
                       {row.product}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.seller_account}
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.description}

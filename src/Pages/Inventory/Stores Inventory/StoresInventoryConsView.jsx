@@ -161,6 +161,7 @@ export const StoresInventoryConsView = () => {
               <TableHead>
                 <TableRow>
                   <StyledTableCell align="center">PRODUCT</StyledTableCell>
+                  <StyledTableCell align="center">SELLER STATE</StyledTableCell>
                   <StyledTableCell align="center">UNIT</StyledTableCell>
                   <StyledTableCell align="center">QUANTITY</StyledTableCell>
                 </TableRow>
@@ -170,6 +171,9 @@ export const StoresInventoryConsView = () => {
                   <StyledTableRow KEY={i}>
                     <StyledTableCell align="center">
                       {row.product__name}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.seller_account}
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.product__unit}

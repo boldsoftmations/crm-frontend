@@ -45,6 +45,9 @@ export const MaterialTransferNoteCreate = (props) => {
       e.preventDefault();
       setOpen(true);
       const req = {
+        seller_account: users.groups.includes("Production Delhi")
+          ? "Delhi"
+          : "Maharashtra",
         user: users.email,
         product: product.product__name,
         quantity: quantity,

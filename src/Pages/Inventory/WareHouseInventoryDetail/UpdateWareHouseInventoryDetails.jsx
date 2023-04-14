@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { Box, Button, Grid, TextField, Autocomplete } from "@mui/material";
-import CustomerServices from "../../../services/CustomerService";
 import axios from "axios";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import InventoryServices from "../../../services/InventoryService";

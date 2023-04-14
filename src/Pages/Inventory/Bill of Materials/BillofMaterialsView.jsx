@@ -29,7 +29,6 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { CustomSearch } from "../../../Components/CustomSearch";
-import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 import { Popup } from "../../../Components/Popup";
 import InventoryServices from "../../../services/InventoryService";
 import { BillofMaterialsCreate } from "./BillofMaterialsCreate";
@@ -67,7 +66,7 @@ export const BillofMaterialsView = () => {
   const [openPopup2, setOpenPopup2] = useState(false);
   const [open, setOpen] = useState(false);
   const errRef = useRef();
-  const [errMsg, setErrMsg] = useState("");
+
   const [billofMaterials, setBillofMaterials] = useState([]);
   const [pageCount, setpageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
@@ -275,7 +274,6 @@ export const BillofMaterialsView = () => {
       <CustomLoader open={open} />
 
       <Grid item xs={12}>
-        <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
           <Box display="flex">
             <Box flexGrow={2}>

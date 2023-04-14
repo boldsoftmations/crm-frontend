@@ -7,7 +7,7 @@ import {
   Snackbar,
   TextField,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import InventoryServices from "../../../services/InventoryService";
@@ -69,6 +69,9 @@ export const MaterialRequisitionFormCreate = (props) => {
       e.preventDefault();
       setOpen(true);
       const req = {
+        seller_account: users.groups.includes("Production Delhi")
+          ? "Delhi"
+          : "Maharashtra",
         user: users.email,
         products_data: products,
       };

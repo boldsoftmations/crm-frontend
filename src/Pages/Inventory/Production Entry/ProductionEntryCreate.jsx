@@ -118,6 +118,9 @@ export const ProductionEntryCreate = (props) => {
           });
 
       const req = {
+        seller_account: users.groups.includes("Production Delhi")
+          ? "Delhi"
+          : "Maharashtra",
         user: users.email,
         bom: selectedBOM.bom_id,
         product: selectedBOM.product,
@@ -281,7 +284,6 @@ export const ProductionEntryCreate = (props) => {
                     <TextField
                       fullWidth
                       name="quantity"
-                      zz
                       size="small"
                       label="Quantity"
                       variant="outlined"

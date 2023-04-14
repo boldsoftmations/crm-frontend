@@ -240,14 +240,14 @@ export const PackingListView = () => {
               aria-label="sticky table"
             >
               <TableHead>
-                <TableRow>
+                <StyledTableRow>
                   <StyledTableCell align="center"></StyledTableCell>
                   <StyledTableCell align="center">VENDOR</StyledTableCell>
                   <StyledTableCell align="center">PACKING LIST</StyledTableCell>
                   <StyledTableCell align="center">SELLER STATE</StyledTableCell>
                   <StyledTableCell align="center">INVOICE DATE</StyledTableCell>
                   <StyledTableCell align="center">Action</StyledTableCell>
-                </TableRow>
+                </StyledTableRow>
               </TableHead>
               <TableBody>
                 {packingListData.map((row, i) => (

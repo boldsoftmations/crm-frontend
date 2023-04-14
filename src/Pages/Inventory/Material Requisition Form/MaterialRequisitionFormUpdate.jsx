@@ -15,6 +15,7 @@ import { CustomLoader } from "../../../Components/CustomLoader";
 import InventoryServices from "../../../services/InventoryService";
 
 import { styled } from "@mui/material/styles";
+import { useSelector } from "react-redux";
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -35,6 +36,8 @@ export const MaterialRequisitionFormUpdate = (props) => {
     useState([]);
   const [open, setOpen] = useState(false);
   const [error, setError] = useState(null);
+  const data = useSelector((state) => state.auth);
+  const users = data.profile;
   const [products, setProducts] = useState([
     {
       product: "",
@@ -106,6 +109,9 @@ export const MaterialRequisitionFormUpdate = (props) => {
       e.preventDefault();
       setOpen(true);
       const req = {
+        seller_account: users.groups.includes("Production Delhi")
+          ? "Delhi"
+          : "Maharashtra",
         user: materialRequisitionDataByID.user,
         products_data: products,
       };

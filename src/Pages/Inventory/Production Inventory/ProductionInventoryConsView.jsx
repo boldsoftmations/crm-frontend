@@ -19,7 +19,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 import InventoryServices from "../../../services/InventoryService";
-import { useSelector } from "react-redux";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -47,7 +46,6 @@ export const ProductionInventoryConsView = () => {
   const [errMsg, setErrMsg] = useState("");
   const [productionInventoryData, setProductionInventoryData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const data = useSelector((state) => state.auth);
 
   useEffect(() => {
     getAllProductionInventoryDetails();
@@ -165,6 +163,7 @@ export const ProductionInventoryConsView = () => {
               <TableHead>
                 <TableRow>
                   <StyledTableCell align="center">PRODUCT</StyledTableCell>
+                  <StyledTableCell align="center">SELLER STATE</StyledTableCell>
                   <StyledTableCell align="center">UNIT</StyledTableCell>
                   <StyledTableCell align="center">QUANTITY</StyledTableCell>
                 </TableRow>
@@ -174,6 +173,9 @@ export const ProductionInventoryConsView = () => {
                   <StyledTableRow key={i}>
                     <StyledTableCell align="center">
                       {row.product__name}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.seller_account}
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.product__unit}
