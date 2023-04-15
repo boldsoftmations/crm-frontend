@@ -43,11 +43,11 @@ export const CustomerProformaInvoice = (props) => {
       // generate the PDF document
       const pdfData = await pdf(
         <MyDocument
-          productData={productData}
-          invoiceData={invoiceData}
-          hsnData={hsnData}
-          AMOUNT_IN_WORDS={AMOUNT_IN_WORDS}
-          TOTAL_GST={TOTAL_GST}
+          productData={productData || []} // add a default empty array for null/undefined
+          invoiceData={invoiceData || {}} // add a default empty object for null/undefined
+          hsnData={hsnData || []} // add a default empty array for null/undefined
+          AMOUNT_IN_WORDS={AMOUNT_IN_WORDS || ""}
+          TOTAL_GST={TOTAL_GST || ""}
         />,
         pdfDoc,
         {
