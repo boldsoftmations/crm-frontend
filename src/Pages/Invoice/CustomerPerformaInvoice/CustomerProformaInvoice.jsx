@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useRef } from "react";
 import InvoiceServices from "../../../services/InvoiceService";
+import { CustomerConfirmationPayment } from "./CustomerConfirmationPayment";
 import { Popup } from "./../../../Components/Popup";
 import { useSelector } from "react-redux";
 import { useReactToPrint } from "react-to-print";
-import { LeadConfirmationPayment } from "./LeadConfirmationPayment";
-import { CustomLoader } from "./../../../Components/CustomLoader";
+import { CustomLoader } from "../../../Components/CustomLoader";
 import logo from "../../../Images/LOGOS3.png";
 import ISO from "../../../Images/ISOLogo.ico";
 import AllLogo from "../../../Images/allLogo.jpg";
@@ -12,15 +12,16 @@ import MSME from "../../../Images/MSME.jpeg";
 // import "../CustomerPiStyle.css";
 import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
 
-export const LeadsPerformaInvoice = (props) => {
-  const { idForEdit, setOpenPopup, getAllLeadsPIDetails } = props;
+export const CustomerProformaInvoice = (props) => {
+  const { idForEdit, setOpenPopup, getCustomerPIDetails } = props;
   const [openPopup2, setOpenPopup2] = useState(false);
   const [invoiceData, setInvoiceData] = useState([]);
-  const [hsnData, setHsnData] = useState([]);
   const [productData, setProductData] = useState([]);
+  const [hsnData, setHsnData] = useState([]);
   const [open, setOpen] = useState(false);
-  const data = useSelector((state) => state.auth);
   const [errMsg, setErrMsg] = useState("");
+  // const [totalGst, setTotalGst] = useState("");
+  const data = useSelector((state) => state.auth);
   const users = data.profile;
   useEffect(() => {
     getAllProformaInvoiceDetails();
@@ -29,11 +30,10 @@ export const LeadsPerformaInvoice = (props) => {
   const getAllProformaInvoiceDetails = async () => {
     try {
       setOpen(true);
-      const response = await InvoiceServices.getLeadsPerformaInvoiceByIDData(
+      const response = await InvoiceServices.getCompanyPerformaInvoiceByIDData(
         idForEdit
       );
       setInvoiceData(response.data);
-
       setProductData(response.data.products);
       setHsnData(response.data.hsn_table);
       setOpen(false);
@@ -41,14 +41,12 @@ export const LeadsPerformaInvoice = (props) => {
       setOpen(false);
     }
   };
-
   const str = invoiceData.amount_in_words ? invoiceData.amount_in_words : "";
   const arr = str.split(" ");
   for (var i = 0; i < arr.length; i++) {
     arr[i] = arr[i].charAt(0).toUpperCase() + arr[i].slice(1);
   }
   const AMOUNT_IN_WORDS = arr.join(" ");
-
   // from Pending Approval or Approved to Raised Status
   const SendForRaisedlPI = async (e) => {
     try {
@@ -61,7 +59,7 @@ export const LeadsPerformaInvoice = (props) => {
         city: invoiceData.city,
         contact: invoiceData.contact,
         delivery_terms: invoiceData.delivery_terms,
-        lead: invoiceData.lead,
+        company: invoiceData.company,
         payment_terms: invoiceData.payment_terms,
         pincode: invoiceData.pincode,
         place_of_supply: invoiceData.place_of_supply,
@@ -70,10 +68,10 @@ export const LeadsPerformaInvoice = (props) => {
         state: invoiceData.state,
         type: invoiceData.type,
       };
-      await InvoiceServices.updateLeadsProformaInvoiceData(idForEdit, req);
+      await InvoiceServices.updateCustomerProformaInvoiceData(idForEdit, req);
       setOpenPopup(false);
       setOpen(false);
-      getAllLeadsPIDetails();
+      getCustomerPIDetails();
     } catch (err) {
       setOpen(false);
       setErrMsg(
@@ -83,7 +81,6 @@ export const LeadsPerformaInvoice = (props) => {
       );
     }
   };
-
   // from Raised to Pending Approval Status
   const SendForApprovalPI = async (e) => {
     try {
@@ -96,7 +93,7 @@ export const LeadsPerformaInvoice = (props) => {
         city: invoiceData.city,
         contact: invoiceData.contact,
         delivery_terms: invoiceData.delivery_terms,
-        lead: invoiceData.lead,
+        company: invoiceData.company,
         payment_terms: invoiceData.payment_terms,
         pincode: invoiceData.pincode,
         place_of_supply: invoiceData.place_of_supply,
@@ -105,10 +102,10 @@ export const LeadsPerformaInvoice = (props) => {
         state: invoiceData.state,
         type: invoiceData.type,
       };
-      await InvoiceServices.updateLeadsProformaInvoiceData(idForEdit, req);
+      await InvoiceServices.updateCustomerProformaInvoiceData(idForEdit, req);
       setOpenPopup(false);
       setOpen(false);
-      getAllLeadsPIDetails();
+      getCustomerPIDetails();
     } catch (err) {
       setOpen(false);
       setErrMsg(
@@ -130,7 +127,7 @@ export const LeadsPerformaInvoice = (props) => {
       await InvoiceServices.sendForApprovalData(req);
       setOpenPopup(false);
       setOpen(false);
-      getAllLeadsPIDetails();
+      getCustomerPIDetails();
     } catch (err) {
       setOpen(false);
       setErrMsg(
@@ -140,7 +137,6 @@ export const LeadsPerformaInvoice = (props) => {
       );
     }
   };
-
   const componentRef = useRef();
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
@@ -149,7 +145,6 @@ export const LeadsPerformaInvoice = (props) => {
 
   const TOTAL_GST_DATA = invoiceData.total - invoiceData.amount;
   const TOTAL_GST = TOTAL_GST_DATA.toFixed(2);
-
   return (
     <>
       <CustomLoader open={open} />
@@ -172,7 +167,8 @@ export const LeadsPerformaInvoice = (props) => {
               )}
           </div>
           <div className="col-xs-6 ">
-            {users.groups.toString() === "Sales" &&
+            {(users.groups.toString() === "Sales" ||
+              users.groups.toString() === "Customer Service") &&
               invoiceData.status === "Raised" && (
                 <button
                   type="button"
@@ -229,7 +225,7 @@ export const LeadsPerformaInvoice = (props) => {
               )}
           </div>
           <div className="col-xs-6">
-          {(users.groups.includes("Accounts") ||
+            {(users.groups.includes("Accounts") ||
               users.groups.includes("Accounts Billing Department")) &&
               invoiceData.status === "Approved" && (
                 <button
@@ -243,7 +239,6 @@ export const LeadsPerformaInvoice = (props) => {
           </div>
         </div>
       </div>
-
       <div
         className="container-fluid m-0 p-0"
         style={{ border: "1px Solid #000000" }}
@@ -274,8 +269,7 @@ export const LeadsPerformaInvoice = (props) => {
                           ,{invoiceData.seller_state}-
                           {invoiceData.seller_state_code},<br />
                           {invoiceData.seller_pincode}, CIN No ;-
-                          {invoiceData.seller_cin}, P.No :-
-                          <br />
+                          {invoiceData.seller_cin}, P.No :- <br />
                           {invoiceData.seller_contact} E:
                           {invoiceData.seller_email},W:www.glutape.com
                         </p>
@@ -341,7 +335,7 @@ export const LeadsPerformaInvoice = (props) => {
                       </div>
                       <div>
                         <strong style={{ ...typographyStyling }}>
-                          Transporter Name :
+                          Transporter Name :{" "}
                         </strong>
                         {invoiceData.transporter_name}
                       </div>
@@ -565,7 +559,7 @@ export const LeadsPerformaInvoice = (props) => {
                               {row.product}
                             </td>
                             <td className="text-center">{row.brand}</td>
-                            <td className="text-center">{row.hsn_code}</td>{" "}
+                            <td className="text-center">{row.hsn_code}</td>
                             <td className="text-center">
                               {row.requested_date}
                             </td>
@@ -633,7 +627,7 @@ export const LeadsPerformaInvoice = (props) => {
                             <br />
                             <strong style={{ ...typographyStyling }}>
                               IGST Amount
-                            </strong>{" "}
+                            </strong>
                             <br />
                             <strong style={{ ...typographyStyling }}>
                               Round Off
@@ -679,7 +673,7 @@ export const LeadsPerformaInvoice = (props) => {
                   }}
                 >
                   <div className="col-md-8 text-right">
-                    <strong>Amount in Words :-</strong>
+                    <strong>Amount in Words :-</strong>&nbsp;&nbsp;
                     {AMOUNT_IN_WORDS}
                   </div>
                 </div>
@@ -827,7 +821,7 @@ export const LeadsPerformaInvoice = (props) => {
         openPopup={openPopup2}
         setOpenPopup={setOpenPopup2}
       >
-        <LeadConfirmationPayment
+        <CustomerConfirmationPayment
           users={users}
           invoiceData={invoiceData}
           setOpenPopup={setOpenPopup2}
@@ -845,7 +839,7 @@ const Information = [
   },
   {
     id: "2)",
-    text: "Material is delivered at owner's risk and with no liability of transportation damage to glutape india Pvt Ltd. ",
+    text: "Material is delivered at owner's risk and with no liability of transportation damage to Glutape India Pvt Ltd. ",
   },
   {
     id: "3)",
