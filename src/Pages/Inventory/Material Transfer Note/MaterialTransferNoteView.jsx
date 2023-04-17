@@ -336,30 +336,32 @@ export const MaterialTransferNoteView = () => {
                       />
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {!users.groups.includes("Stores") ||
-                        (!users.groups.includes("Stores Delhi") && (
+                      {(users.groups.includes("Accounts") ||
+                        users.groups.includes("Production") ||
+                        users.groups.includes("Production Delhi")) && (
+                        <Button
+                          onClick={() => openInPopup(row.id)}
+                          variant="contained"
+                          color="success"
+                        >
+                          Edit
+                        </Button>
+                      )}
+
+                      {(users.groups.includes("Stores") ||
+                        users.groups.includes("Stores Delhi")) &&
+                        row.accepted === false && (
                           <Button
-                            onClick={() => openInPopup(row.id)}
+                            onClick={() => {
+                              setOpenPopup3(true);
+                              setMaterialTransferNoteByID(row);
+                            }}
                             variant="contained"
                             color="success"
                           >
-                            Edit
+                            View
                           </Button>
-                        ))}
-                      {users.groups.includes("Stores") ||
-                        (users.groups.includes("Stores Delhi") &&
-                          row.accepted === false && (
-                            <Button
-                              onClick={() => {
-                                setOpenPopup3(true);
-                                setMaterialTransferNoteByID(row);
-                              }}
-                              variant="contained"
-                              color="success"
-                            >
-                              View
-                            </Button>
-                          ))}
+                        )}
                       <Button
                         onClick={() => {
                           handlePrint(row);

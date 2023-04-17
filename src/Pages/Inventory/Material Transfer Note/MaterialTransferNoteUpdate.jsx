@@ -175,7 +175,7 @@ export const MaterialTransferNoteUpdate = (props) => {
             />
           </Grid>
         </Grid>
-        {inputValue.accepted === false ? (
+        {inputValue.accepted === false || users.groups.includes("Accounts") ? (
           <Button
             type="submit"
             fullWidth

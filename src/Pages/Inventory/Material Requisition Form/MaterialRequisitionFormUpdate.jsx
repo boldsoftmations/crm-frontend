@@ -248,7 +248,8 @@ export const MaterialRequisitionFormUpdate = (props) => {
             );
           })}
         </Grid>
-        {materialRequisitionDataByID.accepted === false ? (
+        {materialRequisitionDataByID.accepted === false ||
+        users.groups.includes("Accounts") ? (
           <Button
             type="submit"
             fullWidth
