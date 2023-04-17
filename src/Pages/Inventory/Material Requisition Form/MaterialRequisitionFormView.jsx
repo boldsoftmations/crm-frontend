@@ -502,17 +502,18 @@ function Row(props) {
         <TableCell align="center">
           {(users.groups.includes("Accounts") ||
             users.groups.includes("Production") ||
-            users.groups.includes("Production Delhi")) && (
-            <Button
-              onClick={() => openInPopup(row.id)}
-              variant="contained"
-              color="success"
-            >
-              Edit
-            </Button>
-          )}
+            users.groups.includes("Production Delhi")) &&
+            row.accepted === false && (
+              <Button
+                onClick={() => openInPopup(row.id)}
+                variant="contained"
+                color="success"
+              >
+                Edit
+              </Button>
+            )}
 
-<Button
+          <Button
             onClick={() => {
               handlePrint(row);
               setMaterialRequisitionDataByID(row);
@@ -522,22 +523,21 @@ function Row(props) {
           >
             Download
           </Button>
-          
+
           {(users.groups.includes("Stores") ||
-            users.groups.includes("Stores Delhi") ||
-            row.accepted === false) && (
-            <Button
-              onClick={() => {
-                setOpenPopup3(true);
-                setMaterialRequisitionDataByID(row);
-              }}
-              variant="contained"
-              color="success"
-            >
-              View
-            </Button>
-          )}
-          
+            users.groups.includes("Stores Delhi")) &&
+            row.accepted === false && (
+              <Button
+                onClick={() => {
+                  setOpenPopup3(true);
+                  setMaterialRequisitionDataByID(row);
+                }}
+                variant="contained"
+                color="success"
+              >
+                View
+              </Button>
+            )}
         </TableCell>
       </TableRow>
       <TableRow>
