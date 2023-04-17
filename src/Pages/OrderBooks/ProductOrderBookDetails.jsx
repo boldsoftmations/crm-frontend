@@ -82,6 +82,10 @@ const headers = [
     key: "seller_state",
   },
   {
+    label: "Pending Amount",
+    key: "pending_amount",
+  },
+  {
     label: "Special Instruction",
     key: "special_instructions",
   },
@@ -315,6 +319,7 @@ export const ProductOrderBookDetails = () => {
         quantity: item.quantity,
         // amount: item.amount,
         pending_quantity: item.pending_quantity,
+        pending_amount: item.pending_amount,
         company: item.company,
         billing_city: item.billing_city,
         shipping_city: item.shipping_city,
@@ -329,6 +334,7 @@ export const ProductOrderBookDetails = () => {
         quantity: item.quantity,
         amount: item.amount,
         pending_quantity: item.pending_quantity,
+        pending_amount: item.pending_amount,
         company: item.company,
         billing_city: item.billing_city,
         shipping_city: item.shipping_city,
@@ -499,6 +505,9 @@ export const ProductOrderBookDetails = () => {
                       ""
                     ))}
                   <StyledTableCell align="center">
+                    PENDING AMOUNT
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
                     SPECIAL INSTRUCTIONS
                   </StyledTableCell>
                   <StyledTableCell align="center">COMPANY</StyledTableCell>
@@ -539,6 +548,9 @@ export const ProductOrderBookDetails = () => {
                       ) : (
                         ""
                       ))}
+                    <StyledTableCell align="center">
+                      {row.pending_amount}
+                    </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.special_instructions}
                     </StyledTableCell>

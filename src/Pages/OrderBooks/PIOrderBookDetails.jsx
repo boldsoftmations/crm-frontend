@@ -243,8 +243,10 @@ export const PIOrderBookDetails = () => {
         product: item.product,
         quantity: item.quantity,
         // amount: item.amount,
+        pending_amount: item.pending_amount,
         pending_quantity: item.pending_quantity,
         seller_state: item.seller_state,
+        special_instructions: item.special_instructions,
       };
     } else {
       return {
@@ -256,8 +258,10 @@ export const PIOrderBookDetails = () => {
         product: item.product,
         quantity: item.quantity,
         amount: item.amount,
+        pending_amount: item.pending_amount,
         pending_quantity: item.pending_quantity,
         seller_state: item.seller_state,
+        special_instructions: item.special_instructions,
       };
     }
   });
@@ -426,6 +430,9 @@ export const PIOrderBookDetails = () => {
                       ""
                     ))}
                   <StyledTableCell align="center">
+                    PENDING AMOUNT
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
                     SPECIAL INSTRUCTIONS
                   </StyledTableCell>
                 </StyledTableRow>
@@ -467,6 +474,9 @@ export const PIOrderBookDetails = () => {
                       ) : (
                         ""
                       ))}
+                    <StyledTableCell align="center">
+                      {row.pending_amount}
+                    </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.special_instructions}
                     </StyledTableCell>
@@ -524,11 +534,19 @@ const headers = [
     key: "amount",
   },
   {
+    label: "Pending Amount",
+    key: "pending_amount",
+  },
+  {
     label: "Pending Quantity",
     key: "pending_quantity",
   },
   {
     label: "Seller State",
     key: "seller_state",
+  },
+  {
+    label: "Special Instruction",
+    key: "special_instructions",
   },
 ];
