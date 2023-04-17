@@ -81,6 +81,10 @@ const headers = [
     label: "Seller State",
     key: "seller_state",
   },
+  {
+    label: "Special Instruction",
+    key: "special_instructions",
+  },
 ];
 
 export const ProductOrderBookDetails = () => {
@@ -315,6 +319,7 @@ export const ProductOrderBookDetails = () => {
         billing_city: item.billing_city,
         shipping_city: item.shipping_city,
         seller_state: item.seller_state,
+        special_instructions: item.special_instructions,
       };
     } else {
       return {
@@ -328,6 +333,7 @@ export const ProductOrderBookDetails = () => {
         billing_city: item.billing_city,
         shipping_city: item.shipping_city,
         seller_state: item.seller_state,
+        special_instructions: item.special_instructions,
       };
     }
   });

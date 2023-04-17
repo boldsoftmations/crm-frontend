@@ -1337,170 +1337,224 @@ export const ListItems = (props) => {
           )}
 
           {/* stores */}
-          {userData.groups.includes("Stores Delhi") && (
-            <>
-              {/* For STORES Delhi Role */}
-              <ListItem
-                button
-                onClick={() => setExpandInventory(!expandInventory)}
-                style={{ width: 300 }}
-              >
-                <ListItemIcon>
-                  <Inventory2Icon />
-                </ListItemIcon>
-                <ListItemText primary="Inventory" />
-                {expandInventory ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-              </ListItem>
-              <Collapse in={expandInventory} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/inventory/view-grn"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="GRN"
-                    />
-                  </ListItem>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/inventory/view-stores-inventory-cons"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Stores Inventory (Cons)"
-                    />
-                  </ListItem>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/inventory/view-material-requisition-form"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Material Requisition Form"
-                    />
-                  </ListItem>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/inventory/view-material-transfer-note"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Material Transfer Note"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
-            </>
-          )}
+          {userData.groups.includes("Stores Delhi") ||
+            (userData.groups.includes("Production Delhi") && (
+              <>
+                {/* For STORES or PRODUCTION Delhi Role */}
+                <ListItem
+                  button
+                  onClick={() => setExpandInventory(!expandInventory)}
+                  style={{ width: 300 }}
+                >
+                  <ListItemIcon>
+                    <Inventory2Icon />
+                  </ListItemIcon>
+                  <ListItemText primary="Inventory" />
+                  {expandInventory ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                </ListItem>
+                <Collapse in={expandInventory} timeout="auto" unmountOnExit>
+                  <Divider />
+                  <List component="div" disablePadding>
+                    <ListItem
+                      button
+                      component={RouterLink}
+                      to="/inventory/view-grn"
+                      style={{ width: 300 }}
+                    >
+                      <ListItemText
+                        component={Button}
+                        onClick={() => setOpen(false)}
+                        inset
+                        primary="GRN"
+                      />
+                    </ListItem>
+                    <ListItem
+                      button
+                      component={RouterLink}
+                      to="/inventory/view-stores-inventory-cons"
+                      style={{ width: 300 }}
+                    >
+                      <ListItemText
+                        component={Button}
+                        onClick={() => setOpen(false)}
+                        inset
+                        primary="Stores Inventory (Cons)"
+                      />
+                    </ListItem>
+                    <ListItem
+                      button
+                      component={RouterLink}
+                      to="/inventory/view-production-inventory-cons"
+                      style={{ width: 300 }}
+                    >
+                      <ListItemText
+                        component={Button}
+                        onClick={() => setOpen(false)}
+                        inset
+                        primary="Production Inventory (Cons)"
+                      />
+                    </ListItem>
+                    <ListItem
+                      button
+                      component={RouterLink}
+                      to="/inventory/view-material-requisition-form"
+                      style={{ width: 300 }}
+                    >
+                      <ListItemText
+                        component={Button}
+                        onClick={() => setOpen(false)}
+                        inset
+                        primary="Material Requisition Form"
+                      />
+                    </ListItem>
+                    <ListItem
+                      button
+                      component={RouterLink}
+                      to="/inventory/view-bill-of-materials"
+                      style={{ width: 300 }}
+                    >
+                      <ListItemText
+                        component={Button}
+                        onClick={() => setOpen(false)}
+                        inset
+                        primary="Bill of Materials"
+                      />
+                    </ListItem>
+                    <ListItem
+                      button
+                      component={RouterLink}
+                      to="/inventory/view-production-entry"
+                      style={{ width: 300 }}
+                    >
+                      <ListItemText
+                        component={Button}
+                        onClick={() => setOpen(false)}
+                        inset
+                        primary="ProductionEntry"
+                      />
+                    </ListItem>
+                    <ListItem
+                      button
+                      component={RouterLink}
+                      to="/inventory/view-material-transfer-note"
+                      style={{ width: 300 }}
+                    >
+                      <ListItemText
+                        component={Button}
+                        onClick={() => setOpen(false)}
+                        inset
+                        primary="Material Transfer Note"
+                      />
+                    </ListItem>
+                  </List>
+                </Collapse>
+
+                {/* Order book */}
+                <ListItem
+                  button
+                  onClick={() => setExpandOrderBook(!expandOrderBook)}
+                  style={{ width: 300 }}
+                >
+                  <ListItemIcon>
+                    <ReceiptIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Order Book" />
+                  {expandOrderBook ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                </ListItem>
+                <Collapse in={expandOrderBook} timeout="auto" unmountOnExit>
+                  <Divider />
+                  <List component="div" disablePadding>
+                    <ListItem
+                      button
+                      component={RouterLink}
+                      to="/invoice/customer-order-book"
+                      style={{ width: 300 }}
+                    >
+                      <ListItemText
+                        component={Button}
+                        onClick={() => setOpen(false)}
+                        inset
+                        primary="Customer Wise Order Book"
+                      />
+                    </ListItem>
+                    <ListItem
+                      button
+                      component={RouterLink}
+                      to="/invoice/product-order-book"
+                      style={{ width: 300 }}
+                    >
+                      <ListItemText
+                        component={Button}
+                        onClick={() => setOpen(false)}
+                        inset
+                        primary="Product Wise Order Book"
+                      />
+                    </ListItem>
+                    <ListItem
+                      button
+                      component={RouterLink}
+                      to="/invoice/pi-order-book"
+                      style={{ width: 300 }}
+                    >
+                      <ListItemText
+                        component={Button}
+                        onClick={() => setOpen(false)}
+                        inset
+                        primary="PI Wise Order Book"
+                      />
+                    </ListItem>
+                  </List>
+                </Collapse>
+
+                {/* Dispatch */}
+                <ListItem
+                  button
+                  onClick={() => setDispatchDetails(!dispatchDetails)}
+                  style={{ width: 300 }}
+                >
+                  <ListItemIcon>
+                    <LocalShippingIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Dispatch" />
+                  {dispatchDetails ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                </ListItem>
+
+                <Collapse in={dispatchDetails} timeout="auto" unmountOnExit>
+                  <Divider />
+                  <List component="div" disablePadding>
+                    <ListItem
+                      button
+                      component={RouterLink}
+                      to="/dispatch/view-dispatch"
+                      style={{ width: 300 }}
+                    >
+                      <ListItemText
+                        component={Button}
+                        onClick={() => setOpen(false)}
+                        inset
+                        primary="Pending Dispatch"
+                      />
+                    </ListItem>
+                    <ListItem
+                      button
+                      component={RouterLink}
+                      to="/dispatch/view-dispatched"
+                      style={{ width: 300 }}
+                    >
+                      <ListItemText
+                        component={Button}
+                        onClick={() => setOpen(false)}
+                        inset
+                        primary="Dispatched"
+                      />
+                    </ListItem>
+                  </List>
+                </Collapse>
+              </>
+            ))}
 
           {/* production */}
           {userData.groups.includes("Production") && (
-            <>
-              {/* For PRODUCTION Role */}
-              <ListItem
-                button
-                onClick={() => setExpandInventory(!expandInventory)}
-                style={{ width: 300 }}
-              >
-                <ListItemIcon>
-                  <Inventory2Icon />
-                </ListItemIcon>
-                <ListItemText primary="Inventory" />
-                {expandInventory ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-              </ListItem>
-              <Collapse in={expandInventory} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/inventory/view-production-inventory-cons"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Production Inventory (Cons)"
-                    />
-                  </ListItem>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/inventory/view-material-requisition-form"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Material Requisition Form"
-                    />
-                  </ListItem>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/inventory/view-bill-of-materials"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Bill of Materials"
-                    />
-                  </ListItem>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/inventory/view-production-entry"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="ProductionEntry"
-                    />
-                  </ListItem>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/inventory/view-material-transfer-note"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Material Transfer Note"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
-            </>
-          )}
-
-          {/* production Delhi */}
-          {userData.groups.includes("Production Delhi") && (
             <>
               {/* For PRODUCTION Role */}
               <ListItem

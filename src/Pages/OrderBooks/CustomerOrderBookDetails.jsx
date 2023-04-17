@@ -250,6 +250,7 @@ export const CustomerOrderBookDetails = () => {
           // amount: item.amount,
           pending_quantity: item.pending_quantity,
           seller_state: item.seller_state,
+          special_instructions: item.special_instructions,
         };
       } else if (userData.groups.toString() === "Customer Service") {
         return {
@@ -284,6 +285,7 @@ export const CustomerOrderBookDetails = () => {
           amount: item.amount,
           pending_quantity: item.pending_quantity,
           seller_state: item.seller_state,
+          special_instructions: item.special_instructions,
         };
       }
     })
@@ -617,5 +619,9 @@ const headers2 = [
   {
     label: "Seller State",
     key: "seller_state",
+  },
+  {
+    label: "Special Instruction",
+    key: "special_instructions",
   },
 ];
