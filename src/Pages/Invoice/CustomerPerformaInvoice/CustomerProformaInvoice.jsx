@@ -273,16 +273,17 @@ export const CustomerProformaInvoice = (props) => {
               )}
           </div>
           <div className="col-xs-6">
-            {invoiceData.status === "Approved" &&
-              users.groups[0] === "Accounts" && (
-                <button
-                  type="button"
-                  className="btn btn-success"
-                  onClick={() => setOpenPopup2(true)}
-                >
-                  Confirmation Payment
-                </button>
-              )}
+            {(invoiceData.status === "Approved" ||
+              users.groups.includes("Accounts") ||
+              users.groups.includes("Accounts Billing Department")) && (
+              <button
+                type="button"
+                className="btn btn-success"
+                onClick={() => setOpenPopup2(true)}
+              >
+                Confirmation Payment
+              </button>
+            )}
           </div>
         </div>
       </div>

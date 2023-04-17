@@ -275,8 +275,8 @@ export const MaterialRequisitionFormView = () => {
               </h3>
             </Box>
             <Box flexGrow={0.5} align="right">
-              {!users.groups.includes("Stores") &&
-              !users.groups.includes("Stores Delhi") ? (
+              {users.groups.includes("Production") ||
+              users.groups.includes("Production Delhi") ? (
                 <Button
                   onClick={() => setOpenPopup2(true)}
                   variant="contained"
@@ -512,21 +512,7 @@ function Row(props) {
             </Button>
           )}
 
-          {(users.groups.includes("Stores") ||
-            users.groups.includes("Stores Delhi")) &&
-            row.accepted === false && (
-              <Button
-                onClick={() => {
-                  setOpenPopup3(true);
-                  setMaterialRequisitionDataByID(row);
-                }}
-                variant="contained"
-                color="success"
-              >
-                View
-              </Button>
-            )}
-          <Button
+<Button
             onClick={() => {
               handlePrint(row);
               setMaterialRequisitionDataByID(row);
@@ -536,6 +522,22 @@ function Row(props) {
           >
             Download
           </Button>
+          
+          {(users.groups.includes("Stores") ||
+            users.groups.includes("Stores Delhi") ||
+            row.accepted === false) && (
+            <Button
+              onClick={() => {
+                setOpenPopup3(true);
+                setMaterialRequisitionDataByID(row);
+              }}
+              variant="contained"
+              color="success"
+            >
+              View
+            </Button>
+          )}
+          
         </TableCell>
       </TableRow>
       <TableRow>

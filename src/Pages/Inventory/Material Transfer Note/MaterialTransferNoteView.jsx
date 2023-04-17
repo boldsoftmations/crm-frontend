@@ -254,8 +254,8 @@ export const MaterialTransferNoteView = () => {
               </h3>
             </Box>
             <Box flexGrow={0.5} align="right">
-              {!users.groups.includes("Stores") &&
-              !users.groups.includes("Stores Delhi") ? (
+              {users.groups.includes("Production") ||
+              users.groups.includes("Production Delhi") ? (
                 <Button
                   onClick={() => setOpenPopup2(true)}
                   variant="contained"
@@ -348,20 +348,6 @@ export const MaterialTransferNoteView = () => {
                         </Button>
                       )}
 
-                      {(users.groups.includes("Stores") ||
-                        users.groups.includes("Stores Delhi")) &&
-                        row.accepted === false && (
-                          <Button
-                            onClick={() => {
-                              setOpenPopup3(true);
-                              setMaterialTransferNoteByID(row);
-                            }}
-                            variant="contained"
-                            color="success"
-                          >
-                            View
-                          </Button>
-                        )}
                       <Button
                         onClick={() => {
                           handlePrint(row);
@@ -372,6 +358,21 @@ export const MaterialTransferNoteView = () => {
                       >
                         Download
                       </Button>
+
+                      {(users.groups.includes("Stores") ||
+                        users.groups.includes("Stores Delhi") ||
+                        row.accepted === false) && (
+                        <Button
+                          onClick={() => {
+                            setOpenPopup3(true);
+                            setMaterialTransferNoteByID(row);
+                          }}
+                          variant="contained"
+                          color="success"
+                        >
+                          View
+                        </Button>
+                      )}
                     </StyledTableCell>
                   </StyledTableRow>
                 ))}
