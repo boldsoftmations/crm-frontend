@@ -85,6 +85,7 @@ export const SecurityChequesDetails = (props) => {
               userData.groups.toString() === "Sales") ||
               userData.is_staff === true ||
               userData.groups.toString() === "Accounts" ||
+              userData.groups.includes("Accounts Billing Department") ||
               userData.groups.toString() === "Customer Service") && (
               <Button
                 onClick={() => setOpenPopup2(true)}
@@ -147,6 +148,9 @@ export const SecurityChequesDetails = (props) => {
                         userData.groups.toString() === "Sales") ||
                         userData.is_staff === true ||
                         userData.groups.toString() === "Accounts" ||
+                        userData.groups.includes(
+                          "Accounts Billing Department"
+                        ) ||
                         userData.groups.toString() === "Customer Service") && (
                         <Button
                           variant="contained"
