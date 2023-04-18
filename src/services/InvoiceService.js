@@ -208,23 +208,32 @@ const getSalesnvoiceDataById = (id) => {
   return CustomAxios.get(`/api/invoice/list-sales-invoice/${id}`);
 };
 
-const getAllSaleRegisterData = () => {
-  return CustomAxios.get(`/api/invoice/list-sales-register`);
-};
-
-const getSaleRegisterDataWithPagination = (currentPage) => {
+const getAllSaleRegisterData = (startDate, endDate) => {
   return CustomAxios.get(
-    `/api/invoice/list-sales-register/?page=${currentPage}`
+    `/api/invoice/list-sales-register/?date_range_after=${startDate}&date_range_before=${endDate}`
   );
 };
 
-const getSaleRegisterDataWithSearch = (search) => {
-  return CustomAxios.get(`/api/invoice/list-sales-register/?search=${search}`);
+const getSaleRegisterDataWithPagination = (startDate, endDate, currentPage) => {
+  return CustomAxios.get(
+    `/api/invoice/list-sales-register/?date_range_after=${startDate}&date_range_before=${endDate}&page=${currentPage}`
+  );
 };
 
-const getSaleRegisterDataWithPaginationAndSearch = (currentPage, search) => {
+const getSaleRegisterDataWithSearch = (startDate, endDate, search) => {
   return CustomAxios.get(
-    `/api/invoice/list-sales-register/?page=${currentPage}&search=${search}`
+    `/api/invoice/list-sales-register/?date_range_after=${startDate}&date_range_before=${endDate}&search=${search}`
+  );
+};
+
+const getSaleRegisterDataWithPaginationAndSearch = (
+  startDate,
+  endDate,
+  currentPage,
+  search
+) => {
+  return CustomAxios.get(
+    `/api/invoice/list-sales-register/?date_range_after=${startDate}&date_range_before=${endDate}&page=${currentPage}&search=${search}`
   );
 };
 
