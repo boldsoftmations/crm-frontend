@@ -47,7 +47,8 @@ export const SalesRegisterView = () => {
     setStartDate(date);
     setEndDate(new Date(date.getTime() + 7 * 24 * 60 * 60 * 1000));
   };
-
+  console.log("startDate", startDate);
+  console.log("endDate", endDate);
   useEffect(() => {
     getSalesRegisterData();
   }, [startDate]);
@@ -269,11 +270,12 @@ export const SalesRegisterView = () => {
               <TableHead>
                 <StyledTableRow>
                   <StyledTableCell align="center"></StyledTableCell>
+                  <StyledTableCell align="center">Date</StyledTableCell>
                   <StyledTableCell align="center">
                     Sales Invoice
                   </StyledTableCell>
                   <StyledTableCell align="center">Customer</StyledTableCell>
-                  <StyledTableCell align="center">Date</StyledTableCell>
+
                   <StyledTableCell align="center">
                     Dispatch Location
                   </StyledTableCell>
@@ -353,30 +355,35 @@ function Row(props) {
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell>
-        <TableCell align="center">{row.sales_invoice}</TableCell>
-        <TableCell align="center">{row.customer}</TableCell>
         <TableCell align="center">
           {moment(row.date).format("DD-MM-YYYY")}
         </TableCell>
+        <TableCell align="center">{row.sales_invoice}</TableCell>
+        <TableCell align="center">{row.customer}</TableCell>
+
         <TableCell align="center">{row.dispatch_location}</TableCell>
         <TableCell align="center">
-          <Button
-            color="success"
-            variant="outlined"
-            onClick={() => handleClickLRCOPY(row)}
-          >
-            Download
-          </Button>
+          {row.lr_copy !== null && (
+            <Button
+              color="success"
+              variant="outlined"
+              onClick={() => handleClickLRCOPY(row)}
+            >
+              Download
+            </Button>
+          )}
         </TableCell>
 
         <TableCell align="center">
-          <Button
-            color="success"
-            variant="outlined"
-            onClick={() => handleClickPODCOPY(row)}
-          >
-            Download
-          </Button>
+          {row.pod_copy !== null && (
+            <Button
+              color="success"
+              variant="outlined"
+              onClick={() => handleClickPODCOPY(row)}
+            >
+              Download
+            </Button>
+          )}
         </TableCell>
       </TableRow>
       <TableRow>

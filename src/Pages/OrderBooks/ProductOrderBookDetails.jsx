@@ -91,6 +91,48 @@ const headers = [
   },
 ];
 
+const Customerheaders = [
+  {
+    label: "Product",
+    key: "product",
+  },
+  { label: "PI Date", key: "pi_date" },
+  { label: "PI Number", key: "proforma_invoice" },
+  {
+    label: "Quantity",
+    key: "quantity",
+  },
+  {
+    label: "Amount",
+    key: "amount",
+  },
+  {
+    label: "Pending Quantity",
+    key: "pending_quantity",
+  },
+  { label: "Customer", key: "company" },
+  { label: "Billing City", key: "billing_city" },
+  { label: "Shipping City", key: "shipping_city" },
+  {
+    label: "Seller State",
+    key: "seller_state",
+  },
+  {
+    label: "Special Instruction",
+    key: "special_instructions",
+  },
+];
+
+const header = [
+  {
+    label: "Product",
+    key: "product__name",
+  },
+  {
+    label: "Total",
+    key: "total",
+  },
+];
 export const ProductOrderBookDetails = () => {
   const [orderBookData, setOrderBookData] = useState([]);
   const [totalPendingQuantity, settotalPendingQuantity] = useState([]);
@@ -326,6 +368,20 @@ export const ProductOrderBookDetails = () => {
         seller_state: item.seller_state,
         special_instructions: item.special_instructions,
       };
+    } else if (userData.groups.toString() === "Customer Service") {
+      return {
+        product: item.product,
+        pi_date: item.pi_date,
+        proforma_invoice: item.proforma_invoice,
+        quantity: item.quantity,
+        amount: item.amount,
+        pending_quantity: item.pending_quantity,
+        company: item.company,
+        billing_city: item.billing_city,
+        shipping_city: item.shipping_city,
+        seller_state: item.seller_state,
+        special_instructions: item.special_instructions,
+      };
     } else {
       return {
         product: item.product,
@@ -344,7 +400,12 @@ export const ProductOrderBookDetails = () => {
     }
   });
 
-  // const data = exportOrderBookData.map((item) => ({
+  let PendingQuantity = totalPendingQuantity.map((item) => {
+    return {
+      product__name: item.product__name,
+      total: item.total,
+    };
+  });
   //   product: item.product,
   //   pi_date: item.pi_date,
   //   proforma_invoice: item.proforma_invoice,
@@ -453,7 +514,11 @@ export const ProductOrderBookDetails = () => {
               </Button>
               <CSVLink
                 data={data}
-                headers={headers}
+                headers={
+                  userData.groups.toString() === "Customer Service"
+                    ? Customerheaders
+                    : headers
+                }
                 filename={"my-file.csv"}
                 target="_blank"
                 style={{
@@ -580,6 +645,21 @@ export const ProductOrderBookDetails = () => {
         openPopup={openModal}
         setOpenPopup={setOpenModal}
       >
+        <CSVLink
+          data={PendingQuantity}
+          headers={header}
+          filename={"my-file.csv"}
+          target="_blank"
+          style={{
+            textDecoration: "none",
+            outline: "none",
+            height: "5vh",
+          }}
+        >
+          <Button color="success" variant="contained">
+            Export to Excel
+          </Button>
+        </CSVLink>
         <TableContainer sx={{ maxHeight: 440 }} component={Paper}>
           <Table
             sx={{ minWidth: 800 }}

@@ -264,7 +264,6 @@ export const CustomerOrderBookDetails = () => {
           quantity: item.quantity,
           rate: item.rate,
           pending_quantity: item.pending_quantity,
-          pending_amount: item.pending_amount,
           seller_state: item.seller_state,
           billing_address: item.billing_address,
           shipping_address: item.shipping_address,
@@ -568,10 +567,7 @@ const headers = [
     label: "Pending Quantity",
     key: "pending_quantity",
   },
-  {
-    label: "Pending Amount",
-    key: "pending_amount",
-  },
+
   {
     label: "Invoice Quantity",
     key: "",
