@@ -112,6 +112,14 @@ const updateProductForecastData = (id, data) => {
   return CustomAxios.patch(`/api/forecast/list-quantity-forecast/${id}`, data);
 };
 
+// followUp endpoints
+const createFollowUpCustomer = (data) => {
+  return CustomAxios.post("/api/customer/list-followup/", data);
+};
+
+const getCustomerFollowUp = () => {
+  return CustomAxios.get(`/api/customer/list-followup/`);
+};
 const CustomerServices = {
   getAllCompanyData,
   getAllPaginateCompanyData,
@@ -140,6 +148,8 @@ const CustomerServices = {
   updateForecastData,
   createProductForecastData,
   updateProductForecastData,
+  createFollowUpCustomer,
+  getCustomerFollowUp,
 };
 
 export default CustomerServices;

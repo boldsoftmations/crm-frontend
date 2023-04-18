@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -20,15 +21,13 @@ import {
   timelineOppositeContentClasses,
   TimelineSeparator,
 } from "@mui/lab";
-
-import moment from "moment";
-import React, { useEffect, useState } from "react";
-import LeadServices from "../../services/LeadService";
 import { useSelector } from "react-redux";
-import { Popup } from "../../Components/Popup";
+import moment from "moment";
+import CustomerServices from "../../services/CustomerService";
 import { CustomLoader } from "../../Components/CustomLoader";
+import { Popup } from "../../Components/Popup";
 
-export const ViewAllFollowUp = (props) => {
+export const ViewCustomerFollowUp = (props) => {
   const { recordForEdit } = props;
   const [followUp, setFollowUp] = useState([]);
   const [followUpData, setFollowUpData] = useState([]);
@@ -48,8 +47,8 @@ export const ViewAllFollowUp = (props) => {
   const getFollowUp = async () => {
     try {
       setOpen(true);
-      const res = await LeadServices.getLeadsById(recordForEdit);
-      setFollowUpData(res.data.followup);
+      const res = await CustomerServices.getCompanyDataById(recordForEdit);
+      setFollowUpData(res.data.follow_up);
       setOpen(false);
     } catch (err) {
       console.error(err);
@@ -66,16 +65,14 @@ export const ViewAllFollowUp = (props) => {
       e.preventDefault();
       setOpen(true);
       const data = {
-        leads: recordForEdit,
+        company: recordForEdit,
         user: userId,
         activity: followUp.activity,
         notes: followUp.note,
         next_followup_date: followUp.nextFollowUpDate,
       };
 
-      const res = await LeadServices.createFollowUpLeads(data);
-
-      console.log("res :>> ", res);
+      const res = await CustomerServices.createFollowUpCustomer(data);
       setOpenModal(false);
       getFollowUp();
       setOpen(false);
@@ -219,7 +216,7 @@ export const ViewAllFollowUp = (props) => {
                               variant="h6"
                               sx={{ fontFamily: "Arial", fontWeight: "bold" }}
                             >
-                              {data.activity} - {data.user} -
+                              {data.activity} - {data.user} -{" "}
                               {data.next_followup_date &&
                                 moment(data.next_followup_date).format(
                                   "DD/MM/YYYY"
@@ -265,71 +262,41 @@ const ActivityOption = [
   },
   {
     id: 4,
-    value: "Send detail on whatsapp/sms/email",
-    label: "Send detail on whatsapp/sms/email",
-  },
-  {
-    id: 5,
-    value: "Not dealing in our product range",
-    label: "Not dealing in our product range",
-  },
-  {
-    id: 6,
-    value: "Dealing in other brand",
-    label: "Dealing in other brand",
-  },
-  {
-    id: 7,
     value: "Buying a different product from other company",
     label: "Buying a different product from other company",
   },
   {
-    id: 8,
+    id: 5,
     value: "Size or quantity is unavailabe with us",
     label: "Size or quantity is unavailabe with us",
   },
   {
-    id: 9,
+    id: 6,
     value: "Transportation cost issue",
     label: "Transportation cost issue",
   },
   {
-    id: 10,
-    value: "Required without bill",
-    label: "Required without bill",
+    id: 7,
+    value: "'Call me back",
+    label: "'Call me back",
   },
   {
-    id: 11,
-    value: "Call me back",
-    label: "Call me back",
-  },
-  {
-    id: 12,
+    id: 8,
     value: "Send sample",
     label: "Send sample",
   },
   {
-    id: 13,
-    value: "Not a decision maker",
-    label: "Not a decision maker",
-  },
-  {
-    id: 14,
+    id: 9,
     value: "Require own branding",
     label: "Require own branding",
   },
   {
-    id: 15,
-    value: "Small buyer, moved to dealer/distributor",
-    label: "Small buyer, moved to dealer/distributor",
-  },
-  {
-    id: 16,
+    id: 10,
     value: "Require exclusive distributorship/dealership",
     label: "Require exclusive distributorship/dealership",
   },
   {
-    id: 17,
+    id: 11,
     value: "Quality issue",
     label: "Quality issue",
   },

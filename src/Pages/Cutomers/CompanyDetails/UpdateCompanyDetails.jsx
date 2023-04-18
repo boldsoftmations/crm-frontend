@@ -23,6 +23,7 @@ import axios from "axios";
 import LeadServices from "../../../services/LeadService";
 import { styled } from "@mui/material/styles";
 import { CustomLoader } from "../../../Components/CustomLoader";
+import { ViewCustomerFollowUp } from "../../FollowUp/ViewCustomerFollowUp";
 export const UpdateCompanyDetails = (props) => {
   const { setOpenPopup, getAllContactDetailsByID, recordForEdit } = props;
 
@@ -433,6 +434,11 @@ export const UpdateCompanyDetails = (props) => {
           </Button>
         )}
       </Box>
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <ViewCustomerFollowUp recordForEdit={recordForEdit} />
+        </Grid>
+      </Grid>
     </>
   );
 };
