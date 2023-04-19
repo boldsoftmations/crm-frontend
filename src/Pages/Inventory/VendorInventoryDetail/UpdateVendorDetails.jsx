@@ -191,16 +191,20 @@ export const UpdateVendorDetails = (props) => {
               getOptionLabel={(option) => option.name}
               value={
                 typeData === "Domestic"
-                  ? "India"
+                  ? { name: "India" }
                   : inputValue.country
-                  ? inputValue.country
+                  ? { name: inputValue.country }
                   : null
               }
               onChange={(event, value) => handleInputChange(event, value)}
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label={"Enter Country Name"}
+                  label={
+                    typeData === "International"
+                      ? "Enter Country Name"
+                      : "Country"
+                  }
                   variant="outlined"
                   name="country" // set the name attribute to "country"
                 />
