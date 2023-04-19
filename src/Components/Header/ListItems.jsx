@@ -2618,19 +2618,7 @@ export const ListItems = (props) => {
                       primary="GRN"
                     />
                   </ListItem>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/inventory/view-bill-of-materials"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Bill of Materials"
-                    />
-                  </ListItem>
+
                   <ListItem
                     button
                     component={RouterLink}
