@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CustomButton } from "./../../Components/CustomButton";
 import InvoiceServices from "../../services/InvoiceService";
 import { CustomLoader } from "./../../Components/CustomLoader";
+import { useSelector } from "react-redux";
 
 export const UpdateDispatch = (props) => {
   const [open, setOpen] = useState(false);
@@ -13,9 +14,9 @@ export const UpdateDispatch = (props) => {
   const [podCopy, setPodCopy] = useState("");
   const [podCopyImage, setPodCopyImage] = useState("");
   const [inputValue, setInputValue] = useState([]);
-
+  const data = useSelector((state) => state.auth);
+  const users = data.profile;
   const handleImageLRCopy = (event) => {
-    console.log("event", event);
     setLrCopy(event.target.files[0]);
     setLrCopyImage(URL.createObjectURL(event.target.files[0]));
   };
@@ -186,7 +187,8 @@ export const UpdateDispatch = (props) => {
               }}
             />
           </Grid>
-          {userData.groups.toString() !== "Customer Service" && (
+          {(users.groups.includes("Factory-Mumbai-Dispatch") ||
+            users.groups.includes("Factory-Delhi-Dispatch")) && (
             <Grid item xs={12}>
               <label>LR Copy : </label>
               <input
@@ -197,7 +199,7 @@ export const UpdateDispatch = (props) => {
               />
               <img
                 src={lrCopyImage ? lrCopyImage : idData.lr_copy}
-                alt="image"
+                alt="lrcopy"
                 height="50px"
                 width="50px"
               />
@@ -214,7 +216,7 @@ export const UpdateDispatch = (props) => {
               />
               <img
                 src={podCopyImage ? podCopyImage : idData.pod_copy}
-                alt="image"
+                alt="podcopy"
                 height="50px"
                 width="50px"
               />

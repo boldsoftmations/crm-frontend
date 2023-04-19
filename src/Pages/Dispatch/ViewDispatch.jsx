@@ -6,7 +6,6 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  Grid,
   Button,
   Paper,
   styled,
@@ -21,6 +20,7 @@ import {
   DialogContentText,
   DialogActions,
   FormControlLabel,
+  Grid,
 } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -31,6 +31,8 @@ import { CustomLoader } from "./../../Components/CustomLoader";
 import { CustomPagination } from "./../../Components/CustomPagination";
 import { CustomSearch } from "./../../Components/CustomSearch";
 import moment from "moment";
+import { ErrorMessage } from "../../Components/ErrorMessage/ErrorMessage";
+import { useSelector } from "react-redux";
 export const ViewDispatch = () => {
   const [dispatchData, setDispatchData] = useState([]);
   const [open, setOpen] = useState(false);
@@ -39,6 +41,8 @@ export const ViewDispatch = () => {
   const [pageCount, setpageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
+  const data = useSelector((state) => state.auth);
+  const users = data.profile;
   useEffect(() => {
     getAllDispatchDetails();
   }, []);
@@ -153,81 +157,94 @@ export const ViewDispatch = () => {
     <div>
       {" "}
       <CustomLoader open={open} />
-      <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
-        <Box display="flex">
-          <Box flexGrow={2}>
-            {" "}
-            <CustomSearch
-              filterSelectedQuery={searchQuery}
-              handleInputChange={handleInputChange}
-              getResetData={getResetData}
-            />
-          </Box>
-          <Box flexGrow={2}>
-            <h3
-              style={{
-                textAlign: "left",
-                marginBottom: "1em",
-                fontSize: "24px",
-                color: "rgb(34, 34, 34)",
-                fontWeight: 800,
-              }}
-            >
-              Pending Dispatch
-            </h3>
-          </Box>
-          <Box flexGrow={0.5}></Box>
-        </Box>
-        <TableContainer
-          sx={{
-            maxHeight: 440,
-            "&::-webkit-scrollbar": {
-              width: 15,
-            },
-            "&::-webkit-scrollbar-track": {
-              backgroundColor: "#f2f2f2",
-            },
-            "&::-webkit-scrollbar-thumb": {
-              backgroundColor: "#aaa9ac",
-            },
-          }}
-        >
-          <Table sx={{ minWidth: 700 }} stickyHeader aria-label="sticky table">
-            <TableHead>
-              <TableRow>
-                <StyledTableCell align="center"></StyledTableCell>
-                <StyledTableCell align="center">Sales Invoice</StyledTableCell>
-                <StyledTableCell align="center">Customer</StyledTableCell>
-                <StyledTableCell align="center">Date</StyledTableCell>
-                <StyledTableCell align="center">
-                  Dispatch Location
-                </StyledTableCell>
-                <StyledTableCell align="center">Dispatched</StyledTableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
+      <Grid item xs={12}>
+        <ErrorMessage errRef={errRef} errMsg={errMsg} />
+        <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
+          <Box display="flex">
+            <Box flexGrow={2}>
               {" "}
-              {dispatchData.map((row) => (
-                <Row
-                  key={row.id}
-                  row={row}
-                  getAllDispatchDetails={getAllDispatchDetails}
-                />
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <CustomPagination
-          pageCount={pageCount}
-          handlePageClick={handlePageClick}
-        />
-      </Paper>
+              <CustomSearch
+                filterSelectedQuery={searchQuery}
+                handleInputChange={handleInputChange}
+                getResetData={getResetData}
+              />
+            </Box>
+            <Box flexGrow={2}>
+              <h3
+                style={{
+                  textAlign: "left",
+                  marginBottom: "1em",
+                  fontSize: "24px",
+                  color: "rgb(34, 34, 34)",
+                  fontWeight: 800,
+                }}
+              >
+                Pending Dispatch
+              </h3>
+            </Box>
+            <Box flexGrow={0.5}></Box>
+          </Box>
+          <TableContainer
+            sx={{
+              maxHeight: 440,
+              "&::-webkit-scrollbar": {
+                width: 15,
+              },
+              "&::-webkit-scrollbar-track": {
+                backgroundColor: "#f2f2f2",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: "#aaa9ac",
+              },
+            }}
+          >
+            <Table
+              sx={{ minWidth: 700 }}
+              stickyHeader
+              aria-label="sticky table"
+            >
+              <TableHead>
+                <StyledTableRow>
+                  <StyledTableCell align="center"></StyledTableCell>
+                  <StyledTableCell align="center">
+                    Sales Invoice
+                  </StyledTableCell>
+                  <StyledTableCell align="center">Customer</StyledTableCell>
+                  <StyledTableCell align="center">Date</StyledTableCell>
+                  <StyledTableCell align="center">
+                    Dispatch Location
+                  </StyledTableCell>
+                  {(users.groups.includes("Factory-Mumbai-Dispatch") ||
+                    users.groups.includes("Factory-Delhi-Dispatch")) && (
+                    <StyledTableCell align="center">Dispatched</StyledTableCell>
+                  )}
+                </StyledTableRow>
+              </TableHead>
+              <TableBody>
+                {" "}
+                {dispatchData.map((row) => (
+                  <Row
+                    key={row.id}
+                    row={row}
+                    getAllDispatchDetails={getAllDispatchDetails}
+                    users={users}
+                  />
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <CustomPagination
+            pageCount={pageCount}
+            handlePageClick={handlePageClick}
+          />
+        </Paper>
+      </Grid>
     </div>
   );
 };
 
 function Row(props) {
-  const { row, getAllDispatchDetails } = props;
+  const { row, getAllDispatchDetails, users } = props;
   const [open, setOpen] = useState(false);
   const [checked, setChecked] = useState(row.dispatched);
   const [openModal, setOpenModal] = useState(false);
@@ -248,6 +265,7 @@ function Row(props) {
       // };
       const data = new FormData();
       data.append("dispatched", checked);
+
       await InvoiceServices.updateDispatched(row.id, data);
       getAllDispatchDetails();
       setOpen(false);
@@ -277,19 +295,22 @@ function Row(props) {
           {moment(row.date).format("DD-MM-YYYY")}
         </TableCell>
         <TableCell align="center">{row.dispatch_location}</TableCell>
-        <TableCell align="center">
-          <Button
-            onClick={() => {
-              setOpenModal(true);
-              setId(row.sales_invoice);
-              setCustomer(row.customer);
-            }}
-            variant="contained"
-            color="success"
-          >
-            Confirm Dispatch
-          </Button>
-        </TableCell>
+        {(users.groups.includes("Factory-Mumbai-Dispatch") ||
+          users.groups.includes("Factory-Delhi-Dispatch")) && (
+          <TableCell align="center">
+            <Button
+              onClick={() => {
+                setOpenModal(true);
+                setId(row.sales_invoice);
+                setCustomer(row.customer);
+              }}
+              variant="contained"
+              color="success"
+            >
+              Confirm Dispatch
+            </Button>
+          </TableCell>
+        )}
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
