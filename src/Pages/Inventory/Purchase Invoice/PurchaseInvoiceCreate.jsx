@@ -102,7 +102,6 @@ export const PurchaseInvoiceCreate = (props) => {
           {vendorOption && vendorOption.length > 0 && (
             <Grid item xs={12} sm={4}>
               <Autocomplete
-                name="vendor"
                 size="small"
                 disablePortal
                 id="combo-box-demo"
@@ -112,17 +111,28 @@ export const PurchaseInvoiceCreate = (props) => {
                   }
                 }}
                 options={vendorOption.map((option) => option)}
-                getOptionLabel={(option) =>
-                  `${option.vendor} ${option.packing_list_no}`
-                }
+                getOptionLabel={(option) => option.grn_no}
                 sx={{ minWidth: 300 }}
                 renderInput={(params) => (
-                  <TextField {...params} label="Vendor" />
+                  <TextField {...params} label="GRN No" />
                 )}
               />
             </Grid>
           )}
 
+          <Grid item xs={12} sm={4}>
+            <TextField
+              fullWidth
+              size="small"
+              label="Vendor"
+              variant="outlined"
+              value={
+                purchaseInvoiceDataByID.vendor
+                  ? purchaseInvoiceDataByID.vendor
+                  : ""
+              }
+            />
+          </Grid>
           <Grid item xs={12} sm={4}>
             <TextField
               fullWidth
