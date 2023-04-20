@@ -273,6 +273,7 @@ export const CustomerOrderBookDetails = () => {
           place_of_supply: item.place_of_supply,
           buyer_order_no: item.buyer_order_no,
           buyer_order_date: item.buyer_order_date,
+          special_instructions: item.special_instructions,
         };
       } else {
         return {
@@ -600,6 +601,10 @@ const headers = [
   {
     label: "Buyer Order Date",
     key: "buyer_order_date",
+  },
+  {
+    label: "Special Instruction",
+    key: "special_instructions",
   },
 ];
 
