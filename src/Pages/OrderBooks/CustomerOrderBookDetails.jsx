@@ -26,6 +26,8 @@ import { CustomLoader } from "../../Components/CustomLoader";
 import { CustomSearch } from "./../../Components/CustomSearch";
 import { CustomPagination } from "./../../Components/CustomPagination";
 import { useSelector } from "react-redux";
+import { Popup } from "../../Components/Popup";
+import { OrderBookUpdate } from "./OrderBookUpdate";
 
 const filterOption = [
   {
@@ -39,6 +41,7 @@ export const CustomerOrderBookDetails = () => {
   const [orderBookData, setOrderBookData] = useState([]);
   const errRef = useRef();
   const [open, setOpen] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
   const [errMsg, setErrMsg] = useState("");
   const [pageCount, setpageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
@@ -46,6 +49,7 @@ export const CustomerOrderBookDetails = () => {
   const [exportOrderBookData, setExportOrderBookData] = useState([]);
   const [filterQuery, setFilterQuery] = useState("search");
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
+  const [recordForEdit, setRecordForEdit] = useState(null);
   const dataList = useSelector((state) => state.auth);
   const userData = dataList.profile;
   useEffect(() => {
@@ -251,6 +255,7 @@ export const CustomerOrderBookDetails = () => {
           pending_quantity: item.pending_quantity,
           pending_amount: item.pending_amount,
           seller_state: item.seller_state,
+          estimated_date: item.estimated_date,
           special_instructions: item.special_instructions,
         };
       } else if (userData.groups.toString() === "Customer Service") {
@@ -273,6 +278,7 @@ export const CustomerOrderBookDetails = () => {
           place_of_supply: item.place_of_supply,
           buyer_order_no: item.buyer_order_no,
           buyer_order_date: item.buyer_order_date,
+          estimated_date: item.estimated_date,
           special_instructions: item.special_instructions,
         };
       } else {
@@ -288,6 +294,7 @@ export const CustomerOrderBookDetails = () => {
           pending_quantity: item.pending_quantity,
           seller_state: item.seller_state,
           pending_amount: item.pending_amount,
+          estimated_date: item.estimated_date,
           special_instructions: item.special_instructions,
         };
       }
@@ -307,6 +314,11 @@ export const CustomerOrderBookDetails = () => {
   //     pending_quantity: item.pending_quantity,
   //   });
   // }
+
+  const openInPopup = (item) => {
+    setRecordForEdit(item);
+    setOpenModal(true);
+  };
 
   return (
     <div>
@@ -465,8 +477,12 @@ export const CustomerOrderBookDetails = () => {
                     PENDING AMOUNT
                   </StyledTableCell>
                   <StyledTableCell align="center">
+                    Estimated Date
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
                     SPECIAL INSTRUCTIONS
                   </StyledTableCell>
+                  <StyledTableCell align="center">Action</StyledTableCell>
                 </StyledTableRow>
               </TableHead>
               <TableBody>
@@ -510,7 +526,18 @@ export const CustomerOrderBookDetails = () => {
                       {row.pending_amount}
                     </StyledTableCell>
                     <StyledTableCell align="center">
+                      {row.estimated_date}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
                       {row.special_instructions}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      <Button
+                        variant="contained"
+                        onClick={() => openInPopup(row)}
+                      >
+                        View
+                      </Button>
                     </StyledTableCell>
                   </StyledTableRow>
                 ))}
@@ -523,6 +550,18 @@ export const CustomerOrderBookDetails = () => {
           />
         </Paper>
       </Grid>
+      <Popup
+        title={"Update Customer OrderBook"}
+        openPopup={openModal}
+        setOpenPopup={setOpenModal}
+      >
+        <OrderBookUpdate
+          recordForEdit={recordForEdit}
+          setOpenPopup={setOpenModal}
+          getAllCustomerWiseOrderBook={getAllCustomerWiseOrderBook}
+          getAllCustomerWiseOrderBookExport={getAllCustomerWiseOrderBookExport}
+        />
+      </Popup>
     </div>
   );
 };
@@ -603,6 +642,10 @@ const headers = [
     key: "buyer_order_date",
   },
   {
+    label: "Estimated Date",
+    key: "estimated_date",
+  },
+  {
     label: "Special Instruction",
     key: "special_instructions",
   },
@@ -637,6 +680,10 @@ const headers2 = [
   {
     label: "Pending Amount",
     key: "pending_amount",
+  },
+  {
+    label: "Estimated Date",
+    key: "estimated_date",
   },
   {
     label: "Special Instruction",

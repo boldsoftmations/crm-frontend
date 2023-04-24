@@ -172,6 +172,30 @@ const getAllcustomerOrderBookData = () => {
   return CustomAxios.get(`/api/invoice/list-order-book-company`);
 };
 
+const updateOrderBookData = (id, data) => {
+  return CustomAxios.patch(`/api/invoice/list-order-book/${id}`, data);
+};
+
+const getCustomerOrderBookByID = (id) => {
+  return CustomAxios.get(`/api/invoice/list-order-book/${id}`);
+};
+
+const updateProductOrderBookData = (id, data) => {
+  return CustomAxios.patch(`/api/invoice/list-order-book/${id}`, data);
+};
+
+const getProductOrderBookDataByID = (id) => {
+  return CustomAxios.get(`/api/invoice/list-order-book/${id}`);
+};
+
+const updatePIOrderBookData = (id, data) => {
+  return CustomAxios.patch(`/api/invoice/list-order-book/${id}`, data);
+};
+
+const getPIOrderBookDataByID = (id) => {
+  return CustomAxios.get(`/api/invoice/list-order-book/${id}`);
+};
+
 const getOTotalPendingQuantity = () => {
   return CustomAxios.get(`/api/invoice/pending-order-total`);
 };
@@ -277,8 +301,14 @@ const InvoiceServices = {
   getAllOrderBookData,
   getAllOrderBookDataWithSearch,
   getAllcustomerOrderBookData,
+  updateOrderBookData,
+  getCustomerOrderBookByID,
   getcustomerOrderBookData,
   getcustomerOrderBookDataByID,
+
+  getProductOrderBookDataByID,
+
+  getPIOrderBookDataByID,
   getSellerAccountDataById,
   updateSellerAccountData,
   getCompanyPerformaInvoiceData,

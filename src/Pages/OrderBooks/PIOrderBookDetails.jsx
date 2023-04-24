@@ -26,6 +26,8 @@ import { CustomLoader } from "../../Components/CustomLoader";
 import { CustomSearch } from "./../../Components/CustomSearch";
 import { CustomPagination } from "./../../Components/CustomPagination";
 import { useSelector } from "react-redux";
+import { Popup } from "../../Components/Popup";
+import { OrderBookUpdate } from "./OrderBookUpdate";
 
 const filterOption = [
   {
@@ -38,6 +40,8 @@ export const PIOrderBookDetails = () => {
   const [orderBookData, setOrderBookData] = useState([]);
   const errRef = useRef();
   const [open, setOpen] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+  const [recordForEdit, setRecordForEdit] = useState(null);
   const [errMsg, setErrMsg] = useState("");
   const [pageCount, setpageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
@@ -246,6 +250,7 @@ export const PIOrderBookDetails = () => {
         pending_amount: item.pending_amount,
         pending_quantity: item.pending_quantity,
         seller_state: item.seller_state,
+        estimated_date: item.estimated_date,
         special_instructions: item.special_instructions,
       };
     } else {
@@ -261,6 +266,7 @@ export const PIOrderBookDetails = () => {
         pending_amount: item.pending_amount,
         pending_quantity: item.pending_quantity,
         seller_state: item.seller_state,
+        estimated_date: item.estimated_date,
         special_instructions: item.special_instructions,
       };
     }
@@ -279,6 +285,11 @@ export const PIOrderBookDetails = () => {
   //     pending_quantity: item.pending_quantity,
   //   });
   // }
+
+  const openInPopup = (item) => {
+    setRecordForEdit(item);
+    setOpenModal(true);
+  };
 
   return (
     <div>
@@ -433,8 +444,12 @@ export const PIOrderBookDetails = () => {
                     PENDING AMOUNT
                   </StyledTableCell>
                   <StyledTableCell align="center">
+                    Estimated Date
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
                     SPECIAL INSTRUCTIONS
                   </StyledTableCell>
+                  <StyledTableCell align="center">Action</StyledTableCell>
                 </StyledTableRow>
               </TableHead>
               <TableBody>
@@ -478,7 +493,18 @@ export const PIOrderBookDetails = () => {
                       {row.pending_amount}
                     </StyledTableCell>
                     <StyledTableCell align="center">
+                      {row.estimated_date}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
                       {row.special_instructions}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      <Button
+                        variant="contained"
+                        onClick={() => openInPopup(row)}
+                      >
+                        View
+                      </Button>
                     </StyledTableCell>
                   </StyledTableRow>
                 ))}
@@ -491,6 +517,18 @@ export const PIOrderBookDetails = () => {
           />
         </Paper>
       </Grid>
+      <Popup
+        title={"Update PI OrderBook"}
+        openPopup={openModal}
+        setOpenPopup={setOpenModal}
+      >
+        <OrderBookUpdate
+          recordForEdit={recordForEdit}
+          setOpenPopup={setOpenModal}
+          getAllOrderBook={getAllPIWiseOrderBook}
+          getAllOrderBookExport={getAllPIWiseOrderBookExport}
+        />
+      </Popup>
     </div>
   );
 };
@@ -544,6 +582,10 @@ const headers = [
   {
     label: "Seller State",
     key: "seller_state",
+  },
+  {
+    label: "Estimated Date",
+    key: "estimated_date",
   },
   {
     label: "Special Instruction",

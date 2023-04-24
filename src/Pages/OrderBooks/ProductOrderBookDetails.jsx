@@ -27,7 +27,7 @@ import { Popup } from "../../Components/Popup";
 import { CustomPagination } from "./../../Components/CustomPagination";
 import { useSelector } from "react-redux";
 import { CustomSearch } from "../../Components/CustomSearch";
-
+import { OrderBookUpdate } from "./OrderBookUpdate";
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.common.black,
@@ -86,6 +86,10 @@ const headers = [
     key: "pending_amount",
   },
   {
+    label: "Estimated Date",
+    key: "estimated_date",
+  },
+  {
     label: "Special Instruction",
     key: "special_instructions",
   },
@@ -140,12 +144,14 @@ export const ProductOrderBookDetails = () => {
   const [open, setOpen] = useState(false);
   const [errMsg, setErrMsg] = useState("");
   const [openModal, setOpenModal] = useState(false);
+  const [openModal2, setOpenModal2] = useState(false);
   const [pageCount, setpageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [exportOrderBookData, setExportOrderBookData] = useState([]);
   const [filterQuery, setFilterQuery] = useState("search");
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
+  const [recordForEdit, setRecordForEdit] = useState(null);
   const dataList = useSelector((state) => state.auth);
   const userData = dataList.profile;
 
@@ -366,6 +372,7 @@ export const ProductOrderBookDetails = () => {
         billing_city: item.billing_city,
         shipping_city: item.shipping_city,
         seller_state: item.seller_state,
+        estimated_date: item.estimated_date,
         special_instructions: item.special_instructions,
       };
     } else if (userData.groups.toString() === "Customer Service") {
@@ -380,6 +387,7 @@ export const ProductOrderBookDetails = () => {
         billing_city: item.billing_city,
         shipping_city: item.shipping_city,
         seller_state: item.seller_state,
+        estimated_date: item.estimated_date,
         special_instructions: item.special_instructions,
       };
     } else {
@@ -395,6 +403,7 @@ export const ProductOrderBookDetails = () => {
         billing_city: item.billing_city,
         shipping_city: item.shipping_city,
         seller_state: item.seller_state,
+        estimated_date: item.estimated_date,
         special_instructions: item.special_instructions,
       };
     }
@@ -416,6 +425,11 @@ export const ProductOrderBookDetails = () => {
   //   billing_city: item.billing_city,
   //   shipping_city: item.shipping_city,
   // }));
+
+  const openInPopup = (item) => {
+    setRecordForEdit(item);
+    setOpenModal2(true);
+  };
 
   return (
     <div>
@@ -562,6 +576,7 @@ export const ProductOrderBookDetails = () => {
                   <StyledTableCell align="center">
                     PENDING QUANTITY
                   </StyledTableCell>
+
                   {userData.groups.toString() !== "Factory-Mumbai-OrderBook" &&
                     (userData.groups.toString() !==
                     "Factory-Delhi-OrderBook" ? (
@@ -573,6 +588,9 @@ export const ProductOrderBookDetails = () => {
                     PENDING AMOUNT
                   </StyledTableCell>
                   <StyledTableCell align="center">
+                    Estimated Date
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
                     SPECIAL INSTRUCTIONS
                   </StyledTableCell>
                   <StyledTableCell align="center">COMPANY</StyledTableCell>
@@ -580,6 +598,7 @@ export const ProductOrderBookDetails = () => {
                   <StyledTableCell align="center">
                     SHIPPING CITY
                   </StyledTableCell>
+                  <StyledTableCell align="center">Action</StyledTableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -617,6 +636,9 @@ export const ProductOrderBookDetails = () => {
                       {row.pending_amount}
                     </StyledTableCell>
                     <StyledTableCell align="center">
+                      {row.estimated_date}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
                       {row.special_instructions}
                     </StyledTableCell>
                     <StyledTableCell align="center">
@@ -627,6 +649,14 @@ export const ProductOrderBookDetails = () => {
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.shipping_city}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      <Button
+                        variant="contained"
+                        onClick={() => openInPopup(row)}
+                      >
+                        View
+                      </Button>
                     </StyledTableCell>
                   </StyledTableRow>
                 ))}
@@ -687,6 +717,18 @@ export const ProductOrderBookDetails = () => {
             </TableBody>
           </Table>
         </TableContainer>
+      </Popup>
+      <Popup
+        title={"Update Product OrderBook"}
+        openPopup={openModal2}
+        setOpenPopup={setOpenModal2}
+      >
+        <OrderBookUpdate
+          recordForEdit={recordForEdit}
+          setOpenPopup={setOpenModal2}
+          getAllOrderBook={getAllProductDataOrderBook}
+          getAllOrderBookExport={getAllCustomerWiseOrderBookExport}
+        />
       </Popup>
     </div>
   );
