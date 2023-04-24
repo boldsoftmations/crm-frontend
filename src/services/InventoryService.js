@@ -598,6 +598,42 @@ const getProductionGAndLInventoryPaginateData = (currentPage) => {
   );
 };
 
+// Production ShortFall List Api
+
+const getAllProductionShortFallData = () => {
+  return CustomAxios.get(`/api/inventory/list-production-shortfall/`);
+};
+
+const getAllPaginateProductionShortFallData = (all) => {
+  return CustomAxios.get(
+    `/api/inventory/list-production-shortfall/?page=${all}`
+  );
+};
+
+const getAllPaginateProductionShortFallDataWithSearch = (all, search) => {
+  return CustomAxios.get(
+    `/api/inventory/list-production-shortfall/?page=${all}&search=${search}`
+  );
+};
+
+const getAllSearchProductionShortFallData = (search) => {
+  return CustomAxios.get(
+    `/api/inventory/list-production-shortfall/?search=${search}`
+  );
+};
+
+const getAllProductionShortFallDataPaginate = (currentPage, search) => {
+  return CustomAxios.get(
+    `/api/inventory/list-production-shortfall/?page=${currentPage}&search=${search}`
+  );
+};
+
+const getProductionShortFallPaginateData = (currentPage) => {
+  return CustomAxios.get(
+    `/api/inventory/list-production-shortfall/?page=${currentPage}`
+  );
+};
+
 const InventoryServices = {
   getAllVendorData,
   getAllPaginateVendorData,
@@ -715,6 +751,12 @@ const InventoryServices = {
   getAllSearchProductionGAndLInventoryData,
   getAllProductionGAndLInventoryDataPaginate,
   getProductionGAndLInventoryPaginateData,
+  getAllProductionShortFallData,
+  getAllPaginateProductionShortFallData,
+  getAllPaginateProductionShortFallDataWithSearch,
+  getAllSearchProductionShortFallData,
+  getAllProductionShortFallDataPaginate,
+  getProductionShortFallPaginateData,
 };
 
 export default InventoryServices;

@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import { useSelector } from "react-redux";
-import React, { useEffect } from "react";
+import React from "react";
 
 import { AssignTo } from "../Pages/Leads/AssignTo";
 import { ChangePassword } from "./../Pages/Auth/ChangePassword";
@@ -51,6 +51,8 @@ import { ProductionInventoryView } from "../Pages/Inventory/Production Inventory
 import { ProductionInventoryConsView } from "../Pages/Inventory/Production Inventory/ProductionInventoryConsView";
 import { StoresInventoryConsView } from "../Pages/Inventory/Stores Inventory/StoresInventoryConsView";
 import { ProductionInventoryGAndLView } from "../Pages/Inventory/Production Entry/ProductionInventoryGAndLView";
+import { ProductionShortFallView } from "../Pages/Inventory/ProductionShortFall/ProductionShortFallView";
+import { ProductForecastView } from "../Pages/ProdutForecast/ProductForecastView";
 
 export const RouteScreen = () => {
   const tokenData = useSelector((state) => state.auth);
@@ -208,6 +210,15 @@ export const RouteScreen = () => {
             <Route
               path="/inventory/view-production-inventory-g&l"
               element={<ProductionInventoryGAndLView />}
+            />
+            <Route
+              path="/inventory/view-production-shortfall"
+              element={<ProductionShortFallView />}
+            />
+            {/* ProductForecast Route */}
+            <Route
+              path="/forecast/view-product-forecast"
+              element={<ProductForecastView />}
             />
             <Route path="*" element={<Home />} />
           </>

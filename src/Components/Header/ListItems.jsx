@@ -22,6 +22,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import DescriptionIcon from "@mui/icons-material/Description";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 
 export const ListItems = (props) => {
   const { setOpen } = props;
@@ -34,6 +35,7 @@ export const ListItems = (props) => {
   const [expandSalesInvoice, setExpandSalesInvoice] = useState(false);
   const [expandOrderBook, setExpandOrderBook] = useState(false);
   const [sellerAccount, setSellerAccount] = useState(false);
+  const [productForecast, setProductForecast] = useState(false);
   const [dispatchDetails, setDispatchDetails] = useState(false);
   const [expandInventory, setExpandInventory] = useState(false);
   const data = useSelector((state) => state.auth);
@@ -354,6 +356,36 @@ export const ListItems = (props) => {
               </ListItem>
             </List>
           </Collapse>
+          {/* Seller Account */}
+          <ListItem
+            button
+            onClick={() => setProductForecast(!productForecast)}
+            style={{ width: 300 }}
+          >
+            <ListItemIcon>
+              <TrendingUpIcon />
+            </ListItemIcon>
+            <ListItemText primary="Product Forecast" />
+            {productForecast ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          </ListItem>
+          <Collapse in={productForecast} timeout="auto" unmountOnExit>
+            <Divider />
+            <List component="div" disablePadding>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/forecast/view-product-forecast"
+                style={{ width: 300 }}
+              >
+                <ListItemText
+                  component={Button}
+                  onClick={() => setOpen(false)}
+                  inset
+                  primary="Products Forecast"
+                />
+              </ListItem>
+            </List>
+          </Collapse>
           {/*Proforma Invoice  */}
           <ListItem
             button
@@ -608,6 +640,19 @@ export const ListItems = (props) => {
                   onClick={() => setOpen(false)}
                   inset
                   primary="Production Inventory (G&L)"
+                />
+              </ListItem>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/inventory/view-production-shortfall"
+                style={{ width: 300 }}
+              >
+                <ListItemText
+                  component={Button}
+                  onClick={() => setOpen(false)}
+                  inset
+                  primary="Production ShortFall"
                 />
               </ListItem>
             </List>
@@ -1256,6 +1301,19 @@ export const ListItems = (props) => {
                       primary="Packing List"
                     />
                   </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/inventory/view-production-shortfall"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Production ShortFall"
+                    />
+                  </ListItem>
                 </List>
               </Collapse>
             </>
@@ -1329,6 +1387,19 @@ export const ListItems = (props) => {
                       onClick={() => setOpen(false)}
                       inset
                       primary="Material Transfer Note"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/inventory/view-production-shortfall"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Production ShortFall"
                     />
                   </ListItem>
                 </List>
@@ -1444,6 +1515,19 @@ export const ListItems = (props) => {
                       onClick={() => setOpen(false)}
                       inset
                       primary="Material Transfer Note"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/inventory/view-production-shortfall"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Production ShortFall"
                     />
                   </ListItem>
                 </List>
@@ -1634,6 +1718,19 @@ export const ListItems = (props) => {
                       onClick={() => setOpen(false)}
                       inset
                       primary="Material Transfer Note"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/inventory/view-production-shortfall"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Production ShortFall"
                     />
                   </ListItem>
                 </List>
@@ -2747,6 +2844,19 @@ export const ListItems = (props) => {
                       onClick={() => setOpen(false)}
                       inset
                       primary="Production Inventory (G&L)"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/inventory/view-production-shortfall"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Production ShortFall"
                     />
                   </ListItem>
                 </List>

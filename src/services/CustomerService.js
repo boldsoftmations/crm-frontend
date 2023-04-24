@@ -120,6 +120,46 @@ const createFollowUpCustomer = (data) => {
 const getCustomerFollowUp = () => {
   return CustomAxios.get(`/api/customer/list-followup/`);
 };
+
+// Product Forecast
+
+const getProductForecast = () => {
+  return CustomAxios.get(`/api/forecast/list-product-forecast/`);
+};
+
+const getByFilterProductForecast = (type, data) => {
+  return CustomAxios.get(
+    `/api/forecast/list-product-forecast/?${type}=${data}`
+  );
+};
+
+const getAllPaginateProductForecast = (all) => {
+  return CustomAxios.get(`/api/forecast/list-product-forecast/?page=${all}`);
+};
+
+const getAllPaginateProductForecastWithSearch = (all, type, search) => {
+  return CustomAxios.get(
+    `/api/forecast/list-product-forecast/?page=${all}&${type}=${search}`
+  );
+};
+
+const getAllSearchProductForecast = (type, search) => {
+  return CustomAxios.get(
+    `/api/forecast/list-product-forecast/?${type}=${search}`
+  );
+};
+
+const getAllProductForecastPaginate = (currentPage, type, search) => {
+  return CustomAxios.get(
+    `/api/forecast/list-product-forecast/?page=${currentPage}&${type}=${search}`
+  );
+};
+
+const getProductForecastPaginateData = (currentPage) => {
+  return CustomAxios.get(
+    `/api/forecast/list-product-forecast/?page=${currentPage}`
+  );
+};
 const CustomerServices = {
   getAllCompanyData,
   getAllPaginateCompanyData,
@@ -150,6 +190,13 @@ const CustomerServices = {
   updateProductForecastData,
   createFollowUpCustomer,
   getCustomerFollowUp,
+  getProductForecast,
+  getByFilterProductForecast,
+  getAllPaginateProductForecast,
+  getAllPaginateProductForecastWithSearch,
+  getAllSearchProductForecast,
+  getAllProductForecastPaginate,
+  getProductForecastPaginateData,
 };
 
 export default CustomerServices;
