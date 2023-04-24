@@ -137,11 +137,11 @@ export const PurchaseInvoiceCreate = (props) => {
             <TextField
               fullWidth
               size="small"
-              label="GRN"
+              label="Invoice No"
               variant="outlined"
               value={
-                purchaseInvoiceDataByID.grn_id
-                  ? purchaseInvoiceDataByID.grn_id
+                purchaseInvoiceDataByID.packing_list_no
+                  ? purchaseInvoiceDataByID.packing_list_no
                   : ""
               }
             />
