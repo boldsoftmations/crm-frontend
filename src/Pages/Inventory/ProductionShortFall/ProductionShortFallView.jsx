@@ -107,6 +107,7 @@ export const ProductionShortFallView = () => {
   //   export to excel data
   let data = productionShortFallData.map((item) => {
     return {
+      state: item.state,
       type: item.type,
       product: item.product,
       description: item.description,
@@ -196,6 +197,7 @@ export const ProductionShortFallView = () => {
             >
               <TableHead>
                 <TableRow>
+                  <StyledTableCell align="center">STATE</StyledTableCell>
                   <StyledTableCell align="center">TYPE</StyledTableCell>
                   <StyledTableCell align="center">PRODUCT</StyledTableCell>
 
@@ -208,6 +210,9 @@ export const ProductionShortFallView = () => {
               <TableBody>
                 {filteredData.map((row, i) => (
                   <StyledTableRow key={i}>
+                    <StyledTableCell align="center">
+                      {row.state}
+                    </StyledTableCell>
                     <StyledTableCell align="center">{row.type}</StyledTableCell>
                     <StyledTableCell align="center">
                       {row.product}
@@ -231,6 +236,7 @@ export const ProductionShortFallView = () => {
 };
 
 const headers = [
+  { label: "State", key: "state" },
   { label: "Type", key: "type" },
   {
     label: "Product",
