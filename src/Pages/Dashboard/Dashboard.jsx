@@ -1,7 +1,5 @@
-import { Tab, Tabs, AppBar, Box, useTheme } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { CustomLoader } from "../../Components/CustomLoader";
-import PropTypes from "prop-types";
 import { OrderBookSummaryView } from "./OrderBookSummary/OrderBookSummaryView";
 import { CurrentSummaryFM } from "./OrderBookSummary/CurrentSummaryFM";
 import { CurrentSummaryRM } from "./OrderBookSummary/CurrentSummaryRM";
@@ -9,39 +7,10 @@ import { CurrentMonthFM } from "./SalesSummary/CurrentMonthFM";
 import { CurrentMonthRM } from "./SalesSummary/CurrentMonthRM";
 import InvoiceServices from "../../services/InvoiceService";
 import { SalesPersonSummary } from "./SalesPersonSummary/SalesPersonSummary";
+import { CustomTabs } from "../../Components/CustomTabs";
 
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`full-width-tabpanel-${index}`}
-      aria-labelledby={`full-width-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
-    </div>
-  );
-}
-
-TabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.number.isRequired,
-  value: PropTypes.number.isRequired,
-};
-
-function a11yProps(index) {
-  return {
-    id: `full-width-tab-${index}`,
-    "aria-controls": `full-width-tabpanel-${index}`,
-  };
-}
 export function Dashboard() {
-  const theme = useTheme();
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(0);
   const [orderBookSummary, setOrderBookSummary] = useState([]);
   const [currentOrderBookSummaryFM, setCurrentOrderBookSummaryFM] = useState(
     []
@@ -52,9 +21,20 @@ export function Dashboard() {
   const [currentSalesSummaryFM, setCurrentSalesSummaryFM] = useState([]);
   const [currentSalesSummaryRM, setCurrentSalesSummaryRM] = useState([]);
   const [salesPersonSummary, setSalesPersonSummary] = useState([]);
-  const handleChangeTab = (event, newValue) => {
-    setValue(newValue);
+  const [activeTab, setActiveTab] = useState(0);
+
+  const handleTabChange = (index) => {
+    setActiveTab(index);
   };
+
+  const tabs = [
+    { label: "OrderBook Summary" },
+    { label: "Current OrderBook(Finish Good)" },
+    { label: "Current OrderBook(Raw Material)" },
+    { label: "Current Month Sales(Finish Good)" },
+    { label: "Current Month Sales(Raw Material)" },
+    { label: "Sales Person Summary" },
+  ];
 
   useEffect(() => {
     getAllDashboardDetails();
@@ -80,46 +60,50 @@ export function Dashboard() {
   return (
     <div>
       <CustomLoader open={open} />
-      <AppBar position="static">
-        <Tabs
-          value={value}
-          onChange={handleChangeTab}
-          indicatorColor="secondary"
-          textColor="inherit"
-          variant="fullWidth"
-          aria-label="full width tabs example"
-        >
-          <Tab label="OrderBook Summary" {...a11yProps(0)} />
-          <Tab label="Current OrderBook(Finish Good)" {...a11yProps(1)} />
-          <Tab label="Current OrderBook(Raw Material)" {...a11yProps(2)} />
-          <Tab label="Current Month Sales(Finish Good)" {...a11yProps(3)} />
-          <Tab label="Current Month Sales(Raw Material)" {...a11yProps(4)} />
-          <Tab label="Sales Person Summary" {...a11yProps(5)} />
-        </Tabs>
-      </AppBar>
-
-      <TabPanel value={value} index={0} dir={theme.direction}>
-        <OrderBookSummaryView orderBookSummary={orderBookSummary} />
-      </TabPanel>
-      <TabPanel value={value} index={1} dir={theme.direction}>
-        <CurrentSummaryFM
-          currentOrderBookSummaryFM={currentOrderBookSummaryFM}
+      <div>
+        <CustomTabs
+          tabs={tabs}
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
         />
-      </TabPanel>
-      <TabPanel value={value} index={2} dir={theme.direction}>
-        <CurrentSummaryRM
-          currentOrderBookSummaryRM={currentOrderBookSummaryRM}
-        />
-      </TabPanel>
-      <TabPanel value={value} index={3} dir={theme.direction}>
-        <CurrentMonthFM currentSalesSummaryFM={currentSalesSummaryFM} />
-      </TabPanel>
-      <TabPanel value={value} index={4} dir={theme.direction}>
-        <CurrentMonthRM currentSalesSummaryRM={currentSalesSummaryRM} />
-      </TabPanel>
-      <TabPanel value={value} index={5} dir={theme.direction}>
-        <SalesPersonSummary salesPersonSummary={salesPersonSummary} />
-      </TabPanel>
+        <div>
+          {activeTab === 0 && (
+            <div>
+              {" "}
+              <OrderBookSummaryView orderBookSummary={orderBookSummary} />
+            </div>
+          )}
+          {activeTab === 1 && (
+            <div>
+              <CurrentSummaryFM
+                currentOrderBookSummaryFM={currentOrderBookSummaryFM}
+              />
+            </div>
+          )}
+          {activeTab === 2 && (
+            <div>
+              <CurrentSummaryRM
+                currentOrderBookSummaryRM={currentOrderBookSummaryRM}
+              />
+            </div>
+          )}
+          {activeTab === 3 && (
+            <div>
+              <CurrentMonthFM currentSalesSummaryFM={currentSalesSummaryFM} />
+            </div>
+          )}
+          {activeTab === 4 && (
+            <div>
+              <CurrentMonthRM currentSalesSummaryRM={currentSalesSummaryRM} />
+            </div>
+          )}
+          {activeTab === 5 && (
+            <div>
+              <SalesPersonSummary salesPersonSummary={salesPersonSummary} />
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

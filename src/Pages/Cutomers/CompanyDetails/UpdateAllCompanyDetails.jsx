@@ -1,61 +1,36 @@
 import React, { useState, useEffect } from "react";
 import { BankDetails } from "../BankDetails/BankDetails";
-
-import {
-  Box,
-  useTheme,
-  Tab,
-  Tabs,
-  AppBar,
-  Backdrop,
-  CircularProgress,
-} from "@mui/material";
-import PropTypes from "prop-types";
 import { ContactDetails } from "../ContactDetails/ContactDetails";
 import { WareHouseDetails } from "../WareHouseDetails/WareHouseDetails";
 import { UpdateCompanyDetails } from "./UpdateCompanyDetails";
 import CustomerServices from "../../../services/CustomerService";
 import { SecurityChequesDetails } from "../SecurityCheckDetails/SecurityChequesDetails";
 import { ForecastView } from "../ForecastDetails/ForecastView";
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`full-width-tabpanel-${index}`}
-      aria-labelledby={`full-width-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
-    </div>
-  );
-}
-
-TabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.number.isRequired,
-  value: PropTypes.number.isRequired,
-};
-
-function a11yProps(index) {
-  return {
-    id: `full-width-tab-${index}`,
-    "aria-controls": `full-width-tabpanel-${index}`,
-  };
-}
+import { CustomLoader } from "../../../Components/CustomLoader";
+import { CustomTabs } from "../../../Components/CustomTabs";
 
 export const UpdateAllCompanyDetails = (props) => {
   const [open, setOpen] = useState(false);
   const { setOpenPopup, getAllCompanyDetails, recordForEdit } = props;
-  const theme = useTheme();
-  const [value, setValue] = useState(0);
   const [bankData, setBankData] = useState([]);
   const [contactData, setContactData] = useState([]);
   const [wareHousedata, setWareHouseData] = useState([]);
   const [securityChequedata, setSecurityChequeData] = useState([]);
   const [forecastdata, setForecastData] = useState([]);
+  const [activeTab, setActiveTab] = useState(0);
+
+  const handleTabChange = (index) => {
+    setActiveTab(index);
+  };
+
+  const tabs = [
+    { label: "Company" },
+    { label: "Bank" },
+    { label: "Contact" },
+    { label: "WareHouse" },
+    { label: "Security Cheques" },
+    { label: "Forecast" },
+  ];
   // All Company Details Api
   useEffect(() => {
     if (recordForEdit) getAllCompanyDetailsByID();
@@ -79,81 +54,74 @@ export const UpdateAllCompanyDetails = (props) => {
     }
   };
 
-  const handleChangeTab = (event, newValue) => {
-    setValue(newValue);
-  };
-
   return (
     <div>
-      <div>
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={open}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </div>
-      <AppBar position="static">
-        <Tabs
-          value={value}
-          onChange={handleChangeTab}
-          indicatorColor="secondary"
-          textColor="inherit"
-          variant="fullWidth"
-          aria-label="full width tabs example"
-        >
-          <Tab label="Company" {...a11yProps(0)} />
-          <Tab label="Bank" {...a11yProps(1)} />
-          <Tab label="Contact" {...a11yProps(2)} />
-          <Tab label="WareHouse" {...a11yProps(3)} />
-          <Tab label="Security Cheques" {...a11yProps(4)} />
-          <Tab label="Forecast" {...a11yProps(5)} />
-        </Tabs>
-      </AppBar>
+      <CustomLoader open={open} />
 
-      <TabPanel value={value} index={0} dir={theme.direction}>
-        <UpdateCompanyDetails
-          setOpenPopup={setOpenPopup}
-          getAllCompanyDetails={getAllCompanyDetails}
-          recordForEdit={recordForEdit}
+      <div>
+        <CustomTabs
+          tabs={tabs}
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
         />
-      </TabPanel>
-      <TabPanel value={value} index={1} dir={theme.direction}>
-        <BankDetails
-          bankData={bankData}
-          open={open}
-          getAllCompanyDetailsByID={getAllCompanyDetailsByID}
-        />
-      </TabPanel>
-      <TabPanel value={value} index={2} dir={theme.direction}>
-        <ContactDetails
-          contactData={contactData}
-          open={open}
-          getAllCompanyDetailsByID={getAllCompanyDetailsByID}
-        />
-      </TabPanel>
-      <TabPanel value={value} index={3} dir={theme.direction}>
-        <WareHouseDetails
-          contactData={contactData}
-          wareHousedata={wareHousedata}
-          open={open}
-          getAllCompanyDetailsByID={getAllCompanyDetailsByID}
-        />
-      </TabPanel>
-      <TabPanel value={value} index={4} dir={theme.direction}>
-        <SecurityChequesDetails
-          securityChequedata={securityChequedata}
-          open={open}
-          getAllCompanyDetailsByID={getAllCompanyDetailsByID}
-        />
-      </TabPanel>
-      <TabPanel value={value} index={5} dir={theme.direction}>
-        <ForecastView
-          forecastdata={forecastdata}
-          open={open}
-          getAllCompanyDetailsByID={getAllCompanyDetailsByID}
-        />
-      </TabPanel>
+        <div style={{ marginTop: "10px" }}>
+          {activeTab === 0 && (
+            <div>
+              <UpdateCompanyDetails
+                setOpenPopup={setOpenPopup}
+                getAllCompanyDetails={getAllCompanyDetails}
+                recordForEdit={recordForEdit}
+              />
+            </div>
+          )}
+          {activeTab === 1 && (
+            <div>
+              <BankDetails
+                bankData={bankData}
+                open={open}
+                getAllCompanyDetailsByID={getAllCompanyDetailsByID}
+              />
+            </div>
+          )}
+          {activeTab === 2 && (
+            <div>
+              <ContactDetails
+                contactData={contactData}
+                open={open}
+                getAllCompanyDetailsByID={getAllCompanyDetailsByID}
+              />
+            </div>
+          )}
+          {activeTab === 3 && (
+            <div>
+              <WareHouseDetails
+                contactData={contactData}
+                wareHousedata={wareHousedata}
+                open={open}
+                getAllCompanyDetailsByID={getAllCompanyDetailsByID}
+              />
+            </div>
+          )}
+          {activeTab === 4 && (
+            <div>
+              <SecurityChequesDetails
+                securityChequedata={securityChequedata}
+                open={open}
+                getAllCompanyDetailsByID={getAllCompanyDetailsByID}
+              />
+            </div>
+          )}
+          {activeTab === 5 && (
+            <div>
+              <ForecastView
+                forecastdata={forecastdata}
+                open={open}
+                getAllCompanyDetailsByID={getAllCompanyDetailsByID}
+              />
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
