@@ -52,7 +52,7 @@ import { ProductionInventoryConsView } from "../Pages/Inventory/Production Inven
 import { StoresInventoryConsView } from "../Pages/Inventory/Stores Inventory/StoresInventoryConsView";
 import { ProductionInventoryGAndLView } from "../Pages/Inventory/Production Entry/ProductionInventoryGAndLView";
 import { ProductionShortFallView } from "../Pages/Inventory/ProductionShortFall/ProductionShortFallView";
-import { ProductForecastView } from "../Pages/ProdutForecast/ProductForecastView";
+import { ProductForecastView } from "../Pages/ProductForecast/ProductForecastView";
 
 export const RouteScreen = () => {
   const tokenData = useSelector((state) => state.auth);

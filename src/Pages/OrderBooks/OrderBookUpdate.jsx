@@ -68,47 +68,27 @@ export const OrderBookUpdate = (props) => {
             <TextField
               fullWidth
               size="small"
-              label="Quantity"
+              label="Pending Quantity"
               variant="outlined"
-              value={recordForEdit.quantity ? recordForEdit.quantity : ""}
+              value={
+                recordForEdit.pending_quantity
+                  ? recordForEdit.pending_quantity
+                  : ""
+              }
             />
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               size="small"
-              label="Rate"
+              label="Requested Date"
               variant="outlined"
-              value={recordForEdit.rate ? recordForEdit.rate : ""}
+              value={
+                recordForEdit.requested_date ? recordForEdit.requested_date : ""
+              }
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              size="small"
-              label="Amount"
-              variant="outlined"
-              value={recordForEdit.amount ? recordForEdit.amount : ""}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              size="small"
-              label="GST"
-              variant="outlined"
-              value={recordForEdit.gst ? recordForEdit.gst : ""}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              size="small"
-              label="Total"
-              variant="outlined"
-              value={recordForEdit.total ? recordForEdit.total : ""}
-            />
-          </Grid>
+
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
@@ -119,6 +99,9 @@ export const OrderBookUpdate = (props) => {
               variant="outlined"
               value={estimateDate ? estimateDate : ""}
               onChange={(event) => setEstimateDate(event.target.value)}
+              InputLabelProps={{
+                shrink: true,
+              }}
             />
           </Grid>
         </Grid>

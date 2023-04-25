@@ -363,7 +363,7 @@ export const ProductForecastView = () => {
                   fontWeight: 800,
                 }}
               >
-                Customer Order Book Details
+                Product Forecast
               </h3>
             </Box>
             <Box flexGrow={0.5}>
@@ -414,18 +414,18 @@ export const ProductForecastView = () => {
                       lastMonth1 < currentMonth ? currentYear : currentYear - 1
                     }`}
                     <br />
-                    ACTUAL - FORECAST
+                    FORECAST - ACTUAL
                   </StyledTableCell>
                   <StyledTableCell align="center">
                     {` ${months[lastMonth2]} - ${
                       lastMonth2 < currentMonth ? currentYear : currentYear - 1
                     }`}{" "}
                     <br />
-                    ACTUAL - FORECAST
+                    FORECAST - ACTUAL
                   </StyledTableCell>
                   <StyledTableCell align="center">
-                    {`${months[currentMonth]} - ${currentYear}`} <br /> ACTUAL -
-                    FORECAST
+                    {`${months[currentMonth]} - ${currentYear}`} <br />
+                    FORECAST - ACTUAL
                   </StyledTableCell>
                   <StyledTableCell align="center">
                     {` ${months[nextMonth1]} - ${
@@ -469,7 +469,7 @@ export const ProductForecastView = () => {
                         </StyledTableCell>
                       ) : (
                         <StyledTableCell align="center">
-                          - {rowData.forecast}
+                          {rowData.forecast} -
                         </StyledTableCell>
                       );
                     })}
