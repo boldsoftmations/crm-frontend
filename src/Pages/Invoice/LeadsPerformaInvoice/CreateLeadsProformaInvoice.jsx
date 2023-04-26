@@ -160,7 +160,7 @@ export const CreateLeadsProformaInvoice = (props) => {
         contact: leads.contact,
         alternate_contact: leads.alternate_contact,
         company_name: leads.company,
-        gst_number: leads.gst_number,
+        gst_number: leads.gst_number || null,
         pan_number: leads.pan_number,
         billing_address: leads.address,
         billing_state: leads.state,

@@ -129,15 +129,15 @@ export const CreateLeads = (props) => {
 
         const data = {
           name: leads.name,
-          assigned_to: assign ? assign.email : "",
+          assigned_to: assign ? assign.email : null,
           alternate_contact_name: leads.alternate_contact_name,
           email: leads.email,
-          alternate_email: leads.alternate_email ? leads.alternate_email : "",
+          alternate_email: leads.alternate_email ? leads.alternate_email : null,
           contact: contact1,
           alternate_contact: contact2,
           business_type: businesTypes,
           company: leads.companyName,
-          gst_number: leads.gstNumber,
+          gst_number: leads.gstNumber || null,
           pan_number: leads.pan_number,
           address: leads.address,
           city: leads.city,

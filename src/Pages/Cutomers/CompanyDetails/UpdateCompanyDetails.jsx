@@ -117,7 +117,7 @@ export const UpdateCompanyDetails = (props) => {
         city: pinCodeData.District ? pinCodeData.District : inputValue.city,
         website: inputValue.website,
         estd_date: inputValue.estd_date,
-        gst_number: inputValue.gst_number,
+        gst_number: inputValue.gst_number || null,
         pan_number: inputValue.pan_number,
         business_type: businessType,
         category: category,

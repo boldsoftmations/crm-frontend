@@ -170,7 +170,7 @@ export const CreateCustomerProformaInvoice = (props) => {
         seller_pincode: selectedSellerData.pincode,
         seller_state: selectedSellerData.state,
         seller_city: selectedSellerData.city,
-        seller_gst: selectedSellerData.gst_number,
+        seller_gst: selectedSellerData.gst_number || null,
         seller_pan: selectedSellerData.pan_number,
         seller_state_code: selectedSellerData.state_code,
         seller_cin: selectedSellerData.cin_number,

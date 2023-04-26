@@ -233,7 +233,7 @@ export const UpdateCustomerProformaInvoice = (props) => {
         contact_person_name: contactData.name,
         alternate_contact: contactData.alternate_contact,
         company_name: customerData.name,
-        gst_number: customerData.gst_number,
+        gst_number: customerData.gst_number || null,
         pan_number: customerData.pan_number,
         billing_address: customerData.address,
         billing_state: customerData.state,
