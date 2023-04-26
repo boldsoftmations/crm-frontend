@@ -4,6 +4,10 @@ const getAllSellerAccountData = () => {
   return CustomAxios.get(`/api/invoice/list-seller-account`);
 };
 
+const getfilterSellerAccountData = (data) => {
+  return CustomAxios.get(`/api/invoice/list-seller-account/?state=${data}`);
+};
+
 const getAllPaginateSellerAccountData = (all) => {
   return CustomAxios.get(`/api/invoice/list-seller-account/?page=${all}`);
 };
@@ -294,6 +298,7 @@ const getAllDashboardData = () => {
 };
 const InvoiceServices = {
   getAllSellerAccountData,
+  getfilterSellerAccountData,
   getAllPaginateSellerAccountData,
   getAllSearchSellerAccountData,
   getAllSellerAccountDataPaginate,

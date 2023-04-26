@@ -26,7 +26,7 @@ const Root = styled("div")(({ theme }) => ({
   },
 }));
 export const ProductionEntryCreate = (props) => {
-  const { setOpenPopup, getAllProductionEntryDetails } = props;
+  const { setOpenPopup, sellerOption, getAllProductionEntryDetails } = props;
   const [open, setOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState([]);
   const [selectedBOM, setSelectedBOM] = useState([]);
@@ -34,6 +34,7 @@ export const ProductionEntryCreate = (props) => {
   const [error, setError] = useState(null);
   const [checked, setChecked] = useState(false);
   const data = useSelector((state) => state.auth);
+  const [selectedSellerData, setSelectedSellerData] = useState(null);
   const users = data.profile;
   const FinishGoodsProduct = data.finishgoodsProduct;
   const [products, setProducts] = useState([
@@ -118,9 +119,7 @@ export const ProductionEntryCreate = (props) => {
           });
 
       const req = {
-        seller_account: users.groups.includes("Production Delhi")
-          ? "Delhi"
-          : "Maharashtra",
+        seller_account: selectedSellerData,
         user: users.email,
         bom: selectedBOM.bom_id,
         product: selectedBOM.product,
@@ -172,6 +171,23 @@ export const ProductionEntryCreate = (props) => {
           }
         />
         <Grid container spacing={2}>
+          <Grid item xs={12} sm={6}>
+            <Autocomplete
+              name="seller_account"
+              size="small"
+              disablePortal
+              id="combo-box-demo"
+              onChange={(event, value) => setSelectedSellerData(value)}
+              options={
+                sellerOption && sellerOption.map((option) => option.unit)
+              }
+              getOptionLabel={(option) => option}
+              sx={{ minWidth: 300 }}
+              renderInput={(params) => (
+                <TextField {...params} label="Seller Account" />
+              )}
+            />
+          </Grid>
           <Grid item xs={12} sm={4}>
             <Autocomplete
               name="product"

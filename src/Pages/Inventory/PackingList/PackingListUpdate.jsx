@@ -115,12 +115,12 @@ export const PackingListUpdate = (props) => {
     try {
       e.preventDefault();
       setOpen(true);
-      console.log("inputValue.vendor_name", PackingListDataByID.vendor_name);
+
       const response = await InventoryServices.getAllSearchVendorData(
         PackingListDataByID.vendor_name
       );
       setVendorOption(response.data.results);
-      console.log("after api");
+
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -165,7 +165,7 @@ export const PackingListUpdate = (props) => {
           ? PackingListDataByID.invoice_date
           : today,
         vendor: vendor.name ? vendor.name : PackingListDataByID.vendor,
-        seller_account: selectedSellerData,
+        seller_account: selectedSellerData ? selectedSellerData : "",
         products: products,
       };
       await InventoryServices.updatePackingListData(idForEdit, req);
@@ -275,9 +275,9 @@ export const PackingListUpdate = (props) => {
               size="small"
               disablePortal
               id="combo-box-demo"
-              value={selectedSellerData}
+              value={selectedSellerData ? selectedSellerData : ""}
               onChange={(event, value) => setSelectedSellerData(value)}
-              options={sellerData.map((option) => option.state)}
+              options={sellerData.map((option) => option.unit)}
               getOptionLabel={(option) => option}
               sx={{ minWidth: 300 }}
               renderInput={(params) => (

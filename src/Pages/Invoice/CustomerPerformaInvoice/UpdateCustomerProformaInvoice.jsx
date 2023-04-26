@@ -301,8 +301,8 @@ export const UpdateCustomerProformaInvoice = (props) => {
               label="Seller Account"
               variant="outlined"
               value={
-                customerPIdataByID.seller_state
-                  ? customerPIdataByID.seller_state
+                customerPIdataByID.seller_account
+                  ? customerPIdataByID.seller_account
                   : ""
               }
             />
@@ -316,7 +316,7 @@ export const UpdateCustomerProformaInvoice = (props) => {
               onChange={(event, value) => setSelectedSellerData(value)}
               options={sellerData}
               // value={selectedSellerData}s
-              getOptionLabel={(option) => option.state}
+              getOptionLabel={(option) => option.unit}
               sx={{ minWidth: 200 }}
               renderInput={(params) => (
                 <TextField

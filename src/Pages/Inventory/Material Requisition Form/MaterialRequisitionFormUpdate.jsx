@@ -31,12 +31,14 @@ export const MaterialRequisitionFormUpdate = (props) => {
     getAllMaterialRequisitionFormDetails,
     idForEdit,
     storesInventoryData,
+    sellerOption,
   } = props;
   const [materialRequisitionDataByID, setMaterialRequisitionDataByID] =
     useState([]);
   const [open, setOpen] = useState(false);
   const [error, setError] = useState(null);
   const data = useSelector((state) => state.auth);
+  const [selectedSellerData, setSelectedSellerData] = useState(null);
   const users = data.profile;
   const [products, setProducts] = useState([
     {
@@ -88,7 +90,7 @@ export const MaterialRequisitionFormUpdate = (props) => {
       setOpen(true);
       const response =
         await InventoryServices.getMaterialRequisitionFormDataById(idForEdit);
-
+      setSelectedSellerData(response.data.seller_account);
       setMaterialRequisitionDataByID(response.data);
       var arr = response.data.products_data.map((fruit) => ({
         product: fruit.product,
@@ -109,9 +111,7 @@ export const MaterialRequisitionFormUpdate = (props) => {
       e.preventDefault();
       setOpen(true);
       const req = {
-        seller_account: users.groups.includes("Production Delhi")
-          ? "Delhi"
-          : "Maharashtra",
+        seller_account: selectedSellerData,
         user: materialRequisitionDataByID.user,
         products_data: products,
       };
@@ -160,7 +160,25 @@ export const MaterialRequisitionFormUpdate = (props) => {
           }
         />
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={3}>
+          <Grid item xs={12} sm={6}>
+            <Autocomplete
+              name="seller_account"
+              size="small"
+              disablePortal
+              id="combo-box-demo"
+              value={selectedSellerData}
+              onChange={(event, value) => setSelectedSellerData(value)}
+              options={
+                sellerOption && sellerOption.map((option) => option.unit)
+              }
+              getOptionLabel={(option) => option}
+              sx={{ minWidth: 300 }}
+              renderInput={(params) => (
+                <TextField {...params} label="Seller Account" />
+              )}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               size="small"

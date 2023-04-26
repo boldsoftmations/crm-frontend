@@ -24,7 +24,7 @@ import LeadServices from "../../../services/LeadService";
 import { CustomLoader } from "../../../Components/CustomLoader";
 
 export const CreateCompanyDetails = (props) => {
-  const { setOpenPopup, getAllCompanyDetails } = props;
+  const { getAllCompanyDetails } = props;
   const [openPopup2, setOpenPopup2] = useState(false);
   const [open, setOpen] = useState(false);
   const [typeData, setTypeData] = useState("");

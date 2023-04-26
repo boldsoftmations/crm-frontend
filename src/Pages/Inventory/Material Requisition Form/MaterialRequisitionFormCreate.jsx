@@ -2,10 +2,13 @@ import {
   Autocomplete,
   Box,
   Button,
+  Chip,
+  Divider,
   Grid,
   IconButton,
   Snackbar,
   TextField,
+  styled,
 } from "@mui/material";
 import React, { useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
@@ -18,9 +21,13 @@ export const MaterialRequisitionFormCreate = (props) => {
     setOpenPopup,
     getAllMaterialRequisitionFormDetails,
     storesInventoryData,
+    sellerOption,
   } = props;
+
   const [open, setOpen] = useState(false);
   const [error, setError] = useState(null);
+  const [selectedSellerData, setSelectedSellerData] = useState(null);
+
   const data = useSelector((state) => state.auth);
   const users = data.profile;
   const [products, setProducts] = useState([
@@ -69,9 +76,7 @@ export const MaterialRequisitionFormCreate = (props) => {
       e.preventDefault();
       setOpen(true);
       const req = {
-        seller_account: users.groups.includes("Production Delhi")
-          ? "Delhi"
-          : "Maharashtra",
+        seller_account: selectedSellerData,
         user: users.email,
         products_data: products,
       };
@@ -119,6 +124,30 @@ export const MaterialRequisitionFormCreate = (props) => {
           }
         />
         <Grid container spacing={2}>
+          <Grid item xs={12} sm={6}>
+            <Autocomplete
+              name="seller_account"
+              size="small"
+              disablePortal
+              id="combo-box-demo"
+              onChange={(event, value) => setSelectedSellerData(value)}
+              options={
+                sellerOption && sellerOption.map((option) => option.unit)
+              }
+              getOptionLabel={(option) => option}
+              sx={{ minWidth: 300 }}
+              renderInput={(params) => (
+                <TextField {...params} label="Seller Account" />
+              )}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Root>
+              <Divider>
+                <Chip label="PRODUCT" />
+              </Divider>
+            </Root>
+          </Grid>
           {products.map((input, index) => {
             return (
               <>
@@ -199,3 +228,11 @@ export const MaterialRequisitionFormCreate = (props) => {
     </div>
   );
 };
+
+const Root = styled("div")(({ theme }) => ({
+  width: "100%",
+  ...theme.typography.body2,
+  "& > :not(style) + :not(style)": {
+    marginTop: theme.spacing(2),
+  },
+}));

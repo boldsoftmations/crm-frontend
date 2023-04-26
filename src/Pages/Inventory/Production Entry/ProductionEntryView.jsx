@@ -26,9 +26,10 @@ import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 import { Popup } from "../../../Components/Popup";
 import InventoryServices from "../../../services/InventoryService";
 import ProductService from "../../../services/ProductService";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getFinishGoodProduct } from "../../../Redux/Action/Action";
 import { ProductionEntryCreate } from "./ProductionEntryCreate";
+import InvoiceServices from "../../../services/InvoiceService";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -59,10 +60,31 @@ export const ProductionEntryView = () => {
   const [pageCount, setpageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
+  const [sellerOption, setSellerOption] = useState(null);
+  const users = useSelector((state) => state.auth.profile);
   const dispatch = useDispatch();
   const handleInputChange = (event) => {
     setFilterSelectedQuery(event.target.value);
     getSearchData(event.target.value);
+  };
+
+  useEffect(() => {
+    getAllSellerAccountsDetails();
+  }, []);
+
+  const getAllSellerAccountsDetails = async () => {
+    try {
+      setOpen(true);
+      const data = users.groups.includes("Production Delhi")
+        ? "Delhi"
+        : "Maharashtra";
+      const response = await InvoiceServices.getfilterSellerAccountData(data);
+      setSellerOption(response.data.results);
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      console.log("err", err);
+    }
   };
 
   useEffect(() => {
@@ -276,6 +298,7 @@ export const ProductionEntryView = () => {
         <ProductionEntryCreate
           getAllProductionEntryDetails={getAllProductionEntryDetails}
           setOpenPopup={setOpenPopup2}
+          sellerOption={sellerOption}
         />
       </Popup>
     </>

@@ -170,7 +170,7 @@ export const CreateCustomerProformaInvoice = (props) => {
         seller_pincode: selectedSellerData.pincode,
         seller_state: selectedSellerData.state,
         seller_city: selectedSellerData.city,
-        seller_gst: selectedSellerData.gst_number || null,
+        seller_gst: selectedSellerData.gst_number,
         seller_pan: selectedSellerData.pan_number,
         seller_state_code: selectedSellerData.state_code,
         seller_cin: selectedSellerData.cin_number,
@@ -186,7 +186,7 @@ export const CreateCustomerProformaInvoice = (props) => {
         contact_person_name: contactData.name,
         alternate_contact: contactData.alternate_contact,
         company_name: customerData.name,
-        gst_number: customerData.gst_number,
+        gst_number: customerData.gst_number || null,
         pan_number: customerData.pan_number,
         billing_address: customerData.address,
         billing_state: customerData.state,
@@ -257,8 +257,8 @@ export const CreateCustomerProformaInvoice = (props) => {
               disablePortal
               id="combo-box-demo"
               onChange={(event, value) => setSelectedSellerData(value)}
-              options={sellerData}
-              getOptionLabel={(option) => option.state}
+              options={sellerData.map((option) => option)}
+              getOptionLabel={(option) => option.unit}
               sx={{ minWidth: 300 }}
               renderInput={(params) => (
                 <TextField {...params} label="Seller Account" sx={tfStyle} />

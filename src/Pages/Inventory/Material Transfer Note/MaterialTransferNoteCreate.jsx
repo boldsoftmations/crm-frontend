@@ -15,7 +15,8 @@ import InventoryServices from "../../../services/InventoryService";
 import { useSelector } from "react-redux";
 
 export const MaterialTransferNoteCreate = (props) => {
-  const { setOpenPopup, getAllMaterialTransferNoteDetails } = props;
+  const { setOpenPopup, sellerOption, getAllMaterialTransferNoteDetails } =
+    props;
   const [open, setOpen] = useState(false);
   const [productOption, setProductOption] = useState([]);
   const [error, setError] = useState(null);
@@ -23,6 +24,7 @@ export const MaterialTransferNoteCreate = (props) => {
   const users = data.profile;
   const [product, setProduct] = useState();
   const [quantity, setQuantity] = useState();
+  const [selectedSellerData, setSelectedSellerData] = useState(null);
   useEffect(() => {
     getProduct();
   }, []);
@@ -45,9 +47,7 @@ export const MaterialTransferNoteCreate = (props) => {
       e.preventDefault();
       setOpen(true);
       const req = {
-        seller_account: users.groups.includes("Production Delhi")
-          ? "Delhi"
-          : "Maharashtra",
+        seller_account: selectedSellerData,
         user: users.email,
         product: product.product__name,
         quantity: quantity,
@@ -96,7 +96,24 @@ export const MaterialTransferNoteCreate = (props) => {
           }
         />
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={3}>
+            <Autocomplete
+              name="seller_account"
+              size="small"
+              disablePortal
+              id="combo-box-demo"
+              onChange={(event, value) => setSelectedSellerData(value)}
+              options={
+                sellerOption && sellerOption.map((option) => option.unit)
+              }
+              getOptionLabel={(option) => option}
+              sx={{ minWidth: 300 }}
+              renderInput={(params) => (
+                <TextField {...params} label="Seller Account" />
+              )}
+            />
+          </Grid>
+          <Grid item xs={12} sm={3}>
             <Autocomplete
               name="product"
               size="small"
@@ -111,7 +128,7 @@ export const MaterialTransferNoteCreate = (props) => {
               )}
             />
           </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={3}>
             <TextField
               fullWidth
               name="unit"
@@ -121,7 +138,7 @@ export const MaterialTransferNoteCreate = (props) => {
               value={product ? product.product__unit : ""}
             />
           </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={3}>
             <TextField
               fullWidth
               name="quantity"

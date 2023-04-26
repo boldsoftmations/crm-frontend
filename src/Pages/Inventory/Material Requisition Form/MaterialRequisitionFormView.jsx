@@ -44,6 +44,7 @@ import {
   StyleSheet,
 } from "@react-pdf/renderer";
 import moment from "moment";
+import InvoiceServices from "../../../services/InvoiceService";
 
 export const MaterialRequisitionFormView = () => {
   const [openPopup, setOpenPopup] = useState(false);
@@ -61,12 +62,32 @@ export const MaterialRequisitionFormView = () => {
   const [idForEdit, setIDForEdit] = useState("");
   const [storesInventoryData, setStoresInventoryData] = useState([]);
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [sellerOption, setSellerOption] = useState(null);
   const users = useSelector((state) => state.auth.profile);
   const handleInputChange = (event) => {
     setFilterSelectedQuery(event.target.value);
     getSearchData(event.target.value);
   };
-  console.log("materialRequisitionDataByID", materialRequisitionDataByID);
+
+  useEffect(() => {
+    getAllSellerAccountsDetails();
+  }, []);
+
+  const getAllSellerAccountsDetails = async () => {
+    try {
+      setOpen(true);
+      const data = users.groups.includes("Production Delhi")
+        ? "Delhi"
+        : "Maharashtra";
+      const response = await InvoiceServices.getfilterSellerAccountData(data);
+      setSellerOption(response.data.results);
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      console.log("err", err);
+    }
+  };
+
   useEffect(() => {
     getAllStoresInventoryDetails();
   }, []);
@@ -378,6 +399,7 @@ export const MaterialRequisitionFormView = () => {
       >
         <MaterialRequisitionFormCreate
           storesInventoryData={storesInventoryData}
+          sellerOption={sellerOption}
           getAllMaterialRequisitionFormDetails={
             getAllMaterialRequisitionFormDetails
           }
@@ -392,6 +414,7 @@ export const MaterialRequisitionFormView = () => {
       >
         <MaterialRequisitionFormUpdate
           setOpenPopup={setOpenPopup}
+          sellerOption={sellerOption}
           storesInventoryData={storesInventoryData}
           getAllMaterialRequisitionFormDetails={
             getAllMaterialRequisitionFormDetails

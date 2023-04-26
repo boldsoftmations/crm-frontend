@@ -137,7 +137,7 @@ export const PackingListCreate = (props) => {
         packing_list_no: inputValue.packing_list_no, //Normal text field
         invoice_date: inputValue.invoice_date ? inputValue.invoice_date : today,
         vendor: vendor.name,
-        seller_account: selectedSellerData.state,
+        seller_account: selectedSellerData,
         products: products,
       };
       await InventoryServices.createPackingListData(req);
@@ -218,8 +218,8 @@ export const PackingListCreate = (props) => {
               disablePortal
               id="combo-box-demo"
               onChange={(event, value) => setSelectedSellerData(value)}
-              options={sellerData}
-              getOptionLabel={(option) => option.state}
+              options={sellerData.map((option) => option.unit)}
+              getOptionLabel={(option) => option}
               sx={{ minWidth: 300 }}
               renderInput={(params) => (
                 <TextField {...params} label="Seller Account" />

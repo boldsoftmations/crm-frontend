@@ -41,6 +41,7 @@ import InventoryServices from "../../../services/InventoryService";
 import { useSelector } from "react-redux";
 import { MaterialTransferNoteCreate } from "./MaterialTransferNoteCreate";
 import { MaterialTransferNoteUpdate } from "./MaterialTransferNoteUpdate";
+import InvoiceServices from "../../../services/InvoiceService";
 
 export const MaterialTransferNoteView = () => {
   const [openPopup, setOpenPopup] = useState(false);
@@ -56,10 +57,30 @@ export const MaterialTransferNoteView = () => {
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const [idForEdit, setIDForEdit] = useState("");
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [sellerOption, setSellerOption] = useState(null);
   const users = useSelector((state) => state.auth.profile);
   const handleInputChange = (event) => {
     setFilterSelectedQuery(event.target.value);
     getSearchData(event.target.value);
+  };
+
+  useEffect(() => {
+    getAllSellerAccountsDetails();
+  }, []);
+
+  const getAllSellerAccountsDetails = async () => {
+    try {
+      setOpen(true);
+      const data = users.groups.includes("Production Delhi")
+        ? "Delhi"
+        : "Maharashtra";
+      const response = await InvoiceServices.getfilterSellerAccountData(data);
+      setSellerOption(response.data.results);
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      console.log("err", err);
+    }
   };
 
   useEffect(() => {
@@ -402,6 +423,7 @@ export const MaterialTransferNoteView = () => {
         <MaterialTransferNoteCreate
           getAllMaterialTransferNoteDetails={getAllMaterialTransferNoteDetails}
           setOpenPopup={setOpenPopup2}
+          sellerOption={sellerOption}
         />
       </Popup>
       <Popup
@@ -412,6 +434,7 @@ export const MaterialTransferNoteView = () => {
       >
         <MaterialTransferNoteUpdate
           setOpenPopup={setOpenPopup}
+          sellerOption={sellerOption}
           getAllMaterialTransferNoteDetails={getAllMaterialTransferNoteDetails}
           idForEdit={idForEdit}
         />

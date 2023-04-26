@@ -26,7 +26,6 @@ import { CustomLoader } from "../../../Components/CustomLoader";
 import { ViewCustomerFollowUp } from "../../FollowUp/ViewCustomerFollowUp";
 export const UpdateCompanyDetails = (props) => {
   const { setOpenPopup, getAllContactDetailsByID, recordForEdit } = props;
-
   const [open, setOpen] = useState(false);
   const [typeData, setTypeData] = useState("");
   const [category, setCategory] = useState("");
