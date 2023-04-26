@@ -97,8 +97,15 @@ export const ProductionShortFallView = () => {
     "QUANTITY",
     "UNIT",
   ];
-  const TableData = filteredData.map((value) => value);
 
+  const TableData = filteredData.map((value) => ({
+    seller_account: value.state,
+    type: value.type,
+    product: value.product,
+    description: value.description,
+    quantity: value.quantity,
+    unit: value.unit,
+  }));
   return (
     <>
       <CustomLoader open={open} />
