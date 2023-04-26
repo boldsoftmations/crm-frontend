@@ -180,6 +180,7 @@ export const SellerAccount = () => {
             >
               <TableHead>
                 <TableRow>
+                  <StyledTableCell align="center">UNIT</StyledTableCell>
                   <StyledTableCell align="center">COMPANY NAME</StyledTableCell>
                   <StyledTableCell align="center">BANK</StyledTableCell>
                   <StyledTableCell align="center">ACCOUNT NO.</StyledTableCell>
@@ -193,6 +194,9 @@ export const SellerAccount = () => {
                 {invoiceData.map((row, i) => {
                   return (
                     <StyledTableRow key={i}>
+                      <StyledTableCell align="center">
+                        {row.unit}
+                      </StyledTableCell>
                       <StyledTableCell align="center">
                         {row.name}
                       </StyledTableCell>
