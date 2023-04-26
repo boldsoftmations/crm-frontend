@@ -140,7 +140,7 @@ export const CreateLeadsProformaInvoice = (props) => {
         raised_by: users.email,
         raised_by_first_name: users.first_name,
         raised_by_last_name: users.last_name,
-        seller_account: selectedSellerData.gst_number,
+        seller_account: selectedSellerData.unit,
         seller_address: selectedSellerData.address,
         seller_pincode: selectedSellerData.pincode,
         seller_state: selectedSellerData.state,

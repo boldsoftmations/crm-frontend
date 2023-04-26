@@ -62,10 +62,8 @@ export const CreateCustomerProformaInvoice = (props) => {
   const [customerData, setCustomerData] = useState([]);
   const [contactOptions, setContactOptions] = useState([]);
   const [warehouseOptions, setWarehouseOptions] = useState([]);
-  const [companyData, setCompanyData] = useState([]);
   const [contactData, setContactData] = useState([]);
   const [warehouseData, setWarehouseData] = useState([]);
-  const [idForEdit, setIDForEdit] = useState();
   const [errorMessage, setErrorMessage] = useState();
   const [validationPrice, setValidationPrice] = useState("");
   const [checked, setChecked] = useState(true);
@@ -120,21 +118,6 @@ export const CreateCustomerProformaInvoice = (props) => {
   };
 
   useEffect(() => {
-    getAllCompanyDetails();
-  }, [openPopup3]);
-
-  const getAllCompanyDetails = async () => {
-    try {
-      setOpen(true);
-      let response = await CustomerServices.getAllPaginateCompanyData("all");
-      // setCompanyOptions(response.data);
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-    }
-  };
-
-  useEffect(() => {
     getAllCompanyDetailsByID();
   }, [openPopup3]);
 
@@ -182,7 +165,7 @@ export const CreateCustomerProformaInvoice = (props) => {
         raised_by: users.email,
         raised_by_first_name: users.first_name,
         raised_by_last_name: users.last_name,
-        seller_account: selectedSellerData.gst_number,
+        seller_account: selectedSellerData.unit,
         seller_address: selectedSellerData.address,
         seller_pincode: selectedSellerData.pincode,
         seller_state: selectedSellerData.state,
@@ -234,7 +217,6 @@ export const CreateCustomerProformaInvoice = (props) => {
         setOpenPopup(false);
         navigate("/invoice/performa-invoice");
       } else {
-        setIDForEdit(companyData.id);
         setOpenPopup2(true);
       }
       setOpen(false);
@@ -256,7 +238,6 @@ export const CreateCustomerProformaInvoice = (props) => {
   const openInPopup = () => {
     setOpenPopup3(true);
     setOpenPopup2(false);
-    getAllCompanyDetails();
   };
 
   return (
@@ -752,8 +733,7 @@ export const CreateCustomerProformaInvoice = (props) => {
         setOpenPopup={setOpenPopup3}
       >
         <UpdateCompanyDetails
-          getAllCompanyDetails={getAllCompanyDetails}
-          recordForEdit={idForEdit}
+          recordForEdit={recordForEdit}
           setOpenPopup={setOpenPopup3}
         />
       </Popup>
