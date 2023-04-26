@@ -1,14 +1,8 @@
 import React, { useState } from "react";
-import {
-  Backdrop,
-  Box,
-  Button,
-  CircularProgress,
-  Grid,
-  TextField,
-} from "@mui/material";
+import { Box, Button, Grid, TextField } from "@mui/material";
 import axios from "axios";
 import InvoiceServices from "./../../../services/InvoiceService";
+import { CustomLoader } from "../../../Components/CustomLoader";
 
 export const CreateSellerAccounts = (props) => {
   const { setOpenPopup, getAllSellerAccountsDetails } = props;
@@ -20,7 +14,7 @@ export const CreateSellerAccounts = (props) => {
     const { name, value } = event.target;
     setInputValue({ ...inputValue, [name]: value });
   };
-  console.log("inputValue :>> ", inputValue);
+
   const validateifsc = async () => {
     try {
       setOpen(true);
@@ -46,6 +40,7 @@ export const CreateSellerAccounts = (props) => {
         name: inputValue.name,
         current_account_no: inputValue.current_account_no,
         address: inputValue.address,
+        unit: inputValue.unit,
         gst_number: inputValue.gst_number,
         grn_prefix: inputValue.grn_prefix,
         pincode: inputValue.pincode,
@@ -74,18 +69,11 @@ export const CreateSellerAccounts = (props) => {
 
   return (
     <div>
-      <div>
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={open}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </div>
+      <CustomLoader open={open} />
 
       <Box component="form" noValidate onSubmit={(e) => createBankDetails(e)}>
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={4}>
             <TextField
               multiline
               fullWidth
@@ -97,7 +85,7 @@ export const CreateSellerAccounts = (props) => {
               onChange={handleInputChange}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={4}>
             <TextField
               fullWidth
               size="small"
@@ -108,7 +96,7 @@ export const CreateSellerAccounts = (props) => {
               onChange={handleInputChange}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={4}>
             <TextField
               multiline
               fullWidth
@@ -120,7 +108,7 @@ export const CreateSellerAccounts = (props) => {
               onChange={handleInputChange}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={4}>
             <TextField
               fullWidth
               name="grn_prefix"
@@ -131,7 +119,7 @@ export const CreateSellerAccounts = (props) => {
               onChange={handleInputChange}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={4}>
             <TextField
               multiline
               fullWidth
@@ -143,7 +131,18 @@ export const CreateSellerAccounts = (props) => {
               onChange={handleInputChange}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={4}>
+            <TextField
+              fullWidth
+              name="unit"
+              size="small"
+              label="Unit"
+              variant="outlined"
+              value={inputValue.unit ? inputValue.unit : ""}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
             <TextField
               fullWidth
               name="pincode"
@@ -154,7 +153,7 @@ export const CreateSellerAccounts = (props) => {
               onChange={handleInputChange}
             />
           </Grid>{" "}
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={4}>
             <TextField
               fullWidth
               name="state"
@@ -165,7 +164,7 @@ export const CreateSellerAccounts = (props) => {
               onChange={handleInputChange}
             />
           </Grid>{" "}
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={4}>
             <TextField
               fullWidth
               name="city"
@@ -176,7 +175,7 @@ export const CreateSellerAccounts = (props) => {
               onChange={handleInputChange}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={4}>
             <TextField
               fullWidth
               name="state_code"
@@ -187,7 +186,7 @@ export const CreateSellerAccounts = (props) => {
               onChange={handleInputChange}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={4}>
             <TextField
               fullWidth
               name="cin_number"
@@ -198,7 +197,7 @@ export const CreateSellerAccounts = (props) => {
               onChange={handleInputChange}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={4}>
             <TextField
               fullWidth
               name="email"
@@ -209,7 +208,7 @@ export const CreateSellerAccounts = (props) => {
               onChange={handleInputChange}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={4}>
             <TextField
               fullWidth
               name="pan_number"
@@ -220,7 +219,7 @@ export const CreateSellerAccounts = (props) => {
               onChange={handleInputChange}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={4}>
             <TextField
               fullWidth
               name="prefix"
@@ -231,7 +230,7 @@ export const CreateSellerAccounts = (props) => {
               onChange={handleInputChange}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={4}>
             <TextField
               fullWidth
               name="suffix"
@@ -242,7 +241,7 @@ export const CreateSellerAccounts = (props) => {
               onChange={handleInputChange}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={4}>
             <TextField
               type={"number"}
               fullWidth
@@ -254,9 +253,9 @@ export const CreateSellerAccounts = (props) => {
               onChange={handleInputChange}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={4}>
             <TextField
-              sx={{ minWidth: "400px" }}
+              sx={{ minWidth: "200px" }}
               name="ifsc_code"
               size="small"
               label="IFSC Code"
@@ -274,7 +273,7 @@ export const CreateSellerAccounts = (props) => {
               Validate
             </Button>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={4}>
             <TextField
               fullWidth
               size="small"
@@ -284,7 +283,7 @@ export const CreateSellerAccounts = (props) => {
               value={bankData.BANK ? bankData.BANK : ""}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={4}>
             <TextField
               fullWidth
               size="small"
