@@ -1,17 +1,6 @@
 import React from "react";
-import {
-  Box,
-  Grid,
-  Paper,
-  styled,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-} from "@mui/material";
-import { tableCellClasses } from "@mui/material/TableCell";
+import { Box, Grid, Paper } from "@mui/material";
+import { CustomTable } from "../../../Components/CustomTable";
 
 export const SalesPersonSummary = (props) => {
   const { salesPersonSummary } = props;
@@ -22,68 +11,68 @@ export const SalesPersonSummary = (props) => {
       currency: "INR",
     }).format(value);
 
-  function salesInvoiceValue(items) {
-    return items
-      .map(({ sales_invoice_value }) => sales_invoice_value)
-      .reduce((sum, i) => sum + i, 0);
-  }
+  const headers = [
+    "Sales Person Name",
+    "New Customer",
+    "PI Raised",
+    "PI Dropped",
+    "PI Unpaid",
+    "Unpaid PI Value",
+    "Order Book Value",
+    "Sales Invoice Value",
+  ];
 
-  const Sale_Invoice_Value_Total = salesInvoiceValue(salesPersonSummary);
+  const totalRow = {
+    sales_person_name: "Total",
+    new_customer: salesPersonSummary.reduce(
+      (sum, { new_customer }) => sum + new_customer,
+      0
+    ),
+    pi_raised: salesPersonSummary.reduce(
+      (sum, { pi_raised }) => sum + pi_raised,
+      0
+    ),
+    pi_dropped: salesPersonSummary.reduce(
+      (sum, { pi_dropped }) => sum + pi_dropped,
+      0
+    ),
+    pi_unpaid: salesPersonSummary.reduce(
+      (sum, { pi_unpaid }) => sum + pi_unpaid,
+      0
+    ),
+    unpaid_pi_value: numberFormat(
+      salesPersonSummary
+        .reduce((sum, { unpaid_pi_value }) => sum + unpaid_pi_value, 0)
+        .toFixed(2)
+    ),
+    order_book_value: numberFormat(
+      salesPersonSummary
+        .reduce((sum, { order_book_value }) => sum + order_book_value, 0)
+        .toFixed(2)
+    ),
+    sales_invoice_value: numberFormat(
+      salesPersonSummary
+        .reduce((sum, { sales_invoice_value }) => sum + sales_invoice_value, 0)
+        .toFixed(2)
+    ),
+  };
 
-  function orderBookValue(items) {
-    return items
-      .map(({ order_book_value }) => order_book_value)
-      .reduce((sum, i) => sum + i, 0);
-  }
+  const rawData = salesPersonSummary.map((value) => ({
+    sales_person_name: `${value.first_name} ${value.last_name}`,
+    new_customer: value.new_customer,
+    pi_raised: value.pi_raised,
+    pi_dropped: value.pi_dropped,
+    pi_unpaid: value.pi_unpaid,
+    unpaid_pi_value: numberFormat(value.unpaid_pi_value),
+    order_book_value: numberFormat(value.order_book_value),
+    sales_invoice_value: numberFormat(value.sales_invoice_value),
+  }));
 
-  const Order_Book_Value_Total = orderBookValue(salesPersonSummary);
-
-  function unpaidPiValue(items) {
-    return items
-      .map(({ unpaid_pi_value }) => unpaid_pi_value)
-      .reduce((sum, i) => sum + i, 0);
-  }
-
-  const Unpaid_PI_Value_Total = unpaidPiValue(salesPersonSummary);
-
-  function piUnpaid(items) {
-    return items
-      .map(({ pi_unpaid }) => pi_unpaid)
-      .reduce((sum, i) => sum + i, 0);
-  }
-
-  const PI_Unpaid_Total = piUnpaid(salesPersonSummary);
-
-  function piDropped(items) {
-    return items
-      .map(({ pi_dropped }) => pi_dropped)
-      .reduce((sum, i) => sum + i, 0);
-  }
-
-  const PI_Dropped_Total = piDropped(salesPersonSummary);
-
-  function piRaised(items) {
-    return items
-      .map(({ pi_raised }) => pi_raised)
-      .reduce((sum, i) => sum + i, 0);
-  }
-
-  const PI_Raised_Total = piRaised(salesPersonSummary);
-
-  function newCustomer(items) {
-    return items
-      .map(({ new_customer }) => new_customer)
-      .reduce((sum, i) => sum + i, 0);
-  }
-
-  const New_Customer_Total = newCustomer(salesPersonSummary);
+  const data = [...rawData, totalRow];
 
   return (
     <>
-      {" "}
-      {/* <CustomLoader open={open} /> */}
       <Grid item xs={12}>
-        {/* <ErrorMessage errRef={errRef} errMsg={errMsg} /> */}
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
           <Box display="flex">
             <Box flexGrow={2}></Box>
@@ -102,128 +91,13 @@ export const SalesPersonSummary = (props) => {
             </Box>
             <Box flexGrow={0.5} align="right"></Box>
           </Box>
-          <TableContainer
-            sx={{
-              maxHeight: 440,
-              "&::-webkit-scrollbar": {
-                width: 15,
-              },
-              "&::-webkit-scrollbar-track": {
-                backgroundColor: "#f2f2f2",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                backgroundColor: "#aaa9ac",
-              },
-            }}
-          >
-            <Table
-              sx={{ minWidth: 700 }}
-              stickyHeader
-              aria-label="sticky table"
-            >
-              <TableHead>
-                <StyledTableRow>
-                  <StyledTableCell align="center">
-                    Sales Person Name
-                  </StyledTableCell>
-                  <StyledTableCell align="center">New Customer</StyledTableCell>
-                  <StyledTableCell align="center">PI Raised</StyledTableCell>
-                  <StyledTableCell align="center">PI Dropped</StyledTableCell>
-                  <StyledTableCell align="center">PI Unpaid </StyledTableCell>
-                  <StyledTableCell align="center">
-                    Unpaid PI Value
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    Order Book Value
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    Sales Invoice Value
-                  </StyledTableCell>
-                </StyledTableRow>
-              </TableHead>
-              <TableBody>
-                {salesPersonSummary.map((row, i) => {
-                  return (
-                    <StyledTableRow key={i}>
-                      <StyledTableCell align="center">
-                        {row.first_name} {row.last_name}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.new_customer}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.pi_raised}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.pi_dropped}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.pi_unpaid}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {numberFormat(row.unpaid_pi_value)}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {numberFormat(row.order_book_value)}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {numberFormat(row.sales_invoice_value)}
-                      </StyledTableCell>
-                    </StyledTableRow>
-                  );
-                })}
-                <StyledTableRow>
-                  <StyledTableCell align="center">Total</StyledTableCell>
-                  <StyledTableCell align="center">
-                    {New_Customer_Total}
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    {PI_Raised_Total}
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    {PI_Dropped_Total}
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    {PI_Unpaid_Total}
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    {numberFormat(Unpaid_PI_Value_Total)}
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    {numberFormat(Order_Book_Value_Total)}
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    {numberFormat(Sale_Invoice_Value_Total)}
-                  </StyledTableCell>
-                </StyledTableRow>
-              </TableBody>
-            </Table>
-          </TableContainer>
-          {/* <CustomPagination
-              pageCount={pageCount}
-              handlePageClick={handlePageClick}
-            /> */}
+          <CustomTable
+            headers={headers}
+            data={data}
+            openInPopup={null} // Set to null or pass in your custom function
+          />
         </Paper>
       </Grid>
     </>
   );
 };
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));

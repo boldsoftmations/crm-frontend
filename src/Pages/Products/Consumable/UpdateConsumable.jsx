@@ -13,7 +13,7 @@ import React, { useEffect } from "react";
 import ProductService from "../../../services/ProductService";
 
 import "../../CommonStyle.css";
-import { useSelector } from 'react-redux';
+import { useSelector } from "react-redux";
 
 export const UpdateConsumable = (props) => {
   const { recordForEdit, setOpenPopup, getconsumables } = props;
@@ -41,17 +41,17 @@ export const UpdateConsumable = (props) => {
   const shortName = searchBrand(brandval, brandData);
   console.log("shortName", shortName);
 
-  function searchAutoNumber(nameKey, myArray) {
-    for (let i = 0; i < myArray.length; i++) {
-      if (myArray[i].name === nameKey) {
-        return myArray[i].auto_number;
-      }
-    }
-  }
+  // function searchAutoNumber(nameKey, myArray) {
+  //   for (let i = 0; i < myArray.length; i++) {
+  //     if (myArray[i].name === nameKey) {
+  //       return myArray[i].auto_number;
+  //     }
+  //   }
+  // }
   const descriptionval = selectedDescription.description
     ? selectedDescription.description
     : selectedDescription;
-  const autoNumber = searchAutoNumber(descriptionval, description);
+  // const autoNumber = searchAutoNumber(descriptionval, description);
 
   const autoNo = consumable ? consumable.name : "";
   const name = autoNo ? autoNo : "";

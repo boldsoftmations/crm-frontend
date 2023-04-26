@@ -8,7 +8,7 @@ import {
   TextField,
 } from "@mui/material";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 
 import ProductService from "../../../services/ProductService";
 
@@ -58,7 +58,6 @@ export const CreateRawMaterials = (props) => {
   }-${shortName ? shortName : ""}-${
     rawMaterials.size ? rawMaterials.size : ""
   }`;
-
 
   const createrawMaterials = async (e) => {
     try {

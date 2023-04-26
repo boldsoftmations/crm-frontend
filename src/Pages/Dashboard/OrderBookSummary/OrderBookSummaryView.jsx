@@ -1,21 +1,9 @@
-import {
-  Box,
-  Grid,
-  Paper,
-  styled,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-} from "@mui/material";
-import { tableCellClasses } from "@mui/material/TableCell";
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { Box, Grid, Paper } from "@mui/material";
+import { CustomTable } from "./../../../Components/CustomTable";
 
 export const OrderBookSummaryView = (props) => {
   const { orderBookSummary } = props;
-  const [sum, setSum] = useState(0);
 
   const numberFormat = (value) =>
     new Intl.NumberFormat("en-IN", {
@@ -23,24 +11,21 @@ export const OrderBookSummaryView = (props) => {
       currency: "INR",
     }).format(value);
 
-  function calculateSum(data) {
-    let sum = 0;
-    data.forEach((row) => {
-      sum += row.total_amount;
-    });
-    setSum(sum);
-  }
+  const sums = orderBookSummary.reduce(
+    (accumulator, current) => accumulator + current.total_amount,
+    0
+  );
 
-  useEffect(() => {
-    calculateSum(orderBookSummary);
-  }, [orderBookSummary]);
-
+  const headers = ["SELLER STATE", "AMOUNT"];
+  const totalRow = ["Total", numberFormat(sums.toFixed(2))];
+  const rowData = orderBookSummary.map((value) => ({
+    seller_state: value.orderbook__proforma_invoice__seller_account__state,
+    amount: numberFormat(value.total_amount),
+  }));
+  const data = [...rowData, totalRow];
   return (
     <>
-      {" "}
-      {/* <CustomLoader open={open} /> */}
       <Grid item xs={12}>
-        {/* <ErrorMessage errRef={errRef} errMsg={errMsg} /> */}
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
           <Box display="flex">
             <Box flexGrow={2}></Box>
@@ -59,53 +44,12 @@ export const OrderBookSummaryView = (props) => {
             </Box>
             <Box flexGrow={0.5} align="right"></Box>
           </Box>
-          <TableContainer
-            sx={{
-              maxHeight: 440,
-              "&::-webkit-scrollbar": {
-                width: 15,
-              },
-              "&::-webkit-scrollbar-track": {
-                backgroundColor: "#f2f2f2",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                backgroundColor: "#aaa9ac",
-              },
-            }}
-          >
-            <Table
-              sx={{ minWidth: 700 }}
-              stickyHeader
-              aria-label="sticky table"
-            >
-              <TableHead>
-                <StyledTableRow>
-                  <StyledTableCell align="center">SELLER STATE</StyledTableCell>
-                  <StyledTableCell align="center">AMOUNT</StyledTableCell>
-                </StyledTableRow>
-              </TableHead>
-              <TableBody>
-                {orderBookSummary.map((row, i) => {
-                  return (
-                    <StyledTableRow key={i}>
-                      <StyledTableCell align="center">
-                        {row.orderbook__proforma_invoice__seller_account__state}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {numberFormat(row.total_amount)}
-                      </StyledTableCell>
-                    </StyledTableRow>
-                  );
-                })}
-                <StyledTableRow>
-                  <StyledTableCell align="center">Total</StyledTableCell>
-                  <StyledTableCell align="center">
-                    {numberFormat(sum)}
-                  </StyledTableCell>
-                </StyledTableRow>
-              </TableBody>
-            </Table>
-          </TableContainer>
+          {/* CustomTable */}
+          <CustomTable
+            headers={headers}
+            data={data}
+            openInPopup={null} // Set to null or pass in your custom function
+          />
           {/* <CustomPagination
             pageCount={pageCount}
             handlePageClick={handlePageClick}
@@ -115,22 +59,3 @@ export const OrderBookSummaryView = (props) => {
     </>
   );
 };
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));

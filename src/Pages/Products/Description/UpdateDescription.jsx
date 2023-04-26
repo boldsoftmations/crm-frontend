@@ -4,7 +4,6 @@ import {
   Button,
   CircularProgress,
   Grid,
-  MenuItem,
   TextField,
 } from "@mui/material";
 
@@ -15,17 +14,17 @@ import ProductService from "../../../services/ProductService";
 
 import "../../CommonStyle.css";
 
-const consume = [
-  {
-    value: "yes",
-    name: "Yes",
-  },
+// const consume = [
+//   {
+//     value: "yes",
+//     name: "Yes",
+//   },
 
-  {
-    value: "no",
-    name: "No",
-  },
-];
+//   {
+//     value: "no",
+//     name: "No",
+//   },
+// ];
 
 export const UpdateDescription = (props) => {
   const { recordForEdit, setOpenPopup, getDescriptions } = props;

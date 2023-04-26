@@ -1,24 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-
-import "../../CommonStyle.css";
-
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Grid,
-  Button,
-  Paper,
-  styled,
-  Box,
-  TableContainer,
-} from "@mui/material";
-import { tableCellClasses } from "@mui/material/TableCell";
+import { Grid, Button, Paper, Box } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ProductService from "../../../services/ProductService";
-import SearchIcon from "@mui/icons-material/Search";
 import { Popup } from "./../../../Components/Popup";
 import { UpdateProductCode } from "./UpdateProductCode";
 import { CreateProductCode } from "./CreateProductCode";
@@ -26,26 +9,8 @@ import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 import { CustomLoader } from "./../../../Components/CustomLoader";
 import { CustomSearch } from "./../../../Components/CustomSearch";
 import { CustomPagination } from "./../../../Components/CustomPagination";
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
+import { CustomTable } from "../../../Components/CustomTable";
+import "../../CommonStyle.css";
 
 export const ViewProductCode = () => {
   const [productCode, setProductCode] = useState([]);
@@ -165,9 +130,12 @@ export const ViewProductCode = () => {
   };
 
   const openInPopup = (item) => {
-    setRecordForEdit(item);
+    setRecordForEdit(item.id);
     setOpenPopup(true);
   };
+
+  const TableHeader = ["ID", "CODE", "DESCRIPTION", "ACTION"];
+  const TableData = productCode.map((value) => value);
 
   return (
     <>
@@ -208,60 +176,12 @@ export const ViewProductCode = () => {
               </Button>
             </Box>
           </Box>
-          <TableContainer
-            sx={{
-              maxHeight: 440,
-              "&::-webkit-scrollbar": {
-                width: 15,
-              },
-              "&::-webkit-scrollbar-track": {
-                backgroundColor: "#f2f2f2",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                backgroundColor: "#aaa9ac",
-              },
-            }}
-          >
-            <Table
-              sx={{ minWidth: 700 }}
-              stickyHeader
-              aria-label="sticky table"
-            >
-              <TableHead>
-                <TableRow>
-                  <StyledTableCell align="center">ID</StyledTableCell>
-                  <StyledTableCell align="center">CODE</StyledTableCell>
-                  <StyledTableCell align="center">DESCRIPTION</StyledTableCell>
-
-                  <StyledTableCell align="center">ACTION</StyledTableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {productCode.map((row, i) => {
-                  return (
-                    <StyledTableRow key={i}>
-                      <StyledTableCell align="center">{row.id}</StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.code}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.description}
-                      </StyledTableCell>
-
-                      <StyledTableCell align="center">
-                        <Button
-                          variant="contained"
-                          onClick={() => openInPopup(row.id)}
-                        >
-                          View
-                        </Button>
-                      </StyledTableCell>
-                    </StyledTableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          {/* CustomTable */}
+          <CustomTable
+            headers={TableHeader}
+            data={TableData}
+            openInPopup={openInPopup}
+          />
           <CustomPagination
             pageCount={pageCount}
             handlePageClick={handlePageChange}

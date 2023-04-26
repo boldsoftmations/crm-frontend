@@ -1,11 +1,13 @@
 import React from "react";
 import { styled } from "@mui/material/styles";
 const CustomTabButton = styled("button")(({ theme, active }) => ({
-  padding: "10px 20px",
+  padding: "10px 10px",
   margin: "10px 10px",
   cursor: "pointer",
   fontWeight: "bold",
   color: active ? "#fff" : "#000",
+  fontSize: "14px",
+  fontWeight: "bolder",
   backgroundColor: active ? "#006ba1" : "transparent",
   border: "none",
   borderRadius: "25px",

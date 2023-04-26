@@ -27,6 +27,7 @@ import { UpdateBasicUnit } from "./UpdateBasicUnit";
 import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
 import { CustomSearch } from "./../../../Components/CustomSearch";
 import { CustomLoader } from "./../../../Components/CustomLoader";
+import { CustomTable } from "../../../Components/CustomTable";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -118,9 +119,12 @@ export const ViewBasicUnit = () => {
   };
 
   const openInPopup = (item) => {
-    setRecordForEdit(item);
+    setRecordForEdit(item.id);
     setOpenPopup(true);
   };
+
+  const TableHeader = ["ID", "BASIC UNIT", "SHORT NAME", "ACTION"];
+  const TableData = basicUnit.map((value) => value);
 
   return (
     <>
@@ -163,60 +167,12 @@ export const ViewBasicUnit = () => {
               </Link>
             </Box>
           </Box>
-          <TableContainer
-            sx={{
-              maxHeight: 440,
-              "&::-webkit-scrollbar": {
-                width: 15,
-              },
-              "&::-webkit-scrollbar-track": {
-                backgroundColor: "#f2f2f2",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                backgroundColor: "#aaa9ac",
-              },
-            }}
-          >
-            <Table
-              sx={{ minWidth: 700 }}
-              stickyHeader
-              aria-label="sticky table"
-            >
-              <TableHead>
-                <TableRow>
-                  <StyledTableCell align="center">ID</StyledTableCell>
-                  <StyledTableCell align="center">BASIC UNIT</StyledTableCell>
-                  <StyledTableCell align="center">SHORT NAME</StyledTableCell>
-                  <StyledTableCell align="center">Action</StyledTableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {basicUnit.map((row, i) => {
-                  return (
-                    <StyledTableRow key={i}>
-                      <StyledTableCell align="center">
-                        {row.id ? row.id : "-"}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.name ? row.name : "-"}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.short_name ? row.short_name : "-"}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        <Button
-                          variant="contained"
-                          onClick={() => openInPopup(row.id)}
-                        >
-                          View
-                        </Button>
-                      </StyledTableCell>
-                    </StyledTableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          {/* CustomTable */}
+          <CustomTable
+            headers={TableHeader}
+            data={TableData}
+            openInPopup={openInPopup}
+          />
         </Paper>
       </Grid>
       <Popup

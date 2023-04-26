@@ -3,44 +3,17 @@ import {
   Box,
   Grid,
   Paper,
-  styled,
-  Table,
-  TableBody,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TableCell,
   TextField,
   InputAdornment,
   IconButton,
   Button,
 } from "@mui/material";
-import { tableCellClasses } from "@mui/material/TableCell";
 import ClearIcon from "@mui/icons-material/Clear";
+import { CSVLink } from "react-csv";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 import InventoryServices from "../../../services/InventoryService";
-import { CSVLink } from "react-csv";
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
+import { CustomTable } from "../../../Components/CustomTable";
 
 export const ProductionShortFallView = () => {
   const [open, setOpen] = useState(false);
@@ -115,6 +88,17 @@ export const ProductionShortFallView = () => {
       unit: item.unit,
     };
   });
+
+  const TableHeader = [
+    "STATE",
+    "TYPE",
+    "PRODUCT",
+    "DESCRIPTION",
+    "QUANTITY",
+    "UNIT",
+  ];
+  const TableData = filteredData.map((value) => value);
+
   return (
     <>
       <CustomLoader open={open} />
@@ -176,59 +160,8 @@ export const ProductionShortFallView = () => {
               </CSVLink>
             </Box>
           </Box>
-          <TableContainer
-            sx={{
-              maxHeight: 440,
-              "&::-webkit-scrollbar": {
-                width: 15,
-              },
-              "&::-webkit-scrollbar-track": {
-                backgroundColor: "#f2f2f2",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                backgroundColor: "#aaa9ac",
-              },
-            }}
-          >
-            <Table
-              sx={{ minWidth: 700 }}
-              stickyHeader
-              aria-label="sticky table"
-            >
-              <TableHead>
-                <TableRow>
-                  <StyledTableCell align="center">STATE</StyledTableCell>
-                  <StyledTableCell align="center">TYPE</StyledTableCell>
-                  <StyledTableCell align="center">PRODUCT</StyledTableCell>
-
-                  <StyledTableCell align="center">DESCRIPTION</StyledTableCell>
-
-                  <StyledTableCell align="center">QUANTITY</StyledTableCell>
-                  <StyledTableCell align="center">UNIT</StyledTableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {filteredData.map((row, i) => (
-                  <StyledTableRow key={i}>
-                    <StyledTableCell align="center">
-                      {row.state}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">{row.type}</StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.product}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.description}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.quantity}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">{row.unit}</StyledTableCell>
-                  </StyledTableRow>
-                ))}
-              </TableBody>{" "}
-            </Table>
-          </TableContainer>
+          {/* CustomTable */}
+          <CustomTable headers={TableHeader} data={TableData} />
         </Paper>
       </Grid>
     </>

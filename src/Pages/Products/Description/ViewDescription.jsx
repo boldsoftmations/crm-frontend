@@ -1,21 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-
-import "../../CommonStyle.css";
-
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Grid,
-  Button,
-  Paper,
-  styled,
-  Box,
-  TableContainer,
-} from "@mui/material";
-import { tableCellClasses } from "@mui/material/TableCell";
+import { Grid, Button, Paper, Box } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ProductService from "../../../services/ProductService";
 import { Popup } from "./../../../Components/Popup";
@@ -25,26 +9,8 @@ import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
 import { CustomLoader } from "./../../../Components/CustomLoader";
 import { CustomSearch } from "./../../../Components/CustomSearch";
 import { CustomPagination } from "./../../../Components/CustomPagination";
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
+import { CustomTable } from "../../../Components/CustomTable";
+import "../../CommonStyle.css";
 
 export const ViewDescription = () => {
   const [description, setDescription] = useState([]);
@@ -164,9 +130,17 @@ export const ViewDescription = () => {
   };
 
   const openInPopup = (item) => {
-    setRecordForEdit(item);
+    setRecordForEdit(item.id);
     setOpenPopup(true);
   };
+
+  const TableHeader = ["ID", "DESCRIPTION", "CONSUMABLE", "ACTION"];
+
+  const TableData = description.map((value) => ({
+    id: value.id,
+    name: value.name,
+    consumable: value.consumable,
+  }));
   return (
     <>
       <CustomLoader open={open} />
@@ -206,60 +180,12 @@ export const ViewDescription = () => {
               </Button>
             </Box>
           </Box>
-          <TableContainer
-            sx={{
-              maxHeight: 440,
-              "&::-webkit-scrollbar": {
-                width: 15,
-              },
-              "&::-webkit-scrollbar-track": {
-                backgroundColor: "#f2f2f2",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                backgroundColor: "#aaa9ac",
-              },
-            }}
-          >
-            <Table
-              sx={{ minWidth: 700 }}
-              stickyHeader
-              aria-label="sticky table"
-            >
-              <TableHead>
-                <TableRow>
-                  <StyledTableCell align="center">ID</StyledTableCell>
-                  <StyledTableCell align="center">DESCRIPTION</StyledTableCell>
-
-                  <StyledTableCell align="center">CONSUMABLE</StyledTableCell>
-                  <StyledTableCell align="center">ACTION</StyledTableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {description.map((row, i) => {
-                  return (
-                    <StyledTableRow key={i}>
-                      <StyledTableCell align="center">{row.id}</StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.name}
-                      </StyledTableCell>
-
-                      <StyledTableCell align="center">
-                        {row.consumable.toUpperCase()}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        <Button
-                          variant="contained"
-                          onClick={() => openInPopup(row.id)}
-                        >
-                          View
-                        </Button>
-                      </StyledTableCell>
-                    </StyledTableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          {/* CustomTable */}
+          <CustomTable
+            headers={TableHeader}
+            data={TableData}
+            openInPopup={openInPopup}
+          />
           <CustomPagination
             pageCount={pageCount}
             handlePageClick={handlePageChange}

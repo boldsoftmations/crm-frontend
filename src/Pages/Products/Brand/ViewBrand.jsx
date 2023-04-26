@@ -1,21 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-
-import "../../CommonStyle.css";
-
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Grid,
-  Button,
-  Paper,
-  styled,
-  Box,
-  TableContainer,
-} from "@mui/material";
-import { tableCellClasses } from "@mui/material/TableCell";
+import { Grid, Button, Paper, Box } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ProductService from "../../../services/ProductService";
 import { Popup } from "./../../../Components/Popup";
@@ -24,26 +8,8 @@ import { UpdateBrand } from "./UpdateBrand";
 import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
 import { CustomSearch } from "./../../../Components/CustomSearch";
 import { CustomLoader } from "./../../../Components/CustomLoader";
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
+import "../../CommonStyle.css";
+import { CustomTable } from "../../../Components/CustomTable";
 
 export const ViewBrand = () => {
   const [brand, setBrand] = useState([]);
@@ -115,10 +81,12 @@ export const ViewBrand = () => {
   };
 
   const openInPopup = (item) => {
-    setRecordForEdit(item);
+    setRecordForEdit(item.id);
     setOpenPopup(true);
   };
 
+  const TableHeader = ["ID", "BRAND", "SHORT NAME", "ACTION"];
+  const TableData = brand.map((value) => value);
   return (
     <>
       <CustomLoader open={open} />
@@ -159,60 +127,12 @@ export const ViewBrand = () => {
             </Box>
           </Box>
 
-          <TableContainer
-            sx={{
-              maxHeight: 440,
-              "&::-webkit-scrollbar": {
-                width: 15,
-              },
-              "&::-webkit-scrollbar-track": {
-                backgroundColor: "#f2f2f2",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                backgroundColor: "#aaa9ac",
-              },
-            }}
-          >
-            <Table
-              sx={{ minWidth: 700 }}
-              stickyHeader
-              aria-label="sticky table"
-            >
-              <TableHead>
-                <TableRow>
-                  <StyledTableCell align="center">ID</StyledTableCell>
-                  <StyledTableCell align="center">BRAND</StyledTableCell>
-                  <StyledTableCell align="center">SHORT NAME</StyledTableCell>
-                  <StyledTableCell align="center">Action</StyledTableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {brand.map((row, i) => {
-                  return (
-                    <StyledTableRow key={i}>
-                      <StyledTableCell align="center">
-                        {row.id ? row.id : "-"}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.name ? row.name : "-"}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.short_name ? row.short_name : "-"}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        <Button
-                          variant="contained"
-                          onClick={() => openInPopup(row.id)}
-                        >
-                          View
-                        </Button>
-                      </StyledTableCell>
-                    </StyledTableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          {/* CustomTable */}
+          <CustomTable
+            headers={TableHeader}
+            data={TableData}
+            openInPopup={openInPopup}
+          />
         </Paper>
       </Grid>
       <Popup

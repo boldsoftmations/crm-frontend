@@ -1,23 +1,6 @@
-import { Link } from "react-router-dom";
 import React, { useEffect, useRef, useState } from "react";
-
 import "../../CommonStyle.css";
-
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Grid,
-  Button,
-  Paper,
-  styled,
-  Box,
-  TableContainer,
-} from "@mui/material";
-
-import { tableCellClasses } from "@mui/material/TableCell";
+import { Grid, Button, Paper, Box } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 
 import ProductService from "../../../services/ProductService";
@@ -37,26 +20,7 @@ import {
 } from "../../../Redux/Action/Action";
 import { getProductCodeData } from "./../../../Redux/Action/Action";
 import { CustomPagination } from "./../../../Components/CustomPagination";
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
+import { CustomTable } from "../../../Components/CustomTable";
 
 export const ViewFinishGoods = () => {
   const dispatch = useDispatch();
@@ -259,9 +223,33 @@ export const ViewFinishGoods = () => {
   };
 
   const openInPopup = (item) => {
-    setRecordForEdit(item);
+    setRecordForEdit(item.id);
     setOpenPopup(true);
   };
+
+  const TableHeader = [
+    "ID",
+    "FINISH GOODS",
+    "UNIT",
+    "BRAND",
+    "PRODUCT CODE",
+    "DESCRIPTION",
+    "HSN CODE",
+    "GST%",
+    "ACTION",
+  ];
+
+  const TableData = finishGood.map((value) => ({
+    id: value.id,
+    name: value.name,
+    unit: value.unit,
+    brand: value.brand,
+    productcode: value.productcode,
+    description: value.description,
+    hsn_code: value.hsn_code,
+    gst: value.gst,
+  }));
+
   return (
     <>
       <CustomLoader open={open} />
@@ -300,84 +288,12 @@ export const ViewFinishGoods = () => {
               </Button>
             </Box>
           </Box>
-          <TableContainer
-            sx={{
-              maxHeight: 440,
-              "&::-webkit-scrollbar": {
-                width: 15,
-              },
-              "&::-webkit-scrollbar-track": {
-                backgroundColor: "#f2f2f2",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                backgroundColor: "#aaa9ac",
-              },
-            }}
-          >
-            <Table
-              sx={{ minWidth: 700 }}
-              stickyHeader
-              aria-label="sticky table"
-            >
-              <TableHead>
-                <TableRow>
-                  <StyledTableCell align="center">ID</StyledTableCell>
-                  <StyledTableCell align="center">FINISH GOODS</StyledTableCell>
-
-                  <StyledTableCell align="center">UNIT</StyledTableCell>
-
-                  <StyledTableCell align="center">BRAND</StyledTableCell>
-                  <StyledTableCell align="center">PRODUCT CODE</StyledTableCell>
-                  <StyledTableCell align="center">DESCRIPTION</StyledTableCell>
-                  <StyledTableCell align="center">HSN CODE</StyledTableCell>
-                  <StyledTableCell align="center">GST%</StyledTableCell>
-                  <StyledTableCell align="center">ACTION</StyledTableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {finishGood.map((row, i) => {
-                  return (
-                    <StyledTableRow key={i}>
-                      <StyledTableCell align="center">
-                        {row.id ? row.id : "-"}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.name ? row.name.toUpperCase() : "-"}
-                      </StyledTableCell>
-
-                      <StyledTableCell align="center">
-                        {row.unit ? row.unit : "-"}
-                      </StyledTableCell>
-
-                      <StyledTableCell align="center">
-                        {row.brand ? row.brand : "-"}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.productcode ? row.productcode : "-"}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.description ? row.description : "-"}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.hsn_code ? row.hsn_code : "-"}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.gst ? `${row.gst}%` : "-"}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        <Button
-                          variant="contained"
-                          onClick={() => openInPopup(row.id)}
-                        >
-                          View
-                        </Button>
-                      </StyledTableCell>
-                    </StyledTableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          {/* CustomTable */}
+          <CustomTable
+            headers={TableHeader}
+            data={TableData}
+            openInPopup={openInPopup}
+          />
           <CustomPagination
             pageCount={pageCount}
             handlePageClick={handlePageChange}

@@ -18,17 +18,17 @@ import ProductService from "../../../services/ProductService";
 
 import "../../CommonStyle.css";
 
-const consume = [
-  {
-    value: "yes",
-    name: "Yes",
-  },
+// const consume = [
+//   {
+//     value: "yes",
+//     name: "Yes",
+//   },
 
-  {
-    value: "no",
-    name: "No",
-  },
-];
+//   {
+//     value: "no",
+//     name: "No",
+//   },
+// ];
 
 export const CreateDescription = (props) => {
   const { setOpenPopup, getDescriptions } = props;

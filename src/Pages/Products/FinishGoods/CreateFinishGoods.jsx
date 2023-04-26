@@ -8,12 +8,12 @@ import {
   TextField,
 } from "@mui/material";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 
 import ProductService from "../../../services/ProductService";
 
 import "../../CommonStyle.css";
-import { useSelector } from 'react-redux';
+import { useSelector } from "react-redux";
 
 export const CreateFinishGoods = (props) => {
   const { setOpenPopup, getFinishGoods } = props;
@@ -27,13 +27,13 @@ export const CreateFinishGoods = (props) => {
   const [productCode, setProductCode] = useState([]);
   const [finishGoods, setFinishGoods] = useState([]);
   const [open, setOpen] = useState(false);
-const user = useSelector((state) => state.auth)
-const brandData = user.brandAllData;
-const colorData = user.colourAllData;
-const packingUnitData = user.packingunitAllData;
-const productCodeData = user.productCodeAllData;
-const allBasicUnit = user.basicunitAllData;
-const unitData = user.unitAllData;
+  const user = useSelector((state) => state.auth);
+  const brandData = user.brandAllData;
+  const colorData = user.colourAllData;
+  const packingUnitData = user.packingunitAllData;
+  const productCodeData = user.productCodeAllData;
+  const allBasicUnit = user.basicunitAllData;
+  const unitData = user.unitAllData;
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
 
