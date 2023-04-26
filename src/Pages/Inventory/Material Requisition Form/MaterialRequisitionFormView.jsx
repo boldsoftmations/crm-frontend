@@ -351,7 +351,7 @@ export const MaterialRequisitionFormView = () => {
                   <StyledTableCell align="center"></StyledTableCell>
                   <StyledTableCell align="center">ID</StyledTableCell>
                   <StyledTableCell align="center">USER</StyledTableCell>
-                  <StyledTableCell align="center">SELLER STATE</StyledTableCell>
+                  <StyledTableCell align="center">SELLER UNIT</StyledTableCell>
                   <StyledTableCell align="center">DATE</StyledTableCell>
                   <StyledTableCell align="center">ACCEPTED</StyledTableCell>
 
@@ -449,6 +449,14 @@ export const MaterialRequisitionFormView = () => {
                   </div>
                   <div style={styles.cell}>
                     {materialRequisitionDataByID.user}
+                  </div>
+                </div>
+                <div style={styles.row}>
+                  <div style={{ ...styles.cell, textAlign: "left" }}>
+                    <strong>Seller Unit</strong>
+                  </div>
+                  <div style={styles.cell}>
+                    {materialRequisitionDataByID.seller_account}
                   </div>
                 </div>
                 <div style={{ ...styles.row, ...styles.header }}>
@@ -680,6 +688,16 @@ const MyDocument = ({ materialRequisitionDataByID }) => (
             <View style={style.cell}>
               <Text style={style.lightText}>
                 {materialRequisitionDataByID.accepted ? "Yes" : "No"}
+              </Text>
+            </View>
+          </View>
+          <View style={style.row}>
+            <View style={style.cell}>
+              <Text>Seller Unit</Text>
+            </View>
+            <View style={style.cell}>
+              <Text style={style.lightText}>
+                {materialRequisitionDataByID.seller_account}
               </Text>
             </View>
           </View>

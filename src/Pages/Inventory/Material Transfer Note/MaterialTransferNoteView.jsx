@@ -327,7 +327,7 @@ export const MaterialTransferNoteView = () => {
               <TableHead>
                 <StyledTableRow>
                   <StyledTableCell align="center">USER</StyledTableCell>
-                  <StyledTableCell align="center">SELLER STATE</StyledTableCell>
+                  <StyledTableCell align="center">SELLER UNIT</StyledTableCell>
                   <StyledTableCell align="center">PRODUCT</StyledTableCell>
                   <StyledTableCell align="center">UNIT</StyledTableCell>
                   <StyledTableCell align="center">QUANTITY</StyledTableCell>
@@ -456,6 +456,12 @@ export const MaterialTransferNoteView = () => {
               </tr>
               <tr>
                 <td>
+                  <strong>Seller Unit</strong>
+                </td>
+                <td>{materialTransferNoteByID.seller_account}</td>
+              </tr>
+              <tr>
+                <td>
                   <strong>Product</strong>
                 </td>
                 <td>{materialTransferNoteByID.product}</td>
@@ -577,6 +583,16 @@ const MyDocument = ({ materialTransferNoteByID }) => (
             <View style={style.cell}>
               <Text style={style.lightText}>
                 {materialTransferNoteByID.accepted ? "Yes" : "No"}
+              </Text>
+            </View>
+          </View>
+          <View style={style.row}>
+            <View style={style.cell}>
+              <Text>Seller Unit</Text>
+            </View>
+            <View style={style.cell}>
+              <Text style={style.lightText}>
+                {materialTransferNoteByID.seller_account}
               </Text>
             </View>
           </View>

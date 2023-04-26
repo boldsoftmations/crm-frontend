@@ -16,10 +16,10 @@ export const OrderBookSummaryView = (props) => {
     0
   );
 
-  const headers = ["SELLER STATE", "AMOUNT"];
+  const headers = ["SELLER UNIT", "AMOUNT"];
   const totalRow = ["Total", numberFormat(sums.toFixed(2))];
   const rowData = orderBookSummary.map((value) => ({
-    seller_state: value.orderbook__proforma_invoice__seller_account__state,
+    seller_state: value.orderbook__proforma_invoice__seller_account__unit,
     amount: numberFormat(value.total_amount),
   }));
   const data = [...rowData, totalRow];
