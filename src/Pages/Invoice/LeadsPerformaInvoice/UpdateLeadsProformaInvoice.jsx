@@ -21,9 +21,8 @@ import ProductService from "../../../services/ProductService";
 export const UpdateLeadsProformaInvoice = (props) => {
   const { idForEdit, getAllLeadsPIDetails, setOpenPopup } = props;
   const [open, setOpen] = useState(false);
-  const [errorMessage, setErrorMessage] = useState();
+  const [error, setError] = useState("");
   const [leadPIdataByID, setLeadPIdataByID] = useState([]);
-  const [validationPrice, setValidationPrice] = useState("");
   const [productOption, setProductOption] = useState([]);
   const [inputValue, setInputValue] = useState([]);
   const [paymentTermData, setPaymentTermData] = useState([]);
@@ -54,6 +53,7 @@ export const UpdateLeadsProformaInvoice = (props) => {
     data[index]["product"] = value;
     data[index]["unit"] = productObj ? productObj.unit : "";
     setProducts(data);
+    setProductEdit(true);
   };
 
   const handleFormChange = (index, event) => {
@@ -254,13 +254,17 @@ export const UpdateLeadsProformaInvoice = (props) => {
       setOpen(false);
     } catch (err) {
       if (err.response.status === 400) {
-        setErrorMessage(err.response.data.errors.buyer_order_no);
-        setValidationPrice(
-          err.response.data.errors.non_field_errors
-            ? err.response.data.errors.non_field_errors
-            : err.response.data.errors
-        );
+        setError({
+          place_of_supply: err.response.data.errors.place_of_supply || "",
+          buyer_order_no: err.response.data.errors.buyer_order_no || "",
+          transporter_name: err.response.data.errors.transporter_name || "",
+          validationPrice:
+            err.response.data.errors.non_field_errors ||
+            err.response.data.errors,
+        });
       }
+    } finally {
+      setOpen(false);
     }
   };
   return (
@@ -280,7 +284,9 @@ export const UpdateLeadsProformaInvoice = (props) => {
               label="Seller Account"
               variant="outlined"
               value={
-                leadPIdataByID.seller_state ? leadPIdataByID.seller_state : ""
+                leadPIdataByID.seller_account
+                  ? leadPIdataByID.seller_account
+                  : ""
               }
             />
           </Grid>
@@ -501,8 +507,8 @@ export const UpdateLeadsProformaInvoice = (props) => {
                   : ""
               }
               onChange={handleInputChange}
-              error={errorMessage}
-              helperText={errorMessage}
+              error={Boolean(error.buyer_order_no)}
+              helperText={error.buyer_order_no ? error.buyer_order_no[0] : ""}
               InputLabelProps={{
                 shrink: true,
               }}
@@ -537,6 +543,10 @@ export const UpdateLeadsProformaInvoice = (props) => {
               value={
                 inputValue.place_of_supply || leadPIdataByID.place_of_supply
               }
+              error={Boolean(error.place_of_supply)}
+              helperText={
+                error.place_of_supply ? error.place_of_supply.join(", ") : ""
+              }
               InputLabelProps={{
                 shrink: true,
               }}
@@ -556,6 +566,10 @@ export const UpdateLeadsProformaInvoice = (props) => {
               InputLabelProps={{
                 shrink: true,
               }}
+              error={Boolean(error.transporter_name)}
+              helperText={
+                error.transporter_name ? error.transporter_name[0] : ""
+              }
               onChange={handleInputChange}
             />
           </Grid>
@@ -566,7 +580,7 @@ export const UpdateLeadsProformaInvoice = (props) => {
               </Divider>
             </Root>
           </Grid>
-          <ErrorMessage errMsg={validationPrice} />
+          <ErrorMessage errMsg={error.validationPrice} />
           {products.map((input, index) => {
             return (
               <>

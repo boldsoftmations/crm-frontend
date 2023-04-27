@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import {
   Autocomplete,
   Box,
@@ -7,7 +8,6 @@ import {
   Divider,
   FormControlLabel,
   Grid,
-  Typography,
   TextField,
   FormControl,
   InputLabel,
@@ -16,11 +16,9 @@ import {
   FormHelperText,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import React, { useEffect, useState } from "react";
+import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 import { useSelector } from "react-redux";
 import { CustomLoader } from "../../../Components/CustomLoader";
-import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
-import { Popup } from "../../../Components/Popup";
 import CustomerServices from "../../../services/CustomerService";
 import InvoiceServices from "../../../services/InvoiceService";
 import ProductService from "../../../services/ProductService";
@@ -28,9 +26,8 @@ import ProductService from "../../../services/ProductService";
 export const UpdateCustomerProformaInvoice = (props) => {
   const { idForEdit, getCustomerPIDetails, setOpenPopup } = props;
   const [open, setOpen] = useState(false);
-  const [errorMessage, setErrorMessage] = useState();
+  const [error, setError] = useState("");
   const [customerPIdataByID, setCustomerPIdataByID] = useState([]);
-  const [validationPrice, setValidationPrice] = useState("");
   const [productOption, setProductOption] = useState([]);
   const [inputValue, setInputValue] = useState([]);
   const [paymentTermData, setPaymentTermData] = useState([]);
@@ -61,10 +58,10 @@ export const UpdateCustomerProformaInvoice = (props) => {
   const handleAutocompleteChange = (index, event, value) => {
     let data = [...products];
     const productObj = productOption.find((item) => item.product === value);
-    console.log("productObj", productObj);
     data[index]["product"] = value;
     data[index]["unit"] = productObj ? productObj.unit : "";
     setProducts(data);
+    setProductEdit(true);
   };
 
   const handleFormChange = (index, event) => {
@@ -145,11 +142,6 @@ export const UpdateCustomerProformaInvoice = (props) => {
     }
   };
 
-  // All Company Details Api
-  // useEffect(() => {
-  //   if (recordForEdit) getAllCompanyDetailsByID();
-  // }, [recordForEdit]);
-
   const getAllCompanyDetailsByID = async (value) => {
     try {
       setOpen(true);
@@ -174,6 +166,7 @@ export const UpdateCustomerProformaInvoice = (props) => {
     try {
       e.preventDefault();
       setOpen(true);
+
       const productList = productEdit === true ? products : [];
       const req = {
         type: "Customer",
@@ -273,17 +266,27 @@ export const UpdateCustomerProformaInvoice = (props) => {
       setOpen(false);
     } catch (err) {
       if (err.response.status === 400) {
-        alert(err.response.data.errors.address);
-        // alert(err.response.data.contact);
-        setErrorMessage(err.response.data.errors.buyer_order_no);
-        setValidationPrice(
-          err.response.data.errors.non_field_errors
-            ? err.response.data.errors.non_field_errors
-            : err.response.data.errors
-        );
+        setError({
+          address: err.response.data.errors.address || "",
+          buyer_order_no: err.response.data.errors.buyer_order_no || "",
+          city: err.response.data.errors.city || "",
+          contact: err.response.data.errors.contact || "",
+          pincode: err.response.data.errors.pincode || "",
+          state: err.response.data.errors.state || "",
+          validationPrice:
+            err.response.data.errors.non_field_errors ||
+            err.response.data.errors,
+        });
       }
+    } finally {
+      setOpen(false);
     }
   };
+
+  const handleCloseSnackbar = () => {
+    setError(null);
+  };
+  console.log("error", error);
   return (
     <div>
       <CustomLoader open={open} />
@@ -380,6 +383,8 @@ export const UpdateCustomerProformaInvoice = (props) => {
               label="Company"
               variant="outlined"
               value={customerData.name ? customerData.name : ""}
+              error={Boolean(error.company)}
+              helperText={error.company ? error.company[0] : ""}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -388,6 +393,7 @@ export const UpdateCustomerProformaInvoice = (props) => {
               fullWidth
               size="small"
               sx={{ padding: "0", margin: "0" }}
+              error={Boolean(error.contact) && !warehouseData.contact}
             >
               <InputLabel id="demo-simple-select-required-label">
                 Contact Name
@@ -407,7 +413,12 @@ export const UpdateCustomerProformaInvoice = (props) => {
                     </MenuItem>
                   ))}
               </Select>
-              <HelperText>first select Company Name</HelperText>
+              {Boolean(error.contact) && !warehouseData.contact && (
+                <FormHelperText>{error.contact}</FormHelperText>
+              )}
+              {!Boolean(error.contact) && !warehouseData.contact && (
+                <HelperText>first select Company Name</HelperText>
+              )}
             </FormControl>
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -475,7 +486,11 @@ export const UpdateCustomerProformaInvoice = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <FormControl fullWidth size="small">
+            <FormControl
+              fullWidth
+              size="small"
+              error={Boolean(error.address) && !warehouseData.address}
+            >
               <InputLabel id="demo-simple-select-label">
                 Shipping Address
               </InputLabel>
@@ -492,7 +507,9 @@ export const UpdateCustomerProformaInvoice = (props) => {
                     </MenuItem>
                   ))}
               </Select>
-              <HelperText>first select Contact</HelperText>
+              {Boolean(error.address) && !warehouseData.address && (
+                <FormHelperText>{error.address}</FormHelperText>
+              )}
             </FormControl>
           </Grid>
 
@@ -512,8 +529,13 @@ export const UpdateCustomerProformaInvoice = (props) => {
                     : ""
                   : ""
               }
+              error={Boolean(error.city) && !warehouseData.city}
+              helperText={
+                Boolean(error.city) && !warehouseData.city ? error.city[0] : ""
+              }
             />
           </Grid>
+
           <Grid item xs={12} sm={4}>
             <TextField
               fullWidth
@@ -528,6 +550,12 @@ export const UpdateCustomerProformaInvoice = (props) => {
                   ? warehouseData.state
                     ? warehouseData.state
                     : ""
+                  : ""
+              }
+              error={Boolean(error.state) && !warehouseData.state}
+              helperText={
+                Boolean(error.state) && !warehouseData.state
+                  ? error.state[0]
                   : ""
               }
             />
@@ -547,6 +575,12 @@ export const UpdateCustomerProformaInvoice = (props) => {
                   ? warehouseData.pincode
                     ? warehouseData.pincode
                     : ""
+                  : ""
+              }
+              error={Boolean(error.pincode) && !warehouseData.pincode}
+              helperText={
+                Boolean(error.pincode) && !warehouseData.pincode
+                  ? error.pincode[0]
                   : ""
               }
             />
@@ -578,9 +612,9 @@ export const UpdateCustomerProformaInvoice = (props) => {
                   ? customerPIdataByID.buyer_order_no
                   : ""
               }
+              error={Boolean(error.buyer_order_no)}
+              helperText={error.buyer_order_no ? error.buyer_order_no[0] : ""}
               onChange={handleInputChange}
-              error={errorMessage}
-              helperText={errorMessage}
               InputLabelProps={{
                 shrink: true,
               }}
@@ -660,7 +694,7 @@ export const UpdateCustomerProformaInvoice = (props) => {
               </Divider>
             </Root>
           </Grid>
-          <ErrorMessage errMsg={validationPrice} />
+          <ErrorMessage errMsg={error.validationPrice} />
           {products.map((input, index) => {
             return (
               <>
