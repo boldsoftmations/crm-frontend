@@ -23,9 +23,10 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { tableCellClasses } from "@mui/material/TableCell";
 import { CustomPagination } from "./../../Components/CustomPagination";
 import { CustomLoader } from "./../../Components/CustomLoader";
-import { CustomSearch } from "./../../Components/CustomSearch";
+import { CaustomSearch, CustomSearch } from "./../../Components/CustomSearch";
 import moment from "moment";
 import { ErrorMessage } from "../../Components/ErrorMessage/ErrorMessage";
+import { CSVLink } from "react-csv";
 export const SalesRegisterView = () => {
   const errRef = useRef();
   const [open, setOpen] = useState(false);
@@ -180,6 +181,19 @@ export const SalesRegisterView = () => {
     }
   };
 
+  let data = salesRegisterData
+    .map((item) => {
+      return {
+        date: moment(item.date).format("DD-MM-YYYY"),
+        sales_invoice: item.sales_invoice,
+        customer: item.customer,
+        dispatch_location: item.dispatch_location,
+        lr_copy: item.lr_copy,
+        pod_copy: item.pod_copy,
+      };
+    })
+    .filter((item) => item !== null);
+
   return (
     <div>
       {" "}
@@ -246,7 +260,24 @@ export const SalesRegisterView = () => {
                 Sales Register
               </h3>
             </Box>
-            <Box flexGrow={0.5}></Box>
+            <Box flexGrow={0.5}>
+              {" "}
+              <CSVLink
+                data={data}
+                headers={headers}
+                filename={"my-file.csv"}
+                target="_blank"
+                style={{
+                  textDecoration: "none",
+                  outline: "none",
+                  height: "5vh",
+                }}
+              >
+                <Button variant="contained" color="success">
+                  Export to Excel
+                </Button>
+              </CSVLink>
+            </Box>
           </Box>
           <TableContainer
             sx={{
@@ -322,25 +353,6 @@ function Row(props) {
     FileSaver.saveAs(url, "image");
   };
 
-  // const createLeadsData = async (e) => {
-  //   try {
-  //     e.preventDefault();
-  //     setOpen(true);
-  //     // const data = {
-  //     //   sales_invoice: id,
-  //     //   dispatched: checked,
-  //     // };
-  //     const data = new FormData();
-
-  //     await InvoiceServices.updateDispatched(row.id, data);
-  //     getAllDispatchDetails();
-  //     setOpen(false);
-  //     setOpenModal(false);
-  //   } catch (error) {
-  //     console.log("error :>> ", error);
-  //     setOpen(false);
-  //   }
-  // };
   return (
     <>
       <CustomLoader opn={open} />
@@ -442,3 +454,15 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     border: 0,
   },
 }));
+
+const headers = [
+  {
+    label: "Date",
+    key: "date",
+  },
+  { label: "Sales Invoice", key: "sales_invoice" },
+  { label: "Customer", key: "customer" },
+  { label: "Dispatch Location", key: "dispatch_location" },
+  { label: "LR Copy", key: "lr_copy" },
+  { label: "POD Copy", key: "pod_copy" },
+];
