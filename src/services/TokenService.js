@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom";
+
 export const getLocalRefreshToken = () => {
   const user = JSON.parse(localStorage.getItem("user"));
   return user.refresh;
@@ -25,4 +27,8 @@ export const setUserData = (user) => {
 
 export const removeUser = () => {
   localStorage.removeItem("user");
+
+  // Navigate to home route
+  const navigate = useNavigate();
+  navigate("/");
 };
