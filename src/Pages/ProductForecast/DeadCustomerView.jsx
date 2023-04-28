@@ -239,10 +239,9 @@ export const DeadCustomerView = () => {
       city: row.city,
       state: row.state,
       sales_person: row.assigned_to,
-      contact_person_name: row.contacts
-        .map((rowData) => rowData.name)
-        .join(", "),
-      contact: row.contacts.map((rowData) => rowData.contact).join(", "),
+      contact_person_name:
+        row.contacts && row.contacts[0] ? row.contacts[0].name : "",
+      contact: row.contacts && row.contacts[0] ? row.contacts[0].contact : "",
     };
     return obj;
   });
@@ -399,16 +398,18 @@ export const DeadCustomerView = () => {
                     <StyledTableCell align="center">
                       {row.assigned_to}
                     </StyledTableCell>
-                    {row.contacts.map((rowData) => (
-                      <>
-                        <StyledTableCell align="center">
-                          {rowData.name}
-                        </StyledTableCell>
-                        <StyledTableCell align="center">
-                          {rowData.contact}
-                        </StyledTableCell>
-                      </>
-                    ))}
+
+                    <StyledTableCell align="center">
+                      {row.contacts && row.contacts[0]
+                        ? row.contacts[0].name
+                        : ""}
+                    </StyledTableCell>
+
+                    <StyledTableCell align="center">
+                      {row.contacts && row.contacts[0]
+                        ? row.contacts[0].contact
+                        : ""}
+                    </StyledTableCell>
                   </StyledTableRow>
                 ))}
               </TableBody>
