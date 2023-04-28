@@ -196,9 +196,7 @@ export const MaterialRequisitionFormView = () => {
     try {
       setOpen(true);
       const req = {
-        seller_account: users.groups.includes("Stores Delhi")
-          ? "Delhi"
-          : "Maharashtra",
+        seller_account: data.seller_account,
         user: data.user,
         accepted: true,
         products_data: data.products_data,

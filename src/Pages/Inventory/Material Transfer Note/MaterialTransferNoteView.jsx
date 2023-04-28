@@ -175,9 +175,7 @@ export const MaterialTransferNoteView = () => {
     try {
       setOpen(true);
       const req = {
-        seller_account: users.groups.includes("Stores Delhi")
-          ? "Delhi"
-          : "Maharashtra",
+        seller_account: data.seller_account,
         user: data.user,
         accepted: true,
         product: data.product,
