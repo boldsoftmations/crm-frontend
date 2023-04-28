@@ -231,8 +231,6 @@ export const ProductHavingForecastView = () => {
     getSearchData(event.target.value);
   };
 
-
-
   useEffect(() => {
     getAllCustomerWiseOrderBookExport();
   }, [searchQuery]);
@@ -313,7 +311,7 @@ export const ProductHavingForecastView = () => {
     },
     //{ label: `${months[nextMonth3]} - ${nextMonth3 > currentMonth ? currentYear : currentYear + 1} Forecast`, key: "product_forecast_5" },
   ];
-  
+
   const data = exportProductHavingForecast.map((row) => {
     const obj = {
       company: row.company,
@@ -417,7 +415,7 @@ export const ProductHavingForecastView = () => {
                   fontWeight: 800,
                 }}
               >
-                Product Having Forecast
+                Customer Having Forecast
               </h3>
             </Box>
             <Box flexGrow={0.5}>

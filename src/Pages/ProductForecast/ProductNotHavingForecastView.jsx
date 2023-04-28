@@ -414,7 +414,7 @@ export const ProductNotHavingForecastView = () => {
                   fontWeight: 800,
                 }}
               >
-                Product Not Having Forecast
+                Customer Not Having Forecast
               </h3>
             </Box>
             <Box flexGrow={0.5}>

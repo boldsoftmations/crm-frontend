@@ -16,8 +16,8 @@ export const ProductForecastViewAll = () => {
 
   const tabs = [
     { label: "Product Forecast" },
-    { label: "Product Not Having Forecast" },
-    { label: "Product Having Forecast" },
+    { label: "Customer Not Having Forecast" },
+    { label: "Customer Having Forecast" },
     { label: "Dead Customer" },
     { label: "Product Wise Forecast" },
     { label: "Current Month Forecast" },
