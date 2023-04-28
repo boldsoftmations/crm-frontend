@@ -1,126 +1,5 @@
 import CustomAxios from "./api";
 
-const getAllCompanyData = () => {
-  return CustomAxios.get(`/api/customer/list-company/`);
-};
-
-const getAllPaginateCompanyData = (all) => {
-  return CustomAxios.get(`/api/customer/list-company/?page=${all}`);
-};
-
-const getAllPaginateCompanyDataWithSearch = (all, search) => {
-  return CustomAxios.get(
-    `/api/customer/list-company/?page=${all}&search=${search}`
-  );
-};
-
-const getAllSearchCompanyData = (search) => {
-  return CustomAxios.get(`/api/customer/list-company/?search=${search}`);
-};
-
-const getAllCompanyDataPaginate = (currentPage, search) => {
-  return CustomAxios.get(
-    `/api/customer/list-company/?page=${currentPage}&search=${search}`
-  );
-};
-
-const getCompanyPaginateData = (currentPage) => {
-  return CustomAxios.get(`/api/customer/list-company/?page=${currentPage}`);
-};
-
-const createCompanyData = (data) => {
-  return CustomAxios.post("/api/customer/list-company/", data);
-};
-
-const getCompanyDataById = (id) => {
-  return CustomAxios.get(`/api/customer/list-company/${id}`);
-};
-
-const updateCompanyData = (id, data) => {
-  return CustomAxios.patch(`/api/customer/list-company/${id}`, data);
-};
-
-const getBankDataById = (id) => {
-  return CustomAxios.get(`/api/customer/list-bank/${id}`);
-};
-
-const createBankData = (data) => {
-  return CustomAxios.post("/api/customer/list-bank/", data);
-};
-
-const updateBankData = (id, data) => {
-  return CustomAxios.patch(`/api/customer/list-bank/${id}`, data);
-};
-
-const createContactData = (data) => {
-  return CustomAxios.post("/api/customer/list-contact/", data);
-};
-
-const getContactDataById = (id) => {
-  return CustomAxios.get(`/api/customer/list-contact/${id}`);
-};
-
-const updateContactData = (id, data) => {
-  return CustomAxios.patch(`/api/customer/list-contact/${id}`, data);
-};
-
-const getAllContactData = () => {
-  return CustomAxios.get(`/api/customer/list-contact/`);
-};
-
-const createWareHouseData = (data) => {
-  return CustomAxios.post("/api/customer/list-warehouse/", data);
-};
-
-const getWareHouseDataById = (id) => {
-  return CustomAxios.get(`/api/customer/list-warehouse/${id}`);
-};
-
-const updatetWareHouseData = (id, data) => {
-  return CustomAxios.patch(`/api/customer/list-warehouse/${id}`, data);
-};
-
-const createSecurityChequeData = (data) => {
-  return CustomAxios.post("/api/customer/list-securitycheque/", data);
-};
-
-const getSecurityChequeDataById = (id) => {
-  return CustomAxios.get(`/api/customer/list-securitycheque/${id}`);
-};
-
-const updateSecurityChequeData = (id, data) => {
-  return CustomAxios.patch(`/api/customer/list-securitycheque/${id}`, data);
-};
-
-const createForecastData = (data) => {
-  return CustomAxios.post("/api/forecast/list-product-forecast/", data);
-};
-
-const getForecastDataById = (id) => {
-  return CustomAxios.get(`/api/forecast/list-product-forecast/${id}`);
-};
-
-const updateForecastData = (id, data) => {
-  return CustomAxios.patch(`/api/forecast/list-quantity-forecast/${id}`, data);
-};
-
-const createProductForecastData = (data) => {
-  return CustomAxios.post("/api/forecast/list-quantity-forecast/", data);
-};
-
-const updateProductForecastData = (id, data) => {
-  return CustomAxios.patch(`/api/forecast/list-quantity-forecast/${id}`, data);
-};
-
-// followUp endpoints
-const createFollowUpCustomer = (data) => {
-  return CustomAxios.post("/api/customer/list-followup/", data);
-};
-
-const getCustomerFollowUp = () => {
-  return CustomAxios.get(`/api/customer/list-followup/`);
-};
-
 // Product Forecast
 
 const getProductForecast = () => {
@@ -248,36 +127,88 @@ const getProductHavingForecastPaginateData = (currentPage) => {
     `/api/forecast/list-product-having-forecast/?page=${currentPage}`
   );
 };
-const CustomerServices = {
-  getAllCompanyData,
-  getAllPaginateCompanyData,
-  getAllPaginateCompanyDataWithSearch,
-  getAllSearchCompanyData,
-  getAllCompanyDataPaginate,
-  getCompanyPaginateData,
-  createCompanyData,
-  getCompanyDataById,
-  updateCompanyData,
-  getBankDataById,
-  createBankData,
-  updateBankData,
-  createContactData,
-  getContactDataById,
-  updateContactData,
-  getAllContactData,
-  createWareHouseData,
-  updatetWareHouseData,
-  getWareHouseDataById,
-  createSecurityChequeData,
-  getSecurityChequeDataById,
-  updateSecurityChequeData,
-  createForecastData,
-  getForecastDataById,
-  updateForecastData,
-  createProductForecastData,
-  updateProductForecastData,
-  createFollowUpCustomer,
-  getCustomerFollowUp,
+
+// Dead Customer
+
+const getDeadCustomer = () => {
+  return CustomAxios.get(`/api/forecast/list-dead-customers/`);
+};
+
+const getByFilterDeadCustomer = (type, data) => {
+  return CustomAxios.get(`/api/forecast/list-dead-customers/?${type}=${data}`);
+};
+
+const getAllPaginateDeadCustomer = (all) => {
+  return CustomAxios.get(`/api/forecast/list-dead-customers/?page=${all}`);
+};
+
+const getAllPaginateDeadCustomerWithSearch = (all, type, search) => {
+  return CustomAxios.get(
+    `/api/forecast/list-dead-customers/?page=${all}&${type}=${search}`
+  );
+};
+
+const getAllSearchDeadCustomer = (type, search) => {
+  return CustomAxios.get(
+    `/api/forecast/list-dead-customers/?${type}=${search}`
+  );
+};
+
+const getAllDeadCustomerPaginate = (currentPage, type, search) => {
+  return CustomAxios.get(
+    `/api/forecast/list-dead-customers/?page=${currentPage}&${type}=${search}`
+  );
+};
+
+const getDeadCustomerPaginateData = (currentPage) => {
+  return CustomAxios.get(
+    `/api/forecast/list-dead-customers/?page=${currentPage}`
+  );
+};
+
+// Product Wise Forecast
+
+const getProductWiseForecast = () => {
+  return CustomAxios.get(`/api/forecast/list-product-wise-forecast/`);
+};
+
+const getByFilterProductWiseForecast = (type, data) => {
+  return CustomAxios.get(
+    `/api/forecast/list-product-wise-forecast/?${type}=${data}`
+  );
+};
+
+const getAllPaginateProductWiseForecast = (all) => {
+  return CustomAxios.get(
+    `/api/forecast/list-product-wise-forecast/?page=${all}`
+  );
+};
+
+const getAllPaginateProductWiseForecastWithSearch = (all, type, search) => {
+  return CustomAxios.get(
+    `/api/forecast/list-product-wise-forecast/?page=${all}&${type}=${search}`
+  );
+};
+
+const getAllSearchProductWiseForecast = (type, search) => {
+  return CustomAxios.get(
+    `/api/forecast/list-product-wise-forecast/?${type}=${search}`
+  );
+};
+
+const getAllProductWiseForecastPaginate = (currentPage, type, search) => {
+  return CustomAxios.get(
+    `/api/forecast/list-product-wise-forecast/?page=${currentPage}&${type}=${search}`
+  );
+};
+
+const getProductWiseForecastPaginateData = (currentPage) => {
+  return CustomAxios.get(
+    `/api/forecast/list-product-wise-forecast/?page=${currentPage}`
+  );
+};
+
+const ProductForecastService = {
   getProductForecast,
   getByFilterProductForecast,
   getAllPaginateProductForecast,
@@ -299,6 +230,20 @@ const CustomerServices = {
   getAllSearchProductHavingForecast,
   getAllProductHavingForecastPaginate,
   getProductHavingForecastPaginateData,
+  getDeadCustomer,
+  getByFilterDeadCustomer,
+  getAllPaginateDeadCustomer,
+  getAllPaginateDeadCustomerWithSearch,
+  getAllSearchDeadCustomer,
+  getAllDeadCustomerPaginate,
+  getDeadCustomerPaginateData,
+  getProductWiseForecast,
+  getByFilterProductWiseForecast,
+  getAllPaginateProductWiseForecast,
+  getAllPaginateProductWiseForecastWithSearch,
+  getAllSearchProductWiseForecast,
+  getAllProductWiseForecastPaginate,
+  getProductWiseForecastPaginateData,
 };
 
-export default CustomerServices;
+export default ProductForecastService;

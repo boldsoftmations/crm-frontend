@@ -45,7 +45,7 @@ const filterOption = [
   { label: "Search", value: "search" },
 ];
 
-export const ProductForecastView = () => {
+export const CurrentMonthForecastView = () => {
   const [open, setOpen] = useState(false);
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
@@ -57,36 +57,6 @@ export const ProductForecastView = () => {
   const [assigned, setAssigned] = useState([]);
   const [productForecast, setProductForecast] = useState([]);
   const [exportProductForecast, setExportProductForecast] = useState([]);
-  // Get the current date
-  const currentDate = new Date();
-
-  // Get the current month and year
-  const currentMonth = currentDate.getMonth();
-  const currentYear = currentDate.getFullYear();
-
-  // Get the last 2 months
-  const lastMonth1 = (currentMonth - 2 + 12) % 12;
-  const lastMonth2 = (currentMonth - 1 + 12) % 12;
-
-  // Get the next 2 months
-  const nextMonth1 = (currentMonth + 1) % 12;
-  const nextMonth2 = (currentMonth + 2) % 12;
-  const nextMonth3 = (currentMonth + 3) % 12;
-  // Convert month number to month name
-  const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
 
   useEffect(() => {
     getLAssignedData();
@@ -275,35 +245,15 @@ export const ProductForecastView = () => {
     { label: "Company", key: "company" },
     { label: "Sales Person", key: "sales_person" },
     { label: "Product", key: "product" },
+
     {
-      label: `${months[lastMonth1]} - ${
-        lastMonth1 < currentMonth ? currentYear : currentYear - 1
-      } Actual-Forecast`,
-      key: "product_forecast_0",
+      label: "Forecast",
+      key: "forecast",
     },
     {
-      label: `${months[lastMonth2]} - ${
-        lastMonth2 < currentMonth ? currentYear : currentYear - 1
-      } Actual-Forecast`,
-      key: "product_forecast_1",
+      label: "Actual",
+      key: "actual",
     },
-    {
-      label: `${months[currentMonth]} - ${currentYear} Actual-Forecast`,
-      key: "product_forecast_2",
-    },
-    {
-      label: `${months[nextMonth1]} - ${
-        nextMonth1 > currentMonth ? currentYear : currentYear + 1
-      } Forecast`,
-      key: "product_forecast_3",
-    },
-    {
-      label: `${months[nextMonth2]} - ${
-        nextMonth2 > currentMonth ? currentYear : currentYear + 1
-      } Forecast`,
-      key: "product_forecast_4",
-    },
-    //{ label: `${months[nextMonth3]} - ${nextMonth3 > currentMonth ? currentYear : currentYear + 1} Forecast`, key: "product_forecast_5" },
   ];
 
   const data = exportProductForecast.map((row) => {
@@ -311,13 +261,10 @@ export const ProductForecastView = () => {
       company: row.company,
       sales_person: row.sales_person,
       product: row.product,
+      forecast: row.product_forecast[2].forecast,
+      actual: row.product_forecast[2].actual,
     };
-    row.product_forecast.forEach((rowData, index) => {
-      obj[`product_forecast_${index}`] =
-        rowData.actual !== null
-          ? `${rowData.actual}-${rowData.forecast}`
-          : `-${rowData.forecast}`;
-    });
+
     return obj;
   });
 
@@ -409,7 +356,7 @@ export const ProductForecastView = () => {
                   fontWeight: 800,
                 }}
               >
-                Product Forecast
+                Current Month Forecast
               </h3>
             </Box>
             <Box flexGrow={0.5}>
@@ -455,45 +402,9 @@ export const ProductForecastView = () => {
                   <StyledTableCell align="center">COMPANY</StyledTableCell>
                   <StyledTableCell align="center">SALES PERSON</StyledTableCell>
                   <StyledTableCell align="center">PRODUCT</StyledTableCell>
-                  <StyledTableCell align="center">
-                    {` ${months[lastMonth1]} - ${
-                      lastMonth1 < currentMonth ? currentYear : currentYear - 1
-                    }`}
-                    <br />
-                    FORECAST - ACTUAL
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    {` ${months[lastMonth2]} - ${
-                      lastMonth2 < currentMonth ? currentYear : currentYear - 1
-                    }`}{" "}
-                    <br />
-                    FORECAST - ACTUAL
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    {`${months[currentMonth]} - ${currentYear}`} <br />
-                    FORECAST - ACTUAL
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    {` ${months[nextMonth1]} - ${
-                      nextMonth1 > currentMonth ? currentYear : currentYear + 1
-                    }`}{" "}
-                    <br />
-                    FORECAST
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    {` ${months[nextMonth2]} - ${
-                      nextMonth2 > currentMonth ? currentYear : currentYear + 1
-                    }`}{" "}
-                    <br />
-                    FORECAST
-                  </StyledTableCell>
-                  {/* <StyledTableCell align="center">
-                    {` ${months[nextMonth3]} - ${
-                      nextMonth3 > currentMonth ? currentYear : currentYear + 1
-                    }`}{" "}
-                    <br />
-                    FORECAST
-                  </StyledTableCell> */}
+
+                  <StyledTableCell align="center">FORECAST</StyledTableCell>
+                  <StyledTableCell align="center">ACTUAL</StyledTableCell>
                 </StyledTableRow>
               </TableHead>
               <TableBody>
@@ -508,17 +419,12 @@ export const ProductForecastView = () => {
                     <StyledTableCell align="center">
                       {row.product}
                     </StyledTableCell>
-                    {row.product_forecast.map((rowData) => {
-                      return rowData.actual !== null ? (
-                        <StyledTableCell align="center">
-                          {rowData.actual} - {rowData.forecast}
-                        </StyledTableCell>
-                      ) : (
-                        <StyledTableCell align="center">
-                          {rowData.forecast} -
-                        </StyledTableCell>
-                      );
-                    })}
+                    <StyledTableCell align="center">
+                      {row.product_forecast[2].forecast}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.product_forecast[2].actual}
+                    </StyledTableCell>
                   </StyledTableRow>
                 ))}
               </TableBody>

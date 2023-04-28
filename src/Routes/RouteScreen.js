@@ -52,7 +52,7 @@ import { ProductionInventoryConsView } from "../Pages/Inventory/Production Inven
 import { StoresInventoryConsView } from "../Pages/Inventory/Stores Inventory/StoresInventoryConsView";
 import { ProductionInventoryGAndLView } from "../Pages/Inventory/Production Entry/ProductionInventoryGAndLView";
 import { ProductionShortFallView } from "../Pages/Inventory/ProductionShortFall/ProductionShortFallView";
-import { ProductForecastView } from "../Pages/ProductForecast/ProductForecastView";
+import { ProductForecastViewAll } from "../Pages/ProductForecast/ProductForecastViewAll";
 
 export const RouteScreen = () => {
   const tokenData = useSelector((state) => state.auth);
@@ -218,7 +218,7 @@ export const RouteScreen = () => {
             {/* ProductForecast Route */}
             <Route
               path="/forecast/view-product-forecast"
-              element={<ProductForecastView />}
+              element={<ProductForecastViewAll />}
             />
             <Route path="*" element={<Home />} />
           </>

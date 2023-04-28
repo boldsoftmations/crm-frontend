@@ -45,7 +45,7 @@ const filterOption = [
   { label: "Search", value: "search" },
 ];
 
-export const ProductForecastView = () => {
+export const ProductWiseForecastView = () => {
   const [open, setOpen] = useState(false);
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
@@ -55,38 +55,10 @@ export const ProductForecastView = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const [assigned, setAssigned] = useState([]);
-  const [productForecast, setProductForecast] = useState([]);
-  const [exportProductForecast, setExportProductForecast] = useState([]);
-  // Get the current date
-  const currentDate = new Date();
-
-  // Get the current month and year
-  const currentMonth = currentDate.getMonth();
-  const currentYear = currentDate.getFullYear();
-
-  // Get the last 2 months
-  const lastMonth1 = (currentMonth - 2 + 12) % 12;
-  const lastMonth2 = (currentMonth - 1 + 12) % 12;
-
-  // Get the next 2 months
-  const nextMonth1 = (currentMonth + 1) % 12;
-  const nextMonth2 = (currentMonth + 2) % 12;
-  const nextMonth3 = (currentMonth + 3) % 12;
-  // Convert month number to month name
-  const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
+  const [ProductWiseForecast, setProductWiseForecast] = useState([]);
+  const [exportProductWiseForecast, setExportProductWiseForecast] = useState(
+    []
+  );
 
   useEffect(() => {
     getLAssignedData();
@@ -114,15 +86,15 @@ export const ProductForecastView = () => {
       setOpen(true);
       if (currentPage) {
         const response =
-          await ProductForecastService.getProductForecastPaginateData(
+          await ProductForecastService.getProductWiseForecastPaginateData(
             currentPage
           );
-        setProductForecast(response.data.results);
+        setProductWiseForecast(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
       } else {
-        const response = await ProductForecastService.getProductForecast();
-        setProductForecast(response.data.results);
+        const response = await ProductForecastService.getProductWiseForecast();
+        setProductWiseForecast(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
       }
@@ -155,12 +127,13 @@ export const ProductForecastView = () => {
     try {
       setOpen(true);
       const filterSearch = value;
-      const response = await ProductForecastService.getAllSearchProductForecast(
-        filterQuery,
-        filterSearch
-      );
+      const response =
+        await ProductForecastService.getAllSearchProductWiseForecast(
+          filterQuery,
+          filterSearch
+        );
       if (response) {
-        setProductForecast(response.data.results);
+        setProductWiseForecast(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
       } else {
@@ -182,13 +155,13 @@ export const ProductForecastView = () => {
 
       if (searchQuery) {
         const response =
-          await ProductForecastService.getAllProductForecastPaginate(
+          await ProductForecastService.getAllProductWiseForecastPaginate(
             page,
             filterQuery,
             searchQuery
           );
         if (response) {
-          setProductForecast(response.data.results);
+          setProductWiseForecast(response.data.results);
           const total = response.data.count;
           setpageCount(Math.ceil(total / 25));
         } else {
@@ -197,8 +170,8 @@ export const ProductForecastView = () => {
         }
       } else {
         const response =
-          await ProductForecastService.getProductForecastPaginateData(page);
-        setProductForecast(response.data.results);
+          await ProductForecastService.getProductWiseForecastPaginateData(page);
+        setProductWiseForecast(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
       }
@@ -236,18 +209,18 @@ export const ProductForecastView = () => {
       setOpen(true);
       if (searchQuery) {
         const response =
-          await ProductForecastService.getAllPaginateProductForecastWithSearch(
+          await ProductForecastService.getAllPaginateProductWiseForecastWithSearch(
             "all",
             filterQuery,
             searchQuery
           );
-        setExportProductForecast(response.data);
+        setExportProductWiseForecast(response.data);
         //   const total = response.data.count;
         //   setpageCount(Math.ceil(total / 25));
       } else {
         const response =
-          await ProductForecastService.getAllPaginateProductForecast("all");
-        setExportProductForecast(response.data);
+          await ProductForecastService.getAllPaginateProductWiseForecast("all");
+        setExportProductWiseForecast(response.data);
       }
       setOpen(false);
     } catch (err) {
@@ -272,52 +245,16 @@ export const ProductForecastView = () => {
   };
 
   const headers = [
-    { label: "Company", key: "company" },
-    { label: "Sales Person", key: "sales_person" },
     { label: "Product", key: "product" },
-    {
-      label: `${months[lastMonth1]} - ${
-        lastMonth1 < currentMonth ? currentYear : currentYear - 1
-      } Actual-Forecast`,
-      key: "product_forecast_0",
-    },
-    {
-      label: `${months[lastMonth2]} - ${
-        lastMonth2 < currentMonth ? currentYear : currentYear - 1
-      } Actual-Forecast`,
-      key: "product_forecast_1",
-    },
-    {
-      label: `${months[currentMonth]} - ${currentYear} Actual-Forecast`,
-      key: "product_forecast_2",
-    },
-    {
-      label: `${months[nextMonth1]} - ${
-        nextMonth1 > currentMonth ? currentYear : currentYear + 1
-      } Forecast`,
-      key: "product_forecast_3",
-    },
-    {
-      label: `${months[nextMonth2]} - ${
-        nextMonth2 > currentMonth ? currentYear : currentYear + 1
-      } Forecast`,
-      key: "product_forecast_4",
-    },
-    //{ label: `${months[nextMonth3]} - ${nextMonth3 > currentMonth ? currentYear : currentYear + 1} Forecast`, key: "product_forecast_5" },
+    { label: "Total", key: "total" },
   ];
 
-  const data = exportProductForecast.map((row) => {
+  const data = exportProductWiseForecast.map((row) => {
     const obj = {
-      company: row.company,
-      sales_person: row.sales_person,
-      product: row.product,
+      product: row.product_forecast__product__name,
+      total: row.total_forecast,
     };
-    row.product_forecast.forEach((rowData, index) => {
-      obj[`product_forecast_${index}`] =
-        rowData.actual !== null
-          ? `${rowData.actual}-${rowData.forecast}`
-          : `-${rowData.forecast}`;
-    });
+
     return obj;
   });
 
@@ -328,7 +265,7 @@ export const ProductForecastView = () => {
         <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
           <Box display="flex">
-            <Box flexGrow={1}>
+            {/* <Box flexGrow={1}>
               <FormControl fullWidth size="small">
                 <InputLabel id="demo-simple-select-label">Fliter By</InputLabel>
                 <Select
@@ -346,21 +283,21 @@ export const ProductForecastView = () => {
                   ))}
                 </Select>
               </FormControl>
-            </Box>
+            </Box> */}
             <Box flexGrow={1}>
-              {filterQuery === "sales_person__email" ? (
+              {/* {filterQuery === "sales_person__email" ? (
                 <FormControl
                   sx={{ minWidth: "200px", marginLeft: "1em" }}
                   size="small"
                 >
                   <InputLabel id="demo-simple-select-label">
-                    Filter By Sales Person
+                    Filter By State
                   </InputLabel>
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
                     name="values"
-                    label="Filter By Sales Person"
+                    label="Filter By State"
                     value={filterSelectedQuery}
                     onChange={(event) => handleInputChanges(event)}
                     sx={{
@@ -391,13 +328,13 @@ export const ProductForecastView = () => {
                     ))}
                   </Select>
                 </FormControl>
-              ) : (
-                <CustomSearch
-                  filterSelectedQuery={searchQuery}
-                  handleInputChange={handleInputChange}
-                  getResetData={getResetData}
-                />
-              )}
+              ) : ( */}
+              <CustomSearch
+                filterSelectedQuery={searchQuery}
+                handleInputChange={handleInputChange}
+                getResetData={getResetData}
+              />
+              {/* )} */}
             </Box>
             <Box flexGrow={2}>
               <h3
@@ -409,7 +346,7 @@ export const ProductForecastView = () => {
                   fontWeight: 800,
                 }}
               >
-                Product Forecast
+                Product Wise Forecast
               </h3>
             </Box>
             <Box flexGrow={0.5}>
@@ -452,73 +389,19 @@ export const ProductForecastView = () => {
             >
               <TableHead>
                 <StyledTableRow>
-                  <StyledTableCell align="center">COMPANY</StyledTableCell>
-                  <StyledTableCell align="center">SALES PERSON</StyledTableCell>
                   <StyledTableCell align="center">PRODUCT</StyledTableCell>
-                  <StyledTableCell align="center">
-                    {` ${months[lastMonth1]} - ${
-                      lastMonth1 < currentMonth ? currentYear : currentYear - 1
-                    }`}
-                    <br />
-                    FORECAST - ACTUAL
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    {` ${months[lastMonth2]} - ${
-                      lastMonth2 < currentMonth ? currentYear : currentYear - 1
-                    }`}{" "}
-                    <br />
-                    FORECAST - ACTUAL
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    {`${months[currentMonth]} - ${currentYear}`} <br />
-                    FORECAST - ACTUAL
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    {` ${months[nextMonth1]} - ${
-                      nextMonth1 > currentMonth ? currentYear : currentYear + 1
-                    }`}{" "}
-                    <br />
-                    FORECAST
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    {` ${months[nextMonth2]} - ${
-                      nextMonth2 > currentMonth ? currentYear : currentYear + 1
-                    }`}{" "}
-                    <br />
-                    FORECAST
-                  </StyledTableCell>
-                  {/* <StyledTableCell align="center">
-                    {` ${months[nextMonth3]} - ${
-                      nextMonth3 > currentMonth ? currentYear : currentYear + 1
-                    }`}{" "}
-                    <br />
-                    FORECAST
-                  </StyledTableCell> */}
+                  <StyledTableCell align="center">TOTAL</StyledTableCell>
                 </StyledTableRow>
               </TableHead>
               <TableBody>
-                {productForecast.map((row) => (
+                {ProductWiseForecast.map((row) => (
                   <StyledTableRow>
                     <StyledTableCell align="center">
-                      {row.company}
+                      {row.product_forecast__product__name}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {row.sales_person}
+                      {row.total_forecast}
                     </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.product}
-                    </StyledTableCell>
-                    {row.product_forecast.map((rowData) => {
-                      return rowData.actual !== null ? (
-                        <StyledTableCell align="center">
-                          {rowData.actual} - {rowData.forecast}
-                        </StyledTableCell>
-                      ) : (
-                        <StyledTableCell align="center">
-                          {rowData.forecast} -
-                        </StyledTableCell>
-                      );
-                    })}
                   </StyledTableRow>
                 ))}
               </TableBody>

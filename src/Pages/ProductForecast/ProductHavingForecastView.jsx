@@ -20,7 +20,6 @@ import {
 import ClearIcon from "@mui/icons-material/Clear";
 import { CSVLink } from "react-csv";
 import { tableCellClasses } from "@mui/material/TableCell";
-
 import { CustomPagination } from "../../Components/CustomPagination";
 
 import { ErrorMessage } from "../../Components/ErrorMessage/ErrorMessage";
@@ -45,7 +44,7 @@ const filterOption = [
   { label: "Search", value: "search" },
 ];
 
-export const ProductForecastView = () => {
+export const ProductHavingForecastView = () => {
   const [open, setOpen] = useState(false);
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
@@ -55,8 +54,9 @@ export const ProductForecastView = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const [assigned, setAssigned] = useState([]);
-  const [productForecast, setProductForecast] = useState([]);
-  const [exportProductForecast, setExportProductForecast] = useState([]);
+  const [productHavingForecast, setProductHavingForecast] = useState([]);
+  const [exportProductHavingForecast, setExportProductHavingForecast] =
+    useState([]);
   // Get the current date
   const currentDate = new Date();
 
@@ -114,15 +114,16 @@ export const ProductForecastView = () => {
       setOpen(true);
       if (currentPage) {
         const response =
-          await ProductForecastService.getProductForecastPaginateData(
+          await ProductForecastService.getProductHavingForecastPaginateData(
             currentPage
           );
-        setProductForecast(response.data.results);
+        setProductHavingForecast(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
       } else {
-        const response = await ProductForecastService.getProductForecast();
-        setProductForecast(response.data.results);
+        const response =
+          await ProductForecastService.getProductHavingForecast();
+        setProductHavingForecast(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
       }
@@ -155,12 +156,13 @@ export const ProductForecastView = () => {
     try {
       setOpen(true);
       const filterSearch = value;
-      const response = await ProductForecastService.getAllSearchProductForecast(
-        filterQuery,
-        filterSearch
-      );
+      const response =
+        await ProductForecastService.getAllSearchProductHavingForecast(
+          filterQuery,
+          filterSearch
+        );
       if (response) {
-        setProductForecast(response.data.results);
+        setProductHavingForecast(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
       } else {
@@ -182,13 +184,13 @@ export const ProductForecastView = () => {
 
       if (searchQuery) {
         const response =
-          await ProductForecastService.getAllProductForecastPaginate(
+          await ProductForecastService.getAllProductHavingForecastPaginate(
             page,
             filterQuery,
             searchQuery
           );
         if (response) {
-          setProductForecast(response.data.results);
+          setProductHavingForecast(response.data.results);
           const total = response.data.count;
           setpageCount(Math.ceil(total / 25));
         } else {
@@ -197,8 +199,10 @@ export const ProductForecastView = () => {
         }
       } else {
         const response =
-          await ProductForecastService.getProductForecastPaginateData(page);
-        setProductForecast(response.data.results);
+          await ProductForecastService.getProductHavingForecastPaginateData(
+            page
+          );
+        setProductHavingForecast(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
       }
@@ -227,27 +231,31 @@ export const ProductForecastView = () => {
     getSearchData(event.target.value);
   };
 
+
+
   useEffect(() => {
-    getAllExportData();
+    getAllCustomerWiseOrderBookExport();
   }, [searchQuery]);
 
-  const getAllExportData = async () => {
+  const getAllCustomerWiseOrderBookExport = async () => {
     try {
       setOpen(true);
       if (searchQuery) {
         const response =
-          await ProductForecastService.getAllPaginateProductForecastWithSearch(
+          await ProductForecastService.getAllPaginateProductHavingForecastWithSearch(
             "all",
             filterQuery,
             searchQuery
           );
-        setExportProductForecast(response.data);
+        setExportProductHavingForecast(response.data);
         //   const total = response.data.count;
         //   setpageCount(Math.ceil(total / 25));
       } else {
         const response =
-          await ProductForecastService.getAllPaginateProductForecast("all");
-        setExportProductForecast(response.data);
+          await ProductForecastService.getAllPaginateProductHavingForecast(
+            "all"
+          );
+        setExportProductHavingForecast(response.data);
       }
       setOpen(false);
     } catch (err) {
@@ -305,8 +313,8 @@ export const ProductForecastView = () => {
     },
     //{ label: `${months[nextMonth3]} - ${nextMonth3 > currentMonth ? currentYear : currentYear + 1} Forecast`, key: "product_forecast_5" },
   ];
-
-  const data = exportProductForecast.map((row) => {
+  
+  const data = exportProductHavingForecast.map((row) => {
     const obj = {
       company: row.company,
       sales_person: row.sales_person,
@@ -354,13 +362,13 @@ export const ProductForecastView = () => {
                   size="small"
                 >
                   <InputLabel id="demo-simple-select-label">
-                    Filter By Sales Person
+                    Filter By State
                   </InputLabel>
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
                     name="values"
-                    label="Filter By Sales Person"
+                    label="Filter By State"
                     value={filterSelectedQuery}
                     onChange={(event) => handleInputChanges(event)}
                     sx={{
@@ -409,7 +417,7 @@ export const ProductForecastView = () => {
                   fontWeight: 800,
                 }}
               >
-                Product Forecast
+                Product Having Forecast
               </h3>
             </Box>
             <Box flexGrow={0.5}>
@@ -497,7 +505,7 @@ export const ProductForecastView = () => {
                 </StyledTableRow>
               </TableHead>
               <TableBody>
-                {productForecast.map((row) => (
+                {productHavingForecast.map((row) => (
                   <StyledTableRow>
                     <StyledTableCell align="center">
                       {row.company}
