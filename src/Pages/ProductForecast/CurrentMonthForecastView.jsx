@@ -256,17 +256,18 @@ export const CurrentMonthForecastView = () => {
     },
   ];
 
-  const data = exportProductForecast.map((row) => {
-    const obj = {
-      company: row.company,
-      sales_person: row.sales_person,
-      product: row.product,
-      forecast: row.product_forecast[2].forecast,
-      actual: row.product_forecast[2].actual,
-    };
-
-    return obj;
-  });
+  const data = exportProductForecast
+    .filter((row) => row.product_forecast[2].forecast > 0)
+    .map((row) => {
+      const obj = {
+        company: row.company,
+        sales_person: row.sales_person,
+        product: row.product,
+        forecast: row.product_forecast[2].forecast,
+        actual: row.product_forecast[2].actual,
+      };
+      return obj;
+    });
 
   return (
     <div>
@@ -408,25 +409,36 @@ export const CurrentMonthForecastView = () => {
                 </StyledTableRow>
               </TableHead>
               <TableBody>
-                {productForecast.map((row) => (
-                  <StyledTableRow>
-                    <StyledTableCell align="center">
-                      {row.company}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.sales_person}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.product}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.product_forecast[2].forecast}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.product_forecast[2].actual}
-                    </StyledTableCell>
-                  </StyledTableRow>
-                ))}
+                {productForecast.map((row) =>
+                  row.product_forecast[2].forecast > 0 ? (
+                    <StyledTableRow>
+                      <StyledTableCell align="center">
+                        {row.company}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        <div
+                          style={{
+                            border: "1px solid #4caf50",
+                            borderRadius: "20px",
+                            padding: "4px 8px",
+                            color: "#4caf50",
+                          }}
+                        >
+                          {row.sales_person}
+                        </div>
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.product}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.product_forecast[2].forecast}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.product_forecast[2].actual}
+                      </StyledTableCell>
+                    </StyledTableRow>
+                  ) : null
+                )}
               </TableBody>
             </Table>
           </TableContainer>

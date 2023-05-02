@@ -308,7 +308,12 @@ export const ProductNotHavingForecastView = () => {
       } Forecast`,
       key: "product_forecast_4",
     },
-    //{ label: `${months[nextMonth3]} - ${nextMonth3 > currentMonth ? currentYear : currentYear + 1} Forecast`, key: "product_forecast_5" },
+    {
+      label: `${months[nextMonth3]} - ${
+        nextMonth3 > currentMonth ? currentYear : currentYear + 1
+      } Forecast`,
+      key: "product_forecast_5",
+    },
   ];
 
   const data = exportProductNotHavingForecast.map((row) => {
@@ -492,13 +497,13 @@ export const ProductNotHavingForecastView = () => {
                     <br />
                     FORECAST
                   </StyledTableCell>
-                  {/* <StyledTableCell align="center">
+                  <StyledTableCell align="center">
                     {` ${months[nextMonth3]} - ${
                       nextMonth3 > currentMonth ? currentYear : currentYear + 1
                     }`}{" "}
                     <br />
                     FORECAST
-                  </StyledTableCell> */}
+                  </StyledTableCell>
                 </StyledTableRow>
               </TableHead>
               <TableBody>
@@ -508,7 +513,16 @@ export const ProductNotHavingForecastView = () => {
                       {row.company}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {row.sales_person}
+                      <div
+                        style={{
+                          border: "1px solid #4caf50",
+                          borderRadius: "20px",
+                          padding: "4px 8px",
+                          color: "#4caf50",
+                        }}
+                      >
+                        {row.sales_person}
+                      </div>
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.product}

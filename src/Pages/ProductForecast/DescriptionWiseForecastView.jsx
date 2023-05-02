@@ -20,6 +20,7 @@ import {
 import ClearIcon from "@mui/icons-material/Clear";
 import { CSVLink } from "react-csv";
 import { tableCellClasses } from "@mui/material/TableCell";
+
 import { CustomPagination } from "../../Components/CustomPagination";
 
 import { ErrorMessage } from "../../Components/ErrorMessage/ErrorMessage";
@@ -44,7 +45,7 @@ const filterOption = [
   { label: "Search", value: "search" },
 ];
 
-export const ProductHavingForecastView = () => {
+export const DescriptionWiseForecastView = () => {
   const [open, setOpen] = useState(false);
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
@@ -54,9 +55,10 @@ export const ProductHavingForecastView = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const [assigned, setAssigned] = useState([]);
-  const [productHavingForecast, setProductHavingForecast] = useState([]);
-  const [exportProductHavingForecast, setExportProductHavingForecast] =
+  const [descriptionWiseForecast, setDescriptionWiseForecast] = useState([]);
+  const [exportDescriptionWiseForecast, setExportDescriptionWiseForecast] =
     useState([]);
+
   // Get the current date
   const currentDate = new Date();
 
@@ -67,7 +69,7 @@ export const ProductHavingForecastView = () => {
   // Get the last 2 months
   const lastMonth1 = (currentMonth - 2 + 12) % 12;
   const lastMonth2 = (currentMonth - 1 + 12) % 12;
-
+  console.log("lastMonth2", lastMonth2);
   // Get the next 2 months
   const nextMonth1 = (currentMonth + 1) % 12;
   const nextMonth2 = (currentMonth + 2) % 12;
@@ -106,24 +108,24 @@ export const ProductHavingForecastView = () => {
   };
 
   useEffect(() => {
-    getAllProductionForecastDetails();
+    getAllDescriptionionForecastDetails();
   }, []);
 
-  const getAllProductionForecastDetails = async () => {
+  const getAllDescriptionionForecastDetails = async () => {
     try {
       setOpen(true);
       if (currentPage) {
         const response =
-          await ProductForecastService.getProductHavingForecastPaginateData(
+          await ProductForecastService.getDescriptionWiseForecastPaginateData(
             currentPage
           );
-        setProductHavingForecast(response.data.results);
+        setDescriptionWiseForecast(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
       } else {
         const response =
-          await ProductForecastService.getProductHavingForecast();
-        setProductHavingForecast(response.data.results);
+          await ProductForecastService.getDescriptionWiseForecast();
+        setDescriptionWiseForecast(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
       }
@@ -157,16 +159,16 @@ export const ProductHavingForecastView = () => {
       setOpen(true);
       const filterSearch = value;
       const response =
-        await ProductForecastService.getAllSearchProductHavingForecast(
+        await ProductForecastService.getAllSearchDescriptionWiseForecast(
           filterQuery,
           filterSearch
         );
       if (response) {
-        setProductHavingForecast(response.data.results);
+        setDescriptionWiseForecast(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
       } else {
-        getAllProductionForecastDetails();
+        getAllDescriptionionForecastDetails();
         setSearchQuery("");
       }
       setOpen(false);
@@ -184,25 +186,25 @@ export const ProductHavingForecastView = () => {
 
       if (searchQuery) {
         const response =
-          await ProductForecastService.getAllProductHavingForecastPaginate(
+          await ProductForecastService.getAllDescriptionWiseForecastPaginate(
             page,
             filterQuery,
             searchQuery
           );
         if (response) {
-          setProductHavingForecast(response.data.results);
+          setDescriptionWiseForecast(response.data.results);
           const total = response.data.count;
           setpageCount(Math.ceil(total / 25));
         } else {
-          getAllProductionForecastDetails();
+          getAllDescriptionionForecastDetails();
           setSearchQuery("");
         }
       } else {
         const response =
-          await ProductForecastService.getProductHavingForecastPaginateData(
+          await ProductForecastService.getDescriptionWiseForecastPaginateData(
             page
           );
-        setProductHavingForecast(response.data.results);
+        setDescriptionWiseForecast(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
       }
@@ -218,7 +220,7 @@ export const ProductHavingForecastView = () => {
     setSearchQuery("");
     setFilterSelectedQuery("");
 
-    getAllProductionForecastDetails();
+    getAllDescriptionionForecastDetails();
   };
 
   const handleInputChange = (event) => {
@@ -232,28 +234,26 @@ export const ProductHavingForecastView = () => {
   };
 
   useEffect(() => {
-    getAllCustomerWiseOrderBookExport();
+    getAllExportData();
   }, [searchQuery]);
 
-  const getAllCustomerWiseOrderBookExport = async () => {
+  const getAllExportData = async () => {
     try {
       setOpen(true);
       if (searchQuery) {
         const response =
-          await ProductForecastService.getAllPaginateProductHavingForecastWithSearch(
+          await ProductForecastService.getAllPaginateDescriptionWiseForecastWithSearch(
             "all",
             filterQuery,
             searchQuery
           );
-        setExportProductHavingForecast(response.data);
+        setExportDescriptionWiseForecast(response.data);
         //   const total = response.data.count;
         //   setpageCount(Math.ceil(total / 25));
       } else {
         const response =
-          await ProductForecastService.getAllPaginateProductHavingForecast(
-            "all"
-          );
-        setExportProductHavingForecast(response.data);
+          await ProductForecastService.getAllPaginateProductWiseForecast("all");
+        setExportDescriptionWiseForecast(response.data);
       }
       setOpen(false);
     } catch (err) {
@@ -278,59 +278,93 @@ export const ProductHavingForecastView = () => {
   };
 
   const headers = [
-    { label: "Company", key: "company" },
-    { label: "Sales Person", key: "sales_person" },
-    { label: "Product", key: "product" },
+    { label: "Description", key: "description" },
+    { label: "Brand", key: "brand" },
+    { label: "Unit", key: "unit" },
     {
       label: `${months[lastMonth1]} - ${
         lastMonth1 < currentMonth ? currentYear : currentYear - 1
-      } Actual-Forecast`,
-      key: "product_forecast_0",
+      } Forecast-Actual`,
+      key: "lastMonth1",
     },
     {
       label: `${months[lastMonth2]} - ${
         lastMonth2 < currentMonth ? currentYear : currentYear - 1
-      } Actual-Forecast`,
-      key: "product_forecast_1",
+      } Forecast-Actual`,
+      key: "lastMonth2",
     },
     {
-      label: `${months[currentMonth]} - ${currentYear} Actual-Forecast`,
-      key: "product_forecast_2",
+      label: `${months[currentMonth]} - ${currentYear} Forecast-Actual`,
+      key: "currentMonth",
     },
     {
       label: `${months[nextMonth1]} - ${
         nextMonth1 > currentMonth ? currentYear : currentYear + 1
       } Forecast`,
-      key: "product_forecast_3",
+      key: "nextMonth1",
     },
     {
       label: `${months[nextMonth2]} - ${
         nextMonth2 > currentMonth ? currentYear : currentYear + 1
       } Forecast`,
-      key: "product_forecast_4",
+      key: "nextMonth2",
     },
     {
       label: `${months[nextMonth3]} - ${
         nextMonth3 > currentMonth ? currentYear : currentYear + 1
       } Forecast`,
-      key: "product_forecast_5",
+      key: "nextMonth3",
     },
   ];
 
-  const data = exportProductHavingForecast.map((row) => {
-    const obj = {
-      company: row.company,
-      sales_person: row.sales_person,
-      product: row.product,
-    };
-    row.product_forecast.forEach((rowData, index) => {
-      obj[`product_forecast_${index}`] =
-        rowData.actual !== null
-          ? `${rowData.actual}-${rowData.forecast}`
-          : `-${rowData.forecast}`;
+  const data = descriptionWiseForecast
+    .filter((row) => row.qty_forecast.length > 0) // Filter rows with non-empty qty_forecast array
+    .map((row) => {
+      return {
+        description: row.product__description__name,
+        brand: row.product__brand__name,
+        unit: row.product__unit__name,
+        lastMonth1: row.qty_forecast
+          .filter((data) => data.index_position === 0)
+          .map(
+            (filteredData) =>
+              `${
+                filteredData.total_forecast !== null
+                  ? filteredData.total_forecast
+                  : ""
+              } - ${filteredData.actual !== null ? filteredData.actual : ""}`
+          ),
+        lastMonth2: row.qty_forecast
+          .filter((data) => data.index_position === 1)
+          .map(
+            (filteredData) =>
+              `${
+                filteredData.total_forecast !== null
+                  ? filteredData.total_forecast
+                  : ""
+              } - ${filteredData.actual !== null ? filteredData.actual : ""}`
+          ),
+        currentMonth: row.qty_forecast
+          .filter((data) => data.index_position === 2)
+          .map(
+            (filteredData) =>
+              `${
+                filteredData.total_forecast !== null
+                  ? filteredData.total_forecast
+                  : ""
+              } - ${filteredData.actual !== null ? filteredData.actual : ""}`
+          ),
+        nextMonth1: row.qty_forecast
+          .filter((data) => data.index_position === 3)
+          .map((filteredData) => filteredData.total_forecast),
+        nextMonth2: row.qty_forecast
+          .filter((data) => data.index_position === 4)
+          .map((filteredData) => filteredData.total_forecast),
+        nextMonth3: row.qty_forecast
+          .filter((data) => data.index_position === 5)
+          .map((filteredData) => filteredData.total_forecast),
+      };
     });
-    return obj;
-  });
 
   return (
     <div>
@@ -339,7 +373,7 @@ export const ProductHavingForecastView = () => {
         <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
           <Box display="flex">
-            <Box flexGrow={1}>
+            {/* <Box flexGrow={1}>
               <FormControl fullWidth size="small">
                 <InputLabel id="demo-simple-select-label">Fliter By</InputLabel>
                 <Select
@@ -357,9 +391,9 @@ export const ProductHavingForecastView = () => {
                   ))}
                 </Select>
               </FormControl>
-            </Box>
+            </Box> */}
             <Box flexGrow={1}>
-              {filterQuery === "sales_person__email" ? (
+              {/* {filterQuery === "sales_person__email" ? (
                 <FormControl
                   sx={{ minWidth: "200px", marginLeft: "1em" }}
                   size="small"
@@ -402,13 +436,13 @@ export const ProductHavingForecastView = () => {
                     ))}
                   </Select>
                 </FormControl>
-              ) : (
-                <CustomSearch
-                  filterSelectedQuery={searchQuery}
-                  handleInputChange={handleInputChange}
-                  getResetData={getResetData}
-                />
-              )}
+              ) : ( */}
+              <CustomSearch
+                filterSelectedQuery={searchQuery}
+                handleInputChange={handleInputChange}
+                getResetData={getResetData}
+              />
+              {/* )} */}
             </Box>
             <Box flexGrow={2}>
               <h3
@@ -420,14 +454,14 @@ export const ProductHavingForecastView = () => {
                   fontWeight: 800,
                 }}
               >
-                Customer Having Forecast
+                Description Wise Forecast
               </h3>
             </Box>
             <Box flexGrow={0.5}>
               <CSVLink
                 data={data}
                 headers={headers}
-                filename={"product_forecast.csv"}
+                filename={"description_forecast.csv"}
                 target="_blank"
                 style={{
                   textDecoration: "none",
@@ -463,9 +497,9 @@ export const ProductHavingForecastView = () => {
             >
               <TableHead>
                 <StyledTableRow>
-                  <StyledTableCell align="center">COMPANY</StyledTableCell>
-                  <StyledTableCell align="center">SALES PERSON</StyledTableCell>
-                  <StyledTableCell align="center">PRODUCT</StyledTableCell>
+                  <StyledTableCell align="center">DESCRIPTION</StyledTableCell>
+                  <StyledTableCell align="center">BRAND</StyledTableCell>
+                  <StyledTableCell align="center">UNIT</StyledTableCell>
                   <StyledTableCell align="center">
                     {` ${months[lastMonth1]} - ${
                       lastMonth1 < currentMonth ? currentYear : currentYear - 1
@@ -508,39 +542,86 @@ export const ProductHavingForecastView = () => {
                 </StyledTableRow>
               </TableHead>
               <TableBody>
-                {productHavingForecast.map((row) => (
-                  <StyledTableRow>
-                    <StyledTableCell align="center">
-                      {row.company}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      <div
-                        style={{
-                          border: "1px solid #4caf50",
-                          borderRadius: "20px",
-                          padding: "4px 8px",
-                          color: "#4caf50",
-                        }}
-                      >
-                        {row.sales_person}
-                      </div>
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.product}
-                    </StyledTableCell>
-                    {row.product_forecast.map((rowData) => {
-                      return rowData.actual !== null ? (
+                {descriptionWiseForecast.map(
+                  (row) =>
+                    // add condition to check if qty_forecast is not empty
+                    row.qty_forecast.length !== 0 && (
+                      <StyledTableRow>
                         <StyledTableCell align="center">
-                          {rowData.actual} - {rowData.forecast}
+                          {row.product__description__name}
                         </StyledTableCell>
-                      ) : (
                         <StyledTableCell align="center">
-                          {rowData.forecast} -
+                          {row.product__brand__name}
                         </StyledTableCell>
-                      );
-                    })}
-                  </StyledTableRow>
-                ))}
+                        <StyledTableCell align="center">
+                          {row.product__unit__name}
+                        </StyledTableCell>
+                        <StyledTableCell align="center">
+                          {row.qty_forecast
+                            .filter((data) => data.index_position === 0)
+                            .map(
+                              (filteredData) =>
+                                `${
+                                  filteredData.total_forecast !== null
+                                    ? filteredData.total_forecast
+                                    : ""
+                                } - ${
+                                  filteredData.actual !== null
+                                    ? filteredData.actual
+                                    : ""
+                                }`
+                            )}
+                        </StyledTableCell>
+                        <StyledTableCell align="center">
+                          {row.qty_forecast
+                            .filter((data) => data.index_position === 1)
+                            .map(
+                              (filteredData) =>
+                                `${
+                                  filteredData.total_forecast !== null
+                                    ? filteredData.total_forecast
+                                    : ""
+                                } - ${
+                                  filteredData.actual !== null
+                                    ? filteredData.actual
+                                    : ""
+                                }`
+                            )}
+                        </StyledTableCell>
+                        <StyledTableCell align="center">
+                          {row.qty_forecast
+                            .filter((data) => data.index_position === 2)
+                            .map(
+                              (filteredData) =>
+                                `${
+                                  filteredData.total_forecast !== null
+                                    ? filteredData.total_forecast
+                                    : ""
+                                } - ${
+                                  filteredData.actual !== null
+                                    ? filteredData.actual
+                                    : ""
+                                }`
+                            )}
+                        </StyledTableCell>
+                        <StyledTableCell align="center">
+                          {row.qty_forecast
+                            .filter((data) => data.index_position === 3)
+                            .map((filteredData) => filteredData.total_forecast)}
+                        </StyledTableCell>
+                        <StyledTableCell align="center">
+                          {row.qty_forecast
+                            .filter((data) => data.index_position === 4)
+                            .map((filteredData) => filteredData.total_forecast)}
+                        </StyledTableCell>
+                        <StyledTableCell align="center">
+                          {row.qty_forecast
+                            .filter((data) => data.index_position === 5)
+                            .map((filteredData) => filteredData.total_forecast)}
+                        </StyledTableCell>
+                      </StyledTableRow>
+                    )
+                )}
               </TableBody>
             </Table>
           </TableContainer>

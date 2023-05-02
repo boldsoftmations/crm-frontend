@@ -208,6 +208,48 @@ const getProductWiseForecastPaginateData = (currentPage) => {
   );
 };
 
+// Description Wise Forecast
+
+const getDescriptionWiseForecast = () => {
+  return CustomAxios.get(`/api/forecast/list-description-wise-forecast/`);
+};
+
+const getByFilterDescriptionWiseForecast = (type, data) => {
+  return CustomAxios.get(
+    `/api/forecast/list-description-wise-forecast/?${type}=${data}`
+  );
+};
+
+const getAllPaginateDescriptionWiseForecast = (all) => {
+  return CustomAxios.get(
+    `/api/forecast/list-description-wise-forecast/?page=${all}`
+  );
+};
+
+const getAllPaginateDescriptionWiseForecastWithSearch = (all, type, search) => {
+  return CustomAxios.get(
+    `/api/forecast/list-description-wise-forecast/?page=${all}&${type}=${search}`
+  );
+};
+
+const getAllSearchDescriptionWiseForecast = (type, search) => {
+  return CustomAxios.get(
+    `/api/forecast/list-description-wise-forecast/?${type}=${search}`
+  );
+};
+
+const getAllDescriptionWiseForecastPaginate = (currentPage, type, search) => {
+  return CustomAxios.get(
+    `/api/forecast/list-description-wise-forecast/?page=${currentPage}&${type}=${search}`
+  );
+};
+
+const getDescriptionWiseForecastPaginateData = (currentPage) => {
+  return CustomAxios.get(
+    `/api/forecast/list-description-wise-forecast/?page=${currentPage}`
+  );
+};
+
 const ProductForecastService = {
   getProductForecast,
   getByFilterProductForecast,
@@ -244,6 +286,13 @@ const ProductForecastService = {
   getAllSearchProductWiseForecast,
   getAllProductWiseForecastPaginate,
   getProductWiseForecastPaginateData,
+  getDescriptionWiseForecast,
+  getByFilterDescriptionWiseForecast,
+  getAllPaginateDescriptionWiseForecast,
+  getAllPaginateDescriptionWiseForecastWithSearch,
+  getAllSearchDescriptionWiseForecast,
+  getAllDescriptionWiseForecastPaginate,
+  getDescriptionWiseForecastPaginateData,
 };
 
 export default ProductForecastService;

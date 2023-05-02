@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { CustomTabs } from "../../Components/CustomTabs";
 import { ProductNotHavingForecastView } from "./ProductNotHavingForecastView";
 import { ProductHavingForecastView } from "./ProductHavingForecastView";
-import { ProductForecastView } from "./ProductForecastView";
 import { DeadCustomerView } from "./DeadCustomerView";
 import { ProductWiseForecastView } from "./ProductWiseForecastView";
 import { CurrentMonthForecastView } from "./CurrentMonthForecastView";
+import { DescriptionWiseForecastView } from "./DescriptionWiseForecastView";
 
 export const ProductForecastViewAll = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -15,12 +15,12 @@ export const ProductForecastViewAll = () => {
   };
 
   const tabs = [
-    { label: "Product Forecast" },
-    { label: "Customer Not Having Forecast" },
+    { label: "Current Month Forecast" },
     { label: "Customer Having Forecast" },
+    { label: "Customer Not Having Forecast" },
     { label: "Dead Customer" },
     { label: "Product Wise Forecast" },
-    { label: "Current Month Forecast" },
+    { label: "Description Wise Forecast" },
   ];
 
   return (
@@ -33,17 +33,17 @@ export const ProductForecastViewAll = () => {
       <div>
         {activeTab === 0 && (
           <div>
-            <ProductForecastView />
+            <CurrentMonthForecastView />
           </div>
         )}
         {activeTab === 1 && (
           <div>
-            <ProductNotHavingForecastView />
+            <ProductHavingForecastView />
           </div>
         )}
         {activeTab === 2 && (
           <div>
-            <ProductHavingForecastView />
+            <ProductNotHavingForecastView />
           </div>
         )}
         {activeTab === 3 && (
@@ -58,7 +58,7 @@ export const ProductForecastViewAll = () => {
         )}
         {activeTab === 5 && (
           <div>
-            <CurrentMonthForecastView />
+            <DescriptionWiseForecastView />
           </div>
         )}
       </div>

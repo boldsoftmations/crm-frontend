@@ -60,6 +60,37 @@ export const ProductWiseForecastView = () => {
     []
   );
 
+  // Get the current date
+  const currentDate = new Date();
+
+  // Get the current month and year
+  const currentMonth = currentDate.getMonth();
+  const currentYear = currentDate.getFullYear();
+
+  // Get the last 2 months
+  const lastMonth1 = (currentMonth - 2 + 12) % 12;
+  const lastMonth2 = (currentMonth - 1 + 12) % 12;
+  console.log("lastMonth2", lastMonth2);
+  // Get the next 2 months
+  const nextMonth1 = (currentMonth + 1) % 12;
+  const nextMonth2 = (currentMonth + 2) % 12;
+  const nextMonth3 = (currentMonth + 3) % 12;
+  // Convert month number to month name
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
   useEffect(() => {
     getLAssignedData();
   }, []);
@@ -246,17 +277,91 @@ export const ProductWiseForecastView = () => {
 
   const headers = [
     { label: "Product", key: "product" },
-    { label: "Total", key: "total" },
+    { label: "Type", key: "type" },
+    { label: "Unit", key: "unit" },
+    {
+      label: `${months[lastMonth1]} - ${
+        lastMonth1 < currentMonth ? currentYear : currentYear - 1
+      } Forecast-Actual`,
+      key: "lastMonth1",
+    },
+    {
+      label: `${months[lastMonth2]} - ${
+        lastMonth2 < currentMonth ? currentYear : currentYear - 1
+      } Forecast-Actual`,
+      key: "lastMonth2",
+    },
+    {
+      label: `${months[currentMonth]} - ${currentYear} Forecast-Actual`,
+      key: "currentMonth",
+    },
+    {
+      label: `${months[nextMonth1]} - ${
+        nextMonth1 > currentMonth ? currentYear : currentYear + 1
+      } Forecast`,
+      key: "nextMonth1",
+    },
+    {
+      label: `${months[nextMonth2]} - ${
+        nextMonth2 > currentMonth ? currentYear : currentYear + 1
+      } Forecast`,
+      key: "nextMonth2",
+    },
+    {
+      label: `${months[nextMonth3]} - ${
+        nextMonth3 > currentMonth ? currentYear : currentYear + 1
+      } Forecast`,
+      key: "nextMonth3",
+    },
   ];
 
-  const data = exportProductWiseForecast.map((row) => {
-    const obj = {
-      product: row.product_forecast__product__name,
-      total: row.total_forecast,
-    };
-
-    return obj;
-  });
+  const data = ProductWiseForecast.filter((row) => row.qty_forecast.length > 0) // Filter rows with non-empty qty_forecast array
+    .map((row) => {
+      return {
+        product: row.product__name,
+        type: row.product__type,
+        unit: row.product__unit__name,
+        lastMonth1: row.qty_forecast
+          .filter((data) => data.index_position === 0)
+          .map(
+            (filteredData) =>
+              `${
+                filteredData.total_forecast !== null
+                  ? filteredData.total_forecast
+                  : ""
+              } - ${filteredData.actual !== null ? filteredData.actual : ""}`
+          ),
+        lastMonth2: row.qty_forecast
+          .filter((data) => data.index_position === 1)
+          .map(
+            (filteredData) =>
+              `${
+                filteredData.total_forecast !== null
+                  ? filteredData.total_forecast
+                  : ""
+              } - ${filteredData.actual !== null ? filteredData.actual : ""}`
+          ),
+        currentMonth: row.qty_forecast
+          .filter((data) => data.index_position === 2)
+          .map(
+            (filteredData) =>
+              `${
+                filteredData.total_forecast !== null
+                  ? filteredData.total_forecast
+                  : ""
+              } - ${filteredData.actual !== null ? filteredData.actual : ""}`
+          ),
+        nextMonth1: row.qty_forecast
+          .filter((data) => data.index_position === 3)
+          .map((filteredData) => filteredData.total_forecast),
+        nextMonth2: row.qty_forecast
+          .filter((data) => data.index_position === 4)
+          .map((filteredData) => filteredData.total_forecast),
+        nextMonth3: row.qty_forecast
+          .filter((data) => data.index_position === 5)
+          .map((filteredData) => filteredData.total_forecast),
+      };
+    });
 
   return (
     <div>
@@ -390,20 +495,130 @@ export const ProductWiseForecastView = () => {
               <TableHead>
                 <StyledTableRow>
                   <StyledTableCell align="center">PRODUCT</StyledTableCell>
-                  <StyledTableCell align="center">TOTAL</StyledTableCell>
+                  <StyledTableCell align="center">TYPE</StyledTableCell>
+                  <StyledTableCell align="center">UNIT</StyledTableCell>
+                  <StyledTableCell align="center">
+                    {` ${months[lastMonth1]} - ${
+                      lastMonth1 < currentMonth ? currentYear : currentYear - 1
+                    }`}
+                    <br />
+                    FORECAST - ACTUAL
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    {` ${months[lastMonth2]} - ${
+                      lastMonth2 < currentMonth ? currentYear : currentYear - 1
+                    }`}{" "}
+                    <br />
+                    FORECAST - ACTUAL
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    {`${months[currentMonth]} - ${currentYear}`} <br />
+                    FORECAST - ACTUAL
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    {` ${months[nextMonth1]} - ${
+                      nextMonth1 > currentMonth ? currentYear : currentYear + 1
+                    }`}{" "}
+                    <br />
+                    FORECAST
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    {` ${months[nextMonth2]} - ${
+                      nextMonth2 > currentMonth ? currentYear : currentYear + 1
+                    }`}{" "}
+                    <br />
+                    FORECAST
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    {` ${months[nextMonth3]} - ${
+                      nextMonth3 > currentMonth ? currentYear : currentYear + 1
+                    }`}{" "}
+                    <br />
+                    FORECAST
+                  </StyledTableCell>
                 </StyledTableRow>
               </TableHead>
               <TableBody>
-                {ProductWiseForecast.map((row) => (
-                  <StyledTableRow>
-                    <StyledTableCell align="center">
-                      {row.product_forecast__product__name}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.total_forecast}
-                    </StyledTableCell>
-                  </StyledTableRow>
-                ))}
+                {ProductWiseForecast.map(
+                  (row) =>
+                    // add condition to check if qty_forecast is not empty
+                    row.qty_forecast.length !== 0 && (
+                      <StyledTableRow>
+                        <StyledTableCell align="center">
+                          {row.product__name}
+                        </StyledTableCell>
+                        <StyledTableCell align="center">
+                          {row.product__type}
+                        </StyledTableCell>
+                        <StyledTableCell align="center">
+                          {row.product__unit__name}
+                        </StyledTableCell>
+                        <StyledTableCell align="center">
+                          {row.qty_forecast
+                            .filter((data) => data.index_position === 0)
+                            .map(
+                              (filteredData) =>
+                                `${
+                                  filteredData.total_forecast !== null
+                                    ? filteredData.total_forecast
+                                    : ""
+                                } - ${
+                                  filteredData.actual !== null
+                                    ? filteredData.actual
+                                    : ""
+                                }`
+                            )}
+                        </StyledTableCell>
+                        <StyledTableCell align="center">
+                          {row.qty_forecast
+                            .filter((data) => data.index_position === 1)
+                            .map(
+                              (filteredData) =>
+                                `${
+                                  filteredData.total_forecast !== null
+                                    ? filteredData.total_forecast
+                                    : ""
+                                } - ${
+                                  filteredData.actual !== null
+                                    ? filteredData.actual
+                                    : ""
+                                }`
+                            )}
+                        </StyledTableCell>
+                        <StyledTableCell align="center">
+                          {row.qty_forecast
+                            .filter((data) => data.index_position === 2)
+                            .map(
+                              (filteredData) =>
+                                `${
+                                  filteredData.total_forecast !== null
+                                    ? filteredData.total_forecast
+                                    : ""
+                                } - ${
+                                  filteredData.actual !== null
+                                    ? filteredData.actual
+                                    : ""
+                                }`
+                            )}
+                        </StyledTableCell>
+                        <StyledTableCell align="center">
+                          {row.qty_forecast
+                            .filter((data) => data.index_position === 3)
+                            .map((filteredData) => filteredData.total_forecast)}
+                        </StyledTableCell>
+                        <StyledTableCell align="center">
+                          {row.qty_forecast
+                            .filter((data) => data.index_position === 4)
+                            .map((filteredData) => filteredData.total_forecast)}
+                        </StyledTableCell>
+                        <StyledTableCell align="center">
+                          {row.qty_forecast
+                            .filter((data) => data.index_position === 5)
+                            .map((filteredData) => filteredData.total_forecast)}
+                        </StyledTableCell>
+                      </StyledTableRow>
+                    )
+                )}
               </TableBody>
             </Table>
           </TableContainer>
