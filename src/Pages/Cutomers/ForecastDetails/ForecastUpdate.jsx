@@ -111,7 +111,7 @@ export const ForecastUpdate = (props) => {
               >
                 {forecastDataByID.map((option, i) => {
                   return (
-                    i >= 3 && (
+                    i >= 2 && (
                       <MenuItem key={i} value={option}>
                         {option.month}
                       </MenuItem>
