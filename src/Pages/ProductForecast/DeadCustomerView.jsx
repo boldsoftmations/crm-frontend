@@ -396,19 +396,23 @@ export const DeadCustomerView = () => {
                       {row.state}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                    {row.assigned_to && row.assigned_to.length > 0 && (
-  <div
-    style={{
-      border: "1px solid #4caf50",
-      borderRadius: "20px",
-      padding: "4px 8px",
-      color: "#4caf50",
-    }}
-  >
-    {row.assigned_to.map((assignedTo) => assignedTo).join(", ")}
-  </div>
-)}
-
+                      {row.assigned_to.map((assignedTo) => {
+                        return (
+                          row.assigned_to &&
+                          row.assigned_to.length > 0 && (
+                            <div
+                              style={{
+                                border: "1px solid #4caf50",
+                                borderRadius: "20px",
+                                padding: "4px 8px",
+                                color: "#4caf50",
+                              }}
+                            >
+                              {assignedTo}
+                            </div>
+                          )
+                        );
+                      })}
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.contacts && row.contacts[0]
