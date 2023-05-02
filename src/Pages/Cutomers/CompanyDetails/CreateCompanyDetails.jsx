@@ -331,7 +331,7 @@ export const CreateCompanyDetails = (props) => {
               multiple
               limitTags={3}
               id="multiple-limit-tags"
-              options={assigned.map((option) => option.email)}
+              options={assigned.map((option) => option.first_name)}
               freeSolo
               renderTags={(value, getTagProps) =>
                 value.map((option, index) => (
