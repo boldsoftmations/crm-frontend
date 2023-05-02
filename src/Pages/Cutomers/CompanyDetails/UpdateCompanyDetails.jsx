@@ -382,7 +382,7 @@ export const UpdateCompanyDetails = (props) => {
               multiple
               limitTags={3}
               id="multiple-limit-tags"
-              options={assigned.map((option) => option.first_name)}
+              options={assigned.map((option) => option.email)}
               freeSolo
               renderTags={(value, getTagProps) =>
                 value.map((option, index) => (
