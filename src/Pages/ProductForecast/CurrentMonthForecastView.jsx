@@ -55,8 +55,10 @@ export const CurrentMonthForecastView = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const [assigned, setAssigned] = useState([]);
-  const [productForecast, setProductForecast] = useState([]);
-  const [exportProductForecast, setExportProductForecast] = useState([]);
+  const [currentMonthForecast, setCurrentMonthForecast] = useState([]);
+  const [exportCurrentMonthForecast, setExportCurrentMonthForecast] = useState(
+    []
+  );
 
   useEffect(() => {
     getLAssignedData();
@@ -84,15 +86,15 @@ export const CurrentMonthForecastView = () => {
       setOpen(true);
       if (currentPage) {
         const response =
-          await ProductForecastService.getProductForecastPaginateData(
+          await ProductForecastService.getCurrentMonthForecastaginateData(
             currentPage
           );
-        setProductForecast(response.data.results);
+        setCurrentMonthForecast(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
       } else {
-        const response = await ProductForecastService.getProductForecast();
-        setProductForecast(response.data.results);
+        const response = await ProductForecastService.getCurrentMonthForecast();
+        setCurrentMonthForecast(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
       }
@@ -125,12 +127,13 @@ export const CurrentMonthForecastView = () => {
     try {
       setOpen(true);
       const filterSearch = value;
-      const response = await ProductForecastService.getAllSearchProductForecast(
-        filterQuery,
-        filterSearch
-      );
+      const response =
+        await ProductForecastService.getAllSearchCurrentMonthForecast(
+          filterQuery,
+          filterSearch
+        );
       if (response) {
-        setProductForecast(response.data.results);
+        setCurrentMonthForecast(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
       } else {
@@ -152,13 +155,13 @@ export const CurrentMonthForecastView = () => {
 
       if (searchQuery) {
         const response =
-          await ProductForecastService.getAllProductForecastPaginate(
+          await ProductForecastService.getAllCurrentMonthForecastPaginate(
             page,
             filterQuery,
             searchQuery
           );
         if (response) {
-          setProductForecast(response.data.results);
+          setCurrentMonthForecast(response.data.results);
           const total = response.data.count;
           setpageCount(Math.ceil(total / 25));
         } else {
@@ -167,8 +170,10 @@ export const CurrentMonthForecastView = () => {
         }
       } else {
         const response =
-          await ProductForecastService.getProductForecastPaginateData(page);
-        setProductForecast(response.data.results);
+          await ProductForecastService.getCurrentMonthForecastPaginateData(
+            page
+          );
+        setCurrentMonthForecast(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
       }
@@ -206,18 +211,20 @@ export const CurrentMonthForecastView = () => {
       setOpen(true);
       if (searchQuery) {
         const response =
-          await ProductForecastService.getAllPaginateProductForecastWithSearch(
+          await ProductForecastService.getAllPaginateCurrentMonthForecastWithSearch(
             "all",
             filterQuery,
             searchQuery
           );
-        setExportProductForecast(response.data);
+        setExportCurrentMonthForecast(response.data);
         //   const total = response.data.count;
         //   setpageCount(Math.ceil(total / 25));
       } else {
         const response =
-          await ProductForecastService.getAllPaginateProductForecast("all");
-        setExportProductForecast(response.data);
+          await ProductForecastService.getAllPaginateCurrentMonthForecast(
+            "all"
+          );
+        setExportCurrentMonthForecast(response.data);
       }
       setOpen(false);
     } catch (err) {
@@ -256,15 +263,15 @@ export const CurrentMonthForecastView = () => {
     },
   ];
 
-  const data = exportProductForecast
-    .filter((row) => row.product_forecast[2].forecast > 0)
+  const data = exportCurrentMonthForecast
+    .filter((row) => row.forecast > 0)
     .map((row) => {
       const obj = {
         company: row.company,
         sales_person: row.sales_person,
         product: row.product,
-        forecast: row.product_forecast[2].forecast,
-        actual: row.product_forecast[2].actual,
+        forecast: row.forecast,
+        actual: row.actual,
       };
       return obj;
     });
@@ -409,8 +416,8 @@ export const CurrentMonthForecastView = () => {
                 </StyledTableRow>
               </TableHead>
               <TableBody>
-                {productForecast.map((row) =>
-                  row.product_forecast[2].forecast > 0 ? (
+                {currentMonthForecast.map((row) =>
+                  row.forecast > 0 ? (
                     <StyledTableRow>
                       <StyledTableCell align="center">
                         {row.company}
@@ -431,10 +438,10 @@ export const CurrentMonthForecastView = () => {
                         {row.product}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {row.product_forecast[2].forecast}
+                        {row.forecast}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {row.product_forecast[2].actual}
+                        {row.actual}
                       </StyledTableCell>
                     </StyledTableRow>
                   ) : null
