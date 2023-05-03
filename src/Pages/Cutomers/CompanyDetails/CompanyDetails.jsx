@@ -16,7 +16,10 @@ import {
   TableFooter,
   Pagination,
   Chip,
+  IconButton,
+  TextField,
 } from "@mui/material";
+import ClearIcon from "@mui/icons-material/Clear";
 import { tableCellClasses } from "@mui/material/TableCell";
 import { Popup } from "./../../../Components/Popup";
 import CustomerServices from "../../../services/CustomerService";
@@ -62,9 +65,9 @@ export const CompanyDetails = () => {
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
-  const handleInputChange = (event) => {
-    setFilterSelectedQuery(event.target.value);
-    getSearchData(event.target.value);
+  const handleInputChange = () => {
+    setFilterSelectedQuery(filterSelectedQuery);
+    getSearchData(filterSelectedQuery);
   };
 
   useEffect(() => {
@@ -201,11 +204,52 @@ export const CompanyDetails = () => {
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
           <Box display="flex">
             <Box flexGrow={0.9}>
-              <CustomSearch
-                filterSelectedQuery={filterSelectedQuery}
-                handleInputChange={handleInputChange}
-                getResetData={getResetData}
-              />
+              <>
+                <TextField
+                  value={filterSelectedQuery}
+                  onChange={(event) =>
+                    setFilterSelectedQuery(event.target.value)
+                  }
+                  name="search"
+                  size="small"
+                  placeholder="search"
+                  label="Search"
+                  variant="outlined"
+                  sx={{
+                    backgroundColor: "#ffffff",
+                    marginLeft: "1em",
+                    "& .MuiSelect-iconOutlined": {
+                      display: filterSelectedQuery ? "none" : "",
+                    },
+                    "&.Mui-focused .MuiIconButton-root": {
+                      color: "primary.main",
+                    },
+                  }}
+                  InputProps={{
+                    endAdornment: (
+                      <>
+                        <IconButton
+                          sx={{
+                            visibility: filterSelectedQuery
+                              ? "visible"
+                              : "hidden",
+                          }}
+                          onClick={getResetData}
+                        >
+                          <ClearIcon />
+                        </IconButton>
+                      </>
+                    ),
+                  }}
+                />
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleInputChange}
+                >
+                  Search
+                </Button>
+              </>
             </Box>
             <Box flexGrow={2}>
               <h3
