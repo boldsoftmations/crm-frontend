@@ -18,6 +18,7 @@ import {
   Snackbar,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
+import { CSVLink } from "react-csv";
 import CloseIcon from "@mui/icons-material/Close";
 import DownloadIcon from "@mui/icons-material/Download";
 import jsPDF from "jspdf";
@@ -51,6 +52,9 @@ export const MaterialTransferNoteView = () => {
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
   const [materialTransferNote, setMaterialTransferNote] = useState([]);
+  const [exportMaterialTransferNote, setExportMaterialTransferNote] = useState(
+    []
+  );
   const [materialTransferNoteByID, setMaterialTransferNoteByID] = useState([]);
   const [pageCount, setpageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
@@ -244,6 +248,71 @@ export const MaterialTransferNoteView = () => {
       setOpen(false);
     }
   };
+
+  useEffect(() => {
+    getAllExportData();
+  }, [filterSelectedQuery]);
+
+  const getAllExportData = async () => {
+    try {
+      setOpen(true);
+      if (filterSelectedQuery) {
+        const response =
+          await InventoryServices.getAllMaterialTransferNoteDataPaginate(
+            "all",
+            filterSelectedQuery
+          );
+        setExportMaterialTransferNote(response.data);
+        //   const total = response.data.count;
+        //   setpageCount(Math.ceil(total / 25));
+      } else {
+        const response =
+          await InventoryServices.getMaterialTransferNotePaginateData("all");
+        setExportMaterialTransferNote(response.data);
+      }
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      if (!err.response) {
+        setErrMsg(
+          "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
+        );
+      } else if (err.response.status === 400) {
+        setErrMsg(
+          err.response.data.errors.name
+            ? err.response.data.errors.name
+            : err.response.data.errors.non_field_errors
+        );
+      } else if (err.response.status === 401) {
+        setErrMsg(err.response.data.errors.code);
+      } else {
+        setErrMsg("Server Error");
+      }
+      errRef.current.focus();
+    }
+  };
+  const headers = [
+    { label: "USER", key: "user" },
+    { label: "SELLER UNIT", key: "seller_account" },
+    { label: "DATE", key: "date" },
+    { label: "PRODUCT", key: "product" },
+    { label: "UNIT", key: "unit" },
+    { label: "QUANTITY", key: "quantity" },
+    { label: "ACCEPTED", key: "accepted" },
+  ];
+
+  const data = exportMaterialTransferNote.map((row) => {
+    return {
+      user: row.user,
+      seller_account: row.seller_account,
+      date: row.created_on,
+      product: row.product,
+      unit: row.unit,
+      quantity: row.quantity,
+      accepted: row.accepted,
+    };
+  });
+
   return (
     <>
       <CustomLoader open={open} />
@@ -284,6 +353,19 @@ export const MaterialTransferNoteView = () => {
                   Add
                 </Button>
               ) : null}
+              <CSVLink
+                data={data}
+                headers={headers}
+                filename={"Material Transfer Note.csv"}
+                target="_blank"
+                style={{
+                  textDecoration: "none",
+                  outline: "none",
+                  height: "5vh",
+                }}
+              >
+                <Button variant="contained">Export to Excel</Button>
+              </CSVLink>
             </Box>
           </Box>
           <TableContainer
@@ -326,6 +408,7 @@ export const MaterialTransferNoteView = () => {
                 <StyledTableRow>
                   <StyledTableCell align="center">USER</StyledTableCell>
                   <StyledTableCell align="center">SELLER UNIT</StyledTableCell>
+                  <StyledTableCell align="center">DATE</StyledTableCell>
                   <StyledTableCell align="center">PRODUCT</StyledTableCell>
                   <StyledTableCell align="center">UNIT</StyledTableCell>
                   <StyledTableCell align="center">QUANTITY</StyledTableCell>
@@ -340,6 +423,9 @@ export const MaterialTransferNoteView = () => {
                     <StyledTableCell align="center">{row.user}</StyledTableCell>
                     <StyledTableCell align="center">
                       {row.seller_account}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.created_on}
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.product}
