@@ -6,60 +6,57 @@ import { DeadCustomerView } from "./DeadCustomerView";
 import { ProductWiseForecastView } from "./ProductWiseForecastView";
 import { CurrentMonthForecastView } from "./CurrentMonthForecastView";
 import { DescriptionWiseForecastView } from "./DescriptionWiseForecastView";
+import { useSelector } from "react-redux";
 
 export const ProductForecastViewAll = () => {
-  const [activeTab, setActiveTab] = useState(0);
+  const data = useSelector((state) => state.auth);
+  const userData = data.profile;
 
-  const handleTabChange = (index) => {
-    setActiveTab(index);
-  };
+  const isAdmin =
+    userData.is_staff === true ||
+    userData.groups.includes("Accounts") ||
+    userData.groups.includes("Sales") ||
+    userData.groups.includes("Customer Service");
+
+  const isPurchase =
+    userData.is_staff === true ||
+    userData.groups.includes("Accounts") ||
+    userData.groups.includes("Purchase");
+
+  const [activeTab, setActiveTab] = useState(isAdmin ? 0 : 4);
 
   const tabs = [
-    { label: "Current Month Forecast" },
-    { label: "Customer Having Forecast" },
-    { label: "Customer Not Having Forecast" },
-    { label: "Dead Customer" },
-    { label: "Product Wise Forecast" },
-    { label: "Description Wise Forecast" },
+    { label: "Current Month Forecast", visible: isAdmin, index: 0 },
+    { label: "Customer Having Forecast", visible: isAdmin, index: 1 },
+    { label: "Customer Not Having Forecast", visible: isAdmin, index: 2 },
+    { label: "Dead Customer", visible: isAdmin, index: 3 },
+    { label: "Product Wise Forecast", visible: isPurchase, index: 4 },
+    { label: "Description Wise Forecast", visible: isPurchase, index: 5 },
   ];
+
+  const visibleTabs = tabs.filter((tab) => tab.visible);
+  const visibleTabIndexes = visibleTabs.map((tab) => tab.index);
+  const tabComponents = {
+    0: <CurrentMonthForecastView />,
+    1: <ProductHavingForecastView />,
+    2: <ProductNotHavingForecastView />,
+    3: <DeadCustomerView />,
+    4: <ProductWiseForecastView />,
+    5: <DescriptionWiseForecastView />,
+  };
 
   return (
     <div>
       <CustomTabs
-        tabs={tabs}
+        tabs={visibleTabs}
         activeTab={activeTab}
-        onTabChange={handleTabChange}
+        onTabChange={(index) => {
+          setActiveTab(visibleTabIndexes[index]);
+        }}
       />
       <div>
-        {activeTab === 0 && (
-          <div>
-            <CurrentMonthForecastView />
-          </div>
-        )}
-        {activeTab === 1 && (
-          <div>
-            <ProductHavingForecastView />
-          </div>
-        )}
-        {activeTab === 2 && (
-          <div>
-            <ProductNotHavingForecastView />
-          </div>
-        )}
-        {activeTab === 3 && (
-          <div>
-            <DeadCustomerView />
-          </div>
-        )}
-        {activeTab === 4 && (
-          <div>
-            <ProductWiseForecastView />
-          </div>
-        )}
-        {activeTab === 5 && (
-          <div>
-            <DescriptionWiseForecastView />
-          </div>
+        {visibleTabIndexes.includes(activeTab) && (
+          <div>{tabComponents[activeTab]}</div>
         )}
       </div>
     </div>

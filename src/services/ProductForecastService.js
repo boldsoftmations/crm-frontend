@@ -40,6 +40,48 @@ const getProductForecastPaginateData = (currentPage) => {
   );
 };
 
+// Current MMonth Forecast
+
+const getCurrentMonthForecast = () => {
+  return CustomAxios.get(`/api/forecast/list-current-month-forecast/`);
+};
+
+const getByFilterCurrentMonthForecast = (type, data) => {
+  return CustomAxios.get(
+    `/api/forecast/list-current-month-forecast/?${type}=${data}`
+  );
+};
+
+const getAllPaginateCurrentMonthForecast = (all) => {
+  return CustomAxios.get(
+    `/api/forecast/list-current-month-forecast/?page=${all}`
+  );
+};
+
+const getAllPaginateCurrentMonthForecastWithSearch = (all, type, search) => {
+  return CustomAxios.get(
+    `/api/forecast/list-current-month-forecast/?page=${all}&${type}=${search}`
+  );
+};
+
+const getAllSearchCurrentMonthForecast = (type, search) => {
+  return CustomAxios.get(
+    `/api/forecast/list-current-month-forecast/?${type}=${search}`
+  );
+};
+
+const getAllCurrentMonthForecastPaginate = (currentPage, type, search) => {
+  return CustomAxios.get(
+    `/api/forecast/list-current-month-forecast/?page=${currentPage}&${type}=${search}`
+  );
+};
+
+const getCurrentMonthForecastPaginateData = (currentPage) => {
+  return CustomAxios.get(
+    `/api/forecast/list-current-month-forecast/?page=${currentPage}`
+  );
+};
+
 // Product Not Having Forecast
 
 const getProductNotHavingForecast = () => {
@@ -258,6 +300,13 @@ const ProductForecastService = {
   getAllSearchProductForecast,
   getAllProductForecastPaginate,
   getProductForecastPaginateData,
+  getCurrentMonthForecast,
+  getByFilterCurrentMonthForecast,
+  getAllPaginateCurrentMonthForecast,
+  getAllPaginateCurrentMonthForecastWithSearch,
+  getAllSearchCurrentMonthForecast,
+  getAllCurrentMonthForecastPaginate,
+  getCurrentMonthForecastPaginateData,
   getProductNotHavingForecast,
   getByFilterProductNotHavingForecast,
   getAllPaginateProductNotHavingForecast,

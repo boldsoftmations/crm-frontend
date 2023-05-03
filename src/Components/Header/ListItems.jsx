@@ -356,7 +356,7 @@ export const ListItems = (props) => {
               </ListItem>
             </List>
           </Collapse>
-          {/* Seller Account */}
+          {/* Product Forecast */}
           <ListItem
             button
             onClick={() => setProductForecast(!productForecast)}
@@ -1286,6 +1286,36 @@ export const ListItems = (props) => {
                   </ListItem>
                 </List>
               </Collapse>
+              {/* Product Forecast */}
+              <ListItem
+                button
+                onClick={() => setProductForecast(!productForecast)}
+                style={{ width: 300 }}
+              >
+                <ListItemIcon>
+                  <TrendingUpIcon />
+                </ListItemIcon>
+                <ListItemText primary="Product Forecast" />
+                {productForecast ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+              </ListItem>
+              <Collapse in={productForecast} timeout="auto" unmountOnExit>
+                <Divider />
+                <List component="div" disablePadding>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/forecast/view-product-forecast"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Products Forecast"
+                    />
+                  </ListItem>
+                </List>
+              </Collapse>
               {/* Seller Account */}
               {userData.groups.toString() !== "Sales" && (
                 <ListItem
@@ -1457,6 +1487,36 @@ export const ListItems = (props) => {
                       onClick={() => setOpen(false)}
                       inset
                       primary="Production ShortFall"
+                    />
+                  </ListItem>
+                </List>
+              </Collapse>
+              {/* Product Forecast */}
+              <ListItem
+                button
+                onClick={() => setProductForecast(!productForecast)}
+                style={{ width: 300 }}
+              >
+                <ListItemIcon>
+                  <TrendingUpIcon />
+                </ListItemIcon>
+                <ListItemText primary="Product Forecast" />
+                {productForecast ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+              </ListItem>
+              <Collapse in={productForecast} timeout="auto" unmountOnExit>
+                <Divider />
+                <List component="div" disablePadding>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/forecast/view-product-forecast"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Products Forecast"
                     />
                   </ListItem>
                 </List>
@@ -2161,6 +2221,7 @@ export const ListItems = (props) => {
                   </ListItem>
                 </List>
               </Collapse>
+
               {/*Proforma Invoice  */}
               <ListItem
                 button
@@ -2204,6 +2265,37 @@ export const ListItems = (props) => {
                       onClick={() => setOpen(false)}
                       inset
                       primary="Leads Performa Invoice"
+                    />
+                  </ListItem>
+                </List>
+              </Collapse>
+
+              {/* Product Forecast */}
+              <ListItem
+                button
+                onClick={() => setProductForecast(!productForecast)}
+                style={{ width: 300 }}
+              >
+                <ListItemIcon>
+                  <TrendingUpIcon />
+                </ListItemIcon>
+                <ListItemText primary="Product Forecast" />
+                {productForecast ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+              </ListItem>
+              <Collapse in={productForecast} timeout="auto" unmountOnExit>
+                <Divider />
+                <List component="div" disablePadding>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/forecast/view-product-forecast"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Products Forecast"
                     />
                   </ListItem>
                 </List>
@@ -2627,6 +2719,36 @@ export const ListItems = (props) => {
                 </List>
               </Collapse>
 
+              {/* Product Forecast */}
+              <ListItem
+                button
+                onClick={() => setProductForecast(!productForecast)}
+                style={{ width: 300 }}
+              >
+                <ListItemIcon>
+                  <TrendingUpIcon />
+                </ListItemIcon>
+                <ListItemText primary="Product Forecast" />
+                {productForecast ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+              </ListItem>
+              <Collapse in={productForecast} timeout="auto" unmountOnExit>
+                <Divider />
+                <List component="div" disablePadding>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/forecast/view-product-forecast"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Products Forecast"
+                    />
+                  </ListItem>
+                </List>
+              </Collapse>
               {/*Sales Invoice  */}
               <ListItem
                 button
