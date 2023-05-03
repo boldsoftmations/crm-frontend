@@ -233,10 +233,6 @@ export const DescriptionWiseForecastView = () => {
     getSearchData(event.target.value);
   };
 
-  useEffect(() => {
-    getAllExportData();
-  }, [searchQuery]);
-
   const getAllExportData = async () => {
     try {
       setOpen(true);
@@ -469,7 +465,11 @@ export const DescriptionWiseForecastView = () => {
                   height: "5vh",
                 }}
               >
-                <Button variant="contained" color="success">
+                <Button
+                  variant="contained"
+                  color="success"
+                  onclick={getAllExportData}
+                >
                   Export to Excel
                 </Button>
               </CSVLink>
