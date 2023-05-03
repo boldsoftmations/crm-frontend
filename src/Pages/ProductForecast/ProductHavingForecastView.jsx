@@ -181,13 +181,13 @@ export const ProductHavingForecastView = () => {
       const page = value;
       setCurrentPage(page);
       setOpen(true);
-
-      if (searchQuery) {
+      console.log("first", searchQuery || filterSelectedQuery);
+      if (searchQuery || filterSelectedQuery) {
         const response =
           await ProductForecastService.getAllProductHavingForecastPaginate(
             page,
             filterQuery,
-            searchQuery
+            searchQuery || filterSelectedQuery
           );
         if (response) {
           setProductHavingForecast(response.data.results);
@@ -230,10 +230,6 @@ export const ProductHavingForecastView = () => {
     setFilterSelectedQuery(event.target.value);
     getSearchData(event.target.value);
   };
-
-  useEffect(() => {
-    getAllCustomerWiseOrderBookExport();
-  }, [searchQuery]);
 
   const getAllCustomerWiseOrderBookExport = async () => {
     try {
@@ -365,13 +361,13 @@ export const ProductHavingForecastView = () => {
                   size="small"
                 >
                   <InputLabel id="demo-simple-select-label">
-                    Filter By State
+                    Filter By Sales Person
                   </InputLabel>
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
                     name="values"
-                    label="Filter By State"
+                    label="Filter By Sales Person"
                     value={filterSelectedQuery}
                     onChange={(event) => handleInputChanges(event)}
                     sx={{
@@ -435,7 +431,11 @@ export const ProductHavingForecastView = () => {
                   height: "5vh",
                 }}
               >
-                <Button variant="contained" color="success">
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={getAllCustomerWiseOrderBookExport}
+                >
                   Export to Excel
                 </Button>
               </CSVLink>
