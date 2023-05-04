@@ -16,20 +16,17 @@ import {
   TableFooter,
   Pagination,
   Chip,
-  IconButton,
-  TextField,
 } from "@mui/material";
-import ClearIcon from "@mui/icons-material/Clear";
 import { tableCellClasses } from "@mui/material/TableCell";
 import { Popup } from "./../../../Components/Popup";
 import CustomerServices from "../../../services/CustomerService";
 import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
-import { CustomSearch } from "./../../../Components/CustomSearch";
 import { useDispatch, useSelector } from "react-redux";
 import { getSellerAccountData } from "../../../Redux/Action/Action";
 import InvoiceServices from "../../../services/InvoiceService";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { CreateCustomerProformaInvoice } from "../../Invoice/CustomerPerformaInvoice/CreateCustomerProformaInvoice";
+import { CustomSearchWithButton } from "../../../Components/CustomSearchWithButton";
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.common.black,
@@ -204,52 +201,12 @@ export const CompanyDetails = () => {
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
           <Box display="flex">
             <Box flexGrow={0.9}>
-              <>
-                <TextField
-                  value={filterSelectedQuery}
-                  onChange={(event) =>
-                    setFilterSelectedQuery(event.target.value)
-                  }
-                  name="search"
-                  size="small"
-                  placeholder="search"
-                  label="Search"
-                  variant="outlined"
-                  sx={{
-                    backgroundColor: "#ffffff",
-                    marginLeft: "1em",
-                    "& .MuiSelect-iconOutlined": {
-                      display: filterSelectedQuery ? "none" : "",
-                    },
-                    "&.Mui-focused .MuiIconButton-root": {
-                      color: "primary.main",
-                    },
-                  }}
-                  InputProps={{
-                    endAdornment: (
-                      <>
-                        <IconButton
-                          sx={{
-                            visibility: filterSelectedQuery
-                              ? "visible"
-                              : "hidden",
-                          }}
-                          onClick={getResetData}
-                        >
-                          <ClearIcon />
-                        </IconButton>
-                      </>
-                    ),
-                  }}
-                />
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleInputChange}
-                >
-                  Search
-                </Button>
-              </>
+              <CustomSearchWithButton
+                filterSelectedQuery={filterSelectedQuery}
+                setFilterSelectedQuery={setFilterSelectedQuery}
+                handleInputChange={handleInputChange}
+                getResetData={getResetData}
+              />
             </Box>
             <Box flexGrow={2}>
               <h3

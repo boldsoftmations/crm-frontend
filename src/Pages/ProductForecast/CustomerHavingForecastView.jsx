@@ -18,14 +18,15 @@ import {
   MenuItem,
 } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
-import { CSVLink } from "react-csv";
+import { CSVDownload } from "react-csv";
 import { tableCellClasses } from "@mui/material/TableCell";
 import { CustomPagination } from "../../Components/CustomPagination";
+
 import { ErrorMessage } from "../../Components/ErrorMessage/ErrorMessage";
 import { CustomLoader } from "../../Components/CustomLoader";
 import LeadServices from "../../services/LeadService";
-import { CustomSearch } from "../../Components/CustomSearch";
 import ProductForecastService from "../../services/ProductForecastService";
+import { CustomSearchWithButton } from "../../Components/CustomSearchWithButton";
 
 const filterOption = [
   {
@@ -43,7 +44,7 @@ const filterOption = [
   { label: "Search", value: "search" },
 ];
 
-export const ProductNotHavingForecastView = () => {
+export const CustomerHavingForecastView = () => {
   const [open, setOpen] = useState(false);
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
@@ -53,9 +54,31 @@ export const ProductNotHavingForecastView = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const [assigned, setAssigned] = useState([]);
-  const [productNotHavingForecast, setProductNotHavingForecast] = useState([]);
-  const [exportProductNotHavingForecast, setExportProductNotHavingForecast] =
-    useState([]);
+  const [productHavingForecast, setProductHavingForecast] = useState([]);
+  const [exportData, setExportData] = useState([]);
+
+  const handleDownload = async () => {
+    const data = await handleExport();
+    setExportData(data);
+  };
+
+  const getResetData = () => {
+    setSearchQuery("");
+    setFilterSelectedQuery("");
+
+    getAllProductionForecastDetails();
+  };
+
+  const handleInputChange = () => {
+    setSearchQuery(searchQuery);
+    getSearchData(searchQuery);
+  };
+
+  const handleInputChanges = (event) => {
+    setFilterSelectedQuery(event.target.value);
+    getSearchData(event.target.value);
+  };
+
   // Get the current date
   const currentDate = new Date();
 
@@ -113,16 +136,16 @@ export const ProductNotHavingForecastView = () => {
       setOpen(true);
       if (currentPage) {
         const response =
-          await ProductForecastService.getProductNotHavingForecastPaginateData(
+          await ProductForecastService.getProductHavingForecastPaginateData(
             currentPage
           );
-        setProductNotHavingForecast(response.data.results);
+        setProductHavingForecast(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
       } else {
         const response =
-          await ProductForecastService.getProductNotHavingForecast();
-        setProductNotHavingForecast(response.data.results);
+          await ProductForecastService.getProductHavingForecast();
+        setProductHavingForecast(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
       }
@@ -156,12 +179,12 @@ export const ProductNotHavingForecastView = () => {
       setOpen(true);
       const filterSearch = value;
       const response =
-        await ProductForecastService.getAllSearchProductNotHavingForecast(
+        await ProductForecastService.getAllSearchProductHavingForecast(
           filterQuery,
           filterSearch
         );
       if (response) {
-        setProductNotHavingForecast(response.data.results);
+        setProductHavingForecast(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
       } else {
@@ -180,16 +203,16 @@ export const ProductNotHavingForecastView = () => {
       const page = value;
       setCurrentPage(page);
       setOpen(true);
-
+      console.log("first", searchQuery || filterSelectedQuery);
       if (searchQuery || filterSelectedQuery) {
         const response =
-          await ProductForecastService.getAllProductNotHavingForecastPaginate(
+          await ProductForecastService.getAllProductHavingForecastPaginate(
             page,
             filterQuery,
-            searchQuery
+            searchQuery || filterSelectedQuery
           );
         if (response) {
-          setProductNotHavingForecast(response.data.results);
+          setProductHavingForecast(response.data.results);
           const total = response.data.count;
           setpageCount(Math.ceil(total / 25));
         } else {
@@ -198,10 +221,10 @@ export const ProductNotHavingForecastView = () => {
         }
       } else {
         const response =
-          await ProductForecastService.getProductNotHavingForecastPaginateData(
+          await ProductForecastService.getProductHavingForecastPaginateData(
             page
           );
-        setProductNotHavingForecast(response.data.results);
+        setProductHavingForecast(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
       }
@@ -210,65 +233,6 @@ export const ProductNotHavingForecastView = () => {
     } catch (error) {
       console.log("error", error);
       setOpen(false);
-    }
-  };
-
-  const getResetData = () => {
-    setSearchQuery("");
-    setFilterSelectedQuery("");
-
-    getAllProductionForecastDetails();
-  };
-
-  const handleInputChange = (event) => {
-    setSearchQuery(event.target.value);
-    getSearchData(event.target.value);
-  };
-
-  const handleInputChanges = (event) => {
-    setFilterSelectedQuery(event.target.value);
-    getSearchData(event.target.value);
-  };
-
-  const getAllCustomerWiseOrderBookExport = async () => {
-    try {
-      setOpen(true);
-      if (searchQuery) {
-        const response =
-          await ProductForecastService.getAllPaginateProductNotHavingForecastWithSearch(
-            "all",
-            filterQuery,
-            searchQuery
-          );
-        setExportProductNotHavingForecast(response.data);
-        //   const total = response.data.count;
-        //   setpageCount(Math.ceil(total / 25));
-      } else {
-        const response =
-          await ProductForecastService.getAllPaginateProductNotHavingForecast(
-            "all"
-          );
-        setExportProductNotHavingForecast(response.data);
-      }
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      if (!err.response) {
-        setErrMsg(
-          "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
-        );
-      } else if (err.response.status === 400) {
-        setErrMsg(
-          err.response.data.errors.name
-            ? err.response.data.errors.name
-            : err.response.data.errors.non_field_errors
-        );
-      } else if (err.response.status === 401) {
-        setErrMsg(err.response.data.errors.code);
-      } else {
-        setErrMsg("Server Error");
-      }
-      errRef.current.focus();
     }
   };
 
@@ -312,20 +276,45 @@ export const ProductNotHavingForecastView = () => {
     },
   ];
 
-  const data = exportProductNotHavingForecast.map((row) => {
-    const obj = {
-      company: row.company,
-      sales_person: row.sales_person,
-      product: row.product,
-    };
-    row.product_forecast.forEach((rowData, index) => {
-      obj[`product_forecast_${index}`] =
-        rowData.actual !== null
-          ? `${rowData.actual}-${rowData.forecast}`
-          : `-${rowData.forecast}`;
-    });
-    return obj;
-  });
+  const handleExport = async () => {
+    try {
+      setOpen(true);
+      let response;
+      if (searchQuery || filterSelectedQuery) {
+        response =
+          await ProductForecastService.getAllPaginateProductHavingForecastWithSearch(
+            "all",
+            filterQuery,
+            searchQuery || filterSelectedQuery
+          );
+      } else {
+        response =
+          await ProductForecastService.getAllPaginateProductHavingForecast(
+            "all"
+          );
+      }
+      const data = response.data.map((row) => {
+        const obj = {
+          company: row.company,
+          sales_person: row.sales_person,
+          product: row.product,
+        };
+        row.product_forecast.forEach((rowData, index) => {
+          obj[`product_forecast_${index}`] =
+            rowData.actual !== null
+              ? `${rowData.actual}-${rowData.forecast}`
+              : `-${rowData.forecast}`;
+        });
+        return obj;
+      });
+      setOpen(false);
+      return data;
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setOpen(false);
+    }
+  };
 
   return (
     <div>
@@ -360,13 +349,13 @@ export const ProductNotHavingForecastView = () => {
                   size="small"
                 >
                   <InputLabel id="demo-simple-select-label">
-                    Filter By State
+                    Filter By Sales Person
                   </InputLabel>
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
                     name="values"
-                    label="Filter By State"
+                    label="Filter By Sales Person"
                     value={filterSelectedQuery}
                     onChange={(event) => handleInputChanges(event)}
                     sx={{
@@ -398,8 +387,9 @@ export const ProductNotHavingForecastView = () => {
                   </Select>
                 </FormControl>
               ) : (
-                <CustomSearch
+                <CustomSearchWithButton
                   filterSelectedQuery={searchQuery}
+                  setFilterSelectedQuery={setSearchQuery}
                   handleInputChange={handleInputChange}
                   getResetData={getResetData}
                 />
@@ -415,29 +405,21 @@ export const ProductNotHavingForecastView = () => {
                   fontWeight: 800,
                 }}
               >
-                Customer Not Having Forecast
+                Customer Having Forecast
               </h3>
             </Box>
             <Box flexGrow={0.5}>
-              <CSVLink
-                data={data}
-                headers={headers}
-                filename={"product_forecast.csv"}
-                target="_blank"
-                style={{
-                  textDecoration: "none",
-                  outline: "none",
-                  height: "5vh",
-                }}
-              >
-                <Button
-                  variant="contained"
-                  color="success"
-                  onClick={getAllCustomerWiseOrderBookExport}
-                >
-                  Export to Excel
-                </Button>
-              </CSVLink>
+              <Button variant="contained" onClick={handleDownload}>
+                Download CSV
+              </Button>
+              {exportData.length > 0 && (
+                <CSVDownload
+                  data={exportData}
+                  headers={headers}
+                  target="_blank"
+                  filename={"Customer Having forecast.csv"}
+                />
+              )}
             </Box>
           </Box>
           <TableContainer
@@ -507,7 +489,7 @@ export const ProductNotHavingForecastView = () => {
                 </StyledTableRow>
               </TableHead>
               <TableBody>
-                {productNotHavingForecast.map((row) => (
+                {productHavingForecast.map((row) => (
                   <StyledTableRow>
                     <StyledTableCell align="center">
                       {row.company}

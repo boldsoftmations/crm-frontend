@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { CustomTabs } from "../../Components/CustomTabs";
-import { ProductNotHavingForecastView } from "./ProductNotHavingForecastView";
-import { ProductHavingForecastView } from "./ProductHavingForecastView";
 import { DeadCustomerView } from "./DeadCustomerView";
 import { ProductWiseForecastView } from "./ProductWiseForecastView";
 import { CurrentMonthForecastView } from "./CurrentMonthForecastView";
 import { DescriptionWiseForecastView } from "./DescriptionWiseForecastView";
 import { useSelector } from "react-redux";
+import { CustomerNotHavingForecastView } from "./CustomerNotHavingForecastView";
+import { CustomerHavingForecastView } from "./CustomerHavingForecastView";
 
 export const ProductForecastViewAll = () => {
   const data = useSelector((state) => state.auth);
@@ -38,8 +38,8 @@ export const ProductForecastViewAll = () => {
   const visibleTabIndexes = visibleTabs.map((tab) => tab.index);
   const tabComponents = {
     0: <CurrentMonthForecastView />,
-    1: <ProductHavingForecastView />,
-    2: <ProductNotHavingForecastView />,
+    1: <CustomerHavingForecastView />,
+    2: <CustomerNotHavingForecastView />,
     3: <DeadCustomerView />,
     4: <ProductWiseForecastView />,
     5: <DescriptionWiseForecastView />,

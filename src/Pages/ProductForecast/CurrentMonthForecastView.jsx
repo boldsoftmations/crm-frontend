@@ -18,16 +18,14 @@ import {
   MenuItem,
 } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
-import { CSVLink } from "react-csv";
+import { CSVDownload } from "react-csv";
 import { tableCellClasses } from "@mui/material/TableCell";
-
 import { CustomPagination } from "../../Components/CustomPagination";
-
 import { ErrorMessage } from "../../Components/ErrorMessage/ErrorMessage";
 import { CustomLoader } from "../../Components/CustomLoader";
 import LeadServices from "../../services/LeadService";
-import { CustomSearch } from "../../Components/CustomSearch";
 import ProductForecastService from "../../services/ProductForecastService";
+import { CustomSearchWithButton } from "../../Components/CustomSearchWithButton";
 
 const filterOption = [
   {
@@ -56,9 +54,57 @@ export const CurrentMonthForecastView = () => {
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const [assigned, setAssigned] = useState([]);
   const [currentMonthForecast, setCurrentMonthForecast] = useState([]);
-  const [exportCurrentMonthForecast, setExportCurrentMonthForecast] = useState(
-    []
-  );
+  const [exportData, setExportData] = useState([]);
+
+  const handleDownload = async () => {
+    const data = await handleExport();
+    setExportData(data);
+  };
+
+  const headers = [
+    { label: "Company", key: "company" },
+    { label: "Sales Person", key: "sales_person" },
+    { label: "Product", key: "product" },
+    { label: "Forecast", key: "forecast" },
+    { label: "Actual", key: "actual" },
+  ];
+
+  const handleExport = async () => {
+    try {
+      setOpen(true);
+      let response;
+      if (searchQuery || filterSelectedQuery) {
+        response =
+          await ProductForecastService.getAllPaginateCurrentMonthForecastWithSearch(
+            "all",
+            filterQuery,
+            searchQuery || filterSelectedQuery
+          );
+      } else {
+        response =
+          await ProductForecastService.getAllPaginateCurrentMonthForecast(
+            "all"
+          );
+      }
+      const data = response.data
+        .filter((row) => row.forecast > 0)
+        .map((row) => {
+          return {
+            company: row.company,
+            sales_person: row.sales_person,
+            product: row.product,
+            forecast: row.forecast,
+            actual: row.actual,
+          };
+        });
+      setOpen(false);
+      return data;
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setOpen(false);
+    }
+  };
 
   useEffect(() => {
     getLAssignedData();
@@ -158,7 +204,7 @@ export const CurrentMonthForecastView = () => {
           await ProductForecastService.getAllCurrentMonthForecastPaginate(
             page,
             filterQuery,
-            searchQuery
+            searchQuery || filterSelectedQuery
           );
         if (response) {
           setCurrentMonthForecast(response.data.results);
@@ -192,85 +238,15 @@ export const CurrentMonthForecastView = () => {
     getAllProductionForecastDetails();
   };
 
-  const handleInputChange = (event) => {
-    setSearchQuery(event.target.value);
-    getSearchData(event.target.value);
+  const handleInputChange = () => {
+    setSearchQuery(searchQuery);
+    getSearchData(searchQuery);
   };
 
   const handleInputChanges = (event) => {
     setFilterSelectedQuery(event.target.value);
     getSearchData(event.target.value);
   };
-
-  const getAllExportData = async () => {
-    try {
-      setOpen(true);
-      if (searchQuery) {
-        const response =
-          await ProductForecastService.getAllPaginateCurrentMonthForecastWithSearch(
-            "all",
-            filterQuery,
-            searchQuery
-          );
-        setExportCurrentMonthForecast(response.data);
-        //   const total = response.data.count;
-        //   setpageCount(Math.ceil(total / 25));
-      } else {
-        const response =
-          await ProductForecastService.getAllPaginateCurrentMonthForecast(
-            "all"
-          );
-        setExportCurrentMonthForecast(response.data);
-      }
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      if (!err.response) {
-        setErrMsg(
-          "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
-        );
-      } else if (err.response.status === 400) {
-        setErrMsg(
-          err.response.data.errors.name
-            ? err.response.data.errors.name
-            : err.response.data.errors.non_field_errors
-        );
-      } else if (err.response.status === 401) {
-        setErrMsg(err.response.data.errors.code);
-      } else {
-        setErrMsg("Server Error");
-      }
-      errRef.current.focus();
-    }
-  };
-
-  const headers = [
-    { label: "Company", key: "company" },
-    { label: "Sales Person", key: "sales_person" },
-    { label: "Product", key: "product" },
-
-    {
-      label: "Forecast",
-      key: "forecast",
-    },
-    {
-      label: "Actual",
-      key: "actual",
-    },
-  ];
-
-  const data = exportCurrentMonthForecast
-    .filter((row) => row.forecast > 0)
-    .map((row) => {
-      const obj = {
-        company: row.company,
-        sales_person: row.sales_person,
-        product: row.product,
-        forecast: row.forecast,
-        actual: row.actual,
-      };
-      return obj;
-    });
 
   return (
     <div>
@@ -343,8 +319,9 @@ export const CurrentMonthForecastView = () => {
                   </Select>
                 </FormControl>
               ) : (
-                <CustomSearch
+                <CustomSearchWithButton
                   filterSelectedQuery={searchQuery}
+                  setFilterSelectedQuery={setSearchQuery}
                   handleInputChange={handleInputChange}
                   getResetData={getResetData}
                 />
@@ -364,25 +341,17 @@ export const CurrentMonthForecastView = () => {
               </h3>
             </Box>
             <Box flexGrow={0.5}>
-              <CSVLink
-                data={data}
-                headers={headers}
-                filename={"product_forecast.csv"}
-                target="_blank"
-                style={{
-                  textDecoration: "none",
-                  outline: "none",
-                  height: "5vh",
-                }}
-              >
-                <Button
-                  variant="contained"
-                  color="success"
-                  onClick={getAllExportData}
-                >
-                  Export to Excel
-                </Button>
-              </CSVLink>
+              <Button variant="contained" onClick={handleDownload}>
+                Download CSV
+              </Button>
+              {exportData.length > 0 && (
+                <CSVDownload
+                  data={[...exportData]}
+                  headers={headers}
+                  target="_blank"
+                  filename="Current Month forecast.csv"
+                />
+              )}
             </Box>
           </Box>
           <TableContainer

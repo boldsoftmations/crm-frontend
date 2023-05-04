@@ -11,14 +11,8 @@ import {
   Box,
   Paper,
   Grid,
-  InputLabel,
-  FormControl,
-  Select,
-  IconButton,
-  MenuItem,
 } from "@mui/material";
-import ClearIcon from "@mui/icons-material/Clear";
-import { CSVLink } from "react-csv";
+import { CSVDownload } from "react-csv";
 import { tableCellClasses } from "@mui/material/TableCell";
 
 import { CustomPagination } from "../../Components/CustomPagination";
@@ -26,8 +20,8 @@ import { CustomPagination } from "../../Components/CustomPagination";
 import { ErrorMessage } from "../../Components/ErrorMessage/ErrorMessage";
 import { CustomLoader } from "../../Components/CustomLoader";
 import LeadServices from "../../services/LeadService";
-import { CustomSearch } from "../../Components/CustomSearch";
 import ProductForecastService from "../../services/ProductForecastService";
+import { CustomSearchWithButton } from "../../Components/CustomSearchWithButton";
 
 const filterOption = [
   {
@@ -56,8 +50,29 @@ export const DescriptionWiseForecastView = () => {
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const [assigned, setAssigned] = useState([]);
   const [descriptionWiseForecast, setDescriptionWiseForecast] = useState([]);
-  const [exportDescriptionWiseForecast, setExportDescriptionWiseForecast] =
-    useState([]);
+  const [exportData, setExportData] = useState([]);
+
+  const handleDownload = async () => {
+    const data = await handleExport();
+    setExportData(data);
+  };
+
+  const getResetData = () => {
+    setSearchQuery("");
+    setFilterSelectedQuery("");
+
+    getAllDescriptionionForecastDetails();
+  };
+
+  const handleInputChange = () => {
+    setSearchQuery(searchQuery);
+    getSearchData(searchQuery);
+  };
+
+  const handleInputChanges = (event) => {
+    setFilterSelectedQuery(event.target.value);
+    getSearchData(event.target.value);
+  };
 
   // Get the current date
   const currentDate = new Date();
@@ -216,81 +231,24 @@ export const DescriptionWiseForecastView = () => {
     }
   };
 
-  const getResetData = () => {
-    setSearchQuery("");
-    setFilterSelectedQuery("");
-
-    getAllDescriptionionForecastDetails();
-  };
-
-  const handleInputChange = (event) => {
-    setSearchQuery(event.target.value);
-    getSearchData(event.target.value);
-  };
-
-  const handleInputChanges = (event) => {
-    setFilterSelectedQuery(event.target.value);
-    getSearchData(event.target.value);
-  };
-
-  const getAllExportData = async () => {
-    try {
-      setOpen(true);
-      if (searchQuery) {
-        const response =
-          await ProductForecastService.getAllPaginateDescriptionWiseForecastWithSearch(
-            "all",
-            filterQuery,
-            searchQuery
-          );
-        setExportDescriptionWiseForecast(response.data);
-        //   const total = response.data.count;
-        //   setpageCount(Math.ceil(total / 25));
-      } else {
-        const response =
-          await ProductForecastService.getAllPaginateProductWiseForecast("all");
-        setExportDescriptionWiseForecast(response.data);
-      }
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      if (!err.response) {
-        setErrMsg(
-          "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
-        );
-      } else if (err.response.status === 400) {
-        setErrMsg(
-          err.response.data.errors.name
-            ? err.response.data.errors.name
-            : err.response.data.errors.non_field_errors
-        );
-      } else if (err.response.status === 401) {
-        setErrMsg(err.response.data.errors.code);
-      } else {
-        setErrMsg("Server Error");
-      }
-      errRef.current.focus();
-    }
-  };
-
   const headers = [
     { label: "Description", key: "description" },
     { label: "Brand", key: "brand" },
     { label: "Unit", key: "unit" },
     {
-      label: `${months[lastMonth1]} - ${
+      label: `${months[lastMonth1]} -- ${
         lastMonth1 < currentMonth ? currentYear : currentYear - 1
       } Forecast-Actual`,
       key: "lastMonth1",
     },
     {
-      label: `${months[lastMonth2]} - ${
+      label: `${months[lastMonth2]} -- ${
         lastMonth2 < currentMonth ? currentYear : currentYear - 1
       } Forecast-Actual`,
       key: "lastMonth2",
     },
     {
-      label: `${months[currentMonth]} - ${currentYear} Forecast-Actual`,
+      label: `${months[currentMonth]} -- ${currentYear} Forecast-Actual`,
       key: "currentMonth",
     },
     {
@@ -313,54 +271,87 @@ export const DescriptionWiseForecastView = () => {
     },
   ];
 
-  const data = descriptionWiseForecast
-    .filter((row) => row.qty_forecast.length > 0) // Filter rows with non-empty qty_forecast array
-    .map((row) => {
-      return {
-        description: row.product__description__name,
-        brand: row.product__brand__name,
-        unit: row.product__unit__name,
-        lastMonth1: row.qty_forecast
-          .filter((data) => data.index_position === 0)
-          .map(
-            (filteredData) =>
-              `${
-                filteredData.total_forecast !== null
-                  ? filteredData.total_forecast
-                  : ""
-              } - ${filteredData.actual !== null ? filteredData.actual : ""}`
-          ),
-        lastMonth2: row.qty_forecast
-          .filter((data) => data.index_position === 1)
-          .map(
-            (filteredData) =>
-              `${
-                filteredData.total_forecast !== null
-                  ? filteredData.total_forecast
-                  : ""
-              } - ${filteredData.actual !== null ? filteredData.actual : ""}`
-          ),
-        currentMonth: row.qty_forecast
-          .filter((data) => data.index_position === 2)
-          .map(
-            (filteredData) =>
-              `${
-                filteredData.total_forecast !== null
-                  ? filteredData.total_forecast
-                  : ""
-              } - ${filteredData.actual !== null ? filteredData.actual : ""}`
-          ),
-        nextMonth1: row.qty_forecast
-          .filter((data) => data.index_position === 3)
-          .map((filteredData) => filteredData.total_forecast),
-        nextMonth2: row.qty_forecast
-          .filter((data) => data.index_position === 4)
-          .map((filteredData) => filteredData.total_forecast),
-        nextMonth3: row.qty_forecast
-          .filter((data) => data.index_position === 5)
-          .map((filteredData) => filteredData.total_forecast),
-      };
-    });
+  const handleExport = async () => {
+    try {
+      setOpen(true);
+      let response;
+      if (searchQuery) {
+        response =
+          await ProductForecastService.getAllPaginateDescriptionWiseForecastWithSearch(
+            "all",
+            filterQuery,
+            searchQuery
+          );
+      } else {
+        response =
+          await ProductForecastService.getAllPaginateDescriptionWiseForecast(
+            "all"
+          );
+      }
+
+      const data = descriptionWiseForecast
+        .filter((row) => row.qty_forecast.length > 0) // Filter rows with non-empty qty_forecast array
+        .map((row) => {
+          return {
+            description: row.product__description__name,
+            brand: row.product__brand__name,
+            unit: row.product__unit__name,
+            lastMonth1: row.qty_forecast
+              .filter((data) => data.index_position === 0)
+              .map(
+                (filteredData) =>
+                  `${
+                    filteredData.total_forecast !== null
+                      ? filteredData.total_forecast
+                      : ""
+                  } -- ${
+                    filteredData.actual !== null ? filteredData.actual : ""
+                  }`
+              ),
+            lastMonth2: row.qty_forecast
+              .filter((data) => data.index_position === 1)
+              .map(
+                (filteredData) =>
+                  `${
+                    filteredData.total_forecast !== null
+                      ? filteredData.total_forecast
+                      : ""
+                  } -- ${
+                    filteredData.actual !== null ? filteredData.actual : ""
+                  }`
+              ),
+            currentMonth: row.qty_forecast
+              .filter((data) => data.index_position === 2)
+              .map(
+                (filteredData) =>
+                  `${
+                    filteredData.total_forecast !== null
+                      ? filteredData.total_forecast
+                      : ""
+                  } -- ${
+                    filteredData.actual !== null ? filteredData.actual : ""
+                  }`
+              ),
+            nextMonth1: row.qty_forecast
+              .filter((data) => data.index_position === 3)
+              .map((filteredData) => filteredData.total_forecast),
+            nextMonth2: row.qty_forecast
+              .filter((data) => data.index_position === 4)
+              .map((filteredData) => filteredData.total_forecast),
+            nextMonth3: row.qty_forecast
+              .filter((data) => data.index_position === 5)
+              .map((filteredData) => filteredData.total_forecast),
+          };
+        });
+
+      setOpen(false);
+      return data;
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setOpen(false);
+    }
+  };
 
   return (
     <div>
@@ -433,8 +424,9 @@ export const DescriptionWiseForecastView = () => {
                   </Select>
                 </FormControl>
               ) : ( */}
-              <CustomSearch
+              <CustomSearchWithButton
                 filterSelectedQuery={searchQuery}
+                setFilterSelectedQuery={setSearchQuery}
                 handleInputChange={handleInputChange}
                 getResetData={getResetData}
               />
@@ -454,25 +446,16 @@ export const DescriptionWiseForecastView = () => {
               </h3>
             </Box>
             <Box flexGrow={0.5}>
-              <CSVLink
-                data={data}
-                headers={headers}
-                filename={"description_forecast.csv"}
-                target="_blank"
-                style={{
-                  textDecoration: "none",
-                  outline: "none",
-                  height: "5vh",
-                }}
-              >
-                <Button
-                  variant="contained"
-                  color="success"
-                  onclick={getAllExportData}
-                >
-                  Export to Excel
-                </Button>
-              </CSVLink>
+              <Button variant="contained" onClick={handleDownload}>
+                Download CSV
+              </Button>
+              {exportData.length > 0 && (
+                <CSVDownload
+                  data={exportData}
+                  headers={headers}
+                  target="_blank"
+                />
+              )}
             </Box>
           </Box>
           <TableContainer
