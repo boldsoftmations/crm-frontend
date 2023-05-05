@@ -16,8 +16,11 @@ import {
   TableFooter,
   Pagination,
   Chip,
+  Snackbar,
+  IconButton,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
+import CloseIcon from "@mui/icons-material/Close";
 import { Popup } from "./../../../Components/Popup";
 import CustomerServices from "../../../services/CustomerService";
 import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
@@ -27,6 +30,7 @@ import InvoiceServices from "../../../services/InvoiceService";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { CreateCustomerProformaInvoice } from "../../Invoice/CustomerPerformaInvoice/CreateCustomerProformaInvoice";
 import { CustomSearchWithButton } from "../../../Components/CustomSearchWithButton";
+import { BulkCustomerAssign } from "./BulkCustomerAssign";
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.common.black,
@@ -52,6 +56,8 @@ export const CompanyDetails = () => {
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [openPopup3, setOpenPopup3] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
   const [open, setOpen] = useState(false);
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
@@ -192,6 +198,9 @@ export const CompanyDetails = () => {
     setOpenPopup3(true);
   };
 
+  const handleSnackbarClose = () => {
+    setOpenSnackbar(false);
+  };
   return (
     <>
       <CustomLoader open={open} />
@@ -222,6 +231,11 @@ export const CompanyDetails = () => {
               </h3>
             </Box>
             <Box flexGrow={0.5} align="right">
+              {userData.is_staff === true && (
+                <Button onClick={() => setOpenModal(true)} variant="contained">
+                  Assign Bulk Customer
+                </Button>
+              )}
               {userData.groups.toString() !== "Sales" && (
                 <Button
                   onClick={() => setOpenPopup2(true)}
@@ -248,6 +262,22 @@ export const CompanyDetails = () => {
               },
             }}
           >
+            <Snackbar
+              open={openSnackbar}
+              onClose={handleSnackbarClose}
+              message={"Bulk Customer Assigned Successfull from "}
+              anchorOrigin={{ vertical: "top", horizontal: "center" }}
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  sx={{ p: 0.5 }}
+                  onClick={handleSnackbarClose}
+                >
+                  <CloseIcon />
+                </IconButton>
+              }
+            />
             <Table
               sx={{ minWidth: 700 }}
               stickyHeader
@@ -357,6 +387,17 @@ export const CompanyDetails = () => {
         <CreateCustomerProformaInvoice
           recordForEdit={recordForEdit}
           setOpenPopup={setOpenPopup3}
+        />
+      </Popup>
+      <Popup
+        maxWidth={"lg"}
+        title={"Assign Bulk Lead to another Employee"}
+        openPopup={openModal}
+        setOpenPopup={setOpenModal}
+      >
+        <BulkCustomerAssign
+          setOpenPopup={setOpenModal}
+          setOpenSnackbar={setOpenSnackbar}
         />
       </Popup>
     </>

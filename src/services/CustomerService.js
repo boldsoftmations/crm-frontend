@@ -248,6 +248,10 @@ const getProductHavingForecastPaginateData = (currentPage) => {
     `/api/forecast/list-product-having-forecast/?page=${currentPage}`
   );
 };
+
+const BulCustomerAssign = (data) => {
+  return CustomAxios.post("/api/customer/assign-bulk-customers/ ", data);
+};
 const CustomerServices = {
   getAllCompanyData,
   getAllPaginateCompanyData,
@@ -299,6 +303,7 @@ const CustomerServices = {
   getAllSearchProductHavingForecast,
   getAllProductHavingForecastPaginate,
   getProductHavingForecastPaginateData,
+  BulCustomerAssign,
 };
 
 export default CustomerServices;
