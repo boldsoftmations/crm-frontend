@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Grid,
@@ -38,12 +38,10 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 export const ForecastView = (props) => {
-  const { forecastdata, getAllCompanyDetailsByID, open } = props;
+  const { forecastdata, getAllCompanyDetailsByID } = props;
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
-  const [IDForEdit, setIDForEdit] = useState();
   const [forecastDataByID, setForecastDataByID] = useState([]);
-
   // Get the current date
   const currentDate = new Date();
 
@@ -74,23 +72,6 @@ export const ForecastView = (props) => {
     "November",
     "December",
   ];
-
-  useEffect(() => {
-    if (IDForEdit) getAllForecastDetailsByID();
-  }, [IDForEdit]);
-
-  const getAllForecastDetailsByID = async () => {
-    try {
-      // setOpen(true);
-      const response = await CustomerServices.getForecastDataById(IDForEdit);
-      console.log("response", response.data.product_forecast);
-      setForecastDataByID(response.data.product_forecast);
-      // setOpen(false);
-    } catch (err) {
-      // setOpen(false);
-      console.log("company data by id error", err);
-    }
-  };
 
   return (
     <>
@@ -208,7 +189,7 @@ export const ForecastView = (props) => {
                       variant="contained"
                       onClick={() => {
                         setOpenPopup(true);
-                        setIDForEdit(row.id);
+                        setForecastDataByID(row);
                       }}
                     >
                       View
@@ -236,10 +217,9 @@ export const ForecastView = (props) => {
         setOpenPopup={setOpenPopup}
       >
         <ForecastUpdate
-          IDForEdit={IDForEdit}
           getAllCompanyDetailsByID={getAllCompanyDetailsByID}
-          forecastDataByID={forecastDataByID}
           setOpenPopup={setOpenPopup}
+          forecastDataByID={forecastDataByID}
         />
       </Popup>
     </>

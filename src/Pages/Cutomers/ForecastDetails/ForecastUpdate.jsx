@@ -8,64 +8,57 @@ import {
   Select,
   TextField,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomerServices from "../../../services/CustomerService";
-import { month, year } from "./DateAndYear";
+// import { month, year } from "./DateAndYear";
+
+const months = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
 
 export const ForecastUpdate = (props) => {
-  const { getAllCompanyDetailsByID, forecastDataByID, setOpenPopup } = props;
-  console.log("forecastDataByID", forecastDataByID);
+  const { getAllCompanyDetailsByID, setOpenPopup, forecastDataByID } = props;
   const [open, setOpen] = useState(false);
-  const [productForecast, setProductForecast] = useState([]);
-  const [selectedMonth, setSelectedMonth] = useState();
-  const [selectedYear, setSelectedYear] = useState();
+  const [selectedMonthForecast, setSelectedMonthForecast] = useState([]);
+  const [forecast, setForecast] = useState(null);
+  console.log("forecast", forecast);
+  console.log("forecastDataByID", forecastDataByID);
+  console.log("selectedMonthForecast", selectedMonthForecast);
   const handleFormChange = (event) => {
-    const { name, value } = event.target;
-    setProductForecast({ ...productForecast, [name]: value });
-  };
-  let searchValue = (property_value, array) => {
-    let new_array = {};
-    for (let i = 0; i < array.length; i++) {
-      if (i === property_value) {
-        return array[i];
-      }
-    }
-    return new_array;
+    setSelectedMonthForecast(event.target.value);
   };
 
-  let FORECAST_DATA = searchValue(selectedMonth, forecastDataByID);
-  console.log("FORECAST_DATA", FORECAST_DATA);
-  // let array = [];
-  // let obj =
-  //   forecastDataByID.length > 0 &&
-  //   forecastDataByID.map((element) => {
-  //     return {
-  //       product_forecast: element.product_forecast,
-  //       month: element.month,
-  //       year: element.year,
-  //       forecast: element.forecast,
-  //     };
-  //   });
-
-  // array.push(obj);
-  // console.log("array", array);
   const updateProductForecastDetails = async (e) => {
     try {
       e.preventDefault();
       setOpen(true);
 
       const req = {
-        product_forecast: selectedMonth.product_forecast,
-        month: selectedMonth.month,
-        year: selectedMonth.year,
-        forecast: productForecast
-          ? productForecast.forecast
-          : selectedMonth
-          ? selectedMonth.forecast
+        product_forecast: selectedMonthForecast.product_forecast,
+        month: selectedMonthForecast.month,
+        year: selectedMonthForecast.year,
+        forecast: forecast
+          ? forecast
+          : selectedMonthForecast && selectedMonthForecast.forecast
+          ? selectedMonthForecast.forecast
           : "",
       };
-      await CustomerServices.updateProductForecastData(selectedMonth.id, req);
+      await CustomerServices.updateProductForecastData(
+        selectedMonthForecast.id,
+        req
+      );
       setOpenPopup(false);
       // setOpenPopup(false);s
       getAllCompanyDetailsByID();
@@ -85,19 +78,6 @@ export const ForecastUpdate = (props) => {
         onSubmit={(e) => updateProductForecastDetails(e)}
       >
         <Grid container spacing={2}>
-          {/* {productForecast.map((input, index) => {
-            return (
-              <> */}
-          {/* <Grid item xs={12} sm={4}>
-            <TextField
-              fullWidth
-              name="product_forecast"
-              size="small"
-              label="Product Forecast"
-              variant="outlined"
-              value={selectedMonth ? selectedMonth.product_forecast : ""}
-            />
-          </Grid> */}
           <Grid item xs={12} sm={6}>
             <FormControl fullWidth size="small">
               <InputLabel id="demo-simple-select-label">Month</InputLabel>
@@ -106,14 +86,13 @@ export const ForecastUpdate = (props) => {
                 id="demo-simple-select"
                 name="month"
                 label="Month"
-                value={selectedMonth ? selectedMonth : FORECAST_DATA.month}
-                onChange={(event) => setSelectedMonth(event.target.value)}
+                onChange={(event) => handleFormChange(event)}
               >
-                {forecastDataByID.map((option, i) => {
+                {forecastDataByID.product_forecast.map((option, i) => {
                   return (
                     i >= 2 && (
                       <MenuItem key={i} value={option}>
-                        {option.month}
+                        {months[option.month - 1]}
                       </MenuItem>
                     )
                   );
@@ -121,41 +100,22 @@ export const ForecastUpdate = (props) => {
               </Select>
             </FormControl>
           </Grid>
-          {/* <Grid item xs={12} sm={3} sx={{ marginRight: "2rem" }}>
-            <FormControl fullWidth size="small">
-              <InputLabel id="demo-simple-select-label">Year</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                name="year"
-                label="Year"
-                value={selectedYear}
-                onChange={(event) => setSelectedYear(event.target.value)}
-              >
-                {year.map((option, i) => (
-                  <MenuItem key={i} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid> */}
+
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              type={"number"}
               name="forecast"
               size="small"
               label="Forecast"
               variant="outlined"
               value={
-                productForecast.forecast
-                  ? productForecast.forecast
-                  : selectedMonth
-                  ? selectedMonth.forecast
+                forecast
+                  ? forecast
+                  : selectedMonthForecast && selectedMonthForecast.forecast
+                  ? selectedMonthForecast.forecast
                   : ""
               }
-              onChange={(event) => handleFormChange(event)}
+              onChange={(event) => setForecast(event.target.value)}
             />
           </Grid>
 
