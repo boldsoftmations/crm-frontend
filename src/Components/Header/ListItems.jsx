@@ -1489,6 +1489,32 @@ export const ListItems = (props) => {
                       primary="Production ShortFall"
                     />
                   </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/inventory/view-stores-inventory-cons"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Stores Inventory (Cons)"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/inventory/view-production-inventory-cons"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Production Inventory (Cons)"
+                    />
+                  </ListItem>
                 </List>
               </Collapse>
               {/* Product Forecast */}
