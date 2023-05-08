@@ -7,7 +7,7 @@ import { BrowserRouter } from "react-router-dom";
 
 function App() {
   return (
-    <BrowserRouter basename="/crm">
+    <BrowserRouter basename="/crm-frontend">
       <Header />
       <div className="appcontainer">
         <RouteScreen />
