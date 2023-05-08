@@ -73,8 +73,11 @@ export const GRNView = () => {
     try {
       setOpen(true);
       const response =
-        await InventoryServices.getAllSearchWithFilterPackingListData(false);
-      setVendorOption(response.data.results);
+        await InventoryServices.getAllSearchWithFilterPackingListData(
+          "all",
+          false
+        );
+      setVendorOption(response.data);
       setOpen(false);
     } catch (err) {
       setOpen(false);

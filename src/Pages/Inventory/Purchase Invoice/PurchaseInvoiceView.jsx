@@ -73,9 +73,10 @@ export const PurchaseInvoiceView = () => {
     try {
       setOpen(true);
       const response = await InventoryServices.getAllSearchWithFilterGRNData(
+        "all",
         false
       );
-      setVendorOption(response.data.results);
+      setVendorOption(response.data);
       setOpen(false);
     } catch (err) {
       setOpen(false);
