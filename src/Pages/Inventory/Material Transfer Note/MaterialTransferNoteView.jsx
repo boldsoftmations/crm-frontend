@@ -1,27 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  Box,
-  Grid,
-  Paper,
-  styled,
-  Table,
-  TableBody,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TableCell,
-  Button,
-  TableFooter,
-  Pagination,
-  IconButton,
-  Switch,
-  Snackbar,
-} from "@mui/material";
-import { tableCellClasses } from "@mui/material/TableCell";
-import { CSVLink } from "react-csv";
-import CloseIcon from "@mui/icons-material/Close";
-import DownloadIcon from "@mui/icons-material/Download";
 import jsPDF from "jspdf";
+import { CSVDownload } from "react-csv";
 import {
   pdf,
   Image,
@@ -43,6 +22,8 @@ import { useSelector } from "react-redux";
 import { MaterialTransferNoteCreate } from "./MaterialTransferNoteCreate";
 import { MaterialTransferNoteUpdate } from "./MaterialTransferNoteUpdate";
 import InvoiceServices from "../../../services/InvoiceService";
+import { CustomPagination } from "../../../Components/CustomPagination";
+import { CustomTable } from "../../../Components/CustomTable";
 
 export const MaterialTransferNoteView = () => {
   const [openPopup, setOpenPopup] = useState(false);
@@ -52,9 +33,6 @@ export const MaterialTransferNoteView = () => {
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
   const [materialTransferNote, setMaterialTransferNote] = useState([]);
-  const [exportMaterialTransferNote, setExportMaterialTransferNote] = useState(
-    []
-  );
   const [materialTransferNoteByID, setMaterialTransferNoteByID] = useState([]);
   const [pageCount, setpageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
@@ -63,6 +41,82 @@ export const MaterialTransferNoteView = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [sellerOption, setSellerOption] = useState(null);
   const users = useSelector((state) => state.auth.profile);
+  const [exportData, setExportData] = useState([]);
+  const [message, setMessage] = useState(null);
+  const handleDownload = async () => {
+    const data = await handleExport();
+    setExportData(data);
+  };
+
+  const headers = [
+    { label: "USER", key: "user" },
+    { label: "SELLER UNIT", key: "seller_account" },
+    { label: "DATE", key: "date" },
+    { label: "PRODUCT", key: "product" },
+    { label: "UNIT", key: "unit" },
+    { label: "QUANTITY", key: "quantity" },
+    { label: "ACCEPTED", key: "accepted" },
+  ];
+
+  const handleExport = async () => {
+    try {
+      setOpen(true);
+      let response;
+      if (filterSelectedQuery) {
+        response =
+          await InventoryServices.getAllMaterialTransferNoteDataPaginate(
+            "all",
+            filterSelectedQuery
+          );
+      } else {
+        response = await InventoryServices.getMaterialTransferNotePaginateData(
+          "all"
+        );
+      }
+      const data = response.data.map((row) => {
+        return {
+          user: row.user,
+          seller_account: row.seller_account,
+          date: row.created_on,
+          product: row.product,
+          unit: row.unit,
+          quantity: row.quantity,
+          accepted: row.accepted,
+        };
+      });
+      setOpen(false);
+      return data;
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setOpen(false);
+    }
+  };
+
+  const getResetData = async () => {
+    setFilterSelectedQuery("");
+    await getAllMaterialTransferNoteDetails();
+  };
+
+  const openInPopup3 = (item) => {
+    setIDForEdit(item);
+    setOpenPopup(true);
+  };
+
+  const openInPopup2 = (item) => {
+    handlePrint(item);
+    setMaterialTransferNoteByID(item);
+  };
+
+  const openInPopup = (item) => {
+    setOpenPopup3(true);
+    setMaterialTransferNoteByID(item);
+  };
+
+  const handleSnackbarClose = () => {
+    setOpenSnackbar(false);
+  };
+
   const handleInputChange = (event) => {
     setFilterSelectedQuery(event.target.value);
     getSearchData(event.target.value);
@@ -185,8 +239,12 @@ export const MaterialTransferNoteView = () => {
         product: data.product,
         quantity: data.quantity,
       };
-      await InventoryServices.updateMaterialTransferNoteData(data.id, req);
+      const response = await InventoryServices.updateMaterialTransferNoteData(
+        data.id,
+        req
+      );
 
+      setMessage(response.data.message);
       setOpenPopup(false);
       setOpenPopup3(false);
       getAllMaterialTransferNoteDetails();
@@ -197,20 +255,6 @@ export const MaterialTransferNoteView = () => {
       console.log("error Store Accepting", error);
       setOpen(false);
     }
-  };
-
-  const getResetData = async () => {
-    setFilterSelectedQuery("");
-    await getAllMaterialTransferNoteDetails();
-  };
-
-  const openInPopup = (item) => {
-    setIDForEdit(item);
-    setOpenPopup(true);
-  };
-
-  const handleSnackbarClose = () => {
-    setOpenSnackbar(false);
   };
 
   const handlePrint = async (data) => {
@@ -249,86 +293,71 @@ export const MaterialTransferNoteView = () => {
     }
   };
 
-  useEffect(() => {
-    getAllExportData();
-  }, [filterSelectedQuery]);
-
-  const getAllExportData = async () => {
-    try {
-      setOpen(true);
-      if (filterSelectedQuery) {
-        const response =
-          await InventoryServices.getAllMaterialTransferNoteDataPaginate(
-            "all",
-            filterSelectedQuery
-          );
-        setExportMaterialTransferNote(response.data);
-        //   const total = response.data.count;
-        //   setpageCount(Math.ceil(total / 25));
-      } else {
-        const response =
-          await InventoryServices.getMaterialTransferNotePaginateData("all");
-        setExportMaterialTransferNote(response.data);
-      }
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      if (!err.response) {
-        setErrMsg(
-          "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
-        );
-      } else if (err.response.status === 400) {
-        setErrMsg(
-          err.response.data.errors.name
-            ? err.response.data.errors.name
-            : err.response.data.errors.non_field_errors
-        );
-      } else if (err.response.status === 401) {
-        setErrMsg(err.response.data.errors.code);
-      } else {
-        setErrMsg("Server Error");
-      }
-      errRef.current.focus();
-    }
-  };
-  const headers = [
-    { label: "USER", key: "user" },
-    { label: "SELLER UNIT", key: "seller_account" },
-    { label: "DATE", key: "date" },
-    { label: "PRODUCT", key: "product" },
-    { label: "UNIT", key: "unit" },
-    { label: "QUANTITY", key: "quantity" },
-    { label: "ACCEPTED", key: "accepted" },
+  const Tableheaders = [
+    "ID",
+    "USER",
+    "SELLER UNIT",
+    "DATE",
+    "PRODUCT",
+    "UNIT",
+    "QUANTITY",
+    "ACCEPTED",
+    "ACTION",
   ];
 
-  const data = exportMaterialTransferNote.map((row) => {
-    return {
-      user: row.user,
-      seller_account: row.seller_account,
-      date: row.created_on,
-      product: row.product,
-      unit: row.unit,
-      quantity: row.quantity,
-      accepted: row.accepted,
-    };
-  });
+  const Tabledata = materialTransferNote.map((row, i) => ({
+    id: row.id,
+    user: row.user,
+    seller_account: row.seller_account,
+    date: row.created_on,
+    product: row.product,
+    unit: row.unit,
+    quantity: row.quantity,
+    accepted: row.accepted,
+  }));
+
+  const isAcceptedEdit =
+    users.groups.includes("Accounts") ||
+    users.groups.includes("Production") ||
+    users.groups.includes("Production Delhi");
+
+  const isAcceptedView =
+    users.groups.includes("Stores") || users.groups.includes("Stores Delhi");
+
+  const filteredMaterialTransferNote = Object.keys(materialTransferNote)
+    .filter((key) => !materialTransferNote[key].accepted)
+    .reduce((obj, key) => {
+      obj[key] = materialTransferNote[key];
+      return obj;
+    }, {});
 
   return (
     <>
       <CustomLoader open={open} />
 
-      <Grid item xs={12}>
+      <div>
         <ErrorMessage errRef={errRef} errMsg={errMsg} />
-        <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
-          <Box display="flex">
-            <Box flexGrow={0.9}>
+
+        <div
+          style={{
+            padding: "16px",
+            margin: "16px",
+            boxShadow: "0px 3px 6px #00000029",
+            borderRadius: "4px",
+            display: "flex",
+            flexDirection: "column",
+            backgroundColor: "rgb(255, 255, 255)", // set background color to default Paper color
+          }}
+        >
+          <div style={{ display: "flex" }}>
+            <div style={{ flexGrow: 0.9 }}>
               <CustomSearch
                 filterSelectedQuery={filterSelectedQuery}
                 handleInputChange={handleInputChange}
                 getResetData={getResetData}
               />
-            </Box>
-            <Box flexGrow={2}>
+            </div>
+            <div style={{ flexGrow: 2 }}>
               <h3
                 style={{
                   textAlign: "left",
@@ -340,164 +369,129 @@ export const MaterialTransferNoteView = () => {
               >
                 Material Transfer Note
               </h3>
-            </Box>
-            <Box flexGrow={0.5} align="right">
+            </div>
+            <div style={{ flexGrow: 0.5 }} align="right">
               {users.groups.includes("Production") ||
               users.groups.includes("Production Delhi") ? (
-                <Button
+                <div
+                  className="btn btn-success"
+                  style={{
+                    display: "inline-block",
+                    padding: "6px 16px",
+                    margin: "10px",
+                    fontSize: "0.875rem",
+                    minWidth: "64px",
+                    fontWeight: 500,
+                    lineHeight: 1.75,
+                    borderRadius: "4px",
+                    letterSpacing: "0.02857em",
+                    textTransform: "uppercase",
+                    boxShadow:
+                      "0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2)",
+                  }}
                   onClick={() => setOpenPopup2(true)}
-                  variant="contained"
-                  color="success"
-                  // startIcon={<AddIcon />}
                 >
                   Add
-                </Button>
+                </div>
               ) : null}
-              <CSVLink
-                data={data}
-                headers={headers}
-                filename={"Material Transfer Note.csv"}
-                target="_blank"
+              <div
+                className="btn btn-primary"
                 style={{
-                  textDecoration: "none",
-                  outline: "none",
-                  height: "5vh",
+                  display: "inline-block",
+                  padding: "6px 16px",
+                  margin: "10px",
+                  fontSize: "0.875rem",
+                  minWidth: "64px",
+                  fontWeight: 500,
+                  lineHeight: 1.75,
+                  borderRadius: "4px",
+                  letterSpacing: "0.02857em",
+                  textTransform: "uppercase",
+                  boxShadow:
+                    "0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2)",
                 }}
+                onClick={handleDownload}
               >
-                <Button variant="contained">Export to Excel</Button>
-              </CSVLink>
-            </Box>
-          </Box>
-          <TableContainer
-            sx={{
-              maxHeight: 440,
-              "&::-webkit-scrollbar": {
-                width: 15,
-              },
-              "&::-webkit-scrollbar-track": {
-                backgroundColor: "#f2f2f2",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                backgroundColor: "#aaa9ac",
-              },
+                Download CSV
+              </div>
+              {exportData.length > 0 && (
+                <CSVDownload
+                  data={exportData}
+                  headers={headers}
+                  target="_blank"
+                />
+              )}
+            </div>
+          </div>
+          <div
+            style={{
+              position: "fixed",
+              top: "20px",
+              left: "50%",
+              transform: "translateX(-50%)",
+              backgroundColor: "green",
+              color: "white",
+              padding: "10px",
+              borderRadius: "4px",
+              display: openSnackbar ? "block" : "none",
+              zIndex: 9999,
             }}
           >
-            <Snackbar
-              open={openSnackbar}
-              onClose={handleSnackbarClose}
-              message={"Materail Transfer Note details Accepted successfully!"}
-              anchorOrigin={{ vertical: "top", horizontal: "center" }}
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  sx={{ p: 0.5 }}
-                  onClick={handleSnackbarClose}
-                >
-                  <CloseIcon />
-                </IconButton>
-              }
-            />
-
-            <Table
-              sx={{ minWidth: 700 }}
-              stickyHeader
-              aria-label="sticky table"
+            <span style={{ marginRight: "10px" }}>
+              {message ? message : "Success"}
+            </span>
+            <button
+              style={{
+                backgroundColor: "transparent",
+                border: "none",
+                color: "white",
+                cursor: "pointer",
+                padding: "0",
+              }}
+              onClick={handleSnackbarClose}
             >
-              <TableHead>
-                <StyledTableRow>
-                  <StyledTableCell align="center">USER</StyledTableCell>
-                  <StyledTableCell align="center">SELLER UNIT</StyledTableCell>
-                  <StyledTableCell align="center">DATE</StyledTableCell>
-                  <StyledTableCell align="center">PRODUCT</StyledTableCell>
-                  <StyledTableCell align="center">UNIT</StyledTableCell>
-                  <StyledTableCell align="center">QUANTITY</StyledTableCell>
-                  <StyledTableCell align="center">ACCEPTED</StyledTableCell>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M8 7.293l2.146-2.147a.5.5 0 11.708.708L8.707 8l2.147 2.146a.5.5 0 01-.708.708L8 8.707l-2.146 2.147a.5.5 0 01-.708-.708L7.293 8 5.146 5.854a.5.5 0 01.708-.708L8 7.293z"
+                />
+              </svg>
+            </button>
+          </div>
 
-                  <StyledTableCell align="center">Action</StyledTableCell>
-                </StyledTableRow>
-              </TableHead>
-              <TableBody>
-                {materialTransferNote.map((row, i) => (
-                  <StyledTableRow>
-                    <StyledTableCell align="center">{row.user}</StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.seller_account}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.created_on}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.product}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">{row.unit}</StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.quantity}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      <Switch
-                        checked={row.accepted}
-                        inputProps={{ "aria-label": "controlled" }}
-                      />
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {(users.groups.includes("Accounts") ||
-                        users.groups.includes("Production") ||
-                        users.groups.includes("Production Delhi")) &&
-                        row.accepted === false && (
-                          <Button
-                            onClick={() => openInPopup(row.id)}
-                            variant="contained"
-                            color="success"
-                          >
-                            Edit
-                          </Button>
-                        )}
-
-                      <Button
-                        onClick={() => {
-                          handlePrint(row);
-                          setMaterialTransferNoteByID(row);
-                        }}
-                        variant="contained"
-                        endIcon={<DownloadIcon />}
-                      >
-                        Download
-                      </Button>
-
-                      {(users.groups.includes("Stores") ||
-                        users.groups.includes("Stores Delhi")) &&
-                        row.accepted === false && (
-                          <Button
-                            onClick={() => {
-                              setOpenPopup3(true);
-                              setMaterialTransferNoteByID(row);
-                            }}
-                            variant="contained"
-                            color="success"
-                          >
-                            View
-                          </Button>
-                        )}
-                    </StyledTableCell>
-                  </StyledTableRow>
-                ))}
-              </TableBody>{" "}
-            </Table>
-          </TableContainer>
-          <TableFooter
-            sx={{ display: "flex", justifyContent: "center", marginTop: "2em" }}
-          >
-            <Pagination
-              count={pageCount}
-              onChange={handlePageClick}
-              color={"primary"}
-              variant="outlined"
-              shape="circular"
-            />
-          </TableFooter>
-        </Paper>
-      </Grid>
+          <CustomTable
+            headers={Tableheaders}
+            data={Tabledata}
+            openInPopup={
+              isAcceptedView && filteredMaterialTransferNote
+                ? openInPopup
+                : null
+            }
+            openInPopup2={openInPopup2}
+            openInPopup3={
+              isAcceptedEdit && filteredMaterialTransferNote
+                ? openInPopup3
+                : null
+            }
+            openInPopup4={null}
+            ButtonText={"Download"}
+            ButtonText1={
+              isAcceptedEdit && filteredMaterialTransferNote ? "Edit" : ""
+            }
+          />
+          <CustomPagination
+            currentPage={currentPage}
+            pageCount={pageCount}
+            handlePageClick={handlePageClick}
+          />
+        </div>
+      </div>
       <Popup
         fullScreen={true}
         title={"Create Material Transfer Note"}
@@ -536,7 +530,7 @@ export const MaterialTransferNoteView = () => {
                 <td>
                   <strong>Date</strong>
                 </td>
-                <td>{materialTransferNoteByID.created_on}</td>
+                <td>{materialTransferNoteByID.date}</td>
               </tr>
               <tr>
                 <td>
@@ -570,15 +564,28 @@ export const MaterialTransferNoteView = () => {
               </tr>
             </tbody>
           </table>
-          <Button
+          <div
+            className="btn btn-success"
+            style={{
+              display: "inline-block",
+              padding: "6px 16px",
+              margin: "10px",
+              fontSize: "0.875rem",
+              minWidth: "64px",
+              fontWeight: 500,
+              lineHeight: 1.75,
+              borderRadius: "4px",
+              letterSpacing: "0.02857em",
+              textTransform: "uppercase",
+              boxShadow:
+                "0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2)",
+            }}
             onClick={() =>
               updateMaterialTransferNoteDetails(materialTransferNoteByID)
             }
-            variant="contained"
-            color="success"
           >
             Accept
-          </Button>
+          </div>
         </div>
       </Popup>
     </>
@@ -719,23 +726,3 @@ const MyDocument = ({ materialTransferNoteByID }) => (
     </Page>
   </Document>
 );
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));

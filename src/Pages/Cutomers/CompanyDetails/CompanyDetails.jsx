@@ -1,26 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { UpdateAllCompanyDetails } from "./UpdateAllCompanyDetails";
 import { CreateCompanyDetails } from "./CreateCompanyDetails";
-import {
-  Box,
-  Grid,
-  Paper,
-  styled,
-  Table,
-  TableBody,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TableCell,
-  Button,
-  TableFooter,
-  Pagination,
-  Chip,
-  Snackbar,
-  IconButton,
-} from "@mui/material";
-import { tableCellClasses } from "@mui/material/TableCell";
-import CloseIcon from "@mui/icons-material/Close";
 import { Popup } from "./../../../Components/Popup";
 import CustomerServices from "../../../services/CustomerService";
 import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
@@ -31,25 +11,8 @@ import { CustomLoader } from "../../../Components/CustomLoader";
 import { CreateCustomerProformaInvoice } from "../../Invoice/CustomerPerformaInvoice/CreateCustomerProformaInvoice";
 import { CustomSearchWithButton } from "../../../Components/CustomSearchWithButton";
 import { BulkCustomerAssign } from "./BulkCustomerAssign";
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
+import { CustomTable } from "./../../../Components/CustomTable";
+import { CustomPagination } from "../../../Components/CustomPagination";
 
 export const CompanyDetails = () => {
   const dispatch = useDispatch();
@@ -72,7 +35,7 @@ export const CompanyDetails = () => {
     setFilterSelectedQuery(filterSelectedQuery);
     getSearchData(filterSelectedQuery);
   };
-
+  console.log("openSnackbar", openSnackbar);
   useEffect(() => {
     getAllSellerAccountsDetails();
   }, []);
@@ -189,35 +152,64 @@ export const CompanyDetails = () => {
   };
 
   const openInPopup = (item) => {
-    setRecordForEdit(item);
+    setRecordForEdit(item.id);
     setOpenPopup(true);
   };
 
   const openInPopup2 = (item) => {
-    setRecordForEdit(item);
+    setRecordForEdit(item.id);
     setOpenPopup3(true);
   };
 
   const handleSnackbarClose = () => {
     setOpenSnackbar(false);
   };
+  const Tableheaders = [
+    "ID",
+    "NAME",
+    "PAN NO.",
+    "GST NO.",
+    "CITY",
+    "STATE",
+    "ACTION",
+  ];
+
+  const Tabledata = companyData.map((value) => ({
+    id: value.id,
+    name: value.name,
+    pan_number: value.pan_number,
+    gst_number: value.gst_number,
+    city: value.city,
+    state: value.state,
+  }));
   return (
     <>
       <CustomLoader open={open} />
 
-      <Grid item xs={12}>
+      <div>
         <ErrorMessage errRef={errRef} errMsg={errMsg} />
-        <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
-          <Box display="flex">
-            <Box flexGrow={0.9}>
+
+        <div
+          style={{
+            padding: "16px",
+            margin: "16px",
+            boxShadow: "0px 3px 6px #00000029",
+            borderRadius: "4px",
+            display: "flex",
+            flexDirection: "column",
+            backgroundColor: "rgb(255, 255, 255)", // set background color to default Paper color
+          }}
+        >
+          <div style={{ display: "flex" }}>
+            <div style={{ flexGrow: 0.9 }}>
               <CustomSearchWithButton
                 filterSelectedQuery={filterSelectedQuery}
                 setFilterSelectedQuery={setFilterSelectedQuery}
                 handleInputChange={handleInputChange}
                 getResetData={getResetData}
               />
-            </Box>
-            <Box flexGrow={2}>
+            </div>
+            <div style={{ flexGrow: 2 }}>
               <h3
                 style={{
                   textAlign: "left",
@@ -229,132 +221,94 @@ export const CompanyDetails = () => {
               >
                 Company Details
               </h3>
-            </Box>
-            <Box flexGrow={0.5} align="right">
+            </div>
+            <div style={{ flexGrow: 0.5 }} align="right">
               {userData.is_staff === true && (
-                <Button onClick={() => setOpenModal(true)} variant="contained">
+                <button
+                  onClick={() => setOpenModal(true)}
+                  className="btn btn-primary me-2"
+                  size="small"
+                >
                   Assign Bulk Customer
-                </Button>
+                </button>
               )}
               {userData.groups.toString() !== "Sales" && (
-                <Button
+                <button
                   onClick={() => setOpenPopup2(true)}
-                  variant="contained"
-                  color="success"
-                  // startIcon={<AddIcon />}
+                  className="btn btn-success"
+                  size="small"
                 >
                   Add
-                </Button>
+                </button>
               )}
-            </Box>
-          </Box>
-          <TableContainer
-            sx={{
-              maxHeight: 440,
-              "&::-webkit-scrollbar": {
-                width: 15,
-              },
-              "&::-webkit-scrollbar-track": {
-                backgroundColor: "#f2f2f2",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                backgroundColor: "#aaa9ac",
-              },
+            </div>
+          </div>
+          <div
+            style={{
+              position: "fixed",
+              top: "20px",
+              left: "50%",
+              transform: "translateX(-50%)",
+              backgroundColor: "green",
+              color: "white",
+              padding: "10px",
+              borderRadius: "4px",
+              display: openSnackbar ? "block" : "none",
+              zIndex: 9999,
             }}
           >
-            <Snackbar
-              open={openSnackbar}
-              onClose={handleSnackbarClose}
-              message={"Bulk Customer Assigned Successfull from "}
-              anchorOrigin={{ vertical: "top", horizontal: "center" }}
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  sx={{ p: 0.5 }}
-                  onClick={handleSnackbarClose}
-                >
-                  <CloseIcon />
-                </IconButton>
-              }
-            />
-            <Table
-              sx={{ minWidth: 700 }}
-              stickyHeader
-              aria-label="sticky table"
+            <span style={{ marginRight: "10px" }}>
+              Bulk Customer Assigned Successfully!
+            </span>
+            <button
+              style={{
+                backgroundColor: "transparent",
+                border: "none",
+                color: "white",
+                cursor: "pointer",
+                padding: "0",
+              }}
+              onClick={handleSnackbarClose}
             >
-              <TableHead>
-                <TableRow>
-                  <StyledTableCell align="center">NAME</StyledTableCell>
-                  <StyledTableCell align="center">PAN NO.</StyledTableCell>
-                  <StyledTableCell align="center">GST NO.</StyledTableCell>
-                  <StyledTableCell align="center">CITY</StyledTableCell>
-                  <StyledTableCell align="center">STATE</StyledTableCell>
-                  {/* {users.groups.toString() !== "Sales" &&
-                    users.groups.toString() !== "Customer Service" && ( */}
-                  <StyledTableCell align="center">Action</StyledTableCell>
-                  {/* )} */}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {companyData.map((row, i) => {
-                  return (
-                    <StyledTableRow key={i}>
-                      <StyledTableCell align="center">
-                        {row.name}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.pan_number}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.gst_number}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.city}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        <Chip
-                          label={row.state}
-                          color="success"
-                          variant="outlined"
-                        />
-                      </StyledTableCell>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M8 7.293l2.146-2.147a.5.5 0 11.708.708L8.707 8l2.147 2.146a.5.5 0 01-.708.708L8 8.707l-2.146 2.147a.5.5 0 01-.708-.708L7.293 8 5.146 5.854a.5.5 0 01.708-.708L8 7.293z"
+                />
+              </svg>
+            </button>
+          </div>
 
-                      <StyledTableCell align="center">
-                        <Button
-                          variant="contained"
-                          onClick={() => openInPopup(row.id)}
-                        >
-                          View
-                        </Button>
+          <CustomTable
+            headers={Tableheaders}
+            data={Tabledata}
+            openInPopup={openInPopup}
+            openInPopup2={openInPopup2}
+            ButtonText={"Invoice"}
+          />
 
-                        <Button
-                          variant="contained"
-                          color="success"
-                          onClick={() => openInPopup2(row.id)}
-                        >
-                          Generate PI
-                        </Button>
-                      </StyledTableCell>
-                    </StyledTableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <TableFooter
-            sx={{ display: "flex", justifyContent: "center", marginTop: "2em" }}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              // marginTop: "2em",
+            }}
           >
-            <Pagination
-              count={pageCount}
-              onChange={handlePageClick}
-              color={"primary"}
-              variant="outlined"
-              shape="circular"
+            <CustomPagination
+              currentPage={currentPage}
+              pageCount={pageCount}
+              handlePageClick={handlePageClick}
             />
-          </TableFooter>
-        </Paper>
-      </Grid>
+          </div>
+        </div>
+      </div>
+
       <Popup
         fullScreen={true}
         title={"Create Company Details"}

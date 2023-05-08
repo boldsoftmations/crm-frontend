@@ -1,44 +1,10 @@
-import {
-  Box,
-  Grid,
-  Paper,
-  styled,
-  Table,
-  TableBody,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TableCell,
-  TextField,
-  InputAdornment,
-  IconButton,
-} from "@mui/material";
-import { tableCellClasses } from "@mui/material/TableCell";
-import ClearIcon from "@mui/icons-material/Clear";
 import React, { useEffect, useRef, useState } from "react";
+import { CSVLink } from "react-csv";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 import InventoryServices from "../../../services/InventoryService";
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
+import { CustomTable } from "../../../Components/CustomTable";
+import { CustomSearch } from "../../../Components/CustomSearch";
 
 export const ProductionInventoryConsView = () => {
   const [open, setOpen] = useState(false);
@@ -97,36 +63,51 @@ export const ProductionInventoryConsView = () => {
     row.product__name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const Tableheaders = ["PRODUCT", "SELLER UNIT", "UNIT", "QUANTITY"];
+
+  const headers = [
+    { label: "PRODUCT", key: "product" },
+    { label: "SELLER UNIT", key: "seller_account" },
+    { label: "UNIT", key: "unit" },
+    { label: "QUANTITY", key: "quantity" },
+  ];
+
+  const data = filteredData.map((row) => {
+    return {
+      product: row.product__name,
+      seller_account: row.seller_account,
+      unit: row.product__unit,
+      quantity: row.quantity,
+    };
+  });
+
   return (
     <>
       <CustomLoader open={open} />
 
-      <Grid item xs={12}>
+      <div>
         <ErrorMessage errRef={errRef} errMsg={errMsg} />
-        <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
-          <Box display="flex">
-            <Box flexGrow={0.9}>
-              <TextField
-                label="Search"
-                variant="outlined"
-                size="small"
-                value={searchQuery}
-                onChange={handleSearchChange}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      {searchQuery && (
-                        <IconButton onClick={handleResetClick}>
-                          <ClearIcon />
-                        </IconButton>
-                      )}
-                    </InputAdornment>
-                  ),
-                }}
-                sx={{ mb: 2 }}
+
+        <div
+          style={{
+            padding: "16px",
+            margin: "16px",
+            boxShadow: "0px 3px 6px #00000029",
+            borderRadius: "4px",
+            display: "flex",
+            flexDirection: "column",
+            backgroundColor: "rgb(255, 255, 255)", // set background color to default Paper color
+          }}
+        >
+          <div style={{ display: "flex" }}>
+            <div style={{ flexGrow: 0.9 }}>
+              <CustomSearch
+                filterSelectedQuery={searchQuery}
+                handleInputChange={handleSearchChange}
+                getResetData={handleResetClick}
               />
-            </Box>
-            <Box flexGrow={2}>
+            </div>
+            <div style={{ flexGrow: 2 }}>
               <h3
                 style={{
                   textAlign: "left",
@@ -138,58 +119,49 @@ export const ProductionInventoryConsView = () => {
               >
                 Production Inventory Cons
               </h3>
-            </Box>
-            <Box flexGrow={0.5} align="right"></Box>
-          </Box>
-          <TableContainer
-            sx={{
-              maxHeight: 440,
-              "&::-webkit-scrollbar": {
-                width: 15,
-              },
-              "&::-webkit-scrollbar-track": {
-                backgroundColor: "#f2f2f2",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                backgroundColor: "#aaa9ac",
-              },
-            }}
-          >
-            <Table
-              sx={{ minWidth: 700 }}
-              stickyHeader
-              aria-label="sticky table"
-            >
-              <TableHead>
-                <TableRow>
-                  <StyledTableCell align="center">PRODUCT</StyledTableCell>
-                  <StyledTableCell align="center">SELLER STATE</StyledTableCell>
-                  <StyledTableCell align="center">UNIT</StyledTableCell>
-                  <StyledTableCell align="center">QUANTITY</StyledTableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {filteredData.map((row, i) => (
-                  <StyledTableRow key={i}>
-                    <StyledTableCell align="center">
-                      {row.product__name}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.seller_account}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.product__unit}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.quantity}
-                    </StyledTableCell>
-                  </StyledTableRow>
-                ))}
-              </TableBody>{" "}
-            </Table>
-          </TableContainer>
-        </Paper>
-      </Grid>
+            </div>
+            <div style={{ flexGrow: 0.5 }} align="right">
+              <CSVLink
+                data={data}
+                headers={headers}
+                filename={"Production Inventory Consolidate.csv"}
+                target="_blank"
+                style={{
+                  textDecoration: "none",
+                  outline: "none",
+                  height: "5vh",
+                }}
+              >
+                <div
+                  className="btn btn-primary"
+                  style={{
+                    display: "inline-block",
+                    padding: "6px 16px",
+                    margin: "10px",
+                    fontSize: "0.875rem",
+                    minWidth: "64px",
+                    fontWeight: 500,
+                    lineHeight: 1.75,
+                    borderRadius: "4px",
+                    letterSpacing: "0.02857em",
+                    textTransform: "uppercase",
+                    boxShadow:
+                      "0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2)",
+                  }}
+                >
+                  Download CSV
+                </div>
+              </CSVLink>
+            </div>
+          </div>
+          <CustomTable
+            headers={Tableheaders}
+            data={data}
+            openInPopup={null}
+            openInPopup2={null}
+          />
+        </div>
+      </div>
     </>
   );
 };

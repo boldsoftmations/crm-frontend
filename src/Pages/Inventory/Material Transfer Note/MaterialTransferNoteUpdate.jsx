@@ -1,14 +1,5 @@
-import {
-  Autocomplete,
-  Box,
-  Button,
-  Grid,
-  IconButton,
-  Snackbar,
-  TextField,
-} from "@mui/material";
 import React, { useEffect, useState } from "react";
-import CloseIcon from "@mui/icons-material/Close";
+import { Autocomplete, Box, Button, Grid, TextField } from "@mui/material";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import InventoryServices from "../../../services/InventoryService";
 import { useSelector } from "react-redux";
@@ -20,20 +11,17 @@ export const MaterialTransferNoteUpdate = (props) => {
     sellerOption,
     idForEdit,
   } = props;
-  const [inputValue, setInputValue] = useState([]);
+  const [quantity, setQuantity] = useState(idForEdit.quantity);
   const [open, setOpen] = useState(false);
   const [productOption, setProductOption] = useState([]);
   const [error, setError] = useState(null);
-  const [product, setProduct] = useState();
-  const [unit, setUnit] = useState();
-  const [selectedSellerData, setSelectedSellerData] = useState(null);
+  const [product, setProduct] = useState(idForEdit.product);
+  const [unit, setUnit] = useState(idForEdit.unit);
+  const [selectedSellerData, setSelectedSellerData] = useState(
+    idForEdit.seller_account
+  );
   const data = useSelector((state) => state.auth);
   const users = data.profile;
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-
-    setInputValue({ ...inputValue, [name]: value });
-  };
 
   const handleAutocompleteChange = (event, value) => {
     setProduct(value);
@@ -63,36 +51,15 @@ export const MaterialTransferNoteUpdate = (props) => {
     }
   };
 
-  useEffect(() => {
-    if (idForEdit) getMaterialTransferNoteDetailsByID();
-  }, [idForEdit]);
-
-  const getMaterialTransferNoteDetailsByID = async () => {
-    try {
-      setOpen(true);
-      const response = await InventoryServices.getMaterialTransferNoteDataById(
-        idForEdit
-      );
-      setSelectedSellerData(response.data.seller_account);
-      setProduct(response.data.product);
-      setUnit(response.data.unit);
-      setInputValue(response.data);
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("company data by id error", err);
-    }
-  };
-
   const updateMaterialTransferNoteDetails = async (e) => {
     try {
       e.preventDefault();
       setOpen(true);
       const req = {
         seller_account: selectedSellerData,
-        user: inputValue.user,
+        user: idForEdit.user,
         product: product ? product : "",
-        quantity: inputValue.quantity,
+        quantity: quantity,
       };
       await InventoryServices.updateMaterialTransferNoteData(idForEdit, req);
 
@@ -122,22 +89,47 @@ export const MaterialTransferNoteUpdate = (props) => {
         noValidate
         onSubmit={(e) => updateMaterialTransferNoteDetails(e)}
       >
-        <Snackbar
-          open={Boolean(error)}
-          onClose={handleCloseSnackbar}
-          message={error}
-          anchorOrigin={{ vertical: "top", horizontal: "center" }}
-          action={
-            <IconButton
-              aria-label="close"
-              color="inherit"
-              sx={{ p: 0.5 }}
-              onClick={handleCloseSnackbar}
+        <div
+          style={{
+            position: "fixed",
+            top: "20px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            backgroundColor: error ? "red" : "green",
+            color: "white",
+            padding: "10px",
+            borderRadius: "4px",
+            display: error ? "block" : "none",
+            zIndex: 9999,
+          }}
+        >
+          <span style={{ marginRight: "10px" }}>
+            {error ? error : "Successfully Updated"}
+          </span>
+          <button
+            style={{
+              backgroundColor: "transparent",
+              border: "none",
+              color: "white",
+              cursor: "pointer",
+              padding: "0",
+            }}
+            onClick={handleCloseSnackbar}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              viewBox="0 0 16 16"
             >
-              <CloseIcon />
-            </IconButton>
-          }
-        />
+              <path
+                fillRule="evenodd"
+                d="M8 7.293l2.146-2.147a.5.5 0 11.708.708L8.707 8l2.147 2.146a.5.5 0 01-.708.708L8 8.707l-2.146 2.147a.5.5 0 01-.708-.708L7.293 8 5.146 5.854a.5.5 0 01.708-.708L8 7.293z"
+              />
+            </svg>
+          </button>
+        </div>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={3}>
             <Autocomplete
@@ -192,12 +184,12 @@ export const MaterialTransferNoteUpdate = (props) => {
               size="small"
               label="Quantity"
               variant="outlined"
-              value={inputValue.quantity ? inputValue.quantity : ""}
-              onChange={(event) => handleInputChange(event)}
+              value={quantity ? quantity : ""}
+              onChange={(event) => setQuantity(event.target.value)}
             />
           </Grid>
         </Grid>
-        {inputValue.accepted === false || users.groups.includes("Accounts") ? (
+        {idForEdit.accepted === false || users.groups.includes("Accounts") ? (
           <Button
             type="submit"
             fullWidth

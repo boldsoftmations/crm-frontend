@@ -1,44 +1,11 @@
-import {
-  Box,
-  Grid,
-  Paper,
-  styled,
-  Table,
-  TableBody,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableFooter,
-  Pagination,
-} from "@mui/material";
-import { tableCellClasses } from "@mui/material/TableCell";
 import React, { useEffect, useRef, useState } from "react";
-
+import { CSVDownload } from "react-csv";
 import { CustomLoader } from "../../../Components/CustomLoader";
-import { CustomSearch } from "../../../Components/CustomSearch";
 import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 import InventoryServices from "../../../services/InventoryService";
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
+import { CustomPagination } from "../../../Components/CustomPagination";
+import { CustomTable } from "../../../Components/CustomTable";
+import { CustomSearchWithButton } from "../../../Components/CustomSearchWithButton";
 
 export const ProductionInventoryGAndLView = () => {
   const [open, setOpen] = useState(false);
@@ -48,10 +15,60 @@ export const ProductionInventoryGAndLView = () => {
   const [pageCount, setpageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
+  const [exportData, setExportData] = useState([]);
 
-  const handleInputChange = (event) => {
-    setFilterSelectedQuery(event.target.value);
-    getSearchData(event.target.value);
+  const handleDownload = async () => {
+    const data = await handleExport();
+    setExportData(data);
+  };
+
+  const headers = [
+    { label: "PRODUCT", key: "product" },
+    { label: "GAIN/LOSS", key: "gnl" },
+    { label: "DATE", key: "date" },
+    { label: "UNIT", key: "unit" },
+    { label: "EXPECTED QUANTITY", key: "expected_quantity" },
+    { label: "ACTUAL QUANTITY", key: "actual_quantity" },
+  ];
+
+  const handleExport = async () => {
+    try {
+      setOpen(true);
+      let response;
+      if (filterSelectedQuery) {
+        response =
+          await InventoryServices.getProductionGAndLInventoryPaginateData(
+            "all",
+            filterSelectedQuery
+          );
+      } else {
+        response =
+          await InventoryServices.getProductionGAndLInventoryPaginateData(
+            "all"
+          );
+      }
+      const data = response.data.map((row) => {
+        return {
+          product: row.product,
+          gnl: row.gnl,
+          date: row.created_on,
+          unit: row.unit,
+          expected_quantity: row.expected_quantity,
+          actual_quantity: row.actual_quantity,
+        };
+      });
+      setOpen(false);
+      return data;
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setOpen(false);
+    }
+  };
+
+  const handleInputChange = () => {
+    setFilterSelectedQuery(filterSelectedQuery);
+    getSearchData(filterSelectedQuery);
   };
 
   useEffect(() => {
@@ -151,22 +168,52 @@ export const ProductionInventoryGAndLView = () => {
     getAllProductionInventoryDetails();
   };
 
+  const Tableheaders = [
+    "PRODUCT",
+    "GAIN/LOSS",
+    "DATE",
+    "UNIT",
+    "EXPECTED QUANTITY",
+    "ACTUAL QUANTITY",
+  ];
+
+  const Tabledata = productionInventoryData.map((row, i) => ({
+    product: row.product,
+    gnl: row.gnl,
+    date: row.created_on,
+    unit: row.unit,
+    expected_quantity: row.expected_quantity,
+    actual_quantity: row.actual_quantity,
+  }));
+
   return (
     <>
       <CustomLoader open={open} />
 
-      <Grid item xs={12}>
+      <div>
         <ErrorMessage errRef={errRef} errMsg={errMsg} />
-        <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
-          <Box display="flex">
-            <Box flexGrow={0.9}>
-              <CustomSearch
+
+        <div
+          style={{
+            padding: "16px",
+            margin: "16px",
+            boxShadow: "0px 3px 6px #00000029",
+            borderRadius: "4px",
+            display: "flex",
+            flexDirection: "column",
+            backgroundColor: "rgb(255, 255, 255)", // set background color to default Paper color
+          }}
+        >
+          <div style={{ display: "flex" }}>
+            <div style={{ flexGrow: 0.9 }}>
+              <CustomSearchWithButton
                 filterSelectedQuery={filterSelectedQuery}
+                setFilterSelectedQuery={setFilterSelectedQuery}
                 handleInputChange={handleInputChange}
                 getResetData={getResetData}
               />
-            </Box>
-            <Box flexGrow={2}>
+            </div>
+            <div style={{ flexGrow: 2 }}>
               <h3
                 style={{
                   textAlign: "left",
@@ -178,77 +225,53 @@ export const ProductionInventoryGAndLView = () => {
               >
                 Production Inventory G&L
               </h3>
-            </Box>
-            <Box flexGrow={0.5} align="right"></Box>
-          </Box>
-          <TableContainer
-            sx={{
-              maxHeight: 440,
-              "&::-webkit-scrollbar": {
-                width: 15,
-              },
-              "&::-webkit-scrollbar-track": {
-                backgroundColor: "#f2f2f2",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                backgroundColor: "#aaa9ac",
-              },
-            }}
-          >
-            <Table
-              sx={{ minWidth: 700 }}
-              stickyHeader
-              aria-label="sticky table"
-            >
-              <TableHead>
-                <TableRow>
-                  <StyledTableCell align="center">PRODUCT</StyledTableCell>
-                  <StyledTableCell align="center">GAIN/LOSS</StyledTableCell>
-                  <StyledTableCell align="center">DATE</StyledTableCell>
-                  <StyledTableCell align="center">UNIT</StyledTableCell>
-                  <StyledTableCell align="center">
-                    EXPECTED QUANTITY
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    ACTUAL QUANTITY
-                  </StyledTableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {productionInventoryData.map((row, i) => (
-                  <StyledTableRow key={i}>
-                    <StyledTableCell align="center">
-                      {row.product}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">{row.gnl}</StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.created_on}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">{row.unit}</StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.expected_quantity}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.actual_quantity}
-                    </StyledTableCell>
-                  </StyledTableRow>
-                ))}
-              </TableBody>{" "}
-            </Table>
-          </TableContainer>
-          <TableFooter
-            sx={{ display: "flex", justifyContent: "center", marginTop: "2em" }}
-          >
-            <Pagination
-              count={pageCount}
-              onChange={handlePageClick}
-              color={"primary"}
-              variant="outlined"
-              shape="circular"
-            />
-          </TableFooter>
-        </Paper>
-      </Grid>
+            </div>
+            <div style={{ flexGrow: 0.5 }} align="right">
+              <div
+                className="btn btn-primary"
+                style={{
+                  display: "inline-block",
+                  padding: "6px 16px",
+                  margin: "10px",
+                  fontSize: "0.875rem",
+                  minWidth: "64px",
+                  fontWeight: 500,
+                  lineHeight: 1.75,
+                  borderRadius: "4px",
+                  letterSpacing: "0.02857em",
+                  textTransform: "uppercase",
+                  boxShadow:
+                    "0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2)",
+                }}
+                onClick={handleDownload}
+              >
+                Download CSV
+              </div>
+              {exportData.length > 0 && (
+                <CSVDownload
+                  data={exportData}
+                  headers={headers}
+                  target="_blank"
+                  filename="Current Month forecast.csv"
+                />
+              )}
+            </div>
+          </div>
+
+          <CustomTable
+            headers={Tableheaders}
+            data={Tabledata}
+            openInPopup={null}
+            openInPopup2={null}
+          />
+
+          <CustomPagination
+            currentPage={currentPage}
+            pageCount={pageCount}
+            handlePageClick={handlePageClick}
+          />
+        </div>
+      </div>
     </>
   );
 };

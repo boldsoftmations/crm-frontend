@@ -1,11 +1,21 @@
+import { Switch } from "@mui/material";
 import React from "react";
-import { Button } from "@mui/material";
 
-export const CustomTable = ({ headers, data, openInPopup }) => {
+export const CustomTable = ({
+  headers,
+  data,
+  openInPopup,
+  ButtonText,
+  ButtonText1,
+  ButtonText2,
+  openInPopup2,
+  openInPopup3,
+  openInPopup4,
+}) => {
   return (
     <div
       style={{
-        maxHeight: 440,
+        maxHeight: 400,
         overflowY: "scroll",
         "&::-webkit-scrollbar": {
           width: 15,
@@ -31,8 +41,8 @@ export const CustomTable = ({ headers, data, openInPopup }) => {
             display: "table-header-group",
             position: "sticky",
             top: 0,
-            top: 0,
             zIndex: 1,
+            backgroundColor: "#444444",
           }}
         >
           <div style={{ display: "table-row" }}>
@@ -43,8 +53,8 @@ export const CustomTable = ({ headers, data, openInPopup }) => {
                   textAlign: "center",
                   padding: "6px",
                   color: "white",
-                  backgroundColor: "black",
                   borderBottom: "1px solid rgba(224, 224, 224, 1)",
+                  fontSize: "16px",
                 }}
                 key={index}
               >
@@ -68,33 +78,94 @@ export const CustomTable = ({ headers, data, openInPopup }) => {
                   style={{
                     display: "table-cell",
                     textAlign: "center",
-                    padding: "6px",
+                    // padding: "2px",
                     borderBottom: "1px solid rgba(224, 224, 224, 1)",
+                    fontSize: "14px",
                   }}
                   key={index}
                 >
-                  {value}
+                  {typeof value === "boolean" ? (
+                    <Switch
+                      checked={value}
+                      inputProps={{ "aria-label": "controlled" }}
+                    />
+                  ) : (
+                    value
+                  )}
                 </div>
               ))}
-              {openInPopup && (
-                <div
-                  style={{
-                    display: "table-cell",
-                    textAlign: "center",
-                    padding: "6px",
-                    borderBottom: "1px solid rgba(224, 224, 224, 1)",
-                    zIndex: 0,
-                  }}
-                >
-                  <Button
-                    size="small"
-                    variant="contained"
+              <div
+                style={{
+                  display: "table-cell",
+                  textAlign: "center",
+                  // padding: "5px",
+                  borderBottom: "1px solid rgba(224, 224, 224, 1)",
+                  zIndex: 0,
+                }}
+              >
+                {openInPopup && (
+                  <div
+                    style={{
+                      display: "inline-block",
+                      // padding: "6px 12px",
+                      // border: "1px solid #1976d2",
+                      // borderRadius: "4px",
+                      color: "#1976d2",
+                      cursor: "pointer",
+                      marginRight: "8px",
+                    }}
                     onClick={() => openInPopup(row)}
                   >
                     View
-                  </Button>
-                </div>
-              )}
+                  </div>
+                )}
+                {openInPopup2 && (
+                  <div
+                    style={{
+                      display: "inline-block",
+                      // padding: "px 6px",
+                      // border: "1px solid #28a745",
+                      // borderRadius: "4px",
+                      color: "#28a745",
+                      cursor: "pointer",
+                      marginRight: "8px",
+                    }}
+                    onClick={() => openInPopup2(row)}
+                  >
+                    {ButtonText}
+                  </div>
+                )}
+                {openInPopup3 && (
+                  <div
+                    style={{
+                      display: "inline-block",
+                      // padding: "px 6px",
+                      // border: "1px solid #28a745",
+                      // borderRadius: "4px",
+                      color: "#28a745",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => openInPopup3(row)}
+                  >
+                    {ButtonText1}
+                  </div>
+                )}
+                {openInPopup4 && (
+                  <div
+                    style={{
+                      display: "inline-block",
+                      // padding: "px 6px",
+                      // border: "1px solid #28a745",
+                      // borderRadius: "4px",
+                      color: "#28a745",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => openInPopup4(row)}
+                  >
+                    {ButtonText2}
+                  </div>
+                )}
+              </div>
             </div>
           ))}
         </div>
