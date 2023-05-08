@@ -241,19 +241,19 @@ export const CustomerHavingForecastView = () => {
     { label: "Sales Person", key: "sales_person" },
     { label: "Product", key: "product" },
     {
-      label: `${months[lastMonth1]} - ${
+      label: `${months[lastMonth1]} -- ${
         lastMonth1 < currentMonth ? currentYear : currentYear - 1
       } Actual-Forecast`,
       key: "product_forecast_0",
     },
     {
-      label: `${months[lastMonth2]} - ${
+      label: `${months[lastMonth2]} -- ${
         lastMonth2 < currentMonth ? currentYear : currentYear - 1
       } Actual-Forecast`,
       key: "product_forecast_1",
     },
     {
-      label: `${months[currentMonth]} - ${currentYear} Actual-Forecast`,
+      label: `${months[currentMonth]} -- ${currentYear} Actual-Forecast`,
       key: "product_forecast_2",
     },
     {
@@ -302,7 +302,7 @@ export const CustomerHavingForecastView = () => {
         row.product_forecast.forEach((rowData, index) => {
           obj[`product_forecast_${index}`] =
             rowData.actual !== null
-              ? `${rowData.actual}-${rowData.forecast}`
+              ? `${rowData.actual}--${rowData.forecast}`
               : `-${rowData.forecast}`;
         });
         return obj;

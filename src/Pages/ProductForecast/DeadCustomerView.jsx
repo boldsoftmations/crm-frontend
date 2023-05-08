@@ -25,10 +25,13 @@ import { CustomPagination } from "../../Components/CustomPagination";
 import { ErrorMessage } from "../../Components/ErrorMessage/ErrorMessage";
 import { CustomLoader } from "../../Components/CustomLoader";
 import LeadServices from "../../services/LeadService";
-import { CustomSearch } from "../../Components/CustomSearch";
 import ProductForecastService from "../../services/ProductForecastService";
+import { CustomSearchWithButton } from "./../../Components/CustomSearchWithButton";
 
-const filterOption = [{ label: "Search", value: "search" }];
+const filterOption = [
+  { label: "Search", value: "search" },
+  { label: "Sales Person", value: "assigned_to__email" },
+];
 
 export const DeadCustomerView = () => {
   const [open, setOpen] = useState(false);
@@ -47,7 +50,7 @@ export const DeadCustomerView = () => {
     getLAssignedData();
   }, []);
 
-  const getLAssignedData = async (id) => {
+  const getLAssignedData = async () => {
     try {
       setOpen(true);
       const res = await LeadServices.getAllAssignedUser();
@@ -170,9 +173,9 @@ export const DeadCustomerView = () => {
     getAllProductionForecastDetails();
   };
 
-  const handleInputChange = (event) => {
-    setSearchQuery(event.target.value);
-    getSearchData(event.target.value);
+  const handleInputChange = () => {
+    setSearchQuery(searchQuery);
+    getSearchData(searchQuery);
   };
 
   const handleInputChanges = (event) => {
@@ -253,7 +256,7 @@ export const DeadCustomerView = () => {
         <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
           <Box display="flex">
-            {/* <Box flexGrow={1}>
+            <Box flexGrow={1}>
               <FormControl fullWidth size="small">
                 <InputLabel id="demo-simple-select-label">Fliter By</InputLabel>
                 <Select
@@ -271,15 +274,15 @@ export const DeadCustomerView = () => {
                   ))}
                 </Select>
               </FormControl>
-            </Box> */}
+            </Box>
             <Box flexGrow={1}>
-              {/* {filterQuery === "sales_person__email" ? (
+              {filterQuery === "assigned_to__email" ? (
                 <FormControl
                   sx={{ minWidth: "200px", marginLeft: "1em" }}
                   size="small"
                 >
                   <InputLabel id="demo-simple-select-label">
-                    Filter By State
+                    Filter By Sales Person
                   </InputLabel>
                   <Select
                     labelId="demo-simple-select-label"
@@ -311,18 +314,19 @@ export const DeadCustomerView = () => {
                   >
                     {assigned.map((option, i) => (
                       <MenuItem key={i} value={option.email}>
-                        {option.first_name} {option.last_name}
+                        {option.email}
                       </MenuItem>
                     ))}
                   </Select>
                 </FormControl>
-              ) : ( */}
-              <CustomSearch
-                filterSelectedQuery={searchQuery}
-                handleInputChange={handleInputChange}
-                getResetData={getResetData}
-              />
-              {/* )} */}
+              ) : (
+                <CustomSearchWithButton
+                  filterSelectedQuery={searchQuery}
+                  setSearchQuery={setSearchQuery}
+                  handleInputChange={handleInputChange}
+                  getResetData={getResetData}
+                />
+              )}
             </Box>
             <Box flexGrow={2}>
               <h3

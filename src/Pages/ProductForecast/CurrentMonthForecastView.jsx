@@ -67,6 +67,7 @@ export const CurrentMonthForecastView = () => {
     { label: "Product", key: "product" },
     { label: "Forecast", key: "forecast" },
     { label: "Actual", key: "actual" },
+    { label: "Orderbook Value", key: "orderbook_value" },
   ];
 
   const handleExport = async () => {
@@ -95,6 +96,7 @@ export const CurrentMonthForecastView = () => {
             product: row.product,
             forecast: row.forecast,
             actual: row.actual,
+            orderbook_value: row.orderbook_value,
           };
         });
       setOpen(false);
@@ -382,6 +384,9 @@ export const CurrentMonthForecastView = () => {
 
                   <StyledTableCell align="center">FORECAST</StyledTableCell>
                   <StyledTableCell align="center">ACTUAL</StyledTableCell>
+                  <StyledTableCell align="center">
+                    ORDERBOOK VALUE
+                  </StyledTableCell>
                 </StyledTableRow>
               </TableHead>
               <TableBody>
@@ -411,6 +416,9 @@ export const CurrentMonthForecastView = () => {
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         {row.actual}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.orderbook_value}
                       </StyledTableCell>
                     </StyledTableRow>
                   ) : null
