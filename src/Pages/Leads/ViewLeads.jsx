@@ -89,6 +89,11 @@ export const Viewleads = () => {
     getSearchData(filterSelectedQuery);
   };
 
+  const handleInputChanges = (event) => {
+    setFilterSelectedQuery(event.target.value);
+    getSearchData(event.target.value);
+  };
+
   useEffect(() => {
     getAllSellerAccountsDetails();
   }, []);
@@ -393,7 +398,7 @@ export const Viewleads = () => {
                     name="values"
                     label="Assigned To"
                     value={filterSelectedQuery}
-                    onChange={(event) => handleInputChange(event)}
+                    onChange={(event) => handleInputChanges(event)}
                     sx={{
                       "& .MuiSelect-iconOutlined": {
                         display: filterSelectedQuery ? "none" : "",
@@ -437,7 +442,7 @@ export const Viewleads = () => {
                     name="values"
                     label="Reference"
                     value={filterSelectedQuery}
-                    onChange={(event) => handleInputChange(event)}
+                    onChange={(event) => handleInputChanges(event)}
                     sx={{
                       "& .MuiSelect-iconOutlined": {
                         display: filterSelectedQuery ? "none" : "",
@@ -479,7 +484,7 @@ export const Viewleads = () => {
                     name="values"
                     label="Stage"
                     value={filterSelectedQuery}
-                    onChange={(event) => handleInputChange(event)}
+                    onChange={(event) => handleInputChanges(event)}
                     sx={{
                       "& .MuiSelect-iconOutlined": {
                         display: filterSelectedQuery ? "none" : "",
@@ -523,7 +528,7 @@ export const Viewleads = () => {
                     name="values"
                     label="Description"
                     value={filterSelectedQuery}
-                    onChange={(event) => handleInputChange(event)}
+                    onChange={(event) => handleInputChanges(event)}
                     sx={{
                       "& .MuiSelect-iconOutlined": {
                         display: filterSelectedQuery ? "none" : "",
