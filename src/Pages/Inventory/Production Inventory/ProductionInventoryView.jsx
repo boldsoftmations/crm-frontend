@@ -70,9 +70,9 @@ export const ProductionInventoryView = () => {
     }
   };
 
-  const handleInputChange = (event) => {
-    setFilterSelectedQuery(event.target.value);
-    getSearchData(event.target.value);
+  const handleInputChange = () => {
+    setFilterSelectedQuery(filterSelectedQuery);
+    getSearchData(filterSelectedQuery);
   };
 
   useEffect(() => {
@@ -218,6 +218,7 @@ export const ProductionInventoryView = () => {
             <div style={{ flexGrow: 0.9 }}>
               <CustomSearchWithButton
                 filterSelectedQuery={filterSelectedQuery}
+                setFilterSelectedQuery={setFilterSelectedQuery}
                 handleInputChange={handleInputChange}
                 getResetData={getResetData}
               />
