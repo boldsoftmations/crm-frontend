@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "../CommonStyle.css";
 import {
   Autocomplete,
@@ -21,28 +21,29 @@ import {
   Select,
   Checkbox,
 } from "@mui/material";
-import { CircularProgress } from "@mui/material";
-import { Backdrop } from "@mui/material";
 import "../CommonStyle.css";
 import LeadServices from "./../../services/LeadService";
-import ProductService from "../../services/ProductService";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/material.css";
+import { CustomLoader } from "../../Components/CustomLoader";
 
 export const CreateLeads = (props) => {
-  const { setOpenPopup, getleads } = props;
+  const {
+    setOpenPopup,
+    getleads,
+    descriptionMenuData,
+    referenceData,
+    assigned,
+  } = props;
   const [activeStep, setActiveStep] = useState(0);
   const steps = getSteps();
   const [open, setOpen] = useState(false);
   const [leads, setLeads] = useState([]);
-  const [referenceData, setReferenceData] = useState([]);
   const [reference, setReference] = useState();
-  const [assigned, setAssigned] = useState([]);
   const [assign, setAssign] = useState([]);
   const [stateSelected, setStateSelected] = useState("");
   const [shippingStateSelected, setShippingStateSelected] = useState("");
   const [businesTypes, setBusinesTypes] = useState();
-  const [descriptionMenuData, setDescriptionMenuData] = useState([]);
   const [phone, setPhone] = useState();
   const [phone2, setPhone2] = useState();
   const [typeData, setTypeData] = useState("");
@@ -69,55 +70,6 @@ export const CreateLeads = (props) => {
     setLeads({ ...leads, [name]: value });
   };
 
-  useEffect(() => {
-    getReference();
-  }, []);
-
-  useEffect(() => {
-    getLAssignedData();
-  }, []);
-
-  const getLAssignedData = async (id) => {
-    try {
-      setOpen(true);
-      const res = await LeadServices.getAllAssignedUser();
-
-      setAssigned(res.data);
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
-  };
-
-  const getReference = async () => {
-    try {
-      const res = await LeadServices.getAllRefernces();
-
-      setReferenceData(res.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const getDescriptionNoData = async () => {
-    try {
-      const res = await ProductService.getNoDescription();
-      setDescriptionMenuData(res.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-  console.log(
-    "checked",
-    checked == true && shippingStateSelected === ""
-      ? stateSelected
-      : leads.shipping_state
-  );
-
-  useEffect(() => {
-    getDescriptionNoData();
-  }, []);
   const createLeadsData = async (e) => {
     if (activeStep === steps.length - 1) {
       try {
@@ -184,17 +136,7 @@ export const CreateLeads = (props) => {
       case 0:
         return (
           <>
-            <div className="Auth-form-container">
-              <Backdrop
-                sx={{
-                  color: "#fff",
-                  zIndex: (theme) => theme.zIndex.drawer + 1,
-                }}
-                open={open}
-              >
-                <CircularProgress color="inherit" />
-              </Backdrop>
-            </div>
+            <CustomLoader open={open} />
             <Box
               sx={{
                 display: "flex",
@@ -373,20 +315,7 @@ export const CreateLeads = (props) => {
       case 1:
         return (
           <>
-            <div
-              className="Auth-form-container"
-              style={{ backgroundColor: "#aaa9ac" }}
-            >
-              <Backdrop
-                sx={{
-                  color: "#fff",
-                  zIndex: (theme) => theme.zIndex.drawer + 1,
-                }}
-                open={open}
-              >
-                <CircularProgress color="inherit" />
-              </Backdrop>
-            </div>
+            <CustomLoader open={open} />
             <Box
               sx={{
                 display: "flex",
@@ -521,17 +450,7 @@ export const CreateLeads = (props) => {
       case 2:
         return (
           <>
-            <div className="Auth-form-container">
-              <Backdrop
-                sx={{
-                  color: "#fff",
-                  zIndex: (theme) => theme.zIndex.drawer + 1,
-                }}
-                open={open}
-              >
-                <CircularProgress color="inherit" />
-              </Backdrop>
-            </div>
+            <CustomLoader open={open} />
             <Box
               sx={{
                 display: "flex",
@@ -673,17 +592,7 @@ export const CreateLeads = (props) => {
       case 3:
         return (
           <>
-            <div className="Auth-form-container">
-              <Backdrop
-                sx={{
-                  color: "#fff",
-                  zIndex: (theme) => theme.zIndex.drawer + 1,
-                }}
-                open={open}
-              >
-                <CircularProgress color="inherit" />
-              </Backdrop>
-            </div>
+            <CustomLoader open={open} />
             <Box
               sx={{
                 display: "flex",

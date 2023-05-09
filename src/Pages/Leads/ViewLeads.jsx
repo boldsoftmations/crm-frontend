@@ -36,6 +36,10 @@ import { BulkLeadAssign } from "./BulkLeadAssign";
 import { useDispatch, useSelector } from "react-redux";
 import InvoiceServices from "../../services/InvoiceService";
 import { getSellerAccountData } from "../../Redux/Action/Action";
+import { CustomTable } from "../../Components/CustomTable";
+import { CustomSearchWithButton } from "../../Components/CustomSearchWithButton";
+import { FollowUpCreate } from "../FollowUp/FollowUpCreate";
+import { PotentialCreate } from "../Potential/PotentialCreate";
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.common.black,
@@ -68,25 +72,21 @@ export const Viewleads = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
-  const [recordForEdit, setRecordForEdit] = useState(null);
+  const [openModalFollowup, setOpenModalFollowup] = useState(false);
+  const [openModalPotential, setOpenModalPotential] = useState(false);
+  const [leadsByID, setLeadsByID] = useState(null);
   const [assigned, setAssigned] = useState([]);
   const [referenceData, setReferenceData] = useState([]);
   const [descriptionMenuData, setDescriptionMenuData] = useState([]);
+  const [product, setProduct] = useState([]);
   // const [anchorEl, setAnchorEl] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const tokenData = useSelector((state) => state.auth);
   const users = tokenData.profile;
 
-  // const handleMenu = (event) => {
-  //   setAnchorEl(event.currentTarget);
-  // };
-
-  // const handleClose = () => {
-  //   setAnchorEl(null);
-  // };
-  const handleInputChange = (event) => {
-    setFilterSelectedQuery(event.target.value);
-    getSearchData(event.target.value);
+  const handleInputChange = () => {
+    setFilterSelectedQuery(filterSelectedQuery);
+    getSearchData(filterSelectedQuery);
   };
 
   useEffect(() => {
@@ -102,6 +102,22 @@ export const Viewleads = () => {
       dispatch(getSellerAccountData(response.data));
       setOpen(false);
     } catch (err) {
+      setOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    getProduct();
+  }, []);
+
+  const getProduct = async () => {
+    try {
+      setOpen(true);
+      const res = await ProductService.getAllProduct();
+      setProduct(res.data);
+      setOpen(false);
+    } catch (err) {
+      console.error("error potential", err);
       setOpen(false);
     }
   };
@@ -149,6 +165,10 @@ export const Viewleads = () => {
     }
   };
 
+  useEffect(() => {
+    getleads();
+  }, []);
+
   const getleads = async () => {
     try {
       setOpen(true);
@@ -188,11 +208,6 @@ export const Viewleads = () => {
     }
   };
 
-  useEffect(() => {
-    getleads();
-  }, []);
-  // console.log("filter", filterQuery.value);
-
   const getSearchData = async (value) => {
     try {
       setOpen(true);
@@ -225,10 +240,22 @@ export const Viewleads = () => {
   };
 
   const openInPopup = (item) => {
-    setRecordForEdit(item);
+    const matchedLead = leads.find((lead) => lead.lead_id === item.id);
+    setLeadsByID(matchedLead);
     setOpenPopup(true);
   };
 
+  const openInPopup2 = (item) => {
+    const matchedLead = leads.find((lead) => lead.lead_id === item.id);
+    setLeadsByID(matchedLead);
+    setOpenModalFollowup(true);
+  };
+
+  const openInPopup3 = (item) => {
+    const matchedLead = leads.find((lead) => lead.lead_id === item.id);
+    setLeadsByID(matchedLead);
+    setOpenModalPotential(true);
+  };
   const handlePageClick = async (event, value) => {
     try {
       const page = value;
@@ -263,7 +290,48 @@ export const Viewleads = () => {
     }
   };
 
-  console.log("leads", leads.length);
+  const PriorityColor = leads.map((row) => {
+    let color = "";
+    switch (row.priority) {
+      case "High":
+        color = "#ffcccc";
+        break;
+      case "Medium":
+        color = "#ccccff";
+        break;
+      case "Low":
+        color = "#ffffcc";
+        break;
+      default:
+        color = "#ffffff";
+    }
+    return { priority: color };
+  });
+
+  const Tabledata = leads.map((row, i) => ({
+    id: row.lead_id,
+    name: row.name,
+    contact: row.contact,
+    alternate_contact: row.alternate_contact,
+    email: row.email,
+
+    assigned_to: row.assigned_to,
+    priority: row.priority,
+    company: row.company,
+  }));
+
+  const Tableheaders = [
+    "ID",
+    "NAME",
+    "CONTACT",
+    "ALTERNATE CONTACT",
+    "EMAIL",
+    "ASSIGNED TO",
+    "PRIORITY",
+    "COMPANY",
+    "ACTION",
+  ];
+
   return (
     <>
       <CustomLoader open={open} />
@@ -486,8 +554,9 @@ export const Viewleads = () => {
                 </FormControl>
               )}
               {filterQuery === "search" && (
-                <CustomSearch
+                <CustomSearchWithButton
                   filterSelectedQuery={filterSelectedQuery}
+                  setFilterSelectedQuery={setFilterSelectedQuery}
                   handleInputChange={handleInputChange}
                   getResetData={getResetData}
                 />
@@ -517,114 +586,17 @@ export const Viewleads = () => {
               </Button>
             </Box>
           </Box>
-          <TableContainer
-            sx={{
-              maxHeight: 440,
-              "&::-webkit-scrollbar": {
-                width: 15,
-              },
-              "&::-webkit-scrollbar-track": {
-                backgroundColor: "#f2f2f2",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                backgroundColor: "#aaa9ac",
-              },
-            }}
-          >
-            <Table
-              sx={{ minWidth: 700 }}
-              stickyHeader
-              aria-label="sticky table"
-            >
-              <TableHead>
-                <TableRow>
-                  <StyledTableCell align="center">ID</StyledTableCell>
-                  <StyledTableCell align="center">NAME</StyledTableCell>
-                  <StyledTableCell align="center">CONTACT</StyledTableCell>
-                  <StyledTableCell align="center">EMAIL</StyledTableCell>
-                  <StyledTableCell align="center">
-                    ALTERNATE CONTACT
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    ASSIGNED TO
-                    {users.is_staff === true && (
-                      <IconButton
-                        size="large"
-                        aria-label="account of current user"
-                        aria-controls="menu-appbar"
-                        aria-haspopup="false"
-                        onClick={() => setOpenModal(true)}
-                        color="inherit"
-                      >
-                        <MoreVertIcon />
-                      </IconButton>
-                    )}
-                  </StyledTableCell>
-                  <StyledTableCell align="center">COMPANY NAME</StyledTableCell>
-
-                  <StyledTableCell align="center">ACTION</StyledTableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {leads.length > 0 ? (
-                  <>
-                    {leads.map((row, i) => {
-                      return (
-                        <StyledTableRow key={i}>
-                          <StyledTableCell align="center">
-                            {row.lead_id ? row.lead_id : "-"}
-                          </StyledTableCell>
-                          <StyledTableCell align="center">
-                            {row.name ? row.name : "-"}
-                          </StyledTableCell>
-                          <StyledTableCell align="center">
-                            {row.contact ? row.contact : "-"}
-                          </StyledTableCell>
-                          <StyledTableCell align="center">
-                            {row.email ? row.email : "-"}
-                          </StyledTableCell>
-                          <StyledTableCell align="center">
-                            {row.alternate_contact
-                              ? row.alternate_contact
-                              : "-"}
-                          </StyledTableCell>
-                          <StyledTableCell align="center">
-                            {row.assigned_to ? row.assigned_to : "-"}
-                          </StyledTableCell>
-                          <StyledTableCell align="center">
-                            {row.company ? row.company : "-"}
-                          </StyledTableCell>
-
-                          <StyledTableCell align="center">
-                            <Button
-                              variant="contained"
-                              onClick={() => openInPopup(row.lead_id)}
-                            >
-                              View
-                            </Button>
-                          </StyledTableCell>
-                        </StyledTableRow>
-                      );
-                    })}
-                  </>
-                ) : (
-                  <StyledTableRow>
-                    <StyledTableCell></StyledTableCell>
-                    <StyledTableCell></StyledTableCell>
-                    <StyledTableCell></StyledTableCell>
-                    <StyledTableCell></StyledTableCell>
-                    <StyledTableCell align="center">
-                      No Data Found
-                    </StyledTableCell>
-
-                    <StyledTableCell></StyledTableCell>
-                    <StyledTableCell></StyledTableCell>
-                    <StyledTableCell></StyledTableCell>
-                  </StyledTableRow>
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          <CustomTable
+            headers={Tableheaders}
+            data={Tabledata}
+            openInPopup={openInPopup}
+            openInPopup2={openInPopup2}
+            openInPopup3={openInPopup3}
+            openInPopup4={null}
+            ButtonText={"Activity"}
+            ButtonText1={"Potential"}
+            PriorityColor={PriorityColor}
+          />
           <CustomPagination
             pageCount={pageCount}
             handlePageClick={handlePageClick}
@@ -637,7 +609,13 @@ export const Viewleads = () => {
         openPopup={openPopup2}
         setOpenPopup={setOpenPopup2}
       >
-        <CreateLeads getleads={getleads} setOpenPopup={setOpenPopup2} />
+        <CreateLeads
+          assigned={assigned}
+          referenceData={referenceData}
+          descriptionMenuData={descriptionMenuData}
+          getleads={getleads}
+          setOpenPopup={setOpenPopup2}
+        />
       </Popup>
       <Popup
         fullScreen={true}
@@ -646,9 +624,37 @@ export const Viewleads = () => {
         setOpenPopup={setOpenPopup}
       >
         <UpdateLeads
-          recordForEdit={recordForEdit}
+          assigned={assigned}
+          descriptionMenuData={descriptionMenuData}
+          leadsByID={leadsByID}
           setOpenPopup={setOpenPopup}
           getAllleadsData={getleads}
+          product={product}
+        />
+      </Popup>
+      <Popup
+        maxWidth={"xl"}
+        title={"Create Activity"}
+        openPopup={openModalFollowup}
+        setOpenPopup={setOpenModalFollowup}
+      >
+        <FollowUpCreate
+          leadsByID={leadsByID}
+          getAllleadsData={getleads}
+          setOpenModal={setOpenModalFollowup}
+        />{" "}
+      </Popup>
+      <Popup
+        maxWidth={"lg"}
+        title={"Create Potential"}
+        openPopup={openModalPotential}
+        setOpenPopup={setOpenModalPotential}
+      >
+        <PotentialCreate
+          getAllleadsData={getleads}
+          leadsByID={leadsByID}
+          product={product}
+          setOpenModal={setOpenModalPotential}
         />
       </Popup>
     </>

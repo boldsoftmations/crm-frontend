@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import "../CommonStyle.css";
 
@@ -24,17 +24,15 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { CircularProgress } from "@mui/material";
-import { Backdrop } from "@mui/material";
 import "../CommonStyle.css";
 import LeadServices from "./../../services/LeadService";
-import ProductService from "../../services/ProductService";
 import { ViewAllFollowUp } from "./../FollowUp/ViewAllFollowUp";
 import { ViewAllPotential } from "../Potential/ViewAllPotential";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/material.css";
 import { Popup } from "./../../Components/Popup";
 import { CreateLeadsProformaInvoice } from "./../Invoice/LeadsPerformaInvoice/CreateLeadsProformaInvoice";
+import { CustomLoader } from "../../Components/CustomLoader";
 
 function getSteps() {
   return [
@@ -46,23 +44,31 @@ function getSteps() {
 }
 
 export const UpdateLeads = (props) => {
-  const { recordForEdit, setOpenPopup, getUnassigned, getAllleadsData } = props;
+  const {
+    leadsByID,
+    setOpenPopup,
+    getUnassigned,
+    getAllleadsData,
+    descriptionMenuData,
+    assigned,
+    product,
+  } = props;
   const [openPopup2, setOpenPopup2] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
   const steps = getSteps();
   const [open, setOpen] = useState(false);
-  const [businesTypes, setBusinesTypes] = useState("");
-  const [interests, setInterests] = useState("");
-  const [businessMismatch, setBusinessMismatch] = useState("");
-  const [leads, setLeads] = useState([]);
-  const [descriptionMenuData, setDescriptionMenuData] = useState([]);
-  const [assigned, setAssigned] = useState([]);
-  const [assign, setAssign] = useState([]);
-  const [descriptionValue, setDescriptionValue] = useState([]);
+  const [businesTypes, setBusinesTypes] = useState(leadsByID.business_type);
+  const [interests, setInterests] = useState(leadsByID.interested);
+  const [businessMismatch, setBusinessMismatch] = useState(
+    leadsByID.business_mismatch
+  );
+  const [leads, setLeads] = useState(leadsByID);
+  const [assign, setAssign] = useState(leadsByID.assigned_to);
+  const [descriptionValue, setDescriptionValue] = useState(
+    leadsByID.description
+  );
   const [phone, setPhone] = useState();
   const [phone2, setPhone2] = useState();
-  const [contacts1, setContacts1] = useState("");
-  const [contacts2, setContacts2] = useState("");
   const [typeData, setTypeData] = useState("");
   const [checked, setChecked] = useState(false);
   const handlePhoneChange = (newPhone) => {
@@ -82,66 +88,14 @@ export const UpdateLeads = (props) => {
     setLeads({ ...leads, [name]: value });
   };
 
-  const getDescriptionNoData = async () => {
-    try {
-      const res = await ProductService.getNoDescription();
-      setDescriptionMenuData(res.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  useEffect(() => {
-    getDescriptionNoData();
-  }, []);
-
-  useEffect(() => {
-    getLeadsData(recordForEdit);
-  }, []);
-
-  useEffect(() => {
-    getLAssignedData();
-  }, []);
-
-  const getLeadsData = async (recordForEdit) => {
-    try {
-      setOpen(true);
-      const res = await LeadServices.getLeadsById(recordForEdit);
-      setAssign(res.data.assigned_to);
-      setInterests(res.data.interested);
-      setBusinesTypes(res.data.business_type);
-      setBusinessMismatch(res.data.business_mismatch);
-      setDescriptionValue(res.data.description);
-      setContacts1(res.data.contact);
-      setContacts2(res.data.alternate_contact);
-      setLeads(res.data);
-
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
-  };
-
-  const getLAssignedData = async () => {
-    try {
-      setOpen(true);
-      const res = await LeadServices.getAllAssignedUser();
-      setAssigned(res.data);
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
-  };
-
   const updateLeadsData = async (e) => {
     if (activeStep === steps.length - 1) {
       try {
         e.preventDefault();
         setOpen(true);
-        const contact1 = phone !== undefined ? `+${phone}` : contacts1;
-        const contact2 = phone2 !== undefined ? `+${phone2}` : contacts2;
+        const contact1 = phone !== undefined ? `+${phone}` : leadsByID.contact;
+        const contact2 =
+          phone2 !== undefined ? `+${phone2}` : leadsByID.alternate_contact;
         const data = {
           name: leads.name,
           alternate_contact_name: leads.alternate_contact_name
@@ -189,9 +143,9 @@ export const UpdateLeads = (props) => {
 
         await LeadServices.updateLeads(leads.lead_id, data);
         setOpenPopup(false);
-        setOpen(false);
         getUnassigned();
         getAllleadsData();
+        setOpen(false);
       } catch (error) {
         console.log("error :>> ", error);
         setOpen(false);
@@ -200,64 +154,6 @@ export const UpdateLeads = (props) => {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     }
   };
-  // console.log("leads :>> ", leads);
-  // const createLeadProformaInvoiceDetails = async (e) => {
-  //   try {
-  //     console.log("e :>> ", e.preventDefault);
-  //     e.preventDefault();
-
-  //     const req = {
-  //       type: "lead",
-  //       raised_by: "admin@glutape.com",
-  //       // seller_account: inputValue.seller_account,
-  //       lead: leads.lead_id,
-  //       contact: leads.contact,
-  //       alternate_contact: leads.alternate_contact,
-  //       address: leads.shipping_address,
-  //       pincode: leads.shipping_pincode,
-  //       state: leads.shipping_state,
-  //       city: leads.shipping_city,
-  //       // requested_date: inputValue.requested_date,
-  //       // buyer_order_no: inputValue.buyer_order_no,
-  //       // buyer_order_date: inputValue.buyer_order_date,
-  //       // payment_terms: paymentTermData,
-  //       // delivery_terms: deliveryTermData,
-  //       status: "raised",
-  //       // amount: inputValue.amount,
-  //       // products: [
-  //       //   {
-  //       //     product: productName,
-  //       //     quantity: inputValue.quantity,
-  //       //     rate: inputValue.rate,
-  //       //     amount: inputValue.amount,
-  //       //   },
-  //       // ],
-  //     };
-  //     console.log("req", req);
-  //     console.log("after req");
-  //     setOpen(true);
-  //     if (
-  //       leads.address.length > 0 &&
-  //       leads.state.length > 0 &&
-  //       leads.city.length > 0 &&
-  //       leads.pincode.length > 0 &&
-  //       leads.shipping_address.length > 0 &&
-  //       leads.shipping_state.length > 0 &&
-  //       leads.shipping_city.length > 0 &&
-  //       leads.shipping_pincode.length > 0
-  //     ) {
-  //       await InvoiceServices.createLeadsProformaInvoiceData(req);
-  //       console.log("after api");
-  //       setOpen(false);
-  //     }
-  //     // setOpenPopup(false);
-  //     // getAllSellerAccountsDetails();
-  //   } catch (err) {
-  //     // setIDForEdit(leadIDData.lead_id);
-  //     setOpen(false);
-  //     // setOpenPopup2(true);
-  //   }
-  // };
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
@@ -268,17 +164,7 @@ export const UpdateLeads = (props) => {
       case 0:
         return (
           <>
-            <div className="Auth-form-container">
-              <Backdrop
-                sx={{
-                  color: "#fff",
-                  zIndex: (theme) => theme.zIndex.drawer + 1,
-                }}
-                open={open}
-              >
-                <CircularProgress color="inherit" />
-              </Backdrop>
-            </div>
+            <CustomLoader open={open} />
             <Box
               sx={{
                 display: "flex",
@@ -346,7 +232,13 @@ export const UpdateLeads = (props) => {
                         minWidth: "500px",
                       }}
                       country={"in"}
-                      value={phone ? `+${phone}` : contacts1 ? contacts1 : ""}
+                      value={
+                        phone
+                          ? `+${phone}`
+                          : leadsByID.contact
+                          ? leadsByID.contact
+                          : ""
+                      }
                       onChange={handlePhoneChange}
                     />
                   </Grid>
@@ -359,7 +251,13 @@ export const UpdateLeads = (props) => {
                         minWidth: "500px",
                       }}
                       country={"in"}
-                      value={phone2 ? `+${phone2}` : contacts2 ? contacts2 : ""}
+                      value={
+                        phone2
+                          ? `+${phone2}`
+                          : leadsByID.alternate_contact
+                          ? leadsByID.alternate_contact
+                          : ""
+                      }
                       onChange={handlePhoneChange2}
                     />
                   </Grid>
@@ -513,17 +411,7 @@ export const UpdateLeads = (props) => {
       case 1:
         return (
           <>
-            <div className="Auth-form-container">
-              <Backdrop
-                sx={{
-                  color: "#fff",
-                  zIndex: (theme) => theme.zIndex.drawer + 1,
-                }}
-                open={open}
-              >
-                <CircularProgress color="inherit" />
-              </Backdrop>
-            </div>
+            <CustomLoader open={open} />
             <Box
               sx={{
                 display: "flex",
@@ -642,17 +530,7 @@ export const UpdateLeads = (props) => {
       case 2:
         return (
           <>
-            <div className="Auth-form-container">
-              <Backdrop
-                sx={{
-                  color: "#fff",
-                  zIndex: (theme) => theme.zIndex.drawer + 1,
-                }}
-                open={open}
-              >
-                <CircularProgress color="inherit" />
-              </Backdrop>
-            </div>
+            <CustomLoader open={open} />
             <Box
               sx={{
                 display: "flex",
@@ -783,17 +661,7 @@ export const UpdateLeads = (props) => {
       case 3:
         return (
           <>
-            <div className="Auth-form-container">
-              <Backdrop
-                sx={{
-                  color: "#fff",
-                  zIndex: (theme) => theme.zIndex.drawer + 1,
-                }}
-                open={open}
-              >
-                <CircularProgress color="inherit" />
-              </Backdrop>
-            </div>
+            <CustomLoader open={open} />
             <Box
               sx={{
                 display: "flex",
@@ -817,10 +685,11 @@ export const UpdateLeads = (props) => {
                     Alt. Email : {leads.alternate_email}
                   </Grid>
                   <Grid item xs={12} sm={4}>
-                    Contact : {phone ? `+${phone}` : contacts1}
+                    Contact : {phone ? `+${phone}` : leadsByID.contact}
                   </Grid>
                   <Grid item xs={12} sm={4}>
-                    Alt. Contact : {phone2 ? `+${phone2}` : contacts2}
+                    Alt. Contact :{" "}
+                    {phone2 ? `+${phone2}` : leadsByID.alternate_contact}
                   </Grid>
                   <Grid item xs={12} sm={4}>
                     Busniess Type : {businesTypes}
@@ -1007,13 +876,20 @@ export const UpdateLeads = (props) => {
 
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <ViewAllFollowUp recordForEdit={recordForEdit} />
+          <ViewAllFollowUp
+            getAllleadsData={getAllleadsData}
+            leadsByID={leadsByID}
+          />
         </Grid>
       </Grid>
 
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <ViewAllPotential recordForEdit={recordForEdit} />
+          <ViewAllPotential
+            getAllleadsData={getAllleadsData}
+            leadsByID={leadsByID}
+            product={product}
+          />
         </Grid>
       </Grid>
       <Popup

@@ -246,7 +246,6 @@ export const TaskView = () => {
             openInPopup2={null}
             openInPopup3={null}
             openInPopup4={null}
-            ButtonText={"View"}
             PriorityColor={PriorityColor}
           />
           <CustomPagination
