@@ -122,6 +122,7 @@ export const TaskCreate = (props) => {
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
+              multiline
               fullWidth
               name="description"
               size="small"

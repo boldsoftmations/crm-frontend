@@ -12,8 +12,10 @@ import {
 import TaskService from "../../services/TaskService";
 import { useSelector } from "react-redux";
 import { CustomLoader } from "../../Components/CustomLoader";
+import { TaskActivityView } from "./TaskActivityView";
 export const TaskUpdate = (props) => {
-  const { setOpenPopup, getAllTaskDetails, assigned, taskByID } = props; // 1
+  const { setOpenPopup, getAllTaskDetails, assigned, taskByID, activity } =
+    props; // 1
   const [open, setOpen] = useState(false);
   const [task, setTask] = useState(taskByID);
 
@@ -186,6 +188,12 @@ export const TaskUpdate = (props) => {
           Submit
         </Button>
       </Box>
+
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <TaskActivityView activity={activity} />
+        </Grid>
+      </Grid>
     </div>
   );
 };

@@ -14,7 +14,6 @@ import moment from "moment";
 
 export const ViewAllFollowUp = (props) => {
   const { followup } = props;
-  console.log("followup :>> ", followup);
   return (
     <>
       <Box component="form" noValidate sx={{ mt: 1 }}>

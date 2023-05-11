@@ -9,6 +9,7 @@ import { ErrorMessage } from "../../Components/ErrorMessage/ErrorMessage";
 import { Popup } from "../../Components/Popup";
 import { TaskUpdate } from "./TaskUpdate";
 import { TaskCreate } from "./TaskCreate";
+import { TaskActivityCreate } from "./TaskActivityCreate";
 
 export const TaskView = () => {
   const [openPopup, setOpenPopup] = useState(false);
@@ -19,10 +20,11 @@ export const TaskView = () => {
   const [assigned, setAssigned] = useState([]);
   const [task, setTask] = useState([]);
   const [filterSelectedQuery, setFilterSelectedQuery] = useState(null);
+  const [activity, setActivity] = useState(null);
   const [pageCount, setpageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [taskByID, setTaskByID] = useState([]);
-
+  const [openModalactivity, setOpenModalActivity] = useState(false);
   const handleInputChange = () => {
     setFilterSelectedQuery(filterSelectedQuery);
     getSearchData(filterSelectedQuery);
@@ -34,8 +36,16 @@ export const TaskView = () => {
   };
 
   const openInPopup = (item) => {
-    setTaskByID(item);
+    const matchedActivity = task.find((activity) => activity.id === item.id);
+    setActivity(matchedActivity.activities);
+    setTaskByID(matchedActivity);
     setOpenPopup2(true);
+  };
+
+  const openInPopup2 = (item) => {
+    const matchedActivity = task.find((activity) => activity.id === item.id);
+    setActivity(matchedActivity.activities);
+    setOpenModalActivity(true);
   };
 
   useEffect(() => {
@@ -243,9 +253,10 @@ export const TaskView = () => {
             headers={Tableheaders}
             data={Tabledata}
             openInPopup={openInPopup}
-            openInPopup2={null}
+            openInPopup2={openInPopup2}
             openInPopup3={null}
             openInPopup4={null}
+            ButtonText={"Activity"}
             PriorityColor={PriorityColor}
           />
           <CustomPagination
@@ -267,6 +278,7 @@ export const TaskView = () => {
         />
       </Popup>
       <Popup
+        maxWidth={"xl"}
         title={"Update Task"}
         openPopup={openPopup2}
         setOpenPopup={setOpenPopup2}
@@ -276,7 +288,20 @@ export const TaskView = () => {
           getAllTaskDetails={getAllTaskDetails}
           assigned={assigned}
           taskByID={taskByID}
+          activity={activity}
         />
+      </Popup>
+      <Popup
+        maxWidth={"xl"}
+        title={"Create Activity"}
+        openPopup={openModalactivity}
+        setOpenPopup={setOpenModalActivity}
+      >
+        <TaskActivityCreate
+          activity={activity}
+          getAllTaskDetails={getAllTaskDetails}
+          setOpenModalActivity={setOpenModalActivity}
+        />{" "}
       </Popup>
     </>
   );

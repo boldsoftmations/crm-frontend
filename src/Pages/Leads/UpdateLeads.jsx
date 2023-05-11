@@ -757,8 +757,6 @@ export const UpdateLeads = (props) => {
     }
   }
 
-  console.log("assign", assign ? assign : "");
-
   return (
     <div style={{ width: "100%" }}>
       <Grid item xs={12}>

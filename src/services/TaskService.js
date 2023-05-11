@@ -24,6 +24,10 @@ const updateTask = (id, data) => {
   return CustomAxios.patch(`/api/task/list-tasks/${id}`, data);
 };
 
+const createActivityTask = (data) => {
+  return CustomAxios.post("/api/task/list-tasks-activity/", data);
+};
+
 const TaskService = {
   getAllTask,
   getTaskPaginatewithSearch,
@@ -31,6 +35,7 @@ const TaskService = {
   getAllSearchTask,
   createTask,
   updateTask,
+  createActivityTask,
 };
 
 export default TaskService;
