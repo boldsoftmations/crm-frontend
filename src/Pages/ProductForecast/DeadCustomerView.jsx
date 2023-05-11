@@ -27,6 +27,9 @@ import { CustomLoader } from "../../Components/CustomLoader";
 import LeadServices from "../../services/LeadService";
 import ProductForecastService from "../../services/ProductForecastService";
 import { CustomSearchWithButton } from "./../../Components/CustomSearchWithButton";
+import { Popup } from "../../Components/Popup";
+import { UpdateCompanyDetails } from "../Cutomers/CompanyDetails/UpdateCompanyDetails";
+import { UpdateAllCompanyDetails } from "../Cutomers/CompanyDetails/UpdateAllCompanyDetails";
 
 const filterOption = [
   { label: "Search", value: "search" },
@@ -45,7 +48,12 @@ export const DeadCustomerView = () => {
   const [assigned, setAssigned] = useState([]);
   const [deadCustomer, setDeadCustomer] = useState([]);
   const [exportDeadCustomer, setExportDeadCustomer] = useState([]);
-
+  const [recordForEdit, setRecordForEdit] = useState(null);
+  const [openPopup, setOpenPopup] = useState(false);
+  const openInPopup = (item) => {
+    setRecordForEdit(item.id);
+    setOpenPopup(true);
+  };
   useEffect(() => {
     getLAssignedData();
   }, []);
@@ -389,6 +397,7 @@ export const DeadCustomerView = () => {
                     CONTACT PERSON
                   </StyledTableCell>
                   <StyledTableCell align="center">CONTACT</StyledTableCell>
+                  <StyledTableCell align="center">ACTION</StyledTableCell>
                 </StyledTableRow>
               </TableHead>
               <TableBody>
@@ -429,6 +438,14 @@ export const DeadCustomerView = () => {
                         ? row.contacts[0].contact
                         : ""}
                     </StyledTableCell>
+                    <StyledTableCell align="center">
+                      <Button
+                        variant="contained"
+                        onClick={() => openInPopup(row)}
+                      >
+                        View
+                      </Button>
+                    </StyledTableCell>
                   </StyledTableRow>
                 ))}
               </TableBody>
@@ -440,6 +457,18 @@ export const DeadCustomerView = () => {
           />
         </Paper>
       </Grid>
+      <Popup
+        fullScreen={true}
+        title={"Update Company Details"}
+        openPopup={openPopup}
+        setOpenPopup={setOpenPopup}
+      >
+        <UpdateAllCompanyDetails
+          setOpenPopup={setOpenPopup}
+          getAllCompanyDetails={getAllProductionForecastDetails}
+          recordForEdit={recordForEdit}
+        />
+      </Popup>
     </div>
   );
 };

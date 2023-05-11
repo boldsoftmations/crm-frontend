@@ -26,6 +26,8 @@ import { CustomLoader } from "../../Components/CustomLoader";
 import LeadServices from "../../services/LeadService";
 import ProductForecastService from "../../services/ProductForecastService";
 import { CustomSearchWithButton } from "../../Components/CustomSearchWithButton";
+import { Popup } from "../../Components/Popup";
+import { ForecastUpdate } from "../Cutomers/ForecastDetails/ForecastUpdate";
 
 const filterOption = [
   {
@@ -55,7 +57,12 @@ export const CustomerNotHavingForecastView = () => {
   const [assigned, setAssigned] = useState([]);
   const [productNotHavingForecast, setProductNotHavingForecast] = useState([]);
   const [exportData, setExportData] = useState([]);
-
+  const [forecastDataByID, setForecastDataByID] = useState(null);
+  const [openPopup, setOpenPopup] = useState(false);
+  const openInPopup = (item) => {
+    setForecastDataByID(item);
+    setOpenPopup(true);
+  };
   const handleDownload = async () => {
     const data = await handleExport();
     setExportData(data);
@@ -485,6 +492,7 @@ export const CustomerNotHavingForecastView = () => {
                     <br />
                     FORECAST
                   </StyledTableCell>
+                  <StyledTableCell align="center">ACTION</StyledTableCell>
                 </StyledTableRow>
               </TableHead>
               <TableBody>
@@ -519,6 +527,14 @@ export const CustomerNotHavingForecastView = () => {
                         </StyledTableCell>
                       );
                     })}
+                    <StyledTableCell align="center">
+                      <Button
+                        variant="contained"
+                        onClick={() => openInPopup(row)}
+                      >
+                        View
+                      </Button>
+                    </StyledTableCell>
                   </StyledTableRow>
                 ))}
               </TableBody>
@@ -530,6 +546,17 @@ export const CustomerNotHavingForecastView = () => {
           />
         </Paper>
       </Grid>
+      <Popup
+        title={"Update Forecast Details"}
+        openPopup={openPopup}
+        setOpenPopup={setOpenPopup}
+      >
+        <ForecastUpdate
+          getAllCompanyDetailsByID={getAllProductionForecastDetails}
+          setOpenPopup={setOpenPopup}
+          forecastDataByID={forecastDataByID}
+        />
+      </Popup>
     </div>
   );
 };
