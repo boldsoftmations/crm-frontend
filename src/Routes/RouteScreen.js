@@ -6,10 +6,6 @@ import { AssignTo } from "../Pages/Leads/AssignTo";
 import { ChangePassword } from "./../Pages/Auth/ChangePassword";
 import { Dashboard } from "../Pages/Dashboard/Dashboard";
 import { ForgotPassword } from "./../Pages/Auth/ForgotPassword";
-// import { PageNotFound } from "../Components/Page/PageNotFound";
-import { PendingFollowup } from "../Pages/FollowUp/PendingFollowup";
-import { TodayFollowup } from "../Pages/FollowUp/TodayFollowup";
-import { UpcomingFollowup } from "../Pages/FollowUp/UpcomingFollowup";
 import { ViewBasicUnit } from "./../Pages/Products/BasicUnit/ViewBasicUnit";
 import { ViewBrand } from "./../Pages/Products/Brand/ViewBrand";
 import { ViewColors } from "../Pages/Products/Color/ViewColors";
@@ -54,6 +50,7 @@ import { ProductionInventoryGAndLView } from "../Pages/Inventory/Production Entr
 import { ProductionShortFallView } from "../Pages/Inventory/ProductionShortFall/ProductionShortFallView";
 import { ProductForecastViewAll } from "../Pages/ProductForecast/ProductForecastViewAll";
 import { TaskView } from "../Pages/Task/TaskView";
+import { FollowUpView } from "../Pages/FollowUp/FollowUpView";
 
 export const RouteScreen = () => {
   const tokenData = useSelector((state) => state.auth);
@@ -80,18 +77,8 @@ export const RouteScreen = () => {
             <Route path="/user/profile" exact element={<Profile />} />
             {/* Leads Routes */}
             <Route path="/leads/view-lead" element={<Viewleads />} />
-            <Route
-              path="/leads/view-today-followup"
-              element={<TodayFollowup />}
-            />
-            <Route
-              path="/leads/view-pending-followup"
-              element={<PendingFollowup />}
-            />{" "}
-            <Route
-              path="/leads/view-upcoming-followup"
-              element={<UpcomingFollowup />}
-            />
+            <Route path="/leads/view-followup" element={<FollowUpView />} />
+
             <Route path="/leads/view-assignedto" element={<AssignTo />} />
             {/* Products Routes */}
             <Route path="/products/view-colors" element={<ViewColors />} />

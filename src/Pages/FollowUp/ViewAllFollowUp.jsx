@@ -13,8 +13,8 @@ import {
 import moment from "moment";
 
 export const ViewAllFollowUp = (props) => {
-  const { leadsByID } = props;
-
+  const { followup } = props;
+  console.log("followup :>> ", followup);
   return (
     <>
       <Box component="form" noValidate sx={{ mt: 1 }}>
@@ -44,9 +44,9 @@ export const ViewAllFollowUp = (props) => {
               // justifyContent="flex-end" # DO NOT USE THIS WITH 'scroll'
             }}
           >
-            {leadsByID.followup && (
+            {followup && (
               <>
-                {leadsByID.followup.map((data) => {
+                {followup.map((data) => {
                   return (
                     <div key={data.id}>
                       <Timeline

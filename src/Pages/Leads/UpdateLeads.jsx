@@ -46,6 +46,7 @@ function getSteps() {
 export const UpdateLeads = (props) => {
   const {
     leadsByID,
+    followup,
     setOpenPopup,
     getUnassigned,
     getAllleadsData,
@@ -57,7 +58,9 @@ export const UpdateLeads = (props) => {
   const [activeStep, setActiveStep] = useState(0);
   const steps = getSteps();
   const [open, setOpen] = useState(false);
-  const [businesTypes, setBusinesTypes] = useState(leadsByID.business_type);
+  const [businesTypes, setBusinesTypes] = useState(
+    leadsByID && leadsByID.business_type
+  );
   const [interests, setInterests] = useState(leadsByID.interested);
   const [businessMismatch, setBusinessMismatch] = useState(
     leadsByID.business_mismatch
@@ -878,7 +881,7 @@ export const UpdateLeads = (props) => {
         <Grid item xs={12}>
           <ViewAllFollowUp
             getAllleadsData={getAllleadsData}
-            leadsByID={leadsByID}
+            followup={followup}
           />
         </Grid>
       </Grid>

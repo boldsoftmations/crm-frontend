@@ -24,7 +24,7 @@ import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
-
+import FollowTheSignsIcon from "@mui/icons-material/FollowTheSigns";
 export const ListItems = (props) => {
   const { setOpen } = props;
   const [expand, setExpand] = useState(false);
@@ -274,58 +274,36 @@ export const ListItems = (props) => {
                   primary="Assigned To"
                 />
               </ListItem>
+            </List>
+          </Collapse>
+          {/* Followup */}
+          <ListItem
+            button
+            onClick={() => setExpandFollowUp(!expandFollowUp)}
+            style={{ width: 300 }}
+          >
+            <ListItemIcon>
+              <FollowTheSignsIcon />
+            </ListItemIcon>
+            <ListItemText primary="FollowUp" />
+            {expandFollowUp ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          </ListItem>
+          <Collapse in={expandFollowUp} timeout="auto" unmountOnExit>
+            <Divider />
+            <List component="div" disablePadding>
               <ListItem
                 button
-                onClick={() => setExpandFollowUp(!expandFollowUp)}
+                component={RouterLink}
+                to="/leads/view-followup"
                 style={{ width: 300 }}
               >
-                <ListItemText inset primary="FollowUp" />
-                {expandFollowUp ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                <ListItemText
+                  component={Button}
+                  onClick={() => setOpen(false)}
+                  inset
+                  primary="FollowUp"
+                />
               </ListItem>
-              <Collapse in={expandFollowUp} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/leads/view-today-followup"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Today FollowUp"
-                    />
-                  </ListItem>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/leads/view-pending-followup"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Pending FollowUp"
-                    />
-                  </ListItem>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/leads/view-upcoming-followup"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Upcoming FollowUp"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
             </List>
           </Collapse>
           {/* Customer */}
@@ -1221,58 +1199,36 @@ export const ListItems = (props) => {
                       primary="Assigned To"
                     />
                   </ListItem>
+                </List>
+              </Collapse>
+              {/* Followup */}
+              <ListItem
+                button
+                onClick={() => setExpandFollowUp(!expandFollowUp)}
+                style={{ width: 300 }}
+              >
+                <ListItemIcon>
+                  <FollowTheSignsIcon />
+                </ListItemIcon>
+                <ListItemText primary="FollowUp" />
+                {expandFollowUp ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+              </ListItem>
+              <Collapse in={expandFollowUp} timeout="auto" unmountOnExit>
+                <Divider />
+                <List component="div" disablePadding>
                   <ListItem
                     button
-                    onClick={() => setExpandFollowUp(!expandFollowUp)}
+                    component={RouterLink}
+                    to="/leads/view-followup"
                     style={{ width: 300 }}
                   >
-                    <ListItemText inset primary="FollowUp" />
-                    {expandFollowUp ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="FollowUp"
+                    />
                   </ListItem>
-                  <Collapse in={expandFollowUp} timeout="auto" unmountOnExit>
-                    <Divider />
-                    <List component="div" disablePadding>
-                      <ListItem
-                        button
-                        component={RouterLink}
-                        to="/leads/view-today-followup"
-                        style={{ width: 300 }}
-                      >
-                        <ListItemText
-                          component={Button}
-                          onClick={() => setOpen(false)}
-                          inset
-                          primary="Today FollowUp"
-                        />
-                      </ListItem>
-                      <ListItem
-                        button
-                        component={RouterLink}
-                        to="/leads/view-pending-followup"
-                        style={{ width: 300 }}
-                      >
-                        <ListItemText
-                          component={Button}
-                          onClick={() => setOpen(false)}
-                          inset
-                          primary="Pending FollowUp"
-                        />
-                      </ListItem>
-                      <ListItem
-                        button
-                        component={RouterLink}
-                        to="/leads/view-upcoming-followup"
-                        style={{ width: 300 }}
-                      >
-                        <ListItemText
-                          component={Button}
-                          onClick={() => setOpen(false)}
-                          inset
-                          primary="Upcoming FollowUp"
-                        />
-                      </ListItem>
-                    </List>
-                  </Collapse>
                 </List>
               </Collapse>
               {/* Customer */}
@@ -2412,58 +2368,36 @@ export const ListItems = (props) => {
                       primary="Assigned To"
                     />
                   </ListItem>
+                </List>
+              </Collapse>
+              {/* Followup */}
+              <ListItem
+                button
+                onClick={() => setExpandFollowUp(!expandFollowUp)}
+                style={{ width: 300 }}
+              >
+                <ListItemIcon>
+                  <FollowTheSignsIcon />
+                </ListItemIcon>
+                <ListItemText primary="FollowUp" />
+                {expandFollowUp ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+              </ListItem>
+              <Collapse in={expandFollowUp} timeout="auto" unmountOnExit>
+                <Divider />
+                <List component="div" disablePadding>
                   <ListItem
                     button
-                    onClick={() => setExpandFollowUp(!expandFollowUp)}
+                    component={RouterLink}
+                    to="/leads/view-followup"
                     style={{ width: 300 }}
                   >
-                    <ListItemText inset primary="FollowUp" />
-                    {expandFollowUp ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="FollowUp"
+                    />
                   </ListItem>
-                  <Collapse in={expandFollowUp} timeout="auto" unmountOnExit>
-                    <Divider />
-                    <List component="div" disablePadding>
-                      <ListItem
-                        button
-                        component={RouterLink}
-                        to="/leads/view-today-followup"
-                        style={{ width: 300 }}
-                      >
-                        <ListItemText
-                          component={Button}
-                          onClick={() => setOpen(false)}
-                          inset
-                          primary="Today FollowUp"
-                        />
-                      </ListItem>
-                      <ListItem
-                        button
-                        component={RouterLink}
-                        to="/leads/view-pending-followup"
-                        style={{ width: 300 }}
-                      >
-                        <ListItemText
-                          component={Button}
-                          onClick={() => setOpen(false)}
-                          inset
-                          primary="Pending FollowUp"
-                        />
-                      </ListItem>
-                      <ListItem
-                        button
-                        component={RouterLink}
-                        to="/leads/view-upcoming-followup"
-                        style={{ width: 300 }}
-                      >
-                        <ListItemText
-                          component={Button}
-                          onClick={() => setOpen(false)}
-                          inset
-                          primary="Upcoming FollowUp"
-                        />
-                      </ListItem>
-                    </List>
-                  </Collapse>
                 </List>
               </Collapse>
               {/* Customer */}
