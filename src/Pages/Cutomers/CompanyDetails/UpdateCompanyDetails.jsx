@@ -126,7 +126,7 @@ export const UpdateCompanyDetails = (props) => {
       await CustomerServices.updateCompanyData(recordForEdit, req);
       setOpenPopup(false);
       setOpen(false);
-      getAllContactDetailsByID();
+      getAllCompanyDetails();
     } catch (error) {
       console.log("createing company detail error", error);
       setErrorMessage(
