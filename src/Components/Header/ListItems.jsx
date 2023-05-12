@@ -86,7 +86,7 @@ export const ListItems = (props) => {
                   component={Button}
                   onClick={() => setOpen(false)}
                   inset
-                  primary="lead & CustomerDasboard"
+                  primary="lead & Customer Dasboard"
                 />
               </ListItem>
             </List>
@@ -2215,7 +2215,7 @@ export const ListItems = (props) => {
                       component={Button}
                       onClick={() => setOpen(false)}
                       inset
-                      primary="lead & CustomerDasboard"
+                      primary="lead & Customer Dasboard"
                     />
                   </ListItem>
                 </List>

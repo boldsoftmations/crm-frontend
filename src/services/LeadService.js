@@ -104,6 +104,10 @@ const getLeadDashboard = () => {
   return CustomAxios.get("/api/lead/lead-dashboard");
 };
 
+const getCustomerDashboard = () => {
+  return CustomAxios.get("/api/lead/customer-dashboard/");
+};
+
 const LeadServices = {
   getProfile,
   getAllLeads,
@@ -130,6 +134,7 @@ const LeadServices = {
   createFollowUps,
   BulkLeadAssign,
   getLeadDashboard,
+  getCustomerDashboard,
 };
 
 export default LeadServices;
