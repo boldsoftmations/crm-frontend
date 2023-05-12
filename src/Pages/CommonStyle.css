@@ -48,3 +48,38 @@ label {
   font-weight: 600;
   color: rgb(34, 34, 34);
 }
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.funnelChart {
+  -webkit-clip-path: polygon(0 0, 100% 0, 60% 78%, 60% 90%, 40% 100%, 40% 78%);
+  clip-path: polygon(0 0, 100% 0, 60% 78%, 60% 90%, 40% 100%, 40% 78%);
+  text-align: center;
+}
+
+.funnelChart .chartSegment {
+  width: 100%;
+  min-height: 1px;
+  font-size: 12px;
+  padding: 10px 0;
+  margin: 2px 0;
+  color: black;
+  background-color: yellow;
+}
+
+.funnelChart .chartSegment:last-child {
+  padding-bottom: 40px;
+}
+
+.funnelChart .chartSegment:hover {
+  opacity: 0.7;
+}
+
+.funnelChart .chartSegment .segmentTitle {
+  font-size: 1.1rem;
+  padding-bottom: 5px;
+}

@@ -13,18 +13,17 @@ const getAllPaginatesLeads = (all) => {
 };
 
 const getAllPaginateLeads = (currentPage) => {
-  return CustomAxios.get(
-    `/api/lead/list-lead/?page=${currentPage}`
-  );
+  return CustomAxios.get(`/api/lead/list-lead/?page=${currentPage}`);
 };
 
-const getAllSearchLeads = (filter,search) => {
+const getAllSearchLeads = (filter, search) => {
   return CustomAxios.get(`/api/lead/list-lead/?${filter}=${search}`);
 };
 
-const getFilterPaginateLeads = (currentPage,filter,search) => {
-  return CustomAxios.get(`/api/lead/list-lead/?page=${currentPage}&${filter}=${search}`);
-
+const getFilterPaginateLeads = (currentPage, filter, search) => {
+  return CustomAxios.get(
+    `/api/lead/list-lead/?page=${currentPage}&${filter}=${search}`
+  );
 };
 
 const getAllUnassignedData = () => {
@@ -32,25 +31,22 @@ const getAllUnassignedData = () => {
 };
 
 const getAllPaginateUnassigned = (currentPage) => {
-  return CustomAxios.get(
-    `/api/lead/list-unassigned/?page=${currentPage}`
-  );
+  return CustomAxios.get(`/api/lead/list-unassigned/?page=${currentPage}`);
 };
 
-const getAllPaginateWithFilterUnassigned = (currentPage, filter,search) => {
+const getAllPaginateWithFilterUnassigned = (currentPage, filter, search) => {
   return CustomAxios.get(
     `/api/lead/list-unassigned/?page=${currentPage}&${filter}=${search}`
   );
 };
 
-const getAllFilterByUnassignedData = (filter,search) => {
+const getAllFilterByUnassignedData = (filter, search) => {
   return CustomAxios.get(`/api/lead/list-unassigned/?${filter}=${search}`);
 };
 
 const getAllAssignedUser = () => {
   return CustomAxios.get(`/api/user/sales-user`);
 };
-
 
 const createLeads = (data) => {
   return CustomAxios.post("/api/lead/list-lead/", data);
@@ -104,6 +100,9 @@ const BulkLeadAssign = (data) => {
   return CustomAxios.post("/api/lead/assign-bulk-leads/", data);
 };
 
+const getLeadDashboard = () => {
+  return CustomAxios.get("/api/lead/lead-dashboard");
+};
 
 const LeadServices = {
   getProfile,
@@ -130,6 +129,7 @@ const LeadServices = {
   updateRefernces,
   createFollowUps,
   BulkLeadAssign,
+  getLeadDashboard,
 };
 
 export default LeadServices;

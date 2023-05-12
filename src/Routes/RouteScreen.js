@@ -51,6 +51,7 @@ import { ProductionShortFallView } from "../Pages/Inventory/ProductionShortFall/
 import { ProductForecastViewAll } from "../Pages/ProductForecast/ProductForecastViewAll";
 import { TaskView } from "../Pages/Task/TaskView";
 import { FollowUpView } from "../Pages/FollowUp/FollowUpView";
+import { SalesFunnelDashboardView } from "../Pages/SalesFunnelDashboardView";
 
 export const RouteScreen = () => {
   const tokenData = useSelector((state) => state.auth);
@@ -74,6 +75,10 @@ export const RouteScreen = () => {
           <>
             <Route path="/user/home" exact element={<Home />} />
             <Route path="/user/dashoard" element={<Dashboard />} />
+            <Route
+              path="/user/list-dashoard"
+              element={<SalesFunnelDashboardView />}
+            />
             <Route path="/user/profile" exact element={<Profile />} />
             {/* Leads Routes */}
             <Route path="/leads/view-lead" element={<Viewleads />} />
