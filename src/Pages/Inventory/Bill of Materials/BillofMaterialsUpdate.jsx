@@ -113,6 +113,7 @@ export const BillofMaterialsUpdate = (props) => {
       setOpen(true);
       const req = {
         product: billofMaterialDataByID.product,
+        approved: false,
         products_data: products,
       };
       await InventoryServices.updateBillofMaterialsData(idForEdit, req);
