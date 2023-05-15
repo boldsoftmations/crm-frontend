@@ -195,6 +195,7 @@ export const ProductWiseForecastView = () => {
   };
 
   const headers = [
+    { key: "description", label: "Description" },
     { key: "product", label: "Product" },
     { key: "type", label: "Type" },
     { key: "unit", label: "Unit" },
@@ -258,6 +259,7 @@ export const ProductWiseForecastView = () => {
         .filter((row) => row.qty_forecast.length > 0) // Filter rows with non-empty qty_forecast array
         .map((row) => {
           return {
+            description: row.product__description__name,
             product: row.product__name,
             type: row.product__type,
             unit: row.product__unit__name,
@@ -321,6 +323,7 @@ export const ProductWiseForecastView = () => {
     .filter((row) => row.qty_forecast.length > 0) // Filter rows with non-empty qty_forecast array
     .map((row) => {
       return {
+        description: row.product__description__name,
         product: row.product__name,
         type: row.product__type,
         unit: row.product__unit__name,
@@ -367,6 +370,7 @@ export const ProductWiseForecastView = () => {
     });
 
   const Tableheaders = [
+    "Description",
     "Product",
     "Type",
     "Unit",

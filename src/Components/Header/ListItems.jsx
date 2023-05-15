@@ -793,6 +793,32 @@ export const ListItems = (props) => {
                   primary="Production ShortFall"
                 />
               </ListItem>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/inventory/view-daily-production"
+                style={{ width: 300 }}
+              >
+                <ListItemText
+                  component={Button}
+                  onClick={() => setOpen(false)}
+                  inset
+                  primary="Daily Production Report"
+                />
+              </ListItem>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/inventory/view-weekly-production"
+                style={{ width: 300 }}
+              >
+                <ListItemText
+                  component={Button}
+                  onClick={() => setOpen(false)}
+                  inset
+                  primary="Weekly Production Report"
+                />
+              </ListItem>
             </List>
           </Collapse>
 
@@ -3261,6 +3287,32 @@ export const ListItems = (props) => {
                       primary="Production ShortFall"
                     />
                   </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/inventory/view-daily-production"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Daily Production Report"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/inventory/view-weekly-production"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Weekly Production Report"
+                    />
+                  </ListItem>
                 </List>
               </Collapse>
 
@@ -3943,6 +3995,32 @@ export const ListItems = (props) => {
                       onClick={() => setOpen(false)}
                       inset
                       primary="Production Inventory (G&L)"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/inventory/view-daily-production"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Daily Production Report"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/inventory/view-weekly-production"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Weekly Production Report"
                     />
                   </ListItem>
                 </List>

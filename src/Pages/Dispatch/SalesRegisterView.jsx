@@ -23,7 +23,7 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { tableCellClasses } from "@mui/material/TableCell";
 import { CustomPagination } from "./../../Components/CustomPagination";
 import { CustomLoader } from "./../../Components/CustomLoader";
-import { CaustomSearch, CustomSearch } from "./../../Components/CustomSearch";
+import { CustomSearch } from "./../../Components/CustomSearch";
 import moment from "moment";
 import { ErrorMessage } from "../../Components/ErrorMessage/ErrorMessage";
 import { CSVLink } from "react-csv";
@@ -48,8 +48,7 @@ export const SalesRegisterView = () => {
     setStartDate(date);
     setEndDate(new Date(date.getTime() + 7 * 24 * 60 * 60 * 1000));
   };
-  console.log("startDate", startDate);
-  console.log("endDate", endDate);
+
   useEffect(() => {
     getSalesRegisterData();
   }, [startDate]);
@@ -196,7 +195,6 @@ export const SalesRegisterView = () => {
 
   return (
     <div>
-      {" "}
       <CustomLoader open={open} />
       <Grid item xs={12}>
         <ErrorMessage errRef={errRef} errMsg={errMsg} />
@@ -261,7 +259,6 @@ export const SalesRegisterView = () => {
               </h3>
             </Box>
             <Box flexGrow={0.5}>
-              {" "}
               <CSVLink
                 data={data}
                 headers={headers}

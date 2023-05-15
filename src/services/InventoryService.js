@@ -638,6 +638,65 @@ const getProductionShortFallPaginateData = (currentPage) => {
   );
 };
 
+// Daily Production Repor Api
+
+const getAllDailyProductionReport = (startDate, endDate) => {
+  return CustomAxios.get(
+    `/api/inventory/list-daily-production-report/?date_range_after=${startDate}&date_range_before=${endDate}`
+  );
+};
+
+const getDailyProductionReportWithPagination = (
+  startDate,
+  endDate,
+  currentPage
+) => {
+  return CustomAxios.get(
+    `/api/inventory/list-daily-production-report/?date_range_after=${startDate}&date_range_before=${endDate}&page=${currentPage}`
+  );
+};
+
+const getDailyProductionReportWithSearch = (startDate, endDate, search) => {
+  return CustomAxios.get(
+    `/api/inventory/list-daily-production-report/?date_range_after=${startDate}&date_range_before=${endDate}&search=${search}`
+  );
+};
+
+const getDailyProductionReportWithPaginationAndSearch = (
+  startDate,
+  endDate,
+  currentPage,
+  search
+) => {
+  return CustomAxios.get(
+    `/api/inventory/list-daily-production-report/?date_range_after=${startDate}&date_range_before=${endDate}&page=${currentPage}&search=${search}`
+  );
+};
+
+// Weekly Production Report List Api
+
+const getAllWeeklyProductionReportData = () => {
+  return CustomAxios.get(`/api/inventory/list-monthly-product-quantity/`);
+};
+
+const getAllSearchWeeklyProductionReportData = (search) => {
+  return CustomAxios.get(
+    `/api/inventory/list-monthly-product-quantity/?search=${search}`
+  );
+};
+
+const getAllWeeklyProductionReportDataPaginate = (currentPage, search) => {
+  return CustomAxios.get(
+    `/api/inventory/list-monthly-product-quantity/?page=${currentPage}&search=${search}`
+  );
+};
+
+const getWeeklyProductionReportPaginateData = (currentPage) => {
+  return CustomAxios.get(
+    `/api/inventory/list-monthly-product-quantity/?page=${currentPage}`
+  );
+};
+
 const InventoryServices = {
   getAllVendorData,
   getAllPaginateVendorData,
@@ -761,6 +820,14 @@ const InventoryServices = {
   getAllSearchProductionShortFallData,
   getAllProductionShortFallDataPaginate,
   getProductionShortFallPaginateData,
+  getAllDailyProductionReport,
+  getDailyProductionReportWithPagination,
+  getDailyProductionReportWithSearch,
+  getDailyProductionReportWithPaginationAndSearch,
+  getAllWeeklyProductionReportData,
+  getAllSearchWeeklyProductionReportData,
+  getAllWeeklyProductionReportDataPaginate,
+  getWeeklyProductionReportPaginateData,
 };
 
 export default InventoryServices;

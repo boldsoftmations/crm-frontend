@@ -52,6 +52,8 @@ import { ProductForecastViewAll } from "../Pages/ProductForecast/ProductForecast
 import { TaskView } from "../Pages/Task/TaskView";
 import { FollowUpView } from "../Pages/FollowUp/FollowUpView";
 import { LeadDashboardView } from "../Pages/LeadDashboardView";
+import { DailyProductionReport } from "../Pages/Inventory/ProductionReport/DailyProductionReport";
+import { WeeklyProductionReport } from "../Pages/Inventory/ProductionReport/WeeklyProductionReport";
 
 export const RouteScreen = () => {
   const tokenData = useSelector((state) => state.auth);
@@ -204,6 +206,14 @@ export const RouteScreen = () => {
             <Route
               path="/inventory/view-production-shortfall"
               element={<ProductionShortFallView />}
+            />
+            <Route
+              path="/inventory/view-daily-production"
+              element={<DailyProductionReport />}
+            />
+            <Route
+              path="/inventory/view-weekly-production"
+              element={<WeeklyProductionReport />}
             />
             {/* ProductForecast Route */}
             <Route
