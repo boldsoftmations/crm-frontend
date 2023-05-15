@@ -1,43 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  styled,
-  Table,
-  TableBody,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TableCell,
-  Button,
-  Box,
-  Paper,
-  Grid,
-} from "@mui/material";
+import { Button, Box, Paper, Grid } from "@mui/material";
 import { CSVDownload } from "react-csv";
-import { tableCellClasses } from "@mui/material/TableCell";
-
 import { CustomPagination } from "../../Components/CustomPagination";
-
 import { ErrorMessage } from "../../Components/ErrorMessage/ErrorMessage";
 import { CustomLoader } from "../../Components/CustomLoader";
 import LeadServices from "../../services/LeadService";
 import ProductForecastService from "../../services/ProductForecastService";
 import { CustomSearchWithButton } from "../../Components/CustomSearchWithButton";
-
-const filterOption = [
-  {
-    label: "Sales Person",
-    value: "sales_person__email",
-  },
-  {
-    label: "Product",
-    value: "product__name",
-  },
-  {
-    label: "Company",
-    value: "company__name",
-  },
-  { label: "Search", value: "search" },
-];
+import { CustomTable } from "../../Components/CustomTable";
 
 export const ProductWiseForecastView = () => {
   const [open, setOpen] = useState(false);
@@ -49,7 +19,7 @@ export const ProductWiseForecastView = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const [assigned, setAssigned] = useState([]);
-  const [ProductWiseForecast, setProductWiseForecast] = useState([]);
+  const [productWiseForecast, setProductWiseForecast] = useState([]);
   const [exportData, setExportData] = useState([]);
 
   const handleDownload = async () => {
@@ -84,7 +54,6 @@ export const ProductWiseForecastView = () => {
   // Get the last 2 months
   const lastMonth1 = (currentMonth - 2 + 12) % 12;
   const lastMonth2 = (currentMonth - 1 + 12) % 12;
-  console.log("lastMonth2", lastMonth2);
   // Get the next 2 months
   const nextMonth1 = (currentMonth + 1) % 12;
   const nextMonth2 = (currentMonth + 2) % 12;
@@ -351,6 +320,79 @@ export const ProductWiseForecastView = () => {
     }
   };
 
+  const Tabledata = productWiseForecast
+    .filter((row) => row.qty_forecast.length > 0) // Filter rows with non-empty qty_forecast array
+    .map((row) => {
+      return {
+        product: row.product__name,
+        type: row.product__type,
+        unit: row.product__unit__name,
+        lastMonth1: row.qty_forecast
+          .filter((data) => data.index_position === 0)
+          .map(
+            (filteredData) =>
+              `${
+                filteredData.total_forecast !== null
+                  ? filteredData.total_forecast
+                  : ""
+              } -- ${filteredData.actual !== null ? filteredData.actual : ""}`
+          ),
+        lastMonth2: row.qty_forecast
+          .filter((data) => data.index_position === 1)
+          .map(
+            (filteredData) =>
+              `${
+                filteredData.total_forecast !== null
+                  ? filteredData.total_forecast
+                  : ""
+              } -- ${filteredData.actual !== null ? filteredData.actual : ""}`
+          ),
+        currentMonth: row.qty_forecast
+          .filter((data) => data.index_position === 2)
+          .map(
+            (filteredData) =>
+              `${
+                filteredData.total_forecast !== null
+                  ? filteredData.total_forecast
+                  : ""
+              } -- ${filteredData.actual !== null ? filteredData.actual : ""}`
+          ),
+        nextMonth1: row.qty_forecast
+          .filter((data) => data.index_position === 3)
+          .map((filteredData) => filteredData.total_forecast),
+        nextMonth2: row.qty_forecast
+          .filter((data) => data.index_position === 4)
+          .map((filteredData) => filteredData.total_forecast),
+        nextMonth3: row.qty_forecast
+          .filter((data) => data.index_position === 5)
+          .map((filteredData) => filteredData.total_forecast),
+      };
+    });
+
+  const Tableheaders = [
+    "Product",
+    "Type",
+    "Unit",
+    `${months[lastMonth1]} -- ${
+      lastMonth1 < currentMonth ? currentYear : currentYear - 1
+    } Actual-Forecast`,
+    `${months[lastMonth2]} -- ${
+      lastMonth2 < currentMonth ? currentYear : currentYear - 1
+    } Actual-Forecast`,
+    `${months[currentMonth]} -- ${currentYear} Actual-Forecast`,
+    `${months[nextMonth1]} - ${
+      nextMonth1 > currentMonth ? currentYear : currentYear + 1
+    } Forecast`,
+
+    `${months[nextMonth2]} - ${
+      nextMonth2 > currentMonth ? currentYear : currentYear + 1
+    } Forecast`,
+
+    `${months[nextMonth3]} - ${
+      nextMonth3 > currentMonth ? currentYear : currentYear + 1
+    } Forecast`,
+  ];
+
   return (
     <div>
       <CustomLoader open={open} />
@@ -457,156 +499,15 @@ export const ProductWiseForecastView = () => {
               )}
             </Box>
           </Box>
-          <TableContainer
-            sx={{
-              maxHeight: 440,
-              "&::-webkit-scrollbar": {
-                width: 15,
-              },
-              "&::-webkit-scrollbar-track": {
-                backgroundColor: "#f2f2f2",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                backgroundColor: "#aaa9ac",
-              },
-            }}
-            component={Paper}
-          >
-            <Table
-              sx={{ minWidth: 700 }}
-              stickyHeader
-              aria-label="sticky table"
-            >
-              <TableHead>
-                <StyledTableRow>
-                  <StyledTableCell align="center">PRODUCT</StyledTableCell>
-                  <StyledTableCell align="center">TYPE</StyledTableCell>
-                  <StyledTableCell align="center">UNIT</StyledTableCell>
-                  <StyledTableCell align="center">
-                    {` ${months[lastMonth1]} - ${
-                      lastMonth1 < currentMonth ? currentYear : currentYear - 1
-                    }`}
-                    <br />
-                    FORECAST - ACTUAL
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    {` ${months[lastMonth2]} - ${
-                      lastMonth2 < currentMonth ? currentYear : currentYear - 1
-                    }`}{" "}
-                    <br />
-                    FORECAST - ACTUAL
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    {`${months[currentMonth]} - ${currentYear}`} <br />
-                    FORECAST - ACTUAL
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    {` ${months[nextMonth1]} - ${
-                      nextMonth1 > currentMonth ? currentYear : currentYear + 1
-                    }`}{" "}
-                    <br />
-                    FORECAST
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    {` ${months[nextMonth2]} - ${
-                      nextMonth2 > currentMonth ? currentYear : currentYear + 1
-                    }`}{" "}
-                    <br />
-                    FORECAST
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    {` ${months[nextMonth3]} - ${
-                      nextMonth3 > currentMonth ? currentYear : currentYear + 1
-                    }`}{" "}
-                    <br />
-                    FORECAST
-                  </StyledTableCell>
-                </StyledTableRow>
-              </TableHead>
-              <TableBody>
-                {ProductWiseForecast.map(
-                  (row) =>
-                    // add condition to check if qty_forecast is not empty
-                    row.qty_forecast.length !== 0 && (
-                      <StyledTableRow>
-                        <StyledTableCell align="center">
-                          {row.product__name}
-                        </StyledTableCell>
-                        <StyledTableCell align="center">
-                          {row.product__type}
-                        </StyledTableCell>
-                        <StyledTableCell align="center">
-                          {row.product__unit__name}
-                        </StyledTableCell>
-                        <StyledTableCell align="center">
-                          {row.qty_forecast
-                            .filter((data) => data.index_position === 0)
-                            .map(
-                              (filteredData) =>
-                                `${
-                                  filteredData.total_forecast !== null
-                                    ? filteredData.total_forecast
-                                    : ""
-                                } - ${
-                                  filteredData.actual !== null
-                                    ? filteredData.actual
-                                    : ""
-                                }`
-                            )}
-                        </StyledTableCell>
-                        <StyledTableCell align="center">
-                          {row.qty_forecast
-                            .filter((data) => data.index_position === 1)
-                            .map(
-                              (filteredData) =>
-                                `${
-                                  filteredData.total_forecast !== null
-                                    ? filteredData.total_forecast
-                                    : ""
-                                } - ${
-                                  filteredData.actual !== null
-                                    ? filteredData.actual
-                                    : ""
-                                }`
-                            )}
-                        </StyledTableCell>
-                        <StyledTableCell align="center">
-                          {row.qty_forecast
-                            .filter((data) => data.index_position === 2)
-                            .map(
-                              (filteredData) =>
-                                `${
-                                  filteredData.total_forecast !== null
-                                    ? filteredData.total_forecast
-                                    : ""
-                                } - ${
-                                  filteredData.actual !== null
-                                    ? filteredData.actual
-                                    : ""
-                                }`
-                            )}
-                        </StyledTableCell>
-                        <StyledTableCell align="center">
-                          {row.qty_forecast
-                            .filter((data) => data.index_position === 3)
-                            .map((filteredData) => filteredData.total_forecast)}
-                        </StyledTableCell>
-                        <StyledTableCell align="center">
-                          {row.qty_forecast
-                            .filter((data) => data.index_position === 4)
-                            .map((filteredData) => filteredData.total_forecast)}
-                        </StyledTableCell>
-                        <StyledTableCell align="center">
-                          {row.qty_forecast
-                            .filter((data) => data.index_position === 5)
-                            .map((filteredData) => filteredData.total_forecast)}
-                        </StyledTableCell>
-                      </StyledTableRow>
-                    )
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          <CustomTable
+            headers={Tableheaders}
+            data={Tabledata}
+            openInPopup={null}
+            openInPopup2={null}
+            openInPopup3={null}
+            openInPopup4={null}
+            Styles={{ paddingLeft: "10px", paddingRight: "10px" }}
+          />
           <CustomPagination
             pageCount={pageCount}
             handlePageClick={handlePageClick}
@@ -617,22 +518,18 @@ export const ProductWiseForecastView = () => {
   );
 };
 
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
+const filterOption = [
+  {
+    label: "Sales Person",
+    value: "sales_person__email",
   },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
+  {
+    label: "Product",
+    value: "product__name",
   },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
+  {
+    label: "Company",
+    value: "company__name",
   },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
+  { label: "Search", value: "search" },
+];

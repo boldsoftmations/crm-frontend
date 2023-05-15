@@ -22,6 +22,7 @@ import { CustomLoader } from "../../Components/CustomLoader";
 import LeadServices from "../../services/LeadService";
 import ProductForecastService from "../../services/ProductForecastService";
 import { CustomSearchWithButton } from "../../Components/CustomSearchWithButton";
+import { CustomTable } from "../../Components/CustomTable";
 
 const filterOption = [
   {
@@ -353,6 +354,79 @@ export const DescriptionWiseForecastView = () => {
     }
   };
 
+  const Tabledata = descriptionWiseForecast
+    .filter((row) => row.qty_forecast.length > 0) // Filter rows with non-empty qty_forecast array
+    .map((row) => {
+      return {
+        description: row.product__description__name,
+        brand: row.product__brand__name,
+        unit: row.product__unit__name,
+        lastMonth1: row.qty_forecast
+          .filter((data) => data.index_position === 0)
+          .map(
+            (filteredData) =>
+              `${
+                filteredData.total_forecast !== null
+                  ? filteredData.total_forecast
+                  : ""
+              } -- ${filteredData.actual !== null ? filteredData.actual : ""}`
+          ),
+        lastMonth2: row.qty_forecast
+          .filter((data) => data.index_position === 1)
+          .map(
+            (filteredData) =>
+              `${
+                filteredData.total_forecast !== null
+                  ? filteredData.total_forecast
+                  : ""
+              } -- ${filteredData.actual !== null ? filteredData.actual : ""}`
+          ),
+        currentMonth: row.qty_forecast
+          .filter((data) => data.index_position === 2)
+          .map(
+            (filteredData) =>
+              `${
+                filteredData.total_forecast !== null
+                  ? filteredData.total_forecast
+                  : ""
+              } -- ${filteredData.actual !== null ? filteredData.actual : ""}`
+          ),
+        nextMonth1: row.qty_forecast
+          .filter((data) => data.index_position === 3)
+          .map((filteredData) => filteredData.total_forecast),
+        nextMonth2: row.qty_forecast
+          .filter((data) => data.index_position === 4)
+          .map((filteredData) => filteredData.total_forecast),
+        nextMonth3: row.qty_forecast
+          .filter((data) => data.index_position === 5)
+          .map((filteredData) => filteredData.total_forecast),
+      };
+    });
+
+  const Tableheaders = [
+    "Description",
+    "Brand",
+    "Unit",
+    `${months[lastMonth1]} -- ${
+      lastMonth1 < currentMonth ? currentYear : currentYear - 1
+    } Actual-Forecast`,
+    `${months[lastMonth2]} -- ${
+      lastMonth2 < currentMonth ? currentYear : currentYear - 1
+    } Actual-Forecast`,
+    `${months[currentMonth]} -- ${currentYear} Actual-Forecast`,
+    `${months[nextMonth1]} - ${
+      nextMonth1 > currentMonth ? currentYear : currentYear + 1
+    } Forecast`,
+
+    `${months[nextMonth2]} - ${
+      nextMonth2 > currentMonth ? currentYear : currentYear + 1
+    } Forecast`,
+
+    `${months[nextMonth3]} - ${
+      nextMonth3 > currentMonth ? currentYear : currentYear + 1
+    } Forecast`,
+  ];
+
   return (
     <div>
       <CustomLoader open={open} />
@@ -458,156 +532,15 @@ export const DescriptionWiseForecastView = () => {
               )}
             </Box>
           </Box>
-          <TableContainer
-            sx={{
-              maxHeight: 440,
-              "&::-webkit-scrollbar": {
-                width: 15,
-              },
-              "&::-webkit-scrollbar-track": {
-                backgroundColor: "#f2f2f2",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                backgroundColor: "#aaa9ac",
-              },
-            }}
-            component={Paper}
-          >
-            <Table
-              sx={{ minWidth: 700 }}
-              stickyHeader
-              aria-label="sticky table"
-            >
-              <TableHead>
-                <StyledTableRow>
-                  <StyledTableCell align="center">DESCRIPTION</StyledTableCell>
-                  <StyledTableCell align="center">BRAND</StyledTableCell>
-                  <StyledTableCell align="center">UNIT</StyledTableCell>
-                  <StyledTableCell align="center">
-                    {` ${months[lastMonth1]} - ${
-                      lastMonth1 < currentMonth ? currentYear : currentYear - 1
-                    }`}
-                    <br />
-                    FORECAST - ACTUAL
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    {` ${months[lastMonth2]} - ${
-                      lastMonth2 < currentMonth ? currentYear : currentYear - 1
-                    }`}{" "}
-                    <br />
-                    FORECAST - ACTUAL
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    {`${months[currentMonth]} - ${currentYear}`} <br />
-                    FORECAST - ACTUAL
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    {` ${months[nextMonth1]} - ${
-                      nextMonth1 > currentMonth ? currentYear : currentYear + 1
-                    }`}{" "}
-                    <br />
-                    FORECAST
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    {` ${months[nextMonth2]} - ${
-                      nextMonth2 > currentMonth ? currentYear : currentYear + 1
-                    }`}{" "}
-                    <br />
-                    FORECAST
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    {` ${months[nextMonth3]} - ${
-                      nextMonth3 > currentMonth ? currentYear : currentYear + 1
-                    }`}{" "}
-                    <br />
-                    FORECAST
-                  </StyledTableCell>
-                </StyledTableRow>
-              </TableHead>
-              <TableBody>
-                {descriptionWiseForecast.map(
-                  (row) =>
-                    // add condition to check if qty_forecast is not empty
-                    row.qty_forecast.length !== 0 && (
-                      <StyledTableRow>
-                        <StyledTableCell align="center">
-                          {row.product__description__name}
-                        </StyledTableCell>
-                        <StyledTableCell align="center">
-                          {row.product__brand__name}
-                        </StyledTableCell>
-                        <StyledTableCell align="center">
-                          {row.product__unit__name}
-                        </StyledTableCell>
-                        <StyledTableCell align="center">
-                          {row.qty_forecast
-                            .filter((data) => data.index_position === 0)
-                            .map(
-                              (filteredData) =>
-                                `${
-                                  filteredData.total_forecast !== null
-                                    ? filteredData.total_forecast
-                                    : ""
-                                } - ${
-                                  filteredData.actual !== null
-                                    ? filteredData.actual
-                                    : ""
-                                }`
-                            )}
-                        </StyledTableCell>
-                        <StyledTableCell align="center">
-                          {row.qty_forecast
-                            .filter((data) => data.index_position === 1)
-                            .map(
-                              (filteredData) =>
-                                `${
-                                  filteredData.total_forecast !== null
-                                    ? filteredData.total_forecast
-                                    : ""
-                                } - ${
-                                  filteredData.actual !== null
-                                    ? filteredData.actual
-                                    : ""
-                                }`
-                            )}
-                        </StyledTableCell>
-                        <StyledTableCell align="center">
-                          {row.qty_forecast
-                            .filter((data) => data.index_position === 2)
-                            .map(
-                              (filteredData) =>
-                                `${
-                                  filteredData.total_forecast !== null
-                                    ? filteredData.total_forecast
-                                    : ""
-                                } - ${
-                                  filteredData.actual !== null
-                                    ? filteredData.actual
-                                    : ""
-                                }`
-                            )}
-                        </StyledTableCell>
-                        <StyledTableCell align="center">
-                          {row.qty_forecast
-                            .filter((data) => data.index_position === 3)
-                            .map((filteredData) => filteredData.total_forecast)}
-                        </StyledTableCell>
-                        <StyledTableCell align="center">
-                          {row.qty_forecast
-                            .filter((data) => data.index_position === 4)
-                            .map((filteredData) => filteredData.total_forecast)}
-                        </StyledTableCell>
-                        <StyledTableCell align="center">
-                          {row.qty_forecast
-                            .filter((data) => data.index_position === 5)
-                            .map((filteredData) => filteredData.total_forecast)}
-                        </StyledTableCell>
-                      </StyledTableRow>
-                    )
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          <CustomTable
+            headers={Tableheaders}
+            data={Tabledata}
+            openInPopup={null}
+            openInPopup2={null}
+            openInPopup3={null}
+            openInPopup4={null}
+            Styles={{ paddingLeft: "10px", paddingRight: "10px" }}
+          />
           <CustomPagination
             pageCount={pageCount}
             handlePageClick={handlePageClick}

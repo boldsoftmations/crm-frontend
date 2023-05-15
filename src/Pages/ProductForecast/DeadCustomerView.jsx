@@ -30,6 +30,7 @@ import { CustomSearchWithButton } from "./../../Components/CustomSearchWithButto
 import { Popup } from "../../Components/Popup";
 import { UpdateCompanyDetails } from "../Cutomers/CompanyDetails/UpdateCompanyDetails";
 import { UpdateAllCompanyDetails } from "../Cutomers/CompanyDetails/UpdateAllCompanyDetails";
+import { CustomTable } from "../../Components/CustomTable";
 
 const filterOption = [
   { label: "Search", value: "search" },
@@ -50,6 +51,24 @@ export const DeadCustomerView = () => {
   const [exportDeadCustomer, setExportDeadCustomer] = useState([]);
   const [recordForEdit, setRecordForEdit] = useState(null);
   const [openPopup, setOpenPopup] = useState(false);
+
+  const getResetData = () => {
+    setSearchQuery("");
+    setFilterSelectedQuery("");
+
+    getAllProductionForecastDetails();
+  };
+
+  const handleInputChange = () => {
+    setSearchQuery(searchQuery);
+    getSearchData(searchQuery);
+  };
+
+  const handleInputChanges = (event) => {
+    setFilterSelectedQuery(event.target.value);
+    getSearchData(event.target.value);
+  };
+
   const openInPopup = (item) => {
     setRecordForEdit(item.id);
     setOpenPopup(true);
@@ -174,23 +193,6 @@ export const DeadCustomerView = () => {
     }
   };
 
-  const getResetData = () => {
-    setSearchQuery("");
-    setFilterSelectedQuery("");
-
-    getAllProductionForecastDetails();
-  };
-
-  const handleInputChange = () => {
-    setSearchQuery(searchQuery);
-    getSearchData(searchQuery);
-  };
-
-  const handleInputChanges = (event) => {
-    setFilterSelectedQuery(event.target.value);
-    getSearchData(event.target.value);
-  };
-
   useEffect(() => {
     getAllCustomerWiseOrderBookExport();
   }, [searchQuery]);
@@ -256,6 +258,28 @@ export const DeadCustomerView = () => {
     };
     return obj;
   });
+
+  const Tabledata = deadCustomer.map((row) => ({
+    id: row.id,
+    company: row.name,
+    city: row.city,
+    state: row.state,
+    sales_person: row.assigned_to,
+    contact_person_name:
+      row.contacts && row.contacts[0] ? row.contacts[0].name : "",
+    contact: row.contacts && row.contacts[0] ? row.contacts[0].contact : "",
+  }));
+
+  const Tableheaders = [
+    "ID",
+    "Company",
+    "City",
+    "State",
+    "Sales Person",
+    "Contact Person Name",
+    "Contact",
+    "Action",
+  ];
 
   return (
     <div>
@@ -367,90 +391,14 @@ export const DeadCustomerView = () => {
               </CSVLink>
             </Box>
           </Box>
-          <TableContainer
-            sx={{
-              maxHeight: 440,
-              "&::-webkit-scrollbar": {
-                width: 15,
-              },
-              "&::-webkit-scrollbar-track": {
-                backgroundColor: "#f2f2f2",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                backgroundColor: "#aaa9ac",
-              },
-            }}
-            component={Paper}
-          >
-            <Table
-              sx={{ minWidth: 700 }}
-              stickyHeader
-              aria-label="sticky table"
-            >
-              <TableHead>
-                <StyledTableRow>
-                  <StyledTableCell align="center">COMPANY</StyledTableCell>
-                  <StyledTableCell align="center">CITY</StyledTableCell>
-                  <StyledTableCell align="center">STATE</StyledTableCell>
-                  <StyledTableCell align="center">SALES PERSON</StyledTableCell>
-                  <StyledTableCell align="center">
-                    CONTACT PERSON
-                  </StyledTableCell>
-                  <StyledTableCell align="center">CONTACT</StyledTableCell>
-                  <StyledTableCell align="center">ACTION</StyledTableCell>
-                </StyledTableRow>
-              </TableHead>
-              <TableBody>
-                {deadCustomer.map((row) => (
-                  <StyledTableRow>
-                    <StyledTableCell align="center">{row.name}</StyledTableCell>
-                    <StyledTableCell align="center">{row.city}</StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.state}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.assigned_to.map((assignedTo) => {
-                        return (
-                          row.assigned_to &&
-                          row.assigned_to.length > 0 && (
-                            <div
-                              style={{
-                                border: "1px solid #4caf50",
-                                borderRadius: "20px",
-                                padding: "4px 8px",
-                                color: "#4caf50",
-                              }}
-                            >
-                              {assignedTo}
-                            </div>
-                          )
-                        );
-                      })}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.contacts && row.contacts[0]
-                        ? row.contacts[0].name
-                        : ""}
-                    </StyledTableCell>
-
-                    <StyledTableCell align="center">
-                      {row.contacts && row.contacts[0]
-                        ? row.contacts[0].contact
-                        : ""}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      <Button
-                        variant="contained"
-                        onClick={() => openInPopup(row)}
-                      >
-                        View
-                      </Button>
-                    </StyledTableCell>
-                  </StyledTableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          <CustomTable
+            headers={Tableheaders}
+            data={Tabledata}
+            openInPopup={openInPopup}
+            openInPopup2={null}
+            openInPopup3={null}
+            openInPopup4={null}
+          />
           <CustomPagination
             pageCount={pageCount}
             handlePageClick={handlePageClick}

@@ -1,4 +1,3 @@
-import { Switch } from "@mui/material";
 import React from "react";
 
 export const CustomTable = ({
@@ -12,6 +11,7 @@ export const CustomTable = ({
   openInPopup2,
   openInPopup3,
   openInPopup4,
+  Styles,
 }) => {
   return (
     <div
@@ -84,6 +84,7 @@ export const CustomTable = ({
                 {Object.values(row).map((value, index) => (
                   <div
                     style={{
+                      ...Styles,
                       display: "table-cell",
                       textAlign: "center",
                       // padding: "2px",
@@ -93,10 +94,44 @@ export const CustomTable = ({
                     key={index}
                   >
                     {typeof value === "boolean" ? (
-                      <Switch
-                        checked={value}
-                        inputProps={{ "aria-label": "controlled" }}
-                      />
+                      <div
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          width: "40px",
+                          height: "20px",
+                          borderRadius: "10px",
+                          background: value ? "#1976d2" : "#ccc",
+                          position: "relative",
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: "18px",
+                            height: "18px",
+                            borderRadius: "50%",
+                            background: "#fff",
+                            position: "absolute",
+                            left: value ? "calc(100% - 18px)" : "2px",
+                            transition: "left 0.3s ease-in-out",
+                            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.24)",
+                          }}
+                        ></div>
+                      </div>
+                    ) : Array.isArray(value) ? (
+                      value.map((chipValue, chipIndex) => (
+                        <div
+                          key={chipIndex}
+                          style={{
+                            border: "1px solid #4caf50",
+                            borderRadius: "20px",
+                            color: "#4caf50",
+                          }}
+                        >
+                          {chipValue}
+                        </div>
+                      ))
                     ) : (
                       <span>{value}</span>
                     )}

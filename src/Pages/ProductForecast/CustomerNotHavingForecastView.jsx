@@ -1,12 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
-  styled,
-  Table,
-  TableBody,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TableCell,
   Button,
   Box,
   Paper,
@@ -19,7 +12,6 @@ import {
 } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
 import { CSVDownload } from "react-csv";
-import { tableCellClasses } from "@mui/material/TableCell";
 import { CustomPagination } from "../../Components/CustomPagination";
 import { ErrorMessage } from "../../Components/ErrorMessage/ErrorMessage";
 import { CustomLoader } from "../../Components/CustomLoader";
@@ -28,22 +20,7 @@ import ProductForecastService from "../../services/ProductForecastService";
 import { CustomSearchWithButton } from "../../Components/CustomSearchWithButton";
 import { Popup } from "../../Components/Popup";
 import { ForecastUpdate } from "../Cutomers/ForecastDetails/ForecastUpdate";
-
-const filterOption = [
-  {
-    label: "Sales Person",
-    value: "sales_person__email",
-  },
-  {
-    label: "Product",
-    value: "product__name",
-  },
-  {
-    label: "Company",
-    value: "company__name",
-  },
-  { label: "Search", value: "search" },
-];
+import { CustomTable } from "../../Components/CustomTable";
 
 export const CustomerNotHavingForecastView = () => {
   const [open, setOpen] = useState(false);
@@ -59,10 +36,15 @@ export const CustomerNotHavingForecastView = () => {
   const [exportData, setExportData] = useState([]);
   const [forecastDataByID, setForecastDataByID] = useState(null);
   const [openPopup, setOpenPopup] = useState(false);
+
   const openInPopup = (item) => {
-    setForecastDataByID(item);
+    const matchedForecast = productNotHavingForecast.find(
+      (forecast) => forecast.id === item.id
+    );
+    setForecastDataByID(matchedForecast);
     setOpenPopup(true);
   };
+
   const handleDownload = async () => {
     const data = await handleExport();
     setExportData(data);
@@ -322,6 +304,50 @@ export const CustomerNotHavingForecastView = () => {
     }
   };
 
+  const Tabledata = productNotHavingForecast.map((row) => {
+    const tableRow = {
+      id: row.id,
+      company: row.company,
+      sales_person: row.sales_person,
+      product: row.product,
+    };
+
+    row.product_forecast.forEach((rowData, index) => {
+      tableRow[`product_forecast_${index}`] =
+        rowData.actual !== null
+          ? `${rowData.actual}--${rowData.forecast}`
+          : `-${rowData.forecast}`;
+    });
+
+    return tableRow;
+  });
+
+  const Tableheaders = [
+    "ID",
+    "Company",
+    "Sales Person",
+    "Product",
+    `${months[lastMonth1]} -- ${
+      lastMonth1 < currentMonth ? currentYear : currentYear - 1
+    } Actual-Forecast`,
+    `${months[lastMonth2]} -- ${
+      lastMonth2 < currentMonth ? currentYear : currentYear - 1
+    } Actual-Forecast`,
+    `${months[currentMonth]} -- ${currentYear} Actual-Forecast`,
+    `${months[nextMonth1]} - ${
+      nextMonth1 > currentMonth ? currentYear : currentYear + 1
+    } Forecast`,
+
+    `${months[nextMonth2]} - ${
+      nextMonth2 > currentMonth ? currentYear : currentYear + 1
+    } Forecast`,
+
+    `${months[nextMonth3]} - ${
+      nextMonth3 > currentMonth ? currentYear : currentYear + 1
+    } Forecast`,
+    "ACTION",
+  ];
+
   return (
     <div>
       <CustomLoader open={open} />
@@ -428,118 +454,15 @@ export const CustomerNotHavingForecastView = () => {
               )}
             </Box>
           </Box>
-          <TableContainer
-            sx={{
-              maxHeight: 440,
-              "&::-webkit-scrollbar": {
-                width: 15,
-              },
-              "&::-webkit-scrollbar-track": {
-                backgroundColor: "#f2f2f2",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                backgroundColor: "#aaa9ac",
-              },
-            }}
-            component={Paper}
-          >
-            <Table
-              sx={{ minWidth: 700 }}
-              stickyHeader
-              aria-label="sticky table"
-            >
-              <TableHead>
-                <StyledTableRow>
-                  <StyledTableCell align="center">COMPANY</StyledTableCell>
-                  <StyledTableCell align="center">SALES PERSON</StyledTableCell>
-                  <StyledTableCell align="center">PRODUCT</StyledTableCell>
-                  <StyledTableCell align="center">
-                    {` ${months[lastMonth1]} - ${
-                      lastMonth1 < currentMonth ? currentYear : currentYear - 1
-                    }`}
-                    <br />
-                    FORECAST - ACTUAL
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    {` ${months[lastMonth2]} - ${
-                      lastMonth2 < currentMonth ? currentYear : currentYear - 1
-                    }`}{" "}
-                    <br />
-                    FORECAST - ACTUAL
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    {`${months[currentMonth]} - ${currentYear}`} <br />
-                    FORECAST - ACTUAL
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    {` ${months[nextMonth1]} - ${
-                      nextMonth1 > currentMonth ? currentYear : currentYear + 1
-                    }`}{" "}
-                    <br />
-                    FORECAST
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    {` ${months[nextMonth2]} - ${
-                      nextMonth2 > currentMonth ? currentYear : currentYear + 1
-                    }`}{" "}
-                    <br />
-                    FORECAST
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    {` ${months[nextMonth3]} - ${
-                      nextMonth3 > currentMonth ? currentYear : currentYear + 1
-                    }`}{" "}
-                    <br />
-                    FORECAST
-                  </StyledTableCell>
-                  <StyledTableCell align="center">ACTION</StyledTableCell>
-                </StyledTableRow>
-              </TableHead>
-              <TableBody>
-                {productNotHavingForecast.map((row) => (
-                  <StyledTableRow>
-                    <StyledTableCell align="center">
-                      {row.company}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      <div
-                        style={{
-                          border: "1px solid #4caf50",
-                          borderRadius: "20px",
-                          padding: "4px 8px",
-                          color: "#4caf50",
-                        }}
-                      >
-                        {row.sales_person}
-                      </div>
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.product}
-                    </StyledTableCell>
-                    {row.product_forecast.map((rowData) => {
-                      return rowData.actual !== null ? (
-                        <StyledTableCell align="center">
-                          {rowData.actual} - {rowData.forecast}
-                        </StyledTableCell>
-                      ) : (
-                        <StyledTableCell align="center">
-                          {rowData.forecast} -
-                        </StyledTableCell>
-                      );
-                    })}
-                    <StyledTableCell align="center">
-                      <Button
-                        variant="contained"
-                        onClick={() => openInPopup(row)}
-                      >
-                        View
-                      </Button>
-                    </StyledTableCell>
-                  </StyledTableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          <CustomTable
+            headers={Tableheaders}
+            data={Tabledata}
+            openInPopup={openInPopup}
+            openInPopup2={null}
+            openInPopup3={null}
+            openInPopup4={null}
+            Styles={{ paddingLeft: "10px", paddingRight: "10px" }}
+          />
           <CustomPagination
             pageCount={pageCount}
             handlePageClick={handlePageClick}
@@ -561,22 +484,18 @@ export const CustomerNotHavingForecastView = () => {
   );
 };
 
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
+const filterOption = [
+  {
+    label: "Sales Person",
+    value: "sales_person__email",
   },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
+  {
+    label: "Product",
+    value: "product__name",
   },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
+  {
+    label: "Company",
+    value: "company__name",
   },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
+  { label: "Search", value: "search" },
+];

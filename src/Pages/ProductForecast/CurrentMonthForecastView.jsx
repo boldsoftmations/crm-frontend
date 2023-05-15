@@ -1,12 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
-  styled,
-  Table,
-  TableBody,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TableCell,
   Button,
   Box,
   Paper,
@@ -19,29 +12,13 @@ import {
 } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
 import { CSVDownload } from "react-csv";
-import { tableCellClasses } from "@mui/material/TableCell";
 import { CustomPagination } from "../../Components/CustomPagination";
 import { ErrorMessage } from "../../Components/ErrorMessage/ErrorMessage";
 import { CustomLoader } from "../../Components/CustomLoader";
 import LeadServices from "../../services/LeadService";
 import ProductForecastService from "../../services/ProductForecastService";
 import { CustomSearchWithButton } from "../../Components/CustomSearchWithButton";
-
-const filterOption = [
-  {
-    label: "Company",
-    value: "product_forecast__company__name",
-  },
-  {
-    label: "Product",
-    value: "product_forecast__product__name",
-  },
-  {
-    label: "Sales Person",
-    value: "product_forecast__sales_person__email",
-  },
-  { label: "Search", value: "search" },
-];
+import { CustomTable } from "../../Components/CustomTable";
 
 export const CurrentMonthForecastView = () => {
   const [open, setOpen] = useState(false);
@@ -56,56 +33,26 @@ export const CurrentMonthForecastView = () => {
   const [currentMonthForecast, setCurrentMonthForecast] = useState([]);
   const [exportData, setExportData] = useState([]);
 
+  const getResetData = () => {
+    setSearchQuery("");
+    setFilterSelectedQuery("");
+
+    getAllProductionForecastDetails();
+  };
+
+  const handleInputChange = () => {
+    setSearchQuery(searchQuery);
+    getSearchData(searchQuery);
+  };
+
+  const handleInputChanges = (event) => {
+    setFilterSelectedQuery(event.target.value);
+    getSearchData(event.target.value);
+  };
+
   const handleDownload = async () => {
     const data = await handleExport();
     setExportData(data);
-  };
-
-  const headers = [
-    { label: "Company", key: "company" },
-    { label: "Sales Person", key: "sales_person" },
-    { label: "Product", key: "product" },
-    { label: "Forecast", key: "forecast" },
-    { label: "Actual", key: "actual" },
-    { label: "Orderbook Value", key: "orderbook_value" },
-  ];
-
-  const handleExport = async () => {
-    try {
-      setOpen(true);
-      let response;
-      if (searchQuery || filterSelectedQuery) {
-        response =
-          await ProductForecastService.getAllPaginateCurrentMonthForecastWithSearch(
-            "all",
-            filterQuery,
-            searchQuery || filterSelectedQuery
-          );
-      } else {
-        response =
-          await ProductForecastService.getAllPaginateCurrentMonthForecast(
-            "all"
-          );
-      }
-      const data = response.data
-        .filter((row) => row.forecast > 0)
-        .map((row) => {
-          return {
-            company: row.company,
-            sales_person: row.sales_person,
-            product: row.product,
-            forecast: row.forecast,
-            actual: row.actual,
-            orderbook_value: row.orderbook_value,
-          };
-        });
-      setOpen(false);
-      return data;
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setOpen(false);
-    }
   };
 
   useEffect(() => {
@@ -233,22 +180,73 @@ export const CurrentMonthForecastView = () => {
     }
   };
 
-  const getResetData = () => {
-    setSearchQuery("");
-    setFilterSelectedQuery("");
+  const headers = [
+    { label: "Company", key: "company" },
+    { label: "Sales Person", key: "sales_person" },
+    { label: "Product", key: "product" },
+    { label: "Forecast", key: "forecast" },
+    { label: "Actual", key: "actual" },
+    { label: "Orderbook Value", key: "orderbook_value" },
+  ];
 
-    getAllProductionForecastDetails();
+  const handleExport = async () => {
+    try {
+      setOpen(true);
+      let response;
+      if (searchQuery || filterSelectedQuery) {
+        response =
+          await ProductForecastService.getAllPaginateCurrentMonthForecastWithSearch(
+            "all",
+            filterQuery,
+            searchQuery || filterSelectedQuery
+          );
+      } else {
+        response =
+          await ProductForecastService.getAllPaginateCurrentMonthForecast(
+            "all"
+          );
+      }
+      const data = response.data
+        .filter((row) => row.forecast > 0)
+        .map((row) => {
+          return {
+            company: row.company,
+            sales_person: row.sales_person,
+            product: row.product,
+            forecast: row.forecast,
+            actual: row.actual,
+            orderbook_value: row.orderbook_value,
+          };
+        });
+      setOpen(false);
+      return data;
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setOpen(false);
+    }
   };
 
-  const handleInputChange = () => {
-    setSearchQuery(searchQuery);
-    getSearchData(searchQuery);
-  };
+  const Tabledata = currentMonthForecast.map((row) => ({
+    id: row.id,
+    company: row.company,
+    sales_person: row.sales_person,
+    product: row.product,
+    forecast: row.forecast,
+    actual: row.actual,
+    orderbook_value: row.orderbook_value,
+  }));
 
-  const handleInputChanges = (event) => {
-    setFilterSelectedQuery(event.target.value);
-    getSearchData(event.target.value);
-  };
+  const Tableheaders = [
+    "ID",
+    "Company",
+    "Sales Person",
+    "Product",
+    "Forecast",
+    "Actual",
+    "Orderbook Value",
+    "Action",
+  ];
 
   return (
     <div>
@@ -356,76 +354,14 @@ export const CurrentMonthForecastView = () => {
               )}
             </Box>
           </Box>
-          <TableContainer
-            sx={{
-              maxHeight: 440,
-              "&::-webkit-scrollbar": {
-                width: 15,
-              },
-              "&::-webkit-scrollbar-track": {
-                backgroundColor: "#f2f2f2",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                backgroundColor: "#aaa9ac",
-              },
-            }}
-            component={Paper}
-          >
-            <Table
-              sx={{ minWidth: 700 }}
-              stickyHeader
-              aria-label="sticky table"
-            >
-              <TableHead>
-                <StyledTableRow>
-                  <StyledTableCell align="center">COMPANY</StyledTableCell>
-                  <StyledTableCell align="center">SALES PERSON</StyledTableCell>
-                  <StyledTableCell align="center">PRODUCT</StyledTableCell>
-
-                  <StyledTableCell align="center">FORECAST</StyledTableCell>
-                  <StyledTableCell align="center">ACTUAL</StyledTableCell>
-                  <StyledTableCell align="center">
-                    ORDERBOOK VALUE
-                  </StyledTableCell>
-                </StyledTableRow>
-              </TableHead>
-              <TableBody>
-                {currentMonthForecast.map((row) =>
-                  row.forecast > 0 ? (
-                    <StyledTableRow>
-                      <StyledTableCell align="center">
-                        {row.company}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        <div
-                          style={{
-                            border: "1px solid #4caf50",
-                            borderRadius: "20px",
-                            padding: "4px 8px",
-                            color: "#4caf50",
-                          }}
-                        >
-                          {row.sales_person}
-                        </div>
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.product}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.forecast}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.actual}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.orderbook_value}
-                      </StyledTableCell>
-                    </StyledTableRow>
-                  ) : null
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          <CustomTable
+            headers={Tableheaders}
+            data={Tabledata}
+            openInPopup={null}
+            openInPopup2={null}
+            openInPopup3={null}
+            openInPopup4={null}
+          />
           <CustomPagination
             pageCount={pageCount}
             handlePageClick={handlePageClick}
@@ -436,22 +372,18 @@ export const CurrentMonthForecastView = () => {
   );
 };
 
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
+const filterOption = [
+  {
+    label: "Company",
+    value: "product_forecast__company__name",
   },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
+  {
+    label: "Product",
+    value: "product_forecast__product__name",
   },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
+  {
+    label: "Sales Person",
+    value: "product_forecast__sales_person__email",
   },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
+  { label: "Search", value: "search" },
+];
