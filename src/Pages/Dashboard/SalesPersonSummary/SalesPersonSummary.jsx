@@ -17,6 +17,7 @@ export const SalesPersonSummary = (props) => {
     "PI Raised",
     "PI Dropped",
     "PI Unpaid",
+    "Forecast Achieved %",
     "Unpaid PI Value",
     "Order Book Value",
     "Sales Invoice Value",
@@ -40,6 +41,8 @@ export const SalesPersonSummary = (props) => {
       (sum, { pi_unpaid }) => sum + pi_unpaid,
       0
     ),
+    forecast_achieved: "-",
+
     unpaid_pi_value: numberFormat(
       salesPersonSummary
         .reduce((sum, { unpaid_pi_value }) => sum + unpaid_pi_value, 0)
@@ -63,6 +66,7 @@ export const SalesPersonSummary = (props) => {
     pi_raised: value.pi_raised,
     pi_dropped: value.pi_dropped,
     pi_unpaid: value.pi_unpaid,
+    forecast_achieved: value.forecast_achieved.toString().substring(0, 2),
     unpaid_pi_value: numberFormat(value.unpaid_pi_value),
     order_book_value: numberFormat(value.order_book_value),
     sales_invoice_value: numberFormat(value.sales_invoice_value),
