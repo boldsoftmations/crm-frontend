@@ -215,7 +215,7 @@ export const DailyProductionReport = () => {
           brand: row.brand,
           unit: row.unit,
           quantity: row.quantity,
-          rate: row.rate,
+          rate: row.rate.toFixed(2),
           amount: row.amount,
         };
       });
@@ -237,7 +237,7 @@ export const DailyProductionReport = () => {
     brand: row.brand,
     unit: row.unit,
     quantity: row.quantity,
-    rate: row.rate,
+    rate: row.rate.toFixed(2),
     amount: row.amount,
   }));
 
