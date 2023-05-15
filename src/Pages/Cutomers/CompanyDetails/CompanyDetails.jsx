@@ -31,13 +31,34 @@ export const CompanyDetails = () => {
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
+
+  const getResetData = () => {
+    setFilterSelectedQuery("");
+    getAllCompanyDetails();
+  };
+
+  const openInPopup = (item) => {
+    setRecordForEdit(item.id);
+    setOpenPopup(true);
+  };
+
+  const openInPopup2 = (item) => {
+    setRecordForEdit(item.id);
+    setOpenPopup3(true);
+  };
+
+  const handleSnackbarClose = () => {
+    setOpenSnackbar(false);
+  };
+
   const handleInputChange = () => {
     setFilterSelectedQuery(filterSelectedQuery);
     getSearchData(filterSelectedQuery);
   };
-  console.log("openSnackbar", openSnackbar);
+
   useEffect(() => {
     getAllSellerAccountsDetails();
+    getAllCompanyDetails();
   }, []);
 
   const getAllSellerAccountsDetails = async () => {
@@ -52,10 +73,6 @@ export const CompanyDetails = () => {
       setOpen(false);
     }
   };
-
-  useEffect(() => {
-    getAllCompanyDetails();
-  }, []);
 
   const getAllCompanyDetails = async () => {
     try {
@@ -146,24 +163,6 @@ export const CompanyDetails = () => {
     }
   };
 
-  const getResetData = () => {
-    setFilterSelectedQuery("");
-    getAllCompanyDetails();
-  };
-
-  const openInPopup = (item) => {
-    setRecordForEdit(item.id);
-    setOpenPopup(true);
-  };
-
-  const openInPopup2 = (item) => {
-    setRecordForEdit(item.id);
-    setOpenPopup3(true);
-  };
-
-  const handleSnackbarClose = () => {
-    setOpenSnackbar(false);
-  };
   const Tableheaders = [
     "ID",
     "NAME",

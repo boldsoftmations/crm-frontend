@@ -35,14 +35,6 @@ import { CustomSearch } from "../../../Components/CustomSearch";
 import { useDispatch } from "react-redux";
 import { getCustomerOrderBookData } from "../../../Redux/Action/Action";
 
-const filterOption = [
-  {
-    label: "Search By State",
-    value: "order_book__proforma_invoice__seller_account__state",
-  },
-  { label: "Search", value: "search" },
-];
-
 export const SalesInvoiceView = () => {
   const errRef = useRef();
   const [open, setOpen] = useState(false);
@@ -56,15 +48,29 @@ export const SalesInvoiceView = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterQuery, setFilterQuery] = useState("search");
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
+  const [sellerUnitOption, setSellerUnitOption] = useState([]);
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
-  useEffect(() => {
-    getSalesInvoiceDetails();
-  }, []);
 
   useEffect(() => {
+    getAllSellerAccountsDetails();
+    getSalesInvoiceDetails();
     getAllCustomerWiseOrderBook();
   }, []);
+
+  const getAllSellerAccountsDetails = async () => {
+    try {
+      setOpen(true);
+      const response = await InvoiceServices.getAllPaginateSellerAccountData(
+        "all"
+      );
+      setSellerUnitOption(response.data);
+      console.log("response", response.data);
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+    }
+  };
 
   const getAllCustomerWiseOrderBook = async () => {
     try {
@@ -251,7 +257,7 @@ export const SalesInvoiceView = () => {
             </Box>
             <Box flexGrow={1}>
               {filterQuery ===
-                "order_book__proforma_invoice__seller_account__state" && (
+                "order_book__proforma_invoice__seller_account__unit" && (
                 <FormControl
                   sx={{ minWidth: "200px", marginLeft: "1em" }}
                   size="small"
@@ -287,8 +293,11 @@ export const SalesInvoiceView = () => {
                       </IconButton>
                     }
                   >
-                    <MenuItem value={"Delhi"}>Delhi</MenuItem>
-                    <MenuItem value={"Maharashtra"}>Maharashtra</MenuItem>
+                    {sellerUnitOption.map((option, i) => (
+                      <MenuItem key={i} value={option.unit}>
+                        {option.unit}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
               )}
@@ -435,26 +444,6 @@ export const SalesInvoiceView = () => {
   );
 };
 
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
-
 function Row(props) {
   const { row, openInPopup } = props;
   const [tableExpand, setTableExpand] = useState(false);
@@ -527,3 +516,31 @@ function Row(props) {
     </>
   );
 }
+
+const filterOption = [
+  {
+    label: "Search By State",
+    value: "order_book__proforma_invoice__seller_account__unit",
+  },
+  { label: "Search", value: "search" },
+];
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  "&:nth-of-type(odd)": {
+    backgroundColor: theme.palette.action.hover,
+  },
+  // hide last border
+  "&:last-child td, &:last-child th": {
+    border: 0,
+  },
+}));
