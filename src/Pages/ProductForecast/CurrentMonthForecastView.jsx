@@ -56,14 +56,14 @@ export const CurrentMonthForecastView = () => {
   };
 
   useEffect(() => {
-    getLAssignedData();
+    getAssignedData();
+    getAllProductionForecastDetails();
   }, []);
 
-  const getLAssignedData = async (id) => {
+  const getAssignedData = async (id) => {
     try {
       setOpen(true);
       const res = await LeadServices.getAllAssignedUser();
-
       setAssigned(res.data);
       setOpen(false);
     } catch (error) {
@@ -71,10 +71,6 @@ export const CurrentMonthForecastView = () => {
       setOpen(false);
     }
   };
-
-  useEffect(() => {
-    getAllProductionForecastDetails();
-  }, []);
 
   const getAllProductionForecastDetails = async () => {
     try {

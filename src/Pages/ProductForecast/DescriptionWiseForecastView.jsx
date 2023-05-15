@@ -107,10 +107,11 @@ export const DescriptionWiseForecastView = () => {
   ];
 
   useEffect(() => {
-    getLAssignedData();
+    getAssignedData();
+    getAllDescriptionionForecastDetails();
   }, []);
 
-  const getLAssignedData = async (id) => {
+  const getAssignedData = async (id) => {
     try {
       setOpen(true);
       const res = await LeadServices.getAllAssignedUser();
@@ -122,10 +123,6 @@ export const DescriptionWiseForecastView = () => {
       setOpen(false);
     }
   };
-
-  useEffect(() => {
-    getAllDescriptionionForecastDetails();
-  }, []);
 
   const getAllDescriptionionForecastDetails = async () => {
     try {

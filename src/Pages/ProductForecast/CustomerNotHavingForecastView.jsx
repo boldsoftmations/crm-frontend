@@ -99,10 +99,11 @@ export const CustomerNotHavingForecastView = () => {
   ];
 
   useEffect(() => {
-    getLAssignedData();
+    getAssignedData();
+    getAllProductionForecastDetails();
   }, []);
 
-  const getLAssignedData = async (id) => {
+  const getAssignedData = async (id) => {
     try {
       setOpen(true);
       const res = await LeadServices.getAllAssignedUser();
@@ -114,10 +115,6 @@ export const CustomerNotHavingForecastView = () => {
       setOpen(false);
     }
   };
-
-  useEffect(() => {
-    getAllProductionForecastDetails();
-  }, []);
 
   const getAllProductionForecastDetails = async () => {
     try {
