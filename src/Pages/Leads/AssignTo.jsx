@@ -211,7 +211,7 @@ export const AssignTo = () => {
         business_mismatch: recordForEdit.business_mismatch
           ? recordForEdit.business_mismatch
           : "No",
-        description: recordForEdit.description,
+        description: recordForEdit.description || [],
         interested: recordForEdit.interested ? recordForEdit.interested : "Yes",
         assigned_to: assign ? assign : recordForEdit.assigned_to,
         references: recordForEdit.references
@@ -219,9 +219,9 @@ export const AssignTo = () => {
           : "Indiamart",
       };
 
-      const res = await LeadServices.updateLeads(recordForEdit.lead_id, data);
-      setModalOpen(false);
+      await LeadServices.updateLeads(recordForEdit.id, data);
       getUnassigned();
+      setModalOpen(false);
       setOpen(false);
     } catch (error) {
       console.log("error :>> ", error);
