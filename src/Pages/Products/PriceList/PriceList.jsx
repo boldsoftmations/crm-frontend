@@ -23,11 +23,8 @@ import {
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
 import AddIcon from "@mui/icons-material/Add";
-
 import ProductService from "../../../services/ProductService";
-// import SearchIcon from "@mui/icons-material/Search";
 import ClearIcon from "@mui/icons-material/Clear";
-
 import { Popup } from "../../../Components/Popup";
 import { CreatePriceList } from "./CreatePriceList";
 import { UpdatePriceList } from "./UpdatePriceList";
@@ -35,6 +32,7 @@ import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
 import { CustomLoader } from "./../../../Components/CustomLoader";
 import { CustomSearch } from "./../../../Components/CustomSearch";
 import { CustomPagination } from "./../../../Components/CustomPagination";
+import { CustomTable } from "../../../Components/CustomTable";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -68,6 +66,23 @@ export const PriceList = () => {
   const [pageCount, setpageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [filterSelectedQuerys, setFilterSelectedQuerys] = useState("");
+  const [product, setProduct] = useState([]);
+  useEffect(() => {
+    getProduct();
+    getPriceList();
+  }, []);
+
+  const getProduct = async () => {
+    try {
+      setOpen(true);
+      const res = await ProductService.getAllProduct();
+      setProduct(res.data);
+      setOpen(false);
+    } catch (err) {
+      console.error("error Product in pricelist", err);
+      setOpen(false);
+    }
+  };
 
   const getPriceList = async () => {
     try {
@@ -104,10 +119,6 @@ export const PriceList = () => {
       errRef.current.focus();
     }
   };
-
-  useEffect(() => {
-    getPriceList();
-  }, []);
 
   const handleInputChange = (event) => {
     setFilterSelectedQuerys(event.target.value);
@@ -159,7 +170,7 @@ export const PriceList = () => {
       setOpen(false);
     }
   };
-  console.log("filterSelectedQuerys", filterSelectedQuerys);
+
   const handlePageClick = async (event, value) => {
     try {
       const page = value;
@@ -217,6 +228,31 @@ export const PriceList = () => {
     setRecordForEdit(item);
     setOpenPopup(true);
   };
+
+  const Tabledata = priceListData.map((row) => ({
+    id: row.id,
+    product: row.product,
+    slab1: row.slab1,
+    slab1_price: row.slab1_price,
+    slab2: row.slab2,
+    slab2_price: row.slab2_price,
+    slab3_price: row.slab3_price,
+    validity: row.validity,
+    discontinued: row.discontinued,
+  }));
+
+  const Tableheaders = [
+    "ID",
+    "Product",
+    "Slab1",
+    "Slab1 Price",
+    "Slab2",
+    "Slab2 Price",
+    "Slab3 Price",
+    "Validity",
+    "Discontinued",
+    "Action",
+  ];
 
   return (
     <>
@@ -296,85 +332,14 @@ export const PriceList = () => {
               </Button>
             </Box>
           </Box>
-          <TableContainer
-            sx={{
-              maxHeight: 440,
-              "&::-webkit-scrollbar": {
-                width: 15,
-              },
-              "&::-webkit-scrollbar-track": {
-                backgroundColor: "#f2f2f2",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                backgroundColor: "#aaa9ac",
-              },
-            }}
-          >
-            <Table
-              sx={{ minWidth: 700 }}
-              stickyHeader
-              aria-label="sticky table"
-            >
-              <TableHead>
-                <TableRow>
-                  <StyledTableCell align="center">PRODUCT</StyledTableCell>
-                  <StyledTableCell align="center">SLAB1</StyledTableCell>
-                  <StyledTableCell align="center">SLAB1 PRICE</StyledTableCell>
-                  <StyledTableCell align="center">SLAB2</StyledTableCell>
-                  <StyledTableCell align="center">SLAB2 PRICE</StyledTableCell>
-                  <StyledTableCell align="center">SLAB3 PRICE</StyledTableCell>
-                  <StyledTableCell align="center">VALIDITY</StyledTableCell>
-                  <StyledTableCell align="center">DISCONTINUED</StyledTableCell>
-                  <StyledTableCell align="center">ACTION</StyledTableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {priceListData.map((row, i) => {
-                  return (
-                    <StyledTableRow key={i}>
-                      <StyledTableCell align="center">
-                        {row.product}
-                      </StyledTableCell>
-
-                      <StyledTableCell align="center">
-                        {row.slab1}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.slab1_price}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.slab2}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.slab2_price}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.slab3_price}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.validity}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {/* {row.discontinued} */}
-                        <Switch
-                          checked={row.discontinued}
-                          inputProps={{ "aria-label": "controlled" }}
-                        />
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        <Button
-                          variant="contained"
-                          onClick={() => openInPopup(row.id)}
-                        >
-                          View
-                        </Button>
-                      </StyledTableCell>
-                    </StyledTableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          <CustomTable
+            headers={Tableheaders}
+            data={Tabledata}
+            openInPopup={openInPopup}
+            openInPopup2={null}
+            openInPopup3={null}
+            openInPopup4={null}
+          />
           <CustomPagination
             pageCount={pageCount}
             handlePageClick={handlePageClick}
@@ -389,6 +354,7 @@ export const PriceList = () => {
         <CreatePriceList
           getPriceList={getPriceList}
           setOpenPopup={setOpenPopup2}
+          product={product}
         />
       </Popup>
       <Popup
@@ -400,6 +366,7 @@ export const PriceList = () => {
           recordForEdit={recordForEdit}
           setOpenPopup={setOpenPopup}
           getPriceList={getPriceList}
+          product={product}
         />
       </Popup>
     </>

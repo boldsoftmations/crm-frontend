@@ -1,60 +1,25 @@
+import React, { useRef, useState } from "react";
 import {
   Autocomplete,
-  Backdrop,
   Box,
   Button,
-  CircularProgress,
   FormControlLabel,
   Grid,
   Switch,
   TextField,
 } from "@mui/material";
-
-import { useRef, useState } from "react";
-import React, { useEffect } from "react";
-
 import ProductService from "../../../services/ProductService";
-
 import "../../CommonStyle.css";
+import { CustomLoader } from "../../../Components/CustomLoader";
 
 export const UpdatePriceList = (props) => {
-  const { recordForEdit, setOpenPopup, getPriceList } = props;
+  const { recordForEdit, setOpenPopup, getPriceList, product } = props;
   const [open, setOpen] = useState(false);
-  const [inputValue, setInputValue] = useState([]);
-  const [productName, setProductName] = useState([]);
-  const [product, setProduct] = useState([]);
+  const [inputValue, setInputValue] = useState(recordForEdit);
+  const [productName, setProductName] = useState(recordForEdit.product);
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
-  const [checked, setChecked] = useState(true);
-
-  useEffect(() => {
-    getProduct();
-  }, []);
-  const getProduct = async () => {
-    try {
-      setOpen(true);
-      const res = await ProductService.getAllProduct();
-      setProduct(res.data);
-      setOpen(false);
-    } catch (err) {
-      console.error("error potential", err);
-      setOpen(false);
-    }
-  };
-
-  const getPriceListData = async () => {
-    try {
-      setOpen(true);
-      const res = await ProductService.getPriceListById(recordForEdit);
-      setInputValue(res.data);
-      setChecked(res.data.discontinued);
-      setProductName(res.data.product);
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
-  };
+  const [checked, setChecked] = useState(recordForEdit.discontinued);
 
   const handleCheckedChange = (event) => {
     setChecked(event.target.checked);
@@ -105,20 +70,9 @@ export const UpdatePriceList = (props) => {
     }
   };
 
-  useEffect(() => {
-    if (recordForEdit) getPriceListData(recordForEdit);
-  }, [recordForEdit]);
-
   return (
     <>
-      <div>
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={open}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </div>
+      <CustomLoader open={open} />
       <Box component="form" noValidate onSubmit={(e) => updatePriceList(e)}>
         <Grid container spacing={2}>
           <p

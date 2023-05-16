@@ -1,21 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import {
-  Box,
-  Grid,
-  Paper,
-  styled,
-  Table,
-  TableBody,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TableCell,
-  Button,
-  TableFooter,
-  Pagination,
-  Chip,
-} from "@mui/material";
-import { tableCellClasses } from "@mui/material/TableCell";
+import { Box, Grid, Paper, Button } from "@mui/material";
 import { Popup } from "../../../Components/Popup";
 import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 import { CustomSearch } from "../../../Components/CustomSearch";
@@ -26,25 +10,8 @@ import { CustomLoader } from "../../../Components/CustomLoader";
 import { CreateVendorDetails } from "./CreateVendorDetails";
 import { UpdateAllVendorDetails } from "./UpdateAllVendorDetails";
 import InventoryServices from "../../../services/InventoryService";
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
+import { CustomTable } from "../../../Components/CustomTable";
+import { CustomPagination } from "../../../Components/CustomPagination";
 
 export const VendorView = () => {
   const dispatch = useDispatch();
@@ -65,8 +32,20 @@ export const VendorView = () => {
     getSearchData(inputValue);
   };
 
+  const getResetData = async () => {
+    setFilterSelectedQuery("");
+    await getAllVendorDetails();
+  };
+
+  const openInPopup = (item) => {
+    const matchedVendor = vendorData.find((lead) => lead.id === item.id);
+    setRecordForEdit(matchedVendor);
+    setOpenPopup(true);
+  };
+
   useEffect(() => {
     getAllSellerAccountsDetails();
+    getAllVendorDetails();
   }, []);
 
   const getAllSellerAccountsDetails = async () => {
@@ -81,10 +60,6 @@ export const VendorView = () => {
       setOpen(false);
     }
   };
-
-  useEffect(() => {
-    getAllVendorDetails();
-  }, []);
 
   const getAllVendorDetails = async () => {
     try {
@@ -167,16 +142,24 @@ export const VendorView = () => {
     }
   };
 
-  const getResetData = async () => {
-    setFilterSelectedQuery("");
-    await getAllVendorDetails();
-  };
+  const Tabledata = vendorData.map((row) => ({
+    id: row.id,
+    name: row.name,
+    pan_number: row.pan_number,
+    gst_number: row.gst_number,
+    city: row.city,
+    state: row.state,
+  }));
 
-  const openInPopup = (item) => {
-    setRecordForEdit(item);
-    setOpenPopup(true);
-  };
-
+  const Tableheaders = [
+    "ID",
+    "Vendor",
+    "Pan No.",
+    "Gst No.",
+    "City",
+    "State",
+    "Action",
+  ];
   return (
     <>
       <CustomLoader open={open} />
@@ -217,89 +200,18 @@ export const VendorView = () => {
               </Button>
             </Box>
           </Box>
-          <TableContainer
-            sx={{
-              maxHeight: 440,
-              "&::-webkit-scrollbar": {
-                width: 15,
-              },
-              "&::-webkit-scrollbar-track": {
-                backgroundColor: "#f2f2f2",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                backgroundColor: "#aaa9ac",
-              },
-            }}
-          >
-            <Table
-              sx={{ minWidth: 700 }}
-              stickyHeader
-              aria-label="sticky table"
-            >
-              <TableHead>
-                <TableRow>
-                  <StyledTableCell align="center">VENDOR</StyledTableCell>
-                  <StyledTableCell align="center">PAN NO.</StyledTableCell>
-                  <StyledTableCell align="center">GST NO.</StyledTableCell>
-                  <StyledTableCell align="center">CITY</StyledTableCell>
-                  <StyledTableCell align="center">STATE</StyledTableCell>
-                  {/* {users.groups.toString() !== "Sales" &&
-                    users.groups.toString() !== "Customer Service" && ( */}
-                  <StyledTableCell align="center">Action</StyledTableCell>
-                  {/* )} */}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {vendorData.map((row, i) => {
-                  return (
-                    <StyledTableRow key={i}>
-                      <StyledTableCell align="center">
-                        {row.name}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.pan_number}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.gst_number}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.city}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        <Chip
-                          label={row.state}
-                          color="success"
-                          variant="outlined"
-                        />
-                      </StyledTableCell>
-                      {/* {users.groups.toString() !== "Sales" &&
-                        users.groups.toString() !== "Customer Service" && ( */}
-                      <StyledTableCell align="center">
-                        <Button
-                          variant="contained"
-                          onClick={() => openInPopup(row.id)}
-                        >
-                          View
-                        </Button>
-                      </StyledTableCell>
-                      {/* )} */}
-                    </StyledTableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <TableFooter
-            sx={{ display: "flex", justifyContent: "center", marginTop: "2em" }}
-          >
-            <Pagination
-              count={pageCount}
-              onChange={handlePageClick}
-              color={"primary"}
-              variant="outlined"
-              shape="circular"
-            />
-          </TableFooter>
+          <CustomTable
+            headers={Tableheaders}
+            data={Tabledata}
+            openInPopup={openInPopup}
+            openInPopup2={null}
+            openInPopup3={null}
+            openInPopup4={null}
+          />
+          <CustomPagination
+            pageCount={pageCount}
+            handlePageClick={handlePageClick}
+          />
         </Paper>
       </Grid>
       <Popup

@@ -128,7 +128,7 @@ export const CreateVendorDetails = (props) => {
         type: typeData,
         name: inputValue.name,
         address: inputValue.address,
-        pincode: inputValue.pincode,
+        pincode: inputValue.pincode || null,
         state:
           typeData === "Domestic"
             ? pinCodeData
@@ -142,7 +142,7 @@ export const CreateVendorDetails = (props) => {
               : ""
             : inputValue.city,
         website: inputValue.website_url,
-        estd_date: inputValue.estd_date,
+        estd_date: inputValue.estd_date || null,
         gst_number: inputValue.gst_number,
         pan_number: inputValue.pan_number,
         total_sales_turnover: inputValue.total_sale,

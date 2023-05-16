@@ -1,44 +1,12 @@
 import React, { useState } from "react";
 
-import {
-  Box,
-  Grid,
-  styled,
-  Table,
-  TableBody,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TableCell,
-  Button,
-} from "@mui/material";
+import { Box, Grid, Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import { tableCellClasses } from "@mui/material/TableCell";
 import { Popup } from "./../../../Components/Popup";
-
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { CreateWareHouseInventoryDetails } from "./CreateWareHouseDetails";
 import { UpdateWareHouseInventoryDetails } from "./UpdateWareHouseInventoryDetails";
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
+import { CustomTable } from "../../../Components/CustomTable";
 
 export const WareHouseInventoryDetails = (props) => {
   const {
@@ -54,10 +22,21 @@ export const WareHouseInventoryDetails = (props) => {
   const [IDForEdit, setIDForEdit] = useState();
 
   const openInPopup = (item) => {
-    setIDForEdit(item);
+    const matchedWarehouse = wareHousedata.find(
+      (warehouse) => warehouse.id === item.id
+    );
+    setIDForEdit(matchedWarehouse);
     setOpenPopup(true);
   };
 
+  const Tabledata = wareHousedata.map((row) => ({
+    id: row.id,
+    contact_number: row.contact_number,
+    state: row.state,
+    pincode: row.pincode,
+  }));
+
+  const Tableheaders = ["ID", "Contact", "State", "Pin Code", "Action"];
   return (
     <>
       <CustomLoader open={open} />
@@ -89,60 +68,14 @@ export const WareHouseInventoryDetails = (props) => {
             </Button>
           </Box>
         </Box>
-        <TableContainer
-          sx={{
-            maxHeight: 440,
-            "&::-webkit-scrollbar": {
-              width: 15,
-            },
-            "&::-webkit-scrollbar-track": {
-              backgroundColor: "#f2f2f2",
-            },
-            "&::-webkit-scrollbar-thumb": {
-              backgroundColor: "#aaa9ac",
-            },
-          }}
-        >
-          <Table sx={{ minWidth: 1200 }} stickyHeader aria-label="sticky table">
-            <TableHead>
-              <TableRow>
-                <StyledTableCell align="center">CONTACT</StyledTableCell>
-                <StyledTableCell align="center">STATE</StyledTableCell>
-                <StyledTableCell align="center">CITY</StyledTableCell>
-                <StyledTableCell align="center">PIN CODE</StyledTableCell>
-                <StyledTableCell align="center">ACTION</StyledTableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {wareHousedata.map((row, i) => {
-                return (
-                  <StyledTableRow>
-                    <StyledTableCell align="center">
-                      {row.contact_number}
-                    </StyledTableCell>
-
-                    <StyledTableCell align="center">
-                      {row.state}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">{row.city}</StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.pincode}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      <Button
-                        variant="contained"
-                        onClick={() => openInPopup(row.id)}
-                      >
-                        View
-                      </Button>
-                    </StyledTableCell>
-                  </StyledTableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        {/* </Paper> */}
+        <CustomTable
+          headers={Tableheaders}
+          data={Tabledata}
+          openInPopup={openInPopup}
+          openInPopup2={null}
+          openInPopup3={null}
+          openInPopup4={null}
+        />
       </Grid>
       <Popup
         title={"Create WareHouse Details"}

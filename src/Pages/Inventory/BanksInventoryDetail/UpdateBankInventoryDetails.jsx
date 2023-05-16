@@ -9,7 +9,7 @@ export const UpdateBankInventoryDetails = (props) => {
   const { setOpenPopup, getAllVendorDetailsByID, idForEdit, vendorData } =
     props;
   const [open, setOpen] = useState(false);
-  const [inputValue, setInputValue] = useState([]);
+  const [inputValue, setInputValue] = useState(idForEdit);
   const [bankData, setBankData] = useState([]);
   const [errMsg, setErrMsg] = useState("");
   const data = useSelector((state) => state.auth);
@@ -38,26 +38,6 @@ export const UpdateBankInventoryDetails = (props) => {
       if (error.response.status === 404) {
         setErrMsg("please enter valid ifsc code.");
       }
-    }
-  };
-
-  useEffect(() => {
-    getAllBankDetailByID();
-  }, [idForEdit]);
-
-  const getAllBankDetailByID = async () => {
-    try {
-      setOpen(true);
-      const response = await InventoryServices.getBankInventoryDataById(
-        idForEdit
-      );
-      console.log("response", response);
-
-      setInputValue(response.data);
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("company data by id error", err);
     }
   };
 

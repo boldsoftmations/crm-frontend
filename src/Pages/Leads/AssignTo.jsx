@@ -1,106 +1,31 @@
 import React, { useEffect, useRef, useState } from "react";
-
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
   Grid,
   Button,
   Paper,
-  Backdrop,
-  CircularProgress,
   TextField,
   Box,
   IconButton,
   Autocomplete,
-  Typography,
-  TableContainer,
-  TableFooter,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Pagination,
   Select,
   FormControl,
   InputLabel,
   MenuItem,
 } from "@mui/material";
-import PropTypes from "prop-types";
-import CloseIcon from "@mui/icons-material/Close";
-import { tableCellClasses } from "@mui/material/TableCell";
 import LeadServices from "../../services/LeadService";
 import ClearIcon from "@mui/icons-material/Clear";
 import "../CommonStyle.css";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
-import { styled } from "@mui/material/styles";
 import { Popup } from "./../../Components/Popup";
 import { UpdateLeads } from "./UpdateLeads";
 import { ErrorMessage } from "./../../Components/ErrorMessage/ErrorMessage";
 import { CustomSearch } from "./../../Components/CustomSearch";
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
-
-const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-  "& .MuiDialogContent-root": {
-    padding: theme.spacing(2),
-  },
-  "& .MuiDialogActions-root": {
-    padding: theme.spacing(1),
-  },
-}));
-
-function BootstrapDialogTitle(props) {
-  const { children, onClose, ...other } = props;
-
-  return (
-    <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
-      {children}
-      {onClose ? (
-        <IconButton
-          aria-label="close"
-          onClick={onClose}
-          sx={{
-            position: "absolute",
-            right: 8,
-            top: 8,
-            color: (theme) => theme.palette.grey[500],
-          }}
-        >
-          <CloseIcon />
-        </IconButton>
-      ) : null}
-    </DialogTitle>
-  );
-}
-
-BootstrapDialogTitle.propTypes = {
-  children: PropTypes.node,
-  onClose: PropTypes.func.isRequired,
-};
+import { CustomLoader } from "../../Components/CustomLoader";
+import { CustomPagination } from "../../Components/CustomPagination";
+import { CustomTable } from "../../Components/CustomTable";
+import ProductService from "../../services/ProductService";
 
 export const AssignTo = () => {
   const [leads, setLeads] = useState([]);
-  const [allDataByID, setAllDataByID] = useState([]);
   const [open, setOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [filterQuery, setFilterQuery] = useState("");
@@ -114,14 +39,36 @@ export const AssignTo = () => {
   const [openPopup, setOpenPopup] = useState(false);
   const [recordForEdit, setRecordForEdit] = useState(null);
   const [referenceData, setReferenceData] = useState([]);
-
+  const [descriptionMenuData, setDescriptionMenuData] = useState([]);
+  const [product, setProduct] = useState([]);
+  const [leadsByID, setLeadsByID] = useState(null);
   const handleInputChange = (event) => {
     setFilterSelectedQuery(event.target.value);
     getSearchData(event.target.value);
   };
 
+  const openInPopup = (item) => {
+    const matchedLead = leads.find((lead) => lead.lead_id === item.id);
+    setLeadsByID(matchedLead);
+    setOpenPopup(true);
+  };
+
+  const openInPopup2 = (item) => {
+    setRecordForEdit(item);
+    setModalOpen(true);
+  };
+
+  const getResetData = () => {
+    setFilterSelectedQuery("");
+    getUnassigned();
+  };
+
   useEffect(() => {
     getReference();
+    getProduct();
+    getDescriptionNoData();
+    getAssignedData();
+    getUnassigned();
   }, []);
 
   const getReference = async () => {
@@ -134,17 +81,12 @@ export const AssignTo = () => {
     }
   };
 
-  useEffect(() => {
-    getLAssignedData();
-  }, []);
-
-  const getLAssignedData = async (id) => {
+  const getAssignedData = async (id) => {
     try {
       setOpen(true);
 
       const res = await LeadServices.getAllAssignedUser();
       setAssigned(res.data);
-
       setOpen(false);
     } catch (error) {
       console.log("error", error);
@@ -152,10 +94,26 @@ export const AssignTo = () => {
     }
   };
 
-  useEffect(() => {
-    getUnassigned();
-  }, []);
+  const getDescriptionNoData = async () => {
+    try {
+      const res = await ProductService.getNoDescription();
+      setDescriptionMenuData(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
+  const getProduct = async () => {
+    try {
+      setOpen(true);
+      const res = await ProductService.getAllProduct();
+      setProduct(res.data);
+      setOpen(false);
+    } catch (err) {
+      console.error("error potential", err);
+      setOpen(false);
+    }
+  };
   const getUnassigned = async () => {
     try {
       if (currentPage) {
@@ -221,12 +179,7 @@ export const AssignTo = () => {
     }
   };
 
-  const getResetData = () => {
-    setFilterSelectedQuery("");
-    getUnassigned();
-  };
-
-  const handlePageChange = async (event, value) => {
+  const handlePageClick = async (event, value) => {
     try {
       const page = value;
       setCurrentPage(page);
@@ -249,43 +202,26 @@ export const AssignTo = () => {
     }
   };
 
-  const handleSubmit = async (id) => {
-    try {
-      setOpen(true);
-
-      const res = await LeadServices.getLeadsById(id);
-      console.log("res :>> ", res);
-      setAllDataByID(res.data);
-      setModalOpen(true);
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
-  };
-
   const updateAssigned = async (e) => {
     try {
       e.preventDefault();
       setOpen(true);
       const data = {
-        contact: allDataByID.contact ? allDataByID.contact : null,
-        business_mismatch: allDataByID.business_mismatch
-          ? allDataByID.business_mismatch
+        contact: recordForEdit.contact ? recordForEdit.contact : null,
+        business_mismatch: recordForEdit.business_mismatch
+          ? recordForEdit.business_mismatch
           : "No",
-        description: allDataByID.description,
-        interested: allDataByID.interested ? allDataByID.interested : "Yes",
-        assigned_to: assign ? assign : allDataByID.assigned_to,
-        references: allDataByID.references
-          ? allDataByID.references
+        description: recordForEdit.description,
+        interested: recordForEdit.interested ? recordForEdit.interested : "Yes",
+        assigned_to: assign ? assign : recordForEdit.assigned_to,
+        references: recordForEdit.references
+          ? recordForEdit.references
           : "Indiamart",
       };
 
-      const res = await LeadServices.updateLeads(allDataByID.lead_id, data);
-      console.log("res :>> ", res);
+      const res = await LeadServices.updateLeads(recordForEdit.lead_id, data);
       setModalOpen(false);
       getUnassigned();
-
       setOpen(false);
     } catch (error) {
       console.log("error :>> ", error);
@@ -294,58 +230,34 @@ export const AssignTo = () => {
     }
   };
 
-  const handleClose = () => {
-    setModalOpen(false);
-  };
-  // Get current post
-  const userEmail = assign ? assign : allDataByID.assigned_to;
+  const Tabledata = leads.map((row, i) => ({
+    id: row.lead_id,
+    name: row.name,
+    contact: row.contact,
+    product: row.query_product_name,
+    assigned_to: row.assigned_to,
+    company: row.company,
+    references: row.references,
+    city: row.city,
+    state: row.state,
+  }));
 
-  const openInPopup = (item) => {
-    setRecordForEdit(item);
-    setOpenPopup(true);
-  };
+  const Tableheaders = [
+    "ID",
+    "NAME",
+    "CONTACT",
+    "PRODUCT",
+    "ASSIGNED TO",
+    "COMPANY",
+    "REFERENCE",
+    "CITY",
+    "STATE",
+    "ACTION",
+  ];
 
   return (
     <>
-      <div className="Auth-form-container">
-        <div>
-          <Backdrop
-            sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-            open={open}
-          >
-            <CircularProgress color="inherit" />
-          </Backdrop>
-        </div>
-      </div>
-      <BootstrapDialog
-        onClose={handleClose}
-        aria-labelledby="customized-dialog-title"
-        open={modalOpen}
-      >
-        <BootstrapDialogTitle
-          id="customized-dialog-title"
-          onClose={handleClose}
-        >
-          Assign To
-        </BootstrapDialogTitle>
-        <DialogContent dividers>
-          <Typography id="modal-modal-description">
-            Are you sure you have to assigned to this user{" "}
-            <Typography sx={{ color: "blue" }}>{userEmail}</Typography>.
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            variant="contained"
-            color="success"
-            startIcon={<CheckCircleOutlineIcon />}
-            onClick={(e) => updateAssigned(e)}
-          >
-            Ok
-          </Button>
-        </DialogActions>
-      </BootstrapDialog>
-
+      <CustomLoader open={open} />
       <Grid item xs={12}>
         <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
@@ -437,129 +349,19 @@ export const AssignTo = () => {
             </Box>
           </Box>
 
-          <TableContainer
-            sx={{
-              maxHeight: 440,
-              "&::-webkit-scrollbar": {
-                width: 15,
-              },
-              "&::-webkit-scrollbar-track": {
-                backgroundColor: "#f2f2f2",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                backgroundColor: "#aaa9ac",
-              },
-            }}
-          >
-            <Table
-              sx={{ minWidth: 700 }}
-              stickyHeader
-              aria-label="sticky table"
-            >
-              <TableHead>
-                <TableRow>
-                  <StyledTableCell align="center">ID</StyledTableCell>
-                  <StyledTableCell align="center">NAME</StyledTableCell>
-                  <StyledTableCell align="center">CONTACT</StyledTableCell>
-
-                  <StyledTableCell align="center">PRODUCT NAME</StyledTableCell>
-                  <StyledTableCell align="center">ASSIGNED TO</StyledTableCell>
-                  <StyledTableCell align="center">COMPANY NAME</StyledTableCell>
-                  <StyledTableCell align="center">REFERENCE</StyledTableCell>
-                  <StyledTableCell align="center">CITY</StyledTableCell>
-                  <StyledTableCell align="center">STATE</StyledTableCell>
-
-                  <StyledTableCell align="center">ACTION</StyledTableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {leads.map((row, i) => {
-                  return (
-                    <StyledTableRow key={i}>
-                      <StyledTableCell align="center">
-                        {row.lead_id ? row.lead_id : "-"}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.name ? row.name : "-"}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.contact ? row.contact : "-"}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.query_product_name ? row.query_product_name : "-"}
-                      </StyledTableCell>
-                      <StyledTableCell align="left">
-                        <Autocomplete
-                          style={{
-                            minWidth: 220,
-                          }}
-                          size="small"
-                          value={row.assigned_to ? row.assigned_to : "-"}
-                          onChange={(e, value) => setAssign(value)}
-                          options={assigned.map((option) => option.email)}
-                          getOptionLabel={(option) => `${option}`}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              name={"assign"}
-                              label={"Assign To"}
-                            />
-                          )}
-                        />
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.company ? row.company : "-"}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.references ? row.references : "-"}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.city ? row.city : "-"}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.state ? row.state : "-"}
-                      </StyledTableCell>{" "}
-                      <StyledTableCell align="center">
-                        <ul className="pagination ">
-                          <li className="page-item">
-                            <Button
-                              variant="contained"
-                              color="primary"
-                              onClick={() => openInPopup(row.lead_id)}
-                            >
-                              View
-                            </Button>
-                          </li>
-
-                          <li className="page-item">
-                            <Button
-                              type="submit"
-                              variant="contained"
-                              color="success"
-                              onClick={(e) => handleSubmit(row.lead_id)}
-                            >
-                              Assign
-                            </Button>
-                          </li>
-                        </ul>
-                      </StyledTableCell>
-                    </StyledTableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <TableFooter
-            sx={{ display: "flex", justifyContent: "center", marginTop: "2em" }}
-          >
-            <Pagination
-              count={pageCount}
-              onChange={handlePageChange}
-              color={"primary"}
-              variant="outlined"
-              shape="circular"
-            />
-          </TableFooter>
+          <CustomTable
+            headers={Tableheaders}
+            data={Tabledata}
+            openInPopup={openInPopup}
+            openInPopup2={openInPopup2}
+            openInPopup3={null}
+            openInPopup4={null}
+            ButtonText={"Assign"}
+          />
+          <CustomPagination
+            pageCount={pageCount}
+            handlePageClick={handlePageClick}
+          />
         </Paper>
       </Grid>
       <Popup
@@ -569,10 +371,46 @@ export const AssignTo = () => {
         setOpenPopup={setOpenPopup}
       >
         <UpdateLeads
-          recordForEdit={recordForEdit}
+          leadsByID={leadsByID}
+          assigned={assigned}
+          descriptionMenuData={descriptionMenuData}
           setOpenPopup={setOpenPopup}
           getUnassigned={getUnassigned}
+          product={product}
         />
+      </Popup>
+      <Popup
+        maxWidth={"xl"}
+        title={"Assigned To"}
+        openPopup={modalOpen}
+        setOpenPopup={setModalOpen}
+      >
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <Autocomplete
+              style={{
+                minWidth: 220,
+              }}
+              size="small"
+              value={recordForEdit ? recordForEdit.assigned_to : "-"}
+              onChange={(e, value) => setAssign(value)}
+              options={assigned.map((option) => option.email)}
+              getOptionLabel={(option) => `${option}`}
+              renderInput={(params) => (
+                <TextField {...params} name={"assign"} label={"Assign To"} />
+              )}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Button
+              variant="contained"
+              color="success"
+              onClick={(e) => updateAssigned(e)}
+            >
+              Submit
+            </Button>
+          </Grid>
+        </Grid>
       </Popup>
     </>
   );

@@ -13,8 +13,9 @@ export const UpdateWareHouseInventoryDetails = (props) => {
     contactData,
     vendorData,
   } = props;
+  console.log("IDForEdit", IDForEdit);
   const [open, setOpen] = useState(false);
-  const [inputValue, setInputValue] = useState([]);
+  const [inputValue, setInputValue] = useState(IDForEdit);
   const data = useSelector((state) => state.auth);
   const [pinCodeData, setPinCodeData] = useState([]);
   const [selectedcontact, setSelectedContact] = useState("");
@@ -45,24 +46,6 @@ export const UpdateWareHouseInventoryDetails = (props) => {
     }
   };
 
-  useEffect(() => {
-    getWareHouseDataByID();
-  }, []);
-
-  const getWareHouseDataByID = async () => {
-    try {
-      setOpen(true);
-      const response = await InventoryServices.getWareHouseInventoryDataById(
-        IDForEdit
-      );
-      setInputValue(response.data);
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("company data by id error", err);
-    }
-  };
-
   const UpdateWareHouseDetails = async (e) => {
     try {
       e.preventDefault();
@@ -75,7 +58,7 @@ export const UpdateWareHouseInventoryDetails = (props) => {
         state: pinCodeData.State ? pinCodeData.State : inputValue.state,
         city: pinCodeData.District ? pinCodeData.District : inputValue.city,
       };
-      await InventoryServices.updatetWareHouseInventoryData(IDForEdit, req);
+      await InventoryServices.updatetWareHouseInventoryData(inputValue.id, req);
       setOpenPopup(false);
       getAllVendorDetailsByID();
       setOpen(false);

@@ -1,43 +1,12 @@
 import React, { useState } from "react";
 
-import {
-  Box,
-  Grid,
-  styled,
-  Table,
-  TableBody,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TableCell,
-  Button,
-} from "@mui/material";
+import { Box, Grid, Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import { tableCellClasses } from "@mui/material/TableCell";
 import { Popup } from "./../../../Components/Popup";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { CreateBankInventoryDetails } from "./CreateBankInventoryDetails";
 import { UpdateBankInventoryDetails } from "./UpdateBankInventoryDetails";
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
+import { CustomTable } from "../../../Components/CustomTable";
 
 export const BankInventoryDetails = (props) => {
   const { bankData, vendorData, open, getAllVendorDetailsByID } = props;
@@ -46,11 +15,28 @@ export const BankInventoryDetails = (props) => {
   const [idForEdit, setIDForEdit] = useState();
 
   const openInPopup = (item) => {
-    setIDForEdit(item);
+    const matchedBank = bankData.find((bank) => bank.id === item.id);
+    setIDForEdit(matchedBank);
     setOpenPopup(true);
   };
 
-  console.log("bankData :>> ", bankData);
+  const Tabledata = bankData.map((row) => ({
+    id: row.id,
+    bank_name: row.bank_name,
+    current_account_no: row.current_account_no,
+    ifsc_code: row.ifsc_code,
+    branch: row.branch,
+  }));
+
+  const Tableheaders = [
+    "ID",
+    "Bank",
+    "ACCOUNT NO",
+    vendorData.type === "Domestic" ? "IFSC CODE" : "SWIFT CODE",
+    "BRANCH",
+    "Action",
+  ];
+
   return (
     <>
       <CustomLoader open={open} />
@@ -82,64 +68,14 @@ export const BankInventoryDetails = (props) => {
             </Button>
           </Box>
         </Box>
-        <TableContainer
-          sx={{
-            maxHeight: 440,
-            "&::-webkit-scrollbar": {
-              width: 15,
-            },
-            "&::-webkit-scrollbar-track": {
-              backgroundColor: "#f2f2f2",
-            },
-            "&::-webkit-scrollbar-thumb": {
-              backgroundColor: "#aaa9ac",
-            },
-          }}
-        >
-          <Table sx={{ minWidth: 1200 }} stickyHeader aria-label="sticky table">
-            <TableHead>
-              <TableRow>
-                <StyledTableCell align="center">ID</StyledTableCell>
-                <StyledTableCell align="center">BANK</StyledTableCell>
-                <StyledTableCell align="center">ACCOUNT NO.</StyledTableCell>
-                <StyledTableCell align="center">
-                  {vendorData.type === "Domestic" ? "IFSC CODE" : "SWIFT CODE"}
-                </StyledTableCell>
-                <StyledTableCell align="center">BRANCH</StyledTableCell>
-                <StyledTableCell align="center">Action</StyledTableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {bankData.map((row, i) => {
-                return (
-                  <StyledTableRow key={i}>
-                    <StyledTableCell align="center">{row.id}</StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.bank_name}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.current_account_no}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.ifsc_code}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.branch}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      <Button
-                        variant="contained"
-                        onClick={() => openInPopup(row.id)}
-                      >
-                        View
-                      </Button>
-                    </StyledTableCell>
-                  </StyledTableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <CustomTable
+          headers={Tableheaders}
+          data={Tabledata}
+          openInPopup={openInPopup}
+          openInPopup2={null}
+          openInPopup3={null}
+          openInPopup4={null}
+        />
       </Grid>
       <Popup
         title={"Create Bank Details"}

@@ -15,33 +15,16 @@ import ProductService from "../../../services/ProductService";
 import "../../CommonStyle.css";
 
 export const CreatePriceList = (props) => {
-  const { setOpenPopup, getPriceList } = props;
+  const { setOpenPopup, getPriceList, product } = props;
   const [inputValue, setInputValue] = useState([]);
   const [open, setOpen] = useState(false);
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
   const [productName, setProductName] = useState([]);
-  const [product, setProduct] = useState([]);
   const [validation, setValidation] = useState();
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setInputValue({ ...inputValue, [name]: value });
-  };
-
-  useEffect(() => {
-    getProduct();
-  }, []);
-
-  const getProduct = async () => {
-    try {
-      setOpen(true);
-      const res = await ProductService.getAllProduct();
-      setProduct(res.data);
-      setOpen(false);
-    } catch (err) {
-      console.error("error potential", err);
-      setOpen(false);
-    }
   };
 
   const validate = inputValue.slab1 < inputValue.slab2;
@@ -175,7 +158,9 @@ export const CreatePriceList = (props) => {
               value={inputValue.slab2}
               error={validate === false || validate === ""}
               helperText={
-                validate === false || inputValue.slab2 === "" ? "slab2 must be greater than slab1" : " "
+                validate === false || inputValue.slab2 === ""
+                  ? "slab2 must be greater than slab1"
+                  : " "
               }
               onChange={handleInputChange}
             />

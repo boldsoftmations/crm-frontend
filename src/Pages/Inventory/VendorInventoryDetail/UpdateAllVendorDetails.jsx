@@ -34,7 +34,9 @@ export const UpdateAllVendorDetails = (props) => {
   const getAllVendorDetailsByID = async () => {
     try {
       setOpen(true);
-      const response = await InventoryServices.getVendorDataById(recordForEdit);
+      const response = await InventoryServices.getVendorDataById(
+        recordForEdit.id
+      );
       setVendorData(response.data);
       setBankData(response.data.bank);
       setContactData(response.data.contacts);

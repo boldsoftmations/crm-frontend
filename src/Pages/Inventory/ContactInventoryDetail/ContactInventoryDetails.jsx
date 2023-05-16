@@ -1,44 +1,13 @@
 import React, { useState } from "react";
 
-import {
-  Box,
-  Grid,
-  styled,
-  Table,
-  TableBody,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TableCell,
-  Button,
-} from "@mui/material";
-import { tableCellClasses } from "@mui/material/TableCell";
+import { Box, Grid, Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { Popup } from "./../../../Components/Popup";
 
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { CreateContactInventoryDetails } from "./CreateContactInventoryDetails";
 import { UpdateContactInventoryDetails } from "./UpdateContactInventoryDetails";
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
+import { CustomTable } from "../../../Components/CustomTable";
 
 export const ContactInventoryDetails = (props) => {
   const { contactData, getAllVendorDetailsByID, open, vendorData } = props;
@@ -47,10 +16,31 @@ export const ContactInventoryDetails = (props) => {
   const [IDForEdit, setIDForEdit] = useState();
 
   const openInPopup = (item) => {
-    setIDForEdit(item);
+    const matchedContact = contactData.find(
+      (contact) => contact.id === item.id
+    );
+    setIDForEdit(matchedContact);
     setOpenPopup(true);
   };
 
+  const Tabledata = contactData.map((row) => ({
+    id: row.id,
+    name: row.name,
+    vendor: row.vendor,
+    designation: row.designation,
+    contact: row.contact,
+    alternate_contact: row.alternate_contact,
+  }));
+
+  const Tableheaders = [
+    "ID",
+    "Name",
+    "Company",
+    "Designation",
+    "Contact",
+    "Alt. Contact",
+    "Action",
+  ];
   return (
     <>
       <CustomLoader open={open} />
@@ -82,64 +72,14 @@ export const ContactInventoryDetails = (props) => {
             </Button>
           </Box>
         </Box>
-        <TableContainer
-          sx={{
-            maxHeight: 440,
-            "&::-webkit-scrollbar": {
-              width: 15,
-            },
-            "&::-webkit-scrollbar-track": {
-              backgroundColor: "#f2f2f2",
-            },
-            "&::-webkit-scrollbar-thumb": {
-              backgroundColor: "#aaa9ac",
-            },
-          }}
-        >
-          <Table sx={{ minWidth: 1200 }} stickyHeader aria-label="sticky table">
-            <TableHead>
-              <TableRow>
-                <StyledTableCell align="center">NAME</StyledTableCell>
-                <StyledTableCell align="center">COMPANY NAME</StyledTableCell>
-                <StyledTableCell align="center">DESIGNATION</StyledTableCell>
-                <StyledTableCell align="center">CONTACT</StyledTableCell>
-                <StyledTableCell align="center">ALT. CONTACT</StyledTableCell>
-                <StyledTableCell align="center">Action</StyledTableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {contactData.map((row, i) => {
-                return (
-                  <StyledTableRow key={i}>
-                    <StyledTableCell align="center">{row.name}</StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.vendor}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.designation}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.contact}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.alternate_contact}
-                    </StyledTableCell>
-
-                    <StyledTableCell align="center">
-                      <Button
-                        variant="contained"
-                        onClick={() => openInPopup(row.id)}
-                      >
-                        View
-                      </Button>
-                    </StyledTableCell>
-                  </StyledTableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        {/* </Paper> */}
+        <CustomTable
+          headers={Tableheaders}
+          data={Tabledata}
+          openInPopup={openInPopup}
+          openInPopup2={null}
+          openInPopup3={null}
+          openInPopup4={null}
+        />
       </Grid>
       <Popup
         title={"Create Contact Details"}

@@ -1,17 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
   Grid,
   Button,
   Paper,
-  styled,
   Box,
-  TableContainer,
   FormControl,
   InputLabel,
   Select,
@@ -19,9 +11,7 @@ import {
   IconButton,
 } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
-import { tableCellClasses } from "@mui/material/TableCell";
 import AddIcon from "@mui/icons-material/Add";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import LeadServices from "./../../services/LeadService";
 import "../CommonStyle.css";
 import { CreateLeads } from "./CreateLeads";
@@ -29,7 +19,6 @@ import { UpdateLeads } from "./UpdateLeads";
 import { Popup } from "./../../Components/Popup";
 import ProductService from "../../services/ProductService";
 import { ErrorMessage } from "./../../Components/ErrorMessage/ErrorMessage";
-import { CustomSearch } from "./../../Components/CustomSearch";
 import { CustomPagination } from "../../Components/CustomPagination";
 import { CustomLoader } from "./../../Components/CustomLoader";
 import { BulkLeadAssign } from "./BulkLeadAssign";
@@ -40,25 +29,6 @@ import { CustomTable } from "../../Components/CustomTable";
 import { CustomSearchWithButton } from "../../Components/CustomSearchWithButton";
 import { FollowUpCreate } from "../FollowUp/FollowUpCreate";
 import { PotentialCreate } from "../Potential/PotentialCreate";
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
 
 export const Viewleads = () => {
   const dispatch = useDispatch();
@@ -80,7 +50,6 @@ export const Viewleads = () => {
   const [referenceData, setReferenceData] = useState([]);
   const [descriptionMenuData, setDescriptionMenuData] = useState([]);
   const [product, setProduct] = useState([]);
-  // const [anchorEl, setAnchorEl] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const tokenData = useSelector((state) => state.auth);
   const users = tokenData.profile;
@@ -95,8 +64,31 @@ export const Viewleads = () => {
     getSearchData(event.target.value);
   };
 
+  const openInPopup = (item) => {
+    const matchedLead = leads.find((lead) => lead.lead_id === item.id);
+    setLeadsByID(matchedLead);
+    setOpenPopup(true);
+  };
+
+  const openInPopup2 = (item) => {
+    const matchedLead = leads.find((lead) => lead.lead_id === item.id);
+    setFollowup(matchedLead.follow_up);
+    setOpenModalFollowup(true);
+  };
+
+  const openInPopup3 = (item) => {
+    const matchedLead = leads.find((lead) => lead.lead_id === item.id);
+    setLeadsByID(matchedLead);
+    setOpenModalPotential(true);
+  };
+
   useEffect(() => {
     getAllSellerAccountsDetails();
+    getProduct();
+    getAssignedData();
+    getReference();
+    getDescriptionNoData();
+    getleads();
   }, []);
 
   const getAllSellerAccountsDetails = async () => {
@@ -112,10 +104,6 @@ export const Viewleads = () => {
     }
   };
 
-  useEffect(() => {
-    getProduct();
-  }, []);
-
   const getProduct = async () => {
     try {
       setOpen(true);
@@ -127,10 +115,6 @@ export const Viewleads = () => {
       setOpen(false);
     }
   };
-
-  useEffect(() => {
-    getAssignedData();
-  }, []);
 
   const getAssignedData = async () => {
     try {
@@ -144,10 +128,6 @@ export const Viewleads = () => {
     }
   };
 
-  useEffect(() => {
-    getReference();
-  }, []);
-
   const getReference = async () => {
     try {
       const res = await LeadServices.getAllRefernces();
@@ -158,10 +138,6 @@ export const Viewleads = () => {
     }
   };
 
-  useEffect(() => {
-    getDescriptionNoData();
-  }, []);
-
   const getDescriptionNoData = async () => {
     try {
       const res = await ProductService.getNoDescription();
@@ -170,10 +146,6 @@ export const Viewleads = () => {
       console.error(err);
     }
   };
-
-  useEffect(() => {
-    getleads();
-  }, []);
 
   const getleads = async () => {
     try {
@@ -245,23 +217,6 @@ export const Viewleads = () => {
     getleads();
   };
 
-  const openInPopup = (item) => {
-    const matchedLead = leads.find((lead) => lead.lead_id === item.id);
-    setLeadsByID(matchedLead);
-    setOpenPopup(true);
-  };
-
-  const openInPopup2 = (item) => {
-    const matchedLead = leads.find((lead) => lead.lead_id === item.id);
-    setFollowup(matchedLead.follow_up);
-    setOpenModalFollowup(true);
-  };
-
-  const openInPopup3 = (item) => {
-    const matchedLead = leads.find((lead) => lead.lead_id === item.id);
-    setLeadsByID(matchedLead);
-    setOpenModalPotential(true);
-  };
   const handlePageClick = async (event, value) => {
     try {
       const page = value;

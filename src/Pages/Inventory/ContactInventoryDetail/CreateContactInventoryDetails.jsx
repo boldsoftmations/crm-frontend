@@ -43,7 +43,6 @@ export const CreateContactInventoryDetails = (props) => {
     const { name, value } = event.target;
     setInputValue({ ...inputValue, [name]: value.toUpperCase() });
   };
-  console.log("phone", phone);
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
@@ -58,9 +57,8 @@ export const CreateContactInventoryDetails = (props) => {
       // Preserve the country code prefix in the phone number
       // contact1 = `+${phone.replace(/\s+/g, "")}`;
       contact1 = "+" + phone;
-      console.log("contact1", contact1);
       contact2 = "+" + phone2;
-      console.log("contact2", contact2);
+
       //   } else {
       //     throw new Error("Invalid phone number format");
       //   }
@@ -91,8 +89,8 @@ export const CreateContactInventoryDetails = (props) => {
       setOpen(true);
       await InventoryServices.createContactInventoryData(req);
 
-      setOpenPopup(false);
       getAllVendorDetailsByID();
+      setOpenPopup(false);
       setOpen(false);
     } catch (error) {
       console.log("error", error);

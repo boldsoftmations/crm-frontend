@@ -5,7 +5,6 @@ import {
   Button,
   FormControl,
   FormControlLabel,
-  FormHelperText,
   FormLabel,
   Grid,
   Radio,
@@ -15,26 +14,14 @@ import {
 import { useDispatch } from "react-redux";
 import { getVendorName } from "../../../Redux/Action/Action";
 import axios from "axios";
-import { styled } from "@mui/material/styles";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import InventoryServices from "../../../services/InventoryService";
 import { country } from "../Country";
 export const UpdateVendorDetails = (props) => {
   const { setOpenPopup, getAllVendorDetails, recordForEdit } = props;
   const [open, setOpen] = useState(false);
-  const [typeData, setTypeData] = useState("");
-  const today = new Date().toISOString().slice(0, 10); // Get current date in YYYY-MM-DD format
-  const [inputValue, setInputValue] = useState({
-    name: "",
-    address: "",
-    pincode: "",
-    website: "",
-    estd_date: today,
-    gst_number: "",
-    pan_number: "",
-    total_sales_turnover: "",
-    country: "",
-  });
+  const [typeData, setTypeData] = useState(recordForEdit.type);
+  const [inputValue, setInputValue] = useState(recordForEdit);
   const [pinCodeData, setPinCodeData] = useState([]);
   const [errorMessage, setErrorMessage] = useState([]);
   const timeoutRef = useRef(null);
@@ -81,22 +68,8 @@ export const UpdateVendorDetails = (props) => {
   };
 
   useEffect(() => {
-    getAllCompanyDetailsByID();
+    dispatch(getVendorName(recordForEdit.name));
   }, []);
-
-  const getAllCompanyDetailsByID = async () => {
-    try {
-      setOpen(true);
-      const response = await InventoryServices.getVendorDataById(recordForEdit);
-      setInputValue(response.data);
-      dispatch(getVendorName(response.data.name));
-      setTypeData(response.data.type);
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("company data by id error", err);
-    }
-  };
 
   const GST_NO = (gst_no) => gst_no.length <= 14;
 
@@ -133,7 +106,7 @@ export const UpdateVendorDetails = (props) => {
             ? inputValue.country
             : null,
       };
-      await InventoryServices.updateVendorData(recordForEdit, req);
+      await InventoryServices.updateVendorData(inputValue.id, req);
       setOpenPopup(false);
       setOpen(false);
       getAllVendorDetails();
@@ -145,7 +118,17 @@ export const UpdateVendorDetails = (props) => {
       setOpen(false);
     }
   };
-
+  console.log("typeData", typeData);
+  console.log(
+    "value",
+    typeData === "Domestic"
+      ? inputValue.country
+        ? inputValue.country
+        : "India"
+      : inputValue.country
+      ? inputValue.country
+      : null
+  );
   return (
     <>
       <CustomLoader open={open} />

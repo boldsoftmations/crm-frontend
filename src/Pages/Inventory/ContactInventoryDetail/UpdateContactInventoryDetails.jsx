@@ -19,8 +19,8 @@ export const UpdateContactInventoryDetails = (props) => {
   const { setOpenPopup, getAllVendorDetailsByID, IDForEdit, vendorData } =
     props;
   const [open, setOpen] = useState(false);
-  const [designation, setDesignation] = useState("");
-  const [inputValue, setInputValue] = useState([]);
+  const [designation, setDesignation] = useState(IDForEdit.designation);
+  const [inputValue, setInputValue] = useState(IDForEdit);
   const [phone, setPhone] = useState("");
   const [phone2, setPhone2] = useState("");
   const errRef = useRef();
@@ -34,63 +34,19 @@ export const UpdateContactInventoryDetails = (props) => {
     setPhone2(value);
   };
 
-  console.log("phone", phone);
-  console.log("phone2", phone2);
-
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setInputValue({ ...inputValue, [name]: value });
   };
   console.log("inputValue", inputValue);
-  useEffect(() => {
-    getAllContactDataByID();
-  }, []);
-
-  const getAllContactDataByID = async () => {
-    try {
-      setOpen(true);
-      const response = await InventoryServices.getContactInventoryDataById(
-        IDForEdit
-      );
-      setInputValue(response.data);
-      setDesignation(response.data.designation);
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("company data by id error", err);
-    }
-  };
 
   const UpdateContactDetails = async (e) => {
     try {
       e.preventDefault();
       setOpen(true);
       setOpen(true);
-      let contact1 = inputValue.contact;
-      let contact2 = inputValue.alternate_contact;
-      contact1 = "+" + phone;
-      console.log("contact1", contact1);
-      contact2 = "+" + phone2;
-      console.log("contact2", contact2);
-      // if (phone) {
-      //   const phoneRegex = /^(\+91[\-\s]?)?[0]?(91)?[789]\d{9}$/;
-      //   if (phoneRegex.test(phone)) {
-      //     // Preserve the country code prefix in the phone number
-      //     contact1 = `+${phone.replace(/\s+/g, "")}`;
-      //   } else {
-      //     throw new Error("Invalid phone number format");
-      //   }
-      // }
-
-      // if (phone2) {
-      //   const phoneRegex = /^(\+91[\-\s]?)?[0]?(91)?[789]\d{9}$/;
-      //   if (phoneRegex.test(phone2)) {
-      //     // Preserve the country code prefix in the alternate contact number
-      //     contact2 = `+${phone2.replace(/\s+/g, "")}`;
-      //   } else {
-      //     throw new Error("Invalid phone number format");
-      //   }
-      // }
+      let contact1 = phone ? "+" + phone : inputValue.contact;
+      let contact2 = phone2 ? "+" + phone2 : inputValue.alternate_contact;
 
       console.log("contact1 :>> ", contact1);
       console.log("contact1 :>> ", contact2);
@@ -121,7 +77,7 @@ export const UpdateContactInventoryDetails = (props) => {
         pan_number: panNumber ? panNumber : null,
         aadhaar: aadhaarNumber ? aadhaarNumber : null,
       };
-      await InventoryServices.updateContactInventoryData(IDForEdit, req);
+      await InventoryServices.updateContactInventoryData(inputValue.id, req);
       setOpenPopup(false);
       getAllVendorDetailsByID();
       setOpen(false);
