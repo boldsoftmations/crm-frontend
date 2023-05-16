@@ -10,26 +10,51 @@ import {
   Cell,
   Tooltip,
   Legend,
-  Label,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
 } from "recharts";
+import ProductForecastService from "../services/ProductForecastService";
+import { useSelector } from "react-redux";
+import { Autocomplete, TextField } from "@mui/material";
 
 export const LeadDashboardView = () => {
   const [open, setOpen] = useState(false);
   const [funnelData, setFunnelData] = useState([]);
   const [barChartData, setBarChartData] = useState([]);
+  const [pieChartData, setPieChartData] = useState([]);
   const [funnelDataByID, setFunnelDataByID] = useState(null);
   const [openPopup, setOpenPopup] = useState(false);
   const [hoveredSegment, setHoveredSegment] = useState(null);
+  const [assigned, setAssigned] = useState([]);
+  const [assign, setAssign] = useState(null);
+  const data = useSelector((state) => state.auth);
+  const userData = data.profile;
   useEffect(() => {
     getAllTaskDetails();
     geCustomerDetails();
+    getForecastDetails();
+    getAssignedData();
   }, []);
+
+  const getAssignedData = async () => {
+    try {
+      setOpen(true);
+      const res = await LeadServices.getAllAssignedUser();
+      setAssigned(res.data);
+      setOpen(false);
+    } catch (error) {
+      console.log("error", error);
+      setOpen(false);
+    }
+  };
 
   const getAllTaskDetails = async () => {
     try {
       setOpen(true);
       const response = await LeadServices.getLeadDashboard();
-      console.log("response", response);
       const Data = [
         { name: "new", label: "New", value: response.data.new },
         { name: "open", label: "Open", value: response.data.open },
@@ -66,7 +91,6 @@ export const LeadDashboardView = () => {
     try {
       setOpen(true);
       const response = await LeadServices.getCustomerDashboard();
-      console.log("response", response);
       const Data = [
         {
           label: "Active",
@@ -85,12 +109,69 @@ export const LeadDashboardView = () => {
           value: response.data.total_customers,
         },
       ];
-      setBarChartData(Data);
+      setPieChartData(Data);
       setOpen(false);
     } catch (err) {
       setOpen(false);
       console.log("err", err);
     }
+  };
+
+  const getForecastDetails = async () => {
+    try {
+      setOpen(true);
+      const users = userData.is_staff;
+      const forecastResponse = users
+        ? await ProductForecastService.getConsLastThreeMonthForecastData()
+        : await ProductForecastService.getLastThreeMonthForecastData();
+      const Data = forecastResponse.data.map((item) => {
+        return {
+          combination: `${months[item.month - 1]} - ${item.year}`,
+          actual: item.actual,
+          forecast: item.total_forecast,
+        };
+      });
+
+      setBarChartData(Data);
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      console.log("Error:", err);
+    }
+  };
+
+  const handleAutocompleteChange = (value) => {
+    setAssign(value);
+    getDataByFilter(value);
+  };
+
+  const getDataByFilter = async (value) => {
+    try {
+      const FilterData = value;
+      setOpen(true);
+      const response =
+        await ProductForecastService.getLastThreeMonthForecastDataByFilter(
+          FilterData
+        );
+      const Data = response.data.map((item) => {
+        return {
+          combination: `${months[item.month - 1]}  - ${item.year}`,
+          actual: item.actual,
+          forecast: item.total_forecast,
+        };
+      });
+
+      setBarChartData(Data);
+      setOpen(false);
+    } catch (error) {
+      console.log("error", error);
+      setOpen(false);
+    }
+  };
+
+  const getResetData = () => {
+    getForecastDetails();
+    setAssign(null);
   };
 
   const handleRowClick = (row) => {
@@ -143,9 +224,63 @@ export const LeadDashboardView = () => {
   const handleSegmentLeave = () => {
     setHoveredSegment(null);
   };
+
   return (
     <>
       <CustomLoader open={open} />
+      {userData.is_staff === true && (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          <div
+            style={{
+              ...chartContainerStyle,
+              minHeight: "10px",
+              paddingTop: "0px",
+              padding: "10px",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <Autocomplete
+              style={{
+                width: 400,
+                marginRight: "10px",
+              }}
+              size="small"
+              onChange={(event, value) => handleAutocompleteChange(value)}
+              value={assign}
+              options={assigned.map((option) => option.email)}
+              getOptionLabel={(option) => option}
+              renderInput={(params) => (
+                <TextField {...params} label="Filter By Sales Person" />
+              )}
+            />
+            <button className="btn btn-primary" onClick={getResetData}>
+              Reset
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div style={{ display: "flex", flexDirection: "row" }}>
+        <div style={chartContainerStyle}>
+          <BarChart width={600} height={400} data={barChartData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="combination" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="actual" name="Actual" fill="#8884d8" />
+            <Bar dataKey="forecast" name="Forecast" fill="#82ca9d" />
+          </BarChart>
+        </div>
+      </div>
+
       <div style={{ display: "flex", flexDirection: "row" }}>
         <div style={chartContainerStyle}>
           <div className="funnelChart" style={funnelStyle}>
@@ -176,7 +311,7 @@ export const LeadDashboardView = () => {
           <ResponsiveContainer width="100%" height={400}>
             <PieChart>
               <Pie
-                data={barChartData}
+                data={pieChartData}
                 dataKey="value"
                 nameKey="label"
                 cx="50%"
@@ -207,12 +342,12 @@ export const LeadDashboardView = () => {
                       textAnchor="middle"
                       dominantBaseline="central"
                     >
-                      {`${barChartData[index].label} (${barChartData[index].value})`}
+                      {`${pieChartData[index].label} (${pieChartData[index].value})`}
                     </text>
                   );
                 }}
               >
-                {barChartData.map((entry, index) => (
+                {pieChartData.map((entry, index) => (
                   <Cell key={index} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
@@ -231,6 +366,7 @@ export const LeadDashboardView = () => {
           </ResponsiveContainer>
         </div>
       </div>
+
       <Popup
         maxWidth={"xl"}
         title={"Vsiew Leads dashboard"}
@@ -245,3 +381,18 @@ export const LeadDashboardView = () => {
     </>
   );
 };
+
+const months = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];

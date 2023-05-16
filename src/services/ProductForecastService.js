@@ -292,6 +292,23 @@ const getDescriptionWiseForecastPaginateData = (currentPage) => {
   );
 };
 
+// last Three Month Forecast End Point
+const getLastThreeMonthForecastData = () => {
+  return CustomAxios.get(`/api/forecast/last-three-month-forecast/`);
+};
+
+const getConsLastThreeMonthForecastData = () => {
+  return CustomAxios.get(
+    `/api/forecast/consolidated-last-three-month-forecast/`
+  );
+};
+
+const getLastThreeMonthForecastDataByFilter = (filter) => {
+  return CustomAxios.get(
+    `/api/forecast/last-three-month-forecast/?product_forecast__sales_person__email=${filter}`
+  );
+};
+
 const ProductForecastService = {
   getProductForecast,
   getByFilterProductForecast,
@@ -342,6 +359,9 @@ const ProductForecastService = {
   getAllSearchDescriptionWiseForecast,
   getAllDescriptionWiseForecastPaginate,
   getDescriptionWiseForecastPaginateData,
+  getLastThreeMonthForecastData,
+  getConsLastThreeMonthForecastData,
+  getLastThreeMonthForecastDataByFilter,
 };
 
 export default ProductForecastService;
