@@ -277,6 +277,15 @@ export const LeadDashboardView = () => {
             <Legend />
             <Bar dataKey="actual" name="Actual" fill="#8884d8" />
             <Bar dataKey="forecast" name="Forecast" fill="#82ca9d" />
+            <text
+              x="50%"
+              y={20}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              className="chart-title"
+            >
+              Forecast vs Achieved
+            </text>
           </BarChart>
         </div>
       </div>
