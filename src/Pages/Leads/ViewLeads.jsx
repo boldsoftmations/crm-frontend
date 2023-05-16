@@ -67,12 +67,13 @@ export const Viewleads = () => {
   const openInPopup = (item) => {
     const matchedLead = leads.find((lead) => lead.lead_id === item.id);
     setLeadsByID(matchedLead);
+    setFollowup(matchedLead.followup);
     setOpenPopup(true);
   };
 
   const openInPopup2 = (item) => {
     const matchedLead = leads.find((lead) => lead.lead_id === item.id);
-    setFollowup(matchedLead.follow_up);
+    setFollowup(matchedLead);
     setOpenModalFollowup(true);
   };
 
@@ -611,7 +612,7 @@ export const Viewleads = () => {
         setOpenPopup={setOpenModalFollowup}
       >
         <FollowUpCreate
-          leadsByID={leadsByID}
+          followupData={followup}
           getAllleadsData={getleads}
           setOpenModal={setOpenModalFollowup}
         />{" "}

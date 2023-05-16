@@ -277,8 +277,8 @@ const ActivityOption = [
   },
   {
     id: 7,
-    value: "'Call me back",
-    label: "'Call me back",
+    value: "Call me back",
+    label: "Call me back",
   },
   {
     id: 8,

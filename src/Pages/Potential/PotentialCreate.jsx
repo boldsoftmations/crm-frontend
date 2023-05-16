@@ -33,8 +33,8 @@ export const PotentialCreate = (props) => {
       setOpen(true);
       LeadServices.createPotentialLead(data);
 
-      setOpenModal(false);
       getAllleadsData();
+      setOpenModal(false);
       setOpen(false);
     } catch (error) {
       console.log("error :>> ", error);

@@ -48,7 +48,6 @@ export const UpdateLeads = (props) => {
     leadsByID,
     followup,
     setOpenPopup,
-    getUnassigned,
     getAllleadsData,
     descriptionMenuData,
     assigned,
@@ -145,9 +144,8 @@ export const UpdateLeads = (props) => {
         };
 
         await LeadServices.updateLeads(leads.lead_id, data);
-        setOpenPopup(false);
-        getUnassigned();
         getAllleadsData();
+        setOpenPopup(false);
         setOpen(false);
       } catch (error) {
         console.log("error :>> ", error);

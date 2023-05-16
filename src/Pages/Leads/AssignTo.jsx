@@ -375,7 +375,7 @@ export const AssignTo = () => {
           assigned={assigned}
           descriptionMenuData={descriptionMenuData}
           setOpenPopup={setOpenPopup}
-          getUnassigned={getUnassigned}
+          getAllleadsData={getUnassigned}
           product={product}
         />
       </Popup>
