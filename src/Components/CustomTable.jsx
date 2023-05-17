@@ -11,6 +11,7 @@ export const CustomTable = ({
   openInPopup2,
   openInPopup3,
   openInPopup4,
+  isLastRow,
   Styles,
 }) => {
   return (
@@ -76,8 +77,10 @@ export const CustomTable = ({
                       : index % 2 === 0
                       ? "#ffffff"
                       : "#f2f2f2",
-
                   borderBottom: "1px solid rgba(224, 224, 224, 1)",
+                  position: isLastRow ? "sticky" : "static",
+                  bottom: isLastRow ? 0 : "auto",
+                  zIndex: isLastRow ? 0 : "auto",
                 }}
                 key={index}
               >

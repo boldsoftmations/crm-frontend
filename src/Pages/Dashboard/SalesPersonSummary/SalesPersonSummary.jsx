@@ -99,6 +99,7 @@ export const SalesPersonSummary = (props) => {
             headers={headers}
             data={data}
             openInPopup={null} // Set to null or pass in your custom function
+            isLastRow={totalRow ? true : false}
           />
         </Paper>
       </Grid>

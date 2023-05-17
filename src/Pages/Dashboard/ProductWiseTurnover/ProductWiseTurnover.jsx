@@ -187,11 +187,8 @@ export const ProductWiseTurnover = () => {
     columnTotals[columnKey] = numberFormat(total);
   }
 
-  console.log("columnTotals", columnTotals);
-
   // Add the column totals row to the Tabledata
   Tabledata.push(columnTotals);
-  console.log("Tabledata", Tabledata);
   const Tableheaders = [
     "Sales Person",
     "Description",
@@ -276,7 +273,7 @@ export const ProductWiseTurnover = () => {
             headers={Tableheaders}
             data={Tabledata}
             Styles={{ paddingLeft: "10px", paddingRight: "10px" }}
-            isLastRow={true}
+            isLastRow={columnTotals ? true : false}
             openInPopup={null}
             openInPopup2={null}
             openInPopup3={null}
