@@ -309,6 +309,32 @@ const getLastThreeMonthForecastDataByFilter = (filter) => {
   );
 };
 
+const getProductWiseTurnoverForecast = () => {
+  return CustomAxios.get(`/api/forecast/productwise-turnover`);
+};
+
+const getAllSearchProductWiseTurnoverForecast = (type, search) => {
+  return CustomAxios.get(
+    `/api/forecast/productwise-turnover/?${type}=${search}`
+  );
+};
+
+const getAllProductWiseTurnoverForecastPaginate = (
+  currentPage,
+  type,
+  search
+) => {
+  return CustomAxios.get(
+    `/api/forecast/productwise-turnover/?page=${currentPage}&${type}=${search}`
+  );
+};
+
+const getProductWiseTurnoverForecastPaginateData = (currentPage) => {
+  return CustomAxios.get(
+    `/api/forecast/productwise-turnover/?page=${currentPage}`
+  );
+};
+
 const ProductForecastService = {
   getProductForecast,
   getByFilterProductForecast,
@@ -362,6 +388,10 @@ const ProductForecastService = {
   getLastThreeMonthForecastData,
   getConsLastThreeMonthForecastData,
   getLastThreeMonthForecastDataByFilter,
+  getProductWiseTurnoverForecast,
+  getAllSearchProductWiseTurnoverForecast,
+  getAllProductWiseTurnoverForecastPaginate,
+  getProductWiseTurnoverForecastPaginateData,
 };
 
 export default ProductForecastService;

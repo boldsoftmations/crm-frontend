@@ -8,6 +8,7 @@ import { CurrentMonthRM } from "./SalesSummary/CurrentMonthRM";
 import InvoiceServices from "../../services/InvoiceService";
 import { SalesPersonSummary } from "./SalesPersonSummary/SalesPersonSummary";
 import { CustomTabs } from "../../Components/CustomTabs";
+import { ProductWiseTurnover } from "./ProductWiseTurnover/ProductWiseTurnover";
 
 export function Dashboard() {
   const [open, setOpen] = useState(false);
@@ -34,6 +35,7 @@ export function Dashboard() {
     { label: "Current Month Sales(Finish Good)" },
     { label: "Current Month Sales(Raw Material)" },
     { label: "Sales Person Summary" },
+    { label: "Product Wise Turnover" },
   ];
 
   useEffect(() => {
@@ -100,6 +102,11 @@ export function Dashboard() {
           {activeTab === 5 && (
             <div>
               <SalesPersonSummary salesPersonSummary={salesPersonSummary} />
+            </div>
+          )}
+          {activeTab === 6 && (
+            <div>
+              <ProductWiseTurnover />
             </div>
           )}
         </div>
