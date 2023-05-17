@@ -210,7 +210,7 @@ export const ProductWiseTurnover = () => {
       <CustomLoader open={open} />
       <Grid item xs={12}>
         <ErrorMessage errRef={errRef} errMsg={errMsg} />
-        <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
+        <Paper sx={{ p: 2, m: 2, display: "flex", flexDirection: "column" }}>
           <Box display="flex">
             <Box flexGrow={1}>
               <FormControl

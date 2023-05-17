@@ -42,6 +42,8 @@ export const AssignTo = () => {
   const [descriptionMenuData, setDescriptionMenuData] = useState([]);
   const [product, setProduct] = useState([]);
   const [leadsByID, setLeadsByID] = useState(null);
+  const [followup, setFollowup] = useState(null);
+  const [potential, setPotential] = useState(null);
   const handleInputChange = (event) => {
     setFilterSelectedQuery(event.target.value);
     getSearchData(event.target.value);
@@ -50,6 +52,8 @@ export const AssignTo = () => {
   const openInPopup = (item) => {
     const matchedLead = leads.find((lead) => lead.lead_id === item.id);
     setLeadsByID(matchedLead);
+    setFollowup(matchedLead.followup);
+    setPotential(matchedLead.potential);
     setOpenPopup(true);
   };
 
@@ -372,6 +376,8 @@ export const AssignTo = () => {
       >
         <UpdateLeads
           leadsByID={leadsByID}
+          followup={followup}
+          potential={potential}
           assigned={assigned}
           descriptionMenuData={descriptionMenuData}
           setOpenPopup={setOpenPopup}

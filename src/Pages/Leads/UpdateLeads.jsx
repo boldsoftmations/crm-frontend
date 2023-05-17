@@ -47,6 +47,7 @@ export const UpdateLeads = (props) => {
   const {
     leadsByID,
     followup,
+    potential,
     setOpenPopup,
     getAllleadsData,
     descriptionMenuData,
@@ -886,7 +887,7 @@ export const UpdateLeads = (props) => {
         <Grid item xs={12}>
           <ViewAllPotential
             getAllleadsData={getAllleadsData}
-            leadsByID={leadsByID}
+            potential={potential}
             product={product}
           />
         </Grid>

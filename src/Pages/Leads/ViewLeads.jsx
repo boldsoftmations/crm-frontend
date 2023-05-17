@@ -46,6 +46,7 @@ export const Viewleads = () => {
   const [openModalPotential, setOpenModalPotential] = useState(false);
   const [leadsByID, setLeadsByID] = useState(null);
   const [followup, setFollowup] = useState(null);
+  const [potential, setPotential] = useState(null);
   const [assigned, setAssigned] = useState([]);
   const [referenceData, setReferenceData] = useState([]);
   const [descriptionMenuData, setDescriptionMenuData] = useState([]);
@@ -68,6 +69,7 @@ export const Viewleads = () => {
     const matchedLead = leads.find((lead) => lead.lead_id === item.id);
     setLeadsByID(matchedLead);
     setFollowup(matchedLead.followup);
+    setPotential(matchedLead.potential);
     setOpenPopup(true);
   };
 
@@ -596,6 +598,7 @@ export const Viewleads = () => {
       >
         <UpdateLeads
           followup={followup}
+          potential={potential}
           assigned={assigned}
           descriptionMenuData={descriptionMenuData}
           leadsByID={leadsByID}

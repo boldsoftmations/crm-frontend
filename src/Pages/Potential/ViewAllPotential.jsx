@@ -2,11 +2,11 @@ import React from "react";
 import { Box, Divider, Grid, Paper } from "@mui/material";
 
 export const ViewAllPotential = (props) => {
-  const { leadsByID } = props;
+  const { potential } = props;
 
   return (
     <>
-      {leadsByID.potential && (
+      {potential && (
         <Box component="form" noValidate sx={{ mt: 1 }}>
           <Paper
             sx={{
@@ -25,7 +25,7 @@ export const ViewAllPotential = (props) => {
               <Box flexGrow={0.3} align="right"></Box>
             </Box>
 
-            {leadsByID.potential.map((potentialInput, index) => {
+            {potential.map((potentialInput, index) => {
               return (
                 <>
                   <Grid
