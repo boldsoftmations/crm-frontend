@@ -28,6 +28,12 @@ export const ProductWiseTurnover = () => {
   const [assigned, setAssigned] = useState([]);
   const [productWiseTurnover, setProductWiseTurnover] = useState([]);
 
+  const numberFormat = (value) =>
+    new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+    }).format(value);
+
   const getResetData = () => {
     setSearchQuery("");
     setFilterSelectedQuery("");
@@ -165,6 +171,27 @@ export const ProductWiseTurnover = () => {
     return tableRow;
   });
 
+  // Calculate the total for each column
+  const columnTotals = {
+    sales_person: "Total",
+    description: "-",
+    brand: "-",
+  };
+
+  for (let i = 0; i < 4; i++) {
+    const columnKey = `total_turnover_monthly_${i}`;
+    const total = Tabledata.reduce(
+      (sum, row) => sum + (row[columnKey] || 0),
+      0
+    );
+    columnTotals[columnKey] = numberFormat(total);
+  }
+
+  console.log("columnTotals", columnTotals);
+
+  // Add the column totals row to the Tabledata
+  Tabledata.push(columnTotals);
+  console.log("Tabledata", Tabledata);
   const Tableheaders = [
     "Sales Person",
     "Description",
@@ -173,11 +200,9 @@ export const ProductWiseTurnover = () => {
     `${months[nextMonth1]} - ${
       nextMonth1 > currentMonth ? currentYear : currentYear + 1
     } Total TurnOver`,
-
     `${months[nextMonth2]} - ${
       nextMonth2 > currentMonth ? currentYear : currentYear + 1
     } Total TurnOver`,
-
     `${months[nextMonth3]} - ${
       nextMonth3 > currentMonth ? currentYear : currentYear + 1
     } Total TurnOver`,
@@ -250,11 +275,12 @@ export const ProductWiseTurnover = () => {
           <CustomTable
             headers={Tableheaders}
             data={Tabledata}
+            Styles={{ paddingLeft: "10px", paddingRight: "10px" }}
+            isLastRow={true}
             openInPopup={null}
             openInPopup2={null}
             openInPopup3={null}
             openInPopup4={null}
-            Styles={{ paddingLeft: "10px", paddingRight: "10px" }}
           />
         </Paper>
       </Grid>
