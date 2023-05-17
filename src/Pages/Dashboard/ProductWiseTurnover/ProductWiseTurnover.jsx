@@ -159,7 +159,7 @@ export const ProductWiseTurnover = () => {
 
   const Tabledata = productWiseTurnover.map((row) => {
     const tableRow = {
-      sales_person: row.sales_person__email,
+      sales_person: row.first_name + " " + row.last_name,
       description: row.product__description__name,
       brand: row.product__brand__name,
     };
@@ -248,7 +248,7 @@ export const ProductWiseTurnover = () => {
                 >
                   {assigned.map((option, i) => (
                     <MenuItem key={i} value={option.email}>
-                      {option.email}
+                      {option.first_name + " " + option.last_name}
                     </MenuItem>
                   ))}
                 </Select>
