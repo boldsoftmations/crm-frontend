@@ -86,8 +86,8 @@ export const SalesFunnel = (props) => {
     contact: row.contact,
     alternate_contact: row.alternate_contact,
     email: row.email,
-    stage: row.stage,
     priority: row.priority,
+    stage: row.stage,
     assigned_to: row.assigned_to,
   }));
 
