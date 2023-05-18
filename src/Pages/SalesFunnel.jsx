@@ -81,25 +81,26 @@ export const SalesFunnel = (props) => {
 
   const Tabledata = leads.map((row, i) => ({
     id: row.lead_id,
+    company: row.company,
     name: row.name,
     contact: row.contact,
     alternate_contact: row.alternate_contact,
     email: row.email,
-
-    assigned_to: row.assigned_to,
+    stage: row.stage,
     priority: row.priority,
-    company: row.company,
+    assigned_to: row.assigned_to,
   }));
 
   const Tableheaders = [
     "ID",
+    "COMPANY",
     "NAME",
     "CONTACT",
     "ALTERNATE CONTACT",
     "EMAIL",
-    "ASSIGNED TO",
     "PRIORITY",
-    "COMPANY",
+    "STAGE",
+    "ASSIGNED TO",
   ];
   return (
     <>
