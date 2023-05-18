@@ -183,6 +183,7 @@ export const CurrentMonthForecastView = () => {
     { label: "Forecast", key: "forecast" },
     { label: "Actual", key: "actual" },
     { label: "Orderbook Value", key: "orderbook_value" },
+    { label: "Forecast Achieved", key: "forecast_achieved" },
   ];
 
   const handleExport = async () => {
@@ -205,6 +206,8 @@ export const CurrentMonthForecastView = () => {
       const data = response.data
         .filter((row) => row.forecast > 0)
         .map((row) => {
+          const sumValue = row.orderbook_value + row.actual;
+          const forecast_achieved = row.forecast - sumValue;
           return {
             company: row.company,
             sales_person: row.sales_person,
@@ -212,6 +215,7 @@ export const CurrentMonthForecastView = () => {
             forecast: row.forecast,
             actual: row.actual,
             orderbook_value: row.orderbook_value,
+            forecast_achieved: forecast_achieved > 0 ? forecast_achieved : 0,
           };
         });
       setOpen(false);
@@ -223,15 +227,20 @@ export const CurrentMonthForecastView = () => {
     }
   };
 
-  const Tabledata = currentMonthForecast.map((row) => ({
-    id: row.id,
-    company: row.company,
-    sales_person: row.sales_person,
-    product: row.product,
-    forecast: row.forecast,
-    actual: row.actual,
-    orderbook_value: row.orderbook_value,
-  }));
+  const Tabledata = currentMonthForecast.map((row) => {
+    const sumValue = row.orderbook_value + row.actual;
+    const forecast_achieved = row.forecast - sumValue;
+    return {
+      id: row.id,
+      company: row.company,
+      sales_person: row.sales_person,
+      product: row.product,
+      forecast: row.forecast,
+      actual: row.actual,
+      orderbook_value: row.orderbook_value,
+      forecast_achieved: forecast_achieved > 0 ? forecast_achieved : 0,
+    };
+  });
 
   const Tableheaders = [
     "ID",
@@ -241,7 +250,7 @@ export const CurrentMonthForecastView = () => {
     "Forecast",
     "Actual",
     "Orderbook Value",
-    "Action",
+    "Forecast Achieved",
   ];
 
   return (
