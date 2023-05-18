@@ -1,9 +1,11 @@
-import React from "react";
-import { Box, Divider, Grid, Paper } from "@mui/material";
+import React, { useState } from "react";
+import { Box, Button, Divider, Grid, Paper } from "@mui/material";
+import { Popup } from "../../Components/Popup";
+import { PotentialCreate } from "./PotentialCreate";
 
 export const ViewAllPotential = (props) => {
-  const { potential } = props;
-
+  const { potential, getAllleadsData, product, leadsByID, openInPopup } = props;
+  const [openModal, setOpenModal] = useState(false);
   return (
     <>
       {potential && (
@@ -22,7 +24,15 @@ export const ViewAllPotential = (props) => {
               <Box flexGrow={2.5} align="center">
                 <h3 className="Auth-form-title">View Potential</h3>
               </Box>
-              <Box flexGrow={0.3} align="right"></Box>
+              <Box flexGrow={0.3} align="right">
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={() => setOpenModal(true)}
+                >
+                  Create Potential
+                </Button>
+              </Box>
             </Box>
 
             {potential.map((potentialInput, index) => {
@@ -72,6 +82,19 @@ export const ViewAllPotential = (props) => {
           </Paper>
         </Box>
       )}
+      <Popup
+        maxWidth={"lg"}
+        title={"Create Potential"}
+        openPopup={openModal}
+        setOpenPopup={setOpenModal}
+      >
+        <PotentialCreate
+          getAllleadsData={getAllleadsData}
+          leadsByID={leadsByID}
+          product={product}
+          setOpenModal={setOpenModal}
+        />
+      </Popup>
     </>
   );
 };

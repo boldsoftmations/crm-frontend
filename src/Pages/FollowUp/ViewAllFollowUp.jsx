@@ -1,5 +1,5 @@
-import React from "react";
-import { Box, Paper, Typography } from "@mui/material";
+import React, { useState } from "react";
+import { Box, Button, Paper, Typography } from "@mui/material";
 import {
   Timeline,
   TimelineConnector,
@@ -11,9 +11,12 @@ import {
   TimelineSeparator,
 } from "@mui/lab";
 import moment from "moment";
+import { Popup } from "../../Components/Popup";
+import { FollowUpCreate } from "./FollowUpCreate";
 
 export const ViewAllFollowUp = (props) => {
-  const { followup } = props;
+  const { followup, leadsByID, getAllleadsData } = props;
+  const [openModal, setOpenModal] = useState(false);
   return (
     <>
       <Box component="form" noValidate sx={{ mt: 1 }}>
@@ -31,7 +34,16 @@ export const ViewAllFollowUp = (props) => {
             <Box flexGrow={2.5} align="center">
               <h3 className="Auth-form-title">View Activity</h3>
             </Box>
-            <Box flexGrow={0.3} align="right"></Box>
+            <Box flexGrow={0.3} align="right">
+              {" "}
+              <Button
+                variant="contained"
+                color="success"
+                onClick={() => setOpenModal(true)}
+              >
+                Create Activity
+              </Button>
+            </Box>
           </Box>
           <Box
             sx={{
@@ -95,6 +107,18 @@ export const ViewAllFollowUp = (props) => {
           </Box>
         </Paper>
       </Box>
+      <Popup
+        maxWidth={"xl"}
+        title={"Create Activity"}
+        openPopup={openModal}
+        setOpenPopup={setOpenModal}
+      >
+        <FollowUpCreate
+          followupData={leadsByID}
+          getAllleadsData={getAllleadsData}
+          setOpenModal={setOpenModal}
+        />
+      </Popup>
     </>
   );
 };

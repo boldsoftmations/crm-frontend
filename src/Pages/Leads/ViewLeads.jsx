@@ -75,7 +75,7 @@ export const Viewleads = () => {
 
   const openInPopup2 = (item) => {
     const matchedLead = leads.find((lead) => lead.lead_id === item.id);
-    setFollowup(matchedLead);
+    setLeadsByID(matchedLead);
     setOpenModalFollowup(true);
   };
 
@@ -274,25 +274,26 @@ export const Viewleads = () => {
 
   const Tabledata = leads.map((row, i) => ({
     id: row.lead_id,
+    company: row.company,
     name: row.name,
     contact: row.contact,
     alternate_contact: row.alternate_contact,
     email: row.email,
-
-    assigned_to: row.assigned_to,
     priority: row.priority,
-    company: row.company,
+    stage: row.stage,
+    assigned_to: row.assigned_to,
   }));
 
   const Tableheaders = [
     "ID",
+    "COMPANY",
     "NAME",
     "CONTACT",
     "ALTERNATE CONTACT",
     "EMAIL",
-    "ASSIGNED TO",
     "PRIORITY",
-    "COMPANY",
+    "STAGE",
+    "ASSIGNED TO",
     "ACTION",
   ];
 
@@ -615,7 +616,7 @@ export const Viewleads = () => {
         setOpenPopup={setOpenModalFollowup}
       >
         <FollowUpCreate
-          followupData={followup}
+          followupData={leadsByID}
           getAllleadsData={getleads}
           setOpenModal={setOpenModalFollowup}
         />{" "}

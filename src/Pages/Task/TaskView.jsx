@@ -44,7 +44,8 @@ export const TaskView = () => {
 
   const openInPopup2 = (item) => {
     const matchedActivity = task.find((activity) => activity.id === item.id);
-    setActivity(matchedActivity.activities);
+    setActivity(matchedActivity);
+
     setOpenModalActivity(true);
   };
 

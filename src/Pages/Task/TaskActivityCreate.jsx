@@ -14,7 +14,8 @@ import TaskService from "../../services/TaskService";
 import { CustomLoader } from "../../Components/CustomLoader";
 
 export const TaskActivityCreate = (props) => {
-  const { setOpenModalActivity, getAllTaskDetails, taskByID, activity } = props;
+  const { setOpenModalActivity, getAllTaskDetails, activity } = props;
+  console.log("activity", activity);
   const [open, setOpen] = useState(false);
   const [activityTask, setActivityTask] = useState([]);
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -31,7 +32,7 @@ export const TaskActivityCreate = (props) => {
       setOpen(true);
       const req = {
         created_by: users.email,
-        task: activity.task,
+        task: activity.id,
         description: activityTask.description,
       };
       await TaskService.createActivityTask(req);

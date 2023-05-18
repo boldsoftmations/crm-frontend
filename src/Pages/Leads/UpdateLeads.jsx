@@ -879,6 +879,7 @@ export const UpdateLeads = (props) => {
           <ViewAllFollowUp
             getAllleadsData={getAllleadsData}
             followup={followup}
+            leadsByID={leadsByID}
           />
         </Grid>
       </Grid>
@@ -889,6 +890,7 @@ export const UpdateLeads = (props) => {
             getAllleadsData={getAllleadsData}
             potential={potential}
             product={product}
+            leadsByID={leadsByID}
           />
         </Grid>
       </Grid>

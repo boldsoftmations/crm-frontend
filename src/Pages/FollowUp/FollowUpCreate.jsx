@@ -23,7 +23,7 @@ export const FollowUpCreate = (props) => {
     const { name, value } = event.target;
     setFollowUp({ ...followUp, [name]: value });
   };
-  console.log("followupData :>> ", followupData);
+
   const createFollowUpLeadsData = async (e) => {
     try {
       e.preventDefault();
@@ -40,6 +40,7 @@ export const FollowUpCreate = (props) => {
 
       setOpenModal(false);
       getAllleadsData();
+
       setOpen(false);
     } catch (error) {
       console.log("error :>> ", error);
