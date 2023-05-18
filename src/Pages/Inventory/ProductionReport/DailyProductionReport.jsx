@@ -18,10 +18,8 @@ export const DailyProductionReport = () => {
   const [dailyProductionReport, setDailyProductionReport] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [exportData, setExportData] = useState([]);
-  const [endDate, setEndDate] = useState(new Date()); // set endDate as one week ahead of startDate
-  const [startDate, setStartDate] = useState(
-    new Date(endDate.getTime() - 7 * 24 * 60 * 60 * 1000)
-  ); // set default value as current date
+  const [endDate, setEndDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(new Date()); // set default value as current date
   const minDate = new Date().toISOString().split("T")[0];
   const maxDate = new Date("2030-12-31").toISOString().split("T")[0];
 
@@ -33,7 +31,12 @@ export const DailyProductionReport = () => {
   const handleStartDateChange = (event) => {
     const date = new Date(event.target.value);
     setStartDate(date);
-    setEndDate(new Date(date.getTime() + 7 * 24 * 60 * 60 * 1000));
+    setEndDate(new Date());
+  };
+
+  const handleEndDateChange = (event) => {
+    const date = new Date(event.target.value);
+    setEndDate(date);
   };
 
   const handleInputChange = () => {
@@ -52,7 +55,7 @@ export const DailyProductionReport = () => {
 
   useEffect(() => {
     getDailyProductionReport();
-  }, [startDate]);
+  }, [startDate, endDate]);
 
   const getDailyProductionReport = async () => {
     try {
@@ -120,6 +123,7 @@ export const DailyProductionReport = () => {
         setpageCount(Math.ceil(total / 25));
       } else {
         getDailyProductionReport();
+
         setSearchQuery("");
       }
       setOpen(false);
@@ -271,32 +275,22 @@ export const DailyProductionReport = () => {
                   id="start-date"
                   value={startDate ? startDate.toISOString().split("T")[0] : ""}
                   min={minDate}
-                  max={
-                    endDate
-                      ? new Date(endDate.getTime() - 7 * 24 * 60 * 60 * 1000)
-                          .toISOString()
-                          .split("T")[0]
-                      : maxDate
-                  }
+                  max={maxDate}
                   onChange={handleStartDateChange}
                 />
+
                 <TextField
                   label="End Date"
                   variant="outlined"
                   size="small"
-                  // type="date"
+                  type="date"
                   id="end-date"
                   value={endDate ? endDate.toISOString().split("T")[0] : ""}
                   min={
                     startDate ? startDate.toISOString().split("T")[0] : minDate
                   }
-                  max={
-                    startDate
-                      ? new Date(startDate.getTime() + 7 * 24 * 60 * 60 * 1000)
-                          .toISOString()
-                          .split("T")[0]
-                      : maxDate
-                  }
+                  max={maxDate}
+                  onChange={handleEndDateChange}
                   disabled={!startDate}
                 />
                 <CustomSearchWithButton
