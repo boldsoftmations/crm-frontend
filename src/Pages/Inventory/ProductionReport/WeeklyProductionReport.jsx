@@ -87,86 +87,143 @@ export const WeeklyProductionReport = () => {
   const headers = [
     { label: "Seller Unit", key: "seller_account__unit" },
     { label: "Product", key: "product__name" },
-    {
-      label: "Unit",
-      key: "product__unit__name",
-    },
-
+    { label: "Unit", key: "product__unit__name" },
     { label: "Brand", key: "product__brand__name" },
   ];
+
   const weekNumbers = [1, 2, 3, 4, 5];
 
   weekNumbers.forEach((weekNumber) => {
     headers.push({ label: `Week ${weekNumber}`, key: `week${weekNumber}` });
   });
+
+  headers.push({ label: "Total", key: "total" });
+
   //   export to excel data
-  let data = weeklyProductionReportData.map((row) => {
+  let data = weeklyProductionReportData.flatMap((row) => {
+    const week1 = row.data
+      .filter(
+        (data) => data.index_position !== null && data.index_position === 0
+      )
+      .reduce(
+        (sum, filteredData) => sum + Number(filteredData.total_quantity),
+        0
+      );
+    const week2 = row.data
+      .filter(
+        (data) => data.index_position !== null && data.index_position === 1
+      )
+      .reduce(
+        (sum, filteredData) => sum + Number(filteredData.total_quantity),
+        0
+      );
+    const week3 = row.data
+      .filter(
+        (data) => data.index_position !== null && data.index_position === 2
+      )
+      .reduce(
+        (sum, filteredData) => sum + Number(filteredData.total_quantity),
+        0
+      );
+    const week4 = row.data
+      .filter(
+        (data) => data.index_position !== null && data.index_position === 3
+      )
+      .reduce(
+        (sum, filteredData) => sum + Number(filteredData.total_quantity),
+        0
+      );
+    const week5 = row.data
+      .filter(
+        (data) => data.index_position !== null && data.index_position === 4
+      )
+      .reduce(
+        (sum, filteredData) => sum + Number(filteredData.total_quantity),
+        0
+      );
+
+    const total = week1 + week2 + week3 + week4 + week5;
+
     return {
       seller_account__unit: row.seller_account__unit,
       product__name: row.product__name,
       product__unit__name: row.product__unit__name,
       product__brand__name: row.product__brand__name,
-      week1: row.data
-        .filter(
-          (data) => data.index_position !== null && data.index_position === 0
-        )
-        .map((filteredData) => `${filteredData.total_quantity}`),
-      week2: row.data
-        .filter(
-          (data) => data.index_position !== null && data.index_position === 1
-        )
-        .map((filteredData) => `${filteredData.total_quantity}`),
-      week3: row.data
-        .filter(
-          (data) => data.index_position !== null && data.index_position === 2
-        )
-        .map((filteredData) => `${filteredData.total_quantity}`),
-      week4: row.data
-        .filter(
-          (data) => data.index_position !== null && data.index_position === 3
-        )
-        .map((filteredData) => `${filteredData.total_quantity}`),
-      week5: row.data
-        .filter(
-          (data) => data.index_position !== null && data.index_position === 4
-        )
-        .map((filteredData) => `${filteredData.total_quantity}`),
+      week1,
+      week2,
+      week3,
+      week4,
+      week5,
+      total,
     };
   });
 
-  const TableHeader = ["Seller Unit", "Product", "Unit", "Brand", ...weeks];
+  const TableHeader = [
+    "Seller Unit",
+    "Product",
+    "Unit",
+    "Brand",
+    ...weeks,
+    "Total",
+  ];
 
-  const TableData = weeklyProductionReportData.flatMap((row) => ({
-    seller_account__unit: row.seller_account__unit,
-    product__name: row.product__name,
-    product__unit__name: row.product__unit__name,
-    product__brand__name: row.product__brand__name,
-    week1: row.data
+  const TableData = weeklyProductionReportData.flatMap((row) => {
+    const week1 = row.data
       .filter(
         (data) => data.index_position !== null && data.index_position === 0
       )
-      .map((filteredData) => `${filteredData.total_quantity}`),
-    week2: row.data
+      .reduce(
+        (sum, filteredData) => sum + Number(filteredData.total_quantity),
+        0
+      );
+    const week2 = row.data
       .filter(
         (data) => data.index_position !== null && data.index_position === 1
       )
-      .map((filteredData) => `${filteredData.total_quantity}`),
-    week3: row.data
+      .reduce(
+        (sum, filteredData) => sum + Number(filteredData.total_quantity),
+        0
+      );
+    const week3 = row.data
       .filter(
         (data) => data.index_position !== null && data.index_position === 2
       )
-      .map((filteredData) => `${filteredData.total_quantity}`),
-    week4: row.data
+      .reduce(
+        (sum, filteredData) => sum + Number(filteredData.total_quantity),
+        0
+      );
+    const week4 = row.data
       .filter(
         (data) => data.index_position !== null && data.index_position === 3
       )
-      .map((filteredData) => `${filteredData.total_quantity}`),
-    week5: row.data
+      .reduce(
+        (sum, filteredData) => sum + Number(filteredData.total_quantity),
+        0
+      );
+    const week5 = row.data
       .filter(
         (data) => data.index_position !== null && data.index_position === 4
       )
-      .map((filteredData) => `${filteredData.total_quantity}`),
-  }));
+      .reduce(
+        (sum, filteredData) => sum + Number(filteredData.total_quantity),
+        0
+      );
+
+    const total = week1 + week2 + week3 + week4 + week5;
+
+    return {
+      seller_account__unit: row.seller_account__unit,
+      product__name: row.product__name,
+      product__unit__name: row.product__unit__name,
+      product__brand__name: row.product__brand__name,
+      week1,
+      week2,
+      week3,
+      week4,
+      week5,
+      total,
+    };
+  });
 
   return (
     <>
