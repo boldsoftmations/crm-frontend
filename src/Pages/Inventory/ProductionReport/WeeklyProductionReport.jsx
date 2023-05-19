@@ -1,19 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
-import { CustomTable } from "../../../Components/CustomTable";
-import { CustomLoader } from "../../../Components/CustomLoader";
-import {
-  Box,
-  Grid,
-  IconButton,
-  InputAdornment,
-  Paper,
-  TextField,
-  Button,
-} from "@mui/material";
-import ClearIcon from "@mui/icons-material/Clear";
+import { Box, Grid, Paper, TextField, Button } from "@mui/material";
 import { CSVLink } from "react-csv";
 import InventoryServices from "../../../services/InventoryService";
 import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
+import { CustomTable } from "../../../Components/CustomTable";
+import { CustomLoader } from "../../../Components/CustomLoader";
+
+const currentDate = new Date();
+const currentYear = currentDate.getFullYear();
+const currentMonth = currentDate.getMonth() + 1;
+const currentMonthFormatted =
+  currentMonth < 10 ? `0${currentMonth}` : currentMonth;
+const initialSearchQuery = `${currentYear}-${currentMonthFormatted}`;
 
 export const WeeklyProductionReport = () => {
   const [open, setOpen] = useState(false);
@@ -22,16 +20,24 @@ export const WeeklyProductionReport = () => {
   const [weeklyProductionReportData, setWeeklyProductionReportData] = useState(
     []
   );
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
+
   useEffect(() => {
     getAllWeeklyProductionReportDetails();
-  }, []);
+  }, [searchQuery]);
 
   const getAllWeeklyProductionReportDetails = async () => {
     try {
       setOpen(true);
+      const dateString = searchQuery;
+      const dateParts = dateString.split("-");
+      const year = dateParts[0];
+      const month = dateParts[1];
       const response =
-        await InventoryServices.getAllWeeklyProductionReportData();
+        await InventoryServices.getWeeklyProductionReportFilterData(
+          month,
+          year
+        );
 
       setWeeklyProductionReportData(response.data);
     } catch (err) {
@@ -60,37 +66,39 @@ export const WeeklyProductionReport = () => {
     }
   };
 
-  const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
-  };
+  const getWeeksInYearAndMonth = (year, month) => {
+    const startDate = new Date(year, month - 1, 1);
+    const endDate = new Date(year, month, 0);
+    const weeks = [];
 
-  const handleResetClick = () => {
-    setSearchQuery("");
-  };
+    let weekNumber = 1;
+    while (startDate <= endDate) {
+      const formattedWeek = `Week ${weekNumber}`;
+      weeks.push(formattedWeek);
+      startDate.setDate(startDate.getDate() + 7);
+      weekNumber++;
+    }
 
-  // Filter the productionInventoryData based on the search query
-  const filteredData = weeklyProductionReportData.filter((row) =>
-    row.product__name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+    return weeks;
+  };
+  const [year, month] = searchQuery.split("-");
+  const weeks = getWeeksInYearAndMonth(year, month);
 
   const headers = [
     { label: "Seller Unit", key: "seller_account__unit" },
     { label: "Product", key: "product__name" },
     {
-      label: "Product Unit",
+      label: "Unit",
       key: "product__unit__name",
     },
 
     { label: "Brand", key: "product__brand__name" },
-    {
-      label: "Week",
-      key: "week",
-    },
-    {
-      label: "Total Quantity",
-      key: "total_quantity",
-    },
   ];
+  const weekNumbers = [1, 2, 3, 4, 5];
+
+  weekNumbers.forEach((weekNumber) => {
+    headers.push({ label: `Week ${weekNumber}`, key: `week${weekNumber}` });
+  });
   //   export to excel data
   let data = weeklyProductionReportData.map((row) => {
     return {
@@ -98,28 +106,68 @@ export const WeeklyProductionReport = () => {
       product__name: row.product__name,
       product__unit__name: row.product__unit__name,
       product__brand__name: row.product__brand__name,
-      week: row.week,
-      total_quantity: row.total_quantity,
+      week1: row.data
+        .filter(
+          (data) => data.index_position !== null && data.index_position === 0
+        )
+        .map((filteredData) => `${filteredData.total_quantity}`),
+      week2: row.data
+        .filter(
+          (data) => data.index_position !== null && data.index_position === 1
+        )
+        .map((filteredData) => `${filteredData.total_quantity}`),
+      week3: row.data
+        .filter(
+          (data) => data.index_position !== null && data.index_position === 2
+        )
+        .map((filteredData) => `${filteredData.total_quantity}`),
+      week4: row.data
+        .filter(
+          (data) => data.index_position !== null && data.index_position === 3
+        )
+        .map((filteredData) => `${filteredData.total_quantity}`),
+      week5: row.data
+        .filter(
+          (data) => data.index_position !== null && data.index_position === 4
+        )
+        .map((filteredData) => `${filteredData.total_quantity}`),
     };
   });
 
-  const TableHeader = [
-    "Seller Unit",
-    "Product",
-    "PRODUCT Unit",
-    "Brand",
-    "Week",
-    "Total Quantity",
-  ];
+  const TableHeader = ["Seller Unit", "Product", "Unit", "Brand", ...weeks];
 
-  const TableData = filteredData.map((row) => ({
+  const TableData = weeklyProductionReportData.flatMap((row) => ({
     seller_account__unit: row.seller_account__unit,
     product__name: row.product__name,
     product__unit__name: row.product__unit__name,
     product__brand__name: row.product__brand__name,
-    week: row.week,
-    total_quantity: row.total_quantity,
+    week1: row.data
+      .filter(
+        (data) => data.index_position !== null && data.index_position === 0
+      )
+      .map((filteredData) => `${filteredData.total_quantity}`),
+    week2: row.data
+      .filter(
+        (data) => data.index_position !== null && data.index_position === 1
+      )
+      .map((filteredData) => `${filteredData.total_quantity}`),
+    week3: row.data
+      .filter(
+        (data) => data.index_position !== null && data.index_position === 2
+      )
+      .map((filteredData) => `${filteredData.total_quantity}`),
+    week4: row.data
+      .filter(
+        (data) => data.index_position !== null && data.index_position === 3
+      )
+      .map((filteredData) => `${filteredData.total_quantity}`),
+    week5: row.data
+      .filter(
+        (data) => data.index_position !== null && data.index_position === 4
+      )
+      .map((filteredData) => `${filteredData.total_quantity}`),
   }));
+
   return (
     <>
       <CustomLoader open={open} />
@@ -129,24 +177,13 @@ export const WeeklyProductionReport = () => {
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
           <Box display="flex">
             <Box flexGrow={0.9}>
-              {" "}
               <TextField
-                label="Search By Product"
+                label="Search"
+                type="month"
                 variant="outlined"
                 size="small"
                 value={searchQuery}
-                onChange={handleSearchChange}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      {searchQuery && (
-                        <IconButton onClick={handleResetClick}>
-                          <ClearIcon />
-                        </IconButton>
-                      )}
-                    </InputAdornment>
-                  ),
-                }}
+                onChange={(event) => setSearchQuery(event.target.value)}
                 sx={{ mb: 2 }}
               />
             </Box>

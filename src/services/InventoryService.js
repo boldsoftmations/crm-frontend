@@ -676,27 +676,32 @@ const getDailyProductionReportWithPaginationAndSearch = (
 // Weekly Production Report List Api
 
 const getAllWeeklyProductionReportData = () => {
-  return CustomAxios.get(`/api/inventory/list-monthly-product-quantity/`);
+  return CustomAxios.get(`/api/inventory/list-weekly-product-quantity/`);
 };
 
 const getAllSearchWeeklyProductionReportData = (search) => {
   return CustomAxios.get(
-    `/api/inventory/list-monthly-product-quantity/?search=${search}`
+    `/api/inventory/list-weekly-product-quantity/?search=${search}`
   );
 };
 
 const getAllWeeklyProductionReportDataPaginate = (currentPage, search) => {
   return CustomAxios.get(
-    `/api/inventory/list-monthly-product-quantity/?page=${currentPage}&search=${search}`
+    `/api/inventory/list-weekly-product-quantity/?page=${currentPage}&search=${search}`
   );
 };
 
 const getWeeklyProductionReportPaginateData = (currentPage) => {
   return CustomAxios.get(
-    `/api/inventory/list-monthly-product-quantity/?page=${currentPage}`
+    `/api/inventory/list-weekly-product-quantity/?page=${currentPage}`
   );
 };
 
+const getWeeklyProductionReportFilterData = (month, year) => {
+  return CustomAxios.get(
+    `/api/inventory/list-weekly-product-quantity/?month=${month}&year=${year}`
+  );
+};
 const InventoryServices = {
   getAllVendorData,
   getAllPaginateVendorData,
@@ -828,6 +833,7 @@ const InventoryServices = {
   getAllSearchWeeklyProductionReportData,
   getAllWeeklyProductionReportDataPaginate,
   getWeeklyProductionReportPaginateData,
+  getWeeklyProductionReportFilterData,
 };
 
 export default InventoryServices;

@@ -570,6 +570,7 @@ export const Viewleads = () => {
             ButtonText={"Activity"}
             ButtonText1={"Potential"}
             PriorityColor={PriorityColor}
+            Styles={{ paddingLeft: "10px", paddingRight: "10px" }}
           />
           <CustomPagination
             pageCount={pageCount}
