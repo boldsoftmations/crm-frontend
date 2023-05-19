@@ -86,9 +86,10 @@ export const WeeklyProductionReport = () => {
 
   const headers = [
     { label: "Seller Unit", key: "seller_account__unit" },
+    { label: "Description", key: "product__description__name" },
+    { label: "Brand", key: "product__brand__name" },
     { label: "Product", key: "product__name" },
     { label: "Unit", key: "product__unit__name" },
-    { label: "Brand", key: "product__brand__name" },
   ];
 
   const weekNumbers = [1, 2, 3, 4, 5];
@@ -146,9 +147,10 @@ export const WeeklyProductionReport = () => {
 
     return {
       seller_account__unit: row.seller_account__unit,
+      product__description__name: row.product__description__name,
+      product__brand__name: row.product__brand__name,
       product__name: row.product__name,
       product__unit__name: row.product__unit__name,
-      product__brand__name: row.product__brand__name,
       week1,
       week2,
       week3,
@@ -160,9 +162,10 @@ export const WeeklyProductionReport = () => {
 
   const TableHeader = [
     "Seller Unit",
+    "Description",
+    "Brand",
     "Product",
     "Unit",
-    "Brand",
     ...weeks,
     "Total",
   ];
@@ -213,9 +216,10 @@ export const WeeklyProductionReport = () => {
 
     return {
       seller_account__unit: row.seller_account__unit,
+      product__description__name: row.product__description__name,
+      product__brand__name: row.product__brand__name,
       product__name: row.product__name,
       product__unit__name: row.product__unit__name,
-      product__brand__name: row.product__brand__name,
       week1,
       week2,
       week3,
