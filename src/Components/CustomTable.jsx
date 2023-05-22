@@ -1,3 +1,4 @@
+import { Button } from "@mui/material";
 import React from "react";
 
 export const CustomTable = ({
@@ -13,6 +14,7 @@ export const CustomTable = ({
   openInPopup4,
   isLastRow,
   Styles,
+  handleClickLRCOPY,
 }) => {
   return (
     <div
@@ -84,17 +86,16 @@ export const CustomTable = ({
                 }}
                 key={index}
               >
-                {Object.values(row).map((value, index) => (
+                {Object.values(row).map((value, colIndex) => (
                   <div
                     style={{
                       ...Styles,
                       display: "table-cell",
                       textAlign: "center",
-                      // padding: "2px",
                       borderBottom: "1px solid rgba(224, 224, 224, 1)",
                       fontSize: "14px",
                     }}
-                    key={index}
+                    key={colIndex}
                   >
                     {typeof value === "boolean" ? (
                       <div
@@ -135,11 +136,20 @@ export const CustomTable = ({
                           {chipValue}
                         </div>
                       ))
+                    ) : typeof value === "object" && value !== null ? (
+                      <Button
+                        color="success"
+                        variant="outlined"
+                        onClick={() => handleClickLRCOPY(value)}
+                      >
+                        Download
+                      </Button>
                     ) : (
                       <span>{value}</span>
                     )}
                   </div>
                 ))}
+
                 <div
                   style={{
                     display: "table-cell",

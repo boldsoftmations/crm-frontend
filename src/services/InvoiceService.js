@@ -296,6 +296,23 @@ const updateDispatched = (id, data) => {
 const getAllDashboardData = () => {
   return CustomAxios.get("/api/invoice/list-dashboard");
 };
+
+const getDispatchDashboardData = () => {
+  return CustomAxios.get(`/api/invoice/list-dashboard-dispatch`);
+};
+
+const getLRCopyDashboardData = (pageNumber, boolean, isNull, unit) => {
+  return CustomAxios.get(
+    `/api/invoice/list-dispatch-book/?page=${pageNumber}&dispatched=${boolean}&lr_copy__isnull=${isNull}&sales_invoice__order_book__proforma_invoice__seller_account__unit=${unit}`
+  );
+};
+
+const getPODCopyDashboardData = (pageNumber, boolean, isNull, unit) => {
+  return CustomAxios.get(
+    `/api/invoice/list-dispatch-book/?page=${pageNumber}&dispatched=${boolean}&pod_copy__isnull=${isNull}&sales_invoice__order_book__proforma_invoice__seller_account__unit=${unit}`
+  );
+};
+
 const InvoiceServices = {
   getAllSellerAccountData,
   getfilterSellerAccountData,
@@ -358,6 +375,9 @@ const InvoiceServices = {
   getDispatchDataWithPagination,
   updateDispatched,
   getAllDashboardData,
+  getDispatchDashboardData,
+  getLRCopyDashboardData,
+  getPODCopyDashboardData,
 };
 
 export default InvoiceServices;

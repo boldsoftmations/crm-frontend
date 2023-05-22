@@ -19,14 +19,19 @@ import {
 import ProductForecastService from "../services/ProductForecastService";
 import { useSelector } from "react-redux";
 import { Autocomplete, TextField } from "@mui/material";
+import InvoiceServices from "../services/InvoiceService";
+import { DispatchData } from "./DispatchData";
 
 export const LeadDashboardView = () => {
   const [open, setOpen] = useState(false);
   const [funnelData, setFunnelData] = useState([]);
   const [barChartData, setBarChartData] = useState([]);
   const [pieChartData, setPieChartData] = useState([]);
+  const [horizontalBarData, setHorizontalBarData] = useState([]);
   const [funnelDataByID, setFunnelDataByID] = useState(null);
+  const [dispatchDataByID, setDispatchDataByID] = useState(null);
   const [openPopup, setOpenPopup] = useState(false);
+  const [openPopup2, setOpenPopup2] = useState(false);
   const [hoveredSegment, setHoveredSegment] = useState(null);
   const [assigned, setAssigned] = useState([]);
   const [assign, setAssign] = useState(null);
@@ -37,6 +42,7 @@ export const LeadDashboardView = () => {
     geCustomerDetails();
     getForecastDetails();
     getAssignedData();
+    getAllDispatchData();
   }, []);
 
   const getAssignedData = async () => {
@@ -140,6 +146,41 @@ export const LeadDashboardView = () => {
     }
   };
 
+  const getAllDispatchData = async () => {
+    try {
+      setOpen(true);
+      const response = await InvoiceServices.getDispatchDashboardData();
+      const Data = [
+        { name: "LR-M1", value: response.data.LR_M1, unit: "M1", type: "LR" },
+        { name: "LR-M2", value: response.data.LR_M2, unit: "M2", type: "LR" },
+        { name: "LR-D1", value: response.data.LR_D1, unit: "D1", type: "LR" },
+        {
+          name: "POD-M1",
+          value: response.data.POD_M1,
+          unit: "M1",
+          type: "POD",
+        },
+        {
+          name: "POD-M2",
+          value: response.data.POD_M2,
+          unit: "M2",
+          type: "POD",
+        },
+        {
+          name: "POD-D1",
+          value: response.data.POD_D1,
+          unit: "D1",
+          type: "POD",
+        },
+      ];
+      setHorizontalBarData(Data);
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      console.log("err", err);
+    }
+  };
+
   const handleAutocompleteChange = (value) => {
     setAssign(value);
     getDataByFilter(value);
@@ -179,6 +220,10 @@ export const LeadDashboardView = () => {
     setOpenPopup(true);
   };
 
+  const handleDispatch = (row) => {
+    setDispatchDataByID(row);
+    setOpenPopup2(true);
+  };
   const chartContainerStyle = {
     margin: "20px",
     borderRadius: "10px",
@@ -268,8 +313,15 @@ export const LeadDashboardView = () => {
       )}
 
       <div style={{ display: "flex", flexDirection: "row" }}>
-        <div style={chartContainerStyle}>
-          <BarChart width={600} height={400} data={barChartData}>
+        <div
+          style={{
+            ...chartContainerStyle,
+            display: "flex",
+            flexDirection: "row",
+          }}
+        >
+          {/* Actual and forecast bar chart */}
+          <BarChart width={400} height={300} data={barChartData}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="combination" />
             <YAxis />
@@ -287,37 +339,37 @@ export const LeadDashboardView = () => {
               Forecast vs Achieved
             </text>
           </BarChart>
-        </div>
-      </div>
-
-      <div style={{ display: "flex", flexDirection: "row" }}>
-        <div style={chartContainerStyle}>
-          <div className="funnelChart" style={funnelStyle}>
-            <h2 style={{ textAlign: "center", color: "#333" }}>Sales Funnel</h2>
-            {funnelData.map((data, index) => (
-              <div
-                key={index}
-                className="chartSegment"
-                style={{
-                  backgroundColor: paletteColors[index % paletteColors.length],
-                  opacity: hoveredSegment === data ? 0.7 : 1,
-                }}
-                onMouseEnter={() => handleSegmentHover(data)}
-                // onMouseLeave={handleSegmentLeave}
-                onClick={() => handleRowClick(data)}
-              >
-                <div
-                // className="segmentTitle"
-                >
-                  <span style={textStyle}>{data.label}</span>&nbsp;
-                  <span style={textStyle}>{data.value}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div style={chartContainerStyle}>
-          <ResponsiveContainer width="100%" height={400}>
+          {/* Horizontal Bar Chart */}
+          <BarChart
+            width={400}
+            height={300}
+            data={horizontalBarData}
+            layout="vertical"
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis type="number" />
+            <YAxis
+              dataKey="name"
+              type="category"
+              angle={-45}
+              textAnchor="end"
+              interval={0}
+            />
+            <Tooltip />
+            <Legend />
+            <Bar
+              dataKey="value"
+              fill="#8884d8"
+              barSize={20}
+              onClick={(data) => {
+                // Handle the click event
+                handleDispatch(data);
+                console.log("Bar clicked:", data);
+              }}
+            />
+          </BarChart>
+          {/* Pie Chart */}
+          <ResponsiveContainer width={400} height={300}>
             <PieChart>
               <Pie
                 data={pieChartData}
@@ -376,15 +428,54 @@ export const LeadDashboardView = () => {
         </div>
       </div>
 
+      <div style={{ display: "flex", flexDirection: "row" }}>
+        <div style={chartContainerStyle}>
+          <div className="funnelChart" style={funnelStyle}>
+            <h2 style={{ textAlign: "center", color: "#333" }}>Sales Funnel</h2>
+            {funnelData.map((data, index) => (
+              <div
+                key={index}
+                className="chartSegment"
+                style={{
+                  backgroundColor: paletteColors[index % paletteColors.length],
+                  opacity: hoveredSegment === data ? 0.7 : 1,
+                }}
+                onMouseEnter={() => handleSegmentHover(data)}
+                // onMouseLeave={handleSegmentLeave}
+                onClick={() => handleRowClick(data)}
+              >
+                <div
+                // className="segmentTitle"
+                >
+                  <span style={textStyle}>{data.label}</span>&nbsp;
+                  <span style={textStyle}>{data.value}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
       <Popup
         maxWidth={"xl"}
-        title={"Vsiew Leads dashboard"}
+        title={"View Leads dashboard"}
         openPopup={openPopup}
         setOpenPopup={setOpenPopup}
       >
         <SalesFunnel
           funnelDataByID={funnelDataByID}
           setOpenPopup={setOpenPopup}
+        />
+      </Popup>
+      <Popup
+        maxWidth={"xl"}
+        title={`View ${dispatchDataByID && dispatchDataByID.type} dashboard`}
+        openPopup={openPopup2}
+        setOpenPopup={setOpenPopup2}
+      >
+        <DispatchData
+          dispatchDataByID={dispatchDataByID}
+          setOpenPopup={setOpenPopup2}
         />
       </Popup>
     </>
