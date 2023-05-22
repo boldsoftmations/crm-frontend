@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Box, Grid, Paper, TextField, Button } from "@mui/material";
 import { CSVLink } from "react-csv";
+import moment from "moment";
 import InventoryServices from "../../../services/InventoryService";
 import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 import { CustomTable } from "../../../Components/CustomTable";
 import { CustomLoader } from "../../../Components/CustomLoader";
-
 const currentDate = new Date();
 const currentYear = currentDate.getFullYear();
 const currentMonth = currentDate.getMonth() + 1;
@@ -13,6 +13,13 @@ const currentMonthFormatted =
   currentMonth < 10 ? `0${currentMonth}` : currentMonth;
 const initialSearchQuery = `${currentYear}-${currentMonthFormatted}`;
 
+// Get current date
+const currentDates = moment();
+// Get the first day of the current month
+const currentMonthStartDate = currentDates.startOf("month");
+
+// Format the dates in the required format (YYYY-MM)
+const currentMonths = currentMonthStartDate.format("YYYY-MM");
 export const WeeklyProductionReport = () => {
   const [open, setOpen] = useState(false);
   const errRef = useRef();
@@ -229,6 +236,88 @@ export const WeeklyProductionReport = () => {
     };
   });
 
+  const totalRow = {
+    seller_account__unit: "Total",
+    product__description__name: "-",
+    product__brand__name: "-",
+    product__name: "-",
+    product__unit__name: "-",
+    week1: weeklyProductionReportData.reduce(
+      (sum, row) =>
+        sum +
+        row.data
+          .filter(
+            (data) => data.index_position !== null && data.index_position === 0
+          )
+          .reduce(
+            (total, filteredData) =>
+              total + Number(filteredData.total_quantity),
+            0
+          ),
+      0
+    ),
+    week2: weeklyProductionReportData.reduce(
+      (sum, row) =>
+        sum +
+        row.data
+          .filter(
+            (data) => data.index_position !== null && data.index_position === 1
+          )
+          .reduce(
+            (total, filteredData) =>
+              total + Number(filteredData.total_quantity),
+            0
+          ),
+      0
+    ),
+    week3: weeklyProductionReportData.reduce(
+      (sum, row) =>
+        sum +
+        row.data
+          .filter(
+            (data) => data.index_position !== null && data.index_position === 2
+          )
+          .reduce(
+            (total, filteredData) =>
+              total + Number(filteredData.total_quantity),
+            0
+          ),
+      0
+    ),
+    week4: weeklyProductionReportData.reduce(
+      (sum, row) =>
+        sum +
+        row.data
+          .filter(
+            (data) => data.index_position !== null && data.index_position === 3
+          )
+          .reduce(
+            (total, filteredData) =>
+              total + Number(filteredData.total_quantity),
+            0
+          ),
+      0
+    ),
+    week5: weeklyProductionReportData.reduce(
+      (sum, row) =>
+        sum +
+        row.data
+          .filter(
+            (data) => data.index_position !== null && data.index_position === 4
+          )
+          .reduce(
+            (total, filteredData) =>
+              total + Number(filteredData.total_quantity),
+            0
+          ),
+      0
+    ),
+    get total() {
+      return this.week1 + this.week2 + this.week3 + this.week4 + this.week5;
+    },
+  };
+
+  const tableData = [...TableData, totalRow];
   return (
     <>
       <CustomLoader open={open} />
@@ -245,6 +334,9 @@ export const WeeklyProductionReport = () => {
                 size="small"
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
+                inputProps={{
+                  max: currentMonths, // Set the maximum allowed value to the previous month
+                }}
                 sx={{ mb: 2 }}
               />
             </Box>
@@ -280,7 +372,11 @@ export const WeeklyProductionReport = () => {
             </Box>
           </Box>
           {/* CustomTable */}
-          <CustomTable headers={TableHeader} data={TableData} />
+          <CustomTable
+            headers={TableHeader}
+            data={tableData}
+            isLastRow={totalRow ? true : false}
+          />
         </Paper>
       </Grid>
     </>
