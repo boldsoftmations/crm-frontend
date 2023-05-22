@@ -417,12 +417,7 @@ export const UpdateCompanyDetails = (props) => {
             />
           </Grid>
         </Grid>
-        {((userData.is_staff === true &&
-          userData.groups.toString() === "Sales") ||
-          userData.is_staff === true ||
-          userData.groups.toString() === "Accounts" ||
-          userData.groups.includes("Accounts Billing Department") ||
-          userData.groups.toString() === "Customer Service") && (
+        {userData.groups.toString() === "Accounts" && (
           <Button
             type="submit"
             fullWidth

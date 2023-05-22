@@ -104,10 +104,10 @@ export const LeadDashboardView = () => {
           label: "New",
           value: response.data.new_customers,
         },
-        {
-          label: "Total",
-          value: response.data.total_customers,
-        },
+        // {
+        //   label: "Total",
+        //   value: response.data.total_customers,
+        // },
       ];
       setPieChartData(Data);
       setOpen(false);

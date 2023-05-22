@@ -124,12 +124,7 @@ export const ContactDetails = (props) => {
             </h3>
           </Box>
           <Box flexGrow={0.5} align="right">
-            {((userData.is_staff === true &&
-              userData.groups.toString() === "Sales") ||
-              userData.is_staff === true ||
-              userData.groups.toString() === "Accounts" ||
-              userData.groups.includes("Accounts Billing Department") ||
-              userData.groups.toString() === "Customer Service") && (
+            {userData.groups.toString() === "Accounts" && (
               <Button
                 onClick={() => setOpenPopup2(true)}
                 variant="contained"
@@ -185,14 +180,7 @@ export const ContactDetails = (props) => {
                     </StyledTableCell>
 
                     <StyledTableCell align="center">
-                      {((userData.is_staff === true &&
-                        userData.groups.toString() === "Sales") ||
-                        userData.is_staff === true ||
-                        userData.groups.toString() === "Accounts" ||
-                        userData.groups.includes(
-                          "Accounts Billing Department"
-                        ) ||
-                        userData.groups.toString() === "Customer Service") && (
+                      {userData.groups.toString() === "Accounts" && (
                         <Button
                           variant="contained"
                           onClick={() => openInPopup(row.id)}
