@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import "../CommonStyle.css";
 import {
   Autocomplete,
   Box,
@@ -21,11 +20,11 @@ import {
   Select,
   Checkbox,
 } from "@mui/material";
-import "../CommonStyle.css";
-import LeadServices from "./../../services/LeadService";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/material.css";
+import LeadServices from "./../../services/LeadService";
 import { CustomLoader } from "../../Components/CustomLoader";
+import "../CommonStyle.css";
 
 export const CreateLeads = (props) => {
   const {
@@ -101,7 +100,11 @@ export const CreateLeads = (props) => {
           description: personName,
           type_of_customer: typeData,
           shipping_address:
-            checked === true ? leads.address : leads.shipping_address,
+            checked === true
+              ? leads.address
+              : leads.shipping_address
+              ? leads.shipping_address
+              : "",
           shipping_city:
             checked === true
               ? leads.city
@@ -111,7 +114,11 @@ export const CreateLeads = (props) => {
           shipping_state:
             checked === true ? stateSelected : shippingStateSelected,
           shipping_pincode:
-            checked === true ? leads.pinCode : leads.shipping_pincode,
+            checked === true
+              ? leads.pinCode
+              : leads.shipping_pincode
+              ? leads.shipping_pincode
+              : "",
         };
 
         await LeadServices.createLeads(data);
@@ -516,6 +523,8 @@ export const CreateLeads = (props) => {
                         checked === true
                           ? leads.address
                           : leads.shipping_address
+                          ? leads.shipping_address
+                          : ""
                       }
                       onChange={handleInputChange}
                     />
@@ -532,6 +541,8 @@ export const CreateLeads = (props) => {
                         checked === true
                           ? leads.pinCode
                           : leads.shipping_pincode
+                          ? leads.shipping_pincode
+                          : ""
                       }
                       onChange={handleInputChange}
                     />
@@ -553,20 +564,8 @@ export const CreateLeads = (props) => {
                       onChange={handleInputChange}
                     />
                   </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <TextField
-                      fulWidth
-                      name="shipping_state"
-                      size="small"
-                      label="Same as State"
-                      variant="outlined"
-                      value={
-                        checked === true ? stateSelected : shippingStateSelected
-                      }
-                      onChange={handleInputChange}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
+
+                  <Grid item xs={12} sm={6}>
                     <Autocomplete
                       style={{
                         minWidth: 220,
@@ -576,7 +575,9 @@ export const CreateLeads = (props) => {
                         setShippingStateSelected(value)
                       }
                       name="shipping_state"
-                      value={shippingStateSelected}
+                      value={
+                        checked === true ? stateSelected : shippingStateSelected
+                      }
                       options={StateOption.map((option) => option.value)}
                       getOptionLabel={(option) => option}
                       renderInput={(params) => (
@@ -648,7 +649,7 @@ export const CreateLeads = (props) => {
                     City : {leads.city}
                   </Grid>{" "}
                   <Grid item xs={12} sm={4}>
-                    State : {leads.state}
+                    State : {stateSelected}
                   </Grid>{" "}
                   <Grid item xs={12} sm={4}>
                     Country : {leads.country}
@@ -666,16 +667,32 @@ export const CreateLeads = (props) => {
                     type : {typeData}
                   </Grid>
                   <Grid item xs={12} sm={4}>
-                    Shipping Address : {leads.shipping_address}
+                    Shipping Address :{" "}
+                    {checked === true
+                      ? leads.address
+                      : leads.shipping_address
+                      ? leads.shipping_address
+                      : ""}
                   </Grid>
                   <Grid item xs={12} sm={4}>
-                    Shipping City : {leads.city}
+                    Shipping City :{" "}
+                    {checked === true
+                      ? leads.city
+                      : leads.shipping_city
+                      ? leads.shipping_city
+                      : ""}
                   </Grid>
                   <Grid item xs={12} sm={4}>
-                    Shipping State : {leads.State}
+                    Shipping State :{" "}
+                    {checked === true ? stateSelected : shippingStateSelected}
                   </Grid>
                   <Grid item xs={12} sm={4}>
-                    Shipping Pincode : {leads.shipping_pincode}
+                    Shipping Pincode :{" "}
+                    {checked === true
+                      ? leads.pinCode
+                      : leads.shipping_pincode
+                      ? leads.shipping_pincode
+                      : ""}
                   </Grid>{" "}
                 </Grid>
                 {/* <Button
