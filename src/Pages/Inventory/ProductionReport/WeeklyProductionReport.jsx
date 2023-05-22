@@ -316,7 +316,7 @@ export const WeeklyProductionReport = () => {
       return this.week1 + this.week2 + this.week3 + this.week4 + this.week5;
     },
   };
-
+  const CSVData = [...data, totalRow];
   const tableData = [...TableData, totalRow];
   return (
     <>
@@ -355,7 +355,7 @@ export const WeeklyProductionReport = () => {
             </Box>
             <Box flexGrow={0.5} align="right">
               <CSVLink
-                data={data}
+                data={CSVData}
                 headers={headers}
                 filename={"Weekly Production Report.csv"}
                 target="_blank"
