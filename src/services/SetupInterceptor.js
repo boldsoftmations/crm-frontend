@@ -50,7 +50,6 @@ const SetupInterceptor = (store) => {
             });
 
             const accessToken = rs.data.access;
-            console.log("accessToken :>> ", accessToken);
             if (rs.status === 200) {
               dispatch(refreshToken(accessToken));
               updateLocalAccessToken(accessToken);
