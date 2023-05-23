@@ -21,6 +21,7 @@ import { Popup } from "../Components/Popup";
 import { Autocomplete, TextField } from "@mui/material";
 import InvoiceServices from "../services/InvoiceService";
 import { DispatchData } from "./DispatchData";
+import DashboardService from "../services/DashboardService";
 
 export const LeadDashboardView = () => {
   const [open, setOpen] = useState(false);
@@ -134,14 +135,16 @@ export const LeadDashboardView = () => {
       setOpen(true);
       const users = userData.is_staff;
       const forecastResponse = users
-        ? await ProductForecastService.getConsLastThreeMonthForecastData()
-        : await ProductForecastService.getLastThreeMonthForecastData();
-      const Data = forecastResponse.data.map((item) => {
-        return {
-          combination: `${months[item.month - 1]} - ${item.year}`,
-          actual: item.actual,
-          forecast: item.total_forecast,
-        };
+        ? await DashboardService.getConsLastThreeMonthForecastData()
+        : await DashboardService.getLastThreeMonthForecastData();
+      const Data = Object.keys(forecastResponse.data).flatMap((key) => {
+        return forecastResponse.data[key].map((item) => {
+          return {
+            combination: `${months[item.month - 1]} - ${item.year}`,
+            actual: item.actual,
+            forecast: item.total_forecast,
+          };
+        });
       });
 
       setBarChartData(Data);
@@ -196,16 +199,18 @@ export const LeadDashboardView = () => {
     try {
       const FilterData = value;
       setOpen(true);
-      const response =
-        await ProductForecastService.getLastThreeMonthForecastDataByFilter(
+      const forecastResponse =
+        await DashboardService.getLastThreeMonthForecastDataByFilter(
           FilterData
         );
-      const Data = response.data.map((item) => {
-        return {
-          combination: `${months[item.month - 1]}  - ${item.year}`,
-          actual: item.actual,
-          forecast: item.total_forecast,
-        };
+      const Data = Object.keys(forecastResponse.data).flatMap((key) => {
+        return forecastResponse.data[key].map((item) => {
+          return {
+            combination: `${months[item.month - 1]} - ${item.year}`,
+            actual: item.actual,
+            forecast: item.total_forecast,
+          };
+        });
       });
 
       setBarChartData(Data);
@@ -328,7 +333,7 @@ export const LeadDashboardView = () => {
         >
           {/* Actual and forecast bar chart */}
           {barChartData.length > 0 && (
-            <BarChart width={400} height={400} data={barChartData}>
+            <BarChart width={600} height={300} data={barChartData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="combination" />
               <YAxis />
@@ -350,8 +355,8 @@ export const LeadDashboardView = () => {
           {/* Horizontal Bar Chart */}
           {horizontalBarData.length > 0 && (
             <BarChart
-              width={400}
-              height={400}
+              width={600}
+              height={300}
               data={horizontalBarData}
               layout="vertical"
             >
@@ -378,6 +383,35 @@ export const LeadDashboardView = () => {
               />
             </BarChart>
           )}
+        </div>
+      </div>
+
+      <div style={{ display: "flex", flexDirection: "row" }}>
+        <div style={chartContainerStyle}>
+          {/* Funnel Chart */}
+          <div className="funnelChart" style={funnelStyle}>
+            <h2 style={{ textAlign: "center", color: "#333" }}>Sales Funnel</h2>
+            {funnelData.map((data, index) => (
+              <div
+                key={index}
+                className="chartSegment"
+                style={{
+                  backgroundColor: paletteColors[index % paletteColors.length],
+                  opacity: hoveredSegment === data ? 0.7 : 1,
+                }}
+                onMouseEnter={() => handleSegmentHover(data)}
+                // onMouseLeave={handleSegmentLeave}
+                onClick={() => handleRowClick(data)}
+              >
+                <div
+                // className="segmentTitle"
+                >
+                  <span style={textStyle}>{data.label}</span>&nbsp;
+                  <span style={textStyle}>{data.value}</span>
+                </div>
+              </div>
+            ))}
+          </div>
           {/* Pie Chart */}
           {pieChartData.length > 0 && (
             <ResponsiveContainer width={400} height={400}>
@@ -437,34 +471,6 @@ export const LeadDashboardView = () => {
               </PieChart>
             </ResponsiveContainer>
           )}
-        </div>
-      </div>
-
-      <div style={{ display: "flex", flexDirection: "row" }}>
-        <div style={chartContainerStyle}>
-          <div className="funnelChart" style={funnelStyle}>
-            <h2 style={{ textAlign: "center", color: "#333" }}>Sales Funnel</h2>
-            {funnelData.map((data, index) => (
-              <div
-                key={index}
-                className="chartSegment"
-                style={{
-                  backgroundColor: paletteColors[index % paletteColors.length],
-                  opacity: hoveredSegment === data ? 0.7 : 1,
-                }}
-                onMouseEnter={() => handleSegmentHover(data)}
-                // onMouseLeave={handleSegmentLeave}
-                onClick={() => handleRowClick(data)}
-              >
-                <div
-                // className="segmentTitle"
-                >
-                  <span style={textStyle}>{data.label}</span>&nbsp;
-                  <span style={textStyle}>{data.value}</span>
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
 
