@@ -1,12 +1,16 @@
 import React from "react";
-import "./Style.css";
+import { Backdrop, CircularProgress } from "@mui/material";
+
 export const CustomLoader = (props) => {
   const { open } = props;
-
-  return open ? (
-    <div className="custom-loader">
-      <div className="backdrop"></div>
-      <div className="spinner"></div>
+  return (
+    <div>
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={open}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </div>
-  ) : null;
+  );
 };
