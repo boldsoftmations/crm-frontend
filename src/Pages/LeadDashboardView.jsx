@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from "react";
-import LeadServices from "../services/LeadService";
-import { CustomLoader } from "../Components/CustomLoader";
-import { SalesFunnel } from "./SalesFunnel";
-import { Popup } from "../Components/Popup";
+import { useSelector } from "react-redux";
 import {
   ResponsiveContainer,
   PieChart,
@@ -17,7 +14,10 @@ import {
   CartesianGrid,
 } from "recharts";
 import ProductForecastService from "../services/ProductForecastService";
-import { useSelector } from "react-redux";
+import LeadServices from "../services/LeadService";
+import { CustomLoader } from "../Components/CustomLoader";
+import { SalesFunnel } from "./SalesFunnel";
+import { Popup } from "../Components/Popup";
 import { Autocomplete, TextField } from "@mui/material";
 import InvoiceServices from "../services/InvoiceService";
 import { DispatchData } from "./DispatchData";
@@ -115,7 +115,13 @@ export const LeadDashboardView = () => {
         //   value: response.data.total_customers,
         // },
       ];
-      setPieChartData(Data);
+      if (
+        response.data.active_customers > 0 ||
+        response.data.dead_customers > 0 ||
+        response.data.new_customers > 0
+      ) {
+        setPieChartData(Data);
+      }
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -321,99 +327,15 @@ export const LeadDashboardView = () => {
           }}
         >
           {/* Actual and forecast bar chart */}
-          <BarChart width={400} height={300} data={barChartData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="combination" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="actual" name="Actual" fill="#8884d8" />
-            <Bar dataKey="forecast" name="Forecast" fill="#82ca9d" />
-            <text
-              x="50%"
-              y={20}
-              textAnchor="middle"
-              dominantBaseline="middle"
-              className="chart-title"
-            >
-              Forecast vs Achieved
-            </text>
-          </BarChart>
-          {/* Horizontal Bar Chart */}
-          <BarChart
-            width={400}
-            height={300}
-            data={horizontalBarData}
-            layout="vertical"
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis type="number" />
-            <YAxis
-              dataKey="name"
-              type="category"
-              angle={-45}
-              textAnchor="end"
-              interval={0}
-            />
-            <Tooltip />
-            <Legend />
-            <Bar
-              dataKey="value"
-              fill="#8884d8"
-              barSize={20}
-              onClick={(data) => {
-                // Handle the click event
-                handleDispatch(data);
-                console.log("Bar clicked:", data);
-              }}
-            />
-          </BarChart>
-          {/* Pie Chart */}
-          <ResponsiveContainer width={400} height={300}>
-            <PieChart>
-              <Pie
-                data={pieChartData}
-                dataKey="value"
-                nameKey="label"
-                cx="50%"
-                cy="50%"
-                outerRadius={120} // Increase the outerRadius for a larger pie chart
-                fill="#8884d8"
-                labelLine={false} // Disable the default label line
-                label={({
-                  cx,
-                  cy,
-                  midAngle,
-                  innerRadius,
-                  outerRadius,
-                  percent,
-                  index,
-                }) => {
-                  const RADIAN = Math.PI / 180;
-                  const radius =
-                    innerRadius + (outerRadius - innerRadius) * 0.5;
-                  const x = cx + radius * Math.cos(-midAngle * RADIAN);
-                  const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
-                  return (
-                    <text
-                      x={x}
-                      y={y}
-                      fill="#fff"
-                      textAnchor="middle"
-                      dominantBaseline="central"
-                    >
-                      {`${pieChartData[index].label} (${pieChartData[index].value})`}
-                    </text>
-                  );
-                }}
-              >
-                {pieChartData.map((entry, index) => (
-                  <Cell key={index} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
+          {barChartData.length > 0 && (
+            <BarChart width={400} height={400} data={barChartData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="combination" />
+              <YAxis />
               <Tooltip />
               <Legend />
+              <Bar dataKey="actual" name="Actual" fill="#8884d8" />
+              <Bar dataKey="forecast" name="Forecast" fill="#82ca9d" />
               <text
                 x="50%"
                 y={20}
@@ -421,10 +343,100 @@ export const LeadDashboardView = () => {
                 dominantBaseline="middle"
                 className="chart-title"
               >
-                Customer Stats
+                Forecast vs Achieved
               </text>
-            </PieChart>
-          </ResponsiveContainer>
+            </BarChart>
+          )}
+          {/* Horizontal Bar Chart */}
+          {horizontalBarData.length > 0 && (
+            <BarChart
+              width={400}
+              height={400}
+              data={horizontalBarData}
+              layout="vertical"
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis type="number" />
+              <YAxis
+                dataKey="name"
+                type="category"
+                angle={-45}
+                textAnchor="end"
+                interval={0}
+              />
+              <Tooltip />
+              <Legend />
+              <Bar
+                dataKey="value"
+                fill="#8884d8"
+                barSize={20}
+                onClick={(data) => {
+                  // Handle the click event
+                  handleDispatch(data);
+                  console.log("Bar clicked:", data);
+                }}
+              />
+            </BarChart>
+          )}
+          {/* Pie Chart */}
+          {pieChartData.length > 0 && (
+            <ResponsiveContainer width={400} height={400}>
+              <PieChart>
+                <Pie
+                  data={pieChartData}
+                  dataKey="value"
+                  nameKey="label"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={120} // Increase the outerRadius for a larger pie chart
+                  fill="#8884d8"
+                  labelLine={false} // Disable the default label line
+                  label={({
+                    cx,
+                    cy,
+                    midAngle,
+                    innerRadius,
+                    outerRadius,
+                    percent,
+                    index,
+                  }) => {
+                    const RADIAN = Math.PI / 180;
+                    const radius =
+                      innerRadius + (outerRadius - innerRadius) * 0.5;
+                    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+                    return (
+                      <text
+                        x={x}
+                        y={y}
+                        fill="#fff"
+                        textAnchor="middle"
+                        dominantBaseline="central"
+                      >
+                        {`${pieChartData[index].label} (${pieChartData[index].value})`}
+                      </text>
+                    );
+                  }}
+                >
+                  {pieChartData.map((entry, index) => (
+                    <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+                <text
+                  x="50%"
+                  y={20}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  className="chart-title"
+                >
+                  Customer Stats
+                </text>
+              </PieChart>
+            </ResponsiveContainer>
+          )}
         </div>
       </div>
 
