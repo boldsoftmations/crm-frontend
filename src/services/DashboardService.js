@@ -16,10 +16,52 @@ const getLastThreeMonthForecastDataByFilter = (filter) => {
     `/api/dashboard/last-three-months-forecast/?email=${filter}`
   );
 };
+
+const getNewCustomerData = () => {
+  return CustomAxios.get(`/api/dashboard/new-customer-month-on-month/`);
+};
+
+const getNewCustomerDataByFilter = (filter) => {
+  return CustomAxios.get(
+    `/api/dashboard/new-customer-month-on-month/?email=${filter}`
+  );
+};
+
+const getPendingTaskData = () => {
+  return CustomAxios.get(`/api/dashboard/pending-tasks/`);
+};
+
+const getPendingTaskDataByFilter = (filter) => {
+  return CustomAxios.get(`/api/dashboard/pending-tasks/?email=${filter}`);
+};
+
+const getPendingFollowupData = () => {
+  return CustomAxios.get(`/api/dashboard/pending-followups/`);
+};
+
+const getPendingFollowupDataByFilter = (filter) => {
+  return CustomAxios.get(`/api/dashboard/pending-followups/?email=${filter}`);
+};
+
+const getPIData = () => {
+  return CustomAxios.get(`/api/dashboard/list-pi-data/`);
+};
+
+const getPIDataByFilter = (filter) => {
+  return CustomAxios.get(`/api/dashboard/list-pi-data/?email=${filter}`);
+};
 const DashboardService = {
   getLastThreeMonthForecastData,
   getConsLastThreeMonthForecastData,
   getLastThreeMonthForecastDataByFilter,
+  getNewCustomerData,
+  getNewCustomerDataByFilter,
+  getPendingTaskData,
+  getPendingTaskDataByFilter,
+  getPendingFollowupData,
+  getPendingFollowupDataByFilter,
+  getPIData,
+  getPIDataByFilter,
 };
 
 export default DashboardService;

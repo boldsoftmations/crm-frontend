@@ -22,13 +22,19 @@ import { Autocomplete, TextField } from "@mui/material";
 import InvoiceServices from "../services/InvoiceService";
 import { DispatchData } from "./DispatchData";
 import DashboardService from "../services/DashboardService";
+import { useNavigate } from "react-router-dom";
 
 export const LeadDashboardView = () => {
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [funnelData, setFunnelData] = useState([]);
   const [barChartData, setBarChartData] = useState([]);
   const [pieChartData, setPieChartData] = useState([]);
   const [horizontalBarData, setHorizontalBarData] = useState([]);
+  const [newCustomerData, setNewCustomerData] = useState([]);
+  const [pendingTask, setPendingTask] = useState([]);
+  const [pendingFollowup, setPendingFollowup] = useState([]);
+  const [piData, setPiData] = useState([]);
   const [funnelDataByID, setFunnelDataByID] = useState(null);
   const [dispatchDataByID, setDispatchDataByID] = useState(null);
   const [openPopup, setOpenPopup] = useState(false);
@@ -36,6 +42,7 @@ export const LeadDashboardView = () => {
   const [hoveredSegment, setHoveredSegment] = useState(null);
   const [assigned, setAssigned] = useState([]);
   const [assign, setAssign] = useState(null);
+  const [total, setTotal] = useState(0);
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
   useEffect(() => {
@@ -44,6 +51,10 @@ export const LeadDashboardView = () => {
     getForecastDetails();
     getAssignedData();
     getAllDispatchData();
+    getNewCustomerDetails();
+    getPendingTaskDetails();
+    getPendingFollowupDetails();
+    getPIDetails();
   }, []);
 
   const getAssignedData = async () => {
@@ -86,7 +97,16 @@ export const LeadDashboardView = () => {
           value: response.data.converted,
         },
       ];
-      setFunnelData(Data);
+      if (
+        response.data.new > 0 ||
+        response.data.open > 0 ||
+        response.data.opportunity > 0 ||
+        response.data.potential > 0 ||
+        response.data.not_interested > 0 ||
+        response.data.converted > 0
+      ) {
+        setFunnelData(Data);
+      }
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -98,6 +118,11 @@ export const LeadDashboardView = () => {
     try {
       setOpen(true);
       const response = await LeadServices.getCustomerDashboard();
+      const Total =
+        response.data.active_customers +
+        response.data.dead_customers +
+        response.data.new_customers;
+      setTotal(Total);
       const Data = [
         {
           label: "Active",
@@ -111,10 +136,10 @@ export const LeadDashboardView = () => {
           label: "New",
           value: response.data.new_customers,
         },
-        // {
-        //   label: "Total",
-        //   value: response.data.total_customers,
-        // },
+        {
+          label: "Total",
+          value: Total,
+        },
       ];
       if (
         response.data.active_customers > 0 ||
@@ -190,9 +215,118 @@ export const LeadDashboardView = () => {
     }
   };
 
+  const getNewCustomerDetails = async () => {
+    try {
+      setOpen(true);
+      const newcustomerResponse = await DashboardService.getNewCustomerData();
+      const Data = Object.keys(newcustomerResponse.data).flatMap((key) => {
+        return newcustomerResponse.data[key].map((item) => {
+          return {
+            combination: `${months[item.month - 1]} - ${item.year}`,
+            count: item.count,
+          };
+        });
+      });
+
+      setNewCustomerData(Data);
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      console.log("Error:", err);
+    }
+  };
+
+  const getPendingTaskDetails = async () => {
+    try {
+      setOpen(true);
+      const response = await DashboardService.getPendingTaskData();
+
+      const Data = [
+        {
+          label: "Open Tasks",
+          value: response.data.open_tasks,
+        },
+        {
+          label: "Overdue Tasks",
+          value: response.data.overdue_tasks,
+        },
+      ];
+      if (response.data.open_tasks > 0 || response.data.overdue_tasks > 0) {
+        setPendingTask(Data);
+      }
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      console.log("err", err);
+    }
+  };
+
+  const getPendingFollowupDetails = async () => {
+    try {
+      setOpen(true);
+      const response = await DashboardService.getPendingFollowupData();
+
+      const Data = [
+        {
+          label: "Open FollowUp",
+          value: response.data.open_follow_ups,
+        },
+        {
+          label: "Overdue FollowUp",
+          value: response.data.overdue_follow_ups,
+        },
+      ];
+      if (
+        response.data.open_follow_ups > 0 ||
+        response.data.overdue_follow_ups > 0
+      ) {
+        setPendingFollowup(Data);
+      }
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      console.log("err", err);
+    }
+  };
+
+  const getPIDetails = async () => {
+    try {
+      setOpen(true);
+      const response = await DashboardService.getPIData();
+      const Data = [
+        {
+          label: "Paid PI",
+          value: response.data.paid_pi,
+        },
+        {
+          label: "Unpaid PI",
+          value: response.data.unpaid_pi,
+        },
+        {
+          label: "Dropped PI",
+          value: response.data.dropped_pi,
+        },
+      ];
+      if (
+        response.data.paid_pi > 0 ||
+        response.data.unpaid_pi > 0 ||
+        response.data.dropped_pi > 0
+      ) {
+        setPiData(Data);
+      }
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      console.log("err", err);
+    }
+  };
   const handleAutocompleteChange = (value) => {
     setAssign(value);
     getDataByFilter(value);
+    getNewCustomerByFilter(value);
+    getPendingTaskByFilter(value);
+    getPendingFollowupByFilter(value);
+    getPIByFilter(value);
   };
 
   const getDataByFilter = async (value) => {
@@ -221,11 +355,135 @@ export const LeadDashboardView = () => {
     }
   };
 
+  const getNewCustomerByFilter = async (value) => {
+    try {
+      const FilterData = value;
+      setOpen(true);
+      const newcustomerResponse =
+        await DashboardService.getNewCustomerDataByFilter(FilterData);
+      const Data = Object.keys(newcustomerResponse.data).flatMap((key) => {
+        return newcustomerResponse.data[key].map((item) => {
+          return {
+            combination: `${months[item.month - 1]}  - ${item.year}`,
+            count: item.count,
+          };
+        });
+      });
+
+      setNewCustomerData(Data);
+      setOpen(false);
+    } catch (error) {
+      console.log("error", error);
+      setOpen(false);
+    }
+  };
+
+  const getPendingTaskByFilter = async (value) => {
+    try {
+      const FilterData = value;
+      setOpen(true);
+      const response = await DashboardService.getPendingTaskDataByFilter(
+        FilterData
+      );
+      const Data = [
+        {
+          label: "Open Tasks",
+          value: response.data.open_tasks,
+        },
+        {
+          label: "Overdue Tasks",
+          value: response.data.overdue_tasks,
+        },
+      ];
+      if (response.data.open_tasks > 0 || response.data.overdue_tasks > 0) {
+        setPendingTask(Data);
+      }
+      setOpen(false);
+    } catch (error) {
+      console.log("error", error);
+      setOpen(false);
+    }
+  };
+
+  const getPendingFollowupByFilter = async (value) => {
+    try {
+      const FilterData = value;
+      setOpen(true);
+      const response = await DashboardService.getPendingFollowupDataByFilter(
+        FilterData
+      );
+      const Data = [
+        {
+          label: "Open FollowUp",
+          value: response.data.open_follow_ups,
+        },
+        {
+          label: "Overdue FollowUp",
+          value: response.data.overdue_follow_ups,
+        },
+      ];
+      if (
+        response.data.open_follow_ups > 0 ||
+        response.data.overdue_follow_ups > 0
+      ) {
+        setPendingFollowup(Data);
+      }
+      setOpen(false);
+    } catch (error) {
+      console.log("error", error);
+      setOpen(false);
+    }
+  };
+
+  const getPIByFilter = async (value) => {
+    try {
+      const FilterData = value;
+      setOpen(true);
+      const response = await DashboardService.getPIDataByFilter(FilterData);
+      const Data = [
+        {
+          label: "Paid PI",
+          value: response.data.paid_pi,
+        },
+        {
+          label: "Unpaid PI",
+          value: response.data.unpaid_pi,
+        },
+        {
+          label: "Dropped PI",
+          value: response.data.dropped_pi,
+        },
+      ];
+      if (
+        response.data.paid_pi > 0 ||
+        response.data.unpaid_pi > 0 ||
+        response.data.dropped_pi > 0
+      ) {
+        setPiData(Data);
+      }
+      setOpen(false);
+    } catch (error) {
+      console.log("error", error);
+      setOpen(false);
+    }
+  };
+
   const getResetData = () => {
     getForecastDetails();
+    getNewCustomerDetails();
+    getPendingTaskDetails();
+    getPendingFollowupDetails();
+    getPIDetails();
     setAssign(null);
   };
 
+  const handlePieChartClick = () => {
+    navigate("/task/view-task");
+  };
+
+  const handlePendingFollowup = () => {
+    navigate("/leads/view-followup");
+  };
   const handleRowClick = (row) => {
     setFunnelDataByID(row);
     setOpenPopup(true);
@@ -284,196 +542,481 @@ export const LeadDashboardView = () => {
   return (
     <>
       <CustomLoader open={open} />
-      {userData.is_staff === true && (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-          <div
-            style={{
-              ...chartContainerStyle,
-              minHeight: "10px",
-              paddingTop: "0px",
-              padding: "10px",
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            <Autocomplete
-              style={{
-                width: 400,
-                marginRight: "10px",
-              }}
-              size="small"
-              onChange={(event, value) => handleAutocompleteChange(value)}
-              value={assign}
-              options={assigned.map((option) => option.email)}
-              getOptionLabel={(option) => option}
-              renderInput={(params) => (
-                <TextField {...params} label="Filter By Sales Person" />
-              )}
-            />
-            <button className="btn btn-primary" onClick={getResetData}>
-              Reset
-            </button>
-          </div>
-        </div>
-      )}
-
-      <div style={{ display: "flex", flexDirection: "row" }}>
-        <div
-          style={{
-            ...chartContainerStyle,
-            display: "flex",
-            flexDirection: "row",
-          }}
-        >
-          {/* Actual and forecast bar chart */}
-          {barChartData.length > 0 && (
-            <BarChart width={600} height={300} data={barChartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="combination" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="actual" name="Actual" fill="#8884d8" />
-              <Bar dataKey="forecast" name="Forecast" fill="#82ca9d" />
-              <text
-                x="50%"
-                y={20}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                className="chart-title"
-              >
-                Forecast vs Achieved
-              </text>
-            </BarChart>
-          )}
-          {/* Horizontal Bar Chart */}
-          {horizontalBarData.length > 0 && (
-            <BarChart
-              width={600}
-              height={300}
-              data={horizontalBarData}
-              layout="vertical"
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis type="number" />
-              <YAxis
-                dataKey="name"
-                type="category"
-                angle={-45}
-                textAnchor="end"
-                interval={0}
-              />
-              <Tooltip />
-              <Legend />
-              <Bar
-                dataKey="value"
-                fill="#8884d8"
-                barSize={20}
-                onClick={(data) => {
-                  // Handle the click event
-                  handleDispatch(data);
-                  console.log("Bar clicked:", data);
-                }}
-              />
-            </BarChart>
-          )}
-        </div>
-      </div>
-
-      <div style={{ display: "flex", flexDirection: "row" }}>
-        <div style={chartContainerStyle}>
-          {/* Funnel Chart */}
-          <div className="funnelChart" style={funnelStyle}>
-            <h2 style={{ textAlign: "center", color: "#333" }}>Sales Funnel</h2>
-            {funnelData.map((data, index) => (
-              <div
-                key={index}
-                className="chartSegment"
-                style={{
-                  backgroundColor: paletteColors[index % paletteColors.length],
-                  opacity: hoveredSegment === data ? 0.7 : 1,
-                }}
-                onMouseEnter={() => handleSegmentHover(data)}
-                // onMouseLeave={handleSegmentLeave}
-                onClick={() => handleRowClick(data)}
-              >
-                <div
-                // className="segmentTitle"
-                >
-                  <span style={textStyle}>{data.label}</span>&nbsp;
-                  <span style={textStyle}>{data.value}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-          {/* Pie Chart */}
+      {userData.groups.toString() === "Sales" && (
+        <>
+          {/* Customer Stats */}
           {pieChartData.length > 0 && (
-            <ResponsiveContainer width={400} height={400}>
-              <PieChart>
-                <Pie
-                  data={pieChartData}
-                  dataKey="value"
-                  nameKey="label"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={120} // Increase the outerRadius for a larger pie chart
-                  fill="#8884d8"
-                  labelLine={false} // Disable the default label line
-                  label={({
-                    cx,
-                    cy,
-                    midAngle,
-                    innerRadius,
-                    outerRadius,
-                    percent,
-                    index,
-                  }) => {
-                    const RADIAN = Math.PI / 180;
-                    const radius =
-                      innerRadius + (outerRadius - innerRadius) * 0.5;
-                    const x = cx + radius * Math.cos(-midAngle * RADIAN);
-                    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                marginTop: "10px",
+              }}
+            >
+              {pieChartData.map((data, index) => {
+                let percentage = 0;
+                console.log("data", data);
+                console.log("total", total);
+                if (total !== 0) {
+                  percentage = (data.value / total) * 100;
+                }
 
-                    return (
-                      <text
-                        x={x}
-                        y={y}
-                        fill="#fff"
-                        textAnchor="middle"
-                        dominantBaseline="central"
-                      >
-                        {`${pieChartData[index].label} (${pieChartData[index].value})`}
-                      </text>
-                    );
-                  }}
-                >
-                  {pieChartData.map((entry, index) => (
-                    <Cell key={index} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-                <text
+                return (
+                  <div
+                    key={index}
+                    style={{
+                      ...chartContainerStyle,
+                      minHeight: "40px",
+                      minWidth: "30px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexDirection: "column",
+                      margin: "0 10px",
+                      backgroundColor: COLORS[index % COLORS.length],
+                    }}
+                  >
+                    <div
+                      style={{
+                        marginBottom: "5px",
+                        color: "white",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {data.label}
+                    </div>
+                    <div style={{ color: "white", fontWeight: "bold" }}>
+                      {data.value}
+                    </div>
+                    <div
+                      style={{
+                        width: "80%",
+                        height: "5px",
+                        backgroundColor: "#ccc",
+                        marginTop: "5px",
+                        marginBottom: "5px",
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: `${percentage}%`,
+                          height: "100%",
+                          backgroundColor: "#007bff",
+                        }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+          <div style={{ display: "flex", flexDirection: "row" }}>
+            <div style={chartContainerStyle}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                }}
+              >
+                {/* Actual and forecast bar chart */}
+                {barChartData.length > 0 && (
+                  <BarChart width={600} height={300} data={barChartData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="combination" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="actual" name="Actual" fill="#8884d8" />
+                    <Bar dataKey="forecast" name="Forecast" fill="#82ca9d" />
+                    {/* <text
                   x="50%"
                   y={20}
                   textAnchor="middle"
                   dominantBaseline="middle"
                   className="chart-title"
                 >
-                  Customer Stats
-                </text>
-              </PieChart>
-            </ResponsiveContainer>
-          )}
-        </div>
-      </div>
+                  Forecast vs Achieved
+                </text> */}
+                  </BarChart>
+                )}
+                {/* Horizontal Bar Chart */}
+                {newCustomerData.length > 0 && (
+                  <BarChart width={600} height={300} data={newCustomerData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="combination" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="count" name="New Customer" fill="#8884d8" />
 
+                    {/* <text
+                  x="50%"
+                  y={20}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  className="chart-title"
+                >
+                  New Customer
+                </text> */}
+                  </BarChart>
+                )}
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                }}
+              >
+                {" "}
+                {/* Funnel Chart */}
+                {funnelData.length > 0 && (
+                  <div className="funnelChart" style={funnelStyle}>
+                    <h2 style={{ textAlign: "center", color: "#333" }}>
+                      Sales Funnel
+                    </h2>
+                    {funnelData.map((data, index) => (
+                      <div
+                        key={index}
+                        className="chartSegment"
+                        style={{
+                          backgroundColor:
+                            paletteColors[index % paletteColors.length],
+                          opacity: hoveredSegment === data ? 0.7 : 1,
+                        }}
+                        onMouseEnter={() => handleSegmentHover(data)}
+                        // onMouseLeave={handleSegmentLeave}
+                        onClick={() => handleRowClick(data)}
+                      >
+                        <div
+                        // className="segmentTitle"
+                        >
+                          <span style={textStyle}>{data.label}</span>&nbsp;
+                          <span style={textStyle}>{data.value}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+      {/* filter by sales person */}
+      {userData.is_staff === true && (
+        <>
+          <div style={{ display: "flex", flexDirection: "row" }}>
+            <div style={chartContainerStyle}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  margin: "20px",
+                }}
+              >
+                <Autocomplete
+                  style={{
+                    width: 400,
+                    marginRight: "10px",
+                  }}
+                  size="small"
+                  onChange={(event, value) => handleAutocompleteChange(value)}
+                  value={assign}
+                  options={assigned.map((option) => option.email)}
+                  getOptionLabel={(option) => option}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Filter By Sales Person" />
+                  )}
+                />
+                <button className="btn btn-primary" onClick={getResetData}>
+                  Reset
+                </button>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                }}
+              >
+                {/* Actual and forecast bar chart */}
+                {barChartData.length > 0 && (
+                  <BarChart width={600} height={300} data={barChartData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="combination" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="actual" name="Actual" fill="#8884d8" />
+                    <Bar dataKey="forecast" name="Forecast" fill="#82ca9d" />
+                    {/* <text
+                  x="50%"
+                  y={20}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  className="chart-title"
+                >
+                  Forecast vs Achieved
+                </text> */}
+                  </BarChart>
+                )}
+                {newCustomerData.length > 0 && (
+                  <BarChart width={600} height={300} data={newCustomerData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="combination" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="count" name="New Customer" fill="#8884d8" />
+
+                    {/* <text
+                  x="50%"
+                  y={20}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  className="chart-title"
+                >
+                  New Customer
+                </text> */}
+                  </BarChart>
+                )}
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                }}
+              >
+                {/* Horizontal Bar Chart */}
+                {horizontalBarData.length > 0 && (
+                  <BarChart
+                    width={600}
+                    height={300}
+                    data={horizontalBarData}
+                    layout="vertical"
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis type="number" />
+                    <YAxis
+                      dataKey="name"
+                      type="category"
+                      angle={-45}
+                      textAnchor="end"
+                      interval={0}
+                    />
+                    <Tooltip />
+                    <Legend />
+                    <Bar
+                      dataKey="value"
+                      fill="#8884d8"
+                      barSize={20}
+                      onClick={(data) => {
+                        // Handle the click event
+                        handleDispatch(data);
+                        console.log("Bar clicked:", data);
+                      }}
+                    />
+                  </BarChart>
+                )}
+                {/* Pie Chart of pending task */}
+                {pendingTask.length > 0 && (
+                  <ResponsiveContainer width={"100%"} height={400}>
+                    <PieChart onClick={handlePieChartClick}>
+                      <Pie
+                        data={pendingTask}
+                        dataKey="value"
+                        nameKey="label"
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={120} // Increase the outerRadius for a larger pie chart
+                        fill="#8884d8"
+                        labelLine={false} // Disable the default label line
+                        label={({
+                          cx,
+                          cy,
+                          midAngle,
+                          innerRadius,
+                          outerRadius,
+                          percent,
+                          index,
+                        }) => {
+                          const RADIAN = Math.PI / 180;
+                          const radius =
+                            innerRadius + (outerRadius - innerRadius) * 0.5;
+                          const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                          const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+                          return (
+                            <text
+                              x={x}
+                              y={y}
+                              fill="#fff"
+                              textAnchor="middle"
+                              dominantBaseline="central"
+                            >
+                              {`${pendingTask[index].label} (${pendingTask[index].value})`}
+                            </text>
+                          );
+                        }}
+                      >
+                        {pendingTask.map((entry, index) => (
+                          <Cell
+                            key={index}
+                            fill={COLORS[index % COLORS.length]}
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                      <Legend />
+                      <text
+                        x="50%"
+                        y={20}
+                        textAnchor="middle"
+                        dominantBaseline="middle"
+                        className="chart-title"
+                      >
+                        Pending Tasks
+                      </text>
+                    </PieChart>
+                  </ResponsiveContainer>
+                )}
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                }}
+              >
+                {/* pie chart of pending followups */}
+                {pendingFollowup.length > 0 && (
+                  <ResponsiveContainer width={"100%"} height={400}>
+                    <PieChart onClick={handlePendingFollowup}>
+                      <Pie
+                        data={pendingFollowup}
+                        dataKey="value"
+                        nameKey="label"
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={120} // Increase the outerRadius for a larger pie chart
+                        fill="#8884d8"
+                        labelLine={false} // Disable the default label line
+                        label={({
+                          cx,
+                          cy,
+                          midAngle,
+                          innerRadius,
+                          outerRadius,
+                          percent,
+                          index,
+                        }) => {
+                          const RADIAN = Math.PI / 180;
+                          const radius =
+                            innerRadius + (outerRadius - innerRadius) * 0.5;
+                          const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                          const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+                          return (
+                            <text
+                              x={x}
+                              y={y}
+                              fill="#fff"
+                              textAnchor="middle"
+                              dominantBaseline="central"
+                            >
+                              {`${pendingFollowup[index].label} (${pendingFollowup[index].value})`}
+                            </text>
+                          );
+                        }}
+                      >
+                        {pendingTask.map((entry, index) => (
+                          <Cell
+                            key={index}
+                            fill={COLORS[index % COLORS.length]}
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                      <Legend />
+                      <text
+                        x="50%"
+                        y={20}
+                        textAnchor="middle"
+                        dominantBaseline="middle"
+                        className="chart-title"
+                      >
+                        Pending FollowUp
+                      </text>
+                    </PieChart>
+                  </ResponsiveContainer>
+                )}
+                {/* pie chart of pi data */}
+                {piData.length > 0 && (
+                  <ResponsiveContainer width={"100%"} height={400}>
+                    <PieChart>
+                      <Pie
+                        data={piData}
+                        dataKey="value"
+                        nameKey="label"
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={120} // Increase the outerRadius for a larger pie chart
+                        fill="#8884d8"
+                        labelLine={false} // Disable the default label line
+                        label={({
+                          cx,
+                          cy,
+                          midAngle,
+                          innerRadius,
+                          outerRadius,
+                          percent,
+                          index,
+                        }) => {
+                          const RADIAN = Math.PI / 180;
+                          const radius =
+                            innerRadius + (outerRadius - innerRadius) * 0.5;
+                          const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                          const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+                          return (
+                            <text
+                              x={x}
+                              y={y}
+                              fill="#fff"
+                              textAnchor="middle"
+                              dominantBaseline="central"
+                            >
+                              {`${piData[index].label} (${piData[index].value})`}
+                            </text>
+                          );
+                        }}
+                      >
+                        {piData.map((entry, index) => (
+                          <Cell
+                            key={index}
+                            fill={COLORS[index % COLORS.length]} // Set color based on index
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                      <Legend />
+                      <text
+                        x="50%"
+                        y={20}
+                        textAnchor="middle"
+                        dominantBaseline="middle"
+                        className="chart-title"
+                      >
+                        PI Data
+                      </text>
+                    </PieChart>
+                  </ResponsiveContainer>
+                )}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
       <Popup
         maxWidth={"xl"}
         title={"View Leads dashboard"}
