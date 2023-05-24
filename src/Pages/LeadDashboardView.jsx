@@ -821,7 +821,7 @@ export const LeadDashboardView = () => {
                 )}
                 {/* Pie Chart of pending task */}
                 {pendingTask.length > 0 && (
-                  <ResponsiveContainer width={"100%"} height={400}>
+                  <ResponsiveContainer width={600} height={400}>
                     <PieChart onClick={handlePieChartClick}>
                       <Pie
                         data={pendingTask}
@@ -890,7 +890,7 @@ export const LeadDashboardView = () => {
               >
                 {/* pie chart of pending followups */}
                 {pendingFollowup.length > 0 && (
-                  <ResponsiveContainer width={"100%"} height={400}>
+                  <ResponsiveContainer width={600} height={400}>
                     <PieChart onClick={handlePendingFollowup}>
                       <Pie
                         data={pendingFollowup}
@@ -952,7 +952,7 @@ export const LeadDashboardView = () => {
                 )}
                 {/* pie chart of pi data */}
                 {piData.length > 0 && (
-                  <ResponsiveContainer width={"100%"} height={400}>
+                  <ResponsiveContainer width={600} height={400}>
                     <PieChart>
                       <Pie
                         data={piData}
