@@ -243,8 +243,8 @@ export const LeadDashboardView = () => {
 
       const Data = [
         {
-          label: "Open Tasks",
-          value: response.data.open_tasks,
+          label: "Timely Tasks",
+          value: response.data.timely_tasks,
         },
         {
           label: "Overdue Tasks",
@@ -268,8 +268,8 @@ export const LeadDashboardView = () => {
 
       const Data = [
         {
-          label: "Open FollowUp",
-          value: response.data.open_follow_ups,
+          label: "Timely FollowUp",
+          value: response.data.timely_followups,
         },
         {
           label: "Overdue FollowUp",
@@ -387,8 +387,8 @@ export const LeadDashboardView = () => {
       );
       const Data = [
         {
-          label: "Open Tasks",
-          value: response.data.open_tasks,
+          label: "Timely Tasks",
+          value: response.data.timely_tasks,
         },
         {
           label: "Overdue Tasks",
@@ -414,8 +414,8 @@ export const LeadDashboardView = () => {
       );
       const Data = [
         {
-          label: "Open FollowUp",
-          value: response.data.open_follow_ups,
+          label: "Timely FollowUp",
+          value: response.data.timely_followups,
         },
         {
           label: "Overdue FollowUp",
@@ -629,17 +629,16 @@ export const LeadDashboardView = () => {
                     <Bar dataKey="actual" name="Actual" fill="#8884d8" />
                     <Bar dataKey="forecast" name="Forecast" fill="#82ca9d" />
                     {/* <text
-                  x="50%"
-                  y={20}
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  className="chart-title"
-                >
-                  Forecast vs Achieved
-                </text> */}
+                x="50%"
+                y={20}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                className="chart-title"
+              >
+                Forecast vs Achieved
+              </text> */}
                   </BarChart>
                 )}
-                {/* Horizontal Bar Chart */}
                 {newCustomerData.length > 0 && (
                   <BarChart width={600} height={300} data={newCustomerData}>
                     <CartesianGrid strokeDasharray="3 3" />
@@ -650,14 +649,14 @@ export const LeadDashboardView = () => {
                     <Bar dataKey="count" name="New Customer" fill="#8884d8" />
 
                     {/* <text
-                  x="50%"
-                  y={20}
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  className="chart-title"
-                >
-                  New Customer
-                </text> */}
+                x="50%"
+                y={20}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                className="chart-title"
+              >
+                New Customer
+              </text> */}
                   </BarChart>
                 )}
               </div>
@@ -667,7 +666,199 @@ export const LeadDashboardView = () => {
                   flexDirection: "row",
                 }}
               >
-                {" "}
+                {/* Pie Chart of pending task */}
+                {pendingTask.length > 0 && (
+                  <ResponsiveContainer width={600} height={400}>
+                    <PieChart onClick={handlePieChartClick}>
+                      <Pie
+                        data={pendingTask}
+                        dataKey="value"
+                        nameKey="label"
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={120} // Increase the outerRadius for a larger pie chart
+                        fill="#8884d8"
+                        labelLine={false} // Disable the default label line
+                        label={({
+                          cx,
+                          cy,
+                          midAngle,
+                          innerRadius,
+                          outerRadius,
+                          percent,
+                          index,
+                        }) => {
+                          const RADIAN = Math.PI / 180;
+                          const radius =
+                            innerRadius + (outerRadius - innerRadius) * 0.5;
+                          const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                          const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+                          return (
+                            <text
+                              x={x}
+                              y={y}
+                              fill="#fff"
+                              textAnchor="middle"
+                              dominantBaseline="central"
+                            >
+                              {`${pendingTask[index].label} (${pendingTask[index].value})`}
+                            </text>
+                          );
+                        }}
+                      >
+                        {pendingTask.map((entry, index) => (
+                          <Cell
+                            key={index}
+                            fill={COLORS[index % COLORS.length]}
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                      <Legend />
+                      <text
+                        x="50%"
+                        y={20}
+                        textAnchor="middle"
+                        dominantBaseline="middle"
+                        className="chart-title"
+                      >
+                        Pending Tasks
+                      </text>
+                    </PieChart>
+                  </ResponsiveContainer>
+                )}
+                {/* pie chart of pending followups */}
+                {pendingFollowup.length > 0 && (
+                  <ResponsiveContainer width={600} height={400}>
+                    <PieChart onClick={handlePendingFollowup}>
+                      <Pie
+                        data={pendingFollowup}
+                        dataKey="value"
+                        nameKey="label"
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={120} // Increase the outerRadius for a larger pie chart
+                        fill="#8884d8"
+                        labelLine={false} // Disable the default label line
+                        label={({
+                          cx,
+                          cy,
+                          midAngle,
+                          innerRadius,
+                          outerRadius,
+                          percent,
+                          index,
+                        }) => {
+                          const RADIAN = Math.PI / 180;
+                          const radius =
+                            innerRadius + (outerRadius - innerRadius) * 0.5;
+                          const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                          const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+                          return (
+                            <text
+                              x={x}
+                              y={y}
+                              fill="#fff"
+                              textAnchor="middle"
+                              dominantBaseline="central"
+                            >
+                              {`${pendingFollowup[index].label} (${pendingFollowup[index].value})`}
+                            </text>
+                          );
+                        }}
+                      >
+                        {pendingTask.map((entry, index) => (
+                          <Cell
+                            key={index}
+                            fill={COLORS[index % COLORS.length]}
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                      <Legend />
+                      <text
+                        x="50%"
+                        y={20}
+                        textAnchor="middle"
+                        dominantBaseline="middle"
+                        className="chart-title"
+                      >
+                        Pending FollowUp
+                      </text>
+                    </PieChart>
+                  </ResponsiveContainer>
+                )}
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                }}
+              >
+                {/* pie chart of pi data */}
+                {piData.length > 0 && (
+                  <ResponsiveContainer width={600} height={400}>
+                    <PieChart>
+                      <Pie
+                        data={piData}
+                        dataKey="value"
+                        nameKey="label"
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={120} // Increase the outerRadius for a larger pie chart
+                        fill="#8884d8"
+                        labelLine={false} // Disable the default label line
+                        label={({
+                          cx,
+                          cy,
+                          midAngle,
+                          innerRadius,
+                          outerRadius,
+                          percent,
+                          index,
+                        }) => {
+                          const RADIAN = Math.PI / 180;
+                          const radius =
+                            innerRadius + (outerRadius - innerRadius) * 0.5;
+                          const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                          const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+                          return (
+                            <text
+                              x={x}
+                              y={y}
+                              fill="#fff"
+                              textAnchor="middle"
+                              dominantBaseline="central"
+                            >
+                              {`${piData[index].label} (${piData[index].value})`}
+                            </text>
+                          );
+                        }}
+                      >
+                        {piData.map((entry, index) => (
+                          <Cell
+                            key={index}
+                            fill={COLORS[index % COLORS.length]} // Set color based on index
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                      <Legend />
+                      <text
+                        x="50%"
+                        y={20}
+                        textAnchor="middle"
+                        dominantBaseline="middle"
+                        className="chart-title"
+                      >
+                        PI Data
+                      </text>
+                    </PieChart>
+                  </ResponsiveContainer>
+                )}
                 {/* Funnel Chart */}
                 {funnelData.length > 0 && (
                   <div className="funnelChart" style={funnelStyle}>
@@ -705,6 +896,72 @@ export const LeadDashboardView = () => {
       {/* filter by sales person */}
       {userData.is_staff === true && (
         <>
+          {/* Customer Stats */}
+          {pieChartData.length > 0 && (
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                marginTop: "10px",
+              }}
+            >
+              {pieChartData.map((data, index) => {
+                let percentage = 0;
+                console.log("data", data);
+                console.log("total", total);
+                if (total !== 0) {
+                  percentage = (data.value / total) * 100;
+                }
+
+                return (
+                  <div
+                    key={index}
+                    style={{
+                      ...chartContainerStyle,
+                      minHeight: "40px",
+                      minWidth: "30px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexDirection: "column",
+                      margin: "0 10px",
+                      backgroundColor: COLORS[index % COLORS.length],
+                    }}
+                  >
+                    <div
+                      style={{
+                        marginBottom: "5px",
+                        color: "white",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {data.label}
+                    </div>
+                    <div style={{ color: "white", fontWeight: "bold" }}>
+                      {data.value}
+                    </div>
+                    <div
+                      style={{
+                        width: "80%",
+                        height: "5px",
+                        backgroundColor: "#ccc",
+                        marginTop: "5px",
+                        marginBottom: "5px",
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: `${percentage}%`,
+                          height: "100%",
+                          backgroundColor: "#007bff",
+                        }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
           <div style={{ display: "flex", flexDirection: "row" }}>
             <div style={chartContainerStyle}>
               <div
@@ -1011,6 +1268,42 @@ export const LeadDashboardView = () => {
                       </text>
                     </PieChart>
                   </ResponsiveContainer>
+                )}
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                }}
+              >
+                {/* Funnel Chart */}
+                {funnelData.length > 0 && (
+                  <div className="funnelChart" style={funnelStyle}>
+                    <h2 style={{ textAlign: "center", color: "#333" }}>
+                      Sales Funnel
+                    </h2>
+                    {funnelData.map((data, index) => (
+                      <div
+                        key={index}
+                        className="chartSegment"
+                        style={{
+                          backgroundColor:
+                            paletteColors[index % paletteColors.length],
+                          opacity: hoveredSegment === data ? 0.7 : 1,
+                        }}
+                        onMouseEnter={() => handleSegmentHover(data)}
+                        // onMouseLeave={handleSegmentLeave}
+                        onClick={() => handleRowClick(data)}
+                      >
+                        <div
+                        // className="segmentTitle"
+                        >
+                          <span style={textStyle}>{data.label}</span>&nbsp;
+                          <span style={textStyle}>{data.value}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </div>
             </div>
