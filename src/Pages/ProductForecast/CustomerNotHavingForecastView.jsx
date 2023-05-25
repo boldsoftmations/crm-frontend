@@ -194,7 +194,7 @@ export const CustomerNotHavingForecastView = () => {
           await ProductForecastService.getAllProductNotHavingForecastPaginate(
             page,
             filterQuery,
-            searchQuery
+            searchQuery || filterSelectedQuery
           );
         if (response) {
           setProductNotHavingForecast(response.data.results);

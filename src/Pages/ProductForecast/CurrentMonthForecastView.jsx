@@ -183,7 +183,7 @@ export const CurrentMonthForecastView = () => {
     { label: "Forecast", key: "forecast" },
     { label: "Actual", key: "actual" },
     { label: "Orderbook Value", key: "orderbook_value" },
-    { label: "Forecast Achieved", key: "forecast_achieved" },
+    { label: "Shortfall", key: "forecast_achieved" },
   ];
 
   const handleExport = async () => {
@@ -250,7 +250,7 @@ export const CurrentMonthForecastView = () => {
     "Forecast",
     "Actual",
     "Orderbook Value",
-    "Forecast Achieved",
+    "Shortfall",
   ];
 
   return (

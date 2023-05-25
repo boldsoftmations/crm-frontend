@@ -160,12 +160,12 @@ export const DeadCustomerView = () => {
       setCurrentPage(page);
       setOpen(true);
 
-      if (searchQuery) {
+      if (searchQuery || filterSelectedQuery) {
         const response =
           await ProductForecastService.getAllDeadCustomerPaginate(
             page,
             filterQuery,
-            searchQuery
+            searchQuery || filterSelectedQuery
           );
         if (response) {
           setDeadCustomer(response.data.results);
