@@ -620,101 +620,101 @@ export const Home = () => {
       <CustomLoader open={open} />
       {/* filter by sales person */}
       <>
-        {/* Customer Stats */}
-
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            marginTop: "10px",
-          }}
-        >
-          {pieChartData.map((data, index) => {
-            let percentage = 0;
-            console.log("data", data);
-            console.log("total", total);
-            if (total !== 0) {
-              percentage = (data.value / total) * 100;
-            }
-
-            return (
-              <div
-                key={index}
-                style={{
-                  ...chartContainerStyle,
-                  minHeight: "40px",
-                  minWidth: "30px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexDirection: "column",
-                  margin: "0 10px",
-                  backgroundColor: COLORS[index % COLORS.length],
-                }}
-              >
-                <div
-                  style={{
-                    marginBottom: "5px",
-                    color: "white",
-                    fontWeight: "bold",
-                  }}
-                >
-                  {data.label}
-                </div>
-                <div style={{ color: "white", fontWeight: "bold" }}>
-                  {data.value}
-                </div>
-                <div
-                  style={{
-                    width: "80%",
-                    height: "5px",
-                    backgroundColor: "#ccc",
-                    marginTop: "5px",
-                    marginBottom: "5px",
-                  }}
-                >
-                  <div
-                    style={{
-                      width: `${percentage}%`,
-                      height: "100%",
-                      backgroundColor: "#007bff",
-                    }}
-                  />
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
         <div style={{ display: "flex", flexDirection: "row" }}>
           <div style={chartContainerStyle}>
+            {userData !== null && userData.is_staff === true && (
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  margin: "20px",
+                }}
+              >
+                <Autocomplete
+                  style={{
+                    width: 400,
+                    marginRight: "10px",
+                  }}
+                  size="small"
+                  onChange={(event, value) => handleAutocompleteChange(value)}
+                  value={assign}
+                  options={assigned.map((option) => option.email)}
+                  getOptionLabel={(option) => option}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Filter By Sales Person" />
+                  )}
+                />
+                <button className="btn btn-primary" onClick={getResetData}>
+                  Reset
+                </button>
+              </div>
+            )}
+            {/* Customer Stats */}
             <div
               style={{
                 display: "flex",
                 flexDirection: "row",
-                justifyContent: "center",
-                alignItems: "center",
-                margin: "20px",
+                marginTop: "20px",
+                marginBottom: "20px",
               }}
             >
-              <Autocomplete
-                style={{
-                  width: 400,
-                  marginRight: "10px",
-                }}
-                size="small"
-                onChange={(event, value) => handleAutocompleteChange(value)}
-                value={assign}
-                options={assigned.map((option) => option.email)}
-                getOptionLabel={(option) => option}
-                renderInput={(params) => (
-                  <TextField {...params} label="Filter By Sales Person" />
-                )}
-              />
-              <button className="btn btn-primary" onClick={getResetData}>
-                Reset
-              </button>
+              {pieChartData.map((data, index) => {
+                let percentage = 0;
+                console.log("data", data);
+                console.log("total", total);
+                if (total !== 0) {
+                  percentage = (data.value / total) * 100;
+                }
+
+                return (
+                  <div
+                    key={index}
+                    style={{
+                      ...chartContainerStyle,
+                      minHeight: "40px",
+                      minWidth: "30px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexDirection: "column",
+                      margin: "0 10px",
+                      backgroundColor: COLORS[index % COLORS.length],
+                    }}
+                  >
+                    <div
+                      style={{
+                        marginBottom: "5px",
+                        color: "white",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {data.label}
+                    </div>
+                    <div style={{ color: "white", fontWeight: "bold" }}>
+                      {data.value}
+                    </div>
+                    <div
+                      style={{
+                        width: "80%",
+                        height: "5px",
+                        backgroundColor: "#ccc",
+                        marginTop: "5px",
+                        marginBottom: "5px",
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: `${percentage}%`,
+                          height: "100%",
+                          backgroundColor: "#007bff",
+                        }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
             </div>
+
             <div
               style={{
                 display: "flex",
