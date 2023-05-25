@@ -826,17 +826,17 @@ export const Home = () => {
                       const x = cx + radius * Math.cos(-midAngle * RADIAN);
                       const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
-                      return (
-                        <text
-                          x={x}
-                          y={y}
-                          fill="#fff"
-                          textAnchor="middle"
-                          dominantBaseline="central"
-                        >
-                          {`${pendingTask[index].label} (${pendingTask[index].value})`}
-                        </text>
-                      );
+                      // return (
+                      //   <text
+                      //     x={x}
+                      //     y={y}
+                      //     fill="#fff"
+                      //     textAnchor="middle"
+                      //     dominantBaseline="central"
+                      //   >
+                      //     {`${pendingTask[index].label} (${pendingTask[index].value})`}
+                      //   </text>
+                      // );
                     }}
                   >
                     {pendingTask.map((entry, index) => (
@@ -891,19 +891,19 @@ export const Home = () => {
                       const y = cy + radius * Math.sin(-midAngle * RADIAN);
                       const label = `${pendingFollowup[index].label} (${pendingFollowup[index].value})`;
 
-                      return (
-                        <text
-                          x={x}
-                          y={y}
-                          fill="#fff"
-                          textAnchor="middle"
-                          dominantBaseline="central"
-                          fontSize={12} // Adjust the font size as needed
-                        >
-                          {/* Add text wrap */}
-                          <tspan>{label}</tspan>
-                        </text>
-                      );
+                      // return (
+                      //   <text
+                      //     x={x}
+                      //     y={y}
+                      //     fill="#fff"
+                      //     textAnchor="middle"
+                      //     dominantBaseline="central"
+                      //     fontSize={12} // Adjust the font size as needed
+                      //   >
+                      //     {/* Add text wrap */}
+                      //     <tspan>{label}</tspan>
+                      //   </text>
+                      // );
                     }}
                   >
                     {pendingFollowup.map((entry, index) => (
@@ -925,7 +925,6 @@ export const Home = () => {
               </ResponsiveContainer>
 
               {/* pie chart of pi data */}
-
               <ResponsiveContainer width={600} height={400}>
                 <PieChart>
                   <Pie
@@ -952,17 +951,17 @@ export const Home = () => {
                       const x = cx + radius * Math.cos(-midAngle * RADIAN);
                       const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
-                      return (
-                        <text
-                          x={x}
-                          y={y}
-                          fill="#fff"
-                          textAnchor="middle"
-                          dominantBaseline="central"
-                        >
-                          {`${piData[index].label} (${piData[index].value})`}
-                        </text>
-                      );
+                      // return (
+                      //   <text
+                      //     x={x}
+                      //     y={y}
+                      //     fill="#fff"
+                      //     textAnchor="middle"
+                      //     dominantBaseline="central"
+                      //   >
+                      //     {`${piData[index].label} (${piData[index].value})`}
+                      //   </text>
+                      // );
                     }}
                   >
                     {piData.map((entry, index) => (
