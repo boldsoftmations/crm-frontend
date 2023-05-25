@@ -50,6 +50,23 @@ const getPIData = () => {
 const getPIDataByFilter = (filter) => {
   return CustomAxios.get(`/api/dashboard/list-pi-data/?email=${filter}`);
 };
+
+const getCustomerDashboard = () => {
+  return CustomAxios.get("/api/dashboard/customer-dashboard/");
+};
+
+const getCustomerDataByFilter = (filter) => {
+  return CustomAxios.get(`/api/dashboard/customer-dashboard/?email=${filter}`);
+};
+
+const getLeadDashboard = () => {
+  return CustomAxios.get("/api/dashboard/lead-dashboard");
+};
+
+const getLeadDataByFilter = (filter) => {
+  return CustomAxios.get(`/api/dashboard/lead-dashboard/?email=${filter}`);
+};
+
 const DashboardService = {
   getLastThreeMonthForecastData,
   getConsLastThreeMonthForecastData,
@@ -62,6 +79,10 @@ const DashboardService = {
   getPendingFollowupDataByFilter,
   getPIData,
   getPIDataByFilter,
+  getCustomerDashboard,
+  getLeadDashboard,
+  getCustomerDataByFilter,
+  getLeadDataByFilter,
 };
 
 export default DashboardService;

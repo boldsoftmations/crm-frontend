@@ -100,14 +100,6 @@ const BulkLeadAssign = (data) => {
   return CustomAxios.post("/api/lead/assign-bulk-leads/", data);
 };
 
-const getLeadDashboard = () => {
-  return CustomAxios.get("/api/lead/lead-dashboard");
-};
-
-const getCustomerDashboard = () => {
-  return CustomAxios.get("/api/lead/customer-dashboard/");
-};
-
 const LeadServices = {
   getProfile,
   getAllLeads,
@@ -133,8 +125,6 @@ const LeadServices = {
   updateRefernces,
   createFollowUps,
   BulkLeadAssign,
-  getLeadDashboard,
-  getCustomerDashboard,
 };
 
 export default LeadServices;

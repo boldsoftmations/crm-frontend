@@ -47,7 +47,7 @@ export const LeadDashboardView = () => {
   const userData = data.profile;
   useEffect(() => {
     getAllTaskDetails();
-    geCustomerDetails();
+    getCustomerDetails();
     getForecastDetails();
     getAssignedData();
     getAllDispatchData();
@@ -72,7 +72,7 @@ export const LeadDashboardView = () => {
   const getAllTaskDetails = async () => {
     try {
       setOpen(true);
-      const response = await LeadServices.getLeadDashboard();
+      const response = await DashboardService.getLeadDashboard();
       const Data = [
         { name: "new", label: "New", value: response.data.new },
         { name: "open", label: "Open", value: response.data.open },
@@ -97,16 +97,9 @@ export const LeadDashboardView = () => {
           value: response.data.converted,
         },
       ];
-      if (
-        response.data.new > 0 ||
-        response.data.open > 0 ||
-        response.data.opportunity > 0 ||
-        response.data.potential > 0 ||
-        response.data.not_interested > 0 ||
-        response.data.converted > 0
-      ) {
-        setFunnelData(Data);
-      }
+
+      setFunnelData(Data);
+
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -114,10 +107,10 @@ export const LeadDashboardView = () => {
     }
   };
 
-  const geCustomerDetails = async () => {
+  const getCustomerDetails = async () => {
     try {
       setOpen(true);
-      const response = await LeadServices.getCustomerDashboard();
+      const response = await DashboardService.getCustomerDashboard();
       const Total =
         response.data.active_customers +
         response.data.dead_customers +
@@ -141,13 +134,9 @@ export const LeadDashboardView = () => {
           value: Total,
         },
       ];
-      if (
-        response.data.active_customers > 0 ||
-        response.data.dead_customers > 0 ||
-        response.data.new_customers > 0
-      ) {
-        setPieChartData(Data);
-      }
+
+      setPieChartData(Data);
+
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -251,9 +240,7 @@ export const LeadDashboardView = () => {
           value: response.data.overdue_tasks,
         },
       ];
-      if (response.data.open_tasks > 0 || response.data.overdue_tasks > 0) {
-        setPendingTask(Data);
-      }
+      setPendingTask(Data);
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -276,12 +263,9 @@ export const LeadDashboardView = () => {
           value: response.data.overdue_follow_ups,
         },
       ];
-      if (
-        response.data.open_follow_ups > 0 ||
-        response.data.overdue_follow_ups > 0
-      ) {
-        setPendingFollowup(Data);
-      }
+
+      setPendingFollowup(Data);
+
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -307,19 +291,16 @@ export const LeadDashboardView = () => {
           value: response.data.dropped_pi,
         },
       ];
-      if (
-        response.data.paid_pi > 0 ||
-        response.data.unpaid_pi > 0 ||
-        response.data.dropped_pi > 0
-      ) {
-        setPiData(Data);
-      }
+
+      setPiData(Data);
+
       setOpen(false);
     } catch (err) {
       setOpen(false);
       console.log("err", err);
     }
   };
+
   const handleAutocompleteChange = (value) => {
     setAssign(value);
     getDataByFilter(value);
@@ -327,6 +308,8 @@ export const LeadDashboardView = () => {
     getPendingTaskByFilter(value);
     getPendingFollowupByFilter(value);
     getPIByFilter(value);
+    getCustomerByFilter(value);
+    geTaskByFilter(value);
   };
 
   const getDataByFilter = async (value) => {
@@ -395,9 +378,9 @@ export const LeadDashboardView = () => {
           value: response.data.overdue_tasks,
         },
       ];
-      if (response.data.open_tasks > 0 || response.data.overdue_tasks > 0) {
-        setPendingTask(Data);
-      }
+
+      setPendingTask(Data);
+
       setOpen(false);
     } catch (error) {
       console.log("error", error);
@@ -422,12 +405,9 @@ export const LeadDashboardView = () => {
           value: response.data.overdue_follow_ups,
         },
       ];
-      if (
-        response.data.open_follow_ups > 0 ||
-        response.data.overdue_follow_ups > 0
-      ) {
-        setPendingFollowup(Data);
-      }
+
+      setPendingFollowup(Data);
+
       setOpen(false);
     } catch (error) {
       console.log("error", error);
@@ -454,13 +434,88 @@ export const LeadDashboardView = () => {
           value: response.data.dropped_pi,
         },
       ];
-      if (
-        response.data.paid_pi > 0 ||
-        response.data.unpaid_pi > 0 ||
-        response.data.dropped_pi > 0
-      ) {
-        setPiData(Data);
-      }
+
+      setPiData(Data);
+
+      setOpen(false);
+    } catch (error) {
+      console.log("error", error);
+      setOpen(false);
+    }
+  };
+
+  const getCustomerByFilter = async (value) => {
+    try {
+      const FilterData = value;
+      setOpen(true);
+      const response = await DashboardService.getCustomerDataByFilter(
+        FilterData
+      );
+      const Total =
+        response.data.active_customers +
+        response.data.dead_customers +
+        response.data.new_customers;
+      setTotal(Total);
+      const Data = [
+        {
+          label: "Active",
+          value: response.data.active_customers,
+        },
+        {
+          label: "Dead",
+          value: response.data.dead_customers,
+        },
+        {
+          label: "New",
+          value: response.data.new_customers,
+        },
+        {
+          label: "Total",
+          value: Total,
+        },
+      ];
+
+      setPieChartData(Data);
+
+      setOpen(false);
+    } catch (error) {
+      console.log("error", error);
+      setOpen(false);
+    }
+  };
+
+  const geTaskByFilter = async (value) => {
+    try {
+      const FilterData = value;
+      setOpen(true);
+      const response = await DashboardService.getLeadDataByFilter(FilterData);
+      const Data = [
+        { name: "new", label: "New", value: response.data.new },
+        { name: "open", label: "Open", value: response.data.open },
+        {
+          name: "opportunity",
+          label: "Oppurtunity",
+          value: response.data.opportunity,
+        },
+        {
+          name: "potential",
+          label: "Potential",
+          value: response.data.potential,
+        },
+        {
+          name: "not_interested",
+          label: "Not Interested",
+          value: response.data.not_interested,
+        },
+        {
+          name: "converted",
+          label: "Converted",
+          value: response.data.converted,
+        },
+      ];
+
+      setFunnelData(Data);
+
       setOpen(false);
     } catch (error) {
       console.log("error", error);
@@ -473,7 +528,9 @@ export const LeadDashboardView = () => {
     getNewCustomerDetails();
     getPendingTaskDetails();
     getPendingFollowupDetails();
+    getCustomerDetails();
     getPIDetails();
+    getAllTaskDetails();
     setAssign(null);
   };
 
