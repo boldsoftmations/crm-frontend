@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { experimentalStyled as styled } from "@mui/material/styles";
 import {
   ResponsiveContainer,
   PieChart,
@@ -13,7 +14,16 @@ import {
   YAxis,
   CartesianGrid,
 } from "recharts";
-import { Autocomplete, TextField } from "@mui/material";
+import {
+  Autocomplete,
+  Grid,
+  TextField,
+  Button,
+  Box,
+  Typography,
+  Paper,
+  LinearProgress,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import LeadServices from "../services/LeadService";
 import DashboardService from "../services/DashboardService";
@@ -157,7 +167,7 @@ export const Home = () => {
       const Data = Object.keys(forecastResponse.data).flatMap((key) => {
         return forecastResponse.data[key].map((item) => {
           return {
-            combination: `${months[item.month - 1]} - ${item.year}`,
+            combination: `${shortMonths[item.month - 1]}-${item.year}`,
             actual: item.actual,
             forecast: item.total_forecast,
           };
@@ -214,7 +224,7 @@ export const Home = () => {
       const Data = Object.keys(newcustomerResponse.data).flatMap((key) => {
         return newcustomerResponse.data[key].map((item) => {
           return {
-            combination: `${months[item.month - 1]} - ${item.year}`,
+            combination: `${shortMonths[item.month - 1]}-${item.year}`,
             count: item.count,
           };
         });
@@ -334,7 +344,7 @@ export const Home = () => {
       const Data = Object.keys(forecastResponse.data).flatMap((key) => {
         return forecastResponse.data[key].map((item) => {
           return {
-            combination: `${months[item.month - 1]} - ${item.year}`,
+            combination: `${shortMonths[item.month - 1]}-${item.year}`,
             actual: item.actual,
             forecast: item.total_forecast,
           };
@@ -358,7 +368,7 @@ export const Home = () => {
       const Data = Object.keys(newcustomerResponse.data).flatMap((key) => {
         return newcustomerResponse.data[key].map((item) => {
           return {
-            combination: `${months[item.month - 1]}  - ${item.year}`,
+            combination: `${shortMonths[item.month - 1]}-${item.year}`,
             count: item.count,
           };
         });
@@ -619,156 +629,167 @@ export const Home = () => {
     <>
       <CustomLoader open={open} />
       {/* filter by sales person */}
-      <>
-        <div style={{ display: "flex", flexDirection: "row" }}>
-          <div style={chartContainerStyle}>
-            {userData !== null && userData.is_staff === true && (
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  margin: "20px",
-                }}
+      <Box
+        sx={{
+          backgroundColor: "white",
+          borderRadius: "8px",
+          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+          margin: "30px",
+          padding: "20px",
+        }}
+      >
+        {/* Filter By Sales Person */}
+        <Grid container spacing={1}>
+          <Grid item xs={9} sm={9} md={9} lg={9}>
+            <Autocomplete
+              sx={{}}
+              size="small"
+              onChange={(event, value) => handleAutocompleteChange(value)}
+              value={assign}
+              options={assigned.map((option) => option.email)}
+              getOptionLabel={(option) => option}
+              renderInput={(params) => (
+                <TextField {...params} label="Filter By Sales Person" />
+              )}
+            />
+          </Grid>
+          <Grid item xs={3} sm={3} md={3} lg={3}>
+            <Button variant="contained" color="primary" onClick={getResetData}>
+              Reset
+            </Button>
+          </Grid>
+        </Grid>
+        {/* Customer Stats */}
+        <Grid
+          container
+          spacing={{ xs: 2, md: 3 }}
+          columns={{ xs: 4, sm: 8, md: 12 }}
+        >
+          {pieChartData.map((data, index) => {
+            let percentage = 0;
+            if (total !== 0) {
+              percentage = (data.value / total) * 100;
+            }
+
+            return (
+              <Grid
+                item
+                xs={1}
+                sm={2}
+                md={3}
+                lg={3}
+                key={index}
+                sx={{ marginTop: "20px" }}
               >
-                <Autocomplete
-                  style={{
-                    width: 400,
-                    marginRight: "10px",
+                <Item
+                  sx={{
+                    backgroundColor: COLORS[index % COLORS.length],
+                    textAlign: "center",
                   }}
-                  size="small"
-                  onChange={(event, value) => handleAutocompleteChange(value)}
-                  value={assign}
-                  options={assigned.map((option) => option.email)}
-                  getOptionLabel={(option) => option}
-                  renderInput={(params) => (
-                    <TextField {...params} label="Filter By Sales Person" />
-                  )}
-                />
-                <button className="btn btn-primary" onClick={getResetData}>
-                  Reset
-                </button>
-              </div>
-            )}
-            {/* Customer Stats */}
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                marginTop: "20px",
-                marginBottom: "20px",
-              }}
-            >
-              {pieChartData.map((data, index) => {
-                let percentage = 0;
-                console.log("data", data);
-                console.log("total", total);
-                if (total !== 0) {
-                  percentage = (data.value / total) * 100;
-                }
-
-                return (
-                  <div
-                    key={index}
-                    style={{
-                      ...chartContainerStyle,
-                      minHeight: "40px",
-                      minWidth: "30px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexDirection: "column",
-                      margin: "0 10px",
-                      backgroundColor: COLORS[index % COLORS.length],
-                    }}
+                >
+                  <Typography
+                    variant="subtitle1"
+                    sx={{ color: "white", fontWeight: "bold" }}
                   >
-                    <div
-                      style={{
-                        marginBottom: "5px",
-                        color: "white",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      {data.label}
-                    </div>
-                    <div style={{ color: "white", fontWeight: "bold" }}>
-                      {data.value}
-                    </div>
-                    <div
-                      style={{
-                        width: "80%",
-                        height: "5px",
-                        backgroundColor: "#ccc",
-                        marginTop: "5px",
-                        marginBottom: "5px",
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: `${percentage}%`,
-                          height: "100%",
-                          backgroundColor: "#007bff",
-                        }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-              }}
+                    {data.label}
+                  </Typography>
+                  <Typography
+                    variant="h6"
+                    sx={{ color: "white", fontWeight: "bold" }}
+                  >
+                    {data.value}
+                  </Typography>
+                  <Box sx={{ width: "100%", marginTop: "10px" }}>
+                    <LinearProgress
+                      variant="determinate"
+                      value={percentage}
+                      sx={{ backgroundColor: "#ccc" }}
+                    />
+                  </Box>
+                </Item>
+              </Grid>
+            );
+          })}
+        </Grid>
+        {/* actual vs forecast and new customer bar chart */}
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={12} md={6} lg={6} sx={{ marginTop: "20px" }}>
+            <ResponsiveContainer
+              width="100%"
+              height={400}
+              preserveAspectRatio={false}
             >
-              {/* Actual and forecast bar chart */}
-
-              <BarChart width={600} height={300} data={barChartData}>
+              <BarChart
+                data={barChartData}
+                margin={{ bottom: 30, left: 20, right: 20 }}
+              >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="combination" />
+                <XAxis
+                  dataKey="combination"
+                  tick={{ fontSize: 15 }}
+                  interval={0} // Display all labels without interval
+                  angle={-45} // Rotate the labels for better visibility
+                  textAnchor="end" // Align the labels at the end of the tick
+                  height={80} // Increase the height of the XAxis to provide more space for labels
+                />
                 <YAxis />
                 <Tooltip />
-                <Legend />
-                <Bar dataKey="actual" name="Actual" fill="#8884d8" />
-                <Bar dataKey="forecast" name="Forecast" fill="#82ca9d" />
-                {/* <text
-                  x="50%"
-                  y={20}
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  className="chart-title"
-                >
-                  Forecast vs Achieved
-                </text> */}
+                <Legend style={{ marginTop: 20 }} />
+                <Bar
+                  dataKey="actual"
+                  name="Actual"
+                  fill="#8884d8"
+                  minPointSize={20}
+                  maxBarSize={20}
+                />
+                <Bar
+                  dataKey="forecast"
+                  name="Forecast"
+                  fill="#82ca9d"
+                  minPointSize={20}
+                  maxBarSize={20}
+                />
               </BarChart>
-
-              <BarChart width={600} height={300} data={newCustomerData}>
+            </ResponsiveContainer>
+          </Grid>
+          <Grid item xs={12} sm={12} md={6} lg={6} sx={{ marginTop: "20px" }}>
+            <ResponsiveContainer
+              width={"100%"}
+              height={400}
+              preserveAspectRatio={false}
+            >
+              <BarChart data={newCustomerData}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="combination" />
+                <XAxis
+                  dataKey="combination"
+                  tick={{ fontSize: 15 }}
+                  interval={0} // Display all labels without interval
+                  angle={-45} // Rotate the labels for better visibility
+                  textAnchor="end" // Align the labels at the end of the tick
+                  height={80} // Increase the height of the XAxis to provide more space for labels
+                />
                 <YAxis />
                 <Tooltip />
-                <Legend />
-                <Bar dataKey="count" name="New Customer" fill="#8884d8" />
-
-                {/* <text
-                  x="50%"
-                  y={20}
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  className="chart-title"
-                >
-                  New Customer
-                </text> */}
+                <Legend style={{ marginTop: 20 }} />
+                <Bar
+                  dataKey="count"
+                  name="New Customer"
+                  fill="#8884d8"
+                  minPointSize={20}
+                  maxBarSize={20}
+                />
               </BarChart>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-              }}
+            </ResponsiveContainer>
+          </Grid>
+        </Grid>
+        {/* pod vs lr bar chart and Task pie chart   */}
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={12} md={6} lg={6} sx={{ marginTop: "20px" }}>
+            <ResponsiveContainer
+              width="100%"
+              height={400}
+              preserveAspectRatio={false}
             >
-              {/* Horizontal Bar Chart */}
-
               <BarChart
                 width={600}
                 height={300}
@@ -797,232 +818,236 @@ export const Home = () => {
                   }}
                 />
               </BarChart>
-
-              {/* Pie Chart of pending task */}
-
-              <ResponsiveContainer width={600} height={400}>
-                <PieChart onClick={handlePieChartClick}>
-                  <Pie
-                    data={pendingTask}
-                    dataKey="value"
-                    nameKey="label"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={120} // Increase the outerRadius for a larger pie chart
-                    fill="#8884d8"
-                    labelLine={false} // Disable the default label line
-                    label={({
-                      cx,
-                      cy,
-                      midAngle,
-                      innerRadius,
-                      outerRadius,
-                      percent,
-                      index,
-                    }) => {
-                      const RADIAN = Math.PI / 180;
-                      const radius =
-                        innerRadius + (outerRadius - innerRadius) * 0.5;
-                      const x = cx + radius * Math.cos(-midAngle * RADIAN);
-                      const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
-                      // return (
-                      //   <text
-                      //     x={x}
-                      //     y={y}
-                      //     fill="#fff"
-                      //     textAnchor="middle"
-                      //     dominantBaseline="central"
-                      //   >
-                      //     {`${pendingTask[index].label} (${pendingTask[index].value})`}
-                      //   </text>
-                      // );
-                    }}
-                  >
-                    {pendingTask.map((entry, index) => (
-                      <Cell key={index} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                  <Legend />
-                  <text
-                    x="50%"
-                    y={20}
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    className="chart-title"
-                  >
-                    Pending Tasks
-                  </text>
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-              }}
+            </ResponsiveContainer>
+          </Grid>
+          <Grid item xs={12} sm={12} md={6} lg={6} sx={{ marginTop: "20px" }}>
+            <ResponsiveContainer
+              width="100%"
+              height={400}
+              preserveAspectRatio={false}
             >
-              {/* pie chart of pending followups */}
-              <ResponsiveContainer width={600} height={400}>
-                <PieChart onClick={handlePendingFollowup}>
-                  <Pie
-                    data={pendingFollowup}
-                    dataKey="value"
-                    nameKey="label"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={120} // Increase the outerRadius for a larger pie chart
-                    fill="#8884d8"
-                    labelLine={false} // Disable the default label line
-                    label={({
-                      cx,
-                      cy,
-                      midAngle,
-                      innerRadius,
-                      outerRadius,
-                      percent,
-                      index,
-                    }) => {
-                      const RADIAN = Math.PI / 180;
-                      const radius =
-                        innerRadius + (outerRadius - innerRadius) * 0.5;
-                      const x = cx + radius * Math.cos(-midAngle * RADIAN);
-                      const y = cy + radius * Math.sin(-midAngle * RADIAN);
-                      const label = `${pendingFollowup[index].label} (${pendingFollowup[index].value})`;
+              <PieChart onClick={handlePieChartClick}>
+                <Pie
+                  data={pendingTask}
+                  dataKey="value"
+                  nameKey="label"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={120} // Increase the outerRadius for a larger pie chart
+                  fill="#8884d8"
+                  labelLine={false} // Disable the default label line
+                  label={({
+                    cx,
+                    cy,
+                    midAngle,
+                    innerRadius,
+                    outerRadius,
+                    percent,
+                    index,
+                  }) => {
+                    const RADIAN = Math.PI / 180;
+                    const radius =
+                      innerRadius + (outerRadius - innerRadius) * 0.5;
+                    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                    const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
-                      // return (
-                      //   <text
-                      //     x={x}
-                      //     y={y}
-                      //     fill="#fff"
-                      //     textAnchor="middle"
-                      //     dominantBaseline="central"
-                      //     fontSize={12} // Adjust the font size as needed
-                      //   >
-                      //     {/* Add text wrap */}
-                      //     <tspan>{label}</tspan>
-                      //   </text>
-                      // );
-                    }}
-                  >
-                    {pendingFollowup.map((entry, index) => (
-                      <Cell key={index} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                  <Legend />
-                  <text
-                    x="50%"
-                    y={20}
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    className="chart-title"
-                  >
-                    Pending FollowUp
-                  </text>
-                </PieChart>
-              </ResponsiveContainer>
-
-              {/* pie chart of pi data */}
-              <ResponsiveContainer width={600} height={400}>
-                <PieChart>
-                  <Pie
-                    data={piData}
-                    dataKey="value"
-                    nameKey="label"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={120} // Increase the outerRadius for a larger pie chart
-                    fill="#8884d8"
-                    labelLine={false} // Disable the default label line
-                    label={({
-                      cx,
-                      cy,
-                      midAngle,
-                      innerRadius,
-                      outerRadius,
-                      percent,
-                      index,
-                    }) => {
-                      const RADIAN = Math.PI / 180;
-                      const radius =
-                        innerRadius + (outerRadius - innerRadius) * 0.5;
-                      const x = cx + radius * Math.cos(-midAngle * RADIAN);
-                      const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
-                      // return (
-                      //   <text
-                      //     x={x}
-                      //     y={y}
-                      //     fill="#fff"
-                      //     textAnchor="middle"
-                      //     dominantBaseline="central"
-                      //   >
-                      //     {`${piData[index].label} (${piData[index].value})`}
-                      //   </text>
-                      // );
-                    }}
-                  >
-                    {piData.map((entry, index) => (
-                      <Cell
-                        key={index}
-                        fill={COLORS[index % COLORS.length]} // Set color based on index
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                  <Legend />
-                  <text
-                    x="50%"
-                    y={20}
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    className="chart-title"
-                  >
-                    PI Data
-                  </text>
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-              }}
+                    // return (
+                    //   <text
+                    //     x={x}
+                    //     y={y}
+                    //     fill="#fff"
+                    //     textAnchor="middle"
+                    //     dominantBaseline="central"
+                    //   >
+                    //     {`${pendingTask[index].label} (${pendingTask[index].value})`}
+                    //   </text>
+                    // );
+                  }}
+                >
+                  {pendingTask.map((entry, index) => (
+                    <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+                <text
+                  x="50%"
+                  y={20}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  className="chart-title"
+                >
+                  Pending Tasks
+                </text>
+              </PieChart>
+            </ResponsiveContainer>
+          </Grid>
+        </Grid>
+        {/* Pending follwup and pi data pie chart */}
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={12} md={6} lg={6} sx={{ marginTop: "20px" }}>
+            <ResponsiveContainer
+              width="100%"
+              height={400}
+              preserveAspectRatio={false}
             >
-              {/* Funnel Chart */}
+              <PieChart onClick={handlePendingFollowup}>
+                <Pie
+                  data={pendingFollowup}
+                  dataKey="value"
+                  nameKey="label"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={120} // Increase the outerRadius for a larger pie chart
+                  fill="#8884d8"
+                  labelLine={false} // Disable the default label line
+                  label={({
+                    cx,
+                    cy,
+                    midAngle,
+                    innerRadius,
+                    outerRadius,
+                    percent,
+                    index,
+                  }) => {
+                    const RADIAN = Math.PI / 180;
+                    const radius =
+                      innerRadius + (outerRadius - innerRadius) * 0.5;
+                    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                    const label = `${pendingFollowup[index].label} (${pendingFollowup[index].value})`;
 
-              <div className="funnelChart" style={funnelStyle}>
-                <h2 style={{ textAlign: "center", color: "#333" }}>
-                  Sales Funnel
-                </h2>
-                {funnelData.map((data, index) => (
+                    // return (
+                    //   <text
+                    //     x={x}
+                    //     y={y}
+                    //     fill="#fff"
+                    //     textAnchor="middle"
+                    //     dominantBaseline="central"
+                    //     fontSize={12} // Adjust the font size as needed
+                    //   >
+                    //     {/* Add text wrap */}
+                    //     <tspan>{label}</tspan>
+                    //   </text>
+                    // );
+                  }}
+                >
+                  {pendingFollowup.map((entry, index) => (
+                    <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+                <text
+                  x="50%"
+                  y={20}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  className="chart-title"
+                >
+                  Pending FollowUp
+                </text>
+              </PieChart>
+            </ResponsiveContainer>
+          </Grid>
+          <Grid item xs={12} sm={12} md={6} lg={6} sx={{ marginTop: "20px" }}>
+            <ResponsiveContainer
+              width="100%"
+              height={400}
+              preserveAspectRatio={false}
+            >
+              <PieChart>
+                <Pie
+                  data={piData}
+                  dataKey="value"
+                  nameKey="label"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={120} // Increase the outerRadius for a larger pie chart
+                  fill="#8884d8"
+                  labelLine={false} // Disable the default label line
+                  label={({
+                    cx,
+                    cy,
+                    midAngle,
+                    innerRadius,
+                    outerRadius,
+                    percent,
+                    index,
+                  }) => {
+                    const RADIAN = Math.PI / 180;
+                    const radius =
+                      innerRadius + (outerRadius - innerRadius) * 0.5;
+                    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+                    // return (
+                    //   <text
+                    //     x={x}
+                    //     y={y}
+                    //     fill="#fff"
+                    //     textAnchor="middle"
+                    //     dominantBaseline="central"
+                    //   >
+                    //     {`${piData[index].label} (${piData[index].value})`}
+                    //   </text>
+                    // );
+                  }}
+                >
+                  {piData.map((entry, index) => (
+                    <Cell
+                      key={index}
+                      fill={COLORS[index % COLORS.length]} // Set color based on index
+                    />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+                <text
+                  x="50%"
+                  y={20}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  className="chart-title"
+                >
+                  PI Data
+                </text>
+              </PieChart>
+            </ResponsiveContainer>
+          </Grid>
+        </Grid>
+        {/* sales funnel */}
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={12} md={6} lg={6} sx={{ marginTop: "20px" }}>
+            <div className="funnelChart" style={funnelStyle}>
+              <h2 style={{ textAlign: "center", color: "#333" }}>
+                Sales Funnel
+              </h2>
+              {funnelData.map((data, index) => (
+                <div
+                  key={index}
+                  className="chartSegment"
+                  style={{
+                    backgroundColor:
+                      paletteColors[index % paletteColors.length],
+                    opacity: hoveredSegment === data ? 0.7 : 1,
+                  }}
+                  onMouseEnter={() => handleSegmentHover(data)}
+                  // onMouseLeave={handleSegmentLeave}
+                  onClick={() => handleRowClick(data)}
+                >
                   <div
-                    key={index}
-                    className="chartSegment"
-                    style={{
-                      backgroundColor:
-                        paletteColors[index % paletteColors.length],
-                      opacity: hoveredSegment === data ? 0.7 : 1,
-                    }}
-                    onMouseEnter={() => handleSegmentHover(data)}
-                    // onMouseLeave={handleSegmentLeave}
-                    onClick={() => handleRowClick(data)}
+                  // className="segmentTitle"
                   >
-                    <div
-                    // className="segmentTitle"
-                    >
-                      <span style={textStyle}>{data.label}</span>&nbsp;
-                      <span style={textStyle}>{data.value}</span>
-                    </div>
+                    <span style={textStyle}>{data.label}</span>&nbsp;
+                    <span style={textStyle}>{data.value}</span>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
-          </div>
-        </div>
-      </>
+          </Grid>
+        </Grid>
+      </Box>
       <Popup
         maxWidth={"xl"}
         title={"View Leads dashboard"}
@@ -1063,3 +1088,25 @@ const months = [
   "November",
   "December",
 ];
+
+const shortMonths = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+const Item = styled(Paper)(({ theme }) => ({
+  backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
+  ...theme.typography.body2,
+  padding: theme.spacing(2),
+  textAlign: "center",
+  color: theme.palette.text.secondary,
+}));
