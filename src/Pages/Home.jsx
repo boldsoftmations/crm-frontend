@@ -331,7 +331,7 @@ export const Home = () => {
         await DashboardService.getDescriptionWisePendingQuantityData();
       const Data = response.data.map((item) => {
         return {
-          label: item.product__description__name,
+          name: item.product__description__name,
           value: item.total_pending_quantity,
         };
       });
@@ -586,7 +586,7 @@ export const Home = () => {
         );
       const Data = response.data.map((item) => {
         return {
-          label: item.product__description__name,
+          name: item.product__description__name,
           value: item.total_pending_quantity,
         };
       });
@@ -607,6 +607,7 @@ export const Home = () => {
     getPIDetails();
     getAllTaskDetails();
     setAssign(null);
+    getPendingDescriptionDetails();
     setFilterValue(null);
   };
 
@@ -1110,65 +1111,29 @@ export const Home = () => {
               height={400}
               preserveAspectRatio={false}
             >
-              <PieChart>
-                <Pie
-                  data={pendingDescription}
-                  dataKey="value"
-                  nameKey="label"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={120} // Increase the outerRadius for a larger pie chart
-                  fill={COLORS[0]} // Set the first color from COLORS array
-                  labelLine={false} // Disable the default label line
-                  label={({
-                    cx,
-                    cy,
-                    midAngle,
-                    innerRadius,
-                    outerRadius,
-                    percent,
-                    index,
-                  }) => {
-                    const RADIAN = Math.PI / 180;
-                    const radius =
-                      innerRadius + (outerRadius - innerRadius) * 0.5;
-                    const x = cx + radius * Math.cos(-midAngle * RADIAN);
-                    const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
-                    return (
-                      <text
-                        x={x}
-                        y={y}
-                        fill="#fff"
-                        textAnchor="middle"
-                        dominantBaseline="central"
-                      >
-                        {`${pendingDescription[index].value}`}
-                      </text>
-                    );
-                  }}
-                >
-                  {pendingDescription.map((entry, index) => {
-                    return (
-                      <Cell
-                        key={index}
-                        fill={COLORS[index % COLORS.length]} // Set color based on index
-                      />
-                    );
-                  })}
-                </Pie>
+              <BarChart
+                width={600}
+                height={300}
+                data={pendingDescription}
+                layout="vertical"
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis type="number" />
+                <YAxis
+                  dataKey="name"
+                  type="category"
+                  // angle={-45}
+                  textAnchor="end"
+                  interval={0}
+                  width={300} // Adjust the width of the YAxis to accommodate longer labels
+                  tick={{ fontSize: 10 }} // Adjust font size of tick labels
+                  tickLine={false} // Disable tick lines
+                  tickMargin={10} // Add margin to tick labels
+                />
                 <Tooltip />
                 <Legend />
-                <text
-                  x="50%"
-                  y={20}
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  className="chart-title"
-                >
-                  Peding Description
-                </text>
-              </PieChart>
+                <Bar dataKey="value" fill="#8884d8" barSize={20} />
+              </BarChart>
             </ResponsiveContainer>
           </Grid>
         </Grid>
