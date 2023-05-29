@@ -607,6 +607,7 @@ export const Home = () => {
     getPIDetails();
     getAllTaskDetails();
     setAssign(null);
+    setFilterValue(null);
   };
 
   const handlePieChartClick = () => {
