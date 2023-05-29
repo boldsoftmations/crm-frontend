@@ -20,6 +20,12 @@ const getAllSearchLeads = (filter, search) => {
   return CustomAxios.get(`/api/lead/list-lead/?${filter}=${search}`);
 };
 
+const getFilterLeads = (assignedTo, assignedToValue, stage, stageValue) => {
+  return CustomAxios.get(
+    `/api/lead/list-lead/?${assignedTo}=${assignedToValue}&${stage}=${stageValue}`
+  );
+};
+
 const getFilterPaginateLeads = (currentPage, filter, search) => {
   return CustomAxios.get(
     `/api/lead/list-lead/?page=${currentPage}&${filter}=${search}`
@@ -111,6 +117,7 @@ const LeadServices = {
   getAllPaginateUnassigned,
   getAllPaginateWithFilterUnassigned,
   getAllSearchLeads,
+  getFilterLeads,
   getFilterPaginateLeads,
   createLeads,
   getLeadsById,

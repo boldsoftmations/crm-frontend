@@ -52,8 +52,8 @@ export const Home = () => {
   const [assigned, setAssigned] = useState([]);
   const [assign, setAssign] = useState(null);
   const [total, setTotal] = useState(0);
+  const [filterValue, setFilterValue] = useState(null);
   const userData = useSelector((state) => state.auth.profile);
-  console.log("userData", userData);
   // const userData = data.profile;
   useEffect(() => {
     getAllTaskDetails();
@@ -323,6 +323,7 @@ export const Home = () => {
   };
 
   const handleAutocompleteChange = (value) => {
+    setFilterValue(value);
     setAssign(value);
     getDataByFilter(value);
     getNewCustomerByFilter(value);
@@ -1057,6 +1058,7 @@ export const Home = () => {
         <SalesFunnel
           funnelDataByID={funnelDataByID}
           setOpenPopup={setOpenPopup}
+          AssignedTo={filterValue}
         />
       </Popup>
       <Popup

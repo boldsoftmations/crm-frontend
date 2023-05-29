@@ -6,7 +6,7 @@ import LeadServices from "../services/LeadService";
 import { useNavigate } from "react-router-dom";
 
 export const SalesFunnel = (props) => {
-  const { funnelDataByID, setOpenPopup } = props;
+  const { funnelDataByID, AssignedTo } = props;
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [leads, setLeads] = useState([]);
@@ -20,8 +20,11 @@ export const SalesFunnel = (props) => {
     try {
       setOpen(true);
       const filterValue = funnelDataByID.name;
+      const assignedto = AssignedTo;
       if (funnelDataByID.name && funnelDataByID.name !== "total") {
-        const response = await LeadServices.getAllSearchLeads(
+        const response = await LeadServices.getFilterLeads(
+          "assigned_to__email",
+          assignedto,
           "stage",
           funnelDataByID.name
         );
