@@ -21,10 +21,18 @@ export const SalesFunnel = (props) => {
       setOpen(true);
       const filterValue = funnelDataByID.name;
       const assignedto = AssignedTo;
-      if (funnelDataByID.name && funnelDataByID.name !== "total") {
+      if (funnelDataByID.name && assignedto !== null) {
         const response = await LeadServices.getFilterLeads(
           "assigned_to__email",
           assignedto,
+          "stage",
+          funnelDataByID.name
+        );
+        setLeads(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      } else if (funnelDataByID.name) {
+        const response = await LeadServices.getAllSearchLeads(
           "stage",
           funnelDataByID.name
         );
@@ -44,16 +52,27 @@ export const SalesFunnel = (props) => {
       console.log("err", err);
     }
   };
+
   const handlePageClick = async (event, value) => {
     try {
       const page = value;
       setOpen(true);
       const filterValue = funnelDataByID.name;
-      const response = await LeadServices.getFilterPaginateLeads(
-        page,
-        "stage",
-        filterValue
-      );
+      const assignedto = AssignedTo;
+      const response =
+        assignedto !== null
+          ? await LeadServices.getFilterAssignedtoPaginateLeads(
+              page,
+              "assigned_to__email",
+              assignedto,
+              "stage",
+              filterValue
+            )
+          : await LeadServices.getFilterPaginateLeads(
+              page,
+              "stage",
+              filterValue
+            );
       setLeads(response.data.results);
       const total = response.data.count;
       setpageCount(Math.ceil(total / 25));

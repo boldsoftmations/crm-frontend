@@ -668,6 +668,12 @@ export const Home = () => {
     "#82ca9d",
     "#ffbb00",
     "#ff7f50",
+    "#ff69b4",
+    "#ba55d3",
+    "#cd5c5c",
+    "#ffa500",
+    "#adff2f",
+    "#008080",
   ];
 
   const handleSegmentHover = (segment) => {
