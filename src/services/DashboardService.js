@@ -67,6 +67,15 @@ const getLeadDataByFilter = (filter) => {
   return CustomAxios.get(`/api/dashboard/lead-dashboard/?email=${filter}`);
 };
 
+const getDescriptionWisePendingQuantityData = () => {
+  return CustomAxios.get("/api/dashboard/list-pending-order-description-wise/");
+};
+
+const getDescriptionWisePendingQuantityDataByFilter = (filter) => {
+  return CustomAxios.get(
+    `/api/dashboard/list-pending-order-description-wise/?email=${filter}`
+  );
+};
 const DashboardService = {
   getLastThreeMonthForecastData,
   getConsLastThreeMonthForecastData,
@@ -83,6 +92,8 @@ const DashboardService = {
   getLeadDashboard,
   getCustomerDataByFilter,
   getLeadDataByFilter,
+  getDescriptionWisePendingQuantityData,
+  getDescriptionWisePendingQuantityDataByFilter,
 };
 
 export default DashboardService;

@@ -43,6 +43,7 @@ export const Home = () => {
   const [newCustomerData, setNewCustomerData] = useState([]);
   const [pendingTask, setPendingTask] = useState([]);
   const [pendingFollowup, setPendingFollowup] = useState([]);
+  const [pendingDescription, setPendingDescription] = useState([]);
   const [piData, setPiData] = useState([]);
   const [funnelDataByID, setFunnelDataByID] = useState(null);
   const [dispatchDataByID, setDispatchDataByID] = useState(null);
@@ -64,6 +65,7 @@ export const Home = () => {
     getPendingTaskDetails();
     getPendingFollowupDetails();
     getPIDetails();
+    getPendingDescriptionDetails();
   }, []);
 
   useEffect(() => {
@@ -322,6 +324,26 @@ export const Home = () => {
     }
   };
 
+  const getPendingDescriptionDetails = async () => {
+    try {
+      setOpen(true);
+      const response =
+        await DashboardService.getDescriptionWisePendingQuantityData();
+      const Data = response.data.map((item) => {
+        return {
+          label: item.product__description__name,
+          value: item.total_pending_quantity,
+        };
+      });
+      setPendingDescription(Data);
+
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      console.log("err", err);
+    }
+  };
+
   const handleAutocompleteChange = (value) => {
     setFilterValue(value);
     setAssign(value);
@@ -332,6 +354,7 @@ export const Home = () => {
     getPIByFilter(value);
     getCustomerByFilter(value);
     geTaskByFilter(value);
+    getPendingDescriptionByFilter(value);
   };
 
   const getDataByFilter = async (value) => {
@@ -553,6 +576,28 @@ export const Home = () => {
     }
   };
 
+  const getPendingDescriptionByFilter = async (value) => {
+    try {
+      const FilterData = value;
+      setOpen(true);
+      const response =
+        await DashboardService.getDescriptionWisePendingQuantityDataByFilter(
+          FilterData
+        );
+      const Data = response.data.map((item) => {
+        return {
+          label: item.product__description__name,
+          value: item.total_pending_quantity,
+        };
+      });
+      setPendingDescription(Data);
+
+      setOpen(false);
+    } catch (error) {
+      console.log("error", error);
+      setOpen(false);
+    }
+  };
   const getResetData = () => {
     getForecastDetails();
     getNewCustomerDetails();
@@ -616,7 +661,14 @@ export const Home = () => {
     "#4466a3",
   ];
 
-  const COLORS = ["#8884d8", "#83a6ed", "#8dd1e1", "#82ca9d"];
+  const COLORS = [
+    "#8884d8",
+    "#83a6ed",
+    "#8dd1e1",
+    "#82ca9d",
+    "#ffbb00",
+    "#ff7f50",
+  ];
 
   const handleSegmentHover = (segment) => {
     setHoveredSegment(segment);
@@ -852,17 +904,17 @@ export const Home = () => {
                     const x = cx + radius * Math.cos(-midAngle * RADIAN);
                     const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
-                    // return (
-                    //   <text
-                    //     x={x}
-                    //     y={y}
-                    //     fill="#fff"
-                    //     textAnchor="middle"
-                    //     dominantBaseline="central"
-                    //   >
-                    //     {`${pendingTask[index].label} (${pendingTask[index].value})`}
-                    //   </text>
-                    // );
+                    return (
+                      <text
+                        x={x}
+                        y={y}
+                        fill="#fff"
+                        textAnchor="middle"
+                        dominantBaseline="central"
+                      >
+                        {`${pendingTask[index].value}`}
+                      </text>
+                    );
                   }}
                 >
                   {pendingTask.map((entry, index) => (
@@ -916,21 +968,19 @@ export const Home = () => {
                       innerRadius + (outerRadius - innerRadius) * 0.5;
                     const x = cx + radius * Math.cos(-midAngle * RADIAN);
                     const y = cy + radius * Math.sin(-midAngle * RADIAN);
-                    const label = `${pendingFollowup[index].label} (${pendingFollowup[index].value})`;
 
-                    // return (
-                    //   <text
-                    //     x={x}
-                    //     y={y}
-                    //     fill="#fff"
-                    //     textAnchor="middle"
-                    //     dominantBaseline="central"
-                    //     fontSize={12} // Adjust the font size as needed
-                    //   >
-                    //     {/* Add text wrap */}
-                    //     <tspan>{label}</tspan>
-                    //   </text>
-                    // );
+                    return (
+                      <text
+                        x={x}
+                        y={y}
+                        fill="#fff"
+                        textAnchor="middle"
+                        dominantBaseline="central"
+                        fontSize={12} // Adjust the font size as needed
+                      >
+                        {`${pendingFollowup[index].value}`}
+                      </text>
+                    );
                   }}
                 >
                   {pendingFollowup.map((entry, index) => (
@@ -982,17 +1032,17 @@ export const Home = () => {
                     const x = cx + radius * Math.cos(-midAngle * RADIAN);
                     const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
-                    // return (
-                    //   <text
-                    //     x={x}
-                    //     y={y}
-                    //     fill="#fff"
-                    //     textAnchor="middle"
-                    //     dominantBaseline="central"
-                    //   >
-                    //     {`${piData[index].label} (${piData[index].value})`}
-                    //   </text>
-                    // );
+                    return (
+                      <text
+                        x={x}
+                        y={y}
+                        fill="#fff"
+                        textAnchor="middle"
+                        dominantBaseline="central"
+                      >
+                        {`${piData[index].value}`}
+                      </text>
+                    );
                   }}
                 >
                   {piData.map((entry, index) => (
@@ -1046,6 +1096,73 @@ export const Home = () => {
                 </div>
               ))}
             </div>
+          </Grid>
+          <Grid item xs={12} sm={12} md={6} lg={6} sx={{ marginTop: "20px" }}>
+            <ResponsiveContainer
+              width="100%"
+              height={400}
+              preserveAspectRatio={false}
+            >
+              <PieChart>
+                <Pie
+                  data={pendingDescription}
+                  dataKey="value"
+                  nameKey="label"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={120} // Increase the outerRadius for a larger pie chart
+                  fill={COLORS[0]} // Set the first color from COLORS array
+                  labelLine={false} // Disable the default label line
+                  label={({
+                    cx,
+                    cy,
+                    midAngle,
+                    innerRadius,
+                    outerRadius,
+                    percent,
+                    index,
+                  }) => {
+                    const RADIAN = Math.PI / 180;
+                    const radius =
+                      innerRadius + (outerRadius - innerRadius) * 0.5;
+                    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+                    return (
+                      <text
+                        x={x}
+                        y={y}
+                        fill="#fff"
+                        textAnchor="middle"
+                        dominantBaseline="central"
+                      >
+                        {`${pendingDescription[index].value}`}
+                      </text>
+                    );
+                  }}
+                >
+                  {pendingDescription.map((entry, index) => {
+                    return (
+                      <Cell
+                        key={index}
+                        fill={COLORS[index % COLORS.length]} // Set color based on index
+                      />
+                    );
+                  })}
+                </Pie>
+                <Tooltip />
+                <Legend />
+                <text
+                  x="50%"
+                  y={20}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  className="chart-title"
+                >
+                  Peding Description
+                </text>
+              </PieChart>
+            </ResponsiveContainer>
           </Grid>
         </Grid>
       </Box>
