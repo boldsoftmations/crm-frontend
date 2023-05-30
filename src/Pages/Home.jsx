@@ -45,6 +45,7 @@ export const Home = () => {
   const [pendingFollowup, setPendingFollowup] = useState([]);
   const [pendingDescription, setPendingDescription] = useState([]);
   const [piData, setPiData] = useState([]);
+  const [monthlyStatus, setMonthlyStatus] = useState([]);
   const [funnelDataByID, setFunnelDataByID] = useState(null);
   const [dispatchDataByID, setDispatchDataByID] = useState(null);
   const [openPopup, setOpenPopup] = useState(false);
@@ -66,6 +67,7 @@ export const Home = () => {
     getPendingFollowupDetails();
     getPIDetails();
     getPendingDescriptionDetails();
+    getMonthlyCallStatusDetails();
   }, []);
 
   useEffect(() => {
@@ -344,6 +346,29 @@ export const Home = () => {
     }
   };
 
+  const getMonthlyCallStatusDetails = async () => {
+    try {
+      setOpen(true);
+
+      const response = await DashboardService.getMonthlyCallStatusData();
+      const Data = Object.keys(response.data).flatMap((key) => {
+        return response.data[key].map((item) => {
+          return {
+            combination: `${shortMonths[item.month - 1]}-${item.year}`,
+            lead: item.lead,
+            customer: item.customer,
+          };
+        });
+      });
+
+      setMonthlyStatus(Data);
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      console.log("Error:", err);
+    }
+  };
+
   const handleAutocompleteChange = (value) => {
     setFilterValue(value);
     setAssign(value);
@@ -355,6 +380,7 @@ export const Home = () => {
     getCustomerByFilter(value);
     geTaskByFilter(value);
     getPendingDescriptionByFilter(value);
+    getMonthlyCallStatusByFilter(value);
   };
 
   const getDataByFilter = async (value) => {
@@ -598,6 +624,32 @@ export const Home = () => {
       setOpen(false);
     }
   };
+
+  const getMonthlyCallStatusByFilter = async (value) => {
+    try {
+      const FilterData = value;
+      setOpen(true);
+      const response = await DashboardService.getMonthlyCallStatusDataByFilter(
+        FilterData
+      );
+      const Data = Object.keys(response.data).flatMap((key) => {
+        return response.data[key].map((item) => {
+          return {
+            combination: `${shortMonths[item.month - 1]}-${item.year}`,
+            lead: item.lead,
+            customer: item.customer,
+          };
+        });
+      });
+
+      setMonthlyStatus(Data);
+
+      setOpen(false);
+    } catch (error) {
+      console.log("error", error);
+      setOpen(false);
+    }
+  };
   const getResetData = () => {
     getForecastDetails();
     getNewCustomerDetails();
@@ -609,6 +661,7 @@ export const Home = () => {
     setAssign(null);
     getPendingDescriptionDetails();
     setFilterValue(null);
+    getMonthlyCallStatusDetails();
   };
 
   const handlePieChartClick = () => {
@@ -1133,6 +1186,48 @@ export const Home = () => {
                 <Tooltip />
                 <Legend />
                 <Bar dataKey="value" fill="#8884d8" barSize={20} />
+              </BarChart>
+            </ResponsiveContainer>
+          </Grid>
+        </Grid>
+
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={12} md={6} lg={6} sx={{ marginTop: "20px" }}>
+            <ResponsiveContainer
+              width="100%"
+              height={400}
+              preserveAspectRatio={false}
+            >
+              <BarChart
+                data={monthlyStatus}
+                margin={{ bottom: 30, left: 20, right: 20 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="combination"
+                  tick={{ fontSize: 15 }}
+                  interval={0} // Display all labels without interval
+                  angle={-45} // Rotate the labels for better visibility
+                  textAnchor="end" // Align the labels at the end of the tick
+                  height={80} // Increase the height of the XAxis to provide more space for labels
+                />
+                <YAxis />
+                <Tooltip />
+                <Legend style={{ marginTop: 20 }} />
+                <Bar
+                  dataKey="lead"
+                  name="Lead"
+                  fill="#8884d8"
+                  minPointSize={20}
+                  maxBarSize={20}
+                />
+                <Bar
+                  dataKey="customer"
+                  name="Customer"
+                  fill="#82ca9d"
+                  minPointSize={20}
+                  maxBarSize={20}
+                />
               </BarChart>
             </ResponsiveContainer>
           </Grid>
