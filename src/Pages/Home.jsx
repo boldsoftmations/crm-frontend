@@ -356,7 +356,8 @@ export const Home = () => {
         return response.data[key].map((item) => {
           return {
             combination: `${shortMonths[item.month - 1]}-${item.year}`,
-            lead: item.lead,
+            existing_lead: item.existing_lead,
+            new_lead: item.new_lead,
             customer: item.customer,
           };
         });
@@ -637,7 +638,8 @@ export const Home = () => {
         return response.data[key].map((item) => {
           return {
             combination: `${shortMonths[item.month - 1]}-${item.year}`,
-            lead: item.lead,
+            existing_lead: item.existing_lead,
+            new_lead: item.new_lead,
             customer: item.customer,
           };
         });
@@ -861,16 +863,14 @@ export const Home = () => {
                 <Bar
                   dataKey="actual"
                   name="Actual"
-                  fill="#8884d8"
-                  minPointSize={20}
-                  maxBarSize={20}
+                  fill={COLORS[0]}
+                  barSize={20}
                 />
                 <Bar
                   dataKey="forecast"
                   name="Forecast"
-                  fill="#82ca9d"
-                  minPointSize={20}
-                  maxBarSize={20}
+                  fill={COLORS[1]}
+                  barSize={20}
                 />
               </BarChart>
             </ResponsiveContainer>
@@ -897,9 +897,8 @@ export const Home = () => {
                 <Bar
                   dataKey="count"
                   name="New Customer"
-                  fill="#8884d8"
-                  minPointSize={20}
-                  maxBarSize={20}
+                  fill={COLORS[0]}
+                  barSize={20}
                 />
               </BarChart>
             </ResponsiveContainer>
@@ -932,7 +931,7 @@ export const Home = () => {
                 <Legend />
                 <Bar
                   dataKey="value"
-                  fill="#8884d8"
+                  fill={COLORS[0]}
                   barSize={20}
                   onClick={(data) => {
                     // Handle the click event
@@ -1194,7 +1193,7 @@ export const Home = () => {
                 />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="value" fill="#8884d8" barSize={20} />
+                <Bar dataKey="value" fill={COLORS[0]} barSize={20} />
               </BarChart>
             </ResponsiveContainer>
           </Grid>
@@ -1224,18 +1223,22 @@ export const Home = () => {
                 <Tooltip />
                 <Legend style={{ marginTop: 20 }} />
                 <Bar
-                  dataKey="lead"
-                  name="Lead"
-                  fill="#8884d8"
-                  minPointSize={20}
-                  maxBarSize={20}
+                  dataKey="existing_lead"
+                  name="Existing Lead"
+                  fill={COLORS[0]}
+                  barSize={20}
+                />
+                <Bar
+                  dataKey="new_lead"
+                  name="New Lead"
+                  fill={COLORS[1]}
+                  barSize={20}
                 />
                 <Bar
                   dataKey="customer"
                   name="Customer"
-                  fill="#82ca9d"
-                  minPointSize={20}
-                  maxBarSize={20}
+                  fill={COLORS[2]}
+                  barSize={20}
                 />
               </BarChart>
             </ResponsiveContainer>
