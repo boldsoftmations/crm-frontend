@@ -1,13 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
-  styled,
-  Table,
-  TableBody,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TableCell,
-  Button,
   Box,
   Paper,
   Grid,
@@ -18,17 +10,14 @@ import {
   MenuItem,
 } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
-import { CSVLink } from "react-csv";
-import { tableCellClasses } from "@mui/material/TableCell";
+import { CSVDownload } from "react-csv";
 import { CustomPagination } from "../../Components/CustomPagination";
-
 import { ErrorMessage } from "../../Components/ErrorMessage/ErrorMessage";
 import { CustomLoader } from "../../Components/CustomLoader";
 import LeadServices from "../../services/LeadService";
 import ProductForecastService from "../../services/ProductForecastService";
 import { CustomSearchWithButton } from "./../../Components/CustomSearchWithButton";
 import { Popup } from "../../Components/Popup";
-import { UpdateCompanyDetails } from "../Cutomers/CompanyDetails/UpdateCompanyDetails";
 import { UpdateAllCompanyDetails } from "../Cutomers/CompanyDetails/UpdateAllCompanyDetails";
 import { CustomTable } from "../../Components/CustomTable";
 
@@ -48,10 +37,62 @@ export const DeadCustomerView = () => {
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const [assigned, setAssigned] = useState([]);
   const [deadCustomer, setDeadCustomer] = useState([]);
-  const [exportDeadCustomer, setExportDeadCustomer] = useState([]);
   const [recordForEdit, setRecordForEdit] = useState(null);
   const [openPopup, setOpenPopup] = useState(false);
+  const [exportData, setExportData] = useState([]);
+  const handleDownload = async () => {
+    const data = await handleExport();
+    setExportData(data);
+  };
 
+  const headers = [
+    { label: "Company", key: "company" },
+    { label: "City", key: "city" },
+    { label: "State", key: "state" },
+    { label: "Sales Person 1", key: "sales_person_1" },
+    { label: "Sales Person 2", key: "sales_person_2" },
+    { label: "Sales Person 3", key: "sales_person_3" },
+    { label: "Sales Person 4", key: "sales_person_4" },
+    { label: "Contact Person Name", key: "contact_person_name" },
+    { label: "Contact", key: "contact" },
+  ];
+
+  const handleExport = async () => {
+    try {
+      setOpen(true);
+      const response =
+        searchQuery || filterSelectedQuery
+          ? await ProductForecastService.getAllPaginateDeadCustomerWithSearch(
+              "all",
+              filterQuery,
+              searchQuery || filterSelectedQuery
+            )
+          : await ProductForecastService.getAllPaginateDeadCustomer("all");
+      const data = response.data.map((row) => {
+        const salesPersons = row.assigned_to.map((email, index) => ({
+          [`sales_person_${index + 1}`]: email,
+        }));
+        const obj = {
+          company: row.name,
+          city: row.city,
+          state: row.state,
+          ...salesPersons.reduce((acc, sp) => ({ ...acc, ...sp }), {}),
+          contact_person_name:
+            row.contacts && row.contacts[0] ? row.contacts[0].name : "",
+          contact:
+            row.contacts && row.contacts[0] ? row.contacts[0].contact : "",
+        };
+        return obj;
+      });
+      console.log(data);
+      setOpen(false);
+      return data;
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setOpen(false);
+    }
+  };
   const getResetData = () => {
     setSearchQuery("");
     setFilterSelectedQuery("");
@@ -73,6 +114,7 @@ export const DeadCustomerView = () => {
     setRecordForEdit(item.id);
     setOpenPopup(true);
   };
+
   useEffect(() => {
     getAssignedData();
     getAllProductionForecastDetails();
@@ -190,72 +232,6 @@ export const DeadCustomerView = () => {
     }
   };
 
-  useEffect(() => {
-    getAllCustomerWiseOrderBookExport();
-  }, [searchQuery]);
-
-  const getAllCustomerWiseOrderBookExport = async () => {
-    try {
-      setOpen(true);
-      if (searchQuery) {
-        const response =
-          await ProductForecastService.getAllPaginateDeadCustomerWithSearch(
-            "all",
-            filterQuery,
-            searchQuery
-          );
-        setExportDeadCustomer(response.data);
-        //   const total = response.data.count;
-        //   setpageCount(Math.ceil(total / 25));
-      } else {
-        const response =
-          await ProductForecastService.getAllPaginateDeadCustomer("all");
-        setExportDeadCustomer(response.data);
-      }
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      if (!err.response) {
-        setErrMsg(
-          "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
-        );
-      } else if (err.response.status === 400) {
-        setErrMsg(
-          err.response.data.errors.name
-            ? err.response.data.errors.name
-            : err.response.data.errors.non_field_errors
-        );
-      } else if (err.response.status === 401) {
-        setErrMsg(err.response.data.errors.code);
-      } else {
-        setErrMsg("Server Error");
-      }
-      errRef.current.focus();
-    }
-  };
-
-  const headers = [
-    { label: "Company", key: "company" },
-    { label: "City", key: "city" },
-    { label: "State", key: "state" },
-    { label: "Sales Person", key: "assigned_to" },
-    { label: "Contact Person Name", key: "contact_person_name" },
-    { label: "Contact", key: "contact" },
-  ];
-
-  const data = exportDeadCustomer.map((row) => {
-    const obj = {
-      company: row.name,
-      city: row.city,
-      state: row.state,
-      sales_person: row.assigned_to,
-      contact_person_name:
-        row.contacts && row.contacts[0] ? row.contacts[0].name : "",
-      contact: row.contacts && row.contacts[0] ? row.contacts[0].contact : "",
-    };
-    return obj;
-  });
-
   const Tabledata = deadCustomer.map((row) => ({
     id: row.id,
     company: row.name,
@@ -371,21 +347,33 @@ export const DeadCustomerView = () => {
               </h3>
             </Box>
             <Box flexGrow={0.5}>
-              <CSVLink
-                data={data}
-                headers={headers}
-                filename={"product_forecast.csv"}
-                target="_blank"
+              <div
+                className="btn btn-primary"
                 style={{
-                  textDecoration: "none",
-                  outline: "none",
-                  height: "5vh",
+                  display: "inline-block",
+                  padding: "6px 16px",
+                  margin: "10px",
+                  fontSize: "0.875rem",
+                  minWidth: "64px",
+                  fontWeight: 500,
+                  lineHeight: 1.75,
+                  borderRadius: "4px",
+                  letterSpacing: "0.02857em",
+                  textTransform: "uppercase",
+                  boxShadow:
+                    "0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2)",
                 }}
+                onClick={handleDownload}
               >
-                <Button variant="contained" color="success">
-                  Export to Excel
-                </Button>
-              </CSVLink>
+                Download CSV
+              </div>
+              {exportData.length > 0 && (
+                <CSVDownload
+                  data={exportData}
+                  headers={headers}
+                  target="_blank"
+                />
+              )}
             </Box>
           </Box>
           <CustomTable
@@ -417,23 +405,3 @@ export const DeadCustomerView = () => {
     </div>
   );
 };
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
