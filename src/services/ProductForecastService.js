@@ -40,6 +40,9 @@ const getProductForecastPaginateData = (currentPage) => {
   );
 };
 
+const updateProductForecast = (id, data) => {
+  return CustomAxios.patch(`/api/forecast/list-product-forecast/${id}`, data);
+};
 // Current MMonth Forecast
 
 const getCurrentMonthForecast = () => {
@@ -343,6 +346,7 @@ const ProductForecastService = {
   getAllSearchProductForecast,
   getAllProductForecastPaginate,
   getProductForecastPaginateData,
+  updateProductForecast,
   getCurrentMonthForecast,
   getByFilterCurrentMonthForecast,
   getAllPaginateCurrentMonthForecast,

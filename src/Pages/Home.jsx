@@ -22,8 +22,9 @@ import {
   Box,
   Typography,
   Paper,
-  LinearProgress,
+  CircularProgress,
 } from "@mui/material";
+import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import LeadServices from "../services/LeadService";
 import DashboardService from "../services/DashboardService";
@@ -795,32 +796,40 @@ export const Home = () => {
                 key={index}
                 sx={{ marginTop: "20px" }}
               >
-                <Item
+                <Box
                   sx={{
                     backgroundColor: COLORS[index % COLORS.length],
                     textAlign: "center",
                   }}
                 >
-                  <Typography
-                    variant="subtitle1"
-                    sx={{ color: "white", fontWeight: "bold" }}
+                  <Box
+                    display="flex"
+                    flexDirection="row"
+                    justifyContent="space-around"
                   >
-                    {data.label}
-                  </Typography>
-                  <Typography
-                    variant="h6"
-                    sx={{ color: "white", fontWeight: "bold" }}
-                  >
-                    {data.value}
-                  </Typography>
-                  <Box sx={{ width: "100%", marginTop: "10px" }}>
-                    <LinearProgress
-                      variant="determinate"
-                      value={percentage}
-                      sx={{ backgroundColor: "#ccc" }}
-                    />
+                    <Box sx={{ marginTop: "10px" }}>
+                      <CircularProgressWithLabel
+                        variant="determinate"
+                        value={percentage}
+                        // sx={{ backgroundColor: "#ccc" }}
+                      />
+                    </Box>
+                    <Box sx={{ marginTop: "10px" }}>
+                      <Typography
+                        variant="subtitle1"
+                        sx={{ color: "white", fontWeight: "bold" }}
+                      >
+                        {data.label}
+                      </Typography>
+                      <Typography
+                        variant="h6"
+                        sx={{ color: "white", fontWeight: "bold" }}
+                      >
+                        {data.value}
+                      </Typography>
+                    </Box>
                   </Box>
-                </Item>
+                </Box>
               </Grid>
             );
           })}
@@ -1296,3 +1305,36 @@ const Item = styled(Paper)(({ theme }) => ({
   textAlign: "center",
   color: theme.palette.text.secondary,
 }));
+
+function CircularProgressWithLabel(props) {
+  return (
+    <Box sx={{ position: "relative", display: "inline-flex" }}>
+      <CircularProgress variant="indeterminate" {...props} size={60} />
+      <Box
+        sx={{
+          top: 0,
+          left: 0,
+          bottom: 0,
+          right: 0,
+          position: "absolute",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Typography variant="caption" component="div" color="#ffffff">
+          {`${Math.round(props.value)}%`}
+        </Typography>
+      </Box>
+    </Box>
+  );
+}
+
+CircularProgressWithLabel.propTypes = {
+  /**
+   * The value of the progress indicator for the determinate variant.
+   * Value between 0 and 100.
+   * @default 0
+   */
+  value: PropTypes.number.isRequired,
+};

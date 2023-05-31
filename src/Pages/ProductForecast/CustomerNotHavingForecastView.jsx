@@ -21,6 +21,7 @@ import { CustomSearchWithButton } from "../../Components/CustomSearchWithButton"
 import { Popup } from "../../Components/Popup";
 import { ForecastUpdate } from "../Cutomers/ForecastDetails/ForecastUpdate";
 import { CustomTable } from "../../Components/CustomTable";
+import { ProductForecastAssignTo } from "./ProductForecastAssignTo";
 
 export const CustomerNotHavingForecastView = () => {
   const [open, setOpen] = useState(false);
@@ -36,6 +37,7 @@ export const CustomerNotHavingForecastView = () => {
   const [exportData, setExportData] = useState([]);
   const [forecastDataByID, setForecastDataByID] = useState(null);
   const [openPopup, setOpenPopup] = useState(false);
+  const [openPopup2, setOpenPopup2] = useState(false);
 
   const openInPopup = (item) => {
     const matchedForecast = productNotHavingForecast.find(
@@ -43,6 +45,14 @@ export const CustomerNotHavingForecastView = () => {
     );
     setForecastDataByID(matchedForecast);
     setOpenPopup(true);
+  };
+
+  const openInPopup2 = (item) => {
+    const matchedForecast = productNotHavingForecast.find(
+      (forecast) => forecast.id === item.id
+    );
+    setForecastDataByID(matchedForecast);
+    setOpenPopup2(true);
   };
 
   const handleDownload = async () => {
@@ -455,9 +465,10 @@ export const CustomerNotHavingForecastView = () => {
             headers={Tableheaders}
             data={Tabledata}
             openInPopup={openInPopup}
-            openInPopup2={null}
+            openInPopup2={openInPopup2}
             openInPopup3={null}
             openInPopup4={null}
+            ButtonText={"AssignTo"}
             Styles={{ paddingLeft: "10px", paddingRight: "10px" }}
           />
           <CustomPagination
@@ -474,6 +485,17 @@ export const CustomerNotHavingForecastView = () => {
         <ForecastUpdate
           getAllCompanyDetailsByID={getAllProductionForecastDetails}
           setOpenPopup={setOpenPopup}
+          forecastDataByID={forecastDataByID}
+        />
+      </Popup>
+      <Popup
+        title={"Product Forecast Assign To"}
+        openPopup={openPopup2}
+        setOpenPopup={setOpenPopup2}
+      >
+        <ProductForecastAssignTo
+          getAllCompanyDetailsByID={getAllProductionForecastDetails}
+          setOpenPopup2={setOpenPopup2}
           forecastDataByID={forecastDataByID}
         />
       </Popup>
