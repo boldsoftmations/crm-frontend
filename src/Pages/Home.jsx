@@ -13,6 +13,8 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
+  LineChart,
+  Line,
 } from "recharts";
 import {
   Autocomplete,
@@ -881,7 +883,7 @@ export const Home = () => {
               height={400}
               preserveAspectRatio={false}
             >
-              <BarChart data={newCustomerData}>
+              <LineChart data={newCustomerData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis
                   dataKey="combination"
@@ -894,13 +896,14 @@ export const Home = () => {
                 <YAxis />
                 <Tooltip />
                 <Legend style={{ marginTop: 20 }} />
-                <Bar
+                <Line
+                  type="monotone"
                   dataKey="count"
                   name="New Customer"
-                  fill={COLORS[0]}
-                  barSize={20}
+                  stroke={COLORS[0]}
+                  strokeWidth={2}
                 />
-              </BarChart>
+              </LineChart>
             </ResponsiveContainer>
           </Grid>
         </Grid>
@@ -1179,7 +1182,7 @@ export const Home = () => {
                 layout="vertical"
               >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="number" />
+                <XAxis type="number" width={300} />
                 <YAxis
                   dataKey="name"
                   type="category"
