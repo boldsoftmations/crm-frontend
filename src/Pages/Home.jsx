@@ -380,11 +380,10 @@ export const Home = () => {
     try {
       setOpen(true);
 
-      const response = await DashboardService.getMonthlyCallStatusData();
+      const response = await DashboardService.getWeeklyCallStatusData();
       const Data = response.data.map((dayObject) => {
         const week = Object.keys(dayObject)[0];
         const weekData = dayObject[week][0];
-
         return {
           combination: week,
           existing_lead: weekData.existing_lead,
@@ -392,7 +391,6 @@ export const Home = () => {
           customer: weekData.customer,
         };
       });
-
       setWeeklyStatus(Data);
       setOpen(false);
     } catch (err) {
@@ -714,7 +712,7 @@ export const Home = () => {
     try {
       const FilterData = value;
       setOpen(true);
-      const response = await DashboardService.getMonthlyCallStatusDataByFilter(
+      const response = await DashboardService.getWeeklyCallStatusDataByFilter(
         FilterData
       );
       const Data = response.data.map((dayObject) => {
