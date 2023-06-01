@@ -82,6 +82,7 @@ export const UpdateLeadsProformaInvoice = (props) => {
     let data = [...products];
     data.splice(index, 1);
     setProducts(data);
+    setProductEdit(true);
   };
 
   useEffect(() => {

@@ -89,6 +89,7 @@ export const UpdateCustomerProformaInvoice = (props) => {
     let data = [...products];
     data.splice(index, 1);
     setProducts(data);
+    setProductEdit(true);
   };
 
   useEffect(() => {
