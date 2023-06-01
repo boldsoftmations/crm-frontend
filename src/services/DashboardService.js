@@ -78,10 +78,18 @@ const getDescriptionWisePendingQuantityDataByFilter = (filter) => {
 };
 
 const getMonthlyCallStatusData = () => {
-  return CustomAxios.get("/api/dashboard/weekly-call-status/");
+  return CustomAxios.get("/api/dashboard/monthly-call-status/");
 };
 
 const getMonthlyCallStatusDataByFilter = (filter) => {
+  return CustomAxios.get(`/api/dashboard/monthly-call-status/?email=${filter}`);
+};
+
+const getWeeklyCallStatusData = () => {
+  return CustomAxios.get("/api/dashboard/weekly-call-status/");
+};
+
+const getWeeklyCallStatusDataByFilter = (filter) => {
   return CustomAxios.get(`/api/dashboard/weekly-call-status/?email=${filter}`);
 };
 
@@ -113,6 +121,8 @@ const DashboardService = {
   getDescriptionWisePendingQuantityDataByFilter,
   getMonthlyCallStatusData,
   getMonthlyCallStatusDataByFilter,
+  getWeeklyCallStatusData,
+  getWeeklyCallStatusDataByFilter,
   getDailyCallStatusData,
   getDailyCallStatusDataByFilter,
 };

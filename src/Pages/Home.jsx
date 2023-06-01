@@ -49,6 +49,7 @@ export const Home = () => {
   const [pendingDescription, setPendingDescription] = useState([]);
   const [piData, setPiData] = useState([]);
   const [monthlyStatus, setMonthlyStatus] = useState([]);
+  const [weeklyStatus, setWeeklyStatus] = useState([]);
   const [dailyStatus, setDailyStatus] = useState([]);
   const [funnelDataByID, setFunnelDataByID] = useState(null);
   const [dispatchDataByID, setDispatchDataByID] = useState(null);
@@ -72,6 +73,7 @@ export const Home = () => {
     getPIDetails();
     getPendingDescriptionDetails();
     getMonthlyCallStatusDetails();
+    getWeeklyCallStatusDetails();
     getDailyCallStatusDetails();
   }, []);
 
@@ -356,6 +358,29 @@ export const Home = () => {
       setOpen(true);
 
       const response = await DashboardService.getMonthlyCallStatusData();
+      const Data = Object.keys(response.data).flatMap((key) => {
+        return response.data[key].map((item) => {
+          return {
+            combination: `${shortMonths[item.month - 1]}-${item.year}`,
+            existing_lead: item.existing_lead,
+            new_lead: item.new_lead,
+            customer: item.customer,
+          };
+        });
+      });
+
+      setMonthlyStatus(Data);
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      console.log("Error:", err);
+    }
+  };
+  const getWeeklyCallStatusDetails = async () => {
+    try {
+      setOpen(true);
+
+      const response = await DashboardService.getMonthlyCallStatusData();
       const Data = response.data.map((dayObject) => {
         const week = Object.keys(dayObject)[0];
         const weekData = dayObject[week][0];
@@ -368,8 +393,7 @@ export const Home = () => {
         };
       });
 
-      console.log("Data", Data);
-      setMonthlyStatus(Data);
+      setWeeklyStatus(Data);
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -413,6 +437,7 @@ export const Home = () => {
     geTaskByFilter(value);
     getPendingDescriptionByFilter(value);
     getMonthlyCallStatusByFilter(value);
+    getWeeklyCallStatusByFilter(value);
     getDailyCallStatusByFilter(value);
   };
 
@@ -665,6 +690,33 @@ export const Home = () => {
       const response = await DashboardService.getMonthlyCallStatusDataByFilter(
         FilterData
       );
+      const Data = Object.keys(response.data).flatMap((key) => {
+        return response.data[key].map((item) => {
+          return {
+            combination: `${shortMonths[item.month - 1]}-${item.year}`,
+            existing_lead: item.existing_lead,
+            new_lead: item.new_lead,
+            customer: item.customer,
+          };
+        });
+      });
+
+      setMonthlyStatus(Data);
+
+      setOpen(false);
+    } catch (error) {
+      console.log("error", error);
+      setOpen(false);
+    }
+  };
+
+  const getWeeklyCallStatusByFilter = async (value) => {
+    try {
+      const FilterData = value;
+      setOpen(true);
+      const response = await DashboardService.getMonthlyCallStatusDataByFilter(
+        FilterData
+      );
       const Data = response.data.map((dayObject) => {
         const week = Object.keys(dayObject)[0];
         const weekData = dayObject[week][0];
@@ -677,7 +729,7 @@ export const Home = () => {
         };
       });
 
-      setMonthlyStatus(Data);
+      setWeeklyStatus(Data);
 
       setOpen(false);
     } catch (error) {
@@ -726,6 +778,7 @@ export const Home = () => {
     getPendingDescriptionDetails();
     setFilterValue(null);
     getMonthlyCallStatusDetails();
+    getWeeklyCallStatusDetails();
     getDailyCallStatusDetails();
   };
 
@@ -1200,7 +1253,7 @@ export const Home = () => {
           </Grid>
         </Grid>
         {/* sales funnel */}
-        <Grid container spacing={2}>
+        <Grid container spacing={1}>
           <Grid item xs={12} sm={12} md={6} lg={6} sx={{ marginTop: "20px" }}>
             <div className="funnelChart" style={funnelStyle}>
               <h2 style={{ textAlign: "center", color: "#333" }}>
@@ -1236,27 +1289,39 @@ export const Home = () => {
               preserveAspectRatio={false}
             >
               <BarChart
-                width={600}
-                height={300}
-                data={pendingDescription}
-                layout="vertical"
+                data={monthlyStatus}
+                margin={{ bottom: 30, left: 20, right: 20 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="number" width={300} />
-                <YAxis
-                  dataKey="name"
-                  type="category"
-                  // angle={-45}
-                  textAnchor="end"
-                  interval={0}
-                  width={300} // Adjust the width of the YAxis to accommodate longer labels
-                  tick={{ fontSize: 10 }} // Adjust font size of tick labels
-                  tickLine={false} // Disable tick lines
-                  tickMargin={10} // Add margin to tick labels
+                <XAxis
+                  dataKey="combination"
+                  tick={{ fontSize: 15 }}
+                  interval={0} // Display all labels without interval
+                  angle={-45} // Rotate the labels for better visibility
+                  textAnchor="end" // Align the labels at the end of the tick
+                  height={80} // Increase the height of the XAxis to provide more space for labels
                 />
+                <YAxis />
                 <Tooltip />
-                <Legend />
-                <Bar dataKey="value" fill={COLORS[0]} barSize={20} />
+                <Legend style={{ marginTop: 20 }} />
+                <Bar
+                  dataKey="existing_lead"
+                  name="Existing Lead"
+                  fill={COLORS[0]}
+                  barSize={20}
+                />
+                <Bar
+                  dataKey="new_lead"
+                  name="New Lead"
+                  fill={COLORS[1]}
+                  barSize={20}
+                />
+                <Bar
+                  dataKey="customer"
+                  name="Customer"
+                  fill={COLORS[2]}
+                  barSize={20}
+                />
               </BarChart>
             </ResponsiveContainer>
           </Grid>
@@ -1270,7 +1335,7 @@ export const Home = () => {
               preserveAspectRatio={false}
             >
               <BarChart
-                data={monthlyStatus}
+                data={weeklyStatus}
                 margin={{ bottom: 30, left: 20, right: 20 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
@@ -1346,6 +1411,39 @@ export const Home = () => {
                   fill={COLORS[2]}
                   barSize={20}
                 />
+              </BarChart>
+            </ResponsiveContainer>
+          </Grid>
+        </Grid>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={12} md={12} lg={12} sx={{ marginTop: "20px" }}>
+            <ResponsiveContainer
+              width="100%"
+              height={400}
+              preserveAspectRatio={false}
+            >
+              <BarChart
+                width={600}
+                height={300}
+                data={pendingDescription}
+                layout="vertical"
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis type="number" width={300} />
+                <YAxis
+                  dataKey="name"
+                  type="category"
+                  // angle={-45}
+                  textAnchor="end"
+                  interval={0}
+                  width={300}
+                  tick={{ fontSize: 15 }} // Adjust font size of tick labels
+                  tickLine={false} // Disable tick lines
+                  tickMargin={10} // Add margin to tick labels
+                />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="value" fill={COLORS[0]} barSize={20} />
               </BarChart>
             </ResponsiveContainer>
           </Grid>
