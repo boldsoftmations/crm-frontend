@@ -1,13 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import InvoiceServices from "../../services/InvoiceService";
 import {
-  styled,
-  Table,
-  TableBody,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TableCell,
   Button,
   Box,
   Paper,
@@ -19,8 +12,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
-import { tableCellClasses } from "@mui/material/TableCell";
-import { CSVLink } from "react-csv";
+import { CSVDownload } from "react-csv";
 import { ErrorMessage } from "./../../Components/ErrorMessage/ErrorMessage";
 import { CustomLoader } from "../../Components/CustomLoader";
 import { CustomSearch } from "./../../Components/CustomSearch";
@@ -28,6 +20,7 @@ import { CustomPagination } from "./../../Components/CustomPagination";
 import { useSelector } from "react-redux";
 import { Popup } from "../../Components/Popup";
 import { OrderBookUpdate } from "./OrderBookUpdate";
+import { CustomTable } from "../../Components/CustomTable";
 
 const filterOption = [
   {
@@ -46,11 +39,97 @@ export const PIOrderBookDetails = () => {
   const [pageCount, setpageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
-  const [exportOrderBookData, setExportOrderBookData] = useState([]);
+  const [exportData, setExportData] = useState([]);
   const [filterQuery, setFilterQuery] = useState("search");
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const dataList = useSelector((state) => state.auth);
   const userData = dataList.profile;
+
+  const handleDownload = async () => {
+    const data = await handleExport();
+    setExportData(data);
+  };
+
+  const handleExport = async () => {
+    try {
+      setOpen(true);
+      const response =
+        filterSelectedQuery || searchQuery
+          ? await InvoiceServices.getAllOrderBookDatawithSearchWithPagination(
+              "pi",
+              "all",
+              filterQuery,
+              filterSelectedQuery || searchQuery
+            )
+          : await InvoiceServices.getAllOrderBookData("all", "pi");
+      let data = response.data.map((item) => {
+        if (
+          userData.groups.toString() === "Factory-Mumbai-OrderBook" ||
+          userData.groups.toString() === "Factory-Delhi-OrderBook"
+        ) {
+          return {
+            proforma_invoice: item.proforma_invoice,
+            pi_date: item.pi_date,
+            company: item.company,
+            billing_city: item.billing_city,
+            shipping_city: item.shipping_city,
+            product: item.product,
+            quantity: item.quantity,
+            // amount: item.amount,
+            pending_amount: item.pending_amount,
+            pending_quantity: item.pending_quantity,
+            seller_state: item.seller_state,
+            estimated_date: item.estimated_date,
+            special_instructions: item.special_instructions,
+          };
+        } else {
+          return {
+            proforma_invoice: item.proforma_invoice,
+            pi_date: item.pi_date,
+            company: item.company,
+            billing_city: item.billing_city,
+            shipping_city: item.shipping_city,
+            product: item.product,
+            quantity: item.quantity,
+            amount: item.amount,
+            pending_amount: item.pending_amount,
+            pending_quantity: item.pending_quantity,
+            seller_state: item.seller_state,
+            estimated_date: item.estimated_date,
+            special_instructions: item.special_instructions,
+          };
+        }
+      });
+      setOpen(false);
+      return data;
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setOpen(false);
+    }
+  };
+
+  const getResetData = () => {
+    setSearchQuery("");
+    setFilterSelectedQuery("");
+    getAllPIWiseOrderBook();
+  };
+
+  const handleInputChange = (event) => {
+    setSearchQuery(event.target.value);
+    getSearchData(event.target.value);
+  };
+
+  const handleInputChanges = (event) => {
+    setFilterSelectedQuery(event.target.value);
+    getSearchData(event.target.value);
+  };
+
+  const openInPopup = (item) => {
+    setRecordForEdit(item);
+    setOpenModal(true);
+  };
+
   useEffect(() => {
     getAllPIWiseOrderBook();
   }, []);
@@ -124,29 +203,13 @@ export const PIOrderBookDetails = () => {
       setCurrentPage(page);
       setOpen(true);
 
-      if (searchQuery) {
+      if (searchQuery || filterSelectedQuery) {
         const response =
           await InvoiceServices.getAllOrderBookDatawithSearchWithPagination(
             "pi",
             page,
             filterQuery,
-            searchQuery
-          );
-        if (response) {
-          setOrderBookData(response.data.results);
-          const total = response.data.count;
-          setpageCount(Math.ceil(total / 25));
-        } else {
-          getAllPIWiseOrderBook();
-          setSearchQuery("");
-        }
-      } else if (filterSelectedQuery) {
-        const response =
-          await InvoiceServices.getAllOrderBookDatawithSearchWithPagination(
-            "pi",
-            page,
-            filterQuery,
-            filterSelectedQuery
+            searchQuery || filterSelectedQuery
           );
         if (response) {
           setOrderBookData(response.data.results);
@@ -173,124 +236,69 @@ export const PIOrderBookDetails = () => {
     }
   };
 
-  const getResetData = () => {
-    setSearchQuery("");
-    setFilterSelectedQuery("");
-    setFilterQuery("");
-    getAllPIWiseOrderBook();
-  };
+  const Tableheaders = [
+    "id",
+    "Pi No",
+    "Pi Date",
+    "Company",
+    "Billing City",
+    "Shipping City",
+    "Product",
+    "Quantity",
+    "Pending Quantity",
+    "Amount",
+    "Pending Amount",
+    "EST DATE",
+    "Special Instructions",
+    "ACTION",
+  ];
 
-  const handleInputChange = (event) => {
-    setSearchQuery(event.target.value);
-    getSearchData(event.target.value);
-  };
+  const Tabledata = orderBookData.map((row, i) => ({
+    id: row.id,
+    pi_no: row.proforma_invoice,
+    pi_date: row.pi_date,
+    company: row.company,
+    billing_city: row.billing_city,
+    shipping_city: row.shipping_city,
+    product: row.product,
+    quantity: row.quantity,
+    pending_quantity: row.pending_quantity,
+    amount: row.amount,
+    pending_amount: row.pending_amount,
+    est_date: row.est_date,
+    special_instruction: row.special_instruction,
+  }));
 
-  const handleInputChanges = (event) => {
-    setFilterSelectedQuery(event.target.value);
-    getSearchData(event.target.value);
-  };
+  const Tableheaders2 = [
+    "ID",
+    "Pi No",
+    "Pi Date",
+    "Company",
+    "Billing City",
+    "Shipping City",
+    "Product",
+    "Quantity",
+    "Pending Quantity",
+    "Pending Amount",
+    "EST DATE",
+    "Special Instructions",
+    "ACTION",
+  ];
 
-  useEffect(() => {
-    getAllPIWiseOrderBookExport();
-  }, [searchQuery]);
-
-  const getAllPIWiseOrderBookExport = async () => {
-    try {
-      setOpen(true);
-      if (filterSelectedQuery) {
-        const response =
-          await InvoiceServices.getAllOrderBookDatawithSearchWithPagination(
-            "pi",
-            "all",
-            filterSelectedQuery
-          );
-        setExportOrderBookData(response.data);
-        //   const total = response.data.count;
-        //   setpageCount(Math.ceil(total / 25));
-      } else {
-        const response = await InvoiceServices.getAllOrderBookData("all", "pi");
-        setExportOrderBookData(response.data);
-      }
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      if (!err.response) {
-        setErrMsg(
-          "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
-        );
-      } else if (err.response.status === 400) {
-        setErrMsg(
-          err.response.data.errors.name
-            ? err.response.data.errors.name
-            : err.response.data.errors.non_field_errors
-        );
-      } else if (err.response.status === 401) {
-        setErrMsg(err.response.data.errors.code);
-      } else {
-        setErrMsg("Server Error");
-      }
-      errRef.current.focus();
-    }
-  };
-
-  let data = exportOrderBookData.map((item) => {
-    if (
-      userData.groups.toString() === "Factory-Mumbai-OrderBook" ||
-      userData.groups.toString() === "Factory-Delhi-OrderBook"
-    ) {
-      return {
-        proforma_invoice: item.proforma_invoice,
-        pi_date: item.pi_date,
-        company: item.company,
-        billing_city: item.billing_city,
-        shipping_city: item.shipping_city,
-        product: item.product,
-        quantity: item.quantity,
-        // amount: item.amount,
-        pending_amount: item.pending_amount,
-        pending_quantity: item.pending_quantity,
-        seller_state: item.seller_state,
-        estimated_date: item.estimated_date,
-        special_instructions: item.special_instructions,
-      };
-    } else {
-      return {
-        proforma_invoice: item.proforma_invoice,
-        pi_date: item.pi_date,
-        company: item.company,
-        billing_city: item.billing_city,
-        shipping_city: item.shipping_city,
-        product: item.product,
-        quantity: item.quantity,
-        amount: item.amount,
-        pending_amount: item.pending_amount,
-        pending_quantity: item.pending_quantity,
-        seller_state: item.seller_state,
-        estimated_date: item.estimated_date,
-        special_instructions: item.special_instructions,
-      };
-    }
-  });
-
-  //   const data = exportOrderBookData.map(item =>
-  //     if (userData.groups.toString() === "Factory") {
-  //     company: item.company,
-  //     pi_date: item.pi_date,
-  //     proforma_invoice: item.proforma_invoice,
-  //     billing_city: item.billing_city,
-  //     shipping_city: item.shipping_city,
-  //     product: item.product,
-  //     quantity: item.quantity,
-  //     // amount: item.amount,
-  //     pending_quantity: item.pending_quantity,
-  //   });
-  // }
-
-  const openInPopup = (item) => {
-    setRecordForEdit(item);
-    setOpenModal(true);
-  };
-
+  const Tabledata2 = orderBookData.map((row, i) => ({
+    id: row.id,
+    pi_no: row.proforma_invoice,
+    pi_date: row.pi_date,
+    company: row.company,
+    billing_city: row.billing_city,
+    shipping_city: row.shipping_city,
+    product: row.product,
+    quantity: row.quantity,
+    pending_quantity: row.pending_quantity,
+    pending_amount: row.pending_amount,
+    est_date: row.est_date,
+    special_instruction: row.special_instruction,
+  }));
   return (
     <div>
       <CustomLoader open={open} />
@@ -382,135 +390,34 @@ export const PIOrderBookDetails = () => {
               </h3>
             </Box>
             <Box flexGrow={0.5}>
-              <CSVLink
-                data={data}
-                headers={headers}
-                filename={"my-file.csv"}
-                target="_blank"
-                style={{
-                  textDecoration: "none",
-                  outline: "none",
-                  height: "5vh",
-                }}
-              >
-                <Button variant="contained" color="success">
-                  Export to Excel
-                </Button>
-              </CSVLink>
+              <Button variant="contained" onClick={handleDownload}>
+                Download CSV
+              </Button>
+              {exportData.length > 0 && (
+                <CSVDownload
+                  data={exportData}
+                  headers={headers}
+                  target="_blank"
+                />
+              )}
             </Box>
           </Box>
-          <TableContainer
-            sx={{
-              maxHeight: 440,
-              "&::-webkit-scrollbar": {
-                width: 15,
-              },
-              "&::-webkit-scrollbar-track": {
-                backgroundColor: "#f2f2f2",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                backgroundColor: "#aaa9ac",
-              },
-            }}
-            component={Paper}
-          >
-            <Table
-              sx={{ minWidth: 1200 }}
-              stickyHeader
-              aria-label="collapsible table"
-            >
-              <TableHead>
-                <StyledTableRow>
-                  <StyledTableCell align="center">PI NUMBER</StyledTableCell>
-                  <StyledTableCell align="center">PI DATE</StyledTableCell>
-                  <StyledTableCell align="center">COMPANY</StyledTableCell>
-                  <StyledTableCell align="center">BILLING CITY</StyledTableCell>
-                  <StyledTableCell align="center">
-                    SHIPPING CITY
-                  </StyledTableCell>
-                  <StyledTableCell align="center">PRODUCT</StyledTableCell>
-                  <StyledTableCell align="center">QUANTITY</StyledTableCell>
-                  <StyledTableCell align="center">
-                    PENDING QUANTITY
-                  </StyledTableCell>
-                  {userData.groups.toString() !== "Factory-Mumbai-OrderBook" &&
-                    (userData.groups.toString() !==
-                    "Factory-Delhi-OrderBook" ? (
-                      <StyledTableCell align="center">AMOUNT</StyledTableCell>
-                    ) : (
-                      ""
-                    ))}
-                  <StyledTableCell align="center">
-                    PENDING AMOUNT
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    Estimated Date
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    SPECIAL INSTRUCTIONS
-                  </StyledTableCell>
-                  <StyledTableCell align="center">Action</StyledTableCell>
-                </StyledTableRow>
-              </TableHead>
-              <TableBody>
-                {orderBookData.map((row, i) => (
-                  <StyledTableRow key={i}>
-                    <StyledTableCell align="center">
-                      {row.proforma_invoice}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.pi_date}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.company}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.billing_city}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.shipping_city}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.product}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.quantity}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.pending_quantity}
-                    </StyledTableCell>
-                    {userData.groups.toString() !==
-                      "Factory-Mumbai-OrderBook" &&
-                      (userData.groups.toString() !==
-                      "Factory-Delhi-OrderBook" ? (
-                        <StyledTableCell align="center">
-                          {row.amount}
-                        </StyledTableCell>
-                      ) : (
-                        ""
-                      ))}
-                    <StyledTableCell align="center">
-                      {row.pending_amount}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.estimated_date}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.special_instructions}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      <Button
-                        variant="contained"
-                        onClick={() => openInPopup(row)}
-                      >
-                        View
-                      </Button>
-                    </StyledTableCell>
-                  </StyledTableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          <CustomTable
+            headers={
+              userData.groups.toString() !== "Factory-Mumbai-OrderBook" &&
+              userData.groups.toString() !== "Factory-Delhi-OrderBook"
+                ? Tableheaders
+                : Tableheaders2
+            }
+            data={
+              userData.groups.toString() !== "Factory-Mumbai-OrderBook" &&
+              userData.groups.toString() !== "Factory-Delhi-OrderBook"
+                ? Tabledata
+                : Tabledata2
+            }
+            openInPopup={openInPopup}
+            openInPopup2={null}
+          />
           <CustomPagination
             pageCount={pageCount}
             handlePageClick={handlePageClick}
@@ -526,32 +433,11 @@ export const PIOrderBookDetails = () => {
           recordForEdit={recordForEdit}
           setOpenPopup={setOpenModal}
           getAllOrderBook={getAllPIWiseOrderBook}
-          getAllOrderBookExport={getAllPIWiseOrderBookExport}
         />
       </Popup>
     </div>
   );
 };
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
 
 const headers = [
   { label: "PI Number", key: "proforma_invoice" },

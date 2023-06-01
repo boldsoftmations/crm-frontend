@@ -6,12 +6,7 @@ import { Box, Button, Grid, TextField } from "@mui/material";
 import { useSelector } from "react-redux";
 
 export const OrderBookUpdate = (props) => {
-  const {
-    recordForEdit,
-    setOpenPopup,
-    getAllOrderBook,
-    getAllOrderBookExport,
-  } = props;
+  const { recordForEdit, setOpenPopup, getAllOrderBook } = props;
   const [open, setOpen] = useState(false);
   const [estimateDate, setEstimateDate] = useState(
     recordForEdit.estimated_date
@@ -38,7 +33,6 @@ export const OrderBookUpdate = (props) => {
       setOpenPopup(false);
       setOpen(false);
       getAllOrderBook();
-      getAllOrderBookExport();
     } catch (err) {
       console.log("err update orderbook", err);
     }

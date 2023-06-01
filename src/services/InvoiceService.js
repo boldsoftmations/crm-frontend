@@ -200,7 +200,7 @@ const getPIOrderBookDataByID = (id) => {
   return CustomAxios.get(`/api/invoice/list-order-book/${id}`);
 };
 
-const getOTotalPendingQuantity = () => {
+const getTotalPendingQuantity = () => {
   return CustomAxios.get(`/api/invoice/pending-order-total`);
 };
 
@@ -358,7 +358,7 @@ const InvoiceServices = {
   getAllOrderBookDatawithSearchWithPagination,
   getAllOrderBookDatawithPage,
   // getAllcustomerOrderBookData,
-  getOTotalPendingQuantity,
+  getTotalPendingQuantity,
   getSalesInvoiceData,
   getSalesInvoiceDataWithSearch,
   getSalesInvoiceDataWithPagination,
