@@ -12,7 +12,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
-import { CSVDownload } from "react-csv";
+import { CSVLink } from "react-csv";
 import { ErrorMessage } from "./../../Components/ErrorMessage/ErrorMessage";
 import { CustomLoader } from "../../Components/CustomLoader";
 import { Popup } from "../../Components/Popup";
@@ -37,12 +37,16 @@ export const ProductOrderBookDetails = () => {
   const [filterQuery, setFilterQuery] = useState("search");
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const [recordForEdit, setRecordForEdit] = useState(null);
+  const csvLinkRef = useRef(null);
   const dataList = useSelector((state) => state.auth);
   const userData = dataList.profile;
 
   const handleDownload = async () => {
     const data = await handleExport();
     setExportData(data);
+    setTimeout(() => {
+      csvLinkRef.current.link.click();
+    });
   };
 
   const handleExport = async () => {
@@ -409,14 +413,21 @@ export const ProductOrderBookDetails = () => {
                 Download CSV
               </Button>
               {exportData.length > 0 && (
-                <CSVDownload
+                <CSVLink
                   data={exportData}
                   headers={
                     userData.groups.toString() === "Customer Service"
                       ? Customerheaders
                       : headers
                   }
+                  ref={csvLinkRef}
+                  filename="Product Order Book.csv"
                   target="_blank"
+                  style={{
+                    textDecoration: "none",
+                    outline: "none",
+                    height: "5vh",
+                  }}
                 />
               )}
             </Box>

@@ -12,7 +12,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
-import { CSVDownload } from "react-csv";
+import { CSVLink } from "react-csv";
 import { ErrorMessage } from "./../../Components/ErrorMessage/ErrorMessage";
 import { CustomLoader } from "../../Components/CustomLoader";
 import { CustomSearch } from "./../../Components/CustomSearch";
@@ -42,12 +42,16 @@ export const PIOrderBookDetails = () => {
   const [exportData, setExportData] = useState([]);
   const [filterQuery, setFilterQuery] = useState("search");
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
+  const csvLinkRef = useRef(null);
   const dataList = useSelector((state) => state.auth);
   const userData = dataList.profile;
 
   const handleDownload = async () => {
     const data = await handleExport();
     setExportData(data);
+    setTimeout(() => {
+      csvLinkRef.current.link.click();
+    });
   };
 
   const handleExport = async () => {
@@ -394,10 +398,17 @@ export const PIOrderBookDetails = () => {
                 Download CSV
               </Button>
               {exportData.length > 0 && (
-                <CSVDownload
+                <CSVLink
                   data={exportData}
                   headers={headers}
+                  ref={csvLinkRef}
+                  filename="PI Order Book.csv"
                   target="_blank"
+                  style={{
+                    textDecoration: "none",
+                    outline: "none",
+                    height: "5vh",
+                  }}
                 />
               )}
             </Box>

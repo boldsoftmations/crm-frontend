@@ -1,13 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import InvoiceServices from "../../services/InvoiceService";
 import {
-  styled,
-  Table,
-  TableBody,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TableCell,
   Button,
   Box,
   Paper,
@@ -19,8 +12,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
-import { tableCellClasses } from "@mui/material/TableCell";
-import { CSVDownload } from "react-csv";
+import { CSVLink } from "react-csv";
 import { ErrorMessage } from "./../../Components/ErrorMessage/ErrorMessage";
 import { CustomLoader } from "../../Components/CustomLoader";
 import { CustomSearch } from "./../../Components/CustomSearch";
@@ -51,6 +43,7 @@ export const CustomerOrderBookDetails = () => {
   const [filterQuery, setFilterQuery] = useState("search");
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const [recordForEdit, setRecordForEdit] = useState(null);
+  const csvLinkRef = useRef(null);
   const dataList = useSelector((state) => state.auth);
   const userData = dataList.profile;
 
@@ -78,6 +71,9 @@ export const CustomerOrderBookDetails = () => {
   const handleDownload = async () => {
     const data = await handleExport();
     setExportData(data);
+    setTimeout(() => {
+      csvLinkRef.current.link.click();
+    });
   };
 
   const handleExport = async () => {
@@ -427,15 +423,21 @@ export const CustomerOrderBookDetails = () => {
                 Download CSV
               </Button>
               {exportData.length > 0 && (
-                <CSVDownload
-                  data={exportData}
+                <CSVLink
                   headers={
                     userData.groups.toString() === "Customer Service"
                       ? headers
                       : headers2
                   }
+                  data={exportData}
+                  ref={csvLinkRef}
+                  filename="Customer Order Book.csv"
                   target="_blank"
-                  filename={"Customer Not Having forecast.csv"}
+                  style={{
+                    textDecoration: "none",
+                    outline: "none",
+                    height: "5vh",
+                  }}
                 />
               )}
             </Box>
@@ -476,26 +478,6 @@ export const CustomerOrderBookDetails = () => {
     </div>
   );
 };
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
 
 const headers = [
   {
