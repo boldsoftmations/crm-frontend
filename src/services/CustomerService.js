@@ -40,6 +40,29 @@ const updateCompanyData = (id, data) => {
   return CustomAxios.patch(`/api/customer/list-company/${id}`, data);
 };
 
+// Unassigned Company api endpoint
+const getUnassignedData = () => {
+  return CustomAxios.get(`/api/customer/list-company/?unassigned=true`);
+};
+
+const getSearchByUnassignedData = (search) => {
+  return CustomAxios.get(
+    `/api/customer/list-company/?unassigned=true&search=${search}`
+  );
+};
+
+const getPaginationByUnassignedData = (page) => {
+  return CustomAxios.get(
+    `/api/customer/list-company/?unassigned=true&page=${page}`
+  );
+};
+
+const getSearchandPaginationByUnassignedData = (page, search) => {
+  return CustomAxios.get(
+    `/api/customer/list-company/?unassigned=true&page=${page}&search=${search}`
+  );
+};
+
 const getBankDataById = (id) => {
   return CustomAxios.get(`/api/customer/list-bank/${id}`);
 };
@@ -262,6 +285,10 @@ const CustomerServices = {
   createCompanyData,
   getCompanyDataById,
   updateCompanyData,
+  getUnassignedData,
+  getSearchByUnassignedData,
+  getPaginationByUnassignedData,
+  getSearchandPaginationByUnassignedData,
   getBankDataById,
   createBankData,
   updateBankData,

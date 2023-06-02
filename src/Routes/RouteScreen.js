@@ -53,6 +53,7 @@ import { TaskView } from "../Pages/Task/TaskView";
 import { FollowUpView } from "../Pages/FollowUp/FollowUpView";
 import { DailyProductionReport } from "../Pages/Inventory/ProductionReport/DailyProductionReport";
 import { WeeklyProductionReport } from "../Pages/Inventory/ProductionReport/WeeklyProductionReport";
+import { UnassignedCustomer } from "../Pages/Cutomers/CompanyDetails/UnassignedCustomer";
 
 export const RouteScreen = () => {
   const tokenData = useSelector((state) => state.auth);
@@ -119,6 +120,10 @@ export const RouteScreen = () => {
             <Route
               path="/customers/company-details"
               element={<CompanyDetails />}
+            />
+            <Route
+              path="/customers/unassigned-company-details"
+              element={<UnassignedCustomer />}
             />
             {/* Invoice - Seller Account Route */}
             <Route path="/invoice/seller-account" element={<SellerAccount />} />

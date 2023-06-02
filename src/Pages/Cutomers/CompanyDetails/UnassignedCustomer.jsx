@@ -1,25 +1,16 @@
 import React, { useState, useRef, useEffect } from "react";
-import { UpdateAllCompanyDetails } from "./UpdateAllCompanyDetails";
-import { CreateCompanyDetails } from "./CreateCompanyDetails";
+import { Grid, Button, TextField, Autocomplete } from "@mui/material";
 import { Popup } from "./../../../Components/Popup";
 import CustomerServices from "../../../services/CustomerService";
 import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
-import { useDispatch, useSelector } from "react-redux";
-import { getSellerAccountData } from "../../../Redux/Action/Action";
-import InvoiceServices from "../../../services/InvoiceService";
 import { CustomLoader } from "../../../Components/CustomLoader";
-import { CreateCustomerProformaInvoice } from "../../Invoice/CustomerPerformaInvoice/CreateCustomerProformaInvoice";
 import { CustomSearchWithButton } from "../../../Components/CustomSearchWithButton";
-import { BulkCustomerAssign } from "./BulkCustomerAssign";
 import { CustomTable } from "./../../../Components/CustomTable";
 import { CustomPagination } from "../../../Components/CustomPagination";
+import LeadServices from "../../../services/LeadService";
 
-export const CompanyDetails = () => {
-  const dispatch = useDispatch();
+export const UnassignedCustomer = () => {
   const [openPopup, setOpenPopup] = useState(false);
-  const [openPopup2, setOpenPopup2] = useState(false);
-  const [openPopup3, setOpenPopup3] = useState(false);
-  const [openModal, setOpenModal] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [open, setOpen] = useState(false);
   const errRef = useRef();
@@ -29,22 +20,17 @@ export const CompanyDetails = () => {
   const [pageCount, setpageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
-  const data = useSelector((state) => state.auth);
-  const userData = data.profile;
+  const [assigned, setAssigned] = useState([]);
+  const [assign, setAssign] = useState("");
 
   const getResetData = () => {
     setFilterSelectedQuery("");
-    getAllCompanyDetails();
+    getUnassignedCompanyDetails();
   };
 
   const openInPopup = (item) => {
-    setRecordForEdit(item.id);
+    setRecordForEdit(item);
     setOpenPopup(true);
-  };
-
-  const openInPopup2 = (item) => {
-    setRecordForEdit(item.id);
-    setOpenPopup3(true);
   };
 
   const handleSnackbarClose = () => {
@@ -57,35 +43,34 @@ export const CompanyDetails = () => {
   };
 
   useEffect(() => {
-    getAllSellerAccountsDetails();
-    getAllCompanyDetails();
+    getUnassignedCompanyDetails();
+    getAssignedData();
   }, []);
 
-  const getAllSellerAccountsDetails = async () => {
+  const getAssignedData = async (id) => {
     try {
       setOpen(true);
-      const response = await InvoiceServices.getAllPaginateSellerAccountData(
-        "all"
-      );
-      dispatch(getSellerAccountData(response.data));
+      const res = await LeadServices.getAllAssignedUser();
+      setAssigned(res.data);
       setOpen(false);
-    } catch (err) {
+    } catch (error) {
+      console.log("error", error);
       setOpen(false);
     }
   };
 
-  const getAllCompanyDetails = async () => {
+  const getUnassignedCompanyDetails = async () => {
     try {
       setOpen(true);
       if (currentPage) {
-        const response = await CustomerServices.getCompanyPaginateData(
+        const response = await CustomerServices.getPaginationByUnassignedData(
           currentPage
         );
         setCompanyData(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
       } else {
-        const response = await CustomerServices.getAllCompanyData();
+        const response = await CustomerServices.getUnassignedData();
         setCompanyData(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
@@ -117,14 +102,14 @@ export const CompanyDetails = () => {
       setOpen(true);
       const filterSearch = value;
       if (filterSearch !== "") {
-        const response = await CustomerServices.getAllSearchCompanyData(
+        const response = await CustomerServices.getSearchByUnassignedData(
           filterSearch
         );
         setCompanyData(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
       } else {
-        getAllCompanyDetails();
+        getUnassignedCompanyDetails();
         setFilterSelectedQuery("");
       }
       setOpen(false);
@@ -136,25 +121,27 @@ export const CompanyDetails = () => {
   const handlePageClick = async (event, value) => {
     try {
       const page = value;
-      console.log("filterSelectedQuery", filterSelectedQuery);
       setCurrentPage(page);
       setOpen(true);
 
       if (filterSelectedQuery) {
-        const response = await CustomerServices.getAllCompanyDataPaginate(
-          page,
-          filterSelectedQuery
-        );
+        const response =
+          await CustomerServices.getSearchandPaginationByUnassignedData(
+            page,
+            filterSelectedQuery
+          );
         if (response) {
           setCompanyData(response.data.results);
           const total = response.data.count;
           setpageCount(Math.ceil(total / 25));
         } else {
-          getAllCompanyDetails();
+          getUnassignedCompanyDetails();
           setFilterSelectedQuery("");
         }
       } else {
-        const response = await CustomerServices.getCompanyPaginateData(page);
+        const response = await CustomerServices.getPaginationByUnassignedData(
+          page
+        );
         setCompanyData(response.data.results);
       }
 
@@ -165,6 +152,34 @@ export const CompanyDetails = () => {
     }
   };
 
+  const UpdateCompanyDetails = async (e) => {
+    try {
+      e.preventDefault();
+      setOpen(true);
+      const req = {
+        type: recordForEdit.type,
+        name: recordForEdit.name,
+        address: recordForEdit.address,
+        pincode: recordForEdit.pincode,
+        state: recordForEdit.state,
+        city: recordForEdit.city,
+        website: recordForEdit.website,
+        estd_date: recordForEdit.estd_date,
+        gst_number: recordForEdit.gst_number || null,
+        pan_number: recordForEdit.pan_number || null,
+        business_type: recordForEdit.business_type,
+        assigned_to: assign ? assign : "",
+      };
+      await CustomerServices.updateCompanyData(recordForEdit.id, req);
+      setOpenPopup(false);
+      setOpen(false);
+      getUnassignedCompanyDetails();
+    } catch (error) {
+      console.log("createing Unassigned company detail error", error);
+
+      setOpen(false);
+    }
+  };
   const Tableheaders = [
     "ID",
     "NAME",
@@ -220,29 +235,10 @@ export const CompanyDetails = () => {
                   fontWeight: 800,
                 }}
               >
-                Company Details
+                Unassigned Company
               </h3>
             </div>
-            <div style={{ flexGrow: 0.5 }} align="right">
-              {userData.is_staff === true && (
-                <button
-                  onClick={() => setOpenModal(true)}
-                  className="btn btn-primary me-2"
-                  size="small"
-                >
-                  Assign Bulk Customer
-                </button>
-              )}
-              {userData.groups.toString() !== "Sales" && (
-                <button
-                  onClick={() => setOpenPopup2(true)}
-                  className="btn btn-success"
-                  size="small"
-                >
-                  Add
-                </button>
-              )}
-            </div>
+            <div style={{ flexGrow: 0.5 }} align="right"></div>
           </div>
           <div
             style={{
@@ -290,8 +286,6 @@ export const CompanyDetails = () => {
             headers={Tableheaders}
             data={Tabledata}
             openInPopup={openInPopup}
-            openInPopup2={openInPopup2}
-            ButtonText={"Invoice"}
           />
 
           <div
@@ -311,49 +305,37 @@ export const CompanyDetails = () => {
       </div>
 
       <Popup
-        fullScreen={true}
-        title={"Create Company Details"}
-        openPopup={openPopup2}
-        setOpenPopup={setOpenPopup2}
-      >
-        <CreateCompanyDetails
-          setOpenPopup={setOpenPopup2}
-          getAllCompanyDetails={getAllCompanyDetails}
-        />
-      </Popup>
-      <Popup
-        fullScreen={true}
-        title={"Update Company Details"}
+        maxWidth={"lg"}
+        title={"Assign To Customer"}
         openPopup={openPopup}
         setOpenPopup={setOpenPopup}
       >
-        <UpdateAllCompanyDetails
-          setOpenPopup={setOpenPopup}
-          getAllCompanyDetails={getAllCompanyDetails}
-          recordForEdit={recordForEdit}
-        />
-      </Popup>
-      <Popup
-        maxWidth={"xl"}
-        title={"Create Customer Proforma Invoice"}
-        openPopup={openPopup3}
-        setOpenPopup={setOpenPopup3}
-      >
-        <CreateCustomerProformaInvoice
-          recordForEdit={recordForEdit}
-          setOpenPopup={setOpenPopup3}
-        />
-      </Popup>
-      <Popup
-        maxWidth={"lg"}
-        title={"Assign Bulk Lead to another Employee"}
-        openPopup={openModal}
-        setOpenPopup={setOpenModal}
-      >
-        <BulkCustomerAssign
-          setOpenPopup={setOpenModal}
-          setOpenSnackbar={setOpenSnackbar}
-        />
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <Autocomplete
+              style={{
+                minWidth: 220,
+              }}
+              size="small"
+              value={recordForEdit ? recordForEdit.assigned_to : "-"}
+              onChange={(e, value) => setAssign(value)}
+              options={assigned.map((option) => option.email)}
+              getOptionLabel={(option) => `${option}`}
+              renderInput={(params) => (
+                <TextField {...params} name={"assign"} label={"Assign To"} />
+              )}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Button
+              variant="contained"
+              color="success"
+              onClick={(e) => UpdateCompanyDetails(e)}
+            >
+              Submit
+            </Button>
+          </Grid>
+        </Grid>
       </Popup>
     </>
   );

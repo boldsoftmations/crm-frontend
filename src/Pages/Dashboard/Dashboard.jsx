@@ -120,7 +120,7 @@ export function Dashboard() {
             backgroundColor: "white",
             borderRadius: "8px",
             boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-            margin: "30px",
+            margin: "10px",
             padding: "20px",
           }}
         >
