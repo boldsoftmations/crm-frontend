@@ -297,6 +297,12 @@ const getAllDashboardData = () => {
   return CustomAxios.get("/api/invoice/list-dashboard");
 };
 
+const getFilterDashboardData = (startDate, endDate) => {
+  return CustomAxios.get(
+    `/api/invoice/list-dashboard/?start_date=${startDate}&end_date=${endDate}`
+  );
+};
+
 const getDispatchDashboardData = () => {
   return CustomAxios.get(`/api/invoice/list-dashboard-dispatch`);
 };
@@ -375,6 +381,7 @@ const InvoiceServices = {
   getDispatchDataWithPagination,
   updateDispatched,
   getAllDashboardData,
+  getFilterDashboardData,
   getDispatchDashboardData,
   getLRCopyDashboardData,
   getPODCopyDashboardData,
