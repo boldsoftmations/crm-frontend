@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Button, Box, Paper, Grid } from "@mui/material";
-import { CSVDownload } from "react-csv";
+import { CSVLink } from "react-csv";
 import { CustomPagination } from "../../Components/CustomPagination";
 import { ErrorMessage } from "../../Components/ErrorMessage/ErrorMessage";
 import { CustomLoader } from "../../Components/CustomLoader";
@@ -21,10 +21,18 @@ export const ProductWiseForecastView = () => {
   const [assigned, setAssigned] = useState([]);
   const [productWiseForecast, setProductWiseForecast] = useState([]);
   const [exportData, setExportData] = useState([]);
+  const csvLinkRef = useRef(null);
 
   const handleDownload = async () => {
-    const data = await handleExport();
-    setExportData(data);
+    try {
+      const data = await handleExport();
+      setExportData(data);
+      setTimeout(() => {
+        csvLinkRef.current.link.click();
+      });
+    } catch (error) {
+      console.log("CSVLink Download error", error);
+    }
   };
 
   const getResetData = () => {
@@ -492,10 +500,17 @@ export const ProductWiseForecastView = () => {
                 Download CSV
               </Button>
               {exportData.length > 0 && (
-                <CSVDownload
+                <CSVLink
                   data={exportData}
                   headers={headers}
+                  ref={csvLinkRef}
+                  filename={"Productwise Forecast.csv"}
                   target="_blank"
+                  style={{
+                    textDecoration: "none",
+                    outline: "none",
+                    height: "5vh",
+                  }}
                 />
               )}
             </Box>

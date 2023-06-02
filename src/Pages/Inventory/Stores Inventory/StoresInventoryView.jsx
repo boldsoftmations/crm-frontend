@@ -5,7 +5,7 @@ import InventoryServices from "../../../services/InventoryService";
 import { CustomPagination } from "../../../Components/CustomPagination";
 import { CustomSearchWithButton } from "./../../../Components/CustomSearchWithButton";
 import { CustomTable } from "../../../Components/CustomTable";
-import { CSVDownload } from "react-csv";
+import { CSVLink } from "react-csv";
 
 export const StoresInventoryView = () => {
   const [open, setOpen] = useState(false);
@@ -16,10 +16,18 @@ export const StoresInventoryView = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const [exportData, setExportData] = useState([]);
+  const csvLinkRef = useRef(null);
 
   const handleDownload = async () => {
-    const data = await handleExport();
-    setExportData(data);
+    try {
+      const data = await handleExport();
+      setExportData(data);
+      setTimeout(() => {
+        csvLinkRef.current.link.click();
+      });
+    } catch (error) {
+      console.log("CSVLink Download error", error);
+    }
   };
 
   const headers = [
@@ -250,11 +258,17 @@ export const StoresInventoryView = () => {
                 Download CSV
               </div>
               {exportData.length > 0 && (
-                <CSVDownload
+                <CSVLink
                   data={[...exportData]}
                   headers={headers}
+                  ref={csvLinkRef}
+                  filename="Store Inventory.csv"
                   target="_blank"
-                  filename="Current Month forecast.csv"
+                  style={{
+                    textDecoration: "none",
+                    outline: "none",
+                    height: "5vh",
+                  }}
                 />
               )}
             </div>

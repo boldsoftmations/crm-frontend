@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import moment from "moment";
 import InventoryServices from "./../../../services/InventoryService";
 import { CustomSearchWithButton } from "../../../Components/CustomSearchWithButton";
-import { CSVDownload } from "react-csv";
+import { CSVLink } from "react-csv";
 import { CustomTable } from "../../../Components/CustomTable";
 import { CustomPagination } from "../../../Components/CustomPagination";
 import { Box, Button, Grid, Paper, TextField } from "@mui/material";
@@ -22,6 +22,7 @@ export const DailyProductionReport = () => {
   const [startDate, setStartDate] = useState(new Date()); // set default value as current date
   const minDate = new Date().toISOString().split("T")[0];
   const maxDate = new Date("2030-12-31").toISOString().split("T")[0];
+  const csvLinkRef = useRef(null);
 
   const getResetData = () => {
     setSearchQuery("");
@@ -48,8 +49,11 @@ export const DailyProductionReport = () => {
     try {
       const data = await handleExport();
       setExportData(data);
-    } catch (err) {
-      console.log(err);
+      setTimeout(() => {
+        csvLinkRef.current.link.click();
+      });
+    } catch (error) {
+      console.log("CSVLink Download error", error);
     }
   };
 
@@ -319,10 +323,17 @@ export const DailyProductionReport = () => {
                 Download CSV
               </Button>
               {exportData.length > 0 && (
-                <CSVDownload
+                <CSVLink
                   data={exportData}
                   headers={headers}
+                  ref={csvLinkRef}
+                  filename="Daily Production Report.csv"
                   target="_blank"
+                  style={{
+                    textDecoration: "none",
+                    outline: "none",
+                    height: "5vh",
+                  }}
                 />
               )}
             </Box>

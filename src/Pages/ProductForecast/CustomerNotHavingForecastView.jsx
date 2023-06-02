@@ -11,7 +11,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
-import { CSVDownload } from "react-csv";
+import { CSVLink } from "react-csv";
 import { CustomPagination } from "../../Components/CustomPagination";
 import { ErrorMessage } from "../../Components/ErrorMessage/ErrorMessage";
 import { CustomLoader } from "../../Components/CustomLoader";
@@ -38,6 +38,7 @@ export const CustomerNotHavingForecastView = () => {
   const [forecastDataByID, setForecastDataByID] = useState(null);
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
+  const csvLinkRef = useRef(null);
 
   const openInPopup = (item) => {
     const matchedForecast = productNotHavingForecast.find(
@@ -56,8 +57,15 @@ export const CustomerNotHavingForecastView = () => {
   };
 
   const handleDownload = async () => {
-    const data = await handleExport();
-    setExportData(data);
+    try {
+      const data = await handleExport();
+      setExportData(data);
+      setTimeout(() => {
+        csvLinkRef.current.link.click();
+      });
+    } catch (error) {
+      console.log("CSVLink Download error", error);
+    }
   };
 
   const getResetData = () => {
@@ -452,11 +460,17 @@ export const CustomerNotHavingForecastView = () => {
                 Download CSV
               </Button>
               {exportData.length > 0 && (
-                <CSVDownload
+                <CSVLink
                   data={exportData}
                   headers={headers}
-                  target="_blank"
+                  ref={csvLinkRef}
                   filename={"Customer Not Having forecast.csv"}
+                  target="_blank"
+                  style={{
+                    textDecoration: "none",
+                    outline: "none",
+                    height: "5vh",
+                  }}
                 />
               )}
             </Box>

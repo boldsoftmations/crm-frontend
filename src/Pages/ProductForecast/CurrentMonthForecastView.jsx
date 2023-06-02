@@ -11,7 +11,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
-import { CSVDownload } from "react-csv";
+import { CSVLink } from "react-csv";
 import { CustomPagination } from "../../Components/CustomPagination";
 import { ErrorMessage } from "../../Components/ErrorMessage/ErrorMessage";
 import { CustomLoader } from "../../Components/CustomLoader";
@@ -32,6 +32,7 @@ export const CurrentMonthForecastView = () => {
   const [assigned, setAssigned] = useState([]);
   const [currentMonthForecast, setCurrentMonthForecast] = useState([]);
   const [exportData, setExportData] = useState([]);
+  const csvLinkRef = useRef(null);
 
   const getResetData = () => {
     setSearchQuery("");
@@ -51,8 +52,15 @@ export const CurrentMonthForecastView = () => {
   };
 
   const handleDownload = async () => {
-    const data = await handleExport();
-    setExportData(data);
+    try {
+      const data = await handleExport();
+      setExportData(data);
+      setTimeout(() => {
+        csvLinkRef.current.link.click();
+      });
+    } catch (error) {
+      console.log("CSVLink Download error", error);
+    }
   };
 
   useEffect(() => {
@@ -350,11 +358,17 @@ export const CurrentMonthForecastView = () => {
                 Download CSV
               </Button>
               {exportData.length > 0 && (
-                <CSVDownload
-                  data={[...exportData]}
+                <CSVLink
+                  data={exportData}
                   headers={headers}
+                  ref={csvLinkRef}
+                  filename="Current Month Forecast.csv"
                   target="_blank"
-                  filename="Current Month forecast.csv"
+                  style={{
+                    textDecoration: "none",
+                    outline: "none",
+                    height: "5vh",
+                  }}
                 />
               )}
             </Box>

@@ -1,22 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  styled,
-  Table,
-  TableBody,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TableCell,
-  Button,
-  Box,
-  Paper,
-  Grid,
-} from "@mui/material";
-import { CSVDownload } from "react-csv";
-import { tableCellClasses } from "@mui/material/TableCell";
-
+import { Button, Box, Paper, Grid } from "@mui/material";
+import { CSVLink } from "react-csv";
 import { CustomPagination } from "../../Components/CustomPagination";
-
 import { ErrorMessage } from "../../Components/ErrorMessage/ErrorMessage";
 import { CustomLoader } from "../../Components/CustomLoader";
 import LeadServices from "../../services/LeadService";
@@ -52,16 +37,23 @@ export const DescriptionWiseForecastView = () => {
   const [assigned, setAssigned] = useState([]);
   const [descriptionWiseForecast, setDescriptionWiseForecast] = useState([]);
   const [exportData, setExportData] = useState([]);
+  const csvLinkRef = useRef(null);
 
   const handleDownload = async () => {
-    const data = await handleExport();
-    setExportData(data);
+    try {
+      const data = await handleExport();
+      setExportData(data);
+      setTimeout(() => {
+        csvLinkRef.current.link.click();
+      });
+    } catch (error) {
+      console.log("CSVLink Download error", error);
+    }
   };
 
   const getResetData = () => {
     setSearchQuery("");
     setFilterSelectedQuery("");
-
     getAllDescriptionionForecastDetails();
   };
 
@@ -85,7 +77,7 @@ export const DescriptionWiseForecastView = () => {
   // Get the last 2 months
   const lastMonth1 = (currentMonth - 2 + 12) % 12;
   const lastMonth2 = (currentMonth - 1 + 12) % 12;
-  console.log("lastMonth2", lastMonth2);
+
   // Get the next 2 months
   const nextMonth1 = (currentMonth + 1) % 12;
   const nextMonth2 = (currentMonth + 2) % 12;
@@ -521,10 +513,17 @@ export const DescriptionWiseForecastView = () => {
                 Download CSV
               </Button>
               {exportData.length > 0 && (
-                <CSVDownload
+                <CSVLink
                   data={exportData}
                   headers={headers}
+                  ref={csvLinkRef}
+                  filename={"Descriptionwise Forecast.csv"}
                   target="_blank"
+                  style={{
+                    textDecoration: "none",
+                    outline: "none",
+                    height: "5vh",
+                  }}
                 />
               )}
             </Box>
@@ -547,23 +546,3 @@ export const DescriptionWiseForecastView = () => {
     </div>
   );
 };
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));

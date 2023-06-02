@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import jsPDF from "jspdf";
-import { CSVDownload } from "react-csv";
+import { CSVLink } from "react-csv";
 import {
   pdf,
   Image,
@@ -24,6 +24,7 @@ import { MaterialTransferNoteUpdate } from "./MaterialTransferNoteUpdate";
 import InvoiceServices from "../../../services/InvoiceService";
 import { CustomPagination } from "../../../Components/CustomPagination";
 import { CustomTable } from "../../../Components/CustomTable";
+import { Button } from "@mui/material";
 
 export const MaterialTransferNoteView = () => {
   const [openPopup, setOpenPopup] = useState(false);
@@ -43,9 +44,18 @@ export const MaterialTransferNoteView = () => {
   const users = useSelector((state) => state.auth.profile);
   const [exportData, setExportData] = useState([]);
   const [message, setMessage] = useState(null);
+  const csvLinkRef = useRef(null);
+
   const handleDownload = async () => {
-    const data = await handleExport();
-    setExportData(data);
+    try {
+      const data = await handleExport();
+      setExportData(data);
+      setTimeout(() => {
+        csvLinkRef.current.link.click();
+      });
+    } catch (error) {
+      console.log("CSVLink Download error", error);
+    }
   };
 
   const headers = [
@@ -394,31 +404,21 @@ export const MaterialTransferNoteView = () => {
                   Add
                 </div>
               ) : null}
-              <div
-                className="btn btn-primary"
-                style={{
-                  display: "inline-block",
-                  padding: "6px 16px",
-                  margin: "10px",
-                  fontSize: "0.875rem",
-                  minWidth: "64px",
-                  fontWeight: 500,
-                  lineHeight: 1.75,
-                  borderRadius: "4px",
-                  letterSpacing: "0.02857em",
-                  textTransform: "uppercase",
-                  boxShadow:
-                    "0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2)",
-                }}
-                onClick={handleDownload}
-              >
+              <Button variant="contained" onClick={handleDownload}>
                 Download CSV
-              </div>
+              </Button>
               {exportData.length > 0 && (
-                <CSVDownload
+                <CSVLink
                   data={exportData}
                   headers={headers}
+                  ref={csvLinkRef}
+                  filename="Material Transfer Note.csv"
                   target="_blank"
+                  style={{
+                    textDecoration: "none",
+                    outline: "none",
+                    height: "5vh",
+                  }}
                 />
               )}
             </div>

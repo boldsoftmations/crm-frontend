@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import { CSVDownload } from "react-csv";
+import { CSVLink } from "react-csv";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 import InventoryServices from "../../../services/InventoryService";
 import { CustomPagination } from "../../../Components/CustomPagination";
 import { CustomTable } from "../../../Components/CustomTable";
 import { CustomSearchWithButton } from "../../../Components/CustomSearchWithButton";
+import { Button } from "@mui/material";
 
 export const ProductionInventoryGAndLView = () => {
   const [open, setOpen] = useState(false);
@@ -16,13 +17,23 @@ export const ProductionInventoryGAndLView = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const [exportData, setExportData] = useState([]);
+  const csvLinkRef = useRef(null);
 
   const handleDownload = async () => {
-    const data = await handleExport();
-    setExportData(data);
+    try {
+      const data = await handleExport();
+      setExportData(data);
+      setTimeout(() => {
+        csvLinkRef.current.link.click();
+      });
+    } catch (error) {
+      console.log("CSVLink Download error", error);
+    }
   };
 
   const headers = [
+    { label: "SELLER ACCOUNT", key: "seller_account" },
+    { label: "PRODUCTION ENTRY", key: "production_entry" },
     { label: "PRODUCT", key: "product" },
     { label: "GAIN/LOSS", key: "gnl" },
     { label: "DATE", key: "date" },
@@ -49,6 +60,8 @@ export const ProductionInventoryGAndLView = () => {
       }
       const data = response.data.map((row) => {
         return {
+          seller_account: row.seller_account,
+          production_entry: row.production_entry,
           product: row.product,
           gnl: row.gnl,
           date: row.created_on,
@@ -169,6 +182,8 @@ export const ProductionInventoryGAndLView = () => {
   };
 
   const Tableheaders = [
+    "SELLER ACCOUNT",
+    "PRODUCTION ENTRY",
     "PRODUCT",
     "GAIN/LOSS",
     "DATE",
@@ -178,6 +193,8 @@ export const ProductionInventoryGAndLView = () => {
   ];
 
   const Tabledata = productionInventoryData.map((row, i) => ({
+    seller_account: row.seller_account,
+    production_entry: row.production_entry,
     product: row.product,
     gnl: row.gnl,
     date: row.created_on,
@@ -227,32 +244,21 @@ export const ProductionInventoryGAndLView = () => {
               </h3>
             </div>
             <div style={{ flexGrow: 0.5 }} align="right">
-              <div
-                className="btn btn-primary"
-                style={{
-                  display: "inline-block",
-                  padding: "6px 16px",
-                  margin: "10px",
-                  fontSize: "0.875rem",
-                  minWidth: "64px",
-                  fontWeight: 500,
-                  lineHeight: 1.75,
-                  borderRadius: "4px",
-                  letterSpacing: "0.02857em",
-                  textTransform: "uppercase",
-                  boxShadow:
-                    "0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2)",
-                }}
-                onClick={handleDownload}
-              >
+              <Button variant="contained" onClick={handleDownload}>
                 Download CSV
-              </div>
+              </Button>
               {exportData.length > 0 && (
-                <CSVDownload
+                <CSVLink
                   data={exportData}
                   headers={headers}
+                  ref={csvLinkRef}
+                  filename="Production Gain And Loss.csv"
                   target="_blank"
-                  filename="Current Month forecast.csv"
+                  style={{
+                    textDecoration: "none",
+                    outline: "none",
+                    height: "5vh",
+                  }}
                 />
               )}
             </div>
