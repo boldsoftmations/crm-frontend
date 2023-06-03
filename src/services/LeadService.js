@@ -4,20 +4,20 @@ const getProfile = () => {
   return CustomAxios.get(`/api/user/profile/`);
 };
 
-const getAllLeads = () => {
-  return CustomAxios.get(`/api/lead/list-lead/`);
+const getAllLeads = (stage) => {
+  return CustomAxios.get(`/api/lead/list-lead/?stage=${stage}`);
 };
 
-const getAllPaginatesLeads = (all) => {
-  return CustomAxios.get(`/api/lead/list-lead/?page=${all}`);
+const getAllPaginateLeads = (stage, currentPage) => {
+  return CustomAxios.get(
+    `/api/lead/list-lead/?stage=${stage}&page=${currentPage}`
+  );
 };
 
-const getAllPaginateLeads = (currentPage) => {
-  return CustomAxios.get(`/api/lead/list-lead/?page=${currentPage}`);
-};
-
-const getAllSearchLeads = (filter, search) => {
-  return CustomAxios.get(`/api/lead/list-lead/?${filter}=${search}`);
+const getAllSearchLeads = (stage, filter, search) => {
+  return CustomAxios.get(
+    `/api/lead/list-lead/?stage=${stage}&${filter}=${search}`
+  );
 };
 
 const getFilterLeads = (assignedTo, assignedToValue, stage, stageValue) => {
@@ -27,14 +27,13 @@ const getFilterLeads = (assignedTo, assignedToValue, stage, stageValue) => {
 };
 
 const getFilterPaginateLeads = (
+  stage,
   currentPage,
   assignedTo,
-  assignedToValue,
-  filter,
-  search
+  assignedToValue
 ) => {
   return CustomAxios.get(
-    `/api/lead/list-lead/?page=${currentPage}&${assignedTo}=${assignedToValue}&${filter}=${search}`
+    `/api/lead/list-lead/?stage=${stage}&page=${currentPage}&${assignedTo}=${assignedToValue}`
   );
 };
 const getFilterAssignedtoPaginateLeads = (currentPage, filter, search) => {
@@ -120,7 +119,6 @@ const BulkLeadAssign = (data) => {
 const LeadServices = {
   getProfile,
   getAllLeads,
-  getAllPaginatesLeads,
   getAllPaginateLeads,
   getAllAssignedUser,
   getAllUnassignedData,

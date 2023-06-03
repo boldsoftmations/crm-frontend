@@ -264,27 +264,118 @@ export const ListItems = (props) => {
               <ListItem
                 button
                 component={RouterLink}
-                to="/leads/view-lead"
+                to="/leads/new-lead"
                 style={{ width: 300 }}
               >
                 <ListItemText
                   component={Button}
                   onClick={() => setOpen(false)}
                   inset
-                  primary="Lead"
+                  primary="New Lead"
                 />
               </ListItem>
               <ListItem
                 button
                 component={RouterLink}
-                to="/leads/view-assignedto"
+                to="/leads/open-lead"
                 style={{ width: 300 }}
               >
                 <ListItemText
                   component={Button}
                   onClick={() => setOpen(false)}
                   inset
-                  primary="Assigned To"
+                  primary="Open Lead"
+                />
+              </ListItem>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/leads/opportunity-lead"
+                style={{ width: 300 }}
+              >
+                <ListItemText
+                  component={Button}
+                  onClick={() => setOpen(false)}
+                  inset
+                  primary="Oppurtunity Lead"
+                />
+              </ListItem>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/leads/potential-lead"
+                style={{ width: 300 }}
+              >
+                <ListItemText
+                  component={Button}
+                  onClick={() => setOpen(false)}
+                  inset
+                  primary="Potential Lead"
+                />
+              </ListItem>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/leads/interested-lead"
+                style={{ width: 300 }}
+              >
+                <ListItemText
+                  component={Button}
+                  onClick={() => setOpen(false)}
+                  inset
+                  primary="Interested Lead"
+                />
+              </ListItem>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/leads/converted-lead"
+                style={{ width: 300 }}
+              >
+                <ListItemText
+                  component={Button}
+                  onClick={() => setOpen(false)}
+                  inset
+                  primary="Converted Lead"
+                />
+              </ListItem>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/leads/not_interested-lead"
+                style={{ width: 300 }}
+              >
+                <ListItemText
+                  component={Button}
+                  onClick={() => setOpen(false)}
+                  inset
+                  primary="Not Interested Lead"
+                />
+              </ListItem>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/leads/closed-lead"
+                style={{ width: 300 }}
+              >
+                <ListItemText
+                  component={Button}
+                  onClick={() => setOpen(false)}
+                  inset
+                  primary="Closed Lead"
+                />
+              </ListItem>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/leads/view-unassigned-lead"
+                style={{ width: 300 }}
+              >
+                <ListItemText
+                  component={Button}
+                  onClick={() => setOpen(false)}
+                  inset
+                  primary="Unassigned Lead"
                 />
               </ListItem>
             </List>
@@ -1229,27 +1320,80 @@ export const ListItems = (props) => {
                   <ListItem
                     button
                     component={RouterLink}
-                    to="/leads/view-lead"
+                    to="/leads/new-lead"
                     style={{ width: 300 }}
                   >
                     <ListItemText
                       component={Button}
                       onClick={() => setOpen(false)}
                       inset
-                      primary="Lead"
+                      primary="New Lead"
                     />
                   </ListItem>
                   <ListItem
                     button
                     component={RouterLink}
-                    to="/leads/view-assignedto"
+                    to="/leads/open-lead"
                     style={{ width: 300 }}
                   >
                     <ListItemText
                       component={Button}
                       onClick={() => setOpen(false)}
                       inset
-                      primary="Assigned To"
+                      primary="Open Lead"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/leads/opportunity-lead"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Oppurtunity Lead"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/leads/potential-lead"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Potential Lead"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/leads/interested-lead"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Interested Lead"
+                    />
+                  </ListItem>
+
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/leads/view-unassigned-lead"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Unassigned Lead"
                     />
                   </ListItem>
                 </List>
@@ -2280,27 +2424,79 @@ export const ListItems = (props) => {
                   <ListItem
                     button
                     component={RouterLink}
-                    to="/leads/view-lead"
+                    to="/leads/new-lead"
                     style={{ width: 300 }}
                   >
                     <ListItemText
                       component={Button}
                       onClick={() => setOpen(false)}
                       inset
-                      primary="Lead"
+                      primary="New Lead"
                     />
                   </ListItem>
                   <ListItem
                     button
                     component={RouterLink}
-                    to="/leads/view-assignedto"
+                    to="/leads/open-lead"
                     style={{ width: 300 }}
                   >
                     <ListItemText
                       component={Button}
                       onClick={() => setOpen(false)}
                       inset
-                      primary="Assigned To"
+                      primary="Open Lead"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/leads/opportunity-lead"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Oppurtunity Lead"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/leads/potential-lead"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Potential Lead"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/leads/interested-lead"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Interested Lead"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/leads/view-unassigned-lead"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Unassigned Lead"
                     />
                   </ListItem>
                 </List>

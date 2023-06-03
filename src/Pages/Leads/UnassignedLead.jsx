@@ -15,16 +15,16 @@ import {
 import LeadServices from "../../services/LeadService";
 import ClearIcon from "@mui/icons-material/Clear";
 import "../CommonStyle.css";
-import { Popup } from "./../../Components/Popup";
+import { Popup } from "../../Components/Popup";
 import { UpdateLeads } from "./UpdateLeads";
-import { ErrorMessage } from "./../../Components/ErrorMessage/ErrorMessage";
-import { CustomSearch } from "./../../Components/CustomSearch";
+import { ErrorMessage } from "../../Components/ErrorMessage/ErrorMessage";
+import { CustomSearch } from "../../Components/CustomSearch";
 import { CustomLoader } from "../../Components/CustomLoader";
 import { CustomPagination } from "../../Components/CustomPagination";
 import { CustomTable } from "../../Components/CustomTable";
 import ProductService from "../../services/ProductService";
 
-export const AssignTo = () => {
+export const UnassignedLead = () => {
   const [leads, setLeads] = useState([]);
   const [open, setOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -348,7 +348,7 @@ export const AssignTo = () => {
                   fontWeight: 800,
                 }}
               >
-                Assigned to
+                Unassigned Lead
               </h3>
             </Box>
           </Box>

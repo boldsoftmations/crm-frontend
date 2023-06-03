@@ -12,15 +12,15 @@ import {
 } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
 import AddIcon from "@mui/icons-material/Add";
-import LeadServices from "./../../services/LeadService";
+import LeadServices from "../../services/LeadService";
 import "../CommonStyle.css";
 import { CreateLeads } from "./CreateLeads";
 import { UpdateLeads } from "./UpdateLeads";
-import { Popup } from "./../../Components/Popup";
+import { Popup } from "../../Components/Popup";
 import ProductService from "../../services/ProductService";
-import { ErrorMessage } from "./../../Components/ErrorMessage/ErrorMessage";
+import { ErrorMessage } from "../../Components/ErrorMessage/ErrorMessage";
 import { CustomPagination } from "../../Components/CustomPagination";
-import { CustomLoader } from "./../../Components/CustomLoader";
+import { CustomLoader } from "../../Components/CustomLoader";
 import { BulkLeadAssign } from "./BulkLeadAssign";
 import { useDispatch, useSelector } from "react-redux";
 import InvoiceServices from "../../services/InvoiceService";
@@ -30,7 +30,7 @@ import { CustomSearchWithButton } from "../../Components/CustomSearchWithButton"
 import { FollowUpCreate } from "../FollowUp/FollowUpCreate";
 import { PotentialCreate } from "../Potential/PotentialCreate";
 
-export const Viewleads = () => {
+export const InterestedLead = () => {
   const dispatch = useDispatch();
   const [leads, setLeads] = useState([]);
   const [open, setOpen] = useState(false);
@@ -154,15 +154,17 @@ export const Viewleads = () => {
     try {
       setOpen(true);
       if (currentPage) {
-        const response = await LeadServices.getAllPaginateLeads(currentPage);
+        const response = await LeadServices.getAllPaginateLeads(
+          "interested",
+          currentPage
+        );
         setLeads(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
       } else {
-        let response = await LeadServices.getAllLeads();
+        let response = await LeadServices.getAllLeads("interested");
         if (response) {
           setLeads(response.data.results);
-
           const total = response.data.count;
           setpageCount(Math.ceil(total / 25));
         }
@@ -195,6 +197,7 @@ export const Viewleads = () => {
       const filterSearch = value;
       if (filterQuery) {
         const response = await LeadServices.getAllSearchLeads(
+          "interested",
           filterQuery,
           filterSearch
         );
@@ -228,6 +231,7 @@ export const Viewleads = () => {
 
       if (filterSelectedQuery) {
         const response = await LeadServices.getFilterPaginateLeads(
+          "interested",
           page,
           filterQuery,
           filterSelectedQuery
@@ -241,7 +245,10 @@ export const Viewleads = () => {
           setFilterSelectedQuery("");
         }
       } else {
-        const response = await LeadServices.getAllPaginateLeads(page);
+        const response = await LeadServices.getAllPaginateLeads(
+          "interested",
+          page
+        );
         setLeads(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
@@ -537,7 +544,7 @@ export const Viewleads = () => {
                   fontWeight: 800,
                 }}
               >
-                Leads
+                Interested Lead
               </h3>
             </Box>
             <Box flexGrow={0.5} align="right">
@@ -642,7 +649,6 @@ export const Viewleads = () => {
 const FilterOptions = [
   { label: "References", value: "references__source" },
   { label: "Description", value: "description__name" },
-  { label: "Stage", value: "stage" },
   { label: "Assigned To", value: "assigned_to__email" },
   { label: "Search", value: "search" },
 ];

@@ -2,7 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import { useSelector } from "react-redux";
 import React from "react";
 
-import { AssignTo } from "../Pages/Leads/AssignTo";
+import { UnassignedLead } from "../Pages/Leads/UnassignedLead";
 import { ChangePassword } from "./../Pages/Auth/ChangePassword";
 import { Dashboard } from "../Pages/Dashboard/Dashboard";
 import { ForgotPassword } from "./../Pages/Auth/ForgotPassword";
@@ -12,7 +12,6 @@ import { ViewColors } from "../Pages/Products/Color/ViewColors";
 import { ViewConsumable } from "../Pages/Products/Consumable/ViewConsumable";
 import { ViewDescription } from "./../Pages/Products/Description/ViewDescription";
 import { ViewFinishGoods } from "./../Pages/Products/FinishGoods/ViewFinishGoods";
-import { Viewleads } from "../Pages/Leads/ViewLeads";
 import { ViewPackingUnit } from "./../Pages/Products/PackingUnit/ViewPackingUnit";
 import { ViewProductCode } from "./../Pages/Products/ProductCode/ViewProductCode";
 import { ViewRawMaterials } from "./../Pages/Products/RawMaterials/ViewRawMaterials";
@@ -54,6 +53,14 @@ import { FollowUpView } from "../Pages/FollowUp/FollowUpView";
 import { DailyProductionReport } from "../Pages/Inventory/ProductionReport/DailyProductionReport";
 import { WeeklyProductionReport } from "../Pages/Inventory/ProductionReport/WeeklyProductionReport";
 import { UnassignedCustomer } from "../Pages/Cutomers/CompanyDetails/UnassignedCustomer";
+import { NewLeads } from "../Pages/Leads/NewLeads";
+import { OpenLead } from "../Pages/Leads/OpenLead";
+import { OpportunityLead } from "../Pages/Leads/OpportunityLead";
+import { PotentialLead } from "../Pages/Leads/PotentialLead";
+import { InterestedLead } from "../Pages/Leads/InterestedLead";
+import { ConvertedLeads } from "../Pages/Leads/ConvertedLeads";
+import { NotInterestedLead } from "../Pages/Leads/NotInterestedLead";
+import { ClosedLead } from "../Pages/Leads/ClosedLead";
 
 export const RouteScreen = () => {
   const tokenData = useSelector((state) => state.auth);
@@ -79,10 +86,26 @@ export const RouteScreen = () => {
             <Route path="/user/dashoard" element={<Dashboard />} />
             <Route path="/user/profile" exact element={<Profile />} />
             {/* Leads Routes */}
-            <Route path="/leads/view-lead" element={<Viewleads />} />
+            <Route path="/leads/new-lead" element={<NewLeads />} />
+            <Route path="/leads/open-lead" element={<OpenLead />} />
+            <Route
+              path="/leads/opportunity-lead"
+              element={<OpportunityLead />}
+            />
+            <Route path="/leads/potential-lead" element={<PotentialLead />} />
+            <Route path="/leads/interested-lead" element={<InterestedLead />} />
+            <Route path="/leads/converted-lead" element={<ConvertedLeads />} />
+            <Route
+              path="/leads/not_interested-lead"
+              element={<NotInterestedLead />}
+            />
+            <Route path="/leads/closed-lead" element={<ClosedLead />} />
             <Route path="/leads/view-followup" element={<FollowUpView />} />
 
-            <Route path="/leads/view-assignedto" element={<AssignTo />} />
+            <Route
+              path="/leads/view-unassigned-lead"
+              element={<UnassignedLead />}
+            />
             {/* Products Routes */}
             <Route path="/products/view-colors" element={<ViewColors />} />
             <Route path="/products/view-brand" element={<ViewBrand />} />
