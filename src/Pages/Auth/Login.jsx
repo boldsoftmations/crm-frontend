@@ -96,6 +96,7 @@ export const Login = () => {
       if (response.data.token.access) {
         setUserData(response.data.token);
         dispatch(loginsucces(response.data));
+        dispatch(getProfileUser(response.data));
         setToken(response.data.token);
         getUsers();
       }
