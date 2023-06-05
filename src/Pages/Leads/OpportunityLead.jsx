@@ -622,9 +622,8 @@ export const OpportunityLead = () => {
       >
         <FollowUpCreate
           followupData={leadsByID}
-          getAllleadsData={getleads}
           setOpenModal={setOpenModalFollowup}
-        />{" "}
+        />
       </Popup>
       <Popup
         maxWidth={"lg"}

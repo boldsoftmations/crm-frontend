@@ -625,9 +625,8 @@ export const InterestedLead = () => {
       >
         <FollowUpCreate
           followupData={leadsByID}
-          getAllleadsData={getleads}
           setOpenModal={setOpenModalFollowup}
-        />{" "}
+        />
       </Popup>
       <Popup
         maxWidth={"lg"}
