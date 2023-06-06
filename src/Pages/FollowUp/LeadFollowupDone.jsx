@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import moment from "moment";
 import LeadServices from "../../services/LeadService";
-export const FollowupDone = (props) => {
+import { CustomLoader } from "../../Components/CustomLoader";
+
+export const LeadFollowupDone = (props) => {
   const { DoneFollowup, setOpenModal, getFollowUp } = props;
   const [open, setOpen] = useState(false);
   const AllFollowUpDone = async (e) => {
@@ -9,16 +11,16 @@ export const FollowupDone = (props) => {
       e.preventDefault();
       setOpen(true);
       const data = {
-        id: DoneFollowup[0].id,
-        leads: DoneFollowup[0].leads,
-        current_date: DoneFollowup[0].current_date,
-        next_followup_date: DoneFollowup[0].next_followup_date,
-        notes: DoneFollowup[0].notes,
-        user: DoneFollowup[0].user,
+        id: DoneFollowup.id,
+        leads: DoneFollowup.leads,
+        current_date: DoneFollowup.current_date,
+        next_followup_date: DoneFollowup.next_followup_date,
+        notes: DoneFollowup.notes,
+        user: DoneFollowup.user,
         is_followed_up: true,
       };
-      await LeadServices.createFollowUps(DoneFollowup[0].id, data);
-
+      await LeadServices.DoneLeadFollowup(DoneFollowup.leads, data);
+      console.log("After api");
       setOpenModal(false);
       getFollowUp();
       setOpen(false);
@@ -29,6 +31,7 @@ export const FollowupDone = (props) => {
   };
   return (
     <>
+      <CustomLoader open={open} />
       <div className="my-4">
         <table className="table table-bordered">
           <tbody>

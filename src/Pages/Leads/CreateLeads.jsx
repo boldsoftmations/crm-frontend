@@ -771,7 +771,7 @@ export const CreateLeads = (props) => {
 function getSteps() {
   return [
     <b style={{ color: "purple" }}>'Enter Basic Details'</b>,
-    <b style={{ color: "purple" }}>'Enter Company Details'</b>,
+    <b style={{ color: "purple" }}>'Enter Customer Details'</b>,
     <b style={{ color: "purple" }}>'Enter Shipping Details'</b>,
     <b style={{ color: "purple" }}>'Review'</b>,
   ];

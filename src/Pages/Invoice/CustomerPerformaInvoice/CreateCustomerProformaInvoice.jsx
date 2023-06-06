@@ -723,7 +723,7 @@ export const CreateCustomerProformaInvoice = (props) => {
           Kindly update all required field WareHouse Details in Company
         </Typography>
         <Button variant="contained" onClick={() => openInPopup()}>
-          Update Company Details
+          Update Customer
         </Button>
       </Popup>
       <Popup

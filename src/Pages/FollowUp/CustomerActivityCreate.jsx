@@ -1,3 +1,6 @@
+import React, { useState } from "react";
+import { CustomLoader } from "../../Components/CustomLoader";
+import CustomerServices from "../../services/CustomerService";
 import {
   Box,
   Button,
@@ -8,39 +11,30 @@ import {
   Select,
   TextField,
 } from "@mui/material";
-import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import LeadServices from "../../services/LeadService";
-import { CustomLoader } from "../../Components/CustomLoader";
 
-export const FollowUpCreate = (props) => {
-  const { followupData, getAllleadsData, setOpenModal } = props;
+export const CustomerActivityCreate = (props) => {
+  const { recordForEdit, setOpenModal, getFollowUp } = props;
   const [open, setOpen] = useState(false);
   const [followUp, setFollowUp] = useState([]);
   const data = useSelector((state) => state.auth);
   const userId = data.profile.email;
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setFollowUp({ ...followUp, [name]: value });
-  };
 
   const createFollowUpLeadsData = async (e) => {
     try {
       e.preventDefault();
       setOpen(true);
       const data = {
-        leads: followupData.lead_id,
+        company: recordForEdit,
         user: userId,
         activity: followUp.activity,
         notes: followUp.note,
         next_followup_date: followUp.nextFollowUpDate,
       };
 
-      await LeadServices.createFollowUpLeads(data);
-
+      const res = await CustomerServices.createFollowUpCustomer(data);
       setOpenModal(false);
-      getAllleadsData();
-
+      getFollowUp();
       setOpen(false);
     } catch (error) {
       console.log("error :>> ", error);
@@ -48,8 +42,12 @@ export const FollowUpCreate = (props) => {
     }
   };
 
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setFollowUp({ ...followUp, [name]: value });
+  };
   return (
-    <>
+    <div>
       <CustomLoader open={open} />
       <Box
         component="form"
@@ -109,7 +107,7 @@ export const FollowUpCreate = (props) => {
           Submit
         </Button>
       </Box>
-    </>
+    </div>
   );
 };
 
@@ -132,71 +130,41 @@ const ActivityOption = [
   },
   {
     id: 4,
-    value: "Send detail on whatsapp/sms/email",
-    label: "Send detail on whatsapp/sms/email",
-  },
-  {
-    id: 5,
-    value: "Not dealing in our product range",
-    label: "Not dealing in our product range",
-  },
-  {
-    id: 6,
-    value: "Dealing in other brand",
-    label: "Dealing in other brand",
-  },
-  {
-    id: 7,
     value: "Buying a different product from other company",
     label: "Buying a different product from other company",
   },
   {
-    id: 8,
+    id: 5,
     value: "Size or quantity is unavailabe with us",
     label: "Size or quantity is unavailabe with us",
   },
   {
-    id: 9,
+    id: 6,
     value: "Transportation cost issue",
     label: "Transportation cost issue",
   },
   {
-    id: 10,
-    value: "Required without bill",
-    label: "Required without bill",
-  },
-  {
-    id: 11,
+    id: 7,
     value: "Call me back",
     label: "Call me back",
   },
   {
-    id: 12,
+    id: 8,
     value: "Send sample",
     label: "Send sample",
   },
   {
-    id: 13,
-    value: "Not a decision maker",
-    label: "Not a decision maker",
-  },
-  {
-    id: 14,
+    id: 9,
     value: "Require own branding",
     label: "Require own branding",
   },
   {
-    id: 15,
-    value: "Small buyer, moved to dealer/distributor",
-    label: "Small buyer, moved to dealer/distributor",
-  },
-  {
-    id: 16,
+    id: 10,
     value: "Require exclusive distributorship/dealership",
     label: "Require exclusive distributorship/dealership",
   },
   {
-    id: 17,
+    id: 11,
     value: "Quality issue",
     label: "Quality issue",
   },

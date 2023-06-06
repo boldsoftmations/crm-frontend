@@ -14,8 +14,7 @@ import CustomerServices from "../../../services/CustomerService";
 import { year } from "./DateAndYear";
 import { month } from "./DateAndYear";
 export const ForecastProductCreate = (props) => {
-  const { setOpenModal, getAllCompanyDetailsByID, setOpenPopup, IDForEdit } =
-    props;
+  const { setOpenModal, getAllCompanyDetailsByID, IDForEdit } = props;
   const [open, setOpen] = useState(false);
   const [productForecast, setProductForecast] = useState([
     {
@@ -36,21 +35,21 @@ export const ForecastProductCreate = (props) => {
     const { name, value } = event.target;
     setProductForecast({ ...productForecast, [name]: value });
   };
-  const addFields = () => {
-    let newfield = {
-      product_forecast: IDForEdit,
-      month: "mm",
-      year: "yy",
-      forecast: 0,
-    };
-    setProductForecast([...productForecast, newfield]);
-  };
+  // const addFields = () => {
+  //   let newfield = {
+  //     product_forecast: IDForEdit,
+  //     month: "mm",
+  //     year: "yy",
+  //     forecast: 0,
+  //   };
+  //   setProductForecast([...productForecast, newfield]);
+  // };
 
-  const removeFields = (index) => {
-    let data = [...productForecast];
-    data.splice(index, 1);
-    setProductForecast(data);
-  };
+  // const removeFields = (index) => {
+  //   let data = [...productForecast];
+  //   data.splice(index, 1);
+  //   setProductForecast(data);
+  // };
 
   const createProductForecastDetails = async (e) => {
     try {

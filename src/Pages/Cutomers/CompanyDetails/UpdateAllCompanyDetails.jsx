@@ -11,7 +11,7 @@ import { CustomTabs } from "../../../Components/CustomTabs";
 
 export const UpdateAllCompanyDetails = (props) => {
   const [open, setOpen] = useState(false);
-  const { setOpenPopup, getAllCompanyDetails, recordForEdit } = props;
+  const { setOpenPopup, getAllCompanyDetails, recordForEdit, product } = props;
   const [bankData, setBankData] = useState([]);
   const [contactData, setContactData] = useState([]);
   const [wareHousedata, setWareHouseData] = useState([]);
@@ -71,6 +71,7 @@ export const UpdateAllCompanyDetails = (props) => {
                 setOpenPopup={setOpenPopup}
                 getAllCompanyDetails={getAllCompanyDetails}
                 recordForEdit={recordForEdit}
+                product={product}
               />
             </div>
           )}

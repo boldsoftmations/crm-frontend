@@ -1,57 +1,44 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 
 import { Grid, Paper, Box } from "@mui/material";
-import LeadServices from "../../services/LeadService";
 import moment from "moment";
-import { Popup } from "./../../Components/Popup";
-import { UpdateLeads } from "./../Leads/UpdateLeads";
-import { CustomLoader } from "../../Components/CustomLoader";
-import { ErrorMessage } from "../../Components/ErrorMessage/ErrorMessage";
-import { CustomTable } from "../../Components/CustomTable";
-import { FollowupDone } from "./FollowupDone";
+import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
+import { CustomTable } from "../../../Components/CustomTable";
+import { Popup } from "../../../Components/Popup";
+import { UpdateCompanyDetails } from "../CompanyDetails/UpdateCompanyDetails";
+import { CustomerFollowupDone } from "./CustomerFollowupDone";
 
-export const TodayFollowup = (props) => {
-  const { assigned, descriptionMenuData, product, todayFollowUp, getFollowUp } =
-    props;
-
-  const [open, setOpen] = useState(false);
+export const CustomerPendingFollowup = (props) => {
+  const { product, pendingFollowUp, getFollowUp } = props;
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
-  const [todayFollowUpById, setTodayFollowUpById] = useState("");
+  const [pendingFollowUpByID, setPendingFollowUpByID] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const [openPopup, setOpenPopup] = useState(false);
-  const [leadsByID, setLeadsByID] = useState(null);
-  const [followup, setFollowup] = useState(null);
+  const [recordForEdit, setRecordForEdit] = useState(null);
 
   const openInPopup = async (item) => {
     try {
-      setOpen(true);
-      const response = await LeadServices.getLeadsById(item.lead);
-      setLeadsByID(response.data);
-      setFollowup(response.data.followup);
+      setRecordForEdit(item.company);
       setOpenPopup(true);
-      setOpen(false);
     } catch (err) {
       console.log("err", err);
-      setOpen(false);
     }
   };
 
   const openInPopup2 = (item) => {
-    const matchedFollowup = todayFollowUp.find(
+    const matchedFollowup = pendingFollowUp.find(
       (followup) => followup.id === item.id
     );
-    setTodayFollowUpById(matchedFollowup);
+    setPendingFollowUpByID(matchedFollowup);
     setOpenModal(true);
   };
 
-  const Tabledata = todayFollowUp.map((row, i) => ({
+  const Tabledata = pendingFollowUp.map((row, i) => ({
     id: row.id,
-    lead: row.lead,
     name: row.name,
     company: row.company,
     user: row.user,
-
     current_date: moment(row.current_date ? row.current_date : "-").format(
       "DD/MM/YYYY h:mm:ss"
     ),
@@ -63,7 +50,6 @@ export const TodayFollowup = (props) => {
 
   const Tableheaders = [
     "ID",
-    "LEADS",
     "NAME",
     "COMPANY",
     "USER",
@@ -75,25 +61,9 @@ export const TodayFollowup = (props) => {
 
   return (
     <>
-      <CustomLoader open={open} />
-
-      <Popup
-        maxWidth={"xl"}
-        title={"Followup Done"}
-        openPopup={openModal}
-        setOpenPopup={setOpenModal}
-      >
-        <FollowupDone
-          DoneFollowup={todayFollowUpById}
-          getFollowUp={getFollowUp}
-          setOpenModal={setOpenModal}
-        />
-      </Popup>
-
-      {/* Today FollowUp */}
+      {/* Pending FollowUp */}
       <Grid item xs={12}>
         <ErrorMessage ref={errRef} errMsg={errMsg} />
-
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
           <Box display="flex" justifyContent={"center"}>
             <h3
@@ -105,7 +75,7 @@ export const TodayFollowup = (props) => {
                 fontWeight: 800,
               }}
             >
-              Today FollowUp
+              Customer Pending Followup
             </h3>
           </Box>
 
@@ -114,25 +84,33 @@ export const TodayFollowup = (props) => {
             data={Tabledata}
             openInPopup={openInPopup}
             openInPopup2={openInPopup2}
-            openInPopup4={null}
             ButtonText={"Done"}
           />
         </Paper>
       </Grid>
       <Popup
         maxWidth={"xl"}
-        title={"Update Leads"}
+        title={"Update Customer"}
         openPopup={openPopup}
         setOpenPopup={setOpenPopup}
       >
-        <UpdateLeads
-          followup={followup}
-          assigned={assigned}
-          descriptionMenuData={descriptionMenuData}
-          leadsByID={leadsByID}
-          product={product}
+        <UpdateCompanyDetails
           setOpenPopup={setOpenPopup}
-          getAllleadsData={getFollowUp}
+          getAllCompanyDetails={getFollowUp}
+          recordForEdit={recordForEdit}
+          product={product}
+        />
+      </Popup>
+      <Popup
+        maxWidth={"xl"}
+        title={"Customer Followup Done"}
+        openPopup={openModal}
+        setOpenPopup={setOpenModal}
+      >
+        <CustomerFollowupDone
+          DoneFollowup={pendingFollowUpByID}
+          getFollowUp={getFollowUp}
+          setOpenModal={setOpenModal}
         />
       </Popup>
     </>

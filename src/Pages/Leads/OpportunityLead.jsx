@@ -27,7 +27,7 @@ import InvoiceServices from "../../services/InvoiceService";
 import { getSellerAccountData } from "../../Redux/Action/Action";
 import { CustomTable } from "../../Components/CustomTable";
 import { CustomSearchWithButton } from "../../Components/CustomSearchWithButton";
-import { FollowUpCreate } from "../FollowUp/FollowUpCreate";
+import { LeadActivityCreate } from "../FollowUp/LeadActivityCreate";
 import { PotentialCreate } from "../Potential/PotentialCreate";
 
 export const OpportunityLead = () => {
@@ -245,7 +245,10 @@ export const OpportunityLead = () => {
           setFilterSelectedQuery("");
         }
       } else {
-        const response = await LeadServices.getAllPaginateLeads("opportunity", page);
+        const response = await LeadServices.getAllPaginateLeads(
+          "opportunity",
+          page
+        );
         setLeads(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
@@ -620,7 +623,7 @@ export const OpportunityLead = () => {
         openPopup={openModalFollowup}
         setOpenPopup={setOpenModalFollowup}
       >
-        <FollowUpCreate
+        <LeadActivityCreate
           followupData={leadsByID}
           setOpenModal={setOpenModalFollowup}
         />

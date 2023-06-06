@@ -392,7 +392,7 @@ export const DeadCustomerView = () => {
       </Grid>
       <Popup
         fullScreen={true}
-        title={"Update Company Details"}
+        title={"Update Customer Details"}
         openPopup={openPopup}
         setOpenPopup={setOpenPopup}
       >

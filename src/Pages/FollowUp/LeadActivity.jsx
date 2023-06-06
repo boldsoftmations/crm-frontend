@@ -12,9 +12,9 @@ import {
 } from "@mui/lab";
 import moment from "moment";
 import { Popup } from "../../Components/Popup";
-import { FollowUpCreate } from "./FollowUpCreate";
+import { LeadActivityCreate } from "./LeadActivityCreate";
 
-export const ViewAllFollowUp = (props) => {
+export const LeadActivity = (props) => {
   const { followup, leadsByID, getAllleadsData } = props;
   const [openModal, setOpenModal] = useState(false);
   return (
@@ -113,7 +113,7 @@ export const ViewAllFollowUp = (props) => {
         openPopup={openModal}
         setOpenPopup={setOpenModal}
       >
-        <FollowUpCreate
+        <LeadActivityCreate
           followupData={leadsByID}
           getAllleadsData={getAllleadsData}
           setOpenModal={setOpenModal}

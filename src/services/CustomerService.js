@@ -144,6 +144,15 @@ const getCustomerFollowUp = () => {
   return CustomAxios.get(`/api/customer/list-followup/`);
 };
 
+const DoneFollowup = (id, data) => {
+  return CustomAxios.patch(`/api/customer/list-followup/${id}`, data);
+};
+
+// Potential Customer endpoints
+const createPotentialCustomer = (data) => {
+  return CustomAxios.post("/api/customer/list-company-potential/", data);
+};
+
 // Product Forecast
 
 const getProductForecast = () => {
@@ -275,6 +284,7 @@ const getProductHavingForecastPaginateData = (currentPage) => {
 const BulCustomerAssign = (data) => {
   return CustomAxios.post("/api/customer/assign-bulk-customers/ ", data);
 };
+
 const CustomerServices = {
   getAllCompanyData,
   getAllPaginateCompanyData,
@@ -309,6 +319,8 @@ const CustomerServices = {
   updateProductForecastData,
   createFollowUpCustomer,
   getCustomerFollowUp,
+  DoneFollowup,
+  createPotentialCustomer,
   getProductForecast,
   getByFilterProductForecast,
   getAllPaginateProductForecast,

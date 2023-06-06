@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Grid, Button, TextField, Autocomplete } from "@mui/material";
+import { Grid, Button, TextField, Autocomplete, Chip } from "@mui/material";
 import { Popup } from "./../../../Components/Popup";
 import CustomerServices from "../../../services/CustomerService";
 import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
@@ -21,7 +21,7 @@ export const UnassignedCustomer = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const [assigned, setAssigned] = useState([]);
-  const [assign, setAssign] = useState("");
+  const [assign, setAssign] = useState([]);
 
   const getResetData = () => {
     setFilterSelectedQuery("");
@@ -29,7 +29,10 @@ export const UnassignedCustomer = () => {
   };
 
   const openInPopup = (item) => {
-    setRecordForEdit(item);
+    const matchedCompany = companyData.find(
+      (company) => company.id === item.id
+    );
+    setRecordForEdit(matchedCompany);
     setOpenPopup(true);
   };
 
@@ -172,8 +175,8 @@ export const UnassignedCustomer = () => {
       };
       await CustomerServices.updateCompanyData(recordForEdit.id, req);
       setOpenPopup(false);
-      setOpen(false);
       getUnassignedCompanyDetails();
+      setOpen(false);
     } catch (error) {
       console.log("createing Unassigned company detail error", error);
 
@@ -201,10 +204,8 @@ export const UnassignedCustomer = () => {
   return (
     <>
       <CustomLoader open={open} />
-
       <div>
         <ErrorMessage errRef={errRef} errMsg={errMsg} />
-
         <div
           style={{
             padding: "16px",
@@ -313,16 +314,31 @@ export const UnassignedCustomer = () => {
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <Autocomplete
-              style={{
-                minWidth: 220,
-              }}
               size="small"
-              value={recordForEdit ? recordForEdit.assigned_to : "-"}
-              onChange={(e, value) => setAssign(value)}
+              value={assign}
+              onChange={(event, newValue) => {
+                setAssign(newValue);
+              }}
+              multiple
+              limitTags={3}
+              id="multiple-limit-tags"
               options={assigned.map((option) => option.email)}
-              getOptionLabel={(option) => `${option}`}
+              freeSolo
+              renderTags={(value, getTagProps) =>
+                value.map((option, index) => (
+                  <Chip
+                    variant="outlined"
+                    label={option}
+                    {...getTagProps({ index })}
+                  />
+                ))
+              }
               renderInput={(params) => (
-                <TextField {...params} name={"assign"} label={"Assign To"} />
+                <TextField
+                  {...params}
+                  label="Assign To"
+                  placeholder="Assign To"
+                />
               )}
             />
           </Grid>

@@ -1,7 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { PendingFollowup } from "./PendingFollowup";
-import { TodayFollowup } from "./TodayFollowup";
-import { UpcomingFollowup } from "./UpcomingFollowup";
 import { CustomLoader } from "../../Components/CustomLoader";
 import { CustomTabs } from "../../Components/CustomTabs";
 import InvoiceServices from "../../services/InvoiceService";
@@ -9,8 +6,11 @@ import { getSellerAccountData } from "../../Redux/Action/Action";
 import { useDispatch } from "react-redux";
 import ProductService from "../../services/ProductService";
 import LeadServices from "../../services/LeadService";
+import { LeadPendingFollowup } from "./LeadPendingFollowup";
+import { LeadTodayFollowup } from "./LeadTodayFollowup";
+import { LeadUpcomingFollowup } from "./LeadUpcomingFollowup";
 
-export const FollowUpView = () => {
+export const LeadFollowup = () => {
   const [open, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
   const errRef = useRef();
@@ -29,6 +29,10 @@ export const FollowUpView = () => {
 
   useEffect(() => {
     getAllSellerAccountsDetails();
+    getProduct();
+    getAssignedData();
+    getDescriptionNoData();
+    getFollowUp();
   }, []);
 
   const getAllSellerAccountsDetails = async () => {
@@ -44,10 +48,6 @@ export const FollowUpView = () => {
     }
   };
 
-  useEffect(() => {
-    getProduct();
-  }, []);
-
   const getProduct = async () => {
     try {
       setOpen(true);
@@ -59,10 +59,6 @@ export const FollowUpView = () => {
       setOpen(false);
     }
   };
-
-  useEffect(() => {
-    getAssignedData();
-  }, []);
 
   const getAssignedData = async () => {
     try {
@@ -76,10 +72,6 @@ export const FollowUpView = () => {
     }
   };
 
-  useEffect(() => {
-    getDescriptionNoData();
-  }, []);
-
   const getDescriptionNoData = async () => {
     try {
       const res = await ProductService.getNoDescription();
@@ -88,10 +80,6 @@ export const FollowUpView = () => {
       console.error(err);
     }
   };
-
-  useEffect(() => {
-    getFollowUp();
-  }, []);
 
   const getFollowUp = async () => {
     try {
@@ -123,9 +111,9 @@ export const FollowUpView = () => {
   };
 
   const tabs = [
-    { label: "Pending Followup" },
-    { label: "Today Followup" },
-    { label: "Upcoming Followup" },
+    { label: "Lead Pending Followup" },
+    { label: "Lead Today Followup" },
+    { label: "Lead Upcoming Followup" },
   ];
 
   return (
@@ -140,8 +128,7 @@ export const FollowUpView = () => {
         <div>
           {activeTab === 0 && (
             <div>
-              {" "}
-              <PendingFollowup
+              <LeadPendingFollowup
                 assigned={assigned}
                 descriptionMenuData={descriptionMenuData}
                 product={product}
@@ -152,7 +139,7 @@ export const FollowUpView = () => {
           )}
           {activeTab === 1 && (
             <div>
-              <TodayFollowup
+              <LeadTodayFollowup
                 assigned={assigned}
                 descriptionMenuData={descriptionMenuData}
                 product={product}
@@ -163,7 +150,7 @@ export const FollowUpView = () => {
           )}
           {activeTab === 2 && (
             <div>
-              <UpcomingFollowup
+              <LeadUpcomingFollowup
                 assigned={assigned}
                 descriptionMenuData={descriptionMenuData}
                 product={product}

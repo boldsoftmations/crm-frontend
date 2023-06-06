@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { Box, Button, Divider, Grid, Paper } from "@mui/material";
 import { Popup } from "../../Components/Popup";
 import { PotentialCreate } from "./PotentialCreate";
+import { CustomerPotentialCreate } from "./CustomerPotentialCreate";
 
-export const ViewAllPotential = (props) => {
-  const { potential, getAllleadsData, product, leadsByID } = props;
+export const CustomerAllPotential = (props) => {
+  const { potential, getAllleadsData, product, recordForEdit, openInPopup } =
+    props;
   const [openModal, setOpenModal] = useState(false);
   return (
     <>
@@ -88,9 +90,9 @@ export const ViewAllPotential = (props) => {
         openPopup={openModal}
         setOpenPopup={setOpenModal}
       >
-        <PotentialCreate
+        <CustomerPotentialCreate
           getAllleadsData={getAllleadsData}
-          leadsByID={leadsByID}
+          recordForEdit={recordForEdit}
           product={product}
           setOpenModal={setOpenModal}
         />

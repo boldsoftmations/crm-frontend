@@ -198,8 +198,9 @@ export const CustomTable = ({
                         // padding: "px 6px",
                         // border: "1px solid #28a745",
                         // borderRadius: "4px",
-                        color: "#28a745",
+                        color: "#5e35b1",
                         cursor: "pointer",
+                        marginRight: "8px",
                       }}
                       onClick={() => openInPopup3(row)}
                     >
@@ -213,7 +214,7 @@ export const CustomTable = ({
                         // padding: "px 6px",
                         // border: "1px solid #28a745",
                         // borderRadius: "4px",
-                        color: "#28a745",
+                        color: "#7b1fa2",
                         cursor: "pointer",
                       }}
                       onClick={() => openInPopup4(row)}

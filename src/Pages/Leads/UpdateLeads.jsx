@@ -26,7 +26,7 @@ import {
 } from "@mui/material";
 import "../CommonStyle.css";
 import LeadServices from "./../../services/LeadService";
-import { ViewAllFollowUp } from "./../FollowUp/ViewAllFollowUp";
+import { LeadActivity } from "../FollowUp/LeadActivity";
 import { ViewAllPotential } from "../Potential/ViewAllPotential";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/material.css";
@@ -36,10 +36,10 @@ import { CustomLoader } from "../../Components/CustomLoader";
 
 function getSteps() {
   return [
-    <b style={{ color: "purple" }}>'Enter Basic Details'</b>,
-    <b style={{ color: "purple" }}>'Enter Company Details'</b>,
-    <b style={{ color: "purple" }}>'Enter Shipping Details'</b>,
-    <b style={{ color: "purple" }}>'Review'</b>,
+    <b style={{ color: "purple" }}>Enter Basic Details</b>,
+    <b style={{ color: "purple" }}>Enter Customer Details</b>,
+    <b style={{ color: "purple" }}>Enter Shipping Details</b>,
+    <b style={{ color: "purple" }}>Review</b>,
   ];
 }
 
@@ -770,11 +770,12 @@ export const UpdateLeads = (props) => {
         >
           <Stepper alternativeLabel activeStep={activeStep}>
             {steps.map((label, index) => (
-              <Step key={label}>
+              <Step key={index}>
                 <StepLabel>{label}</StepLabel>
               </Step>
             ))}
           </Stepper>
+
           <Typography>{getStepContent(activeStep)}</Typography>
 
           {/* <div style={{ display: "flex", justifyContent: "flex-start" }}>
@@ -876,7 +877,7 @@ export const UpdateLeads = (props) => {
 
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <ViewAllFollowUp
+          <LeadActivity
             getAllleadsData={getAllleadsData}
             followup={followup}
             leadsByID={leadsByID}

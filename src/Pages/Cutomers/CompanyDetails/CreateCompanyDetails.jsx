@@ -375,7 +375,7 @@ export const CreateCompanyDetails = (props) => {
       </Box>
       <Popup
         maxWidth={"lg"}
-        title={"Create Company Details"}
+        title={"Create Customer"}
         openPopup={openPopup2}
         setOpenPopup={setOpenPopup2}
       >

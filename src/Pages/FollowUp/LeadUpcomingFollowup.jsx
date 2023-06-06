@@ -1,28 +1,24 @@
-import React, { useEffect, useState, useRef } from "react";
-
+import React, { useState } from "react";
 import { Grid, Paper, Box } from "@mui/material";
 import LeadServices from "../../services/LeadService";
 import moment from "moment";
-import { Popup } from "./../../Components/Popup";
-import { UpdateLeads } from "./../Leads/UpdateLeads";
+import { Popup } from "../../Components/Popup";
+import { UpdateLeads } from "../Leads/UpdateLeads";
 import { CustomLoader } from "../../Components/CustomLoader";
 import { CustomTable } from "../../Components/CustomTable";
-import { ErrorMessage } from "../../Components/ErrorMessage/ErrorMessage";
-import { FollowupDone } from "./FollowupDone";
+import { LeadFollowupDone } from "./LeadFollowupDone";
 
-export const PendingFollowup = (props) => {
+export const LeadUpcomingFollowup = (props) => {
   const {
     assigned,
     descriptionMenuData,
     product,
-    pendingFollowUp,
+    upcomingFollowUp,
     getFollowUp,
   } = props;
 
   const [open, setOpen] = useState(false);
-  const errRef = useRef();
-  const [errMsg, setErrMsg] = useState("");
-  const [pendingFollowUpByID, setPendingFollowUpByID] = useState("");
+  const [upcomingFollowUpByID, setUpcomingFollowUpByID] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const [openPopup, setOpenPopup] = useState(false);
   const [leadsByID, setLeadsByID] = useState(null);
@@ -43,16 +39,16 @@ export const PendingFollowup = (props) => {
   };
 
   const openInPopup2 = (item) => {
-    const matchedFollowup = pendingFollowUp.find(
+    const matchedFollowup = upcomingFollowUp.find(
       (followup) => followup.id === item.id
     );
-    setPendingFollowUpByID(matchedFollowup);
+    setUpcomingFollowUpByID(matchedFollowup);
     setOpenModal(true);
   };
 
-  const Tabledata = pendingFollowUp.map((row, i) => ({
+  const Tabledata = upcomingFollowUp.map((row, i) => ({
     id: row.id,
-    lead: row.leads,
+    lead: row.lead,
     name: row.name,
     company: row.company,
     user: row.user,
@@ -65,7 +61,6 @@ export const PendingFollowup = (props) => {
     ).format("DD/MM/YYYY h:mm:ss"),
     notes: row.notes,
   }));
-
   const Tableheaders = [
     "ID",
     "LEADS",
@@ -81,21 +76,9 @@ export const PendingFollowup = (props) => {
   return (
     <>
       <CustomLoader open={open} />
-      <Popup
-        maxWidth={"xl"}
-        title={"Followup Done"}
-        openPopup={openModal}
-        setOpenPopup={setOpenModal}
-      >
-        <FollowupDone
-          DoneFollowup={pendingFollowUpByID}
-          getFollowUp={getFollowUp}
-          setOpenModal={setOpenModal}
-        />
-      </Popup>
-      {/* Pending FollowUp */}
+
+      {/* Upcoming FollowUp */}
       <Grid item xs={12}>
-        <ErrorMessage ref={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
           <Box display="flex" justifyContent={"center"}>
             <h3
@@ -107,7 +90,7 @@ export const PendingFollowup = (props) => {
                 fontWeight: 800,
               }}
             >
-              Pending FollowUp
+              Lead Upcoming Followup
             </h3>
           </Box>
 
@@ -116,6 +99,7 @@ export const PendingFollowup = (props) => {
             data={Tabledata}
             openInPopup={openInPopup}
             openInPopup2={openInPopup2}
+            openInPopup4={null}
             ButtonText={"Done"}
           />
         </Paper>
@@ -134,6 +118,18 @@ export const PendingFollowup = (props) => {
           product={product}
           setOpenPopup={setOpenPopup}
           getAllleadsData={getFollowUp}
+        />
+      </Popup>
+      <Popup
+        maxWidth={"xl"}
+        title={"Followup Done"}
+        openPopup={openModal}
+        setOpenPopup={setOpenModal}
+      >
+        <LeadFollowupDone
+          DoneFollowup={upcomingFollowUpByID}
+          getFollowUp={getFollowUp}
+          setOpenModal={setOpenModal}
         />
       </Popup>
     </>

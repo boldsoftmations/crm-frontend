@@ -108,8 +108,8 @@ const deletePotentialLeadsById = (id) => {
   return CustomAxios.delete(`/api/lead/view-potential/${id}`);
 };
 
-const createFollowUps = (id, data) => {
-  return CustomAxios.patch(`/api/lead/view-followup/${id}`, data);
+const DoneLeadFollowup = (id, data) => {
+  return CustomAxios.patch(`/api/lead/list-followup/${id}`, data);
 };
 
 const BulkLeadAssign = (data) => {
@@ -140,7 +140,7 @@ const LeadServices = {
   createRefernces,
   getReferncesById,
   updateRefernces,
-  createFollowUps,
+  DoneLeadFollowup,
   BulkLeadAssign,
 };
 

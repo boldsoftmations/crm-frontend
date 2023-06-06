@@ -1,0 +1,133 @@
+import React, { useState } from "react";
+import { Grid, Paper, Box } from "@mui/material";
+import LeadServices from "../../services/LeadService";
+import moment from "moment";
+import { Popup } from "../../Components/Popup";
+import { UpdateLeads } from "../Leads/UpdateLeads";
+import { CustomLoader } from "../../Components/CustomLoader";
+import { CustomTable } from "../../Components/CustomTable";
+import { LeadFollowupDone } from "./LeadFollowupDone";
+
+export const LeadTodayFollowup = (props) => {
+  const { assigned, descriptionMenuData, product, todayFollowUp, getFollowUp } =
+    props;
+
+  const [open, setOpen] = useState(false);
+  const [todayFollowUpById, setTodayFollowUpById] = useState("");
+  const [openModal, setOpenModal] = useState(false);
+  const [openPopup, setOpenPopup] = useState(false);
+  const [leadsByID, setLeadsByID] = useState(null);
+  const [followup, setFollowup] = useState(null);
+
+  const openInPopup = async (item) => {
+    try {
+      setOpen(true);
+      const response = await LeadServices.getLeadsById(item.lead);
+      setLeadsByID(response.data);
+      setFollowup(response.data.followup);
+      setOpenPopup(true);
+      setOpen(false);
+    } catch (err) {
+      console.log("err", err);
+      setOpen(false);
+    }
+  };
+
+  const openInPopup2 = (item) => {
+    const matchedFollowup = todayFollowUp.find(
+      (followup) => followup.id === item.id
+    );
+    setTodayFollowUpById(matchedFollowup);
+    setOpenModal(true);
+  };
+
+  const Tabledata = todayFollowUp.map((row, i) => ({
+    id: row.id,
+    lead: row.lead,
+    name: row.name,
+    company: row.company,
+    user: row.user,
+
+    current_date: moment(row.current_date ? row.current_date : "-").format(
+      "DD/MM/YYYY h:mm:ss"
+    ),
+    next_followup_date: moment(
+      row.next_followup_date ? row.next_followup_date : "-"
+    ).format("DD/MM/YYYY h:mm:ss"),
+    notes: row.notes,
+  }));
+
+  const Tableheaders = [
+    "ID",
+    "LEADS",
+    "NAME",
+    "COMPANY",
+    "USER",
+    "CURRENT DATE",
+    "NEXT FOLLOWUP DATE",
+    "NOTE",
+    "ACTION",
+  ];
+
+  return (
+    <>
+      <CustomLoader open={open} />
+
+      {/* Today FollowUp */}
+      <Grid item xs={12}>
+        <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
+          <Box display="flex" justifyContent={"center"}>
+            <h3
+              style={{
+                textAlign: "left",
+                marginBottom: "1em",
+                fontSize: "24px",
+                color: "rgb(34, 34, 34)",
+                fontWeight: 800,
+              }}
+            >
+              Lead Today Followup
+            </h3>
+          </Box>
+
+          <CustomTable
+            headers={Tableheaders}
+            data={Tabledata}
+            openInPopup={openInPopup}
+            openInPopup2={openInPopup2}
+            openInPopup4={null}
+            ButtonText={"Done"}
+          />
+        </Paper>
+      </Grid>
+      <Popup
+        maxWidth={"xl"}
+        title={"Update Leads"}
+        openPopup={openPopup}
+        setOpenPopup={setOpenPopup}
+      >
+        <UpdateLeads
+          followup={followup}
+          assigned={assigned}
+          descriptionMenuData={descriptionMenuData}
+          leadsByID={leadsByID}
+          product={product}
+          setOpenPopup={setOpenPopup}
+          getAllleadsData={getFollowUp}
+        />
+      </Popup>
+      <Popup
+        maxWidth={"xl"}
+        title={"Followup Done"}
+        openPopup={openModal}
+        setOpenPopup={setOpenModal}
+      >
+        <LeadFollowupDone
+          DoneFollowup={todayFollowUpById}
+          getFollowUp={getFollowUp}
+          setOpenModal={setOpenModal}
+        />
+      </Popup>
+    </>
+  );
+};

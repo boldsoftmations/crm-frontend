@@ -49,7 +49,7 @@ import { ProductionInventoryGAndLView } from "../Pages/Inventory/Production Entr
 import { ProductionShortFallView } from "../Pages/Inventory/ProductionShortFall/ProductionShortFallView";
 import { ProductForecastViewAll } from "../Pages/ProductForecast/ProductForecastViewAll";
 import { TaskView } from "../Pages/Task/TaskView";
-import { FollowUpView } from "../Pages/FollowUp/FollowUpView";
+import { LeadFollowup } from "../Pages/FollowUp/LeadFollowup";
 import { DailyProductionReport } from "../Pages/Inventory/ProductionReport/DailyProductionReport";
 import { WeeklyProductionReport } from "../Pages/Inventory/ProductionReport/WeeklyProductionReport";
 import { UnassignedCustomer } from "../Pages/Cutomers/CompanyDetails/UnassignedCustomer";
@@ -61,6 +61,7 @@ import { InterestedLead } from "../Pages/Leads/InterestedLead";
 import { ConvertedLeads } from "../Pages/Leads/ConvertedLeads";
 import { NotInterestedLead } from "../Pages/Leads/NotInterestedLead";
 import { ClosedLead } from "../Pages/Leads/ClosedLead";
+import { CustomerFollowup } from "../Pages/Cutomers/CustomerFollowup/CustomerFollowup";
 
 export const RouteScreen = () => {
   const tokenData = useSelector((state) => state.auth);
@@ -100,7 +101,7 @@ export const RouteScreen = () => {
               element={<NotInterestedLead />}
             />
             <Route path="/leads/closed-lead" element={<ClosedLead />} />
-            <Route path="/leads/view-followup" element={<FollowUpView />} />
+            <Route path="/leads/view-followup" element={<LeadFollowup />} />
 
             <Route
               path="/leads/view-unassigned-lead"
@@ -147,6 +148,10 @@ export const RouteScreen = () => {
             <Route
               path="/customers/unassigned-company-details"
               element={<UnassignedCustomer />}
+            />
+            <Route
+              path="/customers/view-followup"
+              element={<CustomerFollowup />}
             />
             {/* Invoice - Seller Account Route */}
             <Route path="/invoice/seller-account" element={<SellerAccount />} />

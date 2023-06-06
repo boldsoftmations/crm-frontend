@@ -24,8 +24,10 @@ import LeadServices from "../../../services/LeadService";
 import { styled } from "@mui/material/styles";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { ViewCustomerFollowUp } from "../../FollowUp/ViewCustomerFollowUp";
+import { CustomerAllPotential } from "../../Potential/CustomerAllPotential";
+
 export const UpdateCompanyDetails = (props) => {
-  const { setOpenPopup, getAllCompanyDetails, recordForEdit } = props;
+  const { setOpenPopup, getAllCompanyDetails, recordForEdit, product } = props;
   const [open, setOpen] = useState(false);
   const [typeData, setTypeData] = useState("");
   const [category, setCategory] = useState("");
@@ -35,6 +37,8 @@ export const UpdateCompanyDetails = (props) => {
   const [assigned, setAssigned] = useState([]);
   const [assign, setAssign] = useState([]);
   const [errorMessage, setErrorMessage] = useState([]);
+  const [followUpData, setFollowUpData] = useState([]);
+  const [potential, setPotential] = useState(null);
   const dispatch = useDispatch();
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
@@ -48,10 +52,10 @@ export const UpdateCompanyDetails = (props) => {
   };
 
   useEffect(() => {
-    getLAssignedData();
+    getAssignedData();
   }, []);
 
-  const getLAssignedData = async (id) => {
+  const getAssignedData = async (id) => {
     try {
       setOpen(true);
       const res = await LeadServices.getAllAssignedUser();
@@ -87,13 +91,14 @@ export const UpdateCompanyDetails = (props) => {
     try {
       setOpen(true);
       const response = await CustomerServices.getCompanyDataById(recordForEdit);
-      console.log("response", response);
       setInputValue(response.data);
       dispatch(getCompanyName(response.data.name));
       setTypeData(response.data.type);
       setBusinessType(response.data.business_type);
       setCategory(response.data.category);
       setAssign(response.data.assigned_to);
+      setFollowUpData(response.data.follow_up);
+      setPotential(response.data.potential);
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -430,7 +435,22 @@ export const UpdateCompanyDetails = (props) => {
       </Box>
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <ViewCustomerFollowUp recordForEdit={recordForEdit} />
+          <ViewCustomerFollowUp
+            recordForEdit={recordForEdit}
+            followUpData={followUpData}
+            getAllCompanyDetailsByID={getAllCompanyDetailsByID}
+          />
+        </Grid>
+      </Grid>
+
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <CustomerAllPotential
+            getAllleadsData={getAllCompanyDetails}
+            potential={potential}
+            product={product}
+            recordForEdit={recordForEdit}
+          />
         </Grid>
       </Grid>
     </>

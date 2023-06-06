@@ -24,12 +24,11 @@ import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
-import FollowTheSignsIcon from "@mui/icons-material/FollowTheSigns";
+
 export const ListItems = (props) => {
   const { setOpen } = props;
   const [expand, setExpand] = useState(false);
   const [expandDashboard, setExpandDashboard] = useState(false);
-  const [expandFollowUp, setExpandFollowUp] = useState(false);
   const [expandProduct, setExpandProduct] = useState(false);
   const [expandCustomer, setExpandCustomer] = useState(false);
   const [expandProformaInvoice, setExpandProformaInvoice] = useState(false);
@@ -329,19 +328,6 @@ export const ListItems = (props) => {
               <ListItem
                 button
                 component={RouterLink}
-                to="/leads/converted-lead"
-                style={{ width: 300 }}
-              >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="Converted Lead"
-                />
-              </ListItem>
-              <ListItem
-                button
-                component={RouterLink}
                 to="/leads/not_interested-lead"
                 style={{ width: 300 }}
               >
@@ -378,23 +364,6 @@ export const ListItems = (props) => {
                   primary="Unassigned Lead"
                 />
               </ListItem>
-            </List>
-          </Collapse>
-          {/* Followup */}
-          <ListItem
-            button
-            onClick={() => setExpandFollowUp(!expandFollowUp)}
-            style={{ width: 300 }}
-          >
-            <ListItemIcon>
-              <FollowTheSignsIcon />
-            </ListItemIcon>
-            <ListItemText primary="FollowUp" />
-            {expandFollowUp ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-          </ListItem>
-          <Collapse in={expandFollowUp} timeout="auto" unmountOnExit>
-            <Divider />
-            <List component="div" disablePadding>
               <ListItem
                 button
                 component={RouterLink}
@@ -405,11 +374,12 @@ export const ListItems = (props) => {
                   component={Button}
                   onClick={() => setOpen(false)}
                   inset
-                  primary="FollowUp"
+                  primary="Followup Lead"
                 />
               </ListItem>
             </List>
           </Collapse>
+
           {/* Customer */}
           <ListItem
             button
@@ -435,7 +405,7 @@ export const ListItems = (props) => {
                   component={Button}
                   onClick={() => setOpen(false)}
                   inset
-                  primary="Company Details"
+                  primary="Customer"
                 />
               </ListItem>
               <ListItem
@@ -449,6 +419,19 @@ export const ListItems = (props) => {
                   onClick={() => setOpen(false)}
                   inset
                   primary="Unassigned Company"
+                />
+              </ListItem>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/customers/view-followup"
+                style={{ width: 300 }}
+              >
+                <ListItemText
+                  component={Button}
+                  onClick={() => setOpen(false)}
+                  inset
+                  primary="Followup Customer"
                 />
               </ListItem>
             </List>
@@ -1396,23 +1379,6 @@ export const ListItems = (props) => {
                       primary="Unassigned Lead"
                     />
                   </ListItem>
-                </List>
-              </Collapse>
-              {/* Followup */}
-              <ListItem
-                button
-                onClick={() => setExpandFollowUp(!expandFollowUp)}
-                style={{ width: 300 }}
-              >
-                <ListItemIcon>
-                  <FollowTheSignsIcon />
-                </ListItemIcon>
-                <ListItemText primary="FollowUp" />
-                {expandFollowUp ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-              </ListItem>
-              <Collapse in={expandFollowUp} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
                   <ListItem
                     button
                     component={RouterLink}
@@ -1423,11 +1389,12 @@ export const ListItems = (props) => {
                       component={Button}
                       onClick={() => setOpen(false)}
                       inset
-                      primary="FollowUp"
+                      primary="Followup Lead"
                     />
                   </ListItem>
                 </List>
               </Collapse>
+
               {/* Customer */}
               <ListItem
                 button
@@ -1453,7 +1420,20 @@ export const ListItems = (props) => {
                       component={Button}
                       onClick={() => setOpen(false)}
                       inset
-                      primary="Company Details"
+                      primary="Customer"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/customers/view-followup"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Followup Customer"
                     />
                   </ListItem>
                 </List>
@@ -2499,23 +2479,6 @@ export const ListItems = (props) => {
                       primary="Unassigned Lead"
                     />
                   </ListItem>
-                </List>
-              </Collapse>
-              {/* Followup */}
-              <ListItem
-                button
-                onClick={() => setExpandFollowUp(!expandFollowUp)}
-                style={{ width: 300 }}
-              >
-                <ListItemIcon>
-                  <FollowTheSignsIcon />
-                </ListItemIcon>
-                <ListItemText primary="FollowUp" />
-                {expandFollowUp ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-              </ListItem>
-              <Collapse in={expandFollowUp} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
                   <ListItem
                     button
                     component={RouterLink}
@@ -2526,11 +2489,12 @@ export const ListItems = (props) => {
                       component={Button}
                       onClick={() => setOpen(false)}
                       inset
-                      primary="FollowUp"
+                      primary="Followup Lead"
                     />
                   </ListItem>
                 </List>
               </Collapse>
+
               {/* Customer */}
               <ListItem
                 button
@@ -2556,7 +2520,20 @@ export const ListItems = (props) => {
                       component={Button}
                       onClick={() => setOpen(false)}
                       inset
-                      primary="Company Details"
+                      primary="Customer"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/customers/view-followup"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Followup Customer"
                     />
                   </ListItem>
                 </List>
@@ -3036,7 +3013,20 @@ export const ListItems = (props) => {
                       component={Button}
                       onClick={() => setOpen(false)}
                       inset
-                      primary="Company Details"
+                      primary="Customer"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/customers/view-followup"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Followup Customer"
                     />
                   </ListItem>
                 </List>
@@ -3747,7 +3737,20 @@ export const ListItems = (props) => {
                       component={Button}
                       onClick={() => setOpen(false)}
                       inset
-                      primary="Company Details"
+                      primary="Customer"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/customers/view-followup"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Followup Customer"
                     />
                   </ListItem>
                 </List>
@@ -4179,7 +4182,19 @@ export const ListItems = (props) => {
                       primary="Production Inventory (Cons)"
                     />
                   </ListItem>
-
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/inventory/view-bill-of-materials"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Bill of Materials"
+                    />
+                  </ListItem>
                   <ListItem
                     button
                     component={RouterLink}

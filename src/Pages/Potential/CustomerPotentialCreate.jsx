@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { CustomLoader } from "../../Components/CustomLoader";
 import { Autocomplete, Box, Button, Grid, TextField } from "@mui/material";
-import LeadServices from "../../services/LeadService";
+import CustomerServices from "../../services/CustomerService";
 
-export const PotentialCreate = (props) => {
-  const { leadsByID, getAllleadsData, product, setOpenModal } = props;
+export const CustomerPotentialCreate = (props) => {
+  const { recordForEdit, getAllleadsData, product, setOpenModal } = props;
   const [open, setOpen] = useState(false);
   const [potential, setPotential] = useState([]);
 
@@ -22,9 +22,8 @@ export const PotentialCreate = (props) => {
 
     try {
       setOpen(true);
-
       const data = {
-        lead: leadsByID.lead_id,
+        company: recordForEdit,
         product: potential.product,
         current_brand: potential.current_brand,
         current_buying_price: potential.current_buying_price,
@@ -33,8 +32,7 @@ export const PotentialCreate = (props) => {
         quantity: potential.quantity,
       };
 
-      await LeadServices.createPotentialLead(data);
-
+      await CustomerServices.createPotentialCustomer(data);
       setOpenModal(false);
       await getAllleadsData();
       setOpen(false);
@@ -47,7 +45,6 @@ export const PotentialCreate = (props) => {
   return (
     <>
       <CustomLoader open={open} />
-
       <Box
         sx={{
           display: "flex",

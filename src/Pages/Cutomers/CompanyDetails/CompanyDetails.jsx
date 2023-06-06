@@ -13,12 +13,17 @@ import { CustomSearchWithButton } from "../../../Components/CustomSearchWithButt
 import { BulkCustomerAssign } from "./BulkCustomerAssign";
 import { CustomTable } from "./../../../Components/CustomTable";
 import { CustomPagination } from "../../../Components/CustomPagination";
+import { CustomerActivityCreate } from "../../FollowUp/CustomerActivityCreate";
+import ProductService from "../../../services/ProductService";
+import { CustomerPotentialCreate } from "../../Potential/CustomerPotentialCreate";
 
 export const CompanyDetails = () => {
   const dispatch = useDispatch();
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [openPopup3, setOpenPopup3] = useState(false);
+  const [openPopupActivity, setOpenPopupActivity] = useState(false);
+  const [openPopupPotential, setOpenPopupPotential] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [open, setOpen] = useState(false);
@@ -28,6 +33,7 @@ export const CompanyDetails = () => {
   const [recordForEdit, setRecordForEdit] = useState();
   const [pageCount, setpageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
+  const [product, setProduct] = useState([]);
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
@@ -47,6 +53,16 @@ export const CompanyDetails = () => {
     setOpenPopup3(true);
   };
 
+  const openInPopup3 = (item) => {
+    setRecordForEdit(item.id);
+    setOpenPopupActivity(true);
+  };
+
+  const openInPopup4 = (item) => {
+    setRecordForEdit(item.id);
+    setOpenPopupPotential(true);
+  };
+
   const handleSnackbarClose = () => {
     setOpenSnackbar(false);
   };
@@ -59,6 +75,7 @@ export const CompanyDetails = () => {
   useEffect(() => {
     getAllSellerAccountsDetails();
     getAllCompanyDetails();
+    getProduct();
   }, []);
 
   const getAllSellerAccountsDetails = async () => {
@@ -70,6 +87,18 @@ export const CompanyDetails = () => {
       dispatch(getSellerAccountData(response.data));
       setOpen(false);
     } catch (err) {
+      setOpen(false);
+    }
+  };
+
+  const getProduct = async () => {
+    try {
+      setOpen(true);
+      const res = await ProductService.getAllProduct();
+      setProduct(res.data);
+      setOpen(false);
+    } catch (err) {
+      console.error("error potential", err);
       setOpen(false);
     }
   };
@@ -220,7 +249,7 @@ export const CompanyDetails = () => {
                   fontWeight: 800,
                 }}
               >
-                Company Details
+                Customer
               </h3>
             </div>
             <div style={{ flexGrow: 0.5 }} align="right">
@@ -291,7 +320,11 @@ export const CompanyDetails = () => {
             data={Tabledata}
             openInPopup={openInPopup}
             openInPopup2={openInPopup2}
+            openInPopup3={openInPopup3}
+            openInPopup4={openInPopup4}
             ButtonText={"Invoice"}
+            ButtonText1={"Activity"}
+            ButtonText2={"Potential"}
           />
 
           <div
@@ -312,7 +345,7 @@ export const CompanyDetails = () => {
 
       <Popup
         fullScreen={true}
-        title={"Create Company Details"}
+        title={"Create Customer Details"}
         openPopup={openPopup2}
         setOpenPopup={setOpenPopup2}
       >
@@ -323,7 +356,7 @@ export const CompanyDetails = () => {
       </Popup>
       <Popup
         fullScreen={true}
-        title={"Update Company Details"}
+        title={"Update Customer"}
         openPopup={openPopup}
         setOpenPopup={setOpenPopup}
       >
@@ -331,6 +364,7 @@ export const CompanyDetails = () => {
           setOpenPopup={setOpenPopup}
           getAllCompanyDetails={getAllCompanyDetails}
           recordForEdit={recordForEdit}
+          product={product}
         />
       </Popup>
       <Popup
@@ -353,6 +387,30 @@ export const CompanyDetails = () => {
         <BulkCustomerAssign
           setOpenPopup={setOpenModal}
           setOpenSnackbar={setOpenSnackbar}
+        />
+      </Popup>
+      <Popup
+        maxWidth={"xl"}
+        title={"Create Activity"}
+        openPopup={openPopupActivity}
+        setOpenPopup={setOpenPopupActivity}
+      >
+        <CustomerActivityCreate
+          recordForEdit={recordForEdit}
+          setOpenModal={setOpenPopupActivity}
+          getFollowUp={getAllCompanyDetails}
+        />
+      </Popup>
+      <Popup
+        maxWidth={"lg"}
+        title={"Create Potential"}
+        openPopup={openPopupPotential}
+        setOpenPopup={setOpenPopupPotential}
+      >
+        <CustomerPotentialCreate
+          recordForEdit={recordForEdit}
+          product={product}
+          setOpenModal={setOpenPopupPotential}
         />
       </Popup>
     </>
