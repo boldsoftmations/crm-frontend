@@ -97,7 +97,7 @@ export const UpdateCompanyDetails = (props) => {
       setBusinessType(response.data.business_type);
       setCategory(response.data.category);
       setAssign(response.data.assigned_to);
-      setFollowUpData(response.data.follow_up);
+      setFollowUpData(response.data.followup);
       setPotential(response.data.potential);
       setOpen(false);
     } catch (err) {

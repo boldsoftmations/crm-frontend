@@ -45,66 +45,70 @@ export const LeadActivity = (props) => {
               </Button>
             </Box>
           </Box>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              height: 260,
-              overflow: "hidden",
-              overflowY: "scroll",
-              // justifyContent="flex-end" # DO NOT USE THIS WITH 'scroll'
-            }}
-          >
-            {followup && (
-              <>
-                {followup.map((data) => {
-                  return (
-                    <div key={data.id}>
-                      <Timeline
-                        sx={{
-                          [`& .${timelineOppositeContentClasses.root}`]: {
-                            flex: 0.2,
-                          },
-                        }}
-                      >
-                        <TimelineItem>
-                          <TimelineOppositeContent sx={{ px: 2 }}>
-                            <Typography variant="h6">
-                              {moment(data.current_date).format(
-                                "DD/MM/YYYY h:mm"
-                              )}
-                            </Typography>
-                          </TimelineOppositeContent>
-                          <TimelineSeparator>
-                            <TimelineDot />
-                            <TimelineConnector />
-                          </TimelineSeparator>
-                          <TimelineContent sx={{ width: "50%", color: "#333" }}>
-                            <Typography
-                              variant="h6"
-                              sx={{ fontFamily: "Arial", fontWeight: "bold" }}
-                            >
-                              {data.activity} - {data.user} -
-                              {data.next_followup_date &&
-                                moment(data.next_followup_date).format(
-                                  "DD/MM/YYYY"
+          {followup.length > 0 && (
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                height: 260,
+                overflow: "hidden",
+                overflowY: "scroll",
+                // justifyContent="flex-end" # DO NOT USE THIS WITH 'scroll'
+              }}
+            >
+              {followup && (
+                <>
+                  {followup.map((data) => {
+                    return (
+                      <div key={data.id}>
+                        <Timeline
+                          sx={{
+                            [`& .${timelineOppositeContentClasses.root}`]: {
+                              flex: 0.2,
+                            },
+                          }}
+                        >
+                          <TimelineItem>
+                            <TimelineOppositeContent sx={{ px: 2 }}>
+                              <Typography variant="h6">
+                                {moment(data.current_date).format(
+                                  "DD/MM/YYYY h:mm"
                                 )}
-                            </Typography>
-                            <Typography
-                              variant="body1"
-                              sx={{ fontFamily: "Verdana", fontSize: "16px" }}
+                              </Typography>
+                            </TimelineOppositeContent>
+                            <TimelineSeparator>
+                              <TimelineDot />
+                              <TimelineConnector />
+                            </TimelineSeparator>
+                            <TimelineContent
+                              sx={{ width: "50%", color: "#333" }}
                             >
-                              {data.notes}
-                            </Typography>
-                          </TimelineContent>
-                        </TimelineItem>
-                      </Timeline>
-                    </div>
-                  );
-                })}
-              </>
-            )}
-          </Box>
+                              <Typography
+                                variant="h6"
+                                sx={{ fontFamily: "Arial", fontWeight: "bold" }}
+                              >
+                                {data.activity} - {data.user} -
+                                {data.next_followup_date &&
+                                  moment(data.next_followup_date).format(
+                                    "DD/MM/YYYY"
+                                  )}
+                              </Typography>
+                              <Typography
+                                variant="body1"
+                                sx={{ fontFamily: "Verdana", fontSize: "16px" }}
+                              >
+                                {data.notes}
+                              </Typography>
+                            </TimelineContent>
+                          </TimelineItem>
+                        </Timeline>
+                      </div>
+                    );
+                  })}
+                </>
+              )}
+            </Box>
+          )}
         </Paper>
       </Box>
       <Popup
