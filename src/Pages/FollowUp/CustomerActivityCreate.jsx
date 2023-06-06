@@ -66,6 +66,13 @@ export const CustomerActivityCreate = (props) => {
                 label="Activity"
                 // value={filterQuery}
                 onChange={handleInputChange}
+                MenuProps={{
+                  PaperProps: {
+                    style: {
+                      maxHeight: "200px", // Adjust the maximum height as per your requirement
+                    },
+                  },
+                }}
               >
                 {ActivityOption.map((option) => (
                   <MenuItem key={option.id} value={option.value}>
@@ -167,5 +174,15 @@ const ActivityOption = [
     id: 11,
     value: "Quality issue",
     label: "Quality issue",
+  },
+  {
+    id: 12,
+    value: "Company shut down",
+    label: "Company shut down",
+  },
+  {
+    id: 13,
+    value: "Require credit",
+    label: "Require credit",
   },
 ];

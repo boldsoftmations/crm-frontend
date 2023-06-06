@@ -65,6 +65,13 @@ export const LeadActivityCreate = (props) => {
                 id="demo-simple-select"
                 name="activity"
                 label="Activity"
+                MenuProps={{
+                  PaperProps: {
+                    style: {
+                      maxHeight: "200px", // Adjust the maximum height as per your requirement
+                    },
+                  },
+                }}
                 // value={filterQuery}
                 onChange={handleInputChange}
               >
@@ -198,5 +205,45 @@ const ActivityOption = [
     id: 17,
     value: "Quality issue",
     label: "Quality issue",
+  },
+  {
+    id: 18,
+    value: "Small buyer, no dealer/distributor in that area",
+    label: "Small buyer, no dealer/distributor in that area",
+  },
+  {
+    id: 19,
+    value: "Require credit",
+    label: "Require credit",
+  },
+  {
+    id: 20,
+    value: "Wrong number",
+    label: "Wrong number",
+  },
+  {
+    id: 21,
+    value: "Company shut down",
+    label: "Company shut down",
+  },
+  {
+    id: 22,
+    value: "Order taken",
+    label: "Order taken",
+  },
+  {
+    id: 23,
+    value: "Stock lot",
+    label: "Stock lot",
+  },
+  {
+    id: 24,
+    value: "One time requirement",
+    label: "One time requirement",
+  },
+  {
+    id: 25,
+    value: "Drop the lead",
+    label: "Drop the lead",
   },
 ];
