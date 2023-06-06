@@ -106,7 +106,15 @@ export const CompanyDetails = () => {
   const getAllCompanyDetails = async () => {
     try {
       setOpen(true);
-      if (currentPage) {
+      if (filterSelectedQuery !== "" && currentPage) {
+        const response = await CustomerServices.getAllCompanyDataPaginate(
+          currentPage,
+          filterSelectedQuery
+        );
+        setCompanyData(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      } else if (currentPage) {
         const response = await CustomerServices.getCompanyPaginateData(
           currentPage
         );
@@ -165,7 +173,6 @@ export const CompanyDetails = () => {
   const handlePageClick = async (event, value) => {
     try {
       const page = value;
-      console.log("filterSelectedQuery", filterSelectedQuery);
       setCurrentPage(page);
       setOpen(true);
 

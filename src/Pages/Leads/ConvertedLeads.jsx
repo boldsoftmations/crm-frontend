@@ -153,7 +153,18 @@ export const ConvertedLeads = () => {
   const getleads = async () => {
     try {
       setOpen(true);
-      if (currentPage) {
+      if (filterSelectedQuery !== "" && filterQuery !== "" && currentPage) {
+        const response = await LeadServices.getFilterPaginateLeads(
+          "converted",
+          currentPage,
+          filterQuery,
+          filterSelectedQuery
+        );
+
+        setLeads(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      } else if (currentPage) {
         const response = await LeadServices.getAllPaginateLeads(
           "converted",
           currentPage
@@ -626,6 +637,7 @@ export const ConvertedLeads = () => {
         <LeadActivityCreate
           followupData={leadsByID}
           setOpenModal={setOpenModalFollowup}
+          getAllleadsData={getleads}
         />
       </Popup>
       <Popup
