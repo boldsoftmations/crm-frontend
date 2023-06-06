@@ -236,7 +236,7 @@ export const UnassignedCustomer = () => {
                   fontWeight: 800,
                 }}
               >
-                Unassigned Company
+                Unassigned Customer
               </h3>
             </div>
             <div style={{ flexGrow: 0.5 }} align="right"></div>

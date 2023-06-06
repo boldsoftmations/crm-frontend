@@ -418,7 +418,7 @@ export const ListItems = (props) => {
                   component={Button}
                   onClick={() => setOpen(false)}
                   inset
-                  primary="Unassigned Company"
+                  primary="Unassigned Customer"
                 />
               </ListItem>
               <ListItem
@@ -4261,7 +4261,6 @@ export const ListItems = (props) => {
                 <ListItemText primary="Task" />
                 {expandTask ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
-
               <Collapse in={expandTask} timeout="auto" unmountOnExit>
                 <Divider />
                 <List component="div" disablePadding>
