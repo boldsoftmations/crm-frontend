@@ -31,7 +31,7 @@ import { ViewAllPotential } from "../Potential/ViewAllPotential";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/material.css";
 import { Popup } from "./../../Components/Popup";
-import { CreateLeadsProformaInvoice } from "./../Invoice/LeadsPerformaInvoice/CreateLeadsProformaInvoice";
+import { CreateLeadsProformaInvoice } from "../Invoice/ProformaInvoice/CreateLeadsProformaInvoice";
 import { CustomLoader } from "../../Components/CustomLoader";
 
 function getSteps() {

@@ -24,7 +24,7 @@ import InvoiceServices from "../../../services/InvoiceService";
 import ProductService from "../../../services/ProductService";
 
 export const UpdateCustomerProformaInvoice = (props) => {
-  const { idForEdit, getCustomerPIDetails, setOpenPopup } = props;
+  const { idForEdit, getProformaInvoiceData, setOpenPopup } = props;
   const [open, setOpen] = useState(false);
   const [error, setError] = useState("");
   const [customerPIdataByID, setCustomerPIdataByID] = useState([]);
@@ -116,7 +116,7 @@ export const UpdateCustomerProformaInvoice = (props) => {
     try {
       setOpen(true);
       const response = await InvoiceServices.getCustomerProformaInvoiceDataByID(
-        idForEdit
+        idForEdit.pi_number
       );
       setCustomerPIdataByID(response.data);
       setPaymentTermData(response.data.payment_terms);
@@ -263,7 +263,7 @@ export const UpdateCustomerProformaInvoice = (props) => {
       );
 
       setOpenPopup(false);
-      getCustomerPIDetails();
+      getProformaInvoiceData();
       setOpen(false);
     } catch (err) {
       if (err.response.status === 400) {

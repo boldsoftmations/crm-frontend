@@ -11,7 +11,16 @@ import {
   FormControl,
   InputLabel,
   MenuItem,
+  styled,
+  Table,
+  TableBody,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TableCell,
+  Checkbox,
 } from "@mui/material";
+import { tableCellClasses } from "@mui/material/TableCell";
 import LeadServices from "../../services/LeadService";
 import ClearIcon from "@mui/icons-material/Clear";
 import "../CommonStyle.css";
@@ -44,22 +53,37 @@ export const UnassignedLead = () => {
   const [leadsByID, setLeadsByID] = useState(null);
   const [followup, setFollowup] = useState(null);
   const [potential, setPotential] = useState(null);
+  const [selectedRows, setSelectedRows] = useState([]);
+
   const handleInputChange = (event) => {
     setFilterSelectedQuery(event.target.value);
     getSearchData(event.target.value);
   };
 
   const openInPopup = (item) => {
-    const matchedLead = leads.find((lead) => lead.lead_id === item.id);
-    setLeadsByID(matchedLead);
-    setFollowup(matchedLead.followup);
-    setPotential(matchedLead.potential);
+    setLeadsByID(item);
+    setFollowup(item.followup);
+    setPotential(item.potential);
     setOpenPopup(true);
   };
 
   const openInPopup2 = (item) => {
     setRecordForEdit(item);
     setModalOpen(true);
+  };
+
+  const handleCheckboxChange = (leadId) => {
+    setSelectedRows((prevSelectedRows) => {
+      const isSelected = prevSelectedRows.some((item) => item === leadId);
+
+      if (isSelected) {
+        // Row already exists in selectedRows, remove it
+        return prevSelectedRows.filter((item) => item !== leadId);
+      } else {
+        // Row does not exist in selectedRows, add it
+        return [...prevSelectedRows, leadId];
+      }
+    });
   };
 
   const getResetData = () => {
@@ -222,8 +246,13 @@ export const UnassignedLead = () => {
           ? recordForEdit.references
           : "Indiamart",
       };
-
-      await LeadServices.updateLeads(recordForEdit.id, data);
+      const req = {
+        lead_id: selectedRows,
+        assign_to: assign,
+      };
+      selectedRows.length > 0
+        ? await LeadServices.AssignMultipleLeads(req)
+        : await LeadServices.updateLeads(recordForEdit.id, data);
       getUnassigned();
       setModalOpen(false);
       setOpen(false);
@@ -266,7 +295,7 @@ export const UnassignedLead = () => {
         <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
           <Box display="flex">
-            <Box flexGrow={0.6}>
+            <Box flexGrow={1}>
               <FormControl fullWidth size="small">
                 <InputLabel id="demo-simple-select-label">Fliter By</InputLabel>
                 <Select
@@ -351,17 +380,105 @@ export const UnassignedLead = () => {
                 Unassigned Lead
               </h3>
             </Box>
+            {selectedRows.length > 0 && (
+              <Box flexGrow={0.5}>
+                <Button
+                  variant="contained"
+                  onClick={() => openInPopup2(selectedRows)}
+                >
+                  Assign
+                </Button>
+              </Box>
+            )}
           </Box>
 
-          <CustomTable
-            headers={Tableheaders}
-            data={Tabledata}
-            openInPopup={openInPopup}
-            openInPopup2={openInPopup2}
-            openInPopup3={null}
-            openInPopup4={null}
-            ButtonText={"Assign"}
-          />
+          <TableContainer
+            sx={{
+              maxHeight: 440,
+              "&::-webkit-scrollbar": {
+                width: 15,
+              },
+              "&::-webkit-scrollbar-track": {
+                backgroundColor: "#f2f2f2",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: "#aaa9ac",
+              },
+            }}
+          >
+            <Table
+              sx={{ minWidth: 1200 }}
+              stickyHeader
+              aria-label="sticky table"
+            >
+              <TableHead>
+                <TableRow>
+                  <StyledTableCell align="center">Checkbox</StyledTableCell>
+                  <StyledTableCell align="center">NAME</StyledTableCell>
+                  <StyledTableCell align="center">CONTACT</StyledTableCell>
+                  <StyledTableCell align="center">PRODUCT</StyledTableCell>
+                  <StyledTableCell align="center">ASSIGNED TO</StyledTableCell>
+                  <StyledTableCell align="center">COMPANY</StyledTableCell>
+                  <StyledTableCell align="center">REFERENCE</StyledTableCell>
+                  <StyledTableCell align="center">CITY</StyledTableCell>
+                  <StyledTableCell align="center">STATE</StyledTableCell>
+                  <StyledTableCell align="center">Action</StyledTableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {leads.map((row, i) => {
+                  return (
+                    <StyledTableRow key={i}>
+                      <StyledTableCell align="center">
+                        <Checkbox
+                          checked={selectedRows.includes(row.lead_id)}
+                          onChange={() => handleCheckboxChange(row.lead_id)}
+                          inputProps={{ "aria-label": "controlled" }}
+                        />
+                      </StyledTableCell>
+
+                      <StyledTableCell align="center">
+                        {row.name}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.contact}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.query_product_name}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.assigned_to}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.company}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.references}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.city}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.state}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        <Button variant="text" onClick={() => openInPopup(row)}>
+                          View
+                        </Button>
+                        <Button
+                          variant="text"
+                          onClick={() => openInPopup2(row)}
+                        >
+                          Assign
+                        </Button>
+                      </StyledTableCell>
+                    </StyledTableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+
           <CustomPagination
             pageCount={pageCount}
             handlePageClick={handlePageClick}
@@ -426,3 +543,24 @@ const FilterOptions = [
   { label: "References", value: "references__source" },
   { label: "Search", value: "search" },
 ];
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+    padding: 0,
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  "&:nth-of-type(odd)": {
+    backgroundColor: theme.palette.action.hover,
+  },
+  // hide last border
+  "&:last-child td, &:last-child th": {
+    border: 0,
+  },
+}));

@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import LeadServices from "../services/LeadService";
 import DashboardService from "../services/DashboardService";
 import { Popup } from "../Components/Popup";
-import { SalesFunnel } from "./SalesFunnel";
 import { DispatchData } from "./DispatchData";
 import { CustomLoader } from "../Components/CustomLoader";
 import InvoiceServices from "../services/InvoiceService";
@@ -26,9 +25,7 @@ export const Home = () => {
   const [monthlyStatus, setMonthlyStatus] = useState([]);
   const [weeklyStatus, setWeeklyStatus] = useState([]);
   const [dailyStatus, setDailyStatus] = useState([]);
-  const [funnelDataByID, setFunnelDataByID] = useState(null);
   const [dispatchDataByID, setDispatchDataByID] = useState(null);
-  const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [hoveredSegment, setHoveredSegment] = useState(null);
   const [assigned, setAssigned] = useState([]);
@@ -773,8 +770,24 @@ export const Home = () => {
     navigate("/leads/view-followup");
   };
   const handleRowClick = (row) => {
-    setFunnelDataByID(row);
-    setOpenPopup(true);
+    if (row.label === "New") {
+      navigate("/leads/new-lead");
+    }
+    if (row.label === "Open") {
+      navigate("/leads/open-lead");
+    }
+    if (row.label === "Oppurtunity") {
+      navigate("/leads/opportunity-lead");
+    }
+    if (row.label === "Potential") {
+      navigate("/leads/potential-lead");
+    }
+    if (row.label === "Not Interested") {
+      navigate("/leads/not_interested-lead");
+    }
+    if (row.label === "Converted") {
+      navigate("/leads/converted-lead");
+    }
   };
 
   const handleDispatch = (row) => {
@@ -835,18 +848,6 @@ export const Home = () => {
           handleRowClick={handleRowClick}
         />
       )}
-      <Popup
-        maxWidth={"xl"}
-        title={"View Leads dashboard"}
-        openPopup={openPopup}
-        setOpenPopup={setOpenPopup}
-      >
-        <SalesFunnel
-          funnelDataByID={funnelDataByID}
-          setOpenPopup={setOpenPopup}
-          AssignedTo={filterValue}
-        />
-      </Popup>
       <Popup
         maxWidth={"xl"}
         title={`View ${dispatchDataByID && dispatchDataByID.type} dashboard`}

@@ -1,33 +1,27 @@
+import React, { useState, useEffect } from "react";
 import {
   Autocomplete,
-  // Backdrop,
+  Backdrop,
   Box,
   Button,
   Checkbox,
-  // CircularProgress,
-  FormControl,
+  CircularProgress,
   FormControlLabel,
-  FormHelperText,
   Grid,
-  InputLabel,
-  MenuItem,
-  Select,
   TextField,
   Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import Divider from "@mui/material/Divider";
 import Chip from "@mui/material/Chip";
-import React, { useState, useEffect } from "react";
-import InvoiceServices from "../../../services/InvoiceService";
-import ProductService from "../../../services/ProductService";
-import { Popup } from "./../../../Components/Popup";
-import CustomerServices from "../../../services/CustomerService";
-import { UpdateCompanyDetails } from "../../Cutomers/CompanyDetails/UpdateCompanyDetails";
+import Divider from "@mui/material/Divider";
 import { useSelector } from "react-redux";
-import { CustomLoader } from "../../../Components/CustomLoader";
-import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
 import { useNavigate } from "react-router-dom";
+import ProductService from "../../../services/ProductService";
+import InvoiceServices from "../../../services/InvoiceService";
+import { CustomLoader } from "../../../Components/CustomLoader";
+import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
+import { Popup } from "../../../Components/Popup";
+import { UpdateLeads } from "../../Leads/UpdateLeads";
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -48,8 +42,8 @@ const values = {
   someDate: new Date().toISOString().substring(0, 10),
 };
 
-export const CreateCustomerProformaInvoice = (props) => {
-  const { setOpenPopup, recordForEdit } = props;
+export const CreateLeadsProformaInvoice = (props) => {
+  const { setOpenPopup, leads } = props;
   const navigate = useNavigate();
   const [openPopup2, setOpenPopup2] = useState(false);
   const [openPopup3, setOpenPopup3] = useState(false);
@@ -59,14 +53,10 @@ export const CreateCustomerProformaInvoice = (props) => {
   const [product, setProduct] = useState([]);
   const [paymentTermData, setPaymentTermData] = useState([]);
   const [deliveryTermData, setDeliveryTermData] = useState([]);
-  const [customerData, setCustomerData] = useState([]);
-  const [contactOptions, setContactOptions] = useState([]);
-  const [warehouseOptions, setWarehouseOptions] = useState([]);
-  const [contactData, setContactData] = useState([]);
-  const [warehouseData, setWarehouseData] = useState([]);
+  const [idForEdit, setIDForEdit] = useState();
   const [errorMessage, setErrorMessage] = useState();
   const [validationPrice, setValidationPrice] = useState("");
-  const [checked, setChecked] = useState(true);
+  const [checked, setChecked] = React.useState(true);
   const [products, setProducts] = useState([
     {
       product: "",
@@ -77,6 +67,7 @@ export const CreateCustomerProformaInvoice = (props) => {
       special_instructions: "",
     },
   ]);
+
   const data = useSelector((state) => state.auth);
   const users = data.profile;
   const sellerData = data.sellerAccount;
@@ -84,7 +75,7 @@ export const CreateCustomerProformaInvoice = (props) => {
   const handleAutocompleteChange = (index, event, value) => {
     let data = [...products];
     const productObj = product.find((item) => item.product === value);
-    console.log("productObj", productObj);
+
     data[index]["product"] = value;
     data[index]["unit"] = productObj ? productObj.unit : "";
     setProducts(data);
@@ -118,25 +109,6 @@ export const CreateCustomerProformaInvoice = (props) => {
   };
 
   useEffect(() => {
-    getAllCompanyDetailsByID();
-  }, [openPopup3]);
-
-  const getAllCompanyDetailsByID = async () => {
-    try {
-      setOpen(true);
-
-      const response = await CustomerServices.getCompanyDataById(recordForEdit);
-      setCustomerData(response.data);
-      setContactOptions(response.data.contacts);
-      setWarehouseOptions(response.data.warehouse);
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("company data by id error", err);
-    }
-  };
-
-  useEffect(() => {
     getProduct();
   }, []);
 
@@ -157,11 +129,11 @@ export const CreateCustomerProformaInvoice = (props) => {
     setInputValue({ ...inputValue, [name]: value });
   };
 
-  const createCustomerProformaInvoiceDetails = async (e) => {
+  const createLeadProformaInvoiceDetails = async (e) => {
     try {
       e.preventDefault();
       const req = {
-        type: "Customer",
+        type: "Lead",
         raised_by: users.email,
         raised_by_first_name: users.first_name,
         raised_by_last_name: users.last_name,
@@ -170,7 +142,7 @@ export const CreateCustomerProformaInvoice = (props) => {
         seller_pincode: selectedSellerData.pincode,
         seller_state: selectedSellerData.state,
         seller_city: selectedSellerData.city,
-        seller_gst: selectedSellerData.gst_number,
+        seller_gst: selectedSellerData.gst_number || null,
         seller_pan: selectedSellerData.pan_number,
         seller_state_code: selectedSellerData.state_code,
         seller_cin: selectedSellerData.cin_number,
@@ -180,26 +152,27 @@ export const CreateCustomerProformaInvoice = (props) => {
         seller_account_no: selectedSellerData.current_account_no,
         seller_ifsc_code: selectedSellerData.ifsc_code,
         seller_branch: selectedSellerData.branch,
-        company: customerData.id,
-        company_name: customerData.name,
-        contact: contactData.contact,
-        contact_person_name: contactData.name,
-        alternate_contact: contactData.alternate_contact,
-        company_name: customerData.name,
-        gst_number: customerData.gst_number || null,
-        pan_number: customerData.pan_number,
-        billing_address: customerData.address,
-        billing_state: customerData.state,
-        billing_city: customerData.city,
-        billing_pincode: customerData.pincode,
-        address: warehouseData.address,
-        pincode: warehouseData.pincode,
-        state: warehouseData.state,
-        city: warehouseData.city,
+        lead: leads.lead_id,
+        contact_person_name: leads.name,
+        contact: leads.contact,
+        alternate_contact: leads.alternate_contact,
+        company_name: leads.company,
+        gst_number: leads.gst_number || null,
+        pan_number: leads.pan_number,
+        billing_address: leads.address,
+        billing_state: leads.state,
+        billing_city: leads.city,
+        billing_pincode: leads.pincode,
+        address: leads.shipping_address,
+        pincode: leads.shipping_pincode,
+        state: leads.shipping_state,
+        city: leads.shipping_city,
         place_of_supply: inputValue.place_of_supply,
         transporter_name: inputValue.transporter_name,
         buyer_order_no: checked === true ? "verbal" : inputValue.buyer_order_no,
-        buyer_order_date: inputValue.buyer_order_date,
+        buyer_order_date: inputValue.buyer_order_date
+          ? inputValue.buyer_order_date
+          : values.someDate,
         payment_terms: paymentTermData,
         delivery_terms: deliveryTermData,
         status: "Raised",
@@ -207,16 +180,23 @@ export const CreateCustomerProformaInvoice = (props) => {
       };
       setOpen(true);
       if (
-        contactData.contact !== null &&
-        warehouseData.address !== null &&
-        warehouseData.state !== null &&
-        warehouseData.city !== null &&
-        warehouseData.pincode !== null
+        leads.contact !== null &&
+        leads.address !== null &&
+        leads.state !== null &&
+        leads.city !== null &&
+        leads.pincode !== null &&
+        leads.shipping_address !== null &&
+        leads.shipping_state !== null &&
+        leads.shipping_city !== null &&
+        leads.shipping_pincode !== null &&
+        (leads.pan_number !== null || leads.gst_number !== null) &&
+        leads.company != null
       ) {
-        await InvoiceServices.createCustomerProformaInvoiceData(req);
+        await InvoiceServices.createLeadsProformaInvoiceData(req);
         setOpenPopup(false);
         navigate("/invoice/performa-invoice");
       } else {
+        setIDForEdit(leads.lead_id);
         setOpenPopup2(true);
       }
       setOpen(false);
@@ -229,25 +209,20 @@ export const CreateCustomerProformaInvoice = (props) => {
             : err.response.data.errors
         );
       }
-      // setIDForEdit(leadIDData.lead_id);
+      setIDForEdit(leads.lead_id);
+      setOpenPopup2(true);
       setOpen(false);
-      // setOpenPopup2(true);
     }
-  };
-
-  const openInPopup = () => {
-    setOpenPopup3(true);
-    setOpenPopup2(false);
   };
 
   return (
     <div>
       <CustomLoader open={open} />
+
       <Box
         component="form"
         noValidate
-        // onSubmit={formik.handleSubmit}
-        onSubmit={(e) => createCustomerProformaInvoiceDetails(e)}
+        onSubmit={(e) => createLeadProformaInvoiceDetails(e)}
       >
         <Grid container spacing={2}>
           <Grid item xs={12} sm={4}>
@@ -257,7 +232,7 @@ export const CreateCustomerProformaInvoice = (props) => {
               disablePortal
               id="combo-box-demo"
               onChange={(event, value) => setSelectedSellerData(value)}
-              options={sellerData.map((option) => option)}
+              options={sellerData}
               getOptionLabel={(option) => option.unit}
               sx={{ minWidth: 300 }}
               renderInput={(params) => (
@@ -298,78 +273,40 @@ export const CreateCustomerProformaInvoice = (props) => {
           <Grid item xs={12}>
             <Root>
               <Divider>
-                <Chip label="CUSTOMER" />
+                <Chip label="LEAD" />
               </Divider>
             </Root>
           </Grid>
           <Grid item xs={12} sm={4}>
             <TextField
               fullWidth
-              name="company"
+              required
+              name="Lead ID"
               size="small"
-              label="Company"
+              label="Lead ID"
               variant="outlined"
-              value={customerData.name ? customerData.name : ""}
+              value={leads.lead_id ? leads.lead_id : ""}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <FormControl
-              required
-              fullWidth
-              size="small"
-              sx={{ padding: "0", margin: "0" }}
-            >
-              <InputLabel id="demo-simple-select-required-label">
-                Contact Name
-              </InputLabel>
-              <Select
-                labelId="demo-simple-select-required-label"
-                id="demo-simple-select-required"
-                label="Contact Name"
-                onChange={(e, value) => setContactData(e.target.value)}
-              >
-                {contactOptions &&
-                  contactOptions.map((option, i) => (
-                    <MenuItem key={i} value={option}>
-                      {option ? option.name : "Please First Select Company"}
-                    </MenuItem>
-                  ))}
-              </Select>
-              <HelperText>first select Company Name</HelperText>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} sm={2}>
             <TextField
               fullWidth
-              disabled
+              required
               name="contact"
               size="small"
               label="Contact"
               variant="outlined"
-              value={
-                contactData
-                  ? contactData.contact
-                    ? contactData.contact
-                    : ""
-                  : ""
-              }
+              value={leads.contact ? leads.contact : ""}
             />
           </Grid>
-          <Grid item xs={12} sm={2}>
+          <Grid item xs={12} sm={4}>
             <TextField
               fullWidth
-              disabled
               name="alternate_contact"
               size="small"
               label="Alt. Contact"
               variant="outlined"
-              value={
-                contactData
-                  ? contactData.alternate_contact
-                    ? contactData.alternate_contact
-                    : ""
-                  : ""
-              }
+              value={leads.alternate_contact ? leads.alternate_contact : ""}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -379,9 +316,9 @@ export const CreateCustomerProformaInvoice = (props) => {
               required
               name="address"
               size="small"
-              label="Billing Address"
+              label="Address"
               variant="outlined"
-              value={customerData.address ? customerData.address : ""}
+              value={leads.address ? leads.address : ""}
             />
           </Grid>
 
@@ -391,9 +328,9 @@ export const CreateCustomerProformaInvoice = (props) => {
               required
               name="city"
               size="small"
-              label="Billing City"
+              label="City"
               variant="outlined"
-              value={customerData.city ? customerData.city : ""}
+              value={leads.city ? leads.city : ""}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -402,9 +339,9 @@ export const CreateCustomerProformaInvoice = (props) => {
               required
               name="state"
               size="small"
-              label="Billing State"
+              label="State"
               variant="outlined"
-              value={customerData.state ? customerData.state : ""}
+              value={leads.state ? leads.state : ""}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -414,86 +351,54 @@ export const CreateCustomerProformaInvoice = (props) => {
               name="pincode"
               size="small"
               type={"number"}
-              label="Billing Pin Code"
+              label="Pin Code"
               variant="outlined"
-              value={customerData.pincode ? customerData.pincode : ""}
+              value={leads.pincode ? leads.pincode : ""}
             />
           </Grid>
-          <Grid item xs={12} sm={4}>
-            <FormControl fullWidth size="small">
-              <InputLabel id="demo-simple-select-label">
-                Shipping Address
-              </InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                label="Shipping Address"
-                onChange={(e, value) => setWarehouseData(e.target.value)}
-              >
-                {warehouseOptions &&
-                  warehouseOptions.map((option, i) => (
-                    <MenuItem key={i} value={option}>
-                      {option ? option.address : "Please First Select Contact"}
-                    </MenuItem>
-                  ))}
-              </Select>
-              <HelperText>first select Contact</HelperText>
-            </FormControl>
-          </Grid>
-
           <Grid item xs={12} sm={4}>
             <TextField
               fullWidth
               required
-              disabled
-              name="city"
+              name="shipping_address"
+              size="small"
+              label="Shipping Address"
+              variant="outlined"
+              value={leads.shipping_address ? leads.shipping_address : ""}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextField
+              required
+              fullWidth
+              name="shipping_pincode"
+              size="small"
+              type={"number"}
+              label="Pin Code"
+              variant="outlined"
+              value={leads.shipping_pincode ? leads.shipping_pincode : ""}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextField
+              fullWidth
+              required
+              name="shipping_city"
               size="small"
               label="Shipping City"
               variant="outlined"
-              value={
-                warehouseData
-                  ? warehouseData.city
-                    ? warehouseData.city
-                    : ""
-                  : ""
-              }
+              value={leads.shipping_city ? leads.shipping_city : ""}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
             <TextField
               fullWidth
               required
-              disabled
-              name="state"
+              name="shipping_state"
               size="small"
               label="Shipping State"
               variant="outlined"
-              value={
-                warehouseData
-                  ? warehouseData.state
-                    ? warehouseData.state
-                    : ""
-                  : ""
-              }
-            />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <TextField
-              fullWidth
-              required
-              disabled
-              name="pincode"
-              size="small"
-              type={"number"}
-              label="Shipping Pin Code"
-              variant="outlined"
-              value={
-                warehouseData
-                  ? warehouseData.pincode
-                    ? warehouseData.pincode
-                    : ""
-                  : ""
-              }
+              value={leads.shipping_state ? leads.shipping_state : ""}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -581,7 +486,7 @@ export const CreateCustomerProformaInvoice = (props) => {
           {products.map((input, index) => {
             return (
               <>
-                <Grid key={index} item xs={12} sm={4}>
+                <Grid item xs={12} sm={4}>
                   <Autocomplete
                     name="product"
                     size="small"
@@ -720,10 +625,12 @@ export const CreateCustomerProformaInvoice = (props) => {
         setOpenPopup={setOpenPopup2}
       >
         <Typography>
-          Kindly update all required field WareHouse Details in Company
+          {validationPrice
+            ? validationPrice
+            : "Kindly update all Shipping Details & Laeds Details in required field"}
         </Typography>
-        <Button variant="contained" onClick={() => openInPopup()}>
-          Update Customer
+        <Button variant="contained" onClick={() => setOpenPopup(false)}>
+          Update Leads
         </Button>
       </Popup>
       <Popup
@@ -732,8 +639,9 @@ export const CreateCustomerProformaInvoice = (props) => {
         openPopup={openPopup3}
         setOpenPopup={setOpenPopup3}
       >
-        <UpdateCompanyDetails
-          recordForEdit={recordForEdit}
+        <UpdateLeads
+          // getAllleadsData={getAllleadsData}
+          recordForEdit={idForEdit}
           setOpenPopup={setOpenPopup3}
         />
       </Popup>
@@ -820,7 +728,3 @@ const deliveryTermsOptions = [
     value: "courier_(freight_add_in_invoice",
   },
 ];
-
-const HelperText = styled(FormHelperText)(() => ({
-  padding: "0px",
-}));

@@ -1,65 +1,36 @@
 import {
   Autocomplete,
-  Backdrop,
   Box,
   Button,
   Checkbox,
-  CircularProgress,
+  Chip,
+  Divider,
   FormControlLabel,
   Grid,
   TextField,
-  Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import Chip from "@mui/material/Chip";
-import Divider from "@mui/material/Divider";
-import React, { useState, useEffect } from "react";
-
-import { Popup } from "./../../../Components/Popup";
-import { UpdateLeads } from "./../../Leads/UpdateLeads";
-import InvoiceServices from "../../../services/InvoiceService";
-// import LeadServices from "../../../services/LeadService";
-import ProductService from "../../../services/ProductService";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
-import { useNavigate } from "react-router-dom";
+import { CustomLoader } from "../../../Components/CustomLoader";
+import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
+import InvoiceServices from "../../../services/InvoiceService";
+import LeadServices from "../../../services/LeadService";
+import ProductService from "../../../services/ProductService";
 
-const Root = styled("div")(({ theme }) => ({
-  width: "100%",
-  ...theme.typography.body2,
-  "& > :not(style) + :not(style)": {
-    marginTop: theme.spacing(2),
-  },
-}));
-
-const tfStyle = {
-  "& .MuiButtonBase-root.MuiAutocomplete-clearIndicator": {
-    color: "blue",
-    visibility: "visible",
-  },
-};
-
-const values = {
-  someDate: new Date().toISOString().substring(0, 10),
-};
-
-export const CreateLeadsProformaInvoice = (props) => {
-  const { setOpenPopup, leads } = props;
-  const navigate = useNavigate();
-  const [openPopup2, setOpenPopup2] = useState(false);
-  const [openPopup3, setOpenPopup3] = useState(false);
+export const UpdateLeadsProformaInvoice = (props) => {
+  const { idForEdit, getAllLeadsPIDetails, setOpenPopup } = props;
   const [open, setOpen] = useState(false);
+  const [error, setError] = useState("");
+  const [leadPIdataByID, setLeadPIdataByID] = useState([]);
+  const [productOption, setProductOption] = useState([]);
   const [inputValue, setInputValue] = useState([]);
-  const [selectedSellerData, setSelectedSellerData] = useState("");
-  const [product, setProduct] = useState([]);
-  // const [leadIDData, setLeadIDData] = useState([]);
   const [paymentTermData, setPaymentTermData] = useState([]);
   const [deliveryTermData, setDeliveryTermData] = useState([]);
-  // const [leadsOptions, setLeadsOptions] = useState([]);
-  const [idForEdit, setIDForEdit] = useState();
-  const [errorMessage, setErrorMessage] = useState();
-  const [validationPrice, setValidationPrice] = useState("");
-  const [checked, setChecked] = React.useState(true);
+  const [selectedSellerData, setSelectedSellerData] = useState("");
+  const [leads, setLeads] = useState([]);
+  const [checked, setChecked] = useState(leadPIdataByID.buyer_order_no === "");
+  const [productEdit, setProductEdit] = useState(false);
   const [products, setProducts] = useState([
     {
       product: "",
@@ -70,18 +41,19 @@ export const CreateLeadsProformaInvoice = (props) => {
       special_instructions: "",
     },
   ]);
-
   const data = useSelector((state) => state.auth);
   const users = data.profile;
+
   const sellerData = data.sellerAccount;
 
   const handleAutocompleteChange = (index, event, value) => {
     let data = [...products];
-    const productObj = product.find((item) => item.product === value);
+    const productObj = productOption.find((item) => item.product === value);
 
     data[index]["product"] = value;
     data[index]["unit"] = productObj ? productObj.unit : "";
     setProducts(data);
+    setProductEdit(true);
   };
 
   const handleFormChange = (index, event) => {
@@ -91,6 +63,7 @@ export const CreateLeadsProformaInvoice = (props) => {
       ? event.target.value
       : event.target.textContent;
     setProducts(data);
+    setProductEdit(true);
   };
 
   const addFields = () => {
@@ -109,6 +82,7 @@ export const CreateLeadsProformaInvoice = (props) => {
     let data = [...products];
     data.splice(index, 1);
     setProducts(data);
+    setProductEdit(true);
   };
 
   useEffect(() => {
@@ -119,10 +93,58 @@ export const CreateLeadsProformaInvoice = (props) => {
     try {
       setOpen(true);
       const res = await ProductService.getAllValidPriceList("all");
-      setProduct(res.data);
+      setProductOption(res.data);
       setOpen(false);
     } catch (err) {
       console.error("error potential", err);
+      setOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    getLeadProformaInvoiceDetailsByID();
+  }, []);
+
+  const getLeadProformaInvoiceDetailsByID = async (e) => {
+    try {
+      setOpen(true);
+      const response = await InvoiceServices.getLeadsProformaInvoiceDataByID(
+        idForEdit.pi_number
+      );
+      setLeadPIdataByID(response.data);
+      setPaymentTermData(response.data.payment_terms);
+      setDeliveryTermData(response.data.delivery_terms);
+      getLeadsData(response.data.lead);
+      var arr = [];
+      arr = response.data.products.map((fruit) => ({
+        product: fruit.product,
+        pending_quantity: fruit.pending_quantity,
+        requested_date: fruit.requested_date,
+        special_instructions: fruit.special_instructions,
+        quantity: fruit.quantity,
+        rate: fruit.rate,
+        amount: fruit.amount,
+        unit: fruit.unit,
+      }));
+      setProducts(arr);
+
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      console.log("err", err);
+    }
+  };
+
+  const getLeadsData = async (value) => {
+    try {
+      setOpen(true);
+      const data = value;
+      const res = await LeadServices.getLeadsById(data);
+      setLeads(res.data);
+
+      setOpen(false);
+    } catch (error) {
+      console.log("error", error);
       setOpen(false);
     }
   };
@@ -132,34 +154,68 @@ export const CreateLeadsProformaInvoice = (props) => {
     setInputValue({ ...inputValue, [name]: value });
   };
 
-  const createLeadProformaInvoiceDetails = async (e) => {
+  const updateLeadProformaInvoiceDetails = async (e) => {
     try {
       e.preventDefault();
+      setOpen(true);
+      const productList = productEdit === true ? products : [];
       const req = {
         type: "Lead",
         raised_by: users.email,
-        raised_by_first_name: users.first_name,
-        raised_by_last_name: users.last_name,
-        seller_account: selectedSellerData.unit,
-        seller_address: selectedSellerData.address,
-        seller_pincode: selectedSellerData.pincode,
-        seller_state: selectedSellerData.state,
-        seller_city: selectedSellerData.city,
-        seller_gst: selectedSellerData.gst_number || null,
-        seller_pan: selectedSellerData.pan_number,
-        seller_state_code: selectedSellerData.state_code,
-        seller_cin: selectedSellerData.cin_number,
-        seller_email: selectedSellerData.email,
-        seller_contact: selectedSellerData.contact,
-        seller_bank_name: selectedSellerData.bank_name,
-        seller_account_no: selectedSellerData.current_account_no,
-        seller_ifsc_code: selectedSellerData.ifsc_code,
-        seller_branch: selectedSellerData.branch,
+        raised_by_first_name: leadPIdataByID.raised_by_first_name,
+        raised_by_last_name: leadPIdataByID.raised_by_last_name,
+        seller_account: selectedSellerData.unit
+          ? selectedSellerData.unit
+          : leadPIdataByID.seller_account,
+        seller_address: selectedSellerData.address
+          ? selectedSellerData.address
+          : leadPIdataByID.seller_address,
+        seller_pincode: selectedSellerData.pincode
+          ? selectedSellerData.pincode
+          : leadPIdataByID.seller_pincode,
+        seller_state: selectedSellerData.state
+          ? selectedSellerData.state
+          : leadPIdataByID.seller_state,
+        seller_city: selectedSellerData.city
+          ? selectedSellerData.city
+          : leadPIdataByID.seller_city,
+        seller_gst: selectedSellerData.gst_number
+          ? selectedSellerData.gst_number
+          : leadPIdataByID.seller_gst,
+        seller_pan: selectedSellerData.pan_number
+          ? selectedSellerData.pan_number
+          : leadPIdataByID.seller_pan,
+        seller_state_code: selectedSellerData.state_code
+          ? selectedSellerData.state_code
+          : leadPIdataByID.seller_state_code,
+        seller_cin: selectedSellerData.cin_number
+          ? selectedSellerData.cin_number
+          : leadPIdataByID.seller_cin,
+        seller_email: selectedSellerData.email
+          ? selectedSellerData.email
+          : leadPIdataByID.seller_email,
+        seller_contact: selectedSellerData.contact
+          ? selectedSellerData.contact
+          : leadPIdataByID.seller_contact,
+        seller_bank_name: selectedSellerData.bank_name
+          ? selectedSellerData.bank_name
+          : leadPIdataByID.seller_bank_name,
+        seller_account_no: selectedSellerData.current_account_no
+          ? selectedSellerData.current_account_no
+          : leadPIdataByID.seller_account_no,
+        seller_ifsc_code: selectedSellerData.ifsc_code
+          ? selectedSellerData.ifsc_code
+          : leadPIdataByID.seller_ifsc_code,
+        seller_branch: selectedSellerData.branch
+          ? selectedSellerData.branch
+          : leadPIdataByID.seller_branch,
         lead: leads.lead_id,
         contact_person_name: leads.name,
         contact: leads.contact,
         alternate_contact: leads.alternate_contact,
-        company_name: leads.company,
+        company_name: leadPIdataByID.company_name
+          ? leadPIdataByID.company_name
+          : leads.company,
         gst_number: leads.gst_number || null,
         pan_number: leads.pan_number,
         billing_address: leads.address,
@@ -170,72 +226,72 @@ export const CreateLeadsProformaInvoice = (props) => {
         pincode: leads.shipping_pincode,
         state: leads.shipping_state,
         city: leads.shipping_city,
-        place_of_supply: inputValue.place_of_supply,
-        transporter_name: inputValue.transporter_name,
-        buyer_order_no: checked === true ? "verbal" : inputValue.buyer_order_no,
-        buyer_order_date: inputValue.buyer_order_date
-          ? inputValue.buyer_order_date
-          : values.someDate,
+        place_of_supply:
+          inputValue.place_of_supply || leadPIdataByID.place_of_supply,
+        transporter_name:
+          inputValue.transporter_name || leadPIdataByID.transporter_name,
+        buyer_order_no: checked
+          ? "Verbal"
+          : inputValue.buyer_order_no !== undefined
+          ? inputValue.buyer_order_no
+          : leadPIdataByID.buyer_order_no !== undefined
+          ? leadPIdataByID.buyer_order_no
+          : "",
+        buyer_order_date:
+          inputValue.buyer_order_date ||
+          leadPIdataByID.buyer_order_date ||
+          values.someDate,
         payment_terms: paymentTermData,
         delivery_terms: deliveryTermData,
         status: "Raised",
-        products: products,
+        products: productList,
       };
-      setOpen(true);
-      if (
-        leads.contact !== null &&
-        leads.address !== null &&
-        leads.state !== null &&
-        leads.city !== null &&
-        leads.pincode !== null &&
-        leads.shipping_address !== null &&
-        leads.shipping_state !== null &&
-        leads.shipping_city !== null &&
-        leads.shipping_pincode !== null &&
-        (leads.pan_number !== null || leads.gst_number !== null) &&
-        leads.company != null
-      ) {
-        await InvoiceServices.createLeadsProformaInvoiceData(req);
-        setOpenPopup(false);
-        navigate("/invoice/leads-performa-invoice");
-      } else {
-        setIDForEdit(leads.lead_id);
-        setOpenPopup2(true);
-      }
+      await InvoiceServices.updateLeadsProformaInvoiceData(
+        leadPIdataByID.pi_number,
+        req
+      );
+      setOpenPopup(false);
+      getAllLeadsPIDetails();
       setOpen(false);
     } catch (err) {
       if (err.response.status === 400) {
-        setErrorMessage(err.response.data.errors.buyer_order_no);
-        setValidationPrice(
-          err.response.data.errors.non_field_errors
-            ? err.response.data.errors.non_field_errors
-            : err.response.data.errors
-        );
+        setError({
+          place_of_supply: err.response.data.errors.place_of_supply || "",
+          buyer_order_no: err.response.data.errors.buyer_order_no || "",
+          transporter_name: err.response.data.errors.transporter_name || "",
+          validationPrice:
+            err.response.data.errors.non_field_errors ||
+            err.response.data.errors,
+        });
       }
-      setIDForEdit(leads.lead_id);
-      setOpenPopup2(true);
+    } finally {
       setOpen(false);
     }
   };
-
   return (
     <div>
-      <div>
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={open}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </div>
+      <CustomLoader open={open} />
 
       <Box
         component="form"
         noValidate
-        onSubmit={(e) => createLeadProformaInvoiceDetails(e)}
+        onSubmit={(e) => updateLeadProformaInvoiceDetails(e)}
       >
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={2}>
+            <TextField
+              fullWidth
+              size="small"
+              label="Seller Account"
+              variant="outlined"
+              value={
+                leadPIdataByID.seller_account
+                  ? leadPIdataByID.seller_account
+                  : ""
+              }
+            />
+          </Grid>
+          <Grid item xs={12} sm={2}>
             <Autocomplete
               name="seller_account"
               size="small"
@@ -243,10 +299,16 @@ export const CreateLeadsProformaInvoice = (props) => {
               id="combo-box-demo"
               onChange={(event, value) => setSelectedSellerData(value)}
               options={sellerData}
+              // value={selectedSellerData}s
               getOptionLabel={(option) => option.unit}
-              sx={{ minWidth: 300 }}
+              sx={{ minWidth: 200 }}
               renderInput={(params) => (
-                <TextField {...params} label="Seller Account" sx={tfStyle} />
+                <TextField
+                  {...params}
+                  label="Update Seller Account"
+                  required
+                  sx={tfStyle}
+                />
               )}
             />
           </Grid>
@@ -257,11 +319,17 @@ export const CreateLeadsProformaInvoice = (props) => {
               disablePortal
               id="combo-box-demo"
               onChange={(event, value) => setPaymentTermData(value)}
+              value={paymentTermData ? paymentTermData : ""}
               options={paymentTermsOptions.map((option) => option.label)}
               getOptionLabel={(option) => option}
               sx={{ minWidth: 300 }}
               renderInput={(params) => (
-                <TextField {...params} label="Payment Terms" sx={tfStyle} />
+                <TextField
+                  {...params}
+                  label="Payment Terms"
+                  required
+                  sx={tfStyle}
+                />
               )}
             />
           </Grid>
@@ -272,6 +340,7 @@ export const CreateLeadsProformaInvoice = (props) => {
               disablePortal
               id="combo-box-demo"
               onChange={(event, value) => setDeliveryTermData(value)}
+              value={deliveryTermData ? deliveryTermData : ""}
               options={deliveryTermsOptions.map((option) => option.label)}
               getOptionLabel={(option) => option}
               sx={{ minWidth: 300 }}
@@ -326,7 +395,7 @@ export const CreateLeadsProformaInvoice = (props) => {
               required
               name="address"
               size="small"
-              label="Address"
+              label="Billing Address"
               variant="outlined"
               value={leads.address ? leads.address : ""}
             />
@@ -338,7 +407,7 @@ export const CreateLeadsProformaInvoice = (props) => {
               required
               name="city"
               size="small"
-              label="City"
+              label="Billing City"
               variant="outlined"
               value={leads.city ? leads.city : ""}
             />
@@ -349,7 +418,7 @@ export const CreateLeadsProformaInvoice = (props) => {
               required
               name="state"
               size="small"
-              label="State"
+              label="Billing State"
               variant="outlined"
               value={leads.state ? leads.state : ""}
             />
@@ -361,7 +430,7 @@ export const CreateLeadsProformaInvoice = (props) => {
               name="pincode"
               size="small"
               type={"number"}
-              label="Pin Code"
+              label="Billing Pin Code"
               variant="outlined"
               value={leads.pincode ? leads.pincode : ""}
             />
@@ -428,17 +497,19 @@ export const CreateLeadsProformaInvoice = (props) => {
               size="small"
               label="Buyer Order No"
               variant="outlined"
-              disabled={checked === true}
+              disabled={checked}
               value={
-                checked === true
+                checked
                   ? "Verbal"
-                  : inputValue.buyer_order_no
+                  : inputValue.buyer_order_no !== undefined
                   ? inputValue.buyer_order_no
+                  : leadPIdataByID.buyer_order_no !== undefined
+                  ? leadPIdataByID.buyer_order_no
                   : ""
               }
               onChange={handleInputChange}
-              error={errorMessage}
-              helperText={errorMessage}
+              error={Boolean(error.buyer_order_no)}
+              helperText={error.buyer_order_no ? error.buyer_order_no[0] : ""}
               InputLabelProps={{
                 shrink: true,
               }}
@@ -453,9 +524,9 @@ export const CreateLeadsProformaInvoice = (props) => {
               label="Buyer Order Date"
               variant="outlined"
               value={
-                inputValue.buyer_order_date
-                  ? inputValue.buyer_order_date
-                  : values.someDate
+                inputValue.buyer_order_date ||
+                leadPIdataByID.buyer_order_date ||
+                values.someDate
               }
               onChange={handleInputChange}
               InputLabelProps={{
@@ -470,7 +541,16 @@ export const CreateLeadsProformaInvoice = (props) => {
               size="small"
               label="Place of Supply"
               variant="outlined"
-              value={inputValue.place_of_supply}
+              value={
+                inputValue.place_of_supply || leadPIdataByID.place_of_supply
+              }
+              error={Boolean(error.place_of_supply)}
+              helperText={
+                error.place_of_supply ? error.place_of_supply.join(", ") : ""
+              }
+              InputLabelProps={{
+                shrink: true,
+              }}
               onChange={handleInputChange}
             />
           </Grid>
@@ -481,7 +561,16 @@ export const CreateLeadsProformaInvoice = (props) => {
               size="small"
               label="Transporter Name"
               variant="outlined"
-              value={inputValue.transporter_name}
+              value={
+                inputValue.transporter_name || leadPIdataByID.transporter_name
+              }
+              InputLabelProps={{
+                shrink: true,
+              }}
+              error={Boolean(error.transporter_name)}
+              helperText={
+                error.transporter_name ? error.transporter_name[0] : ""
+              }
               onChange={handleInputChange}
             />
           </Grid>
@@ -492,7 +581,7 @@ export const CreateLeadsProformaInvoice = (props) => {
               </Divider>
             </Root>
           </Grid>
-          <ErrorMessage errMsg={validationPrice} />
+          <ErrorMessage errMsg={error.validationPrice} />
           {products.map((input, index) => {
             return (
               <>
@@ -505,7 +594,8 @@ export const CreateLeadsProformaInvoice = (props) => {
                     onChange={(event, value) =>
                       handleAutocompleteChange(index, event, value)
                     }
-                    options={product.map((option) => option.product)}
+                    value={input.product ? input.product : ""}
+                    options={productOption.map((option) => option.product)}
                     getOptionLabel={(option) => option}
                     sx={{ minWidth: 300 }}
                     renderInput={(params) => (
@@ -524,7 +614,7 @@ export const CreateLeadsProformaInvoice = (props) => {
                     size="small"
                     label="Quantity"
                     variant="outlined"
-                    value={input.quantity}
+                    value={input.quantity ? input.quantity : ""}
                     onChange={(event) => handleFormChange(index, event)}
                   />
                 </Grid>
@@ -547,7 +637,7 @@ export const CreateLeadsProformaInvoice = (props) => {
                     variant="outlined"
                     // error={validationPrice}
                     // helperText={validationPrice}
-                    // value={input.rate}
+                    value={input.rate ? input.rate : ""}
                     onChange={(event) => handleFormChange(index, event)}
                   />
                 </Grid>
@@ -559,7 +649,11 @@ export const CreateLeadsProformaInvoice = (props) => {
                     size="small"
                     label="Amount"
                     variant="outlined"
-                    value={(input.quantity * input.rate).toFixed(2)}
+                    value={
+                      input.quantity
+                        ? (input.quantity * input.rate).toFixed(2)
+                        : ""
+                    }
                     // onChange={(event) => handleFormChange(index, event)}
                   />
                 </Grid>
@@ -628,33 +722,6 @@ export const CreateLeadsProformaInvoice = (props) => {
           Submit
         </Button>
       </Box>
-      <Popup
-        maxWidth={"xl"}
-        title={"Update Lead Details"}
-        openPopup={openPopup2}
-        setOpenPopup={setOpenPopup2}
-      >
-        <Typography>
-          {validationPrice
-            ? validationPrice
-            : "Kindly update all Shipping Details & Laeds Details in required field"}
-        </Typography>
-        <Button variant="contained" onClick={() => setOpenPopup(false)}>
-          Update Leads
-        </Button>
-      </Popup>
-      <Popup
-        maxWidth={"xl"}
-        title={"Update Leads"}
-        openPopup={openPopup3}
-        setOpenPopup={setOpenPopup3}
-      >
-        <UpdateLeads
-          // getAllleadsData={getAllleadsData}
-          recordForEdit={idForEdit}
-          setOpenPopup={setOpenPopup3}
-        />
-      </Popup>
     </div>
   );
 };
@@ -738,3 +805,22 @@ const deliveryTermsOptions = [
     value: "courier_(freight_add_in_invoice",
   },
 ];
+
+const Root = styled("div")(({ theme }) => ({
+  width: "100%",
+  ...theme.typography.body2,
+  "& > :not(style) + :not(style)": {
+    marginTop: theme.spacing(2),
+  },
+}));
+
+const tfStyle = {
+  "& .MuiButtonBase-root.MuiAutocomplete-clearIndicator": {
+    color: "blue",
+    visibility: "visible",
+  },
+};
+
+const values = {
+  someDate: new Date().toISOString().substring(0, 10),
+};

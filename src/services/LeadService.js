@@ -42,6 +42,30 @@ const getFilterAssignedtoPaginateLeads = (currentPage, filter, search) => {
   );
 };
 
+// duplicate leads
+
+const getAllDuplicateLeads = () => {
+  return CustomAxios.get(`/api/lead/duplicate-leads/`);
+};
+
+const getAllPaginateDuplicateLeads = (currentPage) => {
+  return CustomAxios.get(`/api/lead/duplicate-leads/&page=${currentPage}`);
+};
+
+const getAllSearchDuplicateLeads = (filter, search) => {
+  return CustomAxios.get(`/api/lead/duplicate-leads/?${filter}=${search}`);
+};
+
+const getFilterPaginateDuplicateLeads = (
+  currentPage,
+  assignedTo,
+  assignedToValue
+) => {
+  return CustomAxios.get(
+    `/api/lead/duplicate-leads/?page=${currentPage}&${assignedTo}=${assignedToValue}`
+  );
+};
+
 const getAllUnassignedData = () => {
   return CustomAxios.get(`/api/lead/list-unassigned/`);
 };
@@ -116,6 +140,10 @@ const BulkLeadAssign = (data) => {
   return CustomAxios.post("/api/lead/assign-bulk-leads/", data);
 };
 
+const AssignMultipleLeads = (data) => {
+  return CustomAxios.post("/api/lead/assign-multiple-leads/", data);
+};
+
 const LeadServices = {
   getProfile,
   getAllLeads,
@@ -129,6 +157,10 @@ const LeadServices = {
   getFilterLeads,
   getFilterPaginateLeads,
   getFilterAssignedtoPaginateLeads,
+  getAllDuplicateLeads,
+  getAllPaginateDuplicateLeads,
+  getAllSearchDuplicateLeads,
+  getFilterPaginateDuplicateLeads,
   createLeads,
   getLeadsById,
   updateLeads,
@@ -142,6 +174,7 @@ const LeadServices = {
   updateRefernces,
   DoneLeadFollowup,
   BulkLeadAssign,
+  AssignMultipleLeads,
 };
 
 export default LeadServices;

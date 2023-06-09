@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import {
-  Backdrop,
   Box,
   Button,
-  CircularProgress,
   FormControl,
   Grid,
   InputLabel,
@@ -12,18 +10,19 @@ import {
   TextField,
 } from "@mui/material";
 import InvoiceServices from "../../../services/InvoiceService";
+import { CustomLoader } from "../../../Components/CustomLoader";
 
-const StatusOptions = [
-  { label: "Partially Paid", value: "partially_paid" },
-  { label: "Fully Paid", value: "fully_paid" },
-  { label: "Credit", value: "credit" },
-];
-
-export const LeadConfirmationPayment = (props) => {
-  const { getAllProformaInvoiceDetails, invoiceData, users, setOpenPopup } =
-    props;
-  const [inputValue, setInputValue] = useState([]);
+export const PaymentConfirmationPi = (props) => {
+  const {
+    getProformaInvoiceData,
+    invoiceData,
+    users,
+    setOpenPopup,
+    setOpenPopup2,
+  } = props;
+  const [inputValue, setInputValue] = useState({});
   const [open, setOpen] = useState(false);
+
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setInputValue({ ...inputValue, [name]: value });
@@ -36,6 +35,7 @@ export const LeadConfirmationPayment = (props) => {
         type: invoiceData.type,
         raised_by: users.email,
         seller_account: invoiceData.seller_account,
+        company: invoiceData.company,
         lead: invoiceData.lead,
         address: invoiceData.address,
         pincode: invoiceData.pincode,
@@ -49,7 +49,7 @@ export const LeadConfirmationPayment = (props) => {
         generation_date: invoiceData.generation_date,
         validity: invoiceData.validity,
         status: inputValue.status,
-        amount_recieved: inputValue.amount_recieved,
+        amount_recieved: inputValue.amount_recieved || 0,
         amount: invoiceData.amount,
         place_of_supply: invoiceData.place_of_supply,
         sgst: invoiceData.sgst ? invoiceData.sgst : null,
@@ -59,46 +59,41 @@ export const LeadConfirmationPayment = (props) => {
         gst_number: invoiceData.gst_number,
         pan_number: invoiceData.pan_number ? invoiceData.pan_number : null,
       };
-
       setOpen(true);
-      await InvoiceServices.sendForApprovalLeadsData(
-        invoiceData.pi_number,
-        req
-      );
+      if (invoiceData.type === "Customer") {
+        await InvoiceServices.sendForApprovalCompanyData(
+          invoiceData.pi_number,
+          req
+        );
+      } else {
+        await InvoiceServices.sendForApprovalLeadsData(
+          invoiceData.pi_number,
+          req
+        );
+      }
       setOpenPopup(false);
       setOpen(false);
-      getAllProformaInvoiceDetails();
+      setOpenPopup2(false);
+      getProformaInvoiceData();
     } catch (err) {
       setOpen(false);
     }
   };
 
   return (
-    <div>
-      {" "}
-      <div>
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={open}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </div>
-      <Box
-        component="form"
-        noValidate
-        onSubmit={(e) => SendForApprovalStatus(e)}
-      >
+    <>
+      <CustomLoader open={open} />
+      <Box component="form" noValidate onSubmit={SendForApprovalStatus}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <FormControl sx={{ minWidth: "200px" }} size="small">
+            <FormControl sx={{ minWidth: "400px" }} size="small">
               <InputLabel id="demo-simple-select-label">Status</InputLabel>
               <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
                 name="status"
                 label="Status"
-                value={inputValue.status}
+                value={inputValue.status || ""}
                 onChange={handleInputChange}
                 sx={{
                   "& .MuiSelect-iconOutlined": {
@@ -118,35 +113,35 @@ export const LeadConfirmationPayment = (props) => {
             </FormControl>
           </Grid>
           {inputValue.status === "Partially Paid" && (
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                required
-                name="amount_recieved"
-                size="small"
-                label="Amount Recieved"
-                variant="outlined"
-                value={inputValue.amount_recieved}
-                onChange={handleInputChange}
-              />
-            </Grid>
-          )}
-          {inputValue.status === "Partially Paid" && (
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                required
-                name="balance_amount"
-                size="small"
-                label="Balance Amount"
-                variant="outlined"
-                value={
-                  inputValue.amount_recieved
-                    ? invoiceData.total - inputValue.amount_recieved
-                    : ""
-                }
-              />
-            </Grid>
+            <>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  required
+                  name="amount_recieved"
+                  size="small"
+                  label="Amount Received"
+                  variant="outlined"
+                  value={inputValue.amount_recieved || ""}
+                  onChange={handleInputChange}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  required
+                  name="balance_amount"
+                  size="small"
+                  label="Balance Amount"
+                  variant="outlined"
+                  value={
+                    inputValue.amount_recieved
+                      ? invoiceData.total - inputValue.amount_recieved
+                      : ""
+                  }
+                />
+              </Grid>
+            </>
           )}
         </Grid>
         <Button
@@ -158,6 +153,12 @@ export const LeadConfirmationPayment = (props) => {
           Submit
         </Button>
       </Box>
-    </div>
+    </>
   );
 };
+
+const StatusOptions = [
+  { label: "Partially Paid", value: "partially_paid" },
+  { label: "Fully Paid", value: "fully_paid" },
+  { label: "Credit", value: "credit" },
+];

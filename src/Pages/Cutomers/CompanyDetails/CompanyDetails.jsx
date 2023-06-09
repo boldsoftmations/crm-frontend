@@ -8,7 +8,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { getSellerAccountData } from "../../../Redux/Action/Action";
 import InvoiceServices from "../../../services/InvoiceService";
 import { CustomLoader } from "../../../Components/CustomLoader";
-import { CreateCustomerProformaInvoice } from "../../Invoice/CustomerPerformaInvoice/CreateCustomerProformaInvoice";
 import { CustomSearchWithButton } from "../../../Components/CustomSearchWithButton";
 import { BulkCustomerAssign } from "./BulkCustomerAssign";
 import { CustomTable } from "./../../../Components/CustomTable";
@@ -16,6 +15,7 @@ import { CustomPagination } from "../../../Components/CustomPagination";
 import { CustomerActivityCreate } from "../../FollowUp/CustomerActivityCreate";
 import ProductService from "../../../services/ProductService";
 import { CustomerPotentialCreate } from "../../Potential/CustomerPotentialCreate";
+import { CreateCustomerProformaInvoice } from "./../../Invoice/ProformaInvoice/CreateCustomerProformaInvoice";
 
 export const CompanyDetails = () => {
   const dispatch = useDispatch();
