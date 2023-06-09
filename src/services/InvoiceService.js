@@ -34,98 +34,64 @@ const updateSellerAccountData = (id, data) => {
   return CustomAxios.patch(`/api/invoice/list-seller-account/${id}`, data);
 };
 
-// All Company Api
-
-const getPIData = (currentPage, filterType, filterValue, searchValue) => {
-  let url = `/api/invoice/list-proforma-invoice/`;
-
-  if (currentPage) {
-    url += `?page=${currentPage}`;
-  }
-
-  if (filterType !== "" && filterValue !== "") {
-    const separator = currentPage ? "&" : "?";
-    let FilterData = filterValue !== "" ? `${filterType}=${filterValue}` : null;
-    url += `${separator}${FilterData}`;
-  }
-
-  if (searchValue) {
-    const searchSerperator =
-      searchValue !== "" && filterType !== "" && filterValue !== "" ? "&" : "?";
-    const serach = searchValue !== "" && `search=${searchValue}`;
-    url += `${searchSerperator}${serach}`;
-  }
-
-  return CustomAxios.get(url);
+// all proforma invoice api
+const getPIData = () => {
+  return CustomAxios.get(`/api/invoice/list-proforma-invoice`);
 };
 
-const getAllPIData = (currentPage, filterType, filterValue, searchValue) => {
-  let url = `/api/invoice/list-proforma-invoice/?pi=all`;
-
-  if (currentPage) {
-    url += `?page=${currentPage}`;
-  }
-
-  if (filterType !== "" && filterValue !== "") {
-    let FilterData =
-      filterValue !== "" ? `&${filterType}=${filterValue}` : null;
-    url += `${FilterData}`;
-  }
-
-  if (searchValue) {
-    const serach = searchValue !== "" && `&search=${searchValue}`;
-    url += `${serach}`;
-  }
-
-  return CustomAxios.get(url);
-};
-const getPIDataWithPaginationAndFiltered = (
-  currentPage,
-  filterType,
-  FilterValue,
-  searchValue
-) => {
+const getPISearch = (filter, filterValue, search, searchValue) => {
   return CustomAxios.get(
-    `/api/invoice/list-proforma-invoice/?page=${currentPage}&${filterType}=${FilterValue}&search=${searchValue}`
+    `/api/invoice/list-proforma-invoice/?${filter}=${filterValue}&${search}=${searchValue}`
   );
 };
 
-const getCompanyPerformaInvoiceData = () => {
-  return CustomAxios.get(`/api/invoice/list-company-pi`);
-};
-
-const getCompanyPIFilterBy = (filter, search) => {
-  return CustomAxios.get(`/api/invoice/list-company-pi/?${filter}=${search}`);
-};
-
-const getCompanyPIPagination = (currentPage) => {
-  return CustomAxios.get(`/api/invoice/list-company-pi/?page=${currentPage}`);
-};
-
-const getCompanyPIPaginationWithFilterBy = (currentPage, filter, search) => {
+const getPIPagination = (currentPage) => {
   return CustomAxios.get(
-    `/api/invoice/list-company-pi/?page=${currentPage}&${filter}=${search}`
+    `/api/invoice/list-proforma-invoice/?page=${currentPage}`
+  );
+};
+
+const getPIPaginationWithFilterBy = (
+  currentPage,
+  filter,
+  filterValue,
+  search,
+  searchValue
+) => {
+  return CustomAxios.get(
+    `/api/invoice/list-proforma-invoice/?page=${currentPage}&${filter}=${filterValue}&${search}=${searchValue}`
+  );
+};
+
+const getAllPIData = () => {
+  return CustomAxios.get(`/api/invoice/list-proforma-invoice/?pi=all`);
+};
+
+const getAllPISearch = (filter, filterValue, search, searchValue) => {
+  return CustomAxios.get(
+    `/api/invoice/list-proforma-invoice/?pi=all&${filter}=${filterValue}&${search}=${searchValue}`
+  );
+};
+
+const getAllPIPagination = (currentPage) => {
+  return CustomAxios.get(
+    `/api/invoice/list-proforma-invoice/?pi=all&page=${currentPage}`
+  );
+};
+
+const getAllPIPaginationWithFilterBy = (
+  currentPage,
+  filter,
+  filterValue,
+  search,
+  searchValue
+) => {
+  return CustomAxios.get(
+    `/api/invoice/list-proforma-invoice/?pi=all&page=${currentPage}&${filter}=${filterValue}&${search}=${searchValue}`
   );
 };
 
 // All Lead Api
-const getLeadsPerformaInvoiceData = () => {
-  return CustomAxios.get(`/api/invoice/list-lead-pi`);
-};
-
-const getLeadsPerformaInvoiceFilterBy = (filter, search) => {
-  return CustomAxios.get(`/api/invoice/list-lead-pi/?${filter}=${search}`);
-};
-
-const getLeadsPerformaInvoicePagination = (currentPage) => {
-  return CustomAxios.get(`/api/invoice/list-lead-pi/?page=${currentPage}`);
-};
-
-const getLeadsPIPaginationWithFilterBy = (currentPage, filter, search) => {
-  return CustomAxios.get(
-    `/api/invoice/list-lead-pi/?page=${currentPage}&${filter}=${search}`
-  );
-};
 
 const getCompanyPerformaInvoiceByIDData = (id) => {
   return CustomAxios.get(`/api/invoice/list-company-pi/${id}`);
@@ -388,22 +354,18 @@ const InvoiceServices = {
   getCustomerOrderBookByID,
   getcustomerOrderBookData,
   getcustomerOrderBookDataByID,
-
   getProductOrderBookDataByID,
-
   getPIOrderBookDataByID,
   getSellerAccountDataById,
   updateSellerAccountData,
   getPIData,
+  getPISearch,
+  getPIPagination,
+  getPIPaginationWithFilterBy,
   getAllPIData,
-  getCompanyPerformaInvoiceData,
-  getCompanyPIFilterBy,
-  getCompanyPIPagination,
-  getCompanyPIPaginationWithFilterBy,
-  getLeadsPerformaInvoiceData,
-  getLeadsPerformaInvoiceFilterBy,
-  getLeadsPIPaginationWithFilterBy,
-  getLeadsPerformaInvoicePagination,
+  getAllPISearch,
+  getAllPIPagination,
+  getAllPIPaginationWithFilterBy,
   getCompanyPerformaInvoiceByIDData,
   getLeadsPerformaInvoiceByIDData,
   sendForApprovalCompanyData,

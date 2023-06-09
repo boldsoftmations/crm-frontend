@@ -110,13 +110,11 @@ export const ProformaInvoice = () => {
     try {
       setOpen(true);
       const response = currentPage
-        ? await InvoiceServices.getPIData(currentPage)
+        ? await InvoiceServices.getPIPagination(currentPage)
         : await InvoiceServices.getPIData();
       setInvoiceData(response.data.results);
       const total = response.data.count;
       setpageCount(Math.ceil(total / 25));
-      console.log("response filters", response);
-
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -142,11 +140,12 @@ export const ProformaInvoice = () => {
   const getSearchData = async (filterValue) => {
     try {
       setOpen(true);
+      const Search = searchValue ? "search" : "";
       if (filterValue || searchValue) {
-        const response = await InvoiceServices.getPIData(
-          null,
+        const response = await InvoiceServices.getPISearch(
           filterType,
           filterValue,
+          Search,
           searchValue
         );
         if (response) {
@@ -172,13 +171,14 @@ export const ProformaInvoice = () => {
       const page = value;
       setCurrentPage(page);
       setOpen(true);
-
+      const Search = searchValue ? "search" : "";
       if (statusValue || typeValue || searchValue) {
-        const response = await InvoiceServices.getPIData(
+        const response = await InvoiceServices.getPIPaginationWithFilterBy(
           "page",
           page,
           filterType,
           statusValue || typeValue,
+          Search,
           searchValue
         );
         if (response) {
@@ -192,7 +192,7 @@ export const ProformaInvoice = () => {
           setTypeValue(null);
         }
       } else {
-        const response = await InvoiceServices.getPIData("page ", page);
+        const response = await InvoiceServices.getPIPagination(page);
         setInvoiceData(response.data.results);
       }
 
