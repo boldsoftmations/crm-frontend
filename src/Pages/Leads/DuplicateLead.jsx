@@ -17,6 +17,7 @@ import {
   TableRow,
   TableCell,
   Checkbox,
+  TextField,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
 import ClearIcon from "@mui/icons-material/Clear";
@@ -34,7 +35,6 @@ import { BulkLeadAssign } from "./BulkLeadAssign";
 import { useDispatch, useSelector } from "react-redux";
 import InvoiceServices from "../../services/InvoiceService";
 import { getSellerAccountData } from "../../Redux/Action/Action";
-import { CustomSearchWithButton } from "../../Components/CustomSearchWithButton";
 import { LeadActivityCreate } from "../FollowUp/LeadActivityCreate";
 import { PotentialCreate } from "../Potential/PotentialCreate";
 
@@ -64,13 +64,8 @@ export const DuplicateLead = () => {
   const tokenData = useSelector((state) => state.auth);
   const users = tokenData.profile;
 
-  const handleInputChange = () => {
-    setFilterSelectedQuery(filterSelectedQuery);
-    getSearchData(filterSelectedQuery);
-  };
-
   const handleInputChanges = (event) => {
-    setFilterSelectedQuery(event.target.value);
+    setFilterQuery(event.target.value);
     getSearchData(event.target.value);
   };
 
@@ -180,11 +175,10 @@ export const DuplicateLead = () => {
   const getleads = async () => {
     try {
       setOpen(true);
-      if (filterSelectedQuery !== "" && filterQuery !== "" && currentPage) {
+      if (filterQuery !== "" && currentPage) {
         const response = await LeadServices.getFilterPaginateDuplicateLeads(
           currentPage,
-          filterQuery,
-          filterSelectedQuery
+          filterQuery
         );
 
         setLeads(response.data.results);
@@ -231,19 +225,18 @@ export const DuplicateLead = () => {
     try {
       setOpen(true);
       const filterSearch = value;
-      if (filterQuery) {
-        const response = await LeadServices.getAllSearchDuplicateLeads(
-          filterQuery,
-          filterSearch
-        );
-        if (response) {
-          setLeads(response.data.results);
-          const total = response.data.count;
-          setpageCount(Math.ceil(total / 25));
-        } else {
-          getleads();
-          setFilterSelectedQuery("");
-        }
+      console.log("filterSearch", filterSearch);
+      const response = await LeadServices.getFilteredDuplicateLeads(
+        "field",
+        filterSearch
+      );
+      if (response) {
+        setLeads(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      } else {
+        getleads();
+        setFilterSelectedQuery("");
       }
       setOpen(false);
     } catch (error) {
@@ -252,9 +245,13 @@ export const DuplicateLead = () => {
     }
   };
 
-  const getResetData = () => {
+  const getResetFilterData = () => {
+    setFilterQuery("");
+    getleads();
+  };
+
+  const getResetSearchData = () => {
     setFilterSelectedQuery("");
-    // setFilterQuery("");
     getleads();
   };
 
@@ -264,11 +261,10 @@ export const DuplicateLead = () => {
       setCurrentPage(page);
       setOpen(true);
 
-      if (filterSelectedQuery) {
+      if (filterQuery) {
         const response = await LeadServices.getFilterPaginateDuplicateLeads(
           page,
-          filterQuery,
-          filterSelectedQuery
+          filterQuery
         );
         if (response) {
           setLeads(response.data.results);
@@ -316,7 +312,25 @@ export const DuplicateLead = () => {
                   name="values"
                   label="Fliter By"
                   value={filterQuery}
-                  onChange={(event) => setFilterQuery(event.target.value)}
+                  onChange={(event) => handleInputChanges(event)}
+                  sx={{
+                    "& .MuiSelect-iconOutlined": {
+                      display: filterQuery ? "none" : "",
+                    },
+                    "&.Mui-focused .MuiIconButton-root": {
+                      color: "primary.main",
+                    },
+                  }}
+                  endAdornment={
+                    <IconButton
+                      sx={{
+                        visibility: filterQuery ? "visible" : "hidden",
+                      }}
+                      onClick={getResetFilterData}
+                    >
+                      <ClearIcon />
+                    </IconButton>
+                  }
                 >
                   {FilterOptions.map((option, i) => (
                     <MenuItem key={i} value={option.value}>
@@ -325,208 +339,55 @@ export const DuplicateLead = () => {
                   ))}
                 </Select>
               </FormControl>
-              {/* <Autocomplete
-                noOptionsText={"No Options"}
-                disablePortal
-                size="small"
-                id="combo-box-demo"
-                options={FilterOptions}
-                onChange={(event, value) => setFilterQuery(value)}
-                
-                renderInput={(params) => (
-                  <TextField {...params} label="Fliter By" />
-                )}
-              /> */}
             </Box>
-            <Box flexGrow={1}>
-              {filterQuery === "assigned_to__email" && (
-                <FormControl
-                  sx={{ minWidth: "200px", marginLeft: "1em" }}
+            {/* <Box flexGrow={1}>
+              <>
+                <TextField
+                  value={filterSelectedQuery}
+                  onChange={(event) =>
+                    setFilterSelectedQuery(event.target.value)
+                  }
+                  name="search"
                   size="small"
-                >
-                  <InputLabel id="demo-simple-select-label">
-                    Assigned To
-                  </InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    name="values"
-                    label="Assigned To"
-                    value={filterSelectedQuery}
-                    onChange={(event) => handleInputChanges(event)}
-                    sx={{
-                      "& .MuiSelect-iconOutlined": {
-                        display: filterSelectedQuery ? "none" : "",
-                      },
-                      "&.Mui-focused .MuiIconButton-root": {
-                        color: "primary.main",
-                      },
-                    }}
-                    endAdornment={
-                      <IconButton
-                        sx={{
-                          visibility: filterSelectedQuery
-                            ? "visible"
-                            : "hidden",
-                        }}
-                        onClick={getResetData}
-                      >
-                        <ClearIcon />
-                      </IconButton>
-                    }
-                  >
-                    {assigned.map((option, i) => (
-                      <MenuItem key={i} value={option.email}>
-                        {option.email}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              )}
-              {filterQuery === "references__source" && (
-                <FormControl
-                  sx={{ minWidth: "200px", marginLeft: "1em" }}
-                  size="small"
-                >
-                  <InputLabel id="demo-simple-select-label">
-                    Reference
-                  </InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    name="values"
-                    label="Reference"
-                    value={filterSelectedQuery}
-                    onChange={(event) => handleInputChanges(event)}
-                    sx={{
-                      "& .MuiSelect-iconOutlined": {
-                        display: filterSelectedQuery ? "none" : "",
-                      },
-                      "&.Mui-focused .MuiIconButton-root": {
-                        color: "primary.main",
-                      },
-                    }}
-                    endAdornment={
-                      <IconButton
-                        sx={{
-                          visibility: filterSelectedQuery
-                            ? "visible"
-                            : "hidden",
-                        }}
-                        onClick={getResetData}
-                      >
-                        <ClearIcon />
-                      </IconButton>
-                    }
-                  >
-                    {referenceData.map((option) => (
-                      <MenuItem key={option.id} value={option.source}>
-                        {option.source}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              )}
-              {filterQuery === "stage" && (
-                <FormControl
-                  sx={{ minWidth: "200px", marginLeft: "1em" }}
-                  size="small"
-                >
-                  <InputLabel id="demo-simple-select-label">Stage</InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    name="values"
-                    label="Stage"
-                    value={filterSelectedQuery}
-                    onChange={(event) => handleInputChanges(event)}
-                    sx={{
-                      "& .MuiSelect-iconOutlined": {
-                        display: filterSelectedQuery ? "none" : "",
-                      },
-                      "&.Mui-focused .MuiIconButton-root": {
-                        color: "primary.main",
-                      },
-                    }}
-                    endAdornment={
-                      <IconButton
-                        sx={{
-                          visibility: filterSelectedQuery
-                            ? "visible"
-                            : "hidden",
-                        }}
-                        onClick={getResetData}
-                      >
-                        <ClearIcon />
-                      </IconButton>
-                    }
-                  >
-                    {StageOptions.map((option, i) => (
-                      <MenuItem key={i} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              )}
-              {filterQuery === "description__name" && (
-                <FormControl
-                  sx={{ minWidth: "200px", marginLeft: "1em" }}
-                  size="small"
-                >
-                  <InputLabel id="demo-simple-select-label">
-                    Description
-                  </InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    name="values"
-                    label="Description"
-                    value={filterSelectedQuery}
-                    onChange={(event) => handleInputChanges(event)}
-                    sx={{
-                      "& .MuiSelect-iconOutlined": {
-                        display: filterSelectedQuery ? "none" : "",
-                      },
-                      "&.Mui-focused .MuiIconButton-root": {
-                        color: "primary.main",
-                      },
-                    }}
-                    endAdornment={
-                      <IconButton
-                        sx={{
-                          visibility: filterSelectedQuery
-                            ? "visible"
-                            : "hidden",
-                        }}
-                        onClick={getResetData}
-                      >
-                        <ClearIcon />
-                      </IconButton>
-                    }
-                  >
-                    {descriptionMenuData.map((option) => (
-                      <MenuItem key={option.id} value={option.name}>
-                        {option.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              )}
-              {(filterQuery === "search" ||
-                filterQuery === "gst_number" ||
-                filterQuery === "contact" ||
-                filterQuery === "email" ||
-                filterQuery === "company" ||
-                filterQuery === "pan_number") && (
-                <CustomSearchWithButton
-                  filterSelectedQuery={filterSelectedQuery}
-                  setFilterSelectedQuery={setFilterSelectedQuery}
-                  handleInputChange={handleInputChange}
-                  getResetData={getResetData}
+                  placeholder="search"
+                  label="Search"
+                  variant="outlined"
+                  sx={{
+                    backgroundColor: "#ffffff",
+                    marginLeft: "1em",
+                    "& .MuiSelect-iconOutlined": {
+                      display: filterSelectedQuery ? "none" : "",
+                    },
+                    "&.Mui-focused .MuiIconButton-root": {
+                      color: "primary.main",
+                    },
+                  }}
+                  InputProps={{
+                    endAdornment: (
+                      <>
+                        <IconButton
+                          sx={{
+                            visibility: filterSelectedQuery
+                              ? "visible"
+                              : "hidden",
+                          }}
+                          onClick={getResetSearchData}
+                        >
+                          <ClearIcon />
+                        </IconButton>
+                      </>
+                    ),
+                  }}
                 />
-              )}
-            </Box>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={getSearchData}
+                >
+                  Search
+                </Button>
+              </>
+            </Box> */}
             <Box flexGrow={1} align="center">
               <h3
                 style={{
@@ -723,9 +584,6 @@ export const DuplicateLead = () => {
 };
 
 const FilterOptions = [
-  { label: "References", value: "references__source" },
-  { label: "Description", value: "description__name" },
-  { label: "Assigned To", value: "assigned_to__email" },
   { label: "Gst Number", value: "gst_number" },
   { label: "Contact", value: "contact" },
   { label: "Alt Contact", value: "alternate_contact" },

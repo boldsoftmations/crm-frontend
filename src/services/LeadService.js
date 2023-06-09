@@ -52,17 +52,28 @@ const getAllPaginateDuplicateLeads = (currentPage) => {
   return CustomAxios.get(`/api/lead/duplicate-leads/&page=${currentPage}`);
 };
 
-const getAllSearchDuplicateLeads = (filter, search) => {
-  return CustomAxios.get(`/api/lead/duplicate-leads/?${filter}=${search}`);
+const getAllSearchDuplicateLeads = (
+  filter,
+  filterValue
+  // search,
+  // searchValue
+) => {
+  return CustomAxios.get(`/api/lead/duplicate-leads/?${filter}=${filterValue}`);
+};
+
+const getFilteredDuplicateLeads = (filter, filterValue) => {
+  return CustomAxios.get(`/api/lead/duplicate-leads/?${filter}=${filterValue}`);
 };
 
 const getFilterPaginateDuplicateLeads = (
   currentPage,
-  assignedTo,
-  assignedToValue
+  filter,
+  filterValue
+  // search,
+  // searchValue
 ) => {
   return CustomAxios.get(
-    `/api/lead/duplicate-leads/?page=${currentPage}&${assignedTo}=${assignedToValue}`
+    `/api/lead/duplicate-leads/?page=${currentPage}&${filter}=${filterValue}`
   );
 };
 
@@ -160,6 +171,7 @@ const LeadServices = {
   getAllDuplicateLeads,
   getAllPaginateDuplicateLeads,
   getAllSearchDuplicateLeads,
+  getFilteredDuplicateLeads,
   getFilterPaginateDuplicateLeads,
   createLeads,
   getLeadsById,
