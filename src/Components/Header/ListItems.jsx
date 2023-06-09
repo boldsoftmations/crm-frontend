@@ -2355,35 +2355,40 @@ export const ListItems = (props) => {
           {userData.groups.includes("Sales") && (
             <>
               {/* Dashboard */}
-              <ListItem
-                button
-                onClick={() => setExpandDashboard(!expandDashboard)}
-                style={{ width: 300 }}
-              >
-                <ListItemIcon>
-                  <DashboardIcon />
-                </ListItemIcon>
-                <ListItemText primary="Dashboard Details" />
-                {expandDashboard ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-              </ListItem>
-              <Collapse in={expandDashboard} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
+              {userData.is_staff !== true && (
+                <>
                   <ListItem
                     button
-                    component={RouterLink}
-                    to="/user/home"
+                    onClick={() => setExpandDashboard(!expandDashboard)}
                     style={{ width: 300 }}
                   >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Dashboard"
-                    />
+                    <ListItemIcon>
+                      <DashboardIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Dashboard Details" />
+                    {expandDashboard ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                   </ListItem>
-                </List>
-              </Collapse>
+
+                  <Collapse in={expandDashboard} timeout="auto" unmountOnExit>
+                    <Divider />
+                    <List component="div" disablePadding>
+                      <ListItem
+                        button
+                        component={RouterLink}
+                        to="/user/home"
+                        style={{ width: 300 }}
+                      >
+                        <ListItemText
+                          component={Button}
+                          onClick={() => setOpen(false)}
+                          inset
+                          primary="Dashboard"
+                        />
+                      </ListItem>
+                    </List>
+                  </Collapse>
+                </>
+              )}
               {/* Leads */}
 
               <ListItem
