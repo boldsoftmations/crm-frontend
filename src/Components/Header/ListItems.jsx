@@ -24,6 +24,7 @@ import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
+import FollowTheSignsIcon from "@mui/icons-material/FollowTheSigns";
 
 export const ListItems = (props) => {
   const { setOpen } = props;
@@ -38,6 +39,7 @@ export const ListItems = (props) => {
   const [productForecast, setProductForecast] = useState(false);
   const [dispatchDetails, setDispatchDetails] = useState(false);
   const [expandInventory, setExpandInventory] = useState(false);
+  const [expandFollowup, setExpandFollowup] = useState(false);
   const [expandTask, setExpandTask] = useState(false);
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
@@ -450,6 +452,36 @@ export const ListItems = (props) => {
             </List>
           </Collapse>
 
+          {/* All Followup */}
+          <ListItem
+            button
+            onClick={() => setExpandFollowup(!expandFollowup)}
+            style={{ width: 300 }}
+          >
+            <ListItemIcon>
+              <FollowTheSignsIcon />
+            </ListItemIcon>
+            <ListItemText primary="Followup" />
+            {expandFollowup ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          </ListItem>
+          <Collapse in={expandFollowup} timeout="auto" unmountOnExit>
+            <Divider />
+            <List component="div" disablePadding>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/lead-customer/all-followup"
+                style={{ width: 300 }}
+              >
+                <ListItemText
+                  component={Button}
+                  onClick={() => setOpen(false)}
+                  inset
+                  primary="All Followup"
+                />
+              </ListItem>
+            </List>
+          </Collapse>
           {/*Proforma Invoice  */}
           <ListItem
             button

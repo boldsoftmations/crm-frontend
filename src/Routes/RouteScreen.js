@@ -63,6 +63,7 @@ import { CustomerFollowup } from "../Pages/Cutomers/CustomerFollowup/CustomerFol
 import { AllProformaInvoice } from "./../Pages/Invoice/ProformaInvoice/AllProformaInvoice";
 import { ProformaInvoice } from "./../Pages/Invoice/ProformaInvoice/ProformaInvoice";
 import { DuplicateLead } from "../Pages/Leads/DuplicateLead";
+import { AllFollowup } from "../Pages/FollowUp/AllFollowup";
 
 export const RouteScreen = () => {
   const tokenData = useSelector((state) => state.auth);
@@ -154,6 +155,10 @@ export const RouteScreen = () => {
             <Route
               path="/customers/view-followup"
               element={<CustomerFollowup />}
+            />
+            <Route
+              path="/lead-customer/all-followup"
+              element={<AllFollowup />}
             />
             {/* Invoice - Seller Account Route */}
             <Route path="/invoice/seller-account" element={<SellerAccount />} />

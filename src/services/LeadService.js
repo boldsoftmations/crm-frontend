@@ -155,6 +155,36 @@ const AssignMultipleLeads = (data) => {
   return CustomAxios.post("/api/lead/assign-multiple-leads/", data);
 };
 
+const getAllFollowup = (startDate, endDate) => {
+  return CustomAxios.get(
+    `/api/lead/list-all-follow-ups/?date_range_after=${startDate}&date_range_before=${endDate}`
+  );
+};
+
+const getFollowupWithPagination = (startDate, endDate, currentPage) => {
+  return CustomAxios.get(
+    `/api/lead/list-all-follow-ups/?date_range_after=${startDate}&date_range_before=${endDate}&page=${currentPage}`
+  );
+};
+
+const getFollowupWithSearch = (startDate, endDate, search, searchValue) => {
+  return CustomAxios.get(
+    `/api/lead/list-all-follow-ups/?date_range_after=${startDate}&date_range_before=${endDate}&${search}=${searchValue}`
+  );
+};
+
+const getFollowupWithPaginationAndSearch = (
+  startDate,
+  endDate,
+  currentPage,
+  search,
+  searchValue
+) => {
+  return CustomAxios.get(
+    `/api/lead/list-all-follow-ups/?date_range_after=${startDate}&date_range_before=${endDate}&page=${currentPage}&${search}=${searchValue}`
+  );
+};
+
 const LeadServices = {
   getProfile,
   getAllLeads,
@@ -187,6 +217,10 @@ const LeadServices = {
   DoneLeadFollowup,
   BulkLeadAssign,
   AssignMultipleLeads,
+  getAllFollowup,
+  getFollowupWithPagination,
+  getFollowupWithSearch,
+  getFollowupWithPaginationAndSearch,
 };
 
 export default LeadServices;
