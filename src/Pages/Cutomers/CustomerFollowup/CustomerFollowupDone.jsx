@@ -5,7 +5,6 @@ import CustomerServices from "../../../services/CustomerService";
 
 export const CustomerFollowupDone = (props) => {
   const { DoneFollowup, setOpenModal, getFollowUp } = props;
-  console.log("DoneFollowup", DoneFollowup);
   const [open, setOpen] = useState(false);
   const AllFollowUpDone = async (e) => {
     try {
@@ -19,7 +18,7 @@ export const CustomerFollowupDone = (props) => {
         user: DoneFollowup.user,
         is_followed_up: true,
       };
-      await CustomerServices.DoneFollowup(DoneFollowup.company, data);
+      await CustomerServices.DoneFollowup(DoneFollowup.id, data);
 
       setOpenModal(false);
       getFollowUp();

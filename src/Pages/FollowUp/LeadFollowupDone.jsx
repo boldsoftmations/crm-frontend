@@ -6,6 +6,7 @@ import { CustomLoader } from "../../Components/CustomLoader";
 export const LeadFollowupDone = (props) => {
   const { DoneFollowup, setOpenModal, getFollowUp } = props;
   const [open, setOpen] = useState(false);
+
   const AllFollowUpDone = async (e) => {
     try {
       e.preventDefault();
@@ -19,7 +20,7 @@ export const LeadFollowupDone = (props) => {
         user: DoneFollowup.user,
         is_followed_up: true,
       };
-      await LeadServices.DoneLeadFollowup(DoneFollowup.leads, data);
+      await LeadServices.DoneLeadFollowup(DoneFollowup.id, data);
       console.log("After api");
       setOpenModal(false);
       getFollowUp();
@@ -29,6 +30,7 @@ export const LeadFollowupDone = (props) => {
       console.log("err creating follwups", err);
     }
   };
+
   return (
     <>
       <CustomLoader open={open} />
