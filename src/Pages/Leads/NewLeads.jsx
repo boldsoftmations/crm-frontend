@@ -55,8 +55,8 @@ export const NewLeads = () => {
   const users = tokenData.profile;
 
   const handleInputChange = () => {
-    setFilterSelectedQuery(filterSelectedQuery);
-    getSearchData(filterSelectedQuery);
+    setSearchQuery(searchQuery);
+    getSearchData(filterSelectedQuery, searchQuery);
   };
 
   const handleInputChanges = (event) => {
