@@ -739,6 +739,15 @@ export const SalesDashboard = (props) => {
                 stroke="#8884d8"
                 fill="#8884d8"
               />
+              <text
+                x="50%"
+                y={20}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                className="chart-title"
+              >
+                Call Performance
+              </text>
             </AreaChart>
           </ResponsiveContainer>
         </Grid>

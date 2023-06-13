@@ -56,7 +56,7 @@ export const StaffDashboard = (props) => {
     descriptionQuantity,
     callPerformance,
   } = props;
-  console.log("callPerformance", callPerformance);
+
   const paletteColors = [
     "#f14c14",
     "#f39c35",
@@ -822,6 +822,15 @@ export const StaffDashboard = (props) => {
                 stroke="#8884d8"
                 fill="#8884d8"
               />
+              <text
+                x="50%"
+                y={20}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                className="chart-title"
+              >
+                Call Performance
+              </text>
             </AreaChart>
           </ResponsiveContainer>
         </Grid>
