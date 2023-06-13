@@ -45,7 +45,7 @@ export const LeadActivity = (props) => {
               </Button>
             </Box>
           </Box>
-          {followup.length > 0 && (
+          {followup && followup.length > 0 && (
             <Box
               sx={{
                 display: "flex",

@@ -13,6 +13,8 @@ import {
   CartesianGrid,
   LineChart,
   Line,
+  AreaChart,
+  Area,
 } from "recharts";
 import { Grid, Box, Typography, Paper, CircularProgress } from "@mui/material";
 import { experimentalStyled as styled } from "@mui/material/styles";
@@ -37,6 +39,8 @@ export const SalesDashboard = (props) => {
     funnelData,
     hoveredSegment,
     handleRowClick,
+    descriptionQuantity,
+    callPerformance,
   } = props;
 
   const paletteColors = [
@@ -196,6 +200,15 @@ export const SalesDashboard = (props) => {
                 fill={COLORS[1]}
                 barSize={20}
               />
+              <text
+                x="50%"
+                y={20}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                className="chart-title"
+              >
+                Actual vs Forecast
+              </text>
             </BarChart>
           </ResponsiveContainer>
         </Grid>
@@ -225,6 +238,15 @@ export const SalesDashboard = (props) => {
                 stroke={COLORS[0]}
                 strokeWidth={2}
               />
+              <text
+                x="50%"
+                y={20}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                className="chart-title"
+              >
+                New Customer
+              </text>
             </LineChart>
           </ResponsiveContainer>
         </Grid>
@@ -492,6 +514,15 @@ export const SalesDashboard = (props) => {
                 fill={COLORS[2]}
                 barSize={20}
               />
+              <text
+                x="50%"
+                y={20}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                className="chart-title"
+              >
+                Month Calls
+              </text>
             </BarChart>
           </ResponsiveContainer>
         </Grid>
@@ -535,6 +566,15 @@ export const SalesDashboard = (props) => {
                 fill={COLORS[2]}
                 barSize={20}
               />
+              <text
+                x="50%"
+                y={20}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                className="chart-title"
+              >
+                Weekly Calls
+              </text>
             </BarChart>
           </ResponsiveContainer>
         </Grid>
@@ -581,6 +621,15 @@ export const SalesDashboard = (props) => {
                 fill={COLORS[2]}
                 barSize={20}
               />
+              <text
+                x="50%"
+                y={20}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                className="chart-title"
+              >
+                Daily Calls
+              </text>
             </BarChart>
           </ResponsiveContainer>
         </Grid>
@@ -614,7 +663,83 @@ export const SalesDashboard = (props) => {
               <Tooltip />
               <Legend />
               <Bar dataKey="value" fill={COLORS[0]} barSize={20} />
+              <text
+                x="50%"
+                y={20}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                className="chart-title"
+              >
+                Description Wise Pending Quantity
+              </text>
             </BarChart>
+          </ResponsiveContainer>
+        </Grid>
+      </Grid>
+
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={12} md={12} lg={12} sx={{ marginTop: "20px" }}>
+          <ResponsiveContainer
+            width="100%"
+            height={400}
+            preserveAspectRatio={false}
+          >
+            <BarChart
+              width={600}
+              height={300}
+              data={descriptionQuantity}
+              layout="vertical"
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis type="number" width={300} />
+              <YAxis
+                dataKey="name"
+                type="category"
+                // angle={-45}
+                textAnchor="end"
+                interval={0}
+                width={300}
+                tick={{ fontSize: 15 }} // Adjust font size of tick labels
+                tickLine={false} // Disable tick lines
+                tickMargin={10} // Add margin to tick labels
+              />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="value" fill={COLORS[0]} barSize={20} />
+              <text
+                x="50%"
+                y={20}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                className="chart-title"
+              >
+                Description Wise Quantity
+              </text>
+            </BarChart>
+          </ResponsiveContainer>
+        </Grid>
+      </Grid>
+
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={12} md={12} lg={12} sx={{ marginTop: "20px" }}>
+          <ResponsiveContainer
+            width="100%"
+            height={400}
+            preserveAspectRatio={false}
+          >
+            <AreaChart width={600} height={400} data={callPerformance}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Area
+                type="monotone"
+                dataKey="value"
+                stroke="#8884d8"
+                fill="#8884d8"
+              />
+            </AreaChart>
           </ResponsiveContainer>
         </Grid>
       </Grid>

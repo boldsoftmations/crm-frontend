@@ -51,8 +51,6 @@ export const UnassignedLead = () => {
   const [descriptionMenuData, setDescriptionMenuData] = useState([]);
   const [product, setProduct] = useState([]);
   const [leadsByID, setLeadsByID] = useState(null);
-  const [followup, setFollowup] = useState(null);
-  const [potential, setPotential] = useState(null);
   const [selectedRows, setSelectedRows] = useState([]);
 
   const handleInputChange = (event) => {
@@ -61,9 +59,8 @@ export const UnassignedLead = () => {
   };
 
   const openInPopup = (item) => {
-    setLeadsByID(item);
-    setFollowup(item.followup);
-    setPotential(item.potential);
+    setLeadsByID(item.lead_id);
+
     setOpenPopup(true);
   };
 
@@ -377,7 +374,7 @@ export const UnassignedLead = () => {
                   fontWeight: 800,
                 }}
               >
-                Unassigned Lead
+                Unassigned Leads
               </h3>
             </Box>
             {selectedRows.length > 0 && (
@@ -493,8 +490,6 @@ export const UnassignedLead = () => {
       >
         <UpdateLeads
           leadsByID={leadsByID}
-          followup={followup}
-          potential={potential}
           assigned={assigned}
           descriptionMenuData={descriptionMenuData}
           setOpenPopup={setOpenPopup}

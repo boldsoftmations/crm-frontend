@@ -272,7 +272,7 @@ export const ListItems = (props) => {
                   component={Button}
                   onClick={() => setOpen(false)}
                   inset
-                  primary="New Lead"
+                  primary="New Leads"
                 />
               </ListItem>
               <ListItem
@@ -285,61 +285,10 @@ export const ListItems = (props) => {
                   component={Button}
                   onClick={() => setOpen(false)}
                   inset
-                  primary="Open Lead"
+                  primary="Opened Leads"
                 />
               </ListItem>
-              <ListItem
-                button
-                component={RouterLink}
-                to="/leads/opportunity-lead"
-                style={{ width: 300 }}
-              >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="Oppurtunity Lead"
-                />
-              </ListItem>
-              <ListItem
-                button
-                component={RouterLink}
-                to="/leads/potential-lead"
-                style={{ width: 300 }}
-              >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="Potential Lead"
-                />
-              </ListItem>
-              <ListItem
-                button
-                component={RouterLink}
-                to="/leads/interested-lead"
-                style={{ width: 300 }}
-              >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="Interested Lead"
-                />
-              </ListItem>
-              <ListItem
-                button
-                component={RouterLink}
-                to="/leads/not_interested-lead"
-                style={{ width: 300 }}
-              >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="Not Interested Lead"
-                />
-              </ListItem>
+
               <ListItem
                 button
                 component={RouterLink}
@@ -350,7 +299,7 @@ export const ListItems = (props) => {
                   component={Button}
                   onClick={() => setOpen(false)}
                   inset
-                  primary="Closed Lead"
+                  primary="Dropped Leads"
                 />
               </ListItem>
               <ListItem
@@ -363,7 +312,7 @@ export const ListItems = (props) => {
                   component={Button}
                   onClick={() => setOpen(false)}
                   inset
-                  primary="Duplicate Lead"
+                  primary="Duplicate Leads"
                 />
               </ListItem>
               <ListItem
@@ -376,20 +325,7 @@ export const ListItems = (props) => {
                   component={Button}
                   onClick={() => setOpen(false)}
                   inset
-                  primary="Unassigned Lead"
-                />
-              </ListItem>
-              <ListItem
-                button
-                component={RouterLink}
-                to="/leads/view-followup"
-                style={{ width: 300 }}
-              >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="Followup Lead"
+                  primary="Unassigned Leads"
                 />
               </ListItem>
             </List>
@@ -436,19 +372,6 @@ export const ListItems = (props) => {
                   primary="Unassigned Customer"
                 />
               </ListItem>
-              <ListItem
-                button
-                component={RouterLink}
-                to="/customers/view-followup"
-                style={{ width: 300 }}
-              >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="Followup Customer"
-                />
-              </ListItem>
             </List>
           </Collapse>
 
@@ -470,14 +393,14 @@ export const ListItems = (props) => {
               <ListItem
                 button
                 component={RouterLink}
-                to="/lead-customer/all-followup"
+                to="/followp/view-followup"
                 style={{ width: 300 }}
               >
                 <ListItemText
                   component={Button}
                   onClick={() => setOpen(false)}
                   inset
-                  primary="All Followup"
+                  primary="Followup"
                 />
               </ListItem>
             </List>
@@ -500,14 +423,27 @@ export const ListItems = (props) => {
               <ListItem
                 button
                 component={RouterLink}
-                to="/invoice/performa-invoice"
+                to="/invoice/unapproved-pi"
                 style={{ width: 300 }}
               >
                 <ListItemText
                   component={Button}
                   onClick={() => setOpen(false)}
                   inset
-                  primary="Performa Invoice"
+                  primary="UnApproved PI"
+                />
+              </ListItem>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/invoice/active-pi"
+                style={{ width: 300 }}
+              >
+                <ListItemText
+                  component={Button}
+                  onClick={() => setOpen(false)}
+                  inset
+                  primary="Active PI"
                 />
               </ListItem>
               <ListItem
@@ -520,7 +456,7 @@ export const ListItems = (props) => {
                   component={Button}
                   onClick={() => setOpen(false)}
                   inset
-                  primary="All Performa Invoice"
+                  primary="All PI"
                 />
               </ListItem>
             </List>
@@ -1355,7 +1291,7 @@ export const ListItems = (props) => {
                       component={Button}
                       onClick={() => setOpen(false)}
                       inset
-                      primary="New Lead"
+                      primary="New Leads"
                     />
                   </ListItem>
                   <ListItem
@@ -1368,60 +1304,7 @@ export const ListItems = (props) => {
                       component={Button}
                       onClick={() => setOpen(false)}
                       inset
-                      primary="Open Lead"
-                    />
-                  </ListItem>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/leads/opportunity-lead"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Oppurtunity Lead"
-                    />
-                  </ListItem>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/leads/potential-lead"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Potential Lead"
-                    />
-                  </ListItem>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/leads/interested-lead"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Interested Lead"
-                    />
-                  </ListItem>
-
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/leads/view-followup"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Followup Lead"
+                      primary="Open Leads"
                     />
                   </ListItem>
                 </List>
@@ -1455,21 +1338,40 @@ export const ListItems = (props) => {
                       primary="Customer"
                     />
                   </ListItem>
+                </List>
+              </Collapse>
+
+              {/* All Followup */}
+              <ListItem
+                button
+                onClick={() => setExpandFollowup(!expandFollowup)}
+                style={{ width: 300 }}
+              >
+                <ListItemIcon>
+                  <FollowTheSignsIcon />
+                </ListItemIcon>
+                <ListItemText primary="Followup" />
+                {expandFollowup ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+              </ListItem>
+              <Collapse in={expandFollowup} timeout="auto" unmountOnExit>
+                <Divider />
+                <List component="div" disablePadding>
                   <ListItem
                     button
                     component={RouterLink}
-                    to="/customers/view-followup"
+                    to="/followp/view-followup"
                     style={{ width: 300 }}
                   >
                     <ListItemText
                       component={Button}
                       onClick={() => setOpen(false)}
                       inset
-                      primary="Followup Customer"
+                      primary="Followup"
                     />
                   </ListItem>
                 </List>
               </Collapse>
+
               {/*Proforma Invoice  */}
               <ListItem
                 button
@@ -1492,31 +1394,19 @@ export const ListItems = (props) => {
                   <ListItem
                     button
                     component={RouterLink}
-                    to="/invoice/performa-invoice"
+                    to="/invoice/active-pi"
                     style={{ width: 300 }}
                   >
                     <ListItemText
                       component={Button}
                       onClick={() => setOpen(false)}
                       inset
-                      primary="Performa Invoice"
-                    />
-                  </ListItem>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/invoice/all-performa-invoice"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="All Performa Invoice"
+                      primary="Active PI"
                     />
                   </ListItem>
                 </List>
               </Collapse>
+
               {/*Sales Invoice  */}
               <ListItem
                 button
@@ -2434,7 +2324,6 @@ export const ListItems = (props) => {
                 <ListItemText primary="Leads" />
                 {expand ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
-
               <Collapse in={expand} timeout="auto" unmountOnExit>
                 <Divider />
                 <List component="div" disablePadding>
@@ -2448,7 +2337,7 @@ export const ListItems = (props) => {
                       component={Button}
                       onClick={() => setOpen(false)}
                       inset
-                      primary="New Lead"
+                      primary="New Leads"
                     />
                   </ListItem>
                   <ListItem
@@ -2461,60 +2350,7 @@ export const ListItems = (props) => {
                       component={Button}
                       onClick={() => setOpen(false)}
                       inset
-                      primary="Open Lead"
-                    />
-                  </ListItem>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/leads/opportunity-lead"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Oppurtunity Lead"
-                    />
-                  </ListItem>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/leads/potential-lead"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Potential Lead"
-                    />
-                  </ListItem>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/leads/interested-lead"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Interested Lead"
-                    />
-                  </ListItem>
-
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/leads/view-followup"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Followup Lead"
+                      primary="Open Leads"
                     />
                   </ListItem>
                 </List>
@@ -2548,17 +2384,35 @@ export const ListItems = (props) => {
                       primary="Customer"
                     />
                   </ListItem>
+                </List>
+              </Collapse>
+
+              {/* All Followup */}
+              <ListItem
+                button
+                onClick={() => setExpandFollowup(!expandFollowup)}
+                style={{ width: 300 }}
+              >
+                <ListItemIcon>
+                  <FollowTheSignsIcon />
+                </ListItemIcon>
+                <ListItemText primary="Followup" />
+                {expandFollowup ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+              </ListItem>
+              <Collapse in={expandFollowup} timeout="auto" unmountOnExit>
+                <Divider />
+                <List component="div" disablePadding>
                   <ListItem
                     button
                     component={RouterLink}
-                    to="/customers/view-followup"
+                    to="/followp/view-followup"
                     style={{ width: 300 }}
                   >
                     <ListItemText
                       component={Button}
                       onClick={() => setOpen(false)}
                       inset
-                      primary="Followup Customer"
+                      primary="Followup"
                     />
                   </ListItem>
                 </List>
@@ -2586,27 +2440,14 @@ export const ListItems = (props) => {
                   <ListItem
                     button
                     component={RouterLink}
-                    to="/invoice/performa-invoice"
+                    to="/invoice/active-pi"
                     style={{ width: 300 }}
                   >
                     <ListItemText
                       component={Button}
                       onClick={() => setOpen(false)}
                       inset
-                      primary="Performa Invoice"
-                    />
-                  </ListItem>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/invoice/all-performa-invoice"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="All Performa Invoice"
+                      primary="Active PI"
                     />
                   </ListItem>
                 </List>
@@ -3041,19 +2882,6 @@ export const ListItems = (props) => {
                       primary="Customer"
                     />
                   </ListItem>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/customers/view-followup"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Followup Customer"
-                    />
-                  </ListItem>
                 </List>
               </Collapse>
 
@@ -3079,14 +2907,14 @@ export const ListItems = (props) => {
                   <ListItem
                     button
                     component={RouterLink}
-                    to="/invoice/performa-invoice"
+                    to="/invoice/unapproved-pi"
                     style={{ width: 300 }}
                   >
                     <ListItemText
                       component={Button}
                       onClick={() => setOpen(false)}
                       inset
-                      primary="Performa Invoice"
+                      primary="UnApproved PI"
                     />
                   </ListItem>
                   <ListItem
@@ -3099,7 +2927,7 @@ export const ListItems = (props) => {
                       component={Button}
                       onClick={() => setOpen(false)}
                       inset
-                      primary="All Performa Invoice"
+                      primary="All PI"
                     />
                   </ListItem>
                 </List>
@@ -3765,19 +3593,6 @@ export const ListItems = (props) => {
                       primary="Customer"
                     />
                   </ListItem>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/customers/view-followup"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Followup Customer"
-                    />
-                  </ListItem>
                 </List>
               </Collapse>
 
@@ -3803,14 +3618,27 @@ export const ListItems = (props) => {
                   <ListItem
                     button
                     component={RouterLink}
-                    to="/invoice/performa-invoice"
+                    to="/invoice/unapproved-pi"
                     style={{ width: 300 }}
                   >
                     <ListItemText
                       component={Button}
                       onClick={() => setOpen(false)}
                       inset
-                      primary="Performa Invoice"
+                      primary="UnApproved PI"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/invoice/active-pi"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Active PI"
                     />
                   </ListItem>
                   <ListItem
@@ -3823,7 +3651,7 @@ export const ListItems = (props) => {
                       component={Button}
                       onClick={() => setOpen(false)}
                       inset
-                      primary="All Performa Invoice"
+                      primary="All PI"
                     />
                   </ListItem>
                 </List>

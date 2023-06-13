@@ -47,23 +47,17 @@ import { ProductionInventoryGAndLView } from "../Pages/Inventory/Production Entr
 import { ProductionShortFallView } from "../Pages/Inventory/ProductionShortFall/ProductionShortFallView";
 import { ProductForecastViewAll } from "../Pages/ProductForecast/ProductForecastViewAll";
 import { TaskView } from "../Pages/Task/TaskView";
-import { LeadFollowup } from "../Pages/FollowUp/LeadFollowup";
 import { DailyProductionReport } from "../Pages/Inventory/ProductionReport/DailyProductionReport";
 import { WeeklyProductionReport } from "../Pages/Inventory/ProductionReport/WeeklyProductionReport";
 import { UnassignedCustomer } from "../Pages/Cutomers/CompanyDetails/UnassignedCustomer";
 import { NewLeads } from "../Pages/Leads/NewLeads";
 import { OpenLead } from "../Pages/Leads/OpenLead";
-import { OpportunityLead } from "../Pages/Leads/OpportunityLead";
-import { PotentialLead } from "../Pages/Leads/PotentialLead";
-import { InterestedLead } from "../Pages/Leads/InterestedLead";
-import { ConvertedLeads } from "../Pages/Leads/ConvertedLeads";
-import { NotInterestedLead } from "../Pages/Leads/NotInterestedLead";
 import { ClosedLead } from "../Pages/Leads/ClosedLead";
-import { CustomerFollowup } from "../Pages/Cutomers/CustomerFollowup/CustomerFollowup";
 import { AllProformaInvoice } from "./../Pages/Invoice/ProformaInvoice/AllProformaInvoice";
-import { ProformaInvoice } from "./../Pages/Invoice/ProformaInvoice/ProformaInvoice";
 import { DuplicateLead } from "../Pages/Leads/DuplicateLead";
-import { AllFollowup } from "../Pages/FollowUp/AllFollowup";
+import { Followup } from "../Pages/FollowUp/Followup";
+import { UnApprovedPi } from "../Pages/Invoice/ProformaInvoice/UnApprovedPi";
+import { ActivePI } from "../Pages/Invoice/ProformaInvoice/ActivePI";
 
 export const RouteScreen = () => {
   const tokenData = useSelector((state) => state.auth);
@@ -91,21 +85,8 @@ export const RouteScreen = () => {
             {/* Leads Routes */}
             <Route path="/leads/new-lead" element={<NewLeads />} />
             <Route path="/leads/open-lead" element={<OpenLead />} />
-            <Route
-              path="/leads/opportunity-lead"
-              element={<OpportunityLead />}
-            />
-            <Route path="/leads/potential-lead" element={<PotentialLead />} />
-            <Route path="/leads/interested-lead" element={<InterestedLead />} />
-            <Route path="/leads/converted-lead" element={<ConvertedLeads />} />
-            <Route
-              path="/leads/not_interested-lead"
-              element={<NotInterestedLead />}
-            />
             <Route path="/leads/closed-lead" element={<ClosedLead />} />
             <Route path="/leads/duplicate-lead" element={<DuplicateLead />} />
-            <Route path="/leads/view-followup" element={<LeadFollowup />} />
-
             <Route
               path="/leads/view-unassigned-lead"
               element={<UnassignedLead />}
@@ -152,20 +133,12 @@ export const RouteScreen = () => {
               path="/customers/unassigned-company-details"
               element={<UnassignedCustomer />}
             />
-            <Route
-              path="/customers/view-followup"
-              element={<CustomerFollowup />}
-            />
-            <Route
-              path="/lead-customer/all-followup"
-              element={<AllFollowup />}
-            />
+
+            <Route path="/followp/view-followup" element={<Followup />} />
             {/* Invoice - Seller Account Route */}
             <Route path="/invoice/seller-account" element={<SellerAccount />} />
-            <Route
-              path="/invoice/performa-invoice"
-              element={<ProformaInvoice />}
-            />
+            <Route path="/invoice/unapproved-pi" element={<UnApprovedPi />} />
+            <Route path="/invoice/active-pi" element={<ActivePI />} />
             <Route
               path="/invoice/all-performa-invoice"
               element={<AllProformaInvoice />}

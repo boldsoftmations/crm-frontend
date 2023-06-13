@@ -2,7 +2,6 @@ import {
   Autocomplete,
   Box,
   Button,
-  CircularProgress,
   Grid,
   Snackbar,
   TextField,
@@ -14,7 +13,6 @@ import Divider from "@mui/material/Divider";
 import Chip from "@mui/material/Chip";
 import InvoiceServices from "../../../services/InvoiceService";
 import { CustomLoader } from "./../../../Components/CustomLoader";
-import { useSelector } from "react-redux";
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -25,12 +23,8 @@ const Root = styled("div")(({ theme }) => ({
 }));
 
 export const SalesInvoiceCreate = (props) => {
-  const {
-    setOpenPopup,
-    getSalesInvoiceDetails,
-    getAllCustomerWiseOrderBook,
-    loading,
-  } = props;
+  const { setOpenPopup, getSalesInvoiceDetails, getAllCustomerWiseOrderBook } =
+    props;
   const [open, setOpen] = useState(false);
   const [errorOpen, setErrorOpen] = useState(false);
   const [errMsg, setErrMsg] = useState("");
@@ -49,8 +43,6 @@ export const SalesInvoiceCreate = (props) => {
       user: "",
     },
   ]);
-  const data = useSelector((state) => state.auth);
-  const CustomerOrderBookData = data.customerOrderBookData;
 
   const handleFormChange = (index, event) => {
     let data = [...products];
@@ -90,35 +82,47 @@ export const SalesInvoiceCreate = (props) => {
 
   const getCustomerWiseOrderBook = async (value) => {
     try {
-      // e.preventDefault();
-      setOpen(true);
+      setOpen(true); // Show loading spinner
+
       const data = value;
-      console.log("data", data);
-      // const response = await InvoiceServices.getcustomerOrderBookDataByID(
-      //   inputValue.proforma_invoice
-      // );
-      var productData = [];
-      var ORDERBOOKID = [];
+
+      // Initialize arrays
+      const productData = [];
+      const ORDERBOOKID = [];
+
+      // Iterate over data array
       data.map((name) => {
+        // Update state with customer order book data
         setCustomerOrderBookData(name);
+
+        // Add order book id to array
         ORDERBOOKID.push(name.id);
+
+        // Update state with order book id array
         setOrderBookID(ORDERBOOKID);
-        {
-          name.products.map((data) => {
-            productData.push({
-              product: data.product,
-              pending_quantity: data.pending_quantity,
-              requested_date: data.requested_date,
-              rate: data.rate,
-              proforma_invoice: data.proforma_invoice,
-              id: data.id,
-              raised_by: data.raised_by,
-            });
-          });
-        }
+
+        // Iterate over products array and push data to productData array
+        return name.products.map((data) => {
+          const product = {
+            product: data.product,
+            pending_quantity: data.pending_quantity,
+            requested_date: data.requested_date,
+            rate: data.rate,
+            proforma_invoice: data.proforma_invoice,
+            id: data.id,
+            raised_by: data.raised_by,
+          };
+
+          // Push product data to array
+          productData.push(product);
+
+          // Return new product object
+          return product;
+        });
       });
-      var arr = [];
-      arr = productData.map((fruit) => ({
+
+      // Map over productData array and create new array with specific properties
+      const arr = productData.map((fruit) => ({
         product: fruit.product,
         pending_quantity: fruit.pending_quantity,
         requested_date: fruit.requested_date,
@@ -127,12 +131,15 @@ export const SalesInvoiceCreate = (props) => {
         id: fruit.id,
         user: fruit.raised_by,
       }));
+
+      // Update state with new array of product objects
       setProducts(arr);
-      setOpen(false);
+
+      setOpen(false); // Hide loading spinner
     } catch (err) {
-      setOpen(false);
+      setOpen(false); // Hide loading spinner
       console.log("err", err);
-      alert(err.response.data.errors.proforma_invoice);
+      alert(err.response.data.errors.proforma_invoice); // Display error message
     }
   };
 
@@ -143,7 +150,6 @@ export const SalesInvoiceCreate = (props) => {
         ({ pending_quantity, rate, requested_date, ...rest }) => rest
       );
 
-      console.log(PRODUCTS);
       const req = {
         order_book: customerorderBookData.id,
         order_book_list: orderBookID,

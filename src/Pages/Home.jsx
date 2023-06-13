@@ -21,10 +21,12 @@ export const Home = () => {
   const [pendingTask, setPendingTask] = useState([]);
   const [pendingFollowup, setPendingFollowup] = useState([]);
   const [pendingDescription, setPendingDescription] = useState([]);
+  const [descriptionQuantity, setDescriptionQuantity] = useState([]);
   const [piData, setPiData] = useState([]);
   const [monthlyStatus, setMonthlyStatus] = useState([]);
   const [weeklyStatus, setWeeklyStatus] = useState([]);
   const [dailyStatus, setDailyStatus] = useState([]);
+  const [callPerformance, setCallPerformance] = useState([]);
   const [dispatchDataByID, setDispatchDataByID] = useState(null);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [hoveredSegment, setHoveredSegment] = useState(null);
@@ -47,6 +49,8 @@ export const Home = () => {
     getMonthlyCallStatusDetails();
     getWeeklyCallStatusDetails();
     getDailyCallStatusDetails();
+    getDescriptionQuantityDetails();
+    getCallPerformanceDetails();
   }, []);
 
   useEffect(() => {
@@ -114,15 +118,15 @@ export const Home = () => {
       setTotal(Total);
       const Data = [
         {
-          label: "Active",
+          label: "Active Customers",
           value: response.data.active_customers,
         },
         {
-          label: "Dead",
+          label: "Dead Customers",
           value: response.data.dead_customers,
         },
         {
-          label: "New",
+          label: "New Customers",
           value: response.data.new_customers,
         },
         {
@@ -397,6 +401,87 @@ export const Home = () => {
     }
   };
 
+  const getDescriptionQuantityDetails = async () => {
+    try {
+      setOpen(true);
+      const response = await DashboardService.getDescriptionWiseQuantityData();
+      const Data = response.data.map((item) => {
+        return {
+          name: item.product__description__name,
+          value: item.total_quantity,
+        };
+      });
+      setDescriptionQuantity(Data);
+
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      console.log("err", err);
+    }
+  };
+
+  const getCallPerformanceDetails = async () => {
+    try {
+      setOpen(true);
+      const response = await DashboardService.getCallPerformanceData();
+
+      const Data = [
+        {
+          name: "Order",
+          value: response.data.order,
+        },
+        {
+          name: "Followup",
+          value: response.data.followup,
+        },
+        {
+          name: "Credit",
+          value: response.data.credit,
+        },
+        {
+          name: "Issue",
+          value: response.data.issue,
+        },
+        {
+          name: "Not Connect",
+          value: response.data.not_connect,
+        },
+        {
+          name: "OEM",
+          value: response.data.oem,
+        },
+        {
+          name: "One Time",
+          value: response.data.one_time,
+        },
+        {
+          name: "Passed",
+          value: response.data.passed,
+        },
+        {
+          name: "Potential",
+          value: response.data.potential,
+        },
+        {
+          name: "Sample",
+          value: response.data.sample,
+        },
+        {
+          name: "Dropped",
+          value: response.data.dropped,
+        },
+        // Add more data for other categories if needed
+      ];
+
+      setCallPerformance(Data);
+
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      console.log("err", err);
+    }
+  };
+
   const handleAutocompleteChange = (value) => {
     setFilterValue(value);
     setAssign(value);
@@ -411,6 +496,8 @@ export const Home = () => {
     getMonthlyCallStatusByFilter(value);
     getWeeklyCallStatusByFilter(value);
     getDailyCallStatusByFilter(value);
+    getDescriptionQuantityByFilter(value);
+    getCallPerformanceByFilter(value);
   };
 
   const getDataByFilter = async (value) => {
@@ -567,15 +654,15 @@ export const Home = () => {
       setTotal(Total);
       const Data = [
         {
-          label: "Active",
+          label: "Active Customers",
           value: response.data.active_customers,
         },
         {
-          label: "Dead",
+          label: "Dead Customers",
           value: response.data.dead_customers,
         },
         {
-          label: "New",
+          label: "New Customers",
           value: response.data.new_customers,
         },
         {
@@ -738,6 +825,92 @@ export const Home = () => {
     }
   };
 
+  const getDescriptionQuantityByFilter = async (value) => {
+    try {
+      const FilterData = value;
+      setOpen(true);
+      const response =
+        await DashboardService.getDescriptionWiseQuantityDataByFilter(
+          FilterData
+        );
+      const Data = response.data.map((item) => {
+        return {
+          name: item.product__description__name,
+          value: item.total_quantity,
+        };
+      });
+      setDescriptionQuantity(Data);
+
+      setOpen(false);
+    } catch (error) {
+      console.log("error", error);
+      setOpen(false);
+    }
+  };
+
+  const getCallPerformanceByFilter = async (value) => {
+    try {
+      const FilterData = value;
+      setOpen(true);
+      const response = await DashboardService.getCallPerformanceDataByFilter(
+        FilterData
+      );
+      const Data = [
+        {
+          name: "Order",
+          value: response.data.order,
+        },
+        {
+          name: "Followup",
+          value: response.data.followup,
+        },
+        {
+          name: "Credit",
+          value: response.data.credit,
+        },
+        {
+          name: "Issue",
+          value: response.data.issue,
+        },
+        {
+          name: "Not Connect",
+          value: response.data.not_connect,
+        },
+        {
+          name: "OEM",
+          value: response.data.oem,
+        },
+        {
+          name: "One Time",
+          value: response.data.one_time,
+        },
+        {
+          name: "Passed",
+          value: response.data.passed,
+        },
+        {
+          name: "Potential",
+          value: response.data.potential,
+        },
+        {
+          name: "Sample",
+          value: response.data.sample,
+        },
+        {
+          name: "Dropped",
+          value: response.data.dropped,
+        },
+        // Add more data for other categories if needed
+      ];
+
+      setCallPerformance(Data);
+      setOpen(false);
+    } catch (error) {
+      console.log("error", error);
+      setOpen(false);
+    }
+  };
+
   const getResetData = () => {
     getForecastDetails();
     getNewCustomerDetails();
@@ -752,6 +925,8 @@ export const Home = () => {
     getMonthlyCallStatusDetails();
     getWeeklyCallStatusDetails();
     getDailyCallStatusDetails();
+    getDescriptionQuantityDetails();
+    getCallPerformanceDetails();
   };
 
   const handleSegmentHover = (segment) => {
@@ -824,9 +999,11 @@ export const Home = () => {
           funnelData={funnelData}
           hoveredSegment={hoveredSegment}
           handleRowClick={handleRowClick}
+          descriptionQuantity={descriptionQuantity}
+          callPerformance={callPerformance}
         />
       )}
-      {userData.groups.includes("Sales") && (
+      {userData.groups.includes("Sales") && userData.is_staff !== true && (
         <SalesDashboard
           barChartData={barChartData}
           pieChartData={pieChartData}
@@ -846,6 +1023,8 @@ export const Home = () => {
           funnelData={funnelData}
           hoveredSegment={hoveredSegment}
           handleRowClick={handleRowClick}
+          descriptionQuantity={descriptionQuantity}
+          callPerformance={callPerformance}
         />
       )}
       <Popup

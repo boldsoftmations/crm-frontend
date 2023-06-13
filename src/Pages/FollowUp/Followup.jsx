@@ -1,20 +1,19 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CustomLoader } from "../../Components/CustomLoader";
 import { CustomTabs } from "../../Components/CustomTabs";
 import InvoiceServices from "../../services/InvoiceService";
 import { getSellerAccountData } from "../../Redux/Action/Action";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ProductService from "../../services/ProductService";
 import LeadServices from "../../services/LeadService";
-import { LeadPendingFollowup } from "./LeadPendingFollowup";
-import { LeadTodayFollowup } from "./LeadTodayFollowup";
-import { LeadUpcomingFollowup } from "./LeadUpcomingFollowup";
+import { AllFollowup } from "./AllFollowup";
+import { PendingFollowup } from "./PendingFollowup";
+import { UpcomingFollowup } from "./UpcomingFollowup";
+import { TodayFollowup } from "./TodayFollowup";
 
-export const LeadFollowup = () => {
+export const Followup = () => {
   const [open, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
-  const errRef = useRef();
-  const [errMsg, setErrMsg] = useState("");
   const [pendingFollowUp, setPendingFollowUp] = useState([]);
   const [todayFollowUp, setTodayFollowUp] = useState([]);
   const [upcomingFollowUp, setUpcomingFollowUp] = useState([]);
@@ -22,6 +21,8 @@ export const LeadFollowup = () => {
   const [descriptionMenuData, setDescriptionMenuData] = useState([]);
   const [product, setProduct] = useState([]);
   const dispatch = useDispatch();
+  const data = useSelector((state) => state.auth);
+  const userData = data.profile;
 
   const handleTabChange = (index) => {
     setActiveTab(index);
@@ -91,29 +92,21 @@ export const LeadFollowup = () => {
       setOpen(false);
     } catch (err) {
       setOpen(false);
-      if (!err.response) {
-        setErrMsg(
-          "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
-        );
-      } else if (err.response.status === 400) {
-        setErrMsg(
-          err.response.data.errors.name
-            ? err.response.data.errors.name
-            : err.response.data.errors.non_field_errors
-        );
-      } else if (err.response.status === 401) {
-        setErrMsg(err.response.data.errors.code);
-      } else {
-        setErrMsg("Server Error");
-      }
-      errRef.current.focus();
+      console.error("error followup", err);
     }
   };
 
-  const tabs = [
-    { label: "Lead Pending Followup" },
-    { label: "Lead Today Followup" },
-    { label: "Lead Upcoming Followup" },
+  const SalesTabs = [
+    { label: "Pending Followup" },
+    { label: "Today Followup" },
+    { label: "Upcoming Followup" },
+  ];
+
+  const StaffTabs = [
+    { label: "Pending Followup" },
+    { label: "Today Followup" },
+    { label: "Upcoming Followup" },
+    { label: "All Followup" },
   ];
 
   return (
@@ -121,14 +114,14 @@ export const LeadFollowup = () => {
       <CustomLoader open={open} />
       <div>
         <CustomTabs
-          tabs={tabs}
+          tabs={userData.is_staff === true ? StaffTabs : SalesTabs}
           activeTab={activeTab}
           onTabChange={handleTabChange}
         />
         <div>
           {activeTab === 0 && (
             <div>
-              <LeadPendingFollowup
+              <PendingFollowup
                 assigned={assigned}
                 descriptionMenuData={descriptionMenuData}
                 product={product}
@@ -139,7 +132,7 @@ export const LeadFollowup = () => {
           )}
           {activeTab === 1 && (
             <div>
-              <LeadTodayFollowup
+              <TodayFollowup
                 assigned={assigned}
                 descriptionMenuData={descriptionMenuData}
                 product={product}
@@ -150,12 +143,21 @@ export const LeadFollowup = () => {
           )}
           {activeTab === 2 && (
             <div>
-              <LeadUpcomingFollowup
+              <UpcomingFollowup
                 assigned={assigned}
                 descriptionMenuData={descriptionMenuData}
                 product={product}
                 upcomingFollowUp={upcomingFollowUp}
                 getFollowUp={getFollowUp}
+              />
+            </div>
+          )}
+          {activeTab === 3 && (
+            <div>
+              <AllFollowup
+                assigned={assigned}
+                descriptionMenuData={descriptionMenuData}
+                product={product}
               />
             </div>
           )}

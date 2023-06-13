@@ -113,6 +113,26 @@ export const AllProformaInvoiceView = (props) => {
     <>
       <CustomLoader open={open} />
       <ErrorMessage errMsg={errMsg} />
+      {invoiceData.status !== "Pending Approval" &&
+        invoiceData.status !== "Raised" && (
+          <div
+            className="container-fluid mb-4"
+            style={{ border: "1px Solid #000000" }}
+          >
+            <div className="row p-4">
+              <div className="col-xs-6 ">
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={(e) => handlePrint(e)}
+                >
+                  Download
+                  <DownloadIcon />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       <div
         id="invoice"
         style={{ border: "1px Solid #000000" }}

@@ -15,16 +15,13 @@ import { CustomLoader } from "../../Components/CustomLoader";
 import { CustomTable } from "../../Components/CustomTable";
 import { CustomPagination } from "../../Components/CustomPagination";
 import { useDispatch } from "react-redux";
-import { getSellerAccountData } from "../../Redux/Action/Action";
-import InvoiceServices from "../../services/InvoiceService";
-import ProductService from "../../services/ProductService";
 
-export const AllFollowup = () => {
+export const AllFollowup = (props) => {
+  const { assigned, descriptionMenuData, product } = props;
   const [open, setOpen] = useState(false);
   const [allFollowupData, setAllFollowupData] = useState([]);
   const [openPopup, setOpenPopup] = useState(false);
   const [leadsByID, setLeadsByID] = useState(null);
-  const [followup, setFollowup] = useState(null);
   const [pageCount, setpageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [endDate, setEndDate] = useState(new Date());
@@ -32,18 +29,11 @@ export const AllFollowup = () => {
   const minDate = new Date().toISOString().split("T")[0];
   const maxDate = new Date("2030-12-31").toISOString().split("T")[0];
   const [searchQuery, setSearchQuery] = useState("");
-  const [assigned, setAssigned] = useState([]);
-  const [descriptionMenuData, setDescriptionMenuData] = useState([]);
-  const [product, setProduct] = useState([]);
-  const dispatch = useDispatch();
 
   const openInPopup = async (item) => {
     try {
       setOpen(true);
-      const response = await LeadServices.getLeadsById(item.lead);
-      setLeadsByID(response.data);
-      setFollowup(response.data.followup);
-      setOpenPopup(true);
+      setLeadsByID(item.lead);
       setOpen(false);
     } catch (err) {
       console.log("err", err);
@@ -75,59 +65,6 @@ export const AllFollowup = () => {
   useEffect(() => {
     getFollowup();
   }, [startDate, endDate]);
-
-  useEffect(() => {
-    getAssignedData();
-    getAllSellerAccountsDetails();
-    getProduct();
-    getDescriptionNoData();
-  }, []);
-
-  const getAssignedData = async () => {
-    try {
-      setOpen(true);
-      const res = await LeadServices.getAllAssignedUser();
-      setAssigned(res.data);
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
-  };
-
-  const getAllSellerAccountsDetails = async () => {
-    try {
-      setOpen(true);
-      const response = await InvoiceServices.getAllPaginateSellerAccountData(
-        "all"
-      );
-      dispatch(getSellerAccountData(response.data));
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-    }
-  };
-
-  const getProduct = async () => {
-    try {
-      setOpen(true);
-      const res = await ProductService.getAllProduct();
-      setProduct(res.data);
-      setOpen(false);
-    } catch (err) {
-      console.error("error potential", err);
-      setOpen(false);
-    }
-  };
-
-  const getDescriptionNoData = async () => {
-    try {
-      const res = await ProductService.getNoDescription();
-      setDescriptionMenuData(res.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
 
   const getFollowup = async () => {
     try {
@@ -347,7 +284,6 @@ export const AllFollowup = () => {
         setOpenPopup={setOpenPopup}
       >
         <UpdateLeads
-          followup={followup}
           assigned={assigned}
           descriptionMenuData={descriptionMenuData}
           leadsByID={leadsByID}

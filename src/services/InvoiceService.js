@@ -35,51 +35,63 @@ const updateSellerAccountData = (id, data) => {
 };
 
 // all proforma invoice api
-const getPIData = () => {
-  return CustomAxios.get(`/api/invoice/list-proforma-invoice`);
-};
-
-const getPISearch = (filter, filterValue, search, searchValue) => {
+const getPIDataWithDateRange = (startDate, endDate) => {
   return CustomAxios.get(
-    `/api/invoice/list-proforma-invoice/?${filter}=${filterValue}&${search}=${searchValue}`
+    `/api/invoice/list-proforma-invoice/?pi=all&date_range_after=${startDate}&date_range_before=${endDate}`
   );
 };
 
-const getPIPagination = (currentPage) => {
-  return CustomAxios.get(
-    `/api/invoice/list-proforma-invoice/?page=${currentPage}`
-  );
-};
-
-const getPIPaginationWithFilterBy = (
-  currentPage,
+const getPISearchWithDateRange = (
+  startDate,
+  endDate,
   filter,
   filterValue,
   search,
   searchValue
 ) => {
   return CustomAxios.get(
-    `/api/invoice/list-proforma-invoice/?page=${currentPage}&${filter}=${filterValue}&${search}=${searchValue}`
+    `/api/invoice/list-proforma-invoice/?pi=all&date_range_after=${startDate}&date_range_before=${endDate}&${filter}=${filterValue}&${search}=${searchValue}`
   );
 };
 
-const getAllPIData = () => {
-  return CustomAxios.get(`/api/invoice/list-proforma-invoice/?pi=all`);
-};
-
-const getAllPISearch = (filter, filterValue, search, searchValue) => {
+const getPIPaginationWithDateRange = (currentPage, startDate, endDate) => {
   return CustomAxios.get(
-    `/api/invoice/list-proforma-invoice/?pi=all&${filter}=${filterValue}&${search}=${searchValue}`
+    `/api/invoice/list-proforma-invoice/?page=${currentPage}&pi=all&date_range_after=${startDate}&date_range_before=${endDate}`
   );
 };
 
-const getAllPIPagination = (currentPage) => {
+const getPIPaginationWithFilterByWithDateRange = (
+  currentPage,
+  startDate,
+  endDate,
+  filter,
+  filterValue,
+  search,
+  searchValue
+) => {
   return CustomAxios.get(
-    `/api/invoice/list-proforma-invoice/?pi=all&page=${currentPage}`
+    `/api/invoice/list-proforma-invoice/?page=${currentPage}&pi=all&date_range_after=${startDate}&date_range_before=${endDate}&${filter}=${filterValue}&${search}=${searchValue}`
+  );
+};
+
+const getAllPIData = (piValue) => {
+  return CustomAxios.get(`/api/invoice/list-proforma-invoice/?pi=${piValue}`);
+};
+
+const getAllPISearch = (piValue, filter, filterValue, search, searchValue) => {
+  return CustomAxios.get(
+    `/api/invoice/list-proforma-invoice/?pi=${piValue}&${filter}=${filterValue}&${search}=${searchValue}`
+  );
+};
+
+const getAllPIPagination = (piValue, currentPage) => {
+  return CustomAxios.get(
+    `/api/invoice/list-proforma-invoice/?pi=${piValue}&page=${currentPage}`
   );
 };
 
 const getAllPIPaginationWithFilterBy = (
+  piValue,
   currentPage,
   filter,
   filterValue,
@@ -87,7 +99,7 @@ const getAllPIPaginationWithFilterBy = (
   searchValue
 ) => {
   return CustomAxios.get(
-    `/api/invoice/list-proforma-invoice/?pi=all&page=${currentPage}&${filter}=${filterValue}&${search}=${searchValue}`
+    `/api/invoice/list-proforma-invoice/?pi=${piValue}&page=${currentPage}&${filter}=${filterValue}&${search}=${searchValue}`
   );
 };
 
@@ -358,10 +370,10 @@ const InvoiceServices = {
   getPIOrderBookDataByID,
   getSellerAccountDataById,
   updateSellerAccountData,
-  getPIData,
-  getPISearch,
-  getPIPagination,
-  getPIPaginationWithFilterBy,
+  getPIDataWithDateRange,
+  getPISearchWithDateRange,
+  getPIPaginationWithDateRange,
+  getPIPaginationWithFilterByWithDateRange,
   getAllPIData,
   getAllPISearch,
   getAllPIPagination,

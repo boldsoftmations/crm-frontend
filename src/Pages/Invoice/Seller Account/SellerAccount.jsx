@@ -1,46 +1,18 @@
 import React, { useState, useEffect, useRef } from "react";
-
 import {
   Backdrop,
   Box,
   CircularProgress,
   Grid,
-  styled,
-  Table,
-  TableBody,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TableCell,
   Button,
   Paper,
 } from "@mui/material";
-import { tableCellClasses } from "@mui/material/TableCell";
 import { Popup } from "./../../../Components/Popup";
 import { CreateSellerAccounts } from "./CreateSellerAccounts";
 import { UpdateSellerAccounts } from "./UpdateSellerAccounts";
 import InvoiceServices from "./../../../services/InvoiceService";
 import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
+import { CustomTable } from "../../../Components/CustomTable";
 
 export const SellerAccount = () => {
   const [openPopup, setOpenPopup] = useState(false);
@@ -87,9 +59,32 @@ export const SellerAccount = () => {
   // };
 
   const openInPopup = (item) => {
-    setIDForEdit(item);
+    setIDForEdit(item.id);
     setOpenPopup(true);
   };
+
+  const TableHeader = [
+    "ID",
+    "UNIT",
+    "COMPANY",
+    "BANK",
+    "ACCOUNT NO.",
+    "IFSC CODE",
+    "BRANCH",
+    "GST",
+    "ACTION",
+  ];
+
+  const TableData = invoiceData.map((value) => ({
+    id: value.id,
+    unit: value.unit,
+    company: value.name,
+    bank: value.bank_name,
+    current_account_no: value.current_account_no,
+    ifsc_code: value.ifsc_code,
+    branch: value.branch,
+    gst_number: value.gst_number,
+  }));
 
   return (
     <>
@@ -159,79 +154,16 @@ export const SellerAccount = () => {
               </Button>
             </Box>
           </Box>
-          <TableContainer
-            sx={{
-              maxHeight: 440,
-              "&::-webkit-scrollbar": {
-                width: 15,
-              },
-              "&::-webkit-scrollbar-track": {
-                backgroundColor: "#f2f2f2",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                backgroundColor: "#aaa9ac",
-              },
-            }}
-          >
-            <Table
-              sx={{ minWidth: 1200 }}
-              stickyHeader
-              aria-label="sticky table"
-            >
-              <TableHead>
-                <TableRow>
-                  <StyledTableCell align="center">UNIT</StyledTableCell>
-                  <StyledTableCell align="center">COMPANY NAME</StyledTableCell>
-                  <StyledTableCell align="center">BANK</StyledTableCell>
-                  <StyledTableCell align="center">ACCOUNT NO.</StyledTableCell>
-                  <StyledTableCell align="center">IFSC CODE</StyledTableCell>
-                  <StyledTableCell align="center">BRANCH</StyledTableCell>
-                  <StyledTableCell align="center">GST NUMBER</StyledTableCell>
-                  <StyledTableCell align="center">Action</StyledTableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {invoiceData.map((row, i) => {
-                  return (
-                    <StyledTableRow key={i}>
-                      <StyledTableCell align="center">
-                        {row.unit}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.name}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.bank_name}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.current_account_no}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.ifsc_code}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.branch}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.gst_number}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        <Button
-                          variant="contained"
-                          onClick={() => openInPopup(row.id)}
-                        >
-                          View
-                        </Button>
-                      </StyledTableCell>
-                    </StyledTableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          {/* CustomTable */}
+          <CustomTable
+            headers={TableHeader}
+            data={TableData}
+            openInPopup={openInPopup}
+          />
         </Paper>
       </Grid>
       <Popup
+        maxWidth={"xl"}
         title={"Create Seller Accounts Details"}
         openPopup={openPopup2}
         setOpenPopup={setOpenPopup2}
@@ -242,6 +174,7 @@ export const SellerAccount = () => {
         />
       </Popup>
       <Popup
+        maxWidth={"xl"}
         title={"Update Seller Accounts Details"}
         openPopup={openPopup}
         setOpenPopup={setOpenPopup}

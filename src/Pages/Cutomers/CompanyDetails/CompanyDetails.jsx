@@ -329,7 +329,7 @@ export const CompanyDetails = () => {
             openInPopup2={openInPopup2}
             openInPopup3={openInPopup3}
             openInPopup4={openInPopup4}
-            ButtonText={"Invoice"}
+            ButtonText={"PI"}
             ButtonText1={"Activity"}
             ButtonText2={"Potential"}
           />

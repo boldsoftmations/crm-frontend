@@ -1,44 +1,62 @@
-import React, { useState, useRef } from "react";
-
+import React, { useState } from "react";
 import { Grid, Paper, Box } from "@mui/material";
 import moment from "moment";
-import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
-import { CustomTable } from "../../../Components/CustomTable";
-import { Popup } from "../../../Components/Popup";
-import { UpdateCompanyDetails } from "../CompanyDetails/UpdateCompanyDetails";
-import { CustomerFollowupDone } from "./CustomerFollowupDone";
+import { Popup } from "../../Components/Popup";
+import { UpdateLeads } from "../Leads/UpdateLeads";
+import { CustomLoader } from "../../Components/CustomLoader";
+import { CustomTable } from "../../Components/CustomTable";
+import { UpdateCompanyDetails } from "../Cutomers/CompanyDetails/UpdateCompanyDetails";
+import { FollowupDone } from "./FollowupDone";
 
-export const CustomerPendingFollowup = (props) => {
-  const { product, pendingFollowUp, getFollowUp } = props;
-  const errRef = useRef();
-  const [errMsg, setErrMsg] = useState("");
+export const PendingFollowup = (props) => {
+  const {
+    assigned,
+    descriptionMenuData,
+    product,
+    pendingFollowUp,
+    getFollowUp,
+  } = props;
+
+  const [open, setOpen] = useState(false);
   const [pendingFollowUpByID, setPendingFollowUpByID] = useState("");
   const [openModal, setOpenModal] = useState(false);
-  const [openPopup, setOpenPopup] = useState(false);
-  const [recordForEdit, setRecordForEdit] = useState(null);
+  const [popupLead, setPopupLead] = useState(false);
+  const [popupCustomer, setPopupCustomer] = useState(false);
+  const [leadsByID, setLeadsByID] = useState(null);
 
   const openInPopup = async (item) => {
     try {
-      setRecordForEdit(item.company);
-      setOpenPopup(true);
+      setOpen(true);
+      if (item.type === "lead") {
+        setLeadsByID(item.lead);
+        setPopupLead(true);
+      } else {
+        setLeadsByID(item.company);
+        setPopupCustomer(true);
+      }
+      setOpen(false);
     } catch (err) {
       console.log("err", err);
+      setOpen(false);
     }
   };
 
   const openInPopup2 = (item) => {
     const matchedFollowup = pendingFollowUp.find(
-      (followup) => followup.id === item.id
+      (followup) => followup.leads === item.lead
     );
     setPendingFollowUpByID(matchedFollowup);
     setOpenModal(true);
   };
 
   const Tabledata = pendingFollowUp.map((row, i) => ({
-    id: row.id,
-    name: row.name,
+    type: row.type,
+    lead: row.leads,
     company: row.company,
+    company_name: row.company_name,
+    name: row.name,
     user: row.user,
+
     current_date: moment(row.current_date ? row.current_date : "-").format(
       "DD/MM/YYYY h:mm:ss"
     ),
@@ -49,9 +67,11 @@ export const CustomerPendingFollowup = (props) => {
   }));
 
   const Tableheaders = [
-    "ID",
-    "NAME",
+    "TYPE",
+    "LEADS",
     "COMPANY",
+    "COMPANY NAME",
+    "NAME",
     "USER",
     "CURRENT DATE",
     "NEXT FOLLOWUP DATE",
@@ -61,9 +81,10 @@ export const CustomerPendingFollowup = (props) => {
 
   return (
     <>
+      <CustomLoader open={open} />
+
       {/* Pending FollowUp */}
       <Grid item xs={12}>
-        <ErrorMessage ref={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
           <Box display="flex" justifyContent={"center"}>
             <h3
@@ -75,7 +96,7 @@ export const CustomerPendingFollowup = (props) => {
                 fontWeight: 800,
               }}
             >
-              Customer Pending Followup
+              Pending Followup
             </h3>
           </Box>
 
@@ -90,24 +111,39 @@ export const CustomerPendingFollowup = (props) => {
       </Grid>
       <Popup
         maxWidth={"xl"}
-        title={"Update Customer"}
-        openPopup={openPopup}
-        setOpenPopup={setOpenPopup}
+        title={"Update Leads"}
+        openPopup={popupLead}
+        setOpenPopup={setPopupLead}
+      >
+        <UpdateLeads
+          assigned={assigned}
+          descriptionMenuData={descriptionMenuData}
+          leadsByID={leadsByID}
+          product={product}
+          setOpenPopup={setPopupLead}
+          getAllleadsData={getFollowUp}
+        />
+      </Popup>
+      <Popup
+        maxWidth={"xl"}
+        title={"Update customer"}
+        openPopup={popupCustomer}
+        setOpenPopup={setPopupCustomer}
       >
         <UpdateCompanyDetails
-          setOpenPopup={setOpenPopup}
+          setOpenPopup={setPopupCustomer}
           getAllCompanyDetails={getFollowUp}
-          recordForEdit={recordForEdit}
+          recordForEdit={leadsByID}
           product={product}
         />
       </Popup>
       <Popup
         maxWidth={"xl"}
-        title={"Customer Followup Done"}
+        title={"Followup Done"}
         openPopup={openModal}
         setOpenPopup={setOpenModal}
       >
-        <CustomerFollowupDone
+        <FollowupDone
           DoneFollowup={pendingFollowUpByID}
           getFollowUp={getFollowUp}
           setOpenModal={setOpenModal}

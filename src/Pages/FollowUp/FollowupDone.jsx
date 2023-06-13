@@ -1,25 +1,27 @@
 import React, { useState } from "react";
 import moment from "moment";
-import { CustomLoader } from "../../../Components/CustomLoader";
-import CustomerServices from "../../../services/CustomerService";
+import LeadServices from "../../services/LeadService";
+import { CustomLoader } from "../../Components/CustomLoader";
 
-export const CustomerFollowupDone = (props) => {
+export const FollowupDone = (props) => {
   const { DoneFollowup, setOpenModal, getFollowUp } = props;
   const [open, setOpen] = useState(false);
+
   const AllFollowUpDone = async (e) => {
     try {
       e.preventDefault();
       setOpen(true);
       const data = {
-        company: DoneFollowup.company,
+        id: DoneFollowup.id,
+        leads: DoneFollowup.leads,
         current_date: DoneFollowup.current_date,
         next_followup_date: DoneFollowup.next_followup_date,
         notes: DoneFollowup.notes,
         user: DoneFollowup.user,
         is_followed_up: true,
       };
-      await CustomerServices.DoneFollowup(DoneFollowup.id, data);
-
+      await LeadServices.DoneLeadFollowup(DoneFollowup.id, data);
+      console.log("After api");
       setOpenModal(false);
       getFollowUp();
       setOpen(false);
@@ -28,6 +30,7 @@ export const CustomerFollowupDone = (props) => {
       console.log("err creating follwups", err);
     }
   };
+
   return (
     <>
       <CustomLoader open={open} />
@@ -39,6 +42,12 @@ export const CustomerFollowupDone = (props) => {
                 <strong>ID :</strong>
               </td>
               <td> {DoneFollowup ? DoneFollowup.id : ""}</td>
+            </tr>
+            <tr>
+              <td>
+                <strong>LEADS :</strong>
+              </td>
+              <td>{DoneFollowup ? DoneFollowup.leads : ""}</td>
             </tr>
             <tr>
               <td>

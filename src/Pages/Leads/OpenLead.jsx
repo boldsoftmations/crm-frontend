@@ -11,7 +11,6 @@ import {
   IconButton,
 } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
-import AddIcon from "@mui/icons-material/Add";
 import LeadServices from "../../services/LeadService";
 import "../CommonStyle.css";
 import { CreateLeads } from "./CreateLeads";
@@ -35,7 +34,8 @@ export const OpenLead = () => {
   const [leads, setLeads] = useState([]);
   const [open, setOpen] = useState(false);
   const [filterQuery, setFilterQuery] = useState("");
-  const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
+  const [filterSelectedQuery, setFilterSelectedQuery] = useState(null);
+  const [searchQuery, setSearchQuery] = useState(null);
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
   const [pageCount, setpageCount] = useState(0);
@@ -45,8 +45,6 @@ export const OpenLead = () => {
   const [openModalFollowup, setOpenModalFollowup] = useState(false);
   const [openModalPotential, setOpenModalPotential] = useState(false);
   const [leadsByID, setLeadsByID] = useState(null);
-  const [followup, setFollowup] = useState(null);
-  const [potential, setPotential] = useState(null);
   const [assigned, setAssigned] = useState([]);
   const [referenceData, setReferenceData] = useState([]);
   const [descriptionMenuData, setDescriptionMenuData] = useState([]);
@@ -56,8 +54,8 @@ export const OpenLead = () => {
   const users = tokenData.profile;
 
   const handleInputChange = () => {
-    setFilterSelectedQuery(filterSelectedQuery);
-    getSearchData(filterSelectedQuery);
+    setSearchQuery(searchQuery);
+    getSearchData(filterSelectedQuery, searchQuery);
   };
 
   const handleInputChanges = (event) => {
@@ -66,10 +64,7 @@ export const OpenLead = () => {
   };
 
   const openInPopup = (item) => {
-    const matchedLead = leads.find((lead) => lead.lead_id === item.id);
-    setLeadsByID(matchedLead);
-    setFollowup(matchedLead.followup);
-    setPotential(matchedLead.potential);
+    setLeadsByID(item.id);
     setOpenPopup(true);
   };
 
@@ -83,6 +78,17 @@ export const OpenLead = () => {
     const matchedLead = leads.find((lead) => lead.lead_id === item.id);
     setLeadsByID(matchedLead);
     setOpenModalPotential(true);
+  };
+
+  const getResetSearchData = () => {
+    setSearchQuery("");
+    getSearchData(filterSelectedQuery, null); // Pass an empty string as the second parameter
+  };
+
+  const getResetFilterData = () => {
+    setFilterQuery("");
+    setFilterSelectedQuery(null);
+    getSearchData(null, searchQuery); // Pass an empty string as the second parameter
   };
 
   useEffect(() => {
@@ -153,27 +159,53 @@ export const OpenLead = () => {
   const getleads = async () => {
     try {
       setOpen(true);
-      if (filterSelectedQuery !== "" && filterQuery !== "" && currentPage) {
-        const response = await LeadServices.getFilterPaginateLeads(
-          "open",
-          currentPage,
+      const filterValue = filterSelectedQuery ? filterSelectedQuery : null;
+      const searchValue = searchQuery ? searchQuery : null;
+
+      if (filterQuery !== "" && filterValue !== null && searchValue !== null) {
+        const response = await LeadServices.getAllSearchWithFilteredLeads(
+          "others",
+          "-lead_id",
           filterQuery,
-          filterSelectedQuery
+          filterValue,
+          searchValue
         );
 
         setLeads(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
+      } else if (filterQuery && filterValue && currentPage) {
+        const response = await LeadServices.getAllPaginateLeads(
+          currentPage,
+          "others",
+          "-lead_id",
+          filterValue,
+          filterSelectedQuery
+        );
+        setLeads(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      } else if (searchValue) {
+        const response = await LeadServices.getFilteredLeads(
+          "others",
+          "-lead_id",
+          filterQuery,
+          filterValue
+        );
+        setLeads(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
       } else if (currentPage) {
         const response = await LeadServices.getAllPaginateLeads(
-          "open",
-          currentPage
+          currentPage,
+          "others",
+          "-lead_id"
         );
         setLeads(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
       } else {
-        let response = await LeadServices.getAllLeads("open");
+        const response = await LeadServices.getAllLeads("others", "priority");
         if (response) {
           setLeads(response.data.results);
           const total = response.data.count;
@@ -185,7 +217,7 @@ export const OpenLead = () => {
       setOpen(false);
       if (!err.response) {
         setErrMsg(
-          "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
+          "Sorry, You Are Not Allowed to Access This Page. Please contact the admin."
         );
       } else if (err.response.status === 400) {
         setErrMsg(
@@ -202,24 +234,50 @@ export const OpenLead = () => {
     }
   };
 
-  const getSearchData = async (value) => {
+  const getSearchData = async (filterSelectedQuery, searchQuery) => {
     try {
       setOpen(true);
-      const filterSearch = value;
-      if (filterQuery) {
-        const response = await LeadServices.getAllSearchLeads(
-          "open",
+      const filterValue = filterSelectedQuery ? filterSelectedQuery : null;
+      const searchValue = searchQuery ? searchQuery : null;
+      console.log("filterValue", filterValue);
+      console.log("searchValue", searchValue);
+      if (filterQuery && filterValue !== null && searchValue !== null) {
+        const response = await LeadServices.getAllSearchWithFilteredLeads(
+          "others",
+          "-lead_id",
           filterQuery,
-          filterSearch
+          filterValue,
+          searchValue
         );
-        if (response) {
-          setLeads(response.data.results);
-          const total = response.data.count;
-          setpageCount(Math.ceil(total / 25));
-        } else {
-          getleads();
-          setFilterSelectedQuery("");
-        }
+
+        setLeads(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      } else if (filterQuery && filterValue) {
+        const response = await LeadServices.getFilteredLeads(
+          "others",
+          "-lead_id",
+          filterQuery,
+          filterValue
+        );
+
+        setLeads(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      } else if (searchValue) {
+        const response = await LeadServices.getSearchLeads(
+          "others",
+          "-lead_id",
+          searchValue
+        );
+        setLeads(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      } else {
+        setFilterQuery("");
+        setFilterSelectedQuery(null);
+        setSearchQuery(null);
+        await getleads();
       }
       setOpen(false);
     } catch (error) {
@@ -228,35 +286,56 @@ export const OpenLead = () => {
     }
   };
 
-  const getResetData = () => {
-    setFilterSelectedQuery("");
-    // setFilterQuery("");
-    getleads();
-  };
-
   const handlePageClick = async (event, value) => {
     try {
       const page = value;
       setCurrentPage(page);
       setOpen(true);
-
-      if (filterSelectedQuery) {
-        const response = await LeadServices.getFilterPaginateLeads(
-          "open",
+      const filterValue = filterSelectedQuery ? filterSelectedQuery : null;
+      const searchValue = searchQuery ? searchQuery : null;
+      console.log("filterValue pagination", filterValue);
+      console.log("searchValue pagination", searchValue);
+      if (filterQuery && filterValue !== null && searchValue !== null) {
+        const response = await LeadServices.getFilterWithSearchPaginateLeads(
           page,
+          "others",
+          "-lead_id",
           filterQuery,
-          filterSelectedQuery
+          filterValue,
+          searchValue
         );
-        if (response) {
-          setLeads(response.data.results);
-          const total = response.data.count;
-          setpageCount(Math.ceil(total / 25));
-        } else {
-          getleads();
-          setFilterSelectedQuery("");
-        }
+
+        setLeads(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      } else if (filterQuery && filterValue) {
+        const response = await LeadServices.getFilterPaginateLeads(
+          page,
+          "others",
+          "-lead_id",
+          filterQuery,
+          filterValue
+        );
+
+        setLeads(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      } else if (searchValue) {
+        const response = await LeadServices.getSearchPaginateLeads(
+          page,
+          "others",
+          "-lead_id",
+          searchValue
+        );
+        setLeads(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
       } else {
-        const response = await LeadServices.getAllPaginateLeads("open", page);
+        const response = await LeadServices.getAllPaginateLeads(
+          page,
+          "others",
+          "-lead_id"
+        );
         setLeads(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
@@ -293,7 +372,8 @@ export const OpenLead = () => {
     name: row.name,
     contact: row.contact,
     alternate_contact: row.alternate_contact,
-    email: row.email,
+    city: row.city,
+    state: row.state,
     priority: row.priority,
     stage: row.stage,
     assigned_to: row.assigned_to,
@@ -305,7 +385,8 @@ export const OpenLead = () => {
     "NAME",
     "CONTACT",
     "ALTERNATE CONTACT",
-    "EMAIL",
+    "CITY",
+    "STATE",
     "PRIORITY",
     "STAGE",
     "ASSIGNED TO",
@@ -326,254 +407,224 @@ export const OpenLead = () => {
       <Grid item xs={12}>
         <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
-          <Box display="flex">
-            <Box flexGrow={0.6}>
-              <FormControl fullWidth size="small">
-                <InputLabel id="demo-simple-select-label">Fliter By</InputLabel>
+          <Box display="flex" marginBottom="10px">
+            <FormControl fullWidth sx={{ maxWidth: "200px" }} size="small">
+              <InputLabel id="demo-simple-select-label">Fliter By</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                name="values"
+                label="Fliter By"
+                value={filterQuery}
+                onChange={(event) => setFilterQuery(event.target.value)}
+              >
+                {FilterOptions.map((option, i) => (
+                  <MenuItem key={i} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            {filterQuery === "assigned_to__email" && (
+              <FormControl
+                sx={{ minWidth: "200px", marginLeft: "1em" }}
+                size="small"
+              >
+                <InputLabel id="demo-simple-select-label">
+                  Assigned To
+                </InputLabel>
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
                   name="values"
-                  label="Fliter By"
-                  value={filterQuery}
-                  onChange={(event) => setFilterQuery(event.target.value)}
+                  label="Assigned To"
+                  value={filterSelectedQuery}
+                  onChange={(event) => handleInputChanges(event)}
+                  sx={{
+                    "& .MuiSelect-iconOutlined": {
+                      display: filterSelectedQuery ? "none" : "",
+                    },
+                    "&.Mui-focused .MuiIconButton-root": {
+                      color: "primary.main",
+                    },
+                  }}
+                  endAdornment={
+                    <IconButton
+                      sx={{
+                        visibility: filterSelectedQuery ? "visible" : "hidden",
+                      }}
+                      onClick={getResetFilterData}
+                    >
+                      <ClearIcon />
+                    </IconButton>
+                  }
                 >
-                  {FilterOptions.map((option, i) => (
+                  {assigned.map((option, i) => (
+                    <MenuItem key={i} value={option.email}>
+                      {option.email}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
+            {filterQuery === "references__source" && (
+              <FormControl
+                sx={{ minWidth: "200px", marginLeft: "1em" }}
+                size="small"
+              >
+                <InputLabel id="demo-simple-select-label">Reference</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  name="values"
+                  label="Reference"
+                  value={filterSelectedQuery}
+                  onChange={(event) => handleInputChanges(event)}
+                  sx={{
+                    "& .MuiSelect-iconOutlined": {
+                      display: filterSelectedQuery ? "none" : "",
+                    },
+                    "&.Mui-focused .MuiIconButton-root": {
+                      color: "primary.main",
+                    },
+                  }}
+                  endAdornment={
+                    <IconButton
+                      sx={{
+                        visibility: filterSelectedQuery ? "visible" : "hidden",
+                      }}
+                      onClick={getResetFilterData}
+                    >
+                      <ClearIcon />
+                    </IconButton>
+                  }
+                >
+                  {referenceData.map((option) => (
+                    <MenuItem key={option.id} value={option.source}>
+                      {option.source}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
+            {filterQuery === "stage" && (
+              <FormControl
+                sx={{ minWidth: "200px", marginLeft: "1em" }}
+                size="small"
+              >
+                <InputLabel id="demo-simple-select-label">Stage</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  name="values"
+                  label="Stage"
+                  value={filterSelectedQuery}
+                  onChange={(event) => handleInputChanges(event)}
+                  sx={{
+                    "& .MuiSelect-iconOutlined": {
+                      display: filterSelectedQuery ? "none" : "",
+                    },
+                    "&.Mui-focused .MuiIconButton-root": {
+                      color: "primary.main",
+                    },
+                  }}
+                  endAdornment={
+                    <IconButton
+                      sx={{
+                        visibility: filterSelectedQuery ? "visible" : "hidden",
+                      }}
+                      onClick={getResetFilterData}
+                    >
+                      <ClearIcon />
+                    </IconButton>
+                  }
+                >
+                  {StageOptions.map((option, i) => (
                     <MenuItem key={i} value={option.value}>
                       {option.label}
                     </MenuItem>
                   ))}
                 </Select>
               </FormControl>
-              {/* <Autocomplete
-                noOptionsText={"No Options"}
-                disablePortal
+            )}
+            {filterQuery === "description__name" && (
+              <FormControl
+                sx={{ minWidth: "200px", marginLeft: "1em" }}
                 size="small"
-                id="combo-box-demo"
-                options={FilterOptions}
-                onChange={(event, value) => setFilterQuery(value)}
-                
-                renderInput={(params) => (
-                  <TextField {...params} label="Fliter By" />
-                )}
-              /> */}
-            </Box>
-            <Box flexGrow={1}>
-              {filterQuery === "assigned_to__email" && (
-                <FormControl
-                  sx={{ minWidth: "200px", marginLeft: "1em" }}
-                  size="small"
-                >
-                  <InputLabel id="demo-simple-select-label">
-                    Assigned To
-                  </InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    name="values"
-                    label="Assigned To"
-                    value={filterSelectedQuery}
-                    onChange={(event) => handleInputChanges(event)}
-                    sx={{
-                      "& .MuiSelect-iconOutlined": {
-                        display: filterSelectedQuery ? "none" : "",
-                      },
-                      "&.Mui-focused .MuiIconButton-root": {
-                        color: "primary.main",
-                      },
-                    }}
-                    endAdornment={
-                      <IconButton
-                        sx={{
-                          visibility: filterSelectedQuery
-                            ? "visible"
-                            : "hidden",
-                        }}
-                        onClick={getResetData}
-                      >
-                        <ClearIcon />
-                      </IconButton>
-                    }
-                  >
-                    {assigned.map((option, i) => (
-                      <MenuItem key={i} value={option.email}>
-                        {option.email}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              )}
-              {filterQuery === "references__source" && (
-                <FormControl
-                  sx={{ minWidth: "200px", marginLeft: "1em" }}
-                  size="small"
-                >
-                  <InputLabel id="demo-simple-select-label">
-                    Reference
-                  </InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    name="values"
-                    label="Reference"
-                    value={filterSelectedQuery}
-                    onChange={(event) => handleInputChanges(event)}
-                    sx={{
-                      "& .MuiSelect-iconOutlined": {
-                        display: filterSelectedQuery ? "none" : "",
-                      },
-                      "&.Mui-focused .MuiIconButton-root": {
-                        color: "primary.main",
-                      },
-                    }}
-                    endAdornment={
-                      <IconButton
-                        sx={{
-                          visibility: filterSelectedQuery
-                            ? "visible"
-                            : "hidden",
-                        }}
-                        onClick={getResetData}
-                      >
-                        <ClearIcon />
-                      </IconButton>
-                    }
-                  >
-                    {referenceData.map((option) => (
-                      <MenuItem key={option.id} value={option.source}>
-                        {option.source}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              )}
-              {filterQuery === "stage" && (
-                <FormControl
-                  sx={{ minWidth: "200px", marginLeft: "1em" }}
-                  size="small"
-                >
-                  <InputLabel id="demo-simple-select-label">Stage</InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    name="values"
-                    label="Stage"
-                    value={filterSelectedQuery}
-                    onChange={(event) => handleInputChanges(event)}
-                    sx={{
-                      "& .MuiSelect-iconOutlined": {
-                        display: filterSelectedQuery ? "none" : "",
-                      },
-                      "&.Mui-focused .MuiIconButton-root": {
-                        color: "primary.main",
-                      },
-                    }}
-                    endAdornment={
-                      <IconButton
-                        sx={{
-                          visibility: filterSelectedQuery
-                            ? "visible"
-                            : "hidden",
-                        }}
-                        onClick={getResetData}
-                      >
-                        <ClearIcon />
-                      </IconButton>
-                    }
-                  >
-                    {StageOptions.map((option, i) => (
-                      <MenuItem key={i} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              )}
-              {filterQuery === "description__name" && (
-                <FormControl
-                  sx={{ minWidth: "200px", marginLeft: "1em" }}
-                  size="small"
-                >
-                  <InputLabel id="demo-simple-select-label">
-                    Description
-                  </InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    name="values"
-                    label="Description"
-                    value={filterSelectedQuery}
-                    onChange={(event) => handleInputChanges(event)}
-                    sx={{
-                      "& .MuiSelect-iconOutlined": {
-                        display: filterSelectedQuery ? "none" : "",
-                      },
-                      "&.Mui-focused .MuiIconButton-root": {
-                        color: "primary.main",
-                      },
-                    }}
-                    endAdornment={
-                      <IconButton
-                        sx={{
-                          visibility: filterSelectedQuery
-                            ? "visible"
-                            : "hidden",
-                        }}
-                        onClick={getResetData}
-                      >
-                        <ClearIcon />
-                      </IconButton>
-                    }
-                  >
-                    {descriptionMenuData.map((option) => (
-                      <MenuItem key={option.id} value={option.name}>
-                        {option.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              )}
-              {filterQuery === "search" && (
-                <CustomSearchWithButton
-                  filterSelectedQuery={filterSelectedQuery}
-                  setFilterSelectedQuery={setFilterSelectedQuery}
-                  handleInputChange={handleInputChange}
-                  getResetData={getResetData}
-                />
-              )}
-            </Box>
-            <Box flexGrow={1} align="center">
-              <h3
-                style={{
-                  textAlign: "left",
-                  marginBottom: "1em",
-                  fontSize: "24px",
-                  color: "rgb(34, 34, 34)",
-                  fontWeight: 800,
-                }}
               >
-                Open Lead
-              </h3>
-            </Box>
-            <Box flexGrow={0.5} align="right">
-              {users.is_staff === true && (
-                <button
-                  onClick={() => setOpenModal(true)}
-                  className="btn btn-primary me-2"
-                  size="small"
+                <InputLabel id="demo-simple-select-label">
+                  Description
+                </InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  name="values"
+                  label="Description"
+                  value={filterSelectedQuery}
+                  onChange={(event) => handleInputChanges(event)}
+                  sx={{
+                    "& .MuiSelect-iconOutlined": {
+                      display: filterSelectedQuery ? "none" : "",
+                    },
+                    "&.Mui-focused .MuiIconButton-root": {
+                      color: "primary.main",
+                    },
+                  }}
+                  endAdornment={
+                    <IconButton
+                      sx={{
+                        visibility: filterSelectedQuery ? "visible" : "hidden",
+                      }}
+                      onClick={getResetFilterData}
+                    >
+                      <ClearIcon />
+                    </IconButton>
+                  }
                 >
-                  Assign Bulk Lead
-                </button>
-              )}
+                  {descriptionMenuData.map((option) => (
+                    <MenuItem key={option.id} value={option.name}>
+                      {option.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
+            <CustomSearchWithButton
+              filterSelectedQuery={searchQuery}
+              setFilterSelectedQuery={setSearchQuery}
+              handleInputChange={handleInputChange}
+              getResetData={getResetSearchData}
+            />
+
+            {users.is_staff === true && (
               <Button
-                onClick={() => setOpenPopup2(true)}
+                onClick={() => setOpenModal(true)}
                 variant="contained"
-                color="success"
-                startIcon={<AddIcon />}
+                sx={{ marginLeft: "1em", marginRight: "1em" }}
               >
-                Add
+                Assign Bulk Lead
               </Button>
-            </Box>
+            )}
+            <Button
+              onClick={() => setOpenPopup2(true)}
+              variant="contained"
+              color="success"
+            >
+              Add
+            </Button>
+          </Box>
+          <Box display="flex" alignItems="center" justifyContent="center">
+            <h3
+              style={{
+                marginBottom: "1em",
+                fontSize: "24px",
+                color: "rgb(34, 34, 34)",
+                fontWeight: 800,
+              }}
+            >
+              Opened Leads
+            </h3>
           </Box>
           <CustomTable
             headers={Tableheaders}
@@ -614,8 +665,6 @@ export const OpenLead = () => {
         setOpenPopup={setOpenPopup}
       >
         <UpdateLeads
-          followup={followup}
-          potential={potential}
           assigned={assigned}
           descriptionMenuData={descriptionMenuData}
           leadsByID={leadsByID}
@@ -658,16 +707,16 @@ const FilterOptions = [
   { label: "References", value: "references__source" },
   { label: "Description", value: "description__name" },
   { label: "Assigned To", value: "assigned_to__email" },
-  { label: "Search", value: "search" },
+  { label: "Stage", value: "stage" },
 ];
 
 const StageOptions = [
-  { label: "New", value: "new" },
+  // { label: "New", value: "new" },
   { label: "Open", value: "open" },
   { label: "Opportunity", value: "opportunity" },
   { label: "Potential", value: "potential" },
-  { label: "Interested", value: "interested" },
-  { label: "Converted", value: "converted" },
-  { label: "Not Interested", value: "not_interested" },
-  { label: "Close", value: "close" },
+  // { label: "Interested", value: "interested" },
+  // { label: "Converted", value: "converted" },
+  // { label: "Not Interested", value: "not_interested" },
+  // { label: "Close", value: "close" },
 ];

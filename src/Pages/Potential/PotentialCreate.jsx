@@ -24,7 +24,7 @@ export const PotentialCreate = (props) => {
       setOpen(true);
 
       const data = {
-        lead: leadsByID.lead_id,
+        lead: leadsByID,
         product: potential.product,
         current_brand: potential.current_brand,
         current_buying_price: potential.current_buying_price,

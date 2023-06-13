@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import "../CommonStyle.css";
 
@@ -46,8 +46,6 @@ function getSteps() {
 export const UpdateLeads = (props) => {
   const {
     leadsByID,
-    followup,
-    potential,
     setOpenPopup,
     getAllleadsData,
     descriptionMenuData,
@@ -58,22 +56,19 @@ export const UpdateLeads = (props) => {
   const [activeStep, setActiveStep] = useState(0);
   const steps = getSteps();
   const [open, setOpen] = useState(false);
-  const [businesTypes, setBusinesTypes] = useState(
-    leadsByID && leadsByID.business_type
-  );
-  const [interests, setInterests] = useState(leadsByID.interested);
-  const [businessMismatch, setBusinessMismatch] = useState(
-    leadsByID.business_mismatch
-  );
-  const [leads, setLeads] = useState(leadsByID);
-  const [assign, setAssign] = useState(leadsByID.assigned_to);
-  const [descriptionValue, setDescriptionValue] = useState(
-    leadsByID.description
-  );
+  const [businesTypes, setBusinesTypes] = useState("");
+  const [interests, setInterests] = useState("");
+  const [businessMismatch, setBusinessMismatch] = useState("");
+  const [leads, setLeads] = useState([]);
+  const [assign, setAssign] = useState([]);
+  const [descriptionValue, setDescriptionValue] = useState([]);
   const [phone, setPhone] = useState();
   const [phone2, setPhone2] = useState();
   const [typeData, setTypeData] = useState("");
   const [checked, setChecked] = useState(false);
+  const [followup, setFollowup] = useState(null);
+  const [potential, setPotential] = useState(null);
+  console.log("leadsByID", leadsByID);
   const handlePhoneChange = (newPhone) => {
     setPhone(newPhone);
   };
@@ -91,6 +86,31 @@ export const UpdateLeads = (props) => {
     setLeads({ ...leads, [name]: value });
   };
 
+  useEffect(() => {
+    if (leadsByID) getLeadsData(leadsByID);
+  }, []);
+
+  const getLeadsData = async (recordForEdit) => {
+    try {
+      setOpen(true);
+      console.log("recordForEdit", recordForEdit);
+      const res = await LeadServices.getLeadsById(recordForEdit);
+      setAssign(res.data.assigned_to);
+      setInterests(res.data.interested);
+      setBusinesTypes(res.data.business_type);
+      setBusinessMismatch(res.data.business_mismatch);
+      setDescriptionValue(res.data.description);
+      setFollowup(res.data.followup);
+      setPotential(res.data.potential);
+      setLeads(res.data);
+
+      setOpen(false);
+    } catch (error) {
+      console.log("error", error);
+      setOpen(false);
+    }
+  };
+
   const updateLeadsData = async (e) => {
     if (activeStep === steps.length - 1) {
       try {
@@ -106,8 +126,8 @@ export const UpdateLeads = (props) => {
             : null,
           email: leads.email ? leads.email : null,
           alternate_email: leads.alternate_email ? leads.alternate_email : null,
-          contact: contact1,
-          alternate_contact: contact2,
+          contact: contact1 || null,
+          alternate_contact: contact2 || null,
           description: descriptionValue ? descriptionValue : null,
           target_date: leads.target_date,
           business_type: businesTypes ? businesTypes : null,
@@ -831,7 +851,7 @@ export const UpdateLeads = (props) => {
                 marginRight: "1em",
               }}
             >
-              Generate PI
+              PI
             </Button>
           </div>
         </Paper>
@@ -878,7 +898,7 @@ export const UpdateLeads = (props) => {
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <LeadActivity
-            getAllleadsData={getAllleadsData}
+            getAllleadsData={getLeadsData}
             followup={followup}
             leadsByID={leadsByID}
           />
@@ -888,7 +908,7 @@ export const UpdateLeads = (props) => {
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <ViewAllPotential
-            getAllleadsData={getAllleadsData}
+            getAllleadsData={getLeadsData}
             potential={potential}
             product={product}
             leadsByID={leadsByID}
