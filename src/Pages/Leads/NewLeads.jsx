@@ -11,7 +11,6 @@ import {
   IconButton,
 } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
-import AddIcon from "@mui/icons-material/Add";
 import LeadServices from "../../services/LeadService";
 import "../CommonStyle.css";
 import { CreateLeads } from "./CreateLeads";
@@ -29,6 +28,7 @@ import { CustomTable } from "../../Components/CustomTable";
 import { CustomSearchWithButton } from "../../Components/CustomSearchWithButton";
 import { LeadActivityCreate } from "../FollowUp/LeadActivityCreate";
 import { PotentialCreate } from "../Potential/PotentialCreate";
+import { CreateLeadsProformaInvoice } from "../Invoice/ProformaInvoice/CreateLeadsProformaInvoice";
 
 export const NewLeads = () => {
   const dispatch = useDispatch();
@@ -45,6 +45,7 @@ export const NewLeads = () => {
   const [openPopup2, setOpenPopup2] = useState(false);
   const [openModalFollowup, setOpenModalFollowup] = useState(false);
   const [openModalPotential, setOpenModalPotential] = useState(false);
+  const [openModalPI, setOpenModalPI] = useState(false);
   const [leadsByID, setLeadsByID] = useState(null);
   const [assigned, setAssigned] = useState([]);
   const [referenceData, setReferenceData] = useState([]);
@@ -70,15 +71,19 @@ export const NewLeads = () => {
   };
 
   const openInPopup2 = (item) => {
-    const matchedLead = leads.find((lead) => lead.lead_id === item.id);
-    setLeadsByID(matchedLead);
+    setLeadsByID(item.id);
     setOpenModalFollowup(true);
   };
 
   const openInPopup3 = (item) => {
+    setLeadsByID(item.id);
+    setOpenModalPotential(true);
+  };
+
+  const openInPopup4 = (item) => {
     const matchedLead = leads.find((lead) => lead.lead_id === item.id);
     setLeadsByID(matchedLead);
-    setOpenModalPotential(true);
+    setOpenModalPI(true);
   };
 
   const getResetSearchData = () => {
@@ -629,9 +634,10 @@ export const NewLeads = () => {
             openInPopup={openInPopup}
             openInPopup2={openInPopup2}
             openInPopup3={openInPopup3}
-            openInPopup4={null}
+            openInPopup4={openInPopup4}
             ButtonText={"Activity"}
             ButtonText1={"Potential"}
+            ButtonText2={"Proforma Invoice"}
             PriorityColor={PriorityColor}
             Styles={{ paddingLeft: "10px", paddingRight: "10px" }}
           />
@@ -678,9 +684,10 @@ export const NewLeads = () => {
         setOpenPopup={setOpenModalFollowup}
       >
         <LeadActivityCreate
-          followupData={leadsByID}
+          leadsByID={leadsByID}
           setOpenModal={setOpenModalFollowup}
           getAllleadsData={getleads}
+          getLeadByID={null}
         />
       </Popup>
       <Popup
@@ -691,9 +698,21 @@ export const NewLeads = () => {
       >
         <PotentialCreate
           getAllleadsData={getleads}
+          getLeadByID={null}
           leadsByID={leadsByID}
           product={product}
           setOpenModal={setOpenModalPotential}
+        />
+      </Popup>
+      <Popup
+        fullScreen={true}
+        title={"Create Leads Proforma Invoice"}
+        openPopup={openModalPI}
+        setOpenPopup={setOpenModalPI}
+      >
+        <CreateLeadsProformaInvoice
+          leads={leadsByID}
+          setOpenPopup={setOpenModalPI}
         />
       </Popup>
     </>

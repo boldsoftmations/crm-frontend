@@ -4,7 +4,8 @@ import { Autocomplete, Box, Button, Grid, TextField } from "@mui/material";
 import LeadServices from "../../services/LeadService";
 
 export const PotentialCreate = (props) => {
-  const { leadsByID, getAllleadsData, product, setOpenModal } = props;
+  const { leadsByID, getAllleadsData, getLeadByID, product, setOpenModal } =
+    props;
   const [open, setOpen] = useState(false);
   const [potential, setPotential] = useState([]);
 
@@ -36,7 +37,11 @@ export const PotentialCreate = (props) => {
       await LeadServices.createPotentialLead(data);
 
       setOpenModal(false);
-      await getAllleadsData();
+      if (getLeadByID !== null) {
+        await getLeadByID(leadsByID);
+      } else {
+        await getAllleadsData();
+      }
       setOpen(false);
     } catch (error) {
       console.log("error:", error);

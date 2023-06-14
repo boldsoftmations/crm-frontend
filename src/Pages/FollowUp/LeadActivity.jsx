@@ -15,7 +15,8 @@ import { Popup } from "../../Components/Popup";
 import { LeadActivityCreate } from "./LeadActivityCreate";
 
 export const LeadActivity = (props) => {
-  const { followup, leadsByID, getAllleadsData } = props;
+  const { followup, leadsByID, getLeadByID } = props;
+
   const [openModal, setOpenModal] = useState(false);
   return (
     <>
@@ -118,9 +119,10 @@ export const LeadActivity = (props) => {
         setOpenPopup={setOpenModal}
       >
         <LeadActivityCreate
-          followupData={leadsByID}
-          getAllleadsData={getAllleadsData}
+          leadsByID={leadsByID}
+          getLeadByID={getLeadByID}
           setOpenModal={setOpenModal}
+          getAllleadsData={null}
         />
       </Popup>
     </>

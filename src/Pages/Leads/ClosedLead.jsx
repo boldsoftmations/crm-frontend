@@ -11,7 +11,6 @@ import {
   IconButton,
 } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
-import AddIcon from "@mui/icons-material/Add";
 import LeadServices from "../../services/LeadService";
 import "../CommonStyle.css";
 import { CreateLeads } from "./CreateLeads";
@@ -70,14 +69,12 @@ export const ClosedLead = () => {
   };
 
   const openInPopup2 = (item) => {
-    const matchedLead = leads.find((lead) => lead.lead_id === item.id);
-    setLeadsByID(matchedLead);
+    setLeadsByID(item.id);
     setOpenModalFollowup(true);
   };
 
   const openInPopup3 = (item) => {
-    const matchedLead = leads.find((lead) => lead.lead_id === item.id);
-    setLeadsByID(matchedLead);
+    setLeadsByID(item.id);
     setOpenModalPotential(true);
   };
 
@@ -678,9 +675,10 @@ export const ClosedLead = () => {
         setOpenPopup={setOpenModalFollowup}
       >
         <LeadActivityCreate
-          followupData={leadsByID}
+          leadsByID={leadsByID}
           setOpenModal={setOpenModalFollowup}
           getAllleadsData={getleads}
+          getLeadByID={null}
         />
       </Popup>
       <Popup
@@ -691,6 +689,7 @@ export const ClosedLead = () => {
       >
         <PotentialCreate
           getAllleadsData={getleads}
+          getLeadByID={null}
           leadsByID={leadsByID}
           product={product}
           setOpenModal={setOpenModalPotential}

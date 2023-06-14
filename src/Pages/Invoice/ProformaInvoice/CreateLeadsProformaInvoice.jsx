@@ -194,7 +194,7 @@ export const CreateLeadsProformaInvoice = (props) => {
       ) {
         await InvoiceServices.createLeadsProformaInvoiceData(req);
         setOpenPopup(false);
-        navigate("/invoice/performa-invoice");
+        navigate("/invoice/active-pi");
       } else {
         setIDForEdit(leads.lead_id);
         setOpenPopup2(true);

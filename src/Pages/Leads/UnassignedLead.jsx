@@ -60,7 +60,6 @@ export const UnassignedLead = () => {
 
   const openInPopup = (item) => {
     setLeadsByID(item.lead_id);
-
     setOpenPopup(true);
   };
 
@@ -463,6 +462,7 @@ export const UnassignedLead = () => {
                           View
                         </Button>
                         <Button
+                          color="success"
                           variant="text"
                           onClick={() => openInPopup2(row)}
                         >
