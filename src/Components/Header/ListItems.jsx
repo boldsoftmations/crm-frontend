@@ -2882,6 +2882,19 @@ export const ListItems = (props) => {
                       primary="Customer"
                     />
                   </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/customers/unassigned-company-details"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Unassigned Customer"
+                    />
+                  </ListItem>
                 </List>
               </Collapse>
 
