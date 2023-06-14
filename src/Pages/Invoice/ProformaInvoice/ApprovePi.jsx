@@ -30,7 +30,7 @@ import { UpdateCustomerProformaInvoice } from "./UpdateCustomerProformaInvoice";
 import { CustomPagination } from "../../../Components/CustomPagination";
 import { UpdateLeadsProformaInvoice } from "./UpdateLeadsProformaInvoice";
 
-export const UnApprovedPi = () => {
+export const ApprovePi = () => {
   const dispatch = useDispatch();
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup1, setOpenPopup1] = useState(false);
@@ -311,7 +311,7 @@ export const UnApprovedPi = () => {
                 fontWeight: 800,
               }}
             >
-              UnApproved PI
+              Approve Pi
             </h3>
           </Box>
           <TableContainer

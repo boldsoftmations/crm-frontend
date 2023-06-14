@@ -56,8 +56,8 @@ import { ClosedLead } from "../Pages/Leads/ClosedLead";
 import { AllProformaInvoice } from "./../Pages/Invoice/ProformaInvoice/AllProformaInvoice";
 import { DuplicateLead } from "../Pages/Leads/DuplicateLead";
 import { Followup } from "../Pages/FollowUp/Followup";
-import { UnApprovedPi } from "../Pages/Invoice/ProformaInvoice/UnApprovedPi";
 import { ActivePI } from "../Pages/Invoice/ProformaInvoice/ActivePI";
+import { ApprovePi } from "../Pages/Invoice/ProformaInvoice/ApprovePi";
 
 export const RouteScreen = () => {
   const tokenData = useSelector((state) => state.auth);
@@ -137,7 +137,7 @@ export const RouteScreen = () => {
             <Route path="/followp/view-followup" element={<Followup />} />
             {/* Invoice - Seller Account Route */}
             <Route path="/invoice/seller-account" element={<SellerAccount />} />
-            <Route path="/invoice/unapproved-pi" element={<UnApprovedPi />} />
+            <Route path="/invoice/approve-pi" element={<ApprovePi />} />
             <Route path="/invoice/active-pi" element={<ActivePI />} />
             <Route
               path="/invoice/all-performa-invoice"

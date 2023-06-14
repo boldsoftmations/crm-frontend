@@ -58,7 +58,7 @@ export const ListItems = (props) => {
             <ListItemIcon>
               <DashboardIcon />
             </ListItemIcon>
-            <ListItemText primary="Dashboard Details" />
+            <ListItemText primary="Dashboard" />
             {expandDashboard ? <ExpandLessIcon /> : <ExpandMoreIcon />}
           </ListItem>
           <Collapse in={expandDashboard} timeout="auto" unmountOnExit>
@@ -423,14 +423,14 @@ export const ListItems = (props) => {
               <ListItem
                 button
                 component={RouterLink}
-                to="/invoice/unapproved-pi"
+                to="/invoice/approve-pi"
                 style={{ width: 300 }}
               >
                 <ListItemText
                   component={Button}
                   onClick={() => setOpen(false)}
                   inset
-                  primary="UnApproved PI"
+                  primary="Approve PI"
                 />
               </ListItem>
               <ListItem
@@ -530,7 +530,7 @@ export const ListItems = (props) => {
             <ListItemIcon>
               <AccountCircleIcon />
             </ListItemIcon>
-            <ListItemText primary="Seller Account Details" />
+            <ListItemText primary="Seller Account" />
             {sellerAccount ? <ExpandLessIcon /> : <ExpandMoreIcon />}
           </ListItem>
           <Collapse in={sellerAccount} timeout="auto" unmountOnExit>
@@ -1477,7 +1477,7 @@ export const ListItems = (props) => {
                   <ListItemIcon>
                     <AccountCircleIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Seller Account Details" />
+                  <ListItemText primary="Seller Account" />
                   {sellerAccount ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                 </ListItem>
               )}
@@ -2287,7 +2287,7 @@ export const ListItems = (props) => {
                     <ListItemIcon>
                       <DashboardIcon />
                     </ListItemIcon>
-                    <ListItemText primary="Dashboard Details" />
+                    <ListItemText primary="Dashboard" />
                     {expandDashboard ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                   </ListItem>
 
@@ -2672,7 +2672,7 @@ export const ListItems = (props) => {
                 <ListItemIcon>
                   <DashboardIcon />
                 </ListItemIcon>
-                <ListItemText primary="Dashboard Details" />
+                <ListItemText primary="Dashboard" />
                 {expandDashboard ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
               <Collapse in={expandDashboard} timeout="auto" unmountOnExit>
@@ -2907,14 +2907,14 @@ export const ListItems = (props) => {
                   <ListItem
                     button
                     component={RouterLink}
-                    to="/invoice/unapproved-pi"
+                    to="/invoice/approve-pi"
                     style={{ width: 300 }}
                   >
                     <ListItemText
                       component={Button}
                       onClick={() => setOpen(false)}
                       inset
-                      primary="UnApproved PI"
+                      primary="Approve PI"
                     />
                   </ListItem>
                   <ListItem
@@ -3002,7 +3002,7 @@ export const ListItems = (props) => {
                 <ListItemIcon>
                   <AccountCircleIcon />
                 </ListItemIcon>
-                <ListItemText primary="Seller Account Details" />
+                <ListItemText primary="Seller Account" />
                 {sellerAccount ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
               <Collapse in={sellerAccount} timeout="auto" unmountOnExit>
@@ -3618,14 +3618,14 @@ export const ListItems = (props) => {
                   <ListItem
                     button
                     component={RouterLink}
-                    to="/invoice/unapproved-pi"
+                    to="/invoice/approve-pi"
                     style={{ width: 300 }}
                   >
                     <ListItemText
                       component={Button}
                       onClick={() => setOpen(false)}
                       inset
-                      primary="UnApproved PI"
+                      primary="Approve PI"
                     />
                   </ListItem>
                   <ListItem

@@ -704,7 +704,7 @@ const FilterOptions = [
   { label: "References", value: "references__source" },
   { label: "Description", value: "description__name" },
   { label: "Assigned To", value: "assigned_to__email" },
-  { label: "Search", value: "search" },
+  // { label: "Search", value: "search" },
 ];
 
 const StageOptions = [

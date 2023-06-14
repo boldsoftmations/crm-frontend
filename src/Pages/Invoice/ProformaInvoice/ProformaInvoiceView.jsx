@@ -17,7 +17,7 @@ import { PaymentConfirmationPi } from "./PaymentConfirmationPi";
 import { Popup } from "../../../Components/Popup";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import logo from "../../../Images/LOGOS3.png";
-import ISO from "../../../Images/ISOLogo.ico";
+import ISO from "../../../Images/ISO.png";
 import AllLogo from "../../../Images/allLogo.jpg";
 import MSME from "../../../Images/MSME.jpeg";
 import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
