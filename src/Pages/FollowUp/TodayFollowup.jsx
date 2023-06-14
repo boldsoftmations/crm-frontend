@@ -46,7 +46,7 @@ export const TodayFollowup = (props) => {
 
   const Tabledata = todayFollowUp.map((row, i) => ({
     type: row.type,
-    lead: row.lead,
+    lead: row.leads,
     company: row.company,
     company_name: row.company_name,
     name: row.name,

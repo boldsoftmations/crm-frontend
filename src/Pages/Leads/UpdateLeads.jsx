@@ -102,6 +102,8 @@ export const UpdateLeads = (props) => {
       setDescriptionValue(res.data.description);
       setFollowup(res.data.followup);
       setPotential(res.data.potential);
+      setPhone(res.data.contact);
+      setPhone2(res.data.alternate_contact);
       setLeads(res.data);
 
       setOpen(false);
