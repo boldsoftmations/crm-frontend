@@ -112,9 +112,9 @@ export const AllProformaInvoice = () => {
       const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
       const response = currentPage
         ? await InvoiceServices.getPIPaginationWithDateRange(
+            currentPage,
             StartDate,
-            EndDate,
-            currentPage
+            EndDate
           )
         : await InvoiceServices.getPIDataWithDateRange(StartDate, EndDate);
       setInvoiceData(response.data.results);
@@ -209,9 +209,9 @@ export const AllProformaInvoice = () => {
         }
       } else {
         const response = await InvoiceServices.getPIPaginationWithDateRange(
+          page,
           StartDate,
-          EndDate,
-          page
+          EndDate
         );
         setInvoiceData(response.data.results);
       }
