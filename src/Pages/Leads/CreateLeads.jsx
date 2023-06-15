@@ -55,18 +55,14 @@ export const CreateLeads = (props) => {
     try {
       e.preventDefault();
       setOpen(true);
-      let CONTACT = leads.contact ? `+${leads.contact}` : null;
-      let ALTERNATE_CONTACT = leads.alternate_contact
-        ? `+${leads.alternate_contact}`
-        : null;
 
       const data = {
         name: leads.name,
         alternate_contact_name: leads.alternate_contact_name,
         email: leads.email,
         alternate_email: leads.alternate_email,
-        contact: CONTACT,
-        alternate_contact: ALTERNATE_CONTACT,
+        contact: leads.contact || null,
+        alternate_contact: leads.alternate_contact || null,
         business_type: leads.business_type,
         description: leads.description || [],
         assigned_to: leads.assigned_to,
@@ -171,7 +167,12 @@ export const CreateLeads = (props) => {
                 minWidth: "300px",
               }}
               country={"in"}
-              onChange={(newPhone) => handleSelectChange("contact", newPhone)}
+              onChange={(newPhone) => {
+                const formattedPhone = newPhone.startsWith("+")
+                  ? newPhone
+                  : "+" + newPhone;
+                handleSelectChange("contact", formattedPhone);
+              }}
             />
           </Grid>
           <Grid item xs={12} sm={3}>
@@ -182,9 +183,12 @@ export const CreateLeads = (props) => {
                 minWidth: "300px",
               }}
               country={"in"}
-              onChange={(newPhone) =>
-                handleSelectChange("alternate_contact", newPhone)
-              }
+              onChange={(newPhone) => {
+                const formattedPhone = newPhone.startsWith("+")
+                  ? newPhone
+                  : "+" + newPhone;
+                handleSelectChange("alternate_contact", formattedPhone);
+              }}
             />
           </Grid>
 
