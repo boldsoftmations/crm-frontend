@@ -570,9 +570,7 @@ export const UpdateLeads = (props) => {
               size="small"
               label="Pin Code"
               variant="outlined"
-              value={
-                checked === true ? leads.state : leads.shipping_state || ""
-              }
+              value={checked === true ? leads.pincode : leads.pincode || ""}
               onChange={handleInputChange}
             />
           </Grid>
