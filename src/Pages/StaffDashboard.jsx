@@ -242,7 +242,7 @@ export const StaffDashboard = (props) => {
                 dominantBaseline="middle"
                 className="chart-title"
               >
-                Actual vs Forecast
+                Actual vs Forecast(Quantity)
               </text>
             </BarChart>
           </ResponsiveContainer>
@@ -795,7 +795,7 @@ export const StaffDashboard = (props) => {
                 dominantBaseline="middle"
                 className="chart-title"
               >
-                Description Wise Quantity
+                Description Wise Sales Quantity
               </text>
             </BarChart>
           </ResponsiveContainer>
