@@ -303,7 +303,8 @@ export const ProformaInvoiceView = (props) => {
           </div>
           <div className="col-xs-6">
             {invoiceData.status === "Approved" &&
-              users.groups.includes("Accounts") && (
+              (users.groups.includes("Accounts") ||
+                users.groups.includes("Accounts Billing Department")) && (
                 <button
                   type="button"
                   className="btn btn-success"
