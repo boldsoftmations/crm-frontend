@@ -243,8 +243,9 @@ export const ProformaInvoiceView = (props) => {
               )}
           </div>
           <div className="col-xs-6 ">
-            {(users.groups.toString() === "Sales" ||
-              users.groups.toString() === "Customer Service") &&
+            {(users.groups.includes("Sales") ||
+              users.groups.includes("Customer Service") ||
+              users.groups.includes("Accounts")) &&
               invoiceData.status === "Raised" && (
                 <button
                   type="button"
@@ -273,7 +274,7 @@ export const ProformaInvoiceView = (props) => {
           </div>
           <div className="col-xs-6 ">
             {invoiceData.status === "Approved" &&
-              users.groups[0] === "Accounts" && (
+              users.groups.includes("Accounts") && (
                 <button
                   type="button"
                   className="btn btn-primary"
@@ -302,7 +303,7 @@ export const ProformaInvoiceView = (props) => {
           </div>
           <div className="col-xs-6">
             {invoiceData.status === "Approved" &&
-              users.groups[0] === "Accounts" && (
+              users.groups.includes("Accounts") && (
                 <button
                   type="button"
                   className="btn btn-success"

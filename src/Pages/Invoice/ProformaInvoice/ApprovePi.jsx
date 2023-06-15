@@ -174,7 +174,6 @@ export const ApprovePi = () => {
       if (statusValue || typeValue || searchValue) {
         const response = await InvoiceServices.getAllPIPaginationWithFilterBy(
           "unapproved",
-          "page",
           page,
           filterType,
           statusValue || typeValue,

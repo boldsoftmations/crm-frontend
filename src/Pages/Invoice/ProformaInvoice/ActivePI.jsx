@@ -174,7 +174,6 @@ export const ActivePI = () => {
       if (statusValue || typeValue || searchValue) {
         const response = await InvoiceServices.getAllPIPaginationWithFilterBy(
           "active",
-          "page",
           page,
           filterType,
           statusValue || typeValue,
@@ -192,7 +191,10 @@ export const ActivePI = () => {
           setTypeValue(null);
         }
       } else {
-        const response = await InvoiceServices.getAllPIPagination(page);
+        const response = await InvoiceServices.getAllPIPagination(
+          "active",
+          page
+        );
         setInvoiceData(response.data.results);
       }
 

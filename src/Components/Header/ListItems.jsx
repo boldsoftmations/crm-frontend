@@ -2933,6 +2933,19 @@ export const ListItems = (props) => {
                   <ListItem
                     button
                     component={RouterLink}
+                    to="/invoice/active-pi"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Active PI"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
                     to="/invoice/all-performa-invoice"
                     style={{ width: 300 }}
                   >
