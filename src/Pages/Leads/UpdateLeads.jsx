@@ -18,6 +18,7 @@ import {
   Checkbox,
   Snackbar,
   IconButton,
+  Switch,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import PhoneInput from "react-phone-input-2";
@@ -44,18 +45,32 @@ export const UpdateLeads = (props) => {
   const [potential, setPotential] = useState(null);
   const [error, setError] = useState(null);
 
+  const getTargetDate = () => {
+    const currentDate = new Date();
+    const targetDate = new Date(currentDate.setDate(currentDate.getDate() + 3));
+    return targetDate.toISOString().split("T")[0]; // Format targetDate as YYYY-MM-DD
+  };
+
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setLeads({ ...leads, [name]: value });
   };
 
   const handleSelectChange = (name, value) => {
-    setLeads({
-      ...leads,
-      [name]: value,
-    });
+    if (name === "hot_lead") {
+      setLeads({
+        ...leads,
+        [name]: value,
+        target_date: value ? getTargetDate() : "", // Set target_date if hot_lead is true, otherwise clear the value
+      });
+    } else {
+      setLeads({
+        ...leads,
+        [name]: value,
+      });
+    }
   };
-
+  console.log("leads", leads.target_date);
   const handleSameAsAddress = (event) => {
     setChecked(event.target.checked);
   };
@@ -85,6 +100,8 @@ export const UpdateLeads = (props) => {
       setOpen(true);
 
       const data = {
+        hot_lead: leads.hot_lead,
+        pinned: leads.pinned,
         name: leads.name,
         alternate_contact_name: leads.alternate_contact_name,
         email: leads.email,
@@ -97,7 +114,7 @@ export const UpdateLeads = (props) => {
         references: leads.references,
         assigned_to: leads.assigned_to || null,
         description: leads.description || [],
-        target_date: leads.target_date,
+        target_date: leads.target_date || null,
         type_of_customer: leads.type_of_customer,
         company: leads.company || null,
         gst_number: leads.gst_number || null,
@@ -163,6 +180,20 @@ export const UpdateLeads = (props) => {
                 <Chip label="Basic Details" />
               </Divider>
             </Root>
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={leads.hot_lead || false}
+                  onChange={(event) =>
+                    handleSelectChange("hot_lead", event.target.checked)
+                  }
+                  name="validity"
+                />
+              }
+              label="Hot Lead"
+            />
           </Grid>
           <Grid item xs={12} sm={3}>
             <TextField

@@ -58,6 +58,7 @@ import { DuplicateLead } from "../Pages/Leads/DuplicateLead";
 import { Followup } from "../Pages/FollowUp/Followup";
 import { ActivePI } from "../Pages/Invoice/ProformaInvoice/ActivePI";
 import { ApprovePi } from "../Pages/Invoice/ProformaInvoice/ApprovePi";
+import { HotLeads } from "../Pages/Leads/HotLeads";
 
 export const RouteScreen = () => {
   const tokenData = useSelector((state) => state.auth);
@@ -83,6 +84,7 @@ export const RouteScreen = () => {
             <Route path="/user/dashoard" element={<Dashboard />} />
             <Route path="/user/profile" exact element={<Profile />} />
             {/* Leads Routes */}
+            <Route path="/leads/hot-lead" element={<HotLeads />} />
             <Route path="/leads/new-lead" element={<NewLeads />} />
             <Route path="/leads/open-lead" element={<OpenLead />} />
             <Route path="/leads/closed-lead" element={<ClosedLead />} />

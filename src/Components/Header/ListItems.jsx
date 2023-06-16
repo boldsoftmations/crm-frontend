@@ -288,7 +288,19 @@ export const ListItems = (props) => {
                   primary="Opened Leads"
                 />
               </ListItem>
-
+              <ListItem
+                button
+                component={RouterLink}
+                to="/leads/hot-lead"
+                style={{ width: 300 }}
+              >
+                <ListItemText
+                  component={Button}
+                  onClick={() => setOpen(false)}
+                  inset
+                  primary="Hot Leads"
+                />
+              </ListItem>
               <ListItem
                 button
                 component={RouterLink}
@@ -1305,6 +1317,19 @@ export const ListItems = (props) => {
                       onClick={() => setOpen(false)}
                       inset
                       primary="Open Leads"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/leads/hot-lead"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Hot Leads"
                     />
                   </ListItem>
                 </List>
@@ -2351,6 +2376,19 @@ export const ListItems = (props) => {
                       onClick={() => setOpen(false)}
                       inset
                       primary="Open Leads"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/leads/hot-lead"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Hot Leads"
                     />
                   </ListItem>
                 </List>

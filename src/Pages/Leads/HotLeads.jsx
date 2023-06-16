@@ -41,7 +41,7 @@ import { LeadActivityCreate } from "../FollowUp/LeadActivityCreate";
 import { PotentialCreate } from "../Potential/PotentialCreate";
 import { CreateLeadsProformaInvoice } from "../Invoice/ProformaInvoice/CreateLeadsProformaInvoice";
 
-export const NewLeads = () => {
+export const HotLeads = () => {
   const dispatch = useDispatch();
   const [leads, setLeads] = useState([]);
   const [open, setOpen] = useState(false);
@@ -213,7 +213,7 @@ export const NewLeads = () => {
       const searchValue = searchQuery ? searchQuery : null;
       if (filterQuery !== "" && filterValue !== null && searchValue !== null) {
         const response = await LeadServices.getAllSearchWithFilteredLeads(
-          "new",
+          "hot",
           "-lead_id",
           filterQuery,
           filterValue,
@@ -226,7 +226,7 @@ export const NewLeads = () => {
       } else if (filterQuery && filterValue && currentPage) {
         const response = await LeadServices.getAllPaginateLeads(
           currentPage,
-          "new",
+          "hot",
           "-lead_id",
           filterValue,
           filterSelectedQuery
@@ -236,7 +236,7 @@ export const NewLeads = () => {
         setpageCount(Math.ceil(total / 25));
       } else if (searchValue) {
         const response = await LeadServices.getFilteredLeads(
-          "new",
+          "hot",
           "-lead_id",
           filterQuery,
           filterValue
@@ -247,14 +247,14 @@ export const NewLeads = () => {
       } else if (currentPage) {
         const response = await LeadServices.getAllPaginateLeads(
           currentPage,
-          "new",
+          "hot",
           "-lead_id"
         );
         setLeads(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
       } else {
-        const response = await LeadServices.getAllLeads("new", "priority");
+        const response = await LeadServices.getAllLeads("hot", "priority");
         if (response) {
           setLeads(response.data.results);
           const total = response.data.count;
@@ -290,7 +290,7 @@ export const NewLeads = () => {
       const searchValue = searchQuery ? searchQuery : null;
       if (filterQuery && filterValue !== null && searchValue !== null) {
         const response = await LeadServices.getAllSearchWithFilteredLeads(
-          "new",
+          "hot",
           "-lead_id",
           filterQuery,
           filterValue,
@@ -302,7 +302,7 @@ export const NewLeads = () => {
         setpageCount(Math.ceil(total / 25));
       } else if (filterQuery && filterValue) {
         const response = await LeadServices.getFilteredLeads(
-          "new",
+          "hot",
           "-lead_id",
           filterQuery,
           filterValue
@@ -313,7 +313,7 @@ export const NewLeads = () => {
         setpageCount(Math.ceil(total / 25));
       } else if (searchValue) {
         const response = await LeadServices.getSearchLeads(
-          "new",
+          "hot",
           "-lead_id",
           searchValue
         );
@@ -343,7 +343,7 @@ export const NewLeads = () => {
       if (filterQuery && filterValue !== null && searchValue !== null) {
         const response = await LeadServices.getFilterWithSearchPaginateLeads(
           page,
-          "new",
+          "hot",
           "-lead_id",
           filterQuery,
           filterValue,
@@ -356,7 +356,7 @@ export const NewLeads = () => {
       } else if (filterQuery && filterValue) {
         const response = await LeadServices.getFilterPaginateLeads(
           page,
-          "new",
+          "hot",
           "-lead_id",
           filterQuery,
           filterValue
@@ -368,7 +368,7 @@ export const NewLeads = () => {
       } else if (searchValue) {
         const response = await LeadServices.getSearchPaginateLeads(
           page,
-          "new",
+          "hot",
           "-lead_id",
           searchValue
         );
@@ -378,7 +378,7 @@ export const NewLeads = () => {
       } else {
         const response = await LeadServices.getAllPaginateLeads(
           page,
-          "new",
+          "hot",
           "-lead_id"
         );
         setLeads(response.data.results);
@@ -655,7 +655,7 @@ export const NewLeads = () => {
                 fontWeight: 800,
               }}
             >
-              New Leads
+              Hot Leads
             </h3>
           </Box>
           <TableContainer
