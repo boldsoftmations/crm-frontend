@@ -459,7 +459,7 @@ export const CreateLeads = (props) => {
               label="Pin Code"
               variant="outlined"
               value={
-                checked === true ? leads.state : leads.shipping_state || ""
+                checked === true ? leads.pincode : leads.shipping_pincode || ""
               }
               onChange={handleInputChange}
             />
