@@ -204,9 +204,22 @@ const getFollowupWithPagination = (startDate, endDate, currentPage) => {
   );
 };
 
-const getFollowupWithSearch = (startDate, endDate, search, searchValue) => {
+const getFollowupWithFilter = (startDate, endDate, filter, filterValue) => {
   return CustomAxios.get(
-    `/api/lead/list-all-follow-ups/?date_range_after=${startDate}&date_range_before=${endDate}&${search}=${searchValue}`
+    `/api/lead/list-all-follow-ups/?date_range_after=${startDate}&date_range_before=${endDate}&${filter}=${filterValue}`
+  );
+};
+
+const getFollowupWithSearch = (
+  startDate,
+  endDate,
+  search,
+  searchValue,
+  filter,
+  filterValue
+) => {
+  return CustomAxios.get(
+    `/api/lead/list-all-follow-ups/?date_range_after=${startDate}&date_range_before=${endDate}&${search}=${searchValue}&${filter}=${filterValue}`
   );
 };
 
@@ -259,6 +272,7 @@ const LeadServices = {
   getAllFollowup,
   getFollowupWithPagination,
   getFollowupWithSearch,
+  getFollowupWithFilter,
   getFollowupWithPaginationAndSearch,
 };
 
