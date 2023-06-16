@@ -16,6 +16,8 @@ import { CustomerActivityCreate } from "../../FollowUp/CustomerActivityCreate";
 import ProductService from "../../../services/ProductService";
 import { CustomerPotentialCreate } from "../../Potential/CustomerPotentialCreate";
 import { CreateCustomerProformaInvoice } from "./../../Invoice/ProformaInvoice/CreateCustomerProformaInvoice";
+import { CSVLink } from "react-csv";
+import { Button } from "@mui/material";
 
 export const CompanyDetails = () => {
   const dispatch = useDispatch();
@@ -35,8 +37,92 @@ export const CompanyDetails = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [product, setProduct] = useState([]);
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
+  const [exportData, setExportData] = useState([]);
+  const csvLinkRef = useRef(null);
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
+
+  const handleDownload = async () => {
+    try {
+      const data = await handleExport();
+      console.log("data", data);
+      setExportData(data);
+      setTimeout(() => {
+        csvLinkRef.current.link.click();
+      });
+    } catch (error) {
+      console.log("CSVLink Download error", error);
+    }
+  };
+
+  const headers = [
+    { label: "ID", key: "id" },
+    { label: "NAME", key: "name" },
+    { label: "PAN NUMBER", key: "pan_number" },
+    { label: "GST NUMBER", key: "gst_number" },
+    { label: "ADDRESS", key: "address" },
+    { label: "CITY", key: "city" },
+    { label: "STATE", key: "state" },
+    { label: "PINCODE", key: "pincode" },
+    { label: "BUSINESS TYPE", key: "business_type" },
+    { label: "CATEGORY", key: "category" },
+    { label: "EST. DATE", key: "est_date" },
+    { label: "TOTAL SALES TURNOVER", key: "total_sales_turnover" },
+    { label: "TYPE", key: "type" },
+    { label: "CONTACT NAME", key: "contact_name" },
+    { label: "CONTACT", key: "contact" },
+    { label: "ALTERNATE CONTACT", key: "alternate_contact" },
+    { label: "EMAIL", key: "email" },
+    { label: "ALTERNATE EMAIL", key: "alternate_email" },
+  ];
+
+  const handleExport = async () => {
+    try {
+      setOpen(true);
+      let response;
+      if (filterSelectedQuery) {
+        response = await CustomerServices.getAllCompanyDataPaginate(
+          "all",
+          filterSelectedQuery
+        );
+      } else {
+        response = await CustomerServices.getCompanyPaginateData("all");
+      }
+      const data = response.data.map((row) => {
+        return {
+          id: row.id,
+          name: row.name,
+          pan_number: row.pan_number,
+          gst_number: row.gst_number,
+          address: row.address,
+          city: row.city,
+          state: row.state,
+          pincode: row.pincode,
+          business_type: row.business_type,
+          category: row.category,
+          est_date: row.est_date,
+          total_sales_turnover: row.total_sales_turnover,
+          type: row.type,
+          contact_name: row.contacts.map((contact) => contact.name).join(", "),
+          contact: row.contacts.map((contact) => contact.contact).join(", "),
+          alternate_contact: row.contacts
+            .map((contact) => contact.alternate_contact)
+            .join(", "),
+          email: row.contacts.map((contact) => contact.email).join(", "),
+          alternate_email: row.contacts
+            .map((contact) => contact.alternate_email)
+            .join(", "),
+        };
+      });
+      console.log("data", data);
+      setOpen(false);
+      return data;
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setOpen(false);
+    }
+  };
 
   const getResetData = () => {
     setFilterSelectedQuery("");
@@ -277,6 +363,23 @@ export const CompanyDetails = () => {
                 >
                   Add
                 </button>
+              )}
+              <Button variant="contained" onClick={handleDownload}>
+                Download CSV
+              </Button>
+              {exportData.length > 0 && (
+                <CSVLink
+                  data={exportData}
+                  headers={headers}
+                  ref={csvLinkRef}
+                  filename="Customer.csv"
+                  target="_blank"
+                  style={{
+                    textDecoration: "none",
+                    outline: "none",
+                    height: "5vh",
+                  }}
+                />
               )}
             </div>
           </div>
