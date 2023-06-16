@@ -30,7 +30,6 @@ import { ErrorMessage } from "../../Components/ErrorMessage/ErrorMessage";
 import { CustomSearch } from "../../Components/CustomSearch";
 import { CustomLoader } from "../../Components/CustomLoader";
 import { CustomPagination } from "../../Components/CustomPagination";
-import { CustomTable } from "../../Components/CustomTable";
 import ProductService from "../../services/ProductService";
 
 export const UnassignedLead = () => {

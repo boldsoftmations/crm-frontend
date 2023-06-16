@@ -176,6 +176,7 @@ export const UnassignedCustomer = () => {
       await CustomerServices.updateCompanyData(recordForEdit.id, req);
       setOpenPopup(false);
       getUnassignedCompanyDetails();
+      setAssign([]);
       setOpen(false);
     } catch (error) {
       console.log("createing Unassigned company detail error", error);
