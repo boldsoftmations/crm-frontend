@@ -29,6 +29,7 @@ import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 import { UpdateCustomerProformaInvoice } from "./UpdateCustomerProformaInvoice";
 import { CustomPagination } from "../../../Components/CustomPagination";
 import { UpdateLeadsProformaInvoice } from "./UpdateLeadsProformaInvoice";
+import LeadServices from "../../../services/LeadService";
 
 export const ActivePI = () => {
   const dispatch = useDispatch();
@@ -45,13 +46,15 @@ export const ActivePI = () => {
   const [searchValue, setSearchValue] = useState("");
   const [statusValue, setStatusValue] = useState("");
   const [typeValue, setTypeValue] = useState("");
+  const [assign, setAssign] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
+  const [assigned, setAssigned] = useState([]);
   const data = useSelector((state) => state.auth);
   const users = data.profile;
 
   const handleSearchValue = () => {
     setSearchValue(searchValue);
-    getSearchData(statusValue || typeValue);
+    getSearchData(statusValue || typeValue || assign);
   };
 
   const handleStatusValue = (event) => {
@@ -64,11 +67,17 @@ export const ActivePI = () => {
     getSearchData(event.target.value);
   };
 
+  const handleAssignValue = (event) => {
+    setAssign(event.target.value);
+    getSearchData(event.target.value);
+  };
+
   const getResetData = () => {
     setSearchValue("");
     setStatusValue("");
     setTypeValue("");
     setFilterType("");
+    setAssign("");
     getProformaInvoiceData();
   };
 
@@ -87,9 +96,22 @@ export const ActivePI = () => {
   };
 
   useEffect(() => {
+    getAssignedData();
     getAllSellerAccountsDetails();
     getProformaInvoiceData();
   }, []);
+
+  const getAssignedData = async () => {
+    try {
+      setOpen(true);
+      const res = await LeadServices.getAllAssignedUser();
+      setAssigned(res.data);
+      setOpen(false);
+    } catch (error) {
+      console.log("error", error);
+      setOpen(false);
+    }
+  };
 
   const getAllSellerAccountsDetails = async () => {
     try {
@@ -243,6 +265,14 @@ export const ActivePI = () => {
                   label="Status"
                   value={statusValue}
                   onChange={(event) => handleStatusValue(event)}
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        maxHeight: 300,
+                        width: 250,
+                      },
+                    },
+                  }}
                 >
                   {StatusOptions.map((option, i) => (
                     <MenuItem key={i} value={option.value}>
@@ -265,10 +295,50 @@ export const ActivePI = () => {
                   label="Type"
                   value={typeValue}
                   onChange={(event) => handleTypeValue(event)}
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        maxHeight: 300,
+                        width: 250,
+                      },
+                    },
+                  }}
                 >
                   {TypeOptions.map((option, i) => (
                     <MenuItem key={i} value={option.value}>
                       {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
+            {filterType === "raised_by__email" && (
+              <FormControl
+                sx={{ minWidth: "200px", marginLeft: "1em" }}
+                size="small"
+              >
+                <InputLabel id="demo-simple-select-label">
+                  Filter By Sales Person
+                </InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  name="values"
+                  label="Filter By Sales Person"
+                  value={assign}
+                  onChange={(event) => handleAssignValue(event)}
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        maxHeight: 300,
+                        width: 250,
+                      },
+                    },
+                  }}
+                >
+                  {assigned.map((option, i) => (
+                    <MenuItem key={i} value={option.email}>
+                      {option.email}
                     </MenuItem>
                   ))}
                 </Select>
@@ -456,6 +526,7 @@ export const ActivePI = () => {
 const FilterOptions = [
   { label: "Status", value: "status" },
   { label: "Type", value: "type" },
+  { label: "Sales Person", value: "raised_by__email" },
 ];
 
 const StatusOptions = [

@@ -3,8 +3,6 @@ import {
   Grid,
   Paper,
   Box,
-  Autocomplete,
-  Button,
   TextField,
   FormControl,
   InputLabel,
@@ -20,7 +18,6 @@ import { UpdateLeads } from "../Leads/UpdateLeads";
 import { CustomLoader } from "../../Components/CustomLoader";
 import { CustomTable } from "../../Components/CustomTable";
 import { CustomPagination } from "../../Components/CustomPagination";
-import { useDispatch } from "react-redux";
 
 export const AllFollowup = (props) => {
   const { assigned, descriptionMenuData, product } = props;
