@@ -1,8 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import "../../CommonStyle.css";
 import { Grid, Button, Paper, Box } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-
+import "../../CommonStyle.css";
 import ProductService from "../../../services/ProductService";
 import { Popup } from "./../../../Components/Popup";
 import { CreateFinishGoods } from "./CreateFinishGoods";
@@ -21,6 +20,7 @@ import {
 import { getProductCodeData } from "./../../../Redux/Action/Action";
 import { CustomPagination } from "./../../../Components/CustomPagination";
 import { CustomTable } from "../../../Components/CustomTable";
+import { CSVLink } from "react-csv";
 
 export const ViewFinishGoods = () => {
   const dispatch = useDispatch();
@@ -34,9 +34,94 @@ export const ViewFinishGoods = () => {
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [recordForEdit, setRecordForEdit] = useState(null);
+  const [exportData, setExportData] = useState([]);
+  const csvLinkRef = useRef(null);
+
+  const handleDownload = async () => {
+    try {
+      const data = await handleExport();
+      setExportData(data);
+      setTimeout(() => {
+        csvLinkRef.current.link.click();
+      });
+    } catch (error) {
+      console.log("CSVLink Download error", error);
+    }
+  };
+
+  const headers = [
+    { label: "ID", key: "id" },
+    { label: "FINISH GOODS", key: "name" },
+    { label: "PRODUCT CODE", key: "productcode" },
+    { label: "COLOR", key: "color" },
+    { label: "UNIT", key: "unit" },
+    { label: "UNIT QUANTITY", key: "unit_quantity" },
+    { label: "BASIC UNIT", key: "basic_unit" },
+    { label: "BRAND", key: "brand" },
+    { label: "SIZE", key: "size" },
+    { label: "DESCRIPTION", key: "description" },
+    { label: "ADD.DESCRIPTION", key: "additional_description" },
+    { label: "PACKING UNIT", key: "packing_unit" },
+    { label: "PACKING UNIT QUANTITY", key: "packing_unit_quantity" },
+    { label: "HSN CODE", key: "hsn_code" },
+    { label: "GST%", key: "gst" },
+    { label: "SGST", key: "sgst" },
+    { label: "CGST", key: "cgst" },
+    { label: "TYPE", key: "type" },
+  ];
+
+  const handleExport = async () => {
+    try {
+      setOpen(true);
+      let response;
+      if (searchQuery) {
+        response = await ProductService.getFinishGoodsPaginateWithSearch(
+          "all",
+          searchQuery
+        );
+      } else {
+        response = await ProductService.getFinishGoodsPaginate("all");
+      }
+      const data = response.data.map((row) => {
+        return {
+          id: row.id,
+          name: row.name,
+          productcode: row.productcode,
+          color: row.color,
+          unit: row.unit,
+          unit_quantity: row.unit_quantity,
+          basic_unit: row.basic_unit,
+          brand: row.brand,
+          size: row.size,
+          description: row.description,
+          additional_description: row.additional_description,
+          packing_unit: row.packing_unit,
+          packing_unit_quantity: row.packing_unit_quantity,
+          hsn_code: row.hsn_code,
+          gst: row.gst,
+          sgst: row.sgst,
+          cgst: row.cgst,
+          type: row.type,
+        };
+      });
+
+      setOpen(false);
+      return data;
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setOpen(false);
+    }
+  };
 
   useEffect(() => {
     getPackingUnits();
+    getBrandList();
+    getColours();
+    getproductCodes();
+    getUnits();
+    getBasicUnit();
+    getFinishGoods();
   }, []);
 
   const getPackingUnits = async () => {
@@ -48,10 +133,6 @@ export const ViewFinishGoods = () => {
     }
   };
 
-  useEffect(() => {
-    getBrandList();
-  }, []);
-
   const getBrandList = async () => {
     try {
       const res = await ProductService.getAllPaginateBrand("all");
@@ -60,10 +141,6 @@ export const ViewFinishGoods = () => {
       console.log("error finishGoods :>> ", err);
     }
   };
-
-  useEffect(() => {
-    getColours();
-  }, []);
 
   const getColours = async () => {
     try {
@@ -74,10 +151,6 @@ export const ViewFinishGoods = () => {
     }
   };
 
-  useEffect(() => {
-    getproductCodes();
-  }, []);
-
   const getproductCodes = async () => {
     try {
       const res = await ProductService.getAllPaginateProductCode("all");
@@ -87,10 +160,6 @@ export const ViewFinishGoods = () => {
     }
   };
 
-  useEffect(() => {
-    getUnits();
-  }, []);
-
   const getUnits = async () => {
     try {
       const res = await ProductService.getAllPaginateUnit("all");
@@ -99,10 +168,6 @@ export const ViewFinishGoods = () => {
       console.log("error unit finishGoods", err);
     }
   };
-
-  useEffect(() => {
-    getBasicUnit();
-  }, []);
 
   const getBasicUnit = async () => {
     try {
@@ -151,10 +216,6 @@ export const ViewFinishGoods = () => {
       errRef.current.focus();
     }
   };
-
-  useEffect(() => {
-    getFinishGoods();
-  }, []);
 
   const handlePageChange = async (event, value) => {
     try {
@@ -286,6 +347,23 @@ export const ViewFinishGoods = () => {
               >
                 Add
               </Button>
+              <Button variant="contained" onClick={handleDownload}>
+                Download CSV
+              </Button>
+              {exportData.length > 0 && (
+                <CSVLink
+                  data={exportData}
+                  headers={headers}
+                  ref={csvLinkRef}
+                  filename="Finish Goods.csv"
+                  target="_blank"
+                  style={{
+                    textDecoration: "none",
+                    outline: "none",
+                    height: "5vh",
+                  }}
+                />
+              )}
             </Box>
           </Box>
           {/* CustomTable */}

@@ -1,10 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-
-import "../../CommonStyle.css";
-
 import { Grid, Button, Paper, Box } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-
+import "../../CommonStyle.css";
 import ProductService from "../../../services/ProductService";
 import { Popup } from "../../../Components/Popup";
 import { CreateConsumable } from "./CreateConsumable";
@@ -16,6 +13,7 @@ import { useDispatch } from "react-redux";
 import { getBrandData, getUnitData } from "../../../Redux/Action/Action";
 import { CustomPagination } from "./../../../Components/CustomPagination";
 import { CustomTable } from "../../../Components/CustomTable";
+import { CSVLink } from "react-csv";
 
 export const ViewConsumable = () => {
   const dispatch = useDispatch();
@@ -29,9 +27,77 @@ export const ViewConsumable = () => {
   const [openPopup2, setOpenPopup2] = useState(false);
   const [recordForEdit, setRecordForEdit] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
+  const [exportData, setExportData] = useState([]);
+  const csvLinkRef = useRef(null);
 
+  const handleDownload = async () => {
+    try {
+      const data = await handleExport();
+      setExportData(data);
+      setTimeout(() => {
+        csvLinkRef.current.link.click();
+      });
+    } catch (error) {
+      console.log("CSVLink Download error", error);
+    }
+  };
+
+  const headers = [
+    { label: "ID", key: "id" },
+    { label: "CONSUMABLE", key: "name" },
+    { label: "UNIT", key: "unit" },
+    { label: "BRAND", key: "brand" },
+    { label: "SIZE", key: "size" },
+    { label: "DESCRIPTION", key: "description" },
+    { label: "ADD.DESCRIPTION", key: "additional_description" },
+    { label: "HSN CODE", key: "hsn_code" },
+    { label: "GST%", key: "gst" },
+    { label: "SGST", key: "sgst" },
+    { label: "CGST", key: "cgst" },
+    { label: "TYPE", key: "type" },
+  ];
+
+  const handleExport = async () => {
+    try {
+      setOpen(true);
+      let response;
+      if (searchQuery) {
+        response = await ProductService.getConsumablePaginateWithSearch(
+          "all",
+          searchQuery
+        );
+      } else {
+        response = await ProductService.getConsumablePaginate("all");
+      }
+      const data = response.data.map((row) => {
+        return {
+          id: row.id,
+          name: row.name,
+          unit: row.unit,
+          brand: row.brand,
+          size: row.size,
+          description: row.description,
+          additional_description: row.additional_description,
+          hsn_code: row.hsn_code,
+          gst: row.gst,
+          sgst: row.sgst,
+          cgst: row.cgst,
+          type: row.type,
+        };
+      });
+
+      setOpen(false);
+      return data;
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setOpen(false);
+    }
+  };
   useEffect(() => {
     getBrandList();
+    getUnits();
+    getconsumables();
   }, []);
 
   const getBrandList = async () => {
@@ -42,10 +108,6 @@ export const ViewConsumable = () => {
       console.log("error finishGoods :>> ", err);
     }
   };
-
-  useEffect(() => {
-    getUnits();
-  }, []);
 
   const getUnits = async () => {
     try {
@@ -94,10 +156,6 @@ export const ViewConsumable = () => {
       errRef.current.focus();
     }
   };
-
-  useEffect(() => {
-    getconsumables();
-  }, []);
 
   const handlePageChange = async (event, value) => {
     try {
@@ -225,6 +283,23 @@ export const ViewConsumable = () => {
               >
                 Add
               </Button>
+              <Button variant="contained" onClick={handleDownload}>
+                Download CSV
+              </Button>
+              {exportData.length > 0 && (
+                <CSVLink
+                  data={exportData}
+                  headers={headers}
+                  ref={csvLinkRef}
+                  filename="Consumable.csv"
+                  target="_blank"
+                  style={{
+                    textDecoration: "none",
+                    outline: "none",
+                    height: "5vh",
+                  }}
+                />
+              )}
             </Box>
           </Box>
           {/* CustomTable */}

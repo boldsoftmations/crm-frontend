@@ -1,11 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-
-import "../../CommonStyle.css";
-
 import { Grid, Button, Paper, Box } from "@mui/material";
-
 import AddIcon from "@mui/icons-material/Add";
-
+import "../../CommonStyle.css";
 import ProductService from "../../../services/ProductService";
 import { CreateRawMaterials } from "./CreateRawMaterials";
 import { UpdateRawMaterials } from "./UpdateRawMaterials";
@@ -21,6 +17,7 @@ import {
   getProductCodeData,
 } from "./../../../Redux/Action/Action";
 import { CustomTable } from "../../../Components/CustomTable";
+import { CSVLink } from "react-csv";
 
 export const ViewRawMaterials = () => {
   const dispatch = useDispatch();
@@ -34,8 +31,82 @@ export const ViewRawMaterials = () => {
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [recordForEdit, setRecordForEdit] = useState(null);
+  const [exportData, setExportData] = useState([]);
+  const csvLinkRef = useRef(null);
+
+  const handleDownload = async () => {
+    try {
+      const data = await handleExport();
+      setExportData(data);
+      setTimeout(() => {
+        csvLinkRef.current.link.click();
+      });
+    } catch (error) {
+      console.log("CSVLink Download error", error);
+    }
+  };
+
+  const headers = [
+    { label: "ID", key: "id" },
+    { label: "RAW MATERIAL", key: "name" },
+    { label: "PRODUCT CODE", key: "productcode" },
+    { label: "COLOR", key: "color" },
+    { label: "UNIT", key: "unit" },
+    { label: "BRAND", key: "brand" },
+    { label: "SIZE", key: "size" },
+    { label: "DESCRIPTION", key: "description" },
+    { label: "HSN CODE", key: "hsn_code" },
+    { label: "GST%", key: "gst" },
+    { label: "SGST", key: "sgst" },
+    { label: "CGST", key: "cgst" },
+    { label: "TYPE", key: "type" },
+  ];
+
+  const handleExport = async () => {
+    try {
+      setOpen(true);
+      let response;
+      if (searchQuery) {
+        response = await ProductService.getRawMaterialsPaginateWithSearch(
+          "all",
+          searchQuery
+        );
+      } else {
+        response = await ProductService.getRawMaterialsPaginate("all");
+      }
+      const data = response.data.map((row) => {
+        return {
+          id: row.id,
+          name: row.name,
+          productcode: row.productcode,
+          color: row.color,
+          unit: row.unit,
+          brand: row.brand,
+          size: row.size,
+          description: row.description,
+          hsn_code: row.hsn_code,
+          gst: row.gst,
+          sgst: row.sgst,
+          cgst: row.cgst,
+          type: row.type,
+        };
+      });
+
+      setOpen(false);
+      return data;
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setOpen(false);
+    }
+  };
+
   useEffect(() => {
     getBrandList();
+    getColours();
+    getproductCodes();
+    getUnits();
+    getrawMaterials();
   }, []);
 
   const getBrandList = async () => {
@@ -47,10 +118,6 @@ export const ViewRawMaterials = () => {
     }
   };
 
-  useEffect(() => {
-    getColours();
-  }, []);
-
   const getColours = async () => {
     try {
       const res = await ProductService.getAllPaginateColour("all");
@@ -59,10 +126,6 @@ export const ViewRawMaterials = () => {
       console.log("err Colour FinishGoods :>> ", err);
     }
   };
-
-  useEffect(() => {
-    getproductCodes();
-  }, []);
 
   const getproductCodes = async () => {
     try {
@@ -73,10 +136,6 @@ export const ViewRawMaterials = () => {
     }
   };
 
-  useEffect(() => {
-    getUnits();
-  }, []);
-
   const getUnits = async () => {
     try {
       const res = await ProductService.getAllPaginateUnit("all");
@@ -85,10 +144,6 @@ export const ViewRawMaterials = () => {
       console.log("error unit finishGoods", err);
     }
   };
-
-  useEffect(() => {
-    getrawMaterials();
-  }, []);
 
   const getrawMaterials = async () => {
     try {
@@ -255,6 +310,23 @@ export const ViewRawMaterials = () => {
               >
                 Add
               </Button>
+              <Button variant="contained" onClick={handleDownload}>
+                Download CSV
+              </Button>
+              {exportData.length > 0 && (
+                <CSVLink
+                  data={exportData}
+                  headers={headers}
+                  ref={csvLinkRef}
+                  filename="Raw materials.csv"
+                  target="_blank"
+                  style={{
+                    textDecoration: "none",
+                    outline: "none",
+                    height: "5vh",
+                  }}
+                />
+              )}
             </Box>
           </Box>
           {/* CustomTable */}
