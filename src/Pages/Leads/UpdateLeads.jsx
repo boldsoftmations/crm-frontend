@@ -562,7 +562,9 @@ export const UpdateLeads = (props) => {
               label="Shipping Address"
               variant="outlined"
               value={
-                checked === true ? leads.address : leads.shipping_address || ""
+                checked === true
+                  ? leads.address || ""
+                  : leads.shipping_address || ""
               }
               onChange={handleInputChange}
             />
@@ -574,7 +576,11 @@ export const UpdateLeads = (props) => {
               size="small"
               label="Pin Code"
               variant="outlined"
-              value={checked === true ? leads.pincode : leads.pincode || ""}
+              value={
+                checked === true
+                  ? leads.pincode || ""
+                  : leads.shipping_pincode || ""
+              }
               onChange={handleInputChange}
             />
           </Grid>
@@ -585,7 +591,9 @@ export const UpdateLeads = (props) => {
               size="small"
               label="Shipping City"
               variant="outlined"
-              value={checked === true ? leads.city : leads.shipping_city || ""}
+              value={
+                checked === true ? leads.city || "" : leads.shipping_city || ""
+              }
               onChange={handleInputChange}
             />
           </Grid>
@@ -600,7 +608,7 @@ export const UpdateLeads = (props) => {
                 handleSelectChange("shipping_state", value)
               }
               name="shipping_state"
-              value={checked ? leads.state : leads.shipping_state || ""}
+              value={checked ? leads.state || "" : leads.shipping_state || ""}
               options={StateOption.map((option) => option.value)}
               getOptionLabel={(option) => option}
               renderInput={(params) => (
