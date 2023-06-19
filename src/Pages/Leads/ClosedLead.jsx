@@ -677,7 +677,6 @@ export const ClosedLead = () => {
         <LeadActivityCreate
           leadsByID={leadsByID}
           setOpenModal={setOpenModalFollowup}
-          getAllleadsData={getleads}
           getLeadByID={null}
         />
       </Popup>
@@ -688,7 +687,6 @@ export const ClosedLead = () => {
         setOpenPopup={setOpenModalPotential}
       >
         <PotentialCreate
-          getAllleadsData={getleads}
           getLeadByID={null}
           leadsByID={leadsByID}
           product={product}

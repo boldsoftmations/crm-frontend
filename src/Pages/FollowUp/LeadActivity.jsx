@@ -122,7 +122,6 @@ export const LeadActivity = (props) => {
           leadsByID={leadsByID}
           getLeadByID={getLeadByID}
           setOpenModal={setOpenModal}
-          getAllleadsData={null}
         />
       </Popup>
     </>

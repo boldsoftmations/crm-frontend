@@ -45,7 +45,6 @@ export const CompanyDetails = () => {
   const handleDownload = async () => {
     try {
       const data = await handleExport();
-      console.log("data", data);
       setExportData(data);
       setTimeout(() => {
         csvLinkRef.current.link.click();

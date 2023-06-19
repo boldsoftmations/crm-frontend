@@ -14,7 +14,7 @@ import LeadServices from "../../services/LeadService";
 import { CustomLoader } from "../../Components/CustomLoader";
 
 export const LeadActivityCreate = (props) => {
-  const { leadsByID, getAllleadsData, getLeadByID, setOpenModal } = props;
+  const { leadsByID, getLeadByID, setOpenModal } = props;
   const [open, setOpen] = useState(false);
   const [followUp, setFollowUp] = useState([]);
   const data = useSelector((state) => state.auth);
@@ -38,11 +38,7 @@ export const LeadActivityCreate = (props) => {
 
       await LeadServices.createFollowUpLeads(data);
       setOpenModal(false);
-      if (getLeadByID !== null) {
-        await getLeadByID(leadsByID);
-      } else {
-        await getAllleadsData();
-      }
+      await getLeadByID(leadsByID);
       setOpen(false);
     } catch (error) {
       console.log("error :>> ", error);
