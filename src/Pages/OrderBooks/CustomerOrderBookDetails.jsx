@@ -19,7 +19,10 @@ import { CustomSearch } from "./../../Components/CustomSearch";
 import { CustomPagination } from "./../../Components/CustomPagination";
 import { useSelector } from "react-redux";
 import { Popup } from "../../Components/Popup";
-import { OrderBookUpdate } from "./OrderBookUpdate";
+import {
+  OrderBookPeningQuantityUpdate,
+  OrderBookUpdate,
+} from "./OrderBookUpdate";
 import { CustomTable } from "../../Components/CustomTable";
 
 const filterOption = [
@@ -35,6 +38,7 @@ export const CustomerOrderBookDetails = () => {
   const errRef = useRef();
   const [open, setOpen] = useState(false);
   const [openModal, setOpenModal] = useState(false);
+  const [openModal2, setOpenModal2] = useState(false);
   const [errMsg, setErrMsg] = useState("");
   const [pageCount, setpageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
@@ -48,8 +52,23 @@ export const CustomerOrderBookDetails = () => {
   const userData = dataList.profile;
 
   const openInPopup = (item) => {
-    setRecordForEdit(item);
-    setOpenModal(true);
+    try {
+      const matchedODBData = orderBookData.find(
+        (ODBData) => ODBData.id === item.id
+      );
+      setRecordForEdit(matchedODBData);
+      if (userData.groups.includes("Accounts")) {
+        setOpenModal2(true);
+      }
+      if (
+        userData.groups.includes("Production") ||
+        userData.groups.includes("Production Delhi")
+      ) {
+        setOpenModal(true);
+      }
+    } catch (err) {
+      console.log("err", err);
+    }
   };
 
   const getResetData = () => {
@@ -455,7 +474,12 @@ export const CustomerOrderBookDetails = () => {
                 ? Tabledata
                 : Tabledata2
             }
-            openInPopup={openInPopup}
+            openInPopup={
+              (userData.groups.includes("Production") ||
+                userData.groups.includes("Production Delhi") ||
+                userData.groups.includes("Accounts")) &&
+              openInPopup
+            }
             openInPopup2={null}
           />
           <CustomPagination
@@ -472,7 +496,18 @@ export const CustomerOrderBookDetails = () => {
         <OrderBookUpdate
           recordForEdit={recordForEdit}
           setOpenPopup={setOpenModal}
-          getAllCustomerWiseOrderBook={getAllCustomerWiseOrderBook}
+          getAllOrderBook={getAllCustomerWiseOrderBook}
+        />
+      </Popup>
+      <Popup
+        title={"Update Customer OrderBook"}
+        openPopup={openModal2}
+        setOpenPopup={setOpenModal2}
+      >
+        <OrderBookPeningQuantityUpdate
+          recordForEdit={recordForEdit}
+          setOpenPopup={setOpenModal2}
+          getAllOrderBook={getAllCustomerWiseOrderBook}
         />
       </Popup>
     </div>

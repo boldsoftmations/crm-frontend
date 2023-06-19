@@ -19,7 +19,10 @@ import { CustomSearch } from "./../../Components/CustomSearch";
 import { CustomPagination } from "./../../Components/CustomPagination";
 import { useSelector } from "react-redux";
 import { Popup } from "../../Components/Popup";
-import { OrderBookUpdate } from "./OrderBookUpdate";
+import {
+  OrderBookPeningQuantityUpdate,
+  OrderBookUpdate,
+} from "./OrderBookUpdate";
 import { CustomTable } from "../../Components/CustomTable";
 
 const filterOption = [
@@ -34,6 +37,7 @@ export const PIOrderBookDetails = () => {
   const errRef = useRef();
   const [open, setOpen] = useState(false);
   const [openModal, setOpenModal] = useState(false);
+  const [openModal2, setOpenModal2] = useState(false);
   const [recordForEdit, setRecordForEdit] = useState(null);
   const [errMsg, setErrMsg] = useState("");
   const [pageCount, setpageCount] = useState(0);
@@ -130,8 +134,23 @@ export const PIOrderBookDetails = () => {
   };
 
   const openInPopup = (item) => {
-    setRecordForEdit(item);
-    setOpenModal(true);
+    try {
+      const matchedODBData = orderBookData.find(
+        (ODBData) => ODBData.id === item.id
+      );
+      setRecordForEdit(matchedODBData);
+      if (userData.groups.includes("Accounts")) {
+        setOpenModal2(true);
+      }
+      if (
+        userData.groups.includes("Production") ||
+        userData.groups.includes("Production Delhi")
+      ) {
+        setOpenModal(true);
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   useEffect(() => {
@@ -426,7 +445,12 @@ export const PIOrderBookDetails = () => {
                 ? Tabledata
                 : Tabledata2
             }
-            openInPopup={openInPopup}
+            openInPopup={
+              (userData.groups.includes("Production") ||
+                userData.groups.includes("Production Delhi") ||
+                userData.groups.includes("Accounts")) &&
+              openInPopup
+            }
             openInPopup2={null}
           />
           <CustomPagination
@@ -443,6 +467,17 @@ export const PIOrderBookDetails = () => {
         <OrderBookUpdate
           recordForEdit={recordForEdit}
           setOpenPopup={setOpenModal}
+          getAllOrderBook={getAllPIWiseOrderBook}
+        />
+      </Popup>
+      <Popup
+        title={"Update Customer OrderBook"}
+        openPopup={openModal2}
+        setOpenPopup={setOpenModal2}
+      >
+        <OrderBookPeningQuantityUpdate
+          recordForEdit={recordForEdit}
+          setOpenPopup={setOpenModal2}
           getAllOrderBook={getAllPIWiseOrderBook}
         />
       </Popup>
