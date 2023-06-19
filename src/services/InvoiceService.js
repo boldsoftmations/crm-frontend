@@ -265,6 +265,10 @@ const createSalesnvoiceData = (data) => {
   return CustomAxios.post("/api/invoice/list-sales-invoice/", data);
 };
 
+const cancelSalesInvoice = (id, data) => {
+  return CustomAxios.patch(`/api/invoice/list-sales-invoice/${id}`, data);
+};
+
 const getSalesnvoiceDataById = (id) => {
   return CustomAxios.get(`/api/invoice/list-sales-invoice/${id}`);
 };
@@ -401,6 +405,7 @@ const InvoiceServices = {
   getSalesInvoiceDataWithPagination,
   getSalesInvoiceDataWithPaginationAndSearch,
   createSalesnvoiceData,
+  cancelSalesInvoice,
   getSalesnvoiceDataById,
   getAllSaleRegisterData,
   getSaleRegisterDataWithPagination,

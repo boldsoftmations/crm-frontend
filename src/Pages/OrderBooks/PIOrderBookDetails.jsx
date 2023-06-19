@@ -273,6 +273,7 @@ export const PIOrderBookDetails = () => {
     "Pending Amount",
     "EST DATE",
     "Special Instructions",
+    "Revision",
     "ACTION",
   ];
 
@@ -290,6 +291,7 @@ export const PIOrderBookDetails = () => {
     pending_amount: row.pending_amount,
     est_date: row.est_date,
     special_instruction: row.special_instruction,
+    revision: row.revision,
   }));
 
   const Tableheaders2 = [
@@ -305,6 +307,7 @@ export const PIOrderBookDetails = () => {
     "Pending Amount",
     "EST DATE",
     "Special Instructions",
+    "Revision",
     "ACTION",
   ];
 
@@ -321,6 +324,7 @@ export const PIOrderBookDetails = () => {
     pending_amount: row.pending_amount,
     est_date: row.est_date,
     special_instruction: row.special_instruction,
+    revision: row.revision,
   }));
   return (
     <div>

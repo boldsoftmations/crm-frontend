@@ -138,6 +138,7 @@ export const OrderBookPeningQuantityUpdate = (props) => {
         gst: recordForEdit.gst,
         total: recordForEdit.total,
         pending_quantity: pendingQuantity,
+        revision: recordForEdit.revision + 1,
       };
 
       await InvoiceServices.updateOrderBookData(recordForEdit.id, data);

@@ -337,7 +337,7 @@ export const DeadCustomerView = () => {
               ) : (
                 <CustomSearchWithButton
                   filterSelectedQuery={searchQuery}
-                  setSearchQuery={setSearchQuery}
+                  setFilterSelectedQuery={setSearchQuery}
                   handleInputChange={handleInputChange}
                   getResetData={getResetData}
                 />

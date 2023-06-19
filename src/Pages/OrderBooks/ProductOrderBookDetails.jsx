@@ -283,6 +283,7 @@ export const ProductOrderBookDetails = () => {
     "Company",
     "Billing City",
     "Shipping City",
+    "Revision",
     "ACTION",
   ];
 
@@ -300,6 +301,7 @@ export const ProductOrderBookDetails = () => {
     company: row.company,
     billing_city: row.billing_city,
     shipping_city: row.shipping_city,
+    revision: row.revision,
   }));
 
   const Tableheaders2 = [
@@ -315,6 +317,7 @@ export const ProductOrderBookDetails = () => {
     "Company",
     "Billing City",
     "Shipping City",
+    "Revision",
     "ACTION",
   ];
 
@@ -332,6 +335,7 @@ export const ProductOrderBookDetails = () => {
     company: row.company,
     billing_city: row.billing_city,
     shipping_city: row.shipping_city,
+    revision: row.revision,
   }));
   return (
     <div>

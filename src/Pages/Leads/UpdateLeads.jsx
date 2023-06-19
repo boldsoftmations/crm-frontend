@@ -70,7 +70,7 @@ export const UpdateLeads = (props) => {
       });
     }
   };
-  console.log("leads", leads.target_date);
+
   const handleSameAsAddress = (event) => {
     setChecked(event.target.checked);
   };

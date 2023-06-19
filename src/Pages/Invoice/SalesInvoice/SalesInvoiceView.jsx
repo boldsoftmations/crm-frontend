@@ -32,8 +32,9 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
 import { CustomPagination } from "../../../Components/CustomPagination";
 import { CustomSearch } from "../../../Components/CustomSearch";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getCustomerOrderBookData } from "../../../Redux/Action/Action";
+import { CancelSalesInvoice } from "./CancelSalesInvoice";
 
 export const SalesInvoiceView = () => {
   const errRef = useRef();
@@ -42,6 +43,7 @@ export const SalesInvoiceView = () => {
   const [salesInvoiceData, setSalesInvoiceData] = useState([]);
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
+  const [openPopup3, setOpenPopup3] = useState(false);
   const [idForEdit, setIDForEdit] = useState();
   const [pageCount, setpageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
@@ -65,7 +67,7 @@ export const SalesInvoiceView = () => {
         "all"
       );
       setSellerUnitOption(response.data);
-      console.log("response", response.data);
+
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -226,6 +228,11 @@ export const SalesInvoiceView = () => {
   const openInPopup = (item) => {
     setIDForEdit(item);
     setOpenPopup2(true);
+  };
+
+  const openInPopup2 = (item) => {
+    setIDForEdit(item);
+    setOpenPopup3(true);
   };
 
   return (
@@ -404,7 +411,12 @@ export const SalesInvoiceView = () => {
                   );
                 })} */}
                 {salesInvoiceData.map((row) => (
-                  <Row key={row.id} row={row} openInPopup={openInPopup} />
+                  <Row
+                    key={row.id}
+                    row={row}
+                    openInPopup={openInPopup}
+                    openInPopup2={openInPopup2}
+                  />
                 ))}
               </TableBody>
             </Table>
@@ -440,13 +452,27 @@ export const SalesInvoiceView = () => {
           setOpenPopup={setOpenPopup2}
         />
       </Popup>
+      <Popup
+        maxWidth="xl"
+        title={"Cancel Sales Invoice"}
+        openPopup={openPopup3}
+        setOpenPopup={setOpenPopup3}
+      >
+        <CancelSalesInvoice
+          idForEdit={idForEdit}
+          getSalesInvoiceDetails={getSalesInvoiceDetails}
+          setOpenPopup={setOpenPopup3}
+        />
+      </Popup>
     </>
   );
 };
 
 function Row(props) {
-  const { row, openInPopup } = props;
+  const { row, openInPopup, openInPopup2 } = props;
   const [tableExpand, setTableExpand] = useState(false);
+  const data = useSelector((state) => state.auth);
+  const userData = data.profile;
 
   return (
     <>
@@ -474,12 +500,19 @@ function Row(props) {
           <StyledTableCell align="center"></StyledTableCell>
         )}
         <StyledTableCell align="center">
-          <Button
-            variant="contained"
-            onClick={() => openInPopup(row.invoice_no)}
-          >
+          <Button variant="text" onClick={() => openInPopup(row.invoice_no)}>
             View
           </Button>
+          {(userData.groups.includes("Accounts") ||
+            userData.groups.includes("Accounts Billing Department")) && (
+            <Button
+              variant="text"
+              color="error"
+              onClick={() => openInPopup2(row.invoice_no)}
+            >
+              Cancel
+            </Button>
+          )}
         </StyledTableCell>
       </StyledTableRow>
       <TableRow>
