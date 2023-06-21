@@ -10,6 +10,8 @@ import { SalesPersonSummary } from "./SalesPersonSummary/SalesPersonSummary";
 import { CustomTabs } from "../../Components/CustomTabs";
 import { ProductWiseTurnover } from "./ProductWiseTurnover/ProductWiseTurnover";
 import { Box, Button, Grid, TextField } from "@mui/material";
+import { DailyProfitableReports } from "./DailyProfitableReports/DailyProfitableReports";
+import DashboardService from "../../services/DashboardService";
 
 export function Dashboard() {
   const [open, setOpen] = useState(false);
@@ -23,6 +25,10 @@ export function Dashboard() {
   const [currentSalesSummaryFM, setCurrentSalesSummaryFM] = useState([]);
   const [currentSalesSummaryRM, setCurrentSalesSummaryRM] = useState([]);
   const [salesPersonSummary, setSalesPersonSummary] = useState([]);
+  const [
+    dailyProfitableReportsFilterData,
+    setDailyProfitableReportsFilterData,
+  ] = useState([]);
   const [activeTab, setActiveTab] = useState(0);
   const [endDate, setEndDate] = useState(new Date());
   const [startDate, setStartDate] = useState(new Date()); // set default value as current date
@@ -57,6 +63,7 @@ export function Dashboard() {
     { label: "Current Month Sales(Raw Material)" },
     { label: "Sales Person Summary" },
     { label: "Product Wise Turnover" },
+    { label: "Daily Profitability Report" },
   ];
 
   useEffect(() => {
@@ -65,6 +72,7 @@ export function Dashboard() {
 
   useEffect(() => {
     getFilterByDashboard();
+    getFilterByDailyProfitableReports();
   }, [startDate, endDate]);
 
   const getFilterByDashboard = async () => {
@@ -82,6 +90,24 @@ export function Dashboard() {
       setCurrentSalesSummaryFM(response.data.Sales_Invoice_FG);
       setCurrentSalesSummaryRM(response.data.Sales_Invoice_RM);
       // setSalesPersonSummary(response.data.sales_summary);
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      console.log("Dashboard Filter By error", err);
+    }
+  };
+
+  const getFilterByDailyProfitableReports = async () => {
+    try {
+      setOpen(true);
+      const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
+      const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
+      let response =
+        await DashboardService.getDailyProfitableReportsDataByFilter(
+          StartDate,
+          EndDate
+        );
+      setDailyProfitableReportsFilterData(response.data);
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -124,7 +150,6 @@ export function Dashboard() {
             padding: "20px",
           }}
         >
-          {" "}
           <Grid container spacing={2}>
             <Grid item xs={5} sm={5} md={5} lg={5}>
               <TextField
@@ -207,6 +232,15 @@ export function Dashboard() {
           {activeTab === 6 && (
             <div>
               <ProductWiseTurnover />
+            </div>
+          )}
+          {activeTab === 7 && (
+            <div>
+              <DailyProfitableReports
+                dailyProfitableReportsFilterData={
+                  dailyProfitableReportsFilterData
+                }
+              />
             </div>
           )}
         </div>

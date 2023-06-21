@@ -121,6 +121,26 @@ const getCallPerformanceDataByFilter = (filter) => {
   return CustomAxios.get(`/api/dashboard/call-performance/?email=${filter}`);
 };
 
+const getDailyProfitableReportsData = () => {
+  return CustomAxios.get("/api/dashboard/daily-profitablity-report/");
+};
+
+const getDailyProfitableReportsDataByFilter = (startDate, endDate) => {
+  return CustomAxios.get(
+    `/api/dashboard/daily-profitablity-report/?date_range_after=${startDate}&date_range_before=${endDate}`
+  );
+};
+
+const getDailyProfitableSalesReportsDataByFilter = (
+  startDate,
+  endDate,
+  unit
+) => {
+  return CustomAxios.get(
+    `/api/dashboard/daily-profitablity-report-sales-invoice-wise/?date_range_after=${startDate}&date_range_before=${endDate}&sales_invoice__order_book__proforma_invoice__seller_account__unit=${unit}`
+  );
+};
+
 const DashboardService = {
   getLastThreeMonthForecastData,
   getConsLastThreeMonthForecastData,
@@ -149,6 +169,9 @@ const DashboardService = {
   getDescriptionWiseQuantityDataByFilter,
   getCallPerformanceData,
   getCallPerformanceDataByFilter,
+  getDailyProfitableReportsData,
+  getDailyProfitableReportsDataByFilter,
+  getDailyProfitableSalesReportsDataByFilter,
 };
 
 export default DashboardService;
