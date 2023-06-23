@@ -874,6 +874,15 @@ export const StaffDashboard = (props) => {
               <Tooltip />
               <Legend />
               <Line type="monotone" dataKey="total" stroke="#8884d8" />
+              <text
+                x="50%"
+                y={20}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                className="chart-title"
+              >
+                Daily Sales Invoice Quantity
+              </text>
             </LineChart>
           </ResponsiveContainer>
         </Grid>
