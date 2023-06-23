@@ -657,6 +657,29 @@ export const UpdateLeads = (props) => {
           Submit
         </Button>
       </Box>
+
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <TextField
+            fullWidth
+            size="small"
+            label="Query Product Name"
+            variant="outlined"
+            value={leads.query_product_name || ""}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
+            fullWidth
+            multiline
+            size="small"
+            label="Query Meassage"
+            variant="outlined"
+            value={leads.query_message || ""}
+          />
+        </Grid>
+      </Grid>
+
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <LeadActivity
