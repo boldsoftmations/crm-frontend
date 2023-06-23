@@ -27,6 +27,7 @@ export const Home = () => {
   const [weeklyStatus, setWeeklyStatus] = useState([]);
   const [dailyStatus, setDailyStatus] = useState([]);
   const [callPerformance, setCallPerformance] = useState([]);
+  const [dailyInvoiceQuantity, setDailyInvoiceQuantity] = useState([]);
   const [dispatchDataByID, setDispatchDataByID] = useState(null);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [hoveredSegment, setHoveredSegment] = useState(null);
@@ -50,7 +51,7 @@ export const Home = () => {
     getWeeklyCallStatusDetails();
     getDailyCallStatusDetails();
     getDescriptionQuantityDetails();
-    getCallPerformanceDetails();
+    getDailyInvoiceQuantityDetails();
   }, []);
 
   useEffect(() => {
@@ -482,6 +483,18 @@ export const Home = () => {
     }
   };
 
+  const getDailyInvoiceQuantityDetails = async () => {
+    try {
+      setOpen(true);
+      const response = await DashboardService.getDailyInvoiceQuantityData();
+      setDailyInvoiceQuantity(response.data);
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      console.log("Error:", err);
+    }
+  };
+
   const handleAutocompleteChange = (value) => {
     setFilterValue(value);
     setAssign(value);
@@ -498,6 +511,7 @@ export const Home = () => {
     getDailyCallStatusByFilter(value);
     getDescriptionQuantityByFilter(value);
     getCallPerformanceByFilter(value);
+    getDailyInvoiceQuantityByFilter(value);
   };
 
   const getDataByFilter = async (value) => {
@@ -911,6 +925,20 @@ export const Home = () => {
     }
   };
 
+  const getDailyInvoiceQuantityByFilter = async (value) => {
+    try {
+      setOpen(true);
+      const FilterData = value;
+      const response =
+        await DashboardService.getDailyInvoiceQuantityDataByFilter(FilterData);
+      setDailyInvoiceQuantity(response.data);
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      console.log("Error:", err);
+    }
+  };
+
   const getResetData = () => {
     getForecastDetails();
     getNewCustomerDetails();
@@ -927,6 +955,7 @@ export const Home = () => {
     getDailyCallStatusDetails();
     getDescriptionQuantityDetails();
     getCallPerformanceDetails();
+    getDailyInvoiceQuantityDetails();
   };
 
   const handleSegmentHover = (segment) => {
@@ -1001,6 +1030,7 @@ export const Home = () => {
           handleRowClick={handleRowClick}
           descriptionQuantity={descriptionQuantity}
           callPerformance={callPerformance}
+          dailyInvoiceQuantity={dailyInvoiceQuantity}
         />
       )}
       {userData.groups.includes("Sales") && userData.is_staff !== true && (
@@ -1025,6 +1055,7 @@ export const Home = () => {
           handleRowClick={handleRowClick}
           descriptionQuantity={descriptionQuantity}
           callPerformance={callPerformance}
+          dailyInvoiceQuantity={dailyInvoiceQuantity}
         />
       )}
       <Popup

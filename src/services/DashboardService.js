@@ -141,6 +141,16 @@ const getDailyProfitableSalesReportsDataByFilter = (
   );
 };
 
+const getDailyInvoiceQuantityData = () => {
+  return CustomAxios.get("/api/dashboard/daily-invoice-quantity/");
+};
+
+const getDailyInvoiceQuantityDataByFilter = (filter) => {
+  return CustomAxios.get(
+    `/api/dashboard/daily-invoice-quantity/?email=${filter}`
+  );
+};
+
 const DashboardService = {
   getLastThreeMonthForecastData,
   getConsLastThreeMonthForecastData,
@@ -172,6 +182,8 @@ const DashboardService = {
   getDailyProfitableReportsData,
   getDailyProfitableReportsDataByFilter,
   getDailyProfitableSalesReportsDataByFilter,
+  getDailyInvoiceQuantityData,
+  getDailyInvoiceQuantityDataByFilter,
 };
 
 export default DashboardService;

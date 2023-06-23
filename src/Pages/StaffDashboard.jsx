@@ -55,7 +55,24 @@ export const StaffDashboard = (props) => {
     handleRowClick,
     descriptionQuantity,
     callPerformance,
+    dailyInvoiceQuantity,
   } = props;
+
+  const [dIQdata, setDIQData] = useState();
+  const descriptionOptions = dailyInvoiceQuantity.flatMap((entry) =>
+    Object.keys(entry)
+  );
+
+  const handleData = (value) => {
+    // Filter the dailyInvoiceQuantity data based on the selected option
+    const filteredData = dailyInvoiceQuantity
+      .filter((entry) => entry.hasOwnProperty(value))
+      .map((entry) => entry[value]);
+
+    console.log("filteredData", filteredData);
+    // Store the filtered data in the dIQdata state variable
+    setDIQData(filteredData[0]);
+  };
 
   const paletteColors = [
     "#f14c14",
@@ -832,6 +849,32 @@ export const StaffDashboard = (props) => {
                 Call Performance
               </text>
             </AreaChart>
+          </ResponsiveContainer>
+        </Grid>
+      </Grid>
+
+      {/* Daily Sales Invoice Quantity */}
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={12} md={6} lg={6} sx={{ marginTop: "20px" }}>
+          <Autocomplete
+            sx={{}}
+            size="small"
+            onChange={(event, value) => handleData(value)}
+            options={descriptionOptions.map((option) => option)}
+            getOptionLabel={(option) => option}
+            renderInput={(params) => (
+              <TextField {...params} label="Filter By Description" />
+            )}
+          />
+          <ResponsiveContainer width="100%" height={400}>
+            <LineChart width={500} height={300} data={dIQdata}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="sales_invoice__generation_date" />
+              <YAxis dataKey="total" />
+              <Tooltip />
+              <Legend />
+              <Line type="monotone" dataKey="total" stroke="#8884d8" />
+            </LineChart>
           </ResponsiveContainer>
         </Grid>
       </Grid>

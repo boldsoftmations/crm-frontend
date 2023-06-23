@@ -476,7 +476,12 @@ function Row(props) {
 
   return (
     <>
-      <StyledTableRow sx={{ "& > *": { borderBottom: "unset" } }}>
+      <StyledTableRow
+        sx={{
+          "& > *": { borderBottom: "unset" },
+          textDecoration: row.cancelled ? "line-through" : "none",
+        }}
+      >
         <StyledTableCell>
           <IconButton
             aria-label="expand row"

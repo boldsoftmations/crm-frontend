@@ -304,7 +304,14 @@ export const ProductionEntryCreate = (props) => {
                       label="Quantity"
                       variant="outlined"
                       type="number"
-                      value={input.quantity ? parseFloat(input.quantity) : ""}
+                      value={
+                        quantity.quantity && input.quantity && !checked
+                          ? (
+                              parseFloat(input.quantity) *
+                              parseFloat(quantity.quantity)
+                            ).toFixed(4)
+                          : input.quantity || ""
+                      }
                       onChange={(event) => handleFormChange(index, event)}
                     />
                   </Grid>

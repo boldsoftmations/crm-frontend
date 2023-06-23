@@ -12,6 +12,7 @@ import { ProductWiseTurnover } from "./ProductWiseTurnover/ProductWiseTurnover";
 import { Box, Button, Grid, TextField } from "@mui/material";
 import { DailyProfitableReports } from "./DailyProfitableReports/DailyProfitableReports";
 import DashboardService from "../../services/DashboardService";
+import { useSelector } from "react-redux";
 
 export function Dashboard() {
   const [open, setOpen] = useState(false);
@@ -34,6 +35,8 @@ export function Dashboard() {
   const [startDate, setStartDate] = useState(new Date()); // set default value as current date
   const minDate = new Date().toISOString().split("T")[0];
   const maxDate = new Date("2030-12-31").toISOString().split("T")[0];
+  const data = useSelector((state) => state.auth);
+  const userData = data.profile;
 
   const handleStartDateChange = (event) => {
     const date = new Date(event.target.value);
@@ -63,7 +66,12 @@ export function Dashboard() {
     { label: "Current Month Sales(Raw Material)" },
     { label: "Sales Person Summary" },
     { label: "Product Wise Turnover" },
-    { label: "Daily Profitability Report" },
+    ...(userData.email === "devannsh@glutape.com" ||
+    userData.email === "mahesh@glutaoe.com" ||
+    userData.groups.includes("Accounts") ||
+    userData.groups.includes("Accounts Executive")
+      ? [{ label: "Daily Profitability Report" }]
+      : []),
   ];
 
   useEffect(() => {
