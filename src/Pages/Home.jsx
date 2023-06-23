@@ -28,6 +28,7 @@ export const Home = () => {
   const [dailyStatus, setDailyStatus] = useState([]);
   const [callPerformance, setCallPerformance] = useState([]);
   const [dailyInvoiceQuantity, setDailyInvoiceQuantity] = useState([]);
+  const [dailyOrderBookQuantity, setDailyOrderBookQuantity] = useState([]);
   const [dispatchDataByID, setDispatchDataByID] = useState(null);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [hoveredSegment, setHoveredSegment] = useState(null);
@@ -52,6 +53,7 @@ export const Home = () => {
     getDailyCallStatusDetails();
     getDescriptionQuantityDetails();
     getDailyInvoiceQuantityDetails();
+    getDailyOrderBookQuantityDetails();
   }, []);
 
   useEffect(() => {
@@ -425,7 +427,6 @@ export const Home = () => {
     try {
       setOpen(true);
       const response = await DashboardService.getCallPerformanceData();
-
       const Data = [
         {
           name: "Order",
@@ -495,6 +496,17 @@ export const Home = () => {
     }
   };
 
+  const getDailyOrderBookQuantityDetails = async () => {
+    try {
+      setOpen(true);
+      const response = await DashboardService.getDailyOrderBookQuantityData();
+      setDailyOrderBookQuantity(response.data);
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      console.log("Error:", err);
+    }
+  };
   const handleAutocompleteChange = (value) => {
     setFilterValue(value);
     setAssign(value);
@@ -512,6 +524,7 @@ export const Home = () => {
     getDescriptionQuantityByFilter(value);
     getCallPerformanceByFilter(value);
     getDailyInvoiceQuantityByFilter(value);
+    getDailyOrderBookQuantityByFilter(value);
   };
 
   const getDataByFilter = async (value) => {
@@ -939,6 +952,21 @@ export const Home = () => {
     }
   };
 
+  const getDailyOrderBookQuantityByFilter = async (value) => {
+    try {
+      setOpen(true);
+      const FilterData = value;
+      const response =
+        await DashboardService.getDailyOrderBookQuantityDataByFilter(
+          FilterData
+        );
+      setDailyOrderBookQuantity(response.data);
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      console.log("Error:", err);
+    }
+  };
   const getResetData = () => {
     getForecastDetails();
     getNewCustomerDetails();
@@ -956,6 +984,7 @@ export const Home = () => {
     getDescriptionQuantityDetails();
     getCallPerformanceDetails();
     getDailyInvoiceQuantityDetails();
+    getDailyOrderBookQuantityDetails();
   };
 
   const handleSegmentHover = (segment) => {
@@ -1031,6 +1060,7 @@ export const Home = () => {
           descriptionQuantity={descriptionQuantity}
           callPerformance={callPerformance}
           dailyInvoiceQuantity={dailyInvoiceQuantity}
+          dailyOrderBookQuantity={dailyOrderBookQuantity}
         />
       )}
       {userData.groups.includes("Sales") && userData.is_staff !== true && (
@@ -1056,6 +1086,7 @@ export const Home = () => {
           descriptionQuantity={descriptionQuantity}
           callPerformance={callPerformance}
           dailyInvoiceQuantity={dailyInvoiceQuantity}
+          dailyOrderBookQuantity={dailyOrderBookQuantity}
         />
       )}
       <Popup

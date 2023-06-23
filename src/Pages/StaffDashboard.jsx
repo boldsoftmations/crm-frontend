@@ -56,22 +56,36 @@ export const StaffDashboard = (props) => {
     descriptionQuantity,
     callPerformance,
     dailyInvoiceQuantity,
+    dailyOrderBookQuantity,
   } = props;
 
   const [dIQdata, setDIQData] = useState();
-  const descriptionOptions = dailyInvoiceQuantity.flatMap((entry) =>
+  const [dOBQdata, setDOBQData] = useState();
+  const descriptionOptionsForInvoice = dailyInvoiceQuantity.flatMap((entry) =>
     Object.keys(entry)
   );
 
-  const handleData = (value) => {
+  const descriptionOptionsForOrderBook = dailyOrderBookQuantity.flatMap(
+    (entry) => Object.keys(entry)
+  );
+
+  const handleDataForInvoice = (value) => {
     // Filter the dailyInvoiceQuantity data based on the selected option
     const filteredData = dailyInvoiceQuantity
       .filter((entry) => entry.hasOwnProperty(value))
       .map((entry) => entry[value]);
 
-    console.log("filteredData", filteredData);
     // Store the filtered data in the dIQdata state variable
     setDIQData(filteredData[0]);
+  };
+
+  const handleDataForOrderBook = (value) => {
+    // Filter the dailyInvoiceQuantity data based on the selected option
+    const filteredData = dailyOrderBookQuantity
+      .filter((entry) => entry.hasOwnProperty(value))
+      .map((entry) => entry[value]);
+    // Store the filtered data in the dIQdata state variable
+    setDOBQData(filteredData[0]);
   };
 
   const paletteColors = [
@@ -859,8 +873,8 @@ export const StaffDashboard = (props) => {
           <Autocomplete
             sx={{}}
             size="small"
-            onChange={(event, value) => handleData(value)}
-            options={descriptionOptions.map((option) => option)}
+            onChange={(event, value) => handleDataForInvoice(value)}
+            options={descriptionOptionsForInvoice.map((option) => option)}
             getOptionLabel={(option) => option}
             renderInput={(params) => (
               <TextField {...params} label="Filter By Description" />
@@ -882,6 +896,37 @@ export const StaffDashboard = (props) => {
                 className="chart-title"
               >
                 Daily Sales Invoice Quantity
+              </text>
+            </LineChart>
+          </ResponsiveContainer>
+        </Grid>
+        <Grid item xs={12} sm={12} md={6} lg={6} sx={{ marginTop: "20px" }}>
+          <Autocomplete
+            sx={{}}
+            size="small"
+            onChange={(event, value) => handleDataForOrderBook(value)}
+            options={descriptionOptionsForOrderBook.map((option) => option)}
+            getOptionLabel={(option) => option}
+            renderInput={(params) => (
+              <TextField {...params} label="Filter By Description" />
+            )}
+          />
+          <ResponsiveContainer width="100%" height={400}>
+            <LineChart width={500} height={300} data={dOBQdata}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="orderbook__proforma_invoice__generation_date" />
+              <YAxis dataKey="total" />
+              <Tooltip />
+              <Legend />
+              <Line type="monotone" dataKey="total" stroke="#8884d8" />
+              <text
+                x="50%"
+                y={20}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                className="chart-title"
+              >
+                Daily Sales OrderBook Quantity
               </text>
             </LineChart>
           </ResponsiveContainer>
