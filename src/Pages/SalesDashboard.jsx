@@ -24,8 +24,8 @@ import {
   CircularProgress,
   Autocomplete,
   TextField,
+  Button,
 } from "@mui/material";
-import { experimentalStyled as styled } from "@mui/material/styles";
 import PropTypes from "prop-types";
 
 export const SalesDashboard = (props) => {
@@ -51,6 +51,13 @@ export const SalesDashboard = (props) => {
     callPerformance,
     dailyInvoiceQuantity,
     dailyOrderBookQuantity,
+    startDate,
+    endDate,
+    handleStartDateChange,
+    handleEndDateChange,
+    minDate,
+    maxDate,
+    getReset,
   } = props;
 
   const [dIQdata, setDIQData] = useState();
@@ -761,6 +768,38 @@ export const SalesDashboard = (props) => {
 
       <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={12} lg={12} sx={{ marginTop: "20px" }}>
+          <div>
+            <TextField
+              width="100%"
+              sx={{ marginRight: "10px" }}
+              label="Start Date"
+              variant="outlined"
+              size="small"
+              type="date"
+              id="start-date"
+              value={startDate ? startDate.toISOString().split("T")[0] : ""}
+              min={minDate}
+              max={maxDate}
+              onChange={handleStartDateChange}
+            />
+            <TextField
+              width="100%"
+              sx={{ marginRight: "10px" }}
+              label="End Date"
+              variant="outlined"
+              size="small"
+              type="date"
+              id="end-date"
+              value={endDate ? endDate.toISOString().split("T")[0] : ""}
+              min={startDate ? startDate.toISOString().split("T")[0] : minDate}
+              max={maxDate}
+              onChange={handleEndDateChange}
+              disabled={!startDate}
+            />
+            <Button variant="contained" color="primary" onClick={getReset}>
+              Reset
+            </Button>
+          </div>
           <ResponsiveContainer
             width="100%"
             height={400}

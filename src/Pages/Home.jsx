@@ -37,6 +37,10 @@ export const Home = () => {
   const [total, setTotal] = useState(0);
   const [filterValue, setFilterValue] = useState(null);
   const userData = useSelector((state) => state.auth.profile);
+  const [endDate, setEndDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(new Date()); // set default value as current date
+  const minDate = new Date().toISOString().split("T")[0];
+  const maxDate = new Date("2030-12-31").toISOString().split("T")[0];
   // const userData = data.profile;
   useEffect(() => {
     getAllTaskDetails();
@@ -59,6 +63,30 @@ export const Home = () => {
   useEffect(() => {
     getForecastDetails();
   }, [userData]);
+
+  useEffect(() => {
+    if (filterValue) {
+      getCallPerformanceByFilter(filterValue, startDate, endDate);
+    } else {
+      getCallPerformanceDetails();
+    }
+  }, [startDate, endDate]);
+
+  const getReset = () => {
+    setStartDate(new Date());
+    setEndDate(new Date());
+  };
+
+  const handleStartDateChange = (event) => {
+    const date = new Date(event.target.value);
+    setStartDate(date);
+    setEndDate(new Date());
+  };
+
+  const handleEndDateChange = (event) => {
+    const date = new Date(event.target.value);
+    setEndDate(date);
+  };
 
   const getAssignedData = async () => {
     try {
@@ -426,7 +454,12 @@ export const Home = () => {
   const getCallPerformanceDetails = async () => {
     try {
       setOpen(true);
-      const response = await DashboardService.getCallPerformanceData();
+      const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
+      const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
+      const response = await DashboardService.getCallPerformanceData(
+        StartDate,
+        EndDate
+      );
       const Data = [
         {
           name: "Order",
@@ -522,7 +555,7 @@ export const Home = () => {
     getWeeklyCallStatusByFilter(value);
     getDailyCallStatusByFilter(value);
     getDescriptionQuantityByFilter(value);
-    getCallPerformanceByFilter(value);
+    getCallPerformanceByFilter(value, startDate, endDate);
     getDailyInvoiceQuantityByFilter(value);
     getDailyOrderBookQuantityByFilter(value);
   };
@@ -875,12 +908,16 @@ export const Home = () => {
     }
   };
 
-  const getCallPerformanceByFilter = async (value) => {
+  const getCallPerformanceByFilter = async (value, startDate, endDate) => {
     try {
-      const FilterData = value;
       setOpen(true);
+      const FilterData = value;
+      const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
+      const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
       const response = await DashboardService.getCallPerformanceDataByFilter(
-        FilterData
+        FilterData,
+        StartDate,
+        EndDate
       );
       const Data = [
         {
@@ -1061,6 +1098,13 @@ export const Home = () => {
           callPerformance={callPerformance}
           dailyInvoiceQuantity={dailyInvoiceQuantity}
           dailyOrderBookQuantity={dailyOrderBookQuantity}
+          startDate={startDate}
+          endDate={endDate}
+          handleStartDateChange={handleStartDateChange}
+          handleEndDateChange={handleEndDateChange}
+          minDate={minDate}
+          maxDate={maxDate}
+          getReset={getReset}
         />
       )}
       {userData.groups.includes("Sales") && userData.is_staff !== true && (
@@ -1087,6 +1131,13 @@ export const Home = () => {
           callPerformance={callPerformance}
           dailyInvoiceQuantity={dailyInvoiceQuantity}
           dailyOrderBookQuantity={dailyOrderBookQuantity}
+          startDate={startDate}
+          endDate={endDate}
+          handleStartDateChange={handleStartDateChange}
+          handleEndDateChange={handleEndDateChange}
+          minDate={minDate}
+          maxDate={maxDate}
+          getReset={getReset}
         />
       )}
       <Popup

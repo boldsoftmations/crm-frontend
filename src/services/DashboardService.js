@@ -113,12 +113,16 @@ const getDescriptionWiseQuantityDataByFilter = (filter) => {
   );
 };
 
-const getCallPerformanceData = () => {
-  return CustomAxios.get("/api/dashboard/call-performance/");
+const getCallPerformanceData = (startDate, endDate) => {
+  return CustomAxios.get(
+    `/api/dashboard/call-performance/?start_date=${startDate}&end_date=${endDate}`
+  );
 };
 
-const getCallPerformanceDataByFilter = (filter) => {
-  return CustomAxios.get(`/api/dashboard/call-performance/?email=${filter}`);
+const getCallPerformanceDataByFilter = (filter, startDate, endDate) => {
+  return CustomAxios.get(
+    `/api/dashboard/call-performance/?email=${filter}&start_date=${startDate}&end_date=${endDate}`
+  );
 };
 
 const getDailyProfitableReportsData = () => {
