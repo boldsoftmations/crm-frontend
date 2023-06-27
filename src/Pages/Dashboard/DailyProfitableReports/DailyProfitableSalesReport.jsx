@@ -4,6 +4,7 @@ import { CustomLoader } from "../../../Components/CustomLoader";
 import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 import { Box, Grid, Paper } from "@mui/material";
 import { CustomTable } from "../../../Components/CustomTable";
+import { CSVLink } from "react-csv";
 
 export const DailyProfitableSalesReport = (props) => {
   const { idForEdit, setOpenPopup } = props;
@@ -56,6 +57,14 @@ export const DailyProfitableSalesReport = (props) => {
 
   const Tableheaders = ["Unit", "Date", "Invoice No", "Company", "Total"];
 
+  const headers = [
+    { label: "Unit", key: "unit" },
+    { label: "Date", key: "date" },
+    { label: "Invoice No", key: "invoice_no" },
+    { label: "Company", key: "company" },
+    { label: "Total", key: "total" },
+  ];
+
   const Tabledata = dailyProfitableReportsData.map((row, i) => ({
     unit: row.sales_invoice__order_book__proforma_invoice__seller_account__unit,
     date: row.sales_invoice__generation_date,
@@ -70,6 +79,39 @@ export const DailyProfitableSalesReport = (props) => {
       <Grid item xs={12}>
         <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 2, display: "flex", flexDirection: "column" }}>
+          <Box display="flex" justifyContent="flex-end">
+            <CSVLink
+              data={Tabledata}
+              headers={headers}
+              filename={"Production Inventory Consolidate.csv"}
+              target="_blank"
+              style={{
+                textDecoration: "none",
+                outline: "none",
+                height: "5vh",
+              }}
+            >
+              <div
+                className="btn btn-primary"
+                style={{
+                  display: "inline-block",
+                  padding: "6px 16px",
+                  margin: "10px",
+                  fontSize: "0.875rem",
+                  minWidth: "64px",
+                  fontWeight: 500,
+                  lineHeight: 1.75,
+                  borderRadius: "4px",
+                  letterSpacing: "0.02857em",
+                  textTransform: "uppercase",
+                  boxShadow:
+                    "0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2)",
+                }}
+              >
+                Download CSV
+              </div>
+            </CSVLink>
+          </Box>
           <CustomTable
             headers={Tableheaders}
             data={Tabledata}
