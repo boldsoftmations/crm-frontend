@@ -55,12 +55,20 @@ export const DailyProfitableSalesReport = (props) => {
     }
   };
 
-  const Tableheaders = ["Unit", "Date", "Invoice No", "Company", "Total"];
+  const Tableheaders = [
+    "Unit",
+    "Date",
+    "Invoice No",
+    "Product",
+    "Company",
+    "Total",
+  ];
 
   const headers = [
     { label: "Unit", key: "unit" },
     { label: "Date", key: "date" },
     { label: "Invoice No", key: "invoice_no" },
+    { label: "Product", key: "product" },
     { label: "Company", key: "company" },
     { label: "Total", key: "total" },
   ];
@@ -69,6 +77,7 @@ export const DailyProfitableSalesReport = (props) => {
     unit: row.sales_invoice__order_book__proforma_invoice__seller_account__unit,
     date: row.sales_invoice__generation_date,
     invoice_no: row.sales_invoice,
+    product: row.product__name,
     company: row.sales_invoice__order_book__company__name,
     total: row.total,
   }));
