@@ -89,7 +89,7 @@ export const DailyProfitableSalesReport = (props) => {
     invoice_no: row.sales_invoice,
     product: row.product__name,
     company: row.sales_invoice__order_book__company__name,
-    quantity: 16,
+    quantity: row.quantity,
     rate: row.rate,
     amount: row.amount,
     cost: row.cost,
@@ -103,7 +103,7 @@ export const DailyProfitableSalesReport = (props) => {
       <Grid item xs={12}>
         <ErrorMessage errRef={errRef} errMsg={errMsg} />
 
-        <Box display="flex" justifyContent="flex-end">
+        <Box display="flex" justifyContent="flex-end" marginBottom={5}>
           <CSVLink
             data={Tabledata}
             headers={headers}
@@ -143,6 +143,7 @@ export const DailyProfitableSalesReport = (props) => {
           openInPopup2={null}
           openInPopup3={null}
           openInPopup4={null}
+          Styles={{ paddingLeft: "10px", paddingRight: "10px" }}
         />
       </Grid>
     </div>
