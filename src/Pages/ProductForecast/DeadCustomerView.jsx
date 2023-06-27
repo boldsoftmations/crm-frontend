@@ -21,6 +21,7 @@ import { CustomSearchWithButton } from "./../../Components/CustomSearchWithButto
 import { Popup } from "../../Components/Popup";
 import { UpdateAllCompanyDetails } from "../Cutomers/CompanyDetails/UpdateAllCompanyDetails";
 import { CustomTable } from "../../Components/CustomTable";
+import ProductService from "../../services/ProductService";
 
 const filterOption = [
   { label: "Search", value: "search" },
@@ -41,6 +42,7 @@ export const DeadCustomerView = () => {
   const [recordForEdit, setRecordForEdit] = useState(null);
   const [openPopup, setOpenPopup] = useState(false);
   const [exportData, setExportData] = useState([]);
+  const [product, setProduct] = useState([]);
   const csvLinkRef = useRef(null);
 
   const handleDownload = async () => {
@@ -126,9 +128,22 @@ export const DeadCustomerView = () => {
   };
 
   useEffect(() => {
+    getProduct();
     getAssignedData();
     getAllProductionForecastDetails();
   }, []);
+
+  const getProduct = async () => {
+    try {
+      setOpen(true);
+      const res = await ProductService.getAllProduct();
+      setProduct(res.data);
+      setOpen(false);
+    } catch (err) {
+      console.error("error potential", err);
+      setOpen(false);
+    }
+  };
 
   const getAssignedData = async () => {
     try {
@@ -400,6 +415,7 @@ export const DeadCustomerView = () => {
           setOpenPopup={setOpenPopup}
           getAllCompanyDetails={getAllProductionForecastDetails}
           recordForEdit={recordForEdit}
+          product={product}
         />
       </Popup>
     </div>
