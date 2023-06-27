@@ -61,6 +61,11 @@ export const DailyProfitableSalesReport = (props) => {
     "Invoice No",
     "Product",
     "Company",
+    "Quantity",
+    "Rate",
+    "Amount",
+    "Cost",
+    "Cost Value",
     "Total",
   ];
 
@@ -70,6 +75,11 @@ export const DailyProfitableSalesReport = (props) => {
     { label: "Invoice No", key: "invoice_no" },
     { label: "Product", key: "product" },
     { label: "Company", key: "company" },
+    { label: "Quantity", key: "quantity" },
+    { label: "Rate", key: "rate" },
+    { label: "Amount", key: "amount" },
+    { label: "Cost", key: "cost" },
+    { label: "Cost Value", key: "cost_value" },
     { label: "Total", key: "total" },
   ];
 
@@ -79,6 +89,11 @@ export const DailyProfitableSalesReport = (props) => {
     invoice_no: row.sales_invoice,
     product: row.product__name,
     company: row.sales_invoice__order_book__company__name,
+    quantity: 16,
+    rate: row.rate,
+    amount: row.amount,
+    cost: row.cost,
+    cost_value: row.cost_value,
     total: row.total,
   }));
 
@@ -87,49 +102,48 @@ export const DailyProfitableSalesReport = (props) => {
       <CustomLoader open={open} />
       <Grid item xs={12}>
         <ErrorMessage errRef={errRef} errMsg={errMsg} />
-        <Paper sx={{ p: 2, m: 2, display: "flex", flexDirection: "column" }}>
-          <Box display="flex" justifyContent="flex-end">
-            <CSVLink
-              data={Tabledata}
-              headers={headers}
-              filename={"Production Inventory Consolidate.csv"}
-              target="_blank"
+
+        <Box display="flex" justifyContent="flex-end">
+          <CSVLink
+            data={Tabledata}
+            headers={headers}
+            filename={"Daily Profitability Sales Report.csv"}
+            target="_blank"
+            style={{
+              textDecoration: "none",
+              outline: "none",
+              height: "5vh",
+            }}
+          >
+            <div
+              className="btn btn-primary"
               style={{
-                textDecoration: "none",
-                outline: "none",
-                height: "5vh",
+                display: "inline-block",
+                padding: "6px 16px",
+                margin: "10px",
+                fontSize: "0.875rem",
+                minWidth: "64px",
+                fontWeight: 500,
+                lineHeight: 1.75,
+                borderRadius: "4px",
+                letterSpacing: "0.02857em",
+                textTransform: "uppercase",
+                boxShadow:
+                  "0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2)",
               }}
             >
-              <div
-                className="btn btn-primary"
-                style={{
-                  display: "inline-block",
-                  padding: "6px 16px",
-                  margin: "10px",
-                  fontSize: "0.875rem",
-                  minWidth: "64px",
-                  fontWeight: 500,
-                  lineHeight: 1.75,
-                  borderRadius: "4px",
-                  letterSpacing: "0.02857em",
-                  textTransform: "uppercase",
-                  boxShadow:
-                    "0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2)",
-                }}
-              >
-                Download CSV
-              </div>
-            </CSVLink>
-          </Box>
-          <CustomTable
-            headers={Tableheaders}
-            data={Tabledata}
-            openInPopup={null}
-            openInPopup2={null}
-            openInPopup3={null}
-            openInPopup4={null}
-          />
-        </Paper>
+              Download CSV
+            </div>
+          </CSVLink>
+        </Box>
+        <CustomTable
+          headers={Tableheaders}
+          data={Tabledata}
+          openInPopup={null}
+          openInPopup2={null}
+          openInPopup3={null}
+          openInPopup4={null}
+        />
       </Grid>
     </div>
   );
