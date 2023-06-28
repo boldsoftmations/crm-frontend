@@ -36,11 +36,11 @@ export const StoresInventoryCreate = (props) => {
 
     if (name === "quantity") {
       updatedPendingQuantity = parseInt(value);
-      const rate = parseInt(storeInventoryData.rate || 0); // If rate is not entered, default to 0
-      updatedAmount = rate * parseInt(value) || ""; // If rate is not entered, set amount as an empty string
+      const rate = parseFloat(storeInventoryData.rate || 0); // If rate is not entered, default to 0
+      updatedAmount = rate * parseFloat(value) || ""; // If rate is not entered, set amount as an empty string
     } else if (name === "rate") {
       updatedAmount =
-        parseInt(value) * parseInt(storeInventoryData.quantity) || ""; // If quantity is not entered, set amount as an empty string
+        parseFloat(value) * parseInt(storeInventoryData.quantity) || ""; // If quantity is not entered, set amount as an empty string
     }
 
     setStoreInventoryData({

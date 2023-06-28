@@ -261,8 +261,7 @@ export const StoresInventoryView = () => {
                   }}
                 />
               )}
-              {(userData.groups.includes("Accounts") ||
-                userData.groups.includes("Accounts Executive")) && (
+              {userData.groups.includes("Accounts") && (
                 <Button
                   onClick={() => setOpenPopup(true)}
                   variant="contained"
