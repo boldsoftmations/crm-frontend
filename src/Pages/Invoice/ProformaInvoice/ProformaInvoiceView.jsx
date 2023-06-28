@@ -11,6 +11,7 @@ import {
   Text,
   StyleSheet,
 } from "@react-pdf/renderer";
+import { useReactToPrint } from "react-to-print";
 import moment from "moment";
 import InvoiceServices from "../../../services/InvoiceService";
 import { PaymentConfirmationPi } from "./PaymentConfirmationPi";
@@ -32,8 +33,14 @@ export const ProformaInvoiceView = (props) => {
   const [errMsg, setErrMsg] = useState("");
   const data = useSelector((state) => state.auth);
   const users = data.profile;
+  const componentRef = useRef();
 
-  const handlePrint = async (data) => {
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+    documentTitle: `PI Number ${invoiceData.pi_number}`,
+  });
+
+  const handleDownload = async (data) => {
     try {
       setOpen(true);
 
@@ -216,7 +223,6 @@ export const ProformaInvoiceView = (props) => {
       );
     }
   };
-  const componentRef = useRef();
 
   const TOTAL_GST_DATA = invoiceData.total - invoiceData.amount;
   const TOTAL_GST = TOTAL_GST_DATA.toFixed(2);
@@ -235,10 +241,20 @@ export const ProformaInvoiceView = (props) => {
                 <button
                   type="button"
                   className="btn btn-primary"
-                  onClick={(e) => handlePrint(e)}
+                  onClick={(e) => handleDownload(e)}
                 >
                   Download
                   <DownloadIcon />
+                </button>
+              )}
+            {invoiceData.status !== "Pending Approval" &&
+              invoiceData.status !== "Raised" && (
+                <button
+                  type="button"
+                  className="btn btn-secondary ms-2"
+                  onClick={handlePrint}
+                >
+                  Print
                 </button>
               )}
           </div>
@@ -320,6 +336,7 @@ export const ProformaInvoiceView = (props) => {
         id="invoice"
         style={{ border: "1px Solid #000000" }}
         className="container-fluid m-0 p-2"
+        ref={componentRef}
       >
         <div className="m-2 p-0" style={{ border: "1px Solid #000000" }}>
           <div className="row">
