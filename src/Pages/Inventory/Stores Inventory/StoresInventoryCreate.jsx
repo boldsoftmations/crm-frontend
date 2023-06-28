@@ -66,8 +66,7 @@ export const StoresInventoryCreate = (props) => {
   const getProduct = async () => {
     try {
       setOpen(true);
-      const res = await ProductService.getAllValidPriceList("all");
-      console.log("res product", res.data);
+      const res = await ProductService.getAllProduct();
       setProduct(res.data);
       setOpen(false);
     } catch (err) {
