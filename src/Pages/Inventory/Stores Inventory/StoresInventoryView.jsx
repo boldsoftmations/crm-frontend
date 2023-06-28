@@ -6,9 +6,14 @@ import { CustomPagination } from "../../../Components/CustomPagination";
 import { CustomSearchWithButton } from "./../../../Components/CustomSearchWithButton";
 import { CustomTable } from "../../../Components/CustomTable";
 import { CSVLink } from "react-csv";
+import { Popup } from "../../../Components/Popup";
+import { StoresInventoryCreate } from "./StoresInventoryCreate";
+import { Button } from "@mui/material";
+import { useSelector } from "react-redux";
 
 export const StoresInventoryView = () => {
   const [open, setOpen] = useState(false);
+  const [openPopup, setOpenPopup] = useState(false);
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
   const [storesInventoryData, setStoresInventoryData] = useState([]);
@@ -17,6 +22,8 @@ export const StoresInventoryView = () => {
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const [exportData, setExportData] = useState([]);
   const csvLinkRef = useRef(null);
+  const data = useSelector((state) => state.auth);
+  const userData = data.profile;
 
   const handleDownload = async () => {
     try {
@@ -237,26 +244,9 @@ export const StoresInventoryView = () => {
               </h3>
             </div>
             <div style={{ flexGrow: 0.5 }} align="right">
-              <div
-                className="btn btn-primary"
-                style={{
-                  display: "inline-block",
-                  padding: "6px 16px",
-                  margin: "10px",
-                  fontSize: "0.875rem",
-                  minWidth: "64px",
-                  fontWeight: 500,
-                  lineHeight: 1.75,
-                  borderRadius: "4px",
-                  letterSpacing: "0.02857em",
-                  textTransform: "uppercase",
-                  boxShadow:
-                    "0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2)",
-                }}
-                onClick={handleDownload}
-              >
+              <Button onClick={handleDownload} variant="contained">
                 Download CSV
-              </div>
+              </Button>
               {exportData.length > 0 && (
                 <CSVLink
                   data={[...exportData]}
@@ -270,6 +260,16 @@ export const StoresInventoryView = () => {
                     height: "5vh",
                   }}
                 />
+              )}
+              {(userData.groups.includes("Accounts") ||
+                userData.groups.includes("Accounts Executive")) && (
+                <Button
+                  onClick={() => setOpenPopup(true)}
+                  variant="contained"
+                  color="success"
+                >
+                  Add
+                </Button>
               )}
             </div>
           </div>
@@ -287,6 +287,17 @@ export const StoresInventoryView = () => {
           />
         </div>
       </div>
+      <Popup
+        maxWidth="xl"
+        title={"Create Stores Inventory"}
+        openPopup={openPopup}
+        setOpenPopup={setOpenPopup}
+      >
+        <StoresInventoryCreate
+          setOpenPopup={setOpenPopup}
+          getAllStoresInventoryDetails={getAllStoresInventoryDetails}
+        />
+      </Popup>
     </>
   );
 };

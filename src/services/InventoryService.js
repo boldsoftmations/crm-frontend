@@ -230,6 +230,10 @@ const getAllStoresInventoryData = () => {
   return CustomAxios.get(`/api/inventory/list-stores-inventory/`);
 };
 
+const createStoresInventoryData = (data) => {
+  return CustomAxios.post("/api/inventory/list-stores-inventory/", data);
+};
+
 const getAllPaginateStoresInventoryData = (all) => {
   return CustomAxios.get(`/api/inventory/list-stores-inventory/?page=${all}`);
 };
@@ -752,6 +756,7 @@ const InventoryServices = {
   getPurchaseInvoiceDataById,
   updatePurchaseInvoiceData,
   getAllStoresInventoryData,
+  createStoresInventoryData,
   getAllPaginateStoresInventoryData,
   getAllPaginateStoresInventoryDataWithSearch,
   getAllSearchStoresInventoryData,
