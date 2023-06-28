@@ -847,7 +847,14 @@ export const SalesDashboard = (props) => {
           <ResponsiveContainer width="100%" height={400}>
             <LineChart width={500} height={300} data={dIQdata}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="sales_invoice__generation_date" />
+              <XAxis
+                dataKey="sales_invoice__generation_date"
+                tick={{ fontSize: 15 }}
+                interval={0} // Display all labels without interval
+                angle={-45} // Rotate the labels for better visibility
+                textAnchor="end" // Align the labels at the end of the tick
+                height={80} // Increase the height of the XAxis to provide more space for labels
+              />
               <YAxis dataKey="total" />
               <Tooltip />
               <Legend />
@@ -878,7 +885,14 @@ export const SalesDashboard = (props) => {
           <ResponsiveContainer width="100%" height={400}>
             <LineChart width={500} height={300} data={dOBQdata}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="orderbook__proforma_invoice__generation_date" />
+              <XAxis
+                dataKey="orderbook__proforma_invoice__generation_date"
+                tick={{ fontSize: 15 }}
+                interval={0} // Display all labels without interval
+                angle={-45} // Rotate the labels for better visibility
+                textAnchor="end" // Align the labels at the end of the tick
+                height={80} // Increase the height of the XAxis to provide more space for labels
+              />
               <YAxis dataKey="total" />
               <Tooltip />
               <Legend />
