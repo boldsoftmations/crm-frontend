@@ -148,7 +148,7 @@ export const StoresInventoryCreate = (props) => {
               id="combo-box-demo"
               value={storeInventoryData.product || ""}
               onChange={(event, value) => handleSelectChange("product", value)}
-              options={product.map((option) => option.product)}
+              options={product.map((option) => option.name)}
               getOptionLabel={(option) => option}
               sx={{ minWidth: 300 }}
               renderInput={(params) => (
