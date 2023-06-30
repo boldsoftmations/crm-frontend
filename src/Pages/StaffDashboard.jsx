@@ -1,32 +1,16 @@
 import React, { useState } from "react";
 import {
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  Legend,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  LineChart,
-  Line,
-  AreaChart,
-  Area,
-} from "recharts";
-import {
   Autocomplete,
   Grid,
   TextField,
   Button,
   Box,
   Typography,
-  Paper,
   CircularProgress,
 } from "@mui/material";
 import PropTypes from "prop-types";
+import { CustomChart } from "../Components/CustomChart";
+import { useNavigate } from "react-router-dom";
 export const StaffDashboard = (props) => {
   const {
     barChartData,
@@ -64,9 +48,9 @@ export const StaffDashboard = (props) => {
     maxDate,
     getReset,
   } = props;
+  const [dIQdata, setDIQData] = useState([]);
+  const [dOBQdata, setDOBQData] = useState([]);
 
-  const [dIQdata, setDIQData] = useState();
-  const [dOBQdata, setDOBQData] = useState();
   const descriptionOptionsForInvoice = dailyInvoiceQuantity.flatMap((entry) =>
     Object.keys(entry)
   );
@@ -238,335 +222,123 @@ export const StaffDashboard = (props) => {
       </Grid>
       {/* actual vs forecast and new customer bar chart */}
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={12} md={6} lg={6} sx={{ marginTop: "20px" }}>
-          <ResponsiveContainer
-            width="100%"
-            height={400}
-            preserveAspectRatio={false}
-          >
-            <BarChart
-              data={barChartData}
-              margin={{ bottom: 30, left: 20, right: 20 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                dataKey="combination"
-                tick={{ fontSize: 15 }}
-                interval={0} // Display all labels without interval
-                angle={-45} // Rotate the labels for better visibility
-                textAnchor="end" // Align the labels at the end of the tick
-                height={80} // Increase the height of the XAxis to provide more space for labels
-              />
-              <YAxis />
-              <Tooltip />
-              <Legend style={{ marginTop: 20 }} />
-              <Bar
-                dataKey="actual"
-                name="Actual"
-                fill={COLORS[0]}
-                barSize={20}
-              />
-              <Bar
-                dataKey="forecast"
-                name="Forecast"
-                fill={COLORS[1]}
-                barSize={20}
-              />
-              <text
-                x="50%"
-                y={20}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                className="chart-title"
-              >
-                Actual vs Forecast(Quantity)
-              </text>
-            </BarChart>
-          </ResponsiveContainer>
+        <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+          <CustomChart
+            chartType="ColumnChart"
+            data={[
+              ["Combination", "Actual", "Forecast"],
+              ...barChartData.map((item) => [
+                item.combination,
+                item.actual,
+                item.forecast,
+              ]),
+            ]}
+            options={{
+              title: "Actual vs Forecast(Quantity)",
+              width: "100%",
+              height: "300px",
+            }}
+            widthStyle={"100%"}
+            heightStyle={"300px"}
+          />
         </Grid>
-        <Grid item xs={12} sm={12} md={6} lg={6} sx={{ marginTop: "20px" }}>
-          <ResponsiveContainer
-            width={"100%"}
-            height={400}
-            preserveAspectRatio={false}
-          >
-            <LineChart data={newCustomerData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                dataKey="combination"
-                tick={{ fontSize: 15 }}
-                interval={0} // Display all labels without interval
-                angle={-45} // Rotate the labels for better visibility
-                textAnchor="end" // Align the labels at the end of the tick
-                height={80} // Increase the height of the XAxis to provide more space for labels
-              />
-              <YAxis />
-              <Tooltip />
-              <Legend style={{ marginTop: 20 }} />
-              <Line
-                type="monotone"
-                dataKey="count"
-                name="New Customer"
-                stroke={COLORS[0]}
-                strokeWidth={2}
-              />
-              <text
-                x="50%"
-                y={20}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                className="chart-title"
-              >
-                New Customer
-              </text>
-            </LineChart>
-          </ResponsiveContainer>
+        <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+          <CustomChart
+            chartType="LineChart"
+            data={[
+              ["Combination", "Count"],
+              ...newCustomerData.map((item) => [item.combination, item.count]),
+            ]}
+            options={{
+              title: "New Customer Data",
+              width: "100%",
+              height: "300px",
+            }}
+            widthStyle={"100%"}
+            heightStyle={"300px"}
+          />
+        </Grid>
+        <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+          <CustomChart
+            chartType="BarChart"
+            data={[
+              ["Name", "Value", { role: "style" }],
+              ...horizontalBarData.map((item) => [
+                item.name,
+                item.value,
+                item.type === "LR" ? "blue" : "green",
+              ]),
+            ]}
+            options={{
+              title: "Dispatch Data",
+              width: "100%",
+              height: "300px",
+              legend: { position: "none" },
+              hAxis: { title: "Value" },
+            }}
+            widthStyle={"100%"}
+            heightStyle={"300px"}
+          />
         </Grid>
       </Grid>
       {/* pod vs lr bar chart and Task pie chart   */}
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={12} md={6} lg={6} sx={{ marginTop: "20px" }}>
-          <ResponsiveContainer
-            width="100%"
-            height={400}
-            preserveAspectRatio={false}
-          >
-            <BarChart
-              width={600}
-              height={300}
-              data={horizontalBarData}
-              layout="vertical"
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis type="number" />
-              <YAxis
-                dataKey="name"
-                type="category"
-                angle={-45}
-                textAnchor="end"
-                interval={0}
-              />
-              <Tooltip />
-              <Legend />
-              <Bar
-                dataKey="value"
-                fill={COLORS[0]}
-                barSize={20}
-                onClick={(data) => {
-                  // Handle the click event
-                  handleDispatch(data);
-                  console.log("Bar clicked:", data);
-                }}
-              />
-              <text
-                x="50%"
-                y={20}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                className="chart-title"
-              >
-                LR vs POD
-              </text>
-            </BarChart>
-          </ResponsiveContainer>
+        <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+          <CustomChart
+            chartType="PieChart"
+            data={[
+              ["Label", "Value"],
+              ...pendingTask.map((item) => [item.label, item.value]),
+            ]}
+            options={{
+              title: "Pending Task Data",
+              width: "100%",
+              height: "300px",
+              pieHole: 0.4,
+            }}
+            widthStyle={"100%"}
+            heightStyle={"300px"}
+          />
         </Grid>
-        <Grid item xs={12} sm={12} md={6} lg={6} sx={{ marginTop: "20px" }}>
-          <ResponsiveContainer
-            width="100%"
-            height={400}
-            preserveAspectRatio={false}
-          >
-            <PieChart onClick={handlePieChartClick}>
-              <Pie
-                data={pendingTask}
-                dataKey="value"
-                nameKey="label"
-                cx="50%"
-                cy="50%"
-                outerRadius={120} // Increase the outerRadius for a larger pie chart
-                fill="#8884d8"
-                labelLine={false} // Disable the default label line
-                label={({
-                  cx,
-                  cy,
-                  midAngle,
-                  innerRadius,
-                  outerRadius,
-                  percent,
-                  index,
-                }) => {
-                  const RADIAN = Math.PI / 180;
-                  const radius =
-                    innerRadius + (outerRadius - innerRadius) * 0.5;
-                  const x = cx + radius * Math.cos(-midAngle * RADIAN);
-                  const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
-                  return (
-                    <text
-                      x={x}
-                      y={y}
-                      fill="#fff"
-                      textAnchor="middle"
-                      dominantBaseline="central"
-                    >
-                      {`${pendingTask[index].value}`}
-                    </text>
-                  );
-                }}
-              >
-                {pendingTask.map((entry, index) => (
-                  <Cell key={index} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip />
-              <Legend />
-              <text
-                x="50%"
-                y={20}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                className="chart-title"
-              >
-                Pending Tasks
-              </text>
-            </PieChart>
-          </ResponsiveContainer>
+        <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+          <CustomChart
+            chartType="BarChart"
+            data={[
+              ["Label", "Value"],
+              ...pendingFollowup.map((item) => [item.label, item.value]),
+            ]}
+            options={{
+              title: "Pending Follow-Up Data",
+              width: "100%",
+              height: "300px",
+              legend: { position: "none" },
+            }}
+            widthStyle={"100%"}
+            heightStyle={"300px"}
+          />
+        </Grid>
+        <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+          <CustomChart
+            chartType={"PieChart"}
+            data={[
+              ["Label", "Value"],
+              ...piData.map((item) => [item.label, item.value]),
+            ]}
+            options={{
+              title: "PI Data",
+              width: "100%",
+              height: "300px",
+              pieHole: 0.4,
+            }}
+            widthStyle={"100%"}
+            heightStyle={"300px"}
+          />
         </Grid>
       </Grid>
-      {/* Pending follwup and pi data pie chart */}
-      <Grid container spacing={2}>
-        <Grid item xs={12} sm={12} md={6} lg={6} sx={{ marginTop: "20px" }}>
-          <ResponsiveContainer
-            width="100%"
-            height={400}
-            preserveAspectRatio={false}
-          >
-            <PieChart onClick={handlePendingFollowup}>
-              <Pie
-                data={pendingFollowup}
-                dataKey="value"
-                nameKey="label"
-                cx="50%"
-                cy="50%"
-                outerRadius={120} // Increase the outerRadius for a larger pie chart
-                fill="#8884d8"
-                labelLine={false} // Disable the default label line
-                label={({
-                  cx,
-                  cy,
-                  midAngle,
-                  innerRadius,
-                  outerRadius,
-                  percent,
-                  index,
-                }) => {
-                  const RADIAN = Math.PI / 180;
-                  const radius =
-                    innerRadius + (outerRadius - innerRadius) * 0.5;
-                  const x = cx + radius * Math.cos(-midAngle * RADIAN);
-                  const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
-                  return (
-                    <text
-                      x={x}
-                      y={y}
-                      fill="#fff"
-                      textAnchor="middle"
-                      dominantBaseline="central"
-                      fontSize={12} // Adjust the font size as needed
-                    >
-                      {`${pendingFollowup[index].value}`}
-                    </text>
-                  );
-                }}
-              >
-                {pendingFollowup.map((entry, index) => (
-                  <Cell key={index} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip />
-              <Legend />
-              <text
-                x="50%"
-                y={20}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                className="chart-title"
-              >
-                Pending FollowUp
-              </text>
-            </PieChart>
-          </ResponsiveContainer>
-        </Grid>
-        <Grid item xs={12} sm={12} md={6} lg={6} sx={{ marginTop: "20px" }}>
-          <ResponsiveContainer
-            width="100%"
-            height={400}
-            preserveAspectRatio={false}
-          >
-            <PieChart>
-              <Pie
-                data={piData}
-                dataKey="value"
-                nameKey="label"
-                cx="50%"
-                cy="50%"
-                outerRadius={120} // Increase the outerRadius for a larger pie chart
-                fill="#8884d8"
-                labelLine={false} // Disable the default label line
-                label={({
-                  cx,
-                  cy,
-                  midAngle,
-                  innerRadius,
-                  outerRadius,
-                  percent,
-                  index,
-                }) => {
-                  const RADIAN = Math.PI / 180;
-                  const radius =
-                    innerRadius + (outerRadius - innerRadius) * 0.5;
-                  const x = cx + radius * Math.cos(-midAngle * RADIAN);
-                  const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
-                  return (
-                    <text
-                      x={x}
-                      y={y}
-                      fill="#fff"
-                      textAnchor="middle"
-                      dominantBaseline="central"
-                    >
-                      {`${piData[index].value}`}
-                    </text>
-                  );
-                }}
-              >
-                {piData.map((entry, index) => (
-                  <Cell
-                    key={index}
-                    fill={COLORS[index % COLORS.length]} // Set color based on index
-                  />
-                ))}
-              </Pie>
-              <Tooltip />
-              <Legend />
-              <text
-                x="50%"
-                y={20}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                className="chart-title"
-              >
-                PI Data
-              </text>
-            </PieChart>
-          </ResponsiveContainer>
-        </Grid>
-      </Grid>
       {/* sales funnel */}
       <Grid container spacing={1}>
-        <Grid item xs={12} sm={12} md={6} lg={6} sx={{ marginTop: "20px" }}>
+        <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
           <div className="funnelChart" style={funnelStyle}>
             <h2 style={{ textAlign: "center", color: "#333" }}>Sales Funnel</h2>
             {funnelData.map((data, index) => (
@@ -591,251 +363,109 @@ export const StaffDashboard = (props) => {
             ))}
           </div>
         </Grid>
-        <Grid item xs={12} sm={12} md={6} lg={6} sx={{ marginTop: "20px" }}>
-          <ResponsiveContainer
-            width="100%"
-            height={400}
-            preserveAspectRatio={false}
-          >
-            <BarChart
-              data={monthlyStatus}
-              margin={{ bottom: 30, left: 20, right: 20 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                dataKey="combination"
-                tick={{ fontSize: 15 }}
-                interval={0} // Display all labels without interval
-                angle={-45} // Rotate the labels for better visibility
-                textAnchor="end" // Align the labels at the end of the tick
-                height={80} // Increase the height of the XAxis to provide more space for labels
-              />
-              <YAxis />
-              <Tooltip />
-              <Legend style={{ marginTop: 20 }} />
-              <Bar
-                dataKey="existing_lead"
-                name="Existing Lead"
-                fill={COLORS[0]}
-                barSize={20}
-              />
-              <Bar
-                dataKey="new_lead"
-                name="New Lead"
-                fill={COLORS[1]}
-                barSize={20}
-              />
-              <Bar
-                dataKey="customer"
-                name="Customer"
-                fill={COLORS[2]}
-                barSize={20}
-              />
-              <text
-                x="50%"
-                y={20}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                className="chart-title"
-              >
-                Monthly Calls
-              </text>
-            </BarChart>
-          </ResponsiveContainer>
+        <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+          <CustomChart
+            chartType="ColumnChart"
+            data={[
+              ["Month", "Existing Lead", "New Lead", "Customer"],
+              ...monthlyStatus.map((item) => [
+                item.combination,
+                item.existing_lead,
+                item.new_lead,
+                item.customer,
+              ]),
+            ]}
+            options={{
+              title: "Monthly Call Status",
+              width: "100%",
+              height: "400px",
+              isStacked: true,
+              legend: { position: "top" },
+            }}
+            widthStyle={"100%"}
+            heightStyle={"300px"}
+          />
+        </Grid>
+        <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+          <CustomChart
+            chartType="LineChart"
+            data={[
+              ["Week", "Existing Lead", "New Lead", "Customer"],
+              ...weeklyStatus.map((item) => [
+                item.combination,
+                item.existing_lead,
+                item.new_lead,
+                item.customer,
+              ]),
+            ]}
+            options={{
+              title: "Weekly Call Status",
+              width: "100%",
+              height: "400px",
+              curveType: "function",
+              legend: { position: "top" },
+            }}
+            widthStyle={"100%"}
+            heightStyle={"300px"}
+          />
         </Grid>
       </Grid>
 
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={12} md={6} lg={6} sx={{ marginTop: "20px" }}>
-          <ResponsiveContainer
-            width="100%"
-            height={400}
-            preserveAspectRatio={false}
-          >
-            <BarChart
-              data={weeklyStatus}
-              margin={{ bottom: 30, left: 20, right: 20 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                dataKey="combination"
-                tick={{ fontSize: 15 }}
-                interval={0} // Display all labels without interval
-                angle={-45} // Rotate the labels for better visibility
-                textAnchor="end" // Align the labels at the end of the tick
-                height={80} // Increase the height of the XAxis to provide more space for labels
-              />
-              <YAxis />
-              <Tooltip />
-              <Legend style={{ marginTop: 20 }} />
-              <Bar
-                dataKey="existing_lead"
-                name="Existing Lead"
-                fill={COLORS[0]}
-                barSize={20}
-              />
-              <Bar
-                dataKey="new_lead"
-                name="New Lead"
-                fill={COLORS[1]}
-                barSize={20}
-              />
-              <Bar
-                dataKey="customer"
-                name="Customer"
-                fill={COLORS[2]}
-                barSize={20}
-              />
-              <text
-                x="50%"
-                y={20}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                className="chart-title"
-              >
-                Weekly Calls
-              </text>
-            </BarChart>
-          </ResponsiveContainer>
+        <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+          <CustomChart
+            chartType="ColumnChart"
+            data={[
+              ["Day", "Existing Lead", "New Lead", "Customer"],
+              ...dailyStatus.map((item) => [
+                item.combination,
+                item.existing_lead,
+                item.new_lead,
+                item.customer,
+              ]),
+            ]}
+            options={{
+              title: "Daily Call Status",
+              width: "100%",
+              height: "400px",
+              legend: { position: "top" },
+            }}
+            widthStyle={"100%"}
+            heightStyle={"300px"}
+          />
         </Grid>
-        <Grid item xs={12} sm={12} md={6} lg={6} sx={{ marginTop: "20px" }}>
-          <ResponsiveContainer
-            width="100%"
-            height={400}
-            preserveAspectRatio={false}
-          >
-            <BarChart
-              data={dailyStatus}
-              margin={{ bottom: 30, left: 20, right: 20 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                dataKey="combination"
-                tick={{ fontSize: 15 }}
-                interval={0} // Display all labels without interval
-                angle={-45} // Rotate the labels for better visibility
-                textAnchor="end" // Align the labels at the end of the tick
-                height={80} // Increase the height of the XAxis to provide more space for labels
-              />
-              <YAxis />
-              <Tooltip />
-              <Legend style={{ marginTop: 20 }} />
-              <Bar
-                dataKey="existing_lead"
-                name="Existing Lead"
-                fill={COLORS[0]}
-                barSize={20}
-              />
-              <Bar
-                dataKey="new_lead"
-                name="New Lead"
-                fill={COLORS[1]}
-                barSize={20}
-              />
-              <Bar
-                dataKey="customer"
-                name="Customer"
-                fill={COLORS[2]}
-                barSize={20}
-              />
-              <text
-                x="50%"
-                y={20}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                className="chart-title"
-              >
-                Daily Calls
-              </text>
-            </BarChart>
-          </ResponsiveContainer>
+        <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+          <CustomChart
+            chartType="BarChart"
+            data={[
+              ["Product Description", "Pending Quantity"],
+              ...pendingDescription.map((item) => [item.name, item.value]),
+            ]}
+            options={{
+              title: "Pending Quantity by Description",
+              width: "100%",
+              height: "400px",
+              legend: { position: "none" },
+            }}
+            widthStyle={"100%"}
+            heightStyle={"300px"}
+          />
         </Grid>
-      </Grid>
-      {/* description wise pending quantity */}
-      <Grid container spacing={2}>
-        <Grid item xs={12} sm={12} md={12} lg={12} sx={{ marginTop: "20px" }}>
-          <ResponsiveContainer
-            width="100%"
-            height={400}
-            preserveAspectRatio={false}
-          >
-            <BarChart
-              width={600}
-              height={300}
-              data={pendingDescription}
-              layout="vertical"
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis type="number" width={300} />
-              <YAxis
-                dataKey="name"
-                type="category"
-                // angle={-45}
-                textAnchor="end"
-                interval={0}
-                width={300}
-                tick={{ fontSize: 15 }} // Adjust font size of tick labels
-                tickLine={false} // Disable tick lines
-                tickMargin={10} // Add margin to tick labels
-              />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="value" fill={COLORS[0]} barSize={20} />
-              <text
-                x="50%"
-                y={20}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                className="chart-title"
-              >
-                Description Wise Pending Quantity
-              </text>
-            </BarChart>
-          </ResponsiveContainer>
-        </Grid>
-      </Grid>
-
-      {/* description wise quantity */}
-      <Grid container spacing={2}>
-        <Grid item xs={12} sm={12} md={12} lg={12} sx={{ marginTop: "20px" }}>
-          <ResponsiveContainer
-            width="100%"
-            height={400}
-            preserveAspectRatio={false}
-          >
-            <BarChart
-              width={600}
-              height={300}
-              data={descriptionQuantity}
-              layout="vertical"
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis type="number" width={300} />
-              <YAxis
-                dataKey="name"
-                type="category"
-                // angle={-45}
-                textAnchor="end"
-                interval={0}
-                width={300}
-                tick={{ fontSize: 15 }} // Adjust font size of tick labels
-                tickLine={false} // Disable tick lines
-                tickMargin={10} // Add margin to tick labels
-              />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="value" fill={COLORS[0]} barSize={20} />
-              <text
-                x="50%"
-                y={20}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                className="chart-title"
-              >
-                Description Wise Sales Quantity
-              </text>
-            </BarChart>
-          </ResponsiveContainer>
+        <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+          <CustomChart
+            chartType="PieChart"
+            data={[
+              ["Product Description", "Quantity"],
+              ...descriptionQuantity.map((item) => [item.name, item.value]),
+            ]}
+            options={{
+              title: "Description Wise Sales Quantity",
+              width: "100%",
+              height: "400px",
+            }}
+            widthStyle={"100%"}
+            heightStyle={"300px"}
+          />
         </Grid>
       </Grid>
 
@@ -874,34 +504,20 @@ export const StaffDashboard = (props) => {
               Reset
             </Button>
           </div>
-          <ResponsiveContainer
-            width="100%"
-            height={400}
-            preserveAspectRatio={false}
-          >
-            <AreaChart width={600} height={400} data={callPerformance}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Area
-                type="monotone"
-                dataKey="value"
-                stroke="#8884d8"
-                fill="#8884d8"
-              />
-              <text
-                x="50%"
-                y={20}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                className="chart-title"
-              >
-                Call Performance
-              </text>
-            </AreaChart>
-          </ResponsiveContainer>
+          <CustomChart
+            chartType="BarChart"
+            data={[
+              ["Call Category", "Value"],
+              ...callPerformance.map((item) => [item.name, item.value]),
+            ]}
+            options={{
+              title: "Call Performance",
+              width: "100%",
+              height: "400px",
+            }}
+            widthStyle={"100%"}
+            heightStyle={"300px"}
+          />
         </Grid>
       </Grid>
 
@@ -911,6 +527,7 @@ export const StaffDashboard = (props) => {
           <Autocomplete
             sx={{}}
             size="small"
+            defaultValue={dailyInvoiceQuantity[0]}
             onChange={(event, value) => handleDataForInvoice(value)}
             options={descriptionOptionsForInvoice.map((option) => option)}
             getOptionLabel={(option) => option}
@@ -918,37 +535,31 @@ export const StaffDashboard = (props) => {
               <TextField {...params} label="Filter By Description" />
             )}
           />
-          <ResponsiveContainer width="100%" height={400}>
-            <LineChart width={500} height={300} data={dIQdata}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                dataKey="sales_invoice__generation_date"
-                tick={{ fontSize: 15 }}
-                interval={0} // Display all labels without interval
-                angle={-45} // Rotate the labels for better visibility
-                textAnchor="end" // Align the labels at the end of the tick
-                height={80} // Increase the height of the XAxis to provide more space for labels
-              />
-              <YAxis dataKey="total" />
-              <Tooltip />
-              <Legend />
-              <Line type="monotone" dataKey="total" stroke="#8884d8" />
-              <text
-                x="50%"
-                y={20}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                className="chart-title"
-              >
-                Daily Sales Invoice Quantity
-              </text>
-            </LineChart>
-          </ResponsiveContainer>
+          <CustomChart
+            chartType="LineChart"
+            data={[
+              ["Date", "Total"],
+              ...((dIQdata &&
+                dIQdata.map((entry) => [
+                  entry.sales_invoice__generation_date,
+                  entry.total,
+                ])) ||
+                []),
+            ]}
+            options={{
+              title: "Daily Sales Invoice Quantity",
+              width: "100%",
+              height: "400px",
+            }}
+            widthStyle={"100%"}
+            heightStyle={"300px"}
+          />
         </Grid>
         <Grid item xs={12} sm={12} md={6} lg={6} sx={{ marginTop: "20px" }}>
           <Autocomplete
             sx={{}}
             size="small"
+            defaultValue={dailyOrderBookQuantity[0]}
             onChange={(event, value) => handleDataForOrderBook(value)}
             options={descriptionOptionsForOrderBook.map((option) => option)}
             getOptionLabel={(option) => option}
@@ -956,32 +567,25 @@ export const StaffDashboard = (props) => {
               <TextField {...params} label="Filter By Description" />
             )}
           />
-          <ResponsiveContainer width="100%" height={400}>
-            <LineChart width={500} height={300} data={dOBQdata}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                dataKey="orderbook__proforma_invoice__generation_date"
-                tick={{ fontSize: 15 }}
-                interval={0} // Display all labels without interval
-                angle={-45} // Rotate the labels for better visibility
-                textAnchor="end" // Align the labels at the end of the tick
-                height={80} // Increase the height of the XAxis to provide more space for labels
-              />
-              <YAxis dataKey="total" />
-              <Tooltip />
-              <Legend />
-              <Line type="monotone" dataKey="total" stroke="#8884d8" />
-              <text
-                x="50%"
-                y={20}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                className="chart-title"
-              >
-                Daily Sales OrderBook Quantity
-              </text>
-            </LineChart>
-          </ResponsiveContainer>
+          <CustomChart
+            chartType="LineChart"
+            data={[
+              ["Date", "Total"],
+              ...((dOBQdata &&
+                dOBQdata.map((entry) => [
+                  entry.orderbook__proforma_invoice__generation_date,
+                  entry.total,
+                ])) ||
+                []),
+            ]}
+            options={{
+              title: "Daily Sales OrderBook Quantity",
+              width: "100%",
+              height: "400px",
+            }}
+            widthStyle={"100%"}
+            heightStyle={"300px"}
+          />
         </Grid>
       </Grid>
     </Box>
