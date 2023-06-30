@@ -416,8 +416,11 @@ export const Home = () => {
         const day = Object.keys(dayObject)[0];
         const dayData = dayObject[day][0];
 
+        // Convert full day name to abbreviated form
+        const abbreviatedDay = getAbbreviatedDay(day);
+
         return {
-          combination: day,
+          combination: abbreviatedDay,
           existing_lead: dayData.existing_lead,
           new_lead: dayData.new_lead,
           customer: dayData.customer,
@@ -430,6 +433,35 @@ export const Home = () => {
       setOpen(false);
       console.log("Error:", err);
     }
+  };
+
+  const getAbbreviatedDay = (fullDay) => {
+    const fullDayNames = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+    const abbreviatedDayNames = [
+      "Sun",
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri",
+      "Sat",
+    ];
+
+    const index = fullDayNames.indexOf(fullDay);
+    if (index !== -1) {
+      return abbreviatedDayNames[index];
+    }
+
+    // If the full day name is not found, return the original value
+    return fullDay;
   };
 
   const getDescriptionQuantityDetails = async () => {
@@ -868,8 +900,11 @@ export const Home = () => {
         const day = Object.keys(dayObject)[0];
         const dayData = dayObject[day][0];
 
+        // Convert full day name to abbreviated form
+        const abbreviatedDay = getAbbreviatedDay(day);
+
         return {
-          combination: day,
+          combination: abbreviatedDay,
           existing_lead: dayData.existing_lead,
           new_lead: dayData.new_lead,
           customer: dayData.customer,
