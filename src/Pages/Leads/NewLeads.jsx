@@ -9,6 +9,8 @@ import {
   Select,
   MenuItem,
   IconButton,
+  Autocomplete,
+  TextField,
 } from "@mui/material";
 import PushPinIcon from "@mui/icons-material/PushPin";
 import PushPinOutlinedIcon from "@mui/icons-material/PushPinOutlined";
@@ -22,7 +24,6 @@ import {
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
 import { styled } from "@mui/material/styles";
-import ClearIcon from "@mui/icons-material/Clear";
 import LeadServices from "../../services/LeadService";
 import "../CommonStyle.css";
 import { CreateLeads } from "./CreateLeads";
@@ -72,9 +73,9 @@ export const NewLeads = () => {
     getSearchData(filterSelectedQuery, searchQuery);
   };
 
-  const handleInputChanges = (event) => {
-    setFilterSelectedQuery(event.target.value);
-    getSearchData(event.target.value);
+  const handleInputChanges = (value) => {
+    setFilterSelectedQuery(value);
+    getSearchData(value, searchQuery);
   };
 
   const openInPopup = (item) => {
@@ -459,168 +460,52 @@ export const NewLeads = () => {
             </FormControl>
 
             {filterQuery === "assigned_to__email" && (
-              <FormControl
+              <Autocomplete
                 sx={{ minWidth: "200px", marginLeft: "1em" }}
                 size="small"
-              >
-                <InputLabel id="demo-simple-select-label">
-                  Assigned To
-                </InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  name="values"
-                  label="Assigned To"
-                  value={filterSelectedQuery}
-                  onChange={(event) => handleInputChanges(event)}
-                  sx={{
-                    "& .MuiSelect-iconOutlined": {
-                      display: filterSelectedQuery ? "none" : "",
-                    },
-                    "&.Mui-focused .MuiIconButton-root": {
-                      color: "primary.main",
-                    },
-                  }}
-                  endAdornment={
-                    <IconButton
-                      sx={{
-                        visibility: filterSelectedQuery ? "visible" : "hidden",
-                      }}
-                      onClick={getResetFilterData}
-                    >
-                      <ClearIcon />
-                    </IconButton>
-                  }
-                >
-                  {assigned.map((option, i) => (
-                    <MenuItem key={i} value={option.email}>
-                      {option.email}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+                onChange={(event, value) => handleInputChanges(value)}
+                options={assigned.map((option) => option.email)}
+                getOptionLabel={(option) => option}
+                renderInput={(params) => (
+                  <TextField {...params} label="Assigned To" />
+                )}
+              />
             )}
             {filterQuery === "references__source" && (
-              <FormControl
+              <Autocomplete
                 sx={{ minWidth: "200px", marginLeft: "1em" }}
                 size="small"
-              >
-                <InputLabel id="demo-simple-select-label">Reference</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  name="values"
-                  label="Reference"
-                  value={filterSelectedQuery}
-                  onChange={(event) => handleInputChanges(event)}
-                  sx={{
-                    "& .MuiSelect-iconOutlined": {
-                      display: filterSelectedQuery ? "none" : "",
-                    },
-                    "&.Mui-focused .MuiIconButton-root": {
-                      color: "primary.main",
-                    },
-                  }}
-                  endAdornment={
-                    <IconButton
-                      sx={{
-                        visibility: filterSelectedQuery ? "visible" : "hidden",
-                      }}
-                      onClick={getResetFilterData}
-                    >
-                      <ClearIcon />
-                    </IconButton>
-                  }
-                >
-                  {referenceData.map((option) => (
-                    <MenuItem key={option.id} value={option.source}>
-                      {option.source}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+                onChange={(event, value) => handleInputChanges(value)}
+                options={referenceData.map((option) => option.source)}
+                getOptionLabel={(option) => option}
+                renderInput={(params) => (
+                  <TextField {...params} label="Reference" />
+                )}
+              />
             )}
             {filterQuery === "stage" && (
-              <FormControl
+              <Autocomplete
                 sx={{ minWidth: "200px", marginLeft: "1em" }}
                 size="small"
-              >
-                <InputLabel id="demo-simple-select-label">Stage</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  name="values"
-                  label="Stage"
-                  value={filterSelectedQuery}
-                  onChange={(event) => handleInputChanges(event)}
-                  sx={{
-                    "& .MuiSelect-iconOutlined": {
-                      display: filterSelectedQuery ? "none" : "",
-                    },
-                    "&.Mui-focused .MuiIconButton-root": {
-                      color: "primary.main",
-                    },
-                  }}
-                  endAdornment={
-                    <IconButton
-                      sx={{
-                        visibility: filterSelectedQuery ? "visible" : "hidden",
-                      }}
-                      onClick={getResetFilterData}
-                    >
-                      <ClearIcon />
-                    </IconButton>
-                  }
-                >
-                  {StageOptions.map((option, i) => (
-                    <MenuItem key={i} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+                onChange={(event, value) => handleInputChanges(value)}
+                options={StageOptions.map((option) => option.value)}
+                getOptionLabel={(option) => option}
+                renderInput={(params) => (
+                  <TextField {...params} label="Stage" />
+                )}
+              />
             )}
             {filterQuery === "description__name" && (
-              <FormControl
+              <Autocomplete
                 sx={{ minWidth: "200px", marginLeft: "1em" }}
                 size="small"
-              >
-                <InputLabel id="demo-simple-select-label">
-                  Description
-                </InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  name="values"
-                  label="Description"
-                  value={filterSelectedQuery}
-                  onChange={(event) => handleInputChanges(event)}
-                  sx={{
-                    "& .MuiSelect-iconOutlined": {
-                      display: filterSelectedQuery ? "none" : "",
-                    },
-                    "&.Mui-focused .MuiIconButton-root": {
-                      color: "primary.main",
-                    },
-                  }}
-                  endAdornment={
-                    <IconButton
-                      sx={{
-                        visibility: filterSelectedQuery ? "visible" : "hidden",
-                      }}
-                      onClick={getResetFilterData}
-                    >
-                      <ClearIcon />
-                    </IconButton>
-                  }
-                >
-                  {descriptionMenuData.map((option) => (
-                    <MenuItem key={option.id} value={option.name}>
-                      {option.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+                onChange={(event, value) => handleInputChanges(value)}
+                options={descriptionMenuData.map((option) => option.name)}
+                getOptionLabel={(option) => option}
+                renderInput={(params) => (
+                  <TextField {...params} label="Description" />
+                )}
+              />
             )}
             <CustomSearchWithButton
               filterSelectedQuery={searchQuery}
