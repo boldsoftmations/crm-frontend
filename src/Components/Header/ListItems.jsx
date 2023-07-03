@@ -93,160 +93,164 @@ export const ListItems = (props) => {
             </List>
           </Collapse>
           {/* Products */}
-          <ListItem
-            button
-            onClick={() => setExpandProduct(!expandProduct)}
-            style={{ width: 300 }}
-          >
-            <ListItemIcon>
-              <CategoryIcon />
-            </ListItemIcon>
-            <ListItemText primary="Products" />
-            {expandProduct ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-          </ListItem>
-          <Collapse in={expandProduct} timeout="auto" unmountOnExit>
-            <Divider />
-            <List component="div" disablePadding>
+          {userData.email.includes("devannsh@glutape.com") && (
+            <>
               <ListItem
                 button
-                component={RouterLink}
-                to="/products/view-colors"
+                onClick={() => setExpandProduct(!expandProduct)}
                 style={{ width: 300 }}
               >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="Colors"
-                />
+                <ListItemIcon>
+                  <CategoryIcon />
+                </ListItemIcon>
+                <ListItemText primary="Products" />
+                {expandProduct ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
-              <ListItem
-                button
-                component={RouterLink}
-                to="/products/view-brand"
-                style={{ width: 300 }}
-              >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="Brand"
-                />
-              </ListItem>
-              <ListItem
-                button
-                component={RouterLink}
-                to="/products/view-basic-unit"
-                style={{ width: 300 }}
-              >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="Basic Unit"
-                />
-              </ListItem>
-              <ListItem
-                button
-                component={RouterLink}
-                to="/products/view-unit"
-                style={{ width: 300 }}
-              >
-                <ListItemText inset primary="Unit" />
-              </ListItem>
-              <ListItem
-                button
-                component={RouterLink}
-                to="/products/view-packing-unit"
-                style={{ width: 300 }}
-              >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="Packing Unit"
-                />
-              </ListItem>
-              <ListItem
-                button
-                component={RouterLink}
-                to="/products/view-description"
-                style={{ width: 300 }}
-              >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="Description"
-                />
-              </ListItem>
-              <ListItem
-                button
-                component={RouterLink}
-                to="/products/view-product-code"
-                style={{ width: 300 }}
-              >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="Product Code"
-                />
-              </ListItem>
-              <ListItem
-                button
-                component={RouterLink}
-                to="/products/view-consumable"
-                style={{ width: 300 }}
-              >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="Consumable"
-                />
-              </ListItem>
-              <ListItem
-                button
-                component={RouterLink}
-                to="/products/view-finish-goods"
-                style={{ width: 300 }}
-              >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="Finish Goods"
-                />
-              </ListItem>
-              <ListItem
-                button
-                component={RouterLink}
-                to="/products/view-raw-materials"
-                style={{ width: 300 }}
-              >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="Raw Materials"
-                />
-              </ListItem>
-              <ListItem
-                button
-                component={RouterLink}
-                to="/products/view-price-list"
-                style={{ width: 300 }}
-              >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="Price List"
-                />
-              </ListItem>
-            </List>
-          </Collapse>
+              <Collapse in={expandProduct} timeout="auto" unmountOnExit>
+                <Divider />
+                <List component="div" disablePadding>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/products/view-colors"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Colors"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/products/view-brand"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Brand"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/products/view-basic-unit"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Basic Unit"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/products/view-unit"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText inset primary="Unit" />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/products/view-packing-unit"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Packing Unit"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/products/view-description"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Description"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/products/view-product-code"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Product Code"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/products/view-consumable"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Consumable"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/products/view-finish-goods"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Finish Goods"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/products/view-raw-materials"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Raw Materials"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/products/view-price-list"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Price List"
+                    />
+                  </ListItem>
+                </List>
+              </Collapse>
+            </>
+          )}
           {/* Leads */}
           <ListItem
             button
@@ -676,233 +680,236 @@ export const ListItems = (props) => {
             </List>
           </Collapse>
           {/* Inventory - stores  */}
-          <ListItem
-            button
-            onClick={() => setExpandInventory(!expandInventory)}
-            style={{ width: 300 }}
-          >
-            <ListItemIcon>
-              <Inventory2Icon />
-            </ListItemIcon>
-            <ListItemText primary="Inventory" />
-            {expandInventory ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-          </ListItem>
-
-          <Collapse in={expandInventory} timeout="auto" unmountOnExit>
-            <Divider />
-            <List component="div" disablePadding>
+          {userData.email.includes("devannsh@glutape.com") && (
+            <>
               <ListItem
                 button
-                component={RouterLink}
-                to="/inventory/view-vendor"
+                onClick={() => setExpandInventory(!expandInventory)}
                 style={{ width: 300 }}
               >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="Vendor"
-                />
-              </ListItem>
-              <ListItem
-                button
-                component={RouterLink}
-                to="/inventory/view-packing_list"
-                style={{ width: 300 }}
-              >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="Packing List"
-                />
-              </ListItem>
-              <ListItem
-                button
-                component={RouterLink}
-                to="/inventory/view-grn"
-                style={{ width: 300 }}
-              >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="GRN"
-                />
-              </ListItem>
-              <ListItem
-                button
-                component={RouterLink}
-                to="/inventory/view-purchase-invoice"
-                style={{ width: 300 }}
-              >
-                <ListItemText
-                  inset
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  primary="Purchase Invoice"
-                />
-              </ListItem>
-              <ListItem
-                button
-                component={RouterLink}
-                to="/inventory/view-production-entry"
-                style={{ width: 300 }}
-              >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="ProductionEntry"
-                />
-              </ListItem>
-              <ListItem
-                button
-                component={RouterLink}
-                to="/inventory/view-material-requisition-form"
-                style={{ width: 300 }}
-              >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="Material Requisition Form"
-                />
+                <ListItemIcon>
+                  <Inventory2Icon />
+                </ListItemIcon>
+                <ListItemText primary="Inventory" />
+                {expandInventory ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
 
-              <ListItem
-                button
-                component={RouterLink}
-                to="/inventory/view-stores-inventory"
-                style={{ width: 300 }}
-              >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="Stores Inventory"
-                />
-              </ListItem>
-              <ListItem
-                button
-                component={RouterLink}
-                to="/inventory/view-stores-inventory-cons"
-                style={{ width: 300 }}
-              >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="Stores Inventory (Cons)"
-                />
-              </ListItem>
-              <ListItem
-                button
-                component={RouterLink}
-                to="/inventory/view-production-inventory"
-                style={{ width: 300 }}
-              >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="Production Inventory"
-                />
-              </ListItem>
-              <ListItem
-                button
-                component={RouterLink}
-                to="/inventory/view-production-inventory-cons"
-                style={{ width: 300 }}
-              >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="Production Inventory (Cons)"
-                />
-              </ListItem>
-              <ListItem
-                button
-                component={RouterLink}
-                to="/inventory/view-bill-of-materials"
-                style={{ width: 300 }}
-              >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="Bill of Materials"
-                />
-              </ListItem>
-              <ListItem
-                button
-                component={RouterLink}
-                to="/inventory/view-material-transfer-note"
-                style={{ width: 300 }}
-              >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="Material Transfer Note"
-                />
-              </ListItem>
-              <ListItem
-                button
-                component={RouterLink}
-                to="/inventory/view-production-inventory-g&l"
-                style={{ width: 300 }}
-              >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="Production Inventory (G&L)"
-                />
-              </ListItem>
-              <ListItem
-                button
-                component={RouterLink}
-                to="/inventory/view-production-shortfall"
-                style={{ width: 300 }}
-              >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="Production ShortFall"
-                />
-              </ListItem>
-              <ListItem
-                button
-                component={RouterLink}
-                to="/inventory/view-daily-production"
-                style={{ width: 300 }}
-              >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="Daily Production Report"
-                />
-              </ListItem>
-              <ListItem
-                button
-                component={RouterLink}
-                to="/inventory/view-weekly-production"
-                style={{ width: 300 }}
-              >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="Weekly Production Report"
-                />
-              </ListItem>
-            </List>
-          </Collapse>
+              <Collapse in={expandInventory} timeout="auto" unmountOnExit>
+                <Divider />
+                <List component="div" disablePadding>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/inventory/view-vendor"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Vendor"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/inventory/view-packing_list"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Packing List"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/inventory/view-grn"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="GRN"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/inventory/view-purchase-invoice"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      inset
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      primary="Purchase Invoice"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/inventory/view-production-entry"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="ProductionEntry"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/inventory/view-material-requisition-form"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Material Requisition Form"
+                    />
+                  </ListItem>
 
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/inventory/view-stores-inventory"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Stores Inventory"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/inventory/view-stores-inventory-cons"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Stores Inventory (Cons)"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/inventory/view-production-inventory"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Production Inventory"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/inventory/view-production-inventory-cons"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Production Inventory (Cons)"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/inventory/view-bill-of-materials"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Bill of Materials"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/inventory/view-material-transfer-note"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Material Transfer Note"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/inventory/view-production-inventory-g&l"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Production Inventory (G&L)"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/inventory/view-production-shortfall"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Production ShortFall"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/inventory/view-daily-production"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Daily Production Report"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/inventory/view-weekly-production"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Weekly Production Report"
+                    />
+                  </ListItem>
+                </List>
+              </Collapse>
+            </>
+          )}
           {/* Tasks */}
           <ListItem
             button
