@@ -26,10 +26,9 @@ export function Dashboard() {
   const [currentSalesSummaryFM, setCurrentSalesSummaryFM] = useState([]);
   const [currentSalesSummaryRM, setCurrentSalesSummaryRM] = useState([]);
   const [salesPersonSummary, setSalesPersonSummary] = useState([]);
-  const [
-    dailyProfitableReportsFilterData,
-    setDailyProfitableReportsFilterData,
-  ] = useState([]);
+  const [dailyProfitableReportsData, setDailyProfitableReportsData] = useState(
+    []
+  );
   const [activeTab, setActiveTab] = useState(0);
   const [endDate, setEndDate] = useState(new Date());
   const [startDate, setStartDate] = useState(new Date()); // set default value as current date
@@ -76,6 +75,7 @@ export function Dashboard() {
 
   useEffect(() => {
     getAllDashboardDetails();
+    getDailyProfitableReports();
   }, []);
 
   useEffect(() => {
@@ -115,7 +115,8 @@ export function Dashboard() {
           StartDate,
           EndDate
         );
-      setDailyProfitableReportsFilterData(response.data);
+      setDailyProfitableReportsData(response.data);
+      console.log("response", response.data);
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -137,6 +138,18 @@ export function Dashboard() {
     } catch (err) {
       setOpen(false);
       console.log("company data by id error", err);
+    }
+  };
+
+  const getDailyProfitableReports = async () => {
+    try {
+      setOpen(true);
+      const response = await DashboardService.getDailyProfitableReportsData();
+      setDailyProfitableReportsData(response.data);
+
+      setOpen(false);
+    } catch (err) {
+      console.log("Daily Profitability Report", err);
     }
   };
 
@@ -245,9 +258,7 @@ export function Dashboard() {
           {activeTab === 7 && (
             <div>
               <DailyProfitableReports
-                dailyProfitableReportsFilterData={
-                  dailyProfitableReportsFilterData
-                }
+                dailyProfitableReportsData={dailyProfitableReportsData}
               />
             </div>
           )}
