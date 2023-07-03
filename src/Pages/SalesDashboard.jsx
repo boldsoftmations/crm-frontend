@@ -254,23 +254,6 @@ export const SalesDashboard = (props) => {
       <Grid container spacing={2}>
         <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
           <CustomChart
-            chartType="PieChart"
-            data={[
-              ["Label", "Value"],
-              ...pendingTask.map((item) => [item.label, item.value]),
-            ]}
-            options={{
-              title: "Pending Task",
-              width: "100%",
-              height: "300px",
-              pieHole: 0.4,
-            }}
-            widthStyle={"100%"}
-            heightStyle={"300px"}
-          />
-        </Grid>
-        <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
-          <CustomChart
             chartType="BarChart"
             data={[
               ["Label", "Value"],
@@ -303,9 +286,6 @@ export const SalesDashboard = (props) => {
             heightStyle={"300px"}
           />
         </Grid>
-      </Grid>
-      {/* Pending follwup and pi data pie chart */}
-      <Grid container spacing={2}>
         <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
           <div className="funnelChart" style={funnelStyle}>
             <h2 style={{ textAlign: "center", color: "#333" }}>Sales Funnel</h2>
@@ -331,6 +311,9 @@ export const SalesDashboard = (props) => {
             ))}
           </div>
         </Grid>
+      </Grid>
+      {/* Pending follwup and pi data pie chart */}
+      <Grid container spacing={2}>
         <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
           <CustomChart
             chartType="ColumnChart"
@@ -377,9 +360,6 @@ export const SalesDashboard = (props) => {
             heightStyle={"300px"}
           />
         </Grid>
-      </Grid>
-
-      <Grid container spacing={2}>
         <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
           <CustomChart
             chartType="ColumnChart"
@@ -402,6 +382,9 @@ export const SalesDashboard = (props) => {
             heightStyle={"300px"}
           />
         </Grid>
+      </Grid>
+
+      <Grid container spacing={2}>
         <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
           <CustomChart
             chartType="BarChart"
