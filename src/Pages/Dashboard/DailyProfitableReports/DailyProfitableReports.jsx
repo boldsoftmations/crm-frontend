@@ -5,7 +5,7 @@ import { Popup } from "./../../../Components/Popup";
 import { DailyProfitableSalesReport } from "./DailyProfitableSalesReport";
 
 export const DailyProfitableReports = (props) => {
-  const { dailyProfitableReportsData } = props;
+  const { dailyProfitableReportsFilterData } = props;
   const [idForEdit, setIdForEdit] = useState(null);
   const [openPopup, setOpenPopup] = useState(false);
 
@@ -23,7 +23,7 @@ export const DailyProfitableReports = (props) => {
     "Action",
   ];
 
-  const Tabledata = dailyProfitableReportsData.map((row, i) => ({
+  const Tabledata = dailyProfitableReportsFilterData.map((row, i) => ({
     date_range_before: row.date_range_before,
     date_range_after: row.date_range_after,
     unit: row.sales_invoice__order_book__proforma_invoice__seller_account__unit,
