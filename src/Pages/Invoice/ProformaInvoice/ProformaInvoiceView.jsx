@@ -373,7 +373,7 @@ export const ProformaInvoiceView = (props) => {
                         style={{ borderBottom: "1px Solid #000000" }}
                       >
                         <p className="text-center fs-6 fw-bold p-0 m-0">
-                          Proforma Invoice
+                          Proforma Tax Invoice
                         </p>
                       </div>
                     </div>
@@ -907,7 +907,17 @@ export const ProformaInvoiceView = (props) => {
             {/* <!-- END INVOICE --> */}
           </div>
         </div>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            textAlign: "center",
+          }}
+        >
+          This is computer generated Proforma Invoice
+        </div>
       </div>
+
       <Popup
         maxWidth={"md"}
         title={"Customer Confirmation of payment detail"}

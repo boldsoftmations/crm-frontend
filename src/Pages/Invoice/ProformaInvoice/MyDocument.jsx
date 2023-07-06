@@ -67,7 +67,7 @@ export const MyDocument = (props) => {
                 }}
               >
                 <Text style={{ fontWeight: "bold", fontSize: 12 }}>
-                  Proforma Invoice
+                  Proforma Tax Invoice
                 </Text>
               </View>
             </View>
@@ -803,6 +803,16 @@ export const MyDocument = (props) => {
             </View>
           </View>
         </View>
+        <Text
+          style={{
+            ...style.lightText,
+            display: "flex",
+            justifyContent: "center",
+            textAlign: "center",
+          }}
+        >
+          This is computer generated Proforma Invoice
+        </Text>
       </Page>
     </Document>
   );
