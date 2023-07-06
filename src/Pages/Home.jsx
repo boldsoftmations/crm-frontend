@@ -1104,7 +1104,7 @@ export const Home = () => {
     <>
       <CustomLoader open={open} />
       {/* filter by sales person */}
-      {userData.is_staff === true && (
+      {userData.is_staff === true ? (
         <StaffDashboard
           barChartData={barChartData}
           pieChartData={pieChartData}
@@ -1141,8 +1141,7 @@ export const Home = () => {
           maxDate={maxDate}
           getReset={getReset}
         />
-      )}
-      {userData.groups.includes("Sales") && userData.is_staff !== true && (
+      ) : (
         <SalesDashboard
           barChartData={barChartData}
           pieChartData={pieChartData}

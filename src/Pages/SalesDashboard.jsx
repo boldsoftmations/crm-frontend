@@ -8,9 +8,12 @@ import {
   Autocomplete,
   TextField,
   Button,
+  FormControlLabel,
+  Switch,
 } from "@mui/material";
 import PropTypes from "prop-types";
 import { CustomChart } from "../Components/CustomChart";
+import { useSelector } from "react-redux";
 
 export const SalesDashboard = (props) => {
   const {
@@ -43,7 +46,8 @@ export const SalesDashboard = (props) => {
     maxDate,
     getReset,
   } = props;
-
+  const userData = useSelector((state) => state.auth.profile);
+  const [privacy] = useState(!userData.groups.includes("Sales"));
   const [dIQdata, setDIQData] = useState();
   const [dOBQdata, setDOBQData] = useState();
   const descriptionOptionsForInvoice = dailyInvoiceQuantity.flatMap((entry) =>
@@ -134,408 +138,855 @@ export const SalesDashboard = (props) => {
         padding: "20px",
       }}
     >
-      {/* Customer Stats */}
-      <Grid
-        container
-        spacing={{ xs: 2, md: 3 }}
-        columns={{ xs: 4, sm: 8, md: 12 }}
-      >
-        {pieChartData.map((data, index) => {
-          let percentage = 0;
-          if (total !== 0) {
-            percentage = (data.value / total) * 100;
-          }
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+          <FormControlLabel
+            control={<Switch checked={privacy} disabled />}
+            label="Privacy"
+          />
+        </Grid>
+      </Grid>
+      {privacy ? (
+        <div style={{ filter: "blur(4px)" }}>
+          {/* Customer Stats */}
+          <Grid
+            container
+            spacing={{ xs: 2, md: 3 }}
+            columns={{ xs: 4, sm: 8, md: 12 }}
+          >
+            {pieChartData.map((data, index) => {
+              let percentage = 0;
+              if (total !== 0) {
+                percentage = (data.value / total) * 100;
+              }
 
-          return (
+              return (
+                <Grid
+                  item
+                  xs={1}
+                  sm={2}
+                  md={3}
+                  lg={3}
+                  key={index}
+                  sx={{ marginTop: "20px" }}
+                >
+                  <Box
+                    sx={{
+                      backgroundColor: COLORS[index % COLORS.length],
+                      textAlign: "center",
+                    }}
+                  >
+                    <Box
+                      display="flex"
+                      flexDirection="row"
+                      justifyContent="space-around"
+                    >
+                      <Box sx={{ marginTop: "10px" }}>
+                        <CircularProgressWithLabel
+                          variant="determinate"
+                          value={percentage}
+                          // sx={{ backgroundColor: "#ccc" }}
+                        />
+                      </Box>
+                      <Box sx={{ marginTop: "10px" }}>
+                        <Typography
+                          variant="subtitle1"
+                          sx={{ color: "white", fontWeight: "bold" }}
+                        >
+                          {data.label}
+                        </Typography>
+                        <Typography
+                          variant="h6"
+                          sx={{ color: "white", fontWeight: "bold" }}
+                        >
+                          {data.value}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </Box>
+                </Grid>
+              );
+            })}
+          </Grid>
+          {/* actual vs forecast and new customer bar chart */}
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+              <CustomChart
+                chartType="ColumnChart"
+                data={[
+                  ["Combination", "Actual", "Forecast"],
+                  ...barChartData.map((item) => [
+                    item.combination,
+                    Number(item.actual),
+                    Number(item.forecast),
+                  ]),
+                ]}
+                options={{
+                  title: "Actual vs Forecast (Quantity)",
+                  width: "100%",
+                  height: "300px",
+                }}
+                widthStyle="100%"
+                heightStyle="300px"
+              />
+            </Grid>
+            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+              <CustomChart
+                chartType="LineChart"
+                data={[
+                  ["Combination", "Count"],
+                  ...newCustomerData.map((item) => [
+                    item.combination,
+                    item.count,
+                  ]),
+                ]}
+                options={{
+                  title: "New Customer",
+                  width: "100%",
+                  height: "300px",
+                }}
+                widthStyle={"100%"}
+                heightStyle={"300px"}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+              <CustomChart
+                chartType="PieChart"
+                data={[
+                  ["Label", "Value"],
+                  ...pendingTask.map((item) => [item.label, item.value]),
+                ]}
+                options={{
+                  title: "Pending Task",
+                  width: "100%",
+                  height: "300px",
+                  pieHole: 0.4,
+                }}
+                widthStyle={"100%"}
+                heightStyle={"300px"}
+              />
+            </Grid>
+          </Grid>
+          {/* pod vs lr bar chart and Task pie chart   */}
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+              <CustomChart
+                chartType="BarChart"
+                data={[
+                  ["Label", "Value"],
+                  ...pendingFollowup.map((item) => [item.label, item.value]),
+                ]}
+                options={{
+                  title: "Pending Follow-Up",
+                  width: "100%",
+                  height: "300px",
+                  legend: { position: "none" },
+                }}
+                widthStyle={"100%"}
+                heightStyle={"300px"}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+              <CustomChart
+                chartType={"PieChart"}
+                data={[
+                  ["Label", "Value"],
+                  ...piData.map((item) => [item.label, item.value]),
+                ]}
+                options={{
+                  title: "PI Data",
+                  width: "100%",
+                  height: "300px",
+                  pieHole: 0.4,
+                }}
+                widthStyle={"100%"}
+                heightStyle={"300px"}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+              <div className="funnelChart" style={funnelStyle}>
+                <h2 style={{ textAlign: "center", color: "#333" }}>
+                  Sales Funnel
+                </h2>
+                {funnelData.map((data, index) => (
+                  <div
+                    key={index}
+                    className="chartSegment"
+                    style={{
+                      backgroundColor:
+                        paletteColors[index % paletteColors.length],
+                      opacity: hoveredSegment === data ? 0.7 : 1,
+                    }}
+                    onMouseEnter={() => handleSegmentHover(data)}
+                    // onMouseLeave={handleSegmentLeave}
+                    onClick={() => handleRowClick(data)}
+                  >
+                    <div
+                    // className="segmentTitle"
+                    >
+                      <span style={textStyle}>{data.label}</span>&nbsp;
+                      <span style={textStyle}>{data.value}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Grid>
+          </Grid>
+          {/* Pending follwup and pi data pie chart */}
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+              <CustomChart
+                chartType="ColumnChart"
+                data={[
+                  ["Month", "Existing Lead", "New Lead", "Customer"],
+                  ...monthlyStatus.map((item) => [
+                    item.combination,
+                    item.existing_lead,
+                    item.new_lead,
+                    item.customer,
+                  ]),
+                ]}
+                options={{
+                  title: "Monthly Call Status",
+                  width: "100%",
+                  height: "400px",
+                  isStacked: true,
+                  legend: { position: "top" },
+                }}
+                widthStyle={"100%"}
+                heightStyle={"300px"}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+              <CustomChart
+                chartType="LineChart"
+                data={[
+                  ["Week", "Existing Lead", "New Lead", "Customer"],
+                  ...weeklyStatus.map((item) => [
+                    item.combination,
+                    item.existing_lead,
+                    item.new_lead,
+                    item.customer,
+                  ]),
+                ]}
+                options={{
+                  title: "Weekly Call Status",
+                  width: "100%",
+                  height: "400px",
+                  curveType: "function",
+                  legend: { position: "top" },
+                }}
+                widthStyle={"100%"}
+                heightStyle={"300px"}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+              <CustomChart
+                chartType="ColumnChart"
+                data={[
+                  ["Day", "Existing Lead", "New Lead", "Customer"],
+                  ...dailyStatus.map((item) => [
+                    item.combination,
+                    item.existing_lead,
+                    item.new_lead,
+                    item.customer,
+                  ]),
+                ]}
+                options={{
+                  title: "Daily Call Status",
+                  width: "100%",
+                  height: "400px",
+                  legend: { position: "top" },
+                }}
+                widthStyle={"100%"}
+                heightStyle={"300px"}
+              />
+            </Grid>
+          </Grid>
+
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+              <CustomChart
+                chartType="BarChart"
+                data={[
+                  ["Product Description", "Pending Quantity"],
+                  ...pendingDescription.map((item) => [item.name, item.value]),
+                ]}
+                options={{
+                  title: "Pending Quantity by Description",
+                  width: "100%",
+                  height: "400px",
+                  legend: { position: "none" },
+                }}
+                widthStyle={"100%"}
+                heightStyle={"300px"}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+              <CustomChart
+                chartType="PieChart"
+                data={[
+                  ["Product Description", "Quantity"],
+                  ...descriptionQuantity.map((item) => [item.name, item.value]),
+                ]}
+                options={{
+                  title: "Description Wise Sales Quantity",
+                  width: "100%",
+                  height: "400px",
+                }}
+                widthStyle={"100%"}
+                heightStyle={"300px"}
+              />
+            </Grid>
+          </Grid>
+
+          <Grid container spacing={2}>
             <Grid
               item
-              xs={1}
-              sm={2}
-              md={3}
-              lg={3}
-              key={index}
+              xs={12}
+              sm={12}
+              md={12}
+              lg={12}
               sx={{ marginTop: "20px" }}
             >
-              <Box
-                sx={{
-                  backgroundColor: COLORS[index % COLORS.length],
-                  textAlign: "center",
-                }}
-              >
-                <Box
-                  display="flex"
-                  flexDirection="row"
-                  justifyContent="space-around"
-                >
-                  <Box sx={{ marginTop: "10px" }}>
-                    <CircularProgressWithLabel
-                      variant="determinate"
-                      value={percentage}
-                      // sx={{ backgroundColor: "#ccc" }}
-                    />
-                  </Box>
-                  <Box sx={{ marginTop: "10px" }}>
-                    <Typography
-                      variant="subtitle1"
-                      sx={{ color: "white", fontWeight: "bold" }}
-                    >
-                      {data.label}
-                    </Typography>
-                    <Typography
-                      variant="h6"
-                      sx={{ color: "white", fontWeight: "bold" }}
-                    >
-                      {data.value}
-                    </Typography>
-                  </Box>
-                </Box>
-              </Box>
-            </Grid>
-          );
-        })}
-      </Grid>
-      {/* actual vs forecast and new customer bar chart */}
-      <Grid container spacing={2}>
-        <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
-          <CustomChart
-            chartType="ColumnChart"
-            data={[
-              ["Combination", "Actual", "Forecast"],
-              ...barChartData.map((item) => [
-                item.combination,
-                Number(item.actual),
-                Number(item.forecast),
-              ]),
-            ]}
-            options={{
-              title: "Actual vs Forecast (Quantity)",
-              width: "100%",
-              height: "300px",
-            }}
-            widthStyle="100%"
-            heightStyle="300px"
-          />
-        </Grid>
-        <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
-          <CustomChart
-            chartType="LineChart"
-            data={[
-              ["Combination", "Count"],
-              ...newCustomerData.map((item) => [item.combination, item.count]),
-            ]}
-            options={{
-              title: "New Customer",
-              width: "100%",
-              height: "300px",
-            }}
-            widthStyle={"100%"}
-            heightStyle={"300px"}
-          />
-        </Grid>
-        <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
-          <CustomChart
-            chartType="PieChart"
-            data={[
-              ["Label", "Value"],
-              ...pendingTask.map((item) => [item.label, item.value]),
-            ]}
-            options={{
-              title: "Pending Task",
-              width: "100%",
-              height: "300px",
-              pieHole: 0.4,
-            }}
-            widthStyle={"100%"}
-            heightStyle={"300px"}
-          />
-        </Grid>
-      </Grid>
-      {/* pod vs lr bar chart and Task pie chart   */}
-      <Grid container spacing={2}>
-        <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
-          <CustomChart
-            chartType="BarChart"
-            data={[
-              ["Label", "Value"],
-              ...pendingFollowup.map((item) => [item.label, item.value]),
-            ]}
-            options={{
-              title: "Pending Follow-Up",
-              width: "100%",
-              height: "300px",
-              legend: { position: "none" },
-            }}
-            widthStyle={"100%"}
-            heightStyle={"300px"}
-          />
-        </Grid>
-        <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
-          <CustomChart
-            chartType={"PieChart"}
-            data={[
-              ["Label", "Value"],
-              ...piData.map((item) => [item.label, item.value]),
-            ]}
-            options={{
-              title: "PI Data",
-              width: "100%",
-              height: "300px",
-              pieHole: 0.4,
-            }}
-            widthStyle={"100%"}
-            heightStyle={"300px"}
-          />
-        </Grid>
-        <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
-          <div className="funnelChart" style={funnelStyle}>
-            <h2 style={{ textAlign: "center", color: "#333" }}>Sales Funnel</h2>
-            {funnelData.map((data, index) => (
-              <div
-                key={index}
-                className="chartSegment"
-                style={{
-                  backgroundColor: paletteColors[index % paletteColors.length],
-                  opacity: hoveredSegment === data ? 0.7 : 1,
-                }}
-                onMouseEnter={() => handleSegmentHover(data)}
-                // onMouseLeave={handleSegmentLeave}
-                onClick={() => handleRowClick(data)}
-              >
-                <div
-                // className="segmentTitle"
-                >
-                  <span style={textStyle}>{data.label}</span>&nbsp;
-                  <span style={textStyle}>{data.value}</span>
-                </div>
+              <div>
+                <TextField
+                  width="100%"
+                  sx={{ marginRight: "10px" }}
+                  label="Start Date"
+                  variant="outlined"
+                  size="small"
+                  type="date"
+                  id="start-date"
+                  value={startDate ? startDate.toISOString().split("T")[0] : ""}
+                  min={minDate}
+                  max={maxDate}
+                  onChange={handleStartDateChange}
+                />
+                <TextField
+                  width="100%"
+                  sx={{ marginRight: "10px" }}
+                  label="End Date"
+                  variant="outlined"
+                  size="small"
+                  type="date"
+                  id="end-date"
+                  value={endDate ? endDate.toISOString().split("T")[0] : ""}
+                  min={
+                    startDate ? startDate.toISOString().split("T")[0] : minDate
+                  }
+                  max={maxDate}
+                  onChange={handleEndDateChange}
+                  disabled={!startDate}
+                />
+                <Button variant="contained" color="primary" onClick={getReset}>
+                  Reset
+                </Button>
               </div>
-            ))}
-          </div>
-        </Grid>
-      </Grid>
-      {/* Pending follwup and pi data pie chart */}
-      <Grid container spacing={2}>
-        <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
-          <CustomChart
-            chartType="ColumnChart"
-            data={[
-              ["Month", "Existing Lead", "New Lead", "Customer"],
-              ...monthlyStatus.map((item) => [
-                item.combination,
-                item.existing_lead,
-                item.new_lead,
-                item.customer,
-              ]),
-            ]}
-            options={{
-              title: "Monthly Call Status",
-              width: "100%",
-              height: "400px",
-              isStacked: true,
-              legend: { position: "top" },
-            }}
-            widthStyle={"100%"}
-            heightStyle={"300px"}
-          />
-        </Grid>
-        <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
-          <CustomChart
-            chartType="LineChart"
-            data={[
-              ["Week", "Existing Lead", "New Lead", "Customer"],
-              ...weeklyStatus.map((item) => [
-                item.combination,
-                item.existing_lead,
-                item.new_lead,
-                item.customer,
-              ]),
-            ]}
-            options={{
-              title: "Weekly Call Status",
-              width: "100%",
-              height: "400px",
-              curveType: "function",
-              legend: { position: "top" },
-            }}
-            widthStyle={"100%"}
-            heightStyle={"300px"}
-          />
-        </Grid>
-        <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
-          <CustomChart
-            chartType="ColumnChart"
-            data={[
-              ["Day", "Existing Lead", "New Lead", "Customer"],
-              ...dailyStatus.map((item) => [
-                item.combination,
-                item.existing_lead,
-                item.new_lead,
-                item.customer,
-              ]),
-            ]}
-            options={{
-              title: "Daily Call Status",
-              width: "100%",
-              height: "400px",
-              legend: { position: "top" },
-            }}
-            widthStyle={"100%"}
-            heightStyle={"300px"}
-          />
-        </Grid>
-      </Grid>
+              <CustomChart
+                chartType="BarChart"
+                data={[
+                  ["Call Category", "Value"],
+                  ...callPerformance.map((item) => [item.name, item.value]),
+                ]}
+                options={{
+                  title: "Call Performance",
+                  width: "100%",
+                  height: "400px",
+                }}
+                widthStyle={"100%"}
+                heightStyle={"300px"}
+              />
+            </Grid>
+          </Grid>
 
-      <Grid container spacing={2}>
-        <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
-          <CustomChart
-            chartType="BarChart"
-            data={[
-              ["Product Description", "Pending Quantity"],
-              ...pendingDescription.map((item) => [item.name, item.value]),
-            ]}
-            options={{
-              title: "Pending Quantity by Description",
-              width: "100%",
-              height: "400px",
-              legend: { position: "none" },
-            }}
-            widthStyle={"100%"}
-            heightStyle={"300px"}
-          />
-        </Grid>
-        <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
-          <CustomChart
-            chartType="PieChart"
-            data={[
-              ["Product Description", "Quantity"],
-              ...descriptionQuantity.map((item) => [item.name, item.value]),
-            ]}
-            options={{
-              title: "Description Wise Sales Quantity",
-              width: "100%",
-              height: "400px",
-            }}
-            widthStyle={"100%"}
-            heightStyle={"300px"}
-          />
-        </Grid>
-      </Grid>
+          {/* Daily Sales Invoice Quantity */}
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={12} md={6} lg={6} sx={{ marginTop: "20px" }}>
+              <Autocomplete
+                sx={{}}
+                size="small"
+                onChange={(event, value) => handleDataForInvoice(value)}
+                options={descriptionOptionsForInvoice.map((option) => option)}
+                getOptionLabel={(option) => option}
+                renderInput={(params) => (
+                  <TextField {...params} label="Filter By Description" />
+                )}
+              />
+              <CustomChart
+                chartType="LineChart"
+                data={[
+                  ["Date", "Total"],
+                  ...((dIQdata &&
+                    dIQdata.map((entry) => [
+                      entry.sales_invoice__generation_date,
+                      entry.total,
+                    ])) ||
+                    []),
+                ]}
+                options={{
+                  title: "Daily Sales Invoice Quantity",
+                  width: "100%",
+                  height: "400px",
+                }}
+                widthStyle={"100%"}
+                heightStyle={"300px"}
+              />
+            </Grid>
+            <Grid item xs={12} sm={12} md={6} lg={6} sx={{ marginTop: "20px" }}>
+              <Autocomplete
+                sx={{}}
+                size="small"
+                onChange={(event, value) => handleDataForOrderBook(value)}
+                options={descriptionOptionsForOrderBook.map((option) => option)}
+                getOptionLabel={(option) => option}
+                renderInput={(params) => (
+                  <TextField {...params} label="Filter By Description" />
+                )}
+              />
+              <CustomChart
+                chartType="LineChart"
+                data={[
+                  ["Date", "Total"],
+                  ...((dOBQdata &&
+                    dOBQdata.map((entry) => [
+                      entry.orderbook__proforma_invoice__generation_date,
+                      entry.total,
+                    ])) ||
+                    []),
+                ]}
+                options={{
+                  title: "Daily Sales OrderBook Quantity",
+                  width: "100%",
+                  height: "400px",
+                }}
+                widthStyle={"100%"}
+                heightStyle={"300px"}
+              />
+            </Grid>
+          </Grid>
+        </div>
+      ) : (
+        <div>
+          {/* Customer Stats */}
+          <Grid
+            container
+            spacing={{ xs: 2, md: 3 }}
+            columns={{ xs: 4, sm: 8, md: 12 }}
+          >
+            {pieChartData.map((data, index) => {
+              let percentage = 0;
+              if (total !== 0) {
+                percentage = (data.value / total) * 100;
+              }
 
-      <Grid container spacing={2}>
-        <Grid item xs={12} sm={12} md={12} lg={12} sx={{ marginTop: "20px" }}>
-          <div>
-            <TextField
-              width="100%"
-              sx={{ marginRight: "10px" }}
-              label="Start Date"
-              variant="outlined"
-              size="small"
-              type="date"
-              id="start-date"
-              value={startDate ? startDate.toISOString().split("T")[0] : ""}
-              min={minDate}
-              max={maxDate}
-              onChange={handleStartDateChange}
-            />
-            <TextField
-              width="100%"
-              sx={{ marginRight: "10px" }}
-              label="End Date"
-              variant="outlined"
-              size="small"
-              type="date"
-              id="end-date"
-              value={endDate ? endDate.toISOString().split("T")[0] : ""}
-              min={startDate ? startDate.toISOString().split("T")[0] : minDate}
-              max={maxDate}
-              onChange={handleEndDateChange}
-              disabled={!startDate}
-            />
-            <Button variant="contained" color="primary" onClick={getReset}>
-              Reset
-            </Button>
-          </div>
-          <CustomChart
-            chartType="BarChart"
-            data={[
-              ["Call Category", "Value"],
-              ...callPerformance.map((item) => [item.name, item.value]),
-            ]}
-            options={{
-              title: "Call Performance",
-              width: "100%",
-              height: "400px",
-            }}
-            widthStyle={"100%"}
-            heightStyle={"300px"}
-          />
-        </Grid>
-      </Grid>
+              return (
+                <Grid
+                  item
+                  xs={1}
+                  sm={2}
+                  md={3}
+                  lg={3}
+                  key={index}
+                  sx={{ marginTop: "20px" }}
+                >
+                  <Box
+                    sx={{
+                      backgroundColor: COLORS[index % COLORS.length],
+                      textAlign: "center",
+                    }}
+                  >
+                    <Box
+                      display="flex"
+                      flexDirection="row"
+                      justifyContent="space-around"
+                    >
+                      <Box sx={{ marginTop: "10px" }}>
+                        <CircularProgressWithLabel
+                          variant="determinate"
+                          value={percentage}
+                          // sx={{ backgroundColor: "#ccc" }}
+                        />
+                      </Box>
+                      <Box sx={{ marginTop: "10px" }}>
+                        <Typography
+                          variant="subtitle1"
+                          sx={{ color: "white", fontWeight: "bold" }}
+                        >
+                          {data.label}
+                        </Typography>
+                        <Typography
+                          variant="h6"
+                          sx={{ color: "white", fontWeight: "bold" }}
+                        >
+                          {data.value}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </Box>
+                </Grid>
+              );
+            })}
+          </Grid>
+          {/* actual vs forecast and new customer bar chart */}
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+              <CustomChart
+                chartType="ColumnChart"
+                data={[
+                  ["Combination", "Actual", "Forecast"],
+                  ...barChartData.map((item) => [
+                    item.combination,
+                    Number(item.actual),
+                    Number(item.forecast),
+                  ]),
+                ]}
+                options={{
+                  title: "Actual vs Forecast (Quantity)",
+                  width: "100%",
+                  height: "300px",
+                }}
+                widthStyle="100%"
+                heightStyle="300px"
+              />
+            </Grid>
+            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+              <CustomChart
+                chartType="LineChart"
+                data={[
+                  ["Combination", "Count"],
+                  ...newCustomerData.map((item) => [
+                    item.combination,
+                    item.count,
+                  ]),
+                ]}
+                options={{
+                  title: "New Customer",
+                  width: "100%",
+                  height: "300px",
+                }}
+                widthStyle={"100%"}
+                heightStyle={"300px"}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+              <CustomChart
+                chartType="PieChart"
+                data={[
+                  ["Label", "Value"],
+                  ...pendingTask.map((item) => [item.label, item.value]),
+                ]}
+                options={{
+                  title: "Pending Task",
+                  width: "100%",
+                  height: "300px",
+                  pieHole: 0.4,
+                }}
+                widthStyle={"100%"}
+                heightStyle={"300px"}
+              />
+            </Grid>
+          </Grid>
+          {/* pod vs lr bar chart and Task pie chart   */}
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+              <CustomChart
+                chartType="BarChart"
+                data={[
+                  ["Label", "Value"],
+                  ...pendingFollowup.map((item) => [item.label, item.value]),
+                ]}
+                options={{
+                  title: "Pending Follow-Up",
+                  width: "100%",
+                  height: "300px",
+                  legend: { position: "none" },
+                }}
+                widthStyle={"100%"}
+                heightStyle={"300px"}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+              <CustomChart
+                chartType={"PieChart"}
+                data={[
+                  ["Label", "Value"],
+                  ...piData.map((item) => [item.label, item.value]),
+                ]}
+                options={{
+                  title: "PI Data",
+                  width: "100%",
+                  height: "300px",
+                  pieHole: 0.4,
+                }}
+                widthStyle={"100%"}
+                heightStyle={"300px"}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+              <div className="funnelChart" style={funnelStyle}>
+                <h2 style={{ textAlign: "center", color: "#333" }}>
+                  Sales Funnel
+                </h2>
+                {funnelData.map((data, index) => (
+                  <div
+                    key={index}
+                    className="chartSegment"
+                    style={{
+                      backgroundColor:
+                        paletteColors[index % paletteColors.length],
+                      opacity: hoveredSegment === data ? 0.7 : 1,
+                    }}
+                    onMouseEnter={() => handleSegmentHover(data)}
+                    // onMouseLeave={handleSegmentLeave}
+                    onClick={() => handleRowClick(data)}
+                  >
+                    <div
+                    // className="segmentTitle"
+                    >
+                      <span style={textStyle}>{data.label}</span>&nbsp;
+                      <span style={textStyle}>{data.value}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Grid>
+          </Grid>
+          {/* Pending follwup and pi data pie chart */}
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+              <CustomChart
+                chartType="ColumnChart"
+                data={[
+                  ["Month", "Existing Lead", "New Lead", "Customer"],
+                  ...monthlyStatus.map((item) => [
+                    item.combination,
+                    item.existing_lead,
+                    item.new_lead,
+                    item.customer,
+                  ]),
+                ]}
+                options={{
+                  title: "Monthly Call Status",
+                  width: "100%",
+                  height: "400px",
+                  isStacked: true,
+                  legend: { position: "top" },
+                }}
+                widthStyle={"100%"}
+                heightStyle={"300px"}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+              <CustomChart
+                chartType="LineChart"
+                data={[
+                  ["Week", "Existing Lead", "New Lead", "Customer"],
+                  ...weeklyStatus.map((item) => [
+                    item.combination,
+                    item.existing_lead,
+                    item.new_lead,
+                    item.customer,
+                  ]),
+                ]}
+                options={{
+                  title: "Weekly Call Status",
+                  width: "100%",
+                  height: "400px",
+                  curveType: "function",
+                  legend: { position: "top" },
+                }}
+                widthStyle={"100%"}
+                heightStyle={"300px"}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+              <CustomChart
+                chartType="ColumnChart"
+                data={[
+                  ["Day", "Existing Lead", "New Lead", "Customer"],
+                  ...dailyStatus.map((item) => [
+                    item.combination,
+                    item.existing_lead,
+                    item.new_lead,
+                    item.customer,
+                  ]),
+                ]}
+                options={{
+                  title: "Daily Call Status",
+                  width: "100%",
+                  height: "400px",
+                  legend: { position: "top" },
+                }}
+                widthStyle={"100%"}
+                heightStyle={"300px"}
+              />
+            </Grid>
+          </Grid>
 
-      {/* Daily Sales Invoice Quantity */}
-      <Grid container spacing={2}>
-        <Grid item xs={12} sm={12} md={6} lg={6} sx={{ marginTop: "20px" }}>
-          <Autocomplete
-            sx={{}}
-            size="small"
-            onChange={(event, value) => handleDataForInvoice(value)}
-            options={descriptionOptionsForInvoice.map((option) => option)}
-            getOptionLabel={(option) => option}
-            renderInput={(params) => (
-              <TextField {...params} label="Filter By Description" />
-            )}
-          />
-          <CustomChart
-            chartType="LineChart"
-            data={[
-              ["Date", "Total"],
-              ...((dIQdata &&
-                dIQdata.map((entry) => [
-                  entry.sales_invoice__generation_date,
-                  entry.total,
-                ])) ||
-                []),
-            ]}
-            options={{
-              title: "Daily Sales Invoice Quantity",
-              width: "100%",
-              height: "400px",
-            }}
-            widthStyle={"100%"}
-            heightStyle={"300px"}
-          />
-        </Grid>
-        <Grid item xs={12} sm={12} md={6} lg={6} sx={{ marginTop: "20px" }}>
-          <Autocomplete
-            sx={{}}
-            size="small"
-            onChange={(event, value) => handleDataForOrderBook(value)}
-            options={descriptionOptionsForOrderBook.map((option) => option)}
-            getOptionLabel={(option) => option}
-            renderInput={(params) => (
-              <TextField {...params} label="Filter By Description" />
-            )}
-          />
-          <CustomChart
-            chartType="LineChart"
-            data={[
-              ["Date", "Total"],
-              ...((dOBQdata &&
-                dOBQdata.map((entry) => [
-                  entry.orderbook__proforma_invoice__generation_date,
-                  entry.total,
-                ])) ||
-                []),
-            ]}
-            options={{
-              title: "Daily Sales OrderBook Quantity",
-              width: "100%",
-              height: "400px",
-            }}
-            widthStyle={"100%"}
-            heightStyle={"300px"}
-          />
-        </Grid>
-      </Grid>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+              <CustomChart
+                chartType="BarChart"
+                data={[
+                  ["Product Description", "Pending Quantity"],
+                  ...pendingDescription.map((item) => [item.name, item.value]),
+                ]}
+                options={{
+                  title: "Pending Quantity by Description",
+                  width: "100%",
+                  height: "400px",
+                  legend: { position: "none" },
+                }}
+                widthStyle={"100%"}
+                heightStyle={"300px"}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+              <CustomChart
+                chartType="PieChart"
+                data={[
+                  ["Product Description", "Quantity"],
+                  ...descriptionQuantity.map((item) => [item.name, item.value]),
+                ]}
+                options={{
+                  title: "Description Wise Sales Quantity",
+                  width: "100%",
+                  height: "400px",
+                }}
+                widthStyle={"100%"}
+                heightStyle={"300px"}
+              />
+            </Grid>
+          </Grid>
+
+          <Grid container spacing={2}>
+            <Grid
+              item
+              xs={12}
+              sm={12}
+              md={12}
+              lg={12}
+              sx={{ marginTop: "20px" }}
+            >
+              <div>
+                <TextField
+                  width="100%"
+                  sx={{ marginRight: "10px" }}
+                  label="Start Date"
+                  variant="outlined"
+                  size="small"
+                  type="date"
+                  id="start-date"
+                  value={startDate ? startDate.toISOString().split("T")[0] : ""}
+                  min={minDate}
+                  max={maxDate}
+                  onChange={handleStartDateChange}
+                />
+                <TextField
+                  width="100%"
+                  sx={{ marginRight: "10px" }}
+                  label="End Date"
+                  variant="outlined"
+                  size="small"
+                  type="date"
+                  id="end-date"
+                  value={endDate ? endDate.toISOString().split("T")[0] : ""}
+                  min={
+                    startDate ? startDate.toISOString().split("T")[0] : minDate
+                  }
+                  max={maxDate}
+                  onChange={handleEndDateChange}
+                  disabled={!startDate}
+                />
+                <Button variant="contained" color="primary" onClick={getReset}>
+                  Reset
+                </Button>
+              </div>
+              <CustomChart
+                chartType="BarChart"
+                data={[
+                  ["Call Category", "Value"],
+                  ...callPerformance.map((item) => [item.name, item.value]),
+                ]}
+                options={{
+                  title: "Call Performance",
+                  width: "100%",
+                  height: "400px",
+                }}
+                widthStyle={"100%"}
+                heightStyle={"300px"}
+              />
+            </Grid>
+          </Grid>
+
+          {/* Daily Sales Invoice Quantity */}
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={12} md={6} lg={6} sx={{ marginTop: "20px" }}>
+              <Autocomplete
+                sx={{}}
+                size="small"
+                onChange={(event, value) => handleDataForInvoice(value)}
+                options={descriptionOptionsForInvoice.map((option) => option)}
+                getOptionLabel={(option) => option}
+                renderInput={(params) => (
+                  <TextField {...params} label="Filter By Description" />
+                )}
+              />
+              <CustomChart
+                chartType="LineChart"
+                data={[
+                  ["Date", "Total"],
+                  ...((dIQdata &&
+                    dIQdata.map((entry) => [
+                      entry.sales_invoice__generation_date,
+                      entry.total,
+                    ])) ||
+                    []),
+                ]}
+                options={{
+                  title: "Daily Sales Invoice Quantity",
+                  width: "100%",
+                  height: "400px",
+                }}
+                widthStyle={"100%"}
+                heightStyle={"300px"}
+              />
+            </Grid>
+            <Grid item xs={12} sm={12} md={6} lg={6} sx={{ marginTop: "20px" }}>
+              <Autocomplete
+                sx={{}}
+                size="small"
+                onChange={(event, value) => handleDataForOrderBook(value)}
+                options={descriptionOptionsForOrderBook.map((option) => option)}
+                getOptionLabel={(option) => option}
+                renderInput={(params) => (
+                  <TextField {...params} label="Filter By Description" />
+                )}
+              />
+              <CustomChart
+                chartType="LineChart"
+                data={[
+                  ["Date", "Total"],
+                  ...((dOBQdata &&
+                    dOBQdata.map((entry) => [
+                      entry.orderbook__proforma_invoice__generation_date,
+                      entry.total,
+                    ])) ||
+                    []),
+                ]}
+                options={{
+                  title: "Daily Sales OrderBook Quantity",
+                  width: "100%",
+                  height: "400px",
+                }}
+                widthStyle={"100%"}
+                heightStyle={"300px"}
+              />
+            </Grid>
+          </Grid>
+        </div>
+      )}
     </Box>
   );
 };
