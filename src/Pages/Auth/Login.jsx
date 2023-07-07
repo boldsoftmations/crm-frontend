@@ -148,65 +148,61 @@ export const Login = () => {
     <ThemeProvider theme={theme}>
       <CustomLoader open={open} />
       <Grid>
-        <Paper style={paperStyle}>
-          <Grid align="center">
-            <Avatar style={avatarStyle}>
-              <LockOutlinedIcon />
-            </Avatar>
-            <h2>Sign In</h2>
-          </Grid>
-          <Box
-            // className="Auth-form-content"
-            onSubmit={handleSubmit}
-            component="form"
-            noValidate
-          >
-            <ErrorMessage errMsg={errMsg} errRef={errRef} />
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  name="email"
-                  size="small"
-                  label="Email"
-                  variant="outlined"
-                  ref={userRef}
-                  autoComplete="off"
-                  onChange={handleChange("email")}
-                  value={user.email}
-                  required
+        {/* <Paper style={paperStyle}> */}
+        <Grid align="center">
+          <Avatar style={avatarStyle}>
+            <LockOutlinedIcon />
+          </Avatar>
+          <h2>Sign In</h2>
+        </Grid>
+        <Box
+          // className="Auth-form-content"
+          onSubmit={handleSubmit}
+          component="form"
+          noValidate
+        >
+          <ErrorMessage errMsg={errMsg} errRef={errRef} />
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                name="email"
+                size="small"
+                label="Email"
+                variant="outlined"
+                ref={userRef}
+                autoComplete="off"
+                onChange={handleChange("email")}
+                value={user.email}
+                required
+              />
+            </Grid>
+            <Grid rowSpacing={0.5} item xs={12}>
+              <FormControl variant="outlined" size="small" fullWidth>
+                <InputLabel htmlFor="outlined-adornment-password">
+                  Password
+                </InputLabel>
+                <OutlinedInput
+                  id="outlined-adornment-password"
+                  type={user.showPassword ? "text" : "password"}
+                  value={user.password}
+                  onChange={handleChange("password")}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                        edge="end"
+                      >
+                        {user.showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  label="Password"
                 />
-              </Grid>
-              <Grid rowSpacing={0.5} item xs={12}>
-                <FormControl variant="outlined" size="small" fullWidth>
-                  <InputLabel htmlFor="outlined-adornment-password">
-                    Password
-                  </InputLabel>
-                  <OutlinedInput
-                    id="outlined-adornment-password"
-                    type={user.showPassword ? "text" : "password"}
-                    value={user.password}
-                    onChange={handleChange("password")}
-                    endAdornment={
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label="toggle password visibility"
-                          onClick={handleClickShowPassword}
-                          onMouseDown={handleMouseDownPassword}
-                          edge="end"
-                        >
-                          {user.showPassword ? (
-                            <VisibilityOff />
-                          ) : (
-                            <Visibility />
-                          )}
-                        </IconButton>
-                      </InputAdornment>
-                    }
-                    label="Password"
-                  />
-                </FormControl>
-                {/* <TextField
+              </FormControl>
+              {/* <TextField
                   fullWidth
                   name="password"
                   size="small"
@@ -217,16 +213,16 @@ export const Login = () => {
                   value={pwd}
                   required
                 /> */}
-              </Grid>
             </Grid>
-            <CustomButton
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-              text={"Sign In"}
-            />
-            {/* <Button
+          </Grid>
+          <CustomButton
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+            text={"Sign In"}
+          />
+          {/* <Button
           type="submit"
           fullWidth
           variant="contained"
@@ -234,15 +230,15 @@ export const Login = () => {
         >
           Sign In
         </Button> */}
-            <Grid container justifyContent="center">
-              <Grid item>
-                <Link to="/forgot-password" className="link-primary">
-                  Forgot Password? Click Here
-                </Link>
-              </Grid>
+          <Grid container justifyContent="center">
+            <Grid item>
+              <Link to="/forgot-password" className="link-primary">
+                Forgot Password? Click Here
+              </Link>
             </Grid>
-          </Box>
-        </Paper>
+          </Grid>
+        </Box>
+        {/* </Paper> */}
       </Grid>
     </ThemeProvider>
   );

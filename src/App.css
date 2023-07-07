@@ -35,7 +35,7 @@ body::-webkit-scrollbar-thumb {
 
 .appcontainer {
   min-height: 100vh;
-  padding-top: 2.5%;
+  padding-top: 4rem;
   width: 100%;
   position: absolute;
   background-color: #f5f6f8;

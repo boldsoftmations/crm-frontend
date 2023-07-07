@@ -16,8 +16,6 @@ import { ViewPackingUnit } from "./../Pages/Products/PackingUnit/ViewPackingUnit
 import { ViewProductCode } from "./../Pages/Products/ProductCode/ViewProductCode";
 import { ViewRawMaterials } from "./../Pages/Products/RawMaterials/ViewRawMaterials";
 import { ViewUnit } from "./../Pages/Products/Unit/ViewUnit";
-
-import "../App.css";
 import { CompanyDetails } from "../Pages/Cutomers/CompanyDetails/CompanyDetails";
 import { PriceList } from "./../Pages/Products/PriceList/PriceList";
 import { SellerAccount } from "./../Pages/Invoice/Seller Account/SellerAccount";
@@ -65,7 +63,7 @@ export const RouteScreen = () => {
   const token = tokenData.user;
 
   return (
-    <div className="appcontainer">
+    <div>
       <Routes>
         {!token && (
           <>
