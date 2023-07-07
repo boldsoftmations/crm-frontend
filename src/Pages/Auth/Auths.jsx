@@ -18,7 +18,7 @@ export const Auths = () => {
       <Components.Container>
         <Components.SignUpContainer signinIn={signIn}>
           <Components.Form>
-            <SignUp />
+            <SignUp handleToggle={handleToggle} />
           </Components.Form>
         </Components.SignUpContainer>
 

@@ -21,7 +21,7 @@ import { CustomButton } from "./../../Components/CustomButton";
 import { CustomLoader } from "../../Components/CustomLoader";
 
 export const SignUp = (props) => {
-  const { handleChange } = props;
+  const { handleToggle } = props;
   const [open, setOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [message, setMessage] = useState("");
@@ -106,10 +106,7 @@ export const SignUp = (props) => {
             >
               {message}
             </Typography>
-            <Button
-              variant="contained"
-              onClick={() => handleChange("event", 0)}
-            >
+            <Button variant="contained" onClick={() => handleToggle(true)}>
               LOGIN
             </Button>
           </Box>
@@ -252,7 +249,7 @@ export const SignUp = (props) => {
           </Button> */}
             <Grid container justifyContent="center">
               <Grid item>
-                <Button onClick={() => handleChange("event", 0)} variant="text">
+                <Button onClick={() => handleToggle(true)} variant="text">
                   Already have an account? Sign in
                 </Button>
               </Grid>
@@ -279,5 +276,5 @@ const style = {
 
 const phoneRegExp =
   /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
-const SIGNUP_URL = `${process.env.REACT_APP_DEPLOY_BACKEND_URL}/api/user/register/`;
-// const SIGNUP_URL = `${process.env.REACT_APP_TESTING_BACKEND_URL}/api/user/register/`;
+// const SIGNUP_URL = `${process.env.REACT_APP_DEPLOY_BACKEND_URL}/api/user/register/`;
+const SIGNUP_URL = `${process.env.REACT_APP_TESTING_BACKEND_URL}/api/user/register/`;
