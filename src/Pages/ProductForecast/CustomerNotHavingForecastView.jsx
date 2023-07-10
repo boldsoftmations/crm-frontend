@@ -22,6 +22,7 @@ import { Popup } from "../../Components/Popup";
 import { ForecastUpdate } from "../Cutomers/ForecastDetails/ForecastUpdate";
 import { CustomTable } from "../../Components/CustomTable";
 import { ProductForecastAssignTo } from "./ProductForecastAssignTo";
+import { Helmet } from "react-helmet";
 
 export const CustomerNotHavingForecastView = () => {
   const [open, setOpen] = useState(false);
@@ -39,6 +40,28 @@ export const CustomerNotHavingForecastView = () => {
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const csvLinkRef = useRef(null);
+  const [isPrinting, setIsPrinting] = useState(false);
+
+  useEffect(() => {
+    const beforePrint = () => {
+      setIsPrinting(true);
+      setProductNotHavingForecast([]);
+    };
+
+    const afterPrint = () => {
+      setIsPrinting(false);
+      // Fetch the data again and update the companyData state
+      getAllProductionForecastDetails();
+    };
+
+    window.addEventListener("beforeprint", beforePrint);
+    window.addEventListener("afterprint", afterPrint);
+
+    return () => {
+      window.removeEventListener("beforeprint", beforePrint);
+      window.removeEventListener("afterprint", afterPrint);
+    };
+  }, []);
 
   const openInPopup = (item) => {
     const matchedForecast = productNotHavingForecast.find(
@@ -365,6 +388,17 @@ export const CustomerNotHavingForecastView = () => {
 
   return (
     <div>
+      <Helmet>
+        <style>
+          {`
+            @media print {
+              html, body {
+                filter: ${isPrinting ? "blur(10px)" : "none"} !important;
+              }
+            }
+          `}
+        </style>
+      </Helmet>
       <CustomLoader open={open} />
       <Grid item xs={12}>
         <ErrorMessage errRef={errRef} errMsg={errMsg} />

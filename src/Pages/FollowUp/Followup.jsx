@@ -10,6 +10,7 @@ import { AllFollowup } from "./AllFollowup";
 import { PendingFollowup } from "./PendingFollowup";
 import { UpcomingFollowup } from "./UpcomingFollowup";
 import { TodayFollowup } from "./TodayFollowup";
+import { Helmet } from "react-helmet";
 
 export const Followup = () => {
   const [open, setOpen] = useState(false);
@@ -23,6 +24,30 @@ export const Followup = () => {
   const dispatch = useDispatch();
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
+  const [isPrinting, setIsPrinting] = useState(false);
+
+  useEffect(() => {
+    const beforePrint = () => {
+      setIsPrinting(true);
+      setPendingFollowUp([]);
+      setTodayFollowUp([]);
+      setUpcomingFollowUp([]);
+    };
+
+    const afterPrint = () => {
+      setIsPrinting(false);
+      // Fetch the data again and update the companyData state
+      getFollowUp();
+    };
+
+    window.addEventListener("beforeprint", beforePrint);
+    window.addEventListener("afterprint", afterPrint);
+
+    return () => {
+      window.removeEventListener("beforeprint", beforePrint);
+      window.removeEventListener("afterprint", afterPrint);
+    };
+  }, []);
 
   const handleTabChange = (index) => {
     setActiveTab(index);
@@ -111,6 +136,17 @@ export const Followup = () => {
 
   return (
     <div>
+      <Helmet>
+        <style>
+          {`
+            @media print {
+              html, body {
+                filter: ${isPrinting ? "blur(10px)" : "none"} !important;
+              }
+            }
+          `}
+        </style>
+      </Helmet>
       <CustomLoader open={open} />
       <div>
         <CustomTabs

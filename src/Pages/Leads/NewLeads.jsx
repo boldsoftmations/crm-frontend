@@ -41,6 +41,7 @@ import { CustomSearchWithButton } from "../../Components/CustomSearchWithButton"
 import { LeadActivityCreate } from "../FollowUp/LeadActivityCreate";
 import { PotentialCreate } from "../Potential/PotentialCreate";
 import { CreateLeadsProformaInvoice } from "../Invoice/ProformaInvoice/CreateLeadsProformaInvoice";
+import { Helmet } from "react-helmet";
 
 export const NewLeads = () => {
   const dispatch = useDispatch();
@@ -67,6 +68,28 @@ export const NewLeads = () => {
   const [openModal, setOpenModal] = useState(false);
   const tokenData = useSelector((state) => state.auth);
   const users = tokenData.profile;
+  const [isPrinting, setIsPrinting] = useState(false);
+
+  useEffect(() => {
+    const beforePrint = () => {
+      setIsPrinting(true);
+      setLeads([]);
+    };
+
+    const afterPrint = () => {
+      setIsPrinting(false);
+      // Fetch the data again and update the companyData state
+      getleads();
+    };
+
+    window.addEventListener("beforeprint", beforePrint);
+    window.addEventListener("afterprint", afterPrint);
+
+    return () => {
+      window.removeEventListener("beforeprint", beforePrint);
+      window.removeEventListener("afterprint", afterPrint);
+    };
+  }, []);
 
   const handleInputChange = () => {
     setSearchQuery(searchQuery);
@@ -428,6 +451,17 @@ export const NewLeads = () => {
 
   return (
     <>
+      <Helmet>
+        <style>
+          {`
+            @media print {
+              html, body {
+                filter: ${isPrinting ? "blur(10px)" : "none"} !important;
+              }
+            }
+          `}
+        </style>
+      </Helmet>
       <CustomLoader open={open} />
       <Popup
         maxWidth={"lg"}

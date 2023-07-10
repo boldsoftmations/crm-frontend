@@ -18,6 +18,7 @@ import { CustomerPotentialCreate } from "../../Potential/CustomerPotentialCreate
 import { CreateCustomerProformaInvoice } from "./../../Invoice/ProformaInvoice/CreateCustomerProformaInvoice";
 import { CSVLink } from "react-csv";
 import { Button } from "@mui/material";
+import { Helmet } from "react-helmet";
 
 export const CompanyDetails = () => {
   const dispatch = useDispatch();
@@ -41,6 +42,28 @@ export const CompanyDetails = () => {
   const csvLinkRef = useRef(null);
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
+  const [isPrinting, setIsPrinting] = useState(false);
+
+  useEffect(() => {
+    const beforePrint = () => {
+      setIsPrinting(true);
+      setCompanyData([]);
+    };
+
+    const afterPrint = () => {
+      setIsPrinting(false);
+      // Fetch the data again and update the companyData state
+      getAllCompanyDetails();
+    };
+
+    window.addEventListener("beforeprint", beforePrint);
+    window.addEventListener("afterprint", afterPrint);
+
+    return () => {
+      window.removeEventListener("beforeprint", beforePrint);
+      window.removeEventListener("afterprint", afterPrint);
+    };
+  }, []);
 
   const handleDownload = async () => {
     try {
@@ -304,10 +327,22 @@ export const CompanyDetails = () => {
     city: value.city,
     state: value.state,
   }));
+
   return (
     <>
-      <CustomLoader open={open} />
+      <Helmet>
+        <style>
+          {`
+            @media print {
+              html, body {
+                filter: ${isPrinting ? "blur(10px)" : "none"} !important;
+              }
+            }
+          `}
+        </style>
+      </Helmet>
 
+      <CustomLoader open={open} />
       <div>
         <ErrorMessage errRef={errRef} errMsg={errMsg} />
 

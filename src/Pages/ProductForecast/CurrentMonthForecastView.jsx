@@ -19,6 +19,7 @@ import LeadServices from "../../services/LeadService";
 import ProductForecastService from "../../services/ProductForecastService";
 import { CustomSearchWithButton } from "../../Components/CustomSearchWithButton";
 import { CustomTable } from "../../Components/CustomTable";
+import { Helmet } from "react-helmet";
 
 export const CurrentMonthForecastView = () => {
   const [open, setOpen] = useState(false);
@@ -33,6 +34,28 @@ export const CurrentMonthForecastView = () => {
   const [currentMonthForecast, setCurrentMonthForecast] = useState([]);
   const [exportData, setExportData] = useState([]);
   const csvLinkRef = useRef(null);
+  const [isPrinting, setIsPrinting] = useState(false);
+
+  useEffect(() => {
+    const beforePrint = () => {
+      setIsPrinting(true);
+      setCurrentMonthForecast([]);
+    };
+
+    const afterPrint = () => {
+      setIsPrinting(false);
+      // Fetch the data again and update the companyData state
+      getAllProductionForecastDetails();
+    };
+
+    window.addEventListener("beforeprint", beforePrint);
+    window.addEventListener("afterprint", afterPrint);
+
+    return () => {
+      window.removeEventListener("beforeprint", beforePrint);
+      window.removeEventListener("afterprint", afterPrint);
+    };
+  }, []);
 
   const getResetData = () => {
     setSearchQuery("");
@@ -263,6 +286,17 @@ export const CurrentMonthForecastView = () => {
 
   return (
     <div>
+      <Helmet>
+        <style>
+          {`
+            @media print {
+              html, body {
+                filter: ${isPrinting ? "blur(10px)" : "none"} !important;
+              }
+            }
+          `}
+        </style>
+      </Helmet>
       <CustomLoader open={open} />
       <Grid item xs={12}>
         <ErrorMessage errRef={errRef} errMsg={errMsg} />

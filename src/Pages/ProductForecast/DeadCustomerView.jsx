@@ -22,6 +22,7 @@ import { Popup } from "../../Components/Popup";
 import { UpdateAllCompanyDetails } from "../Cutomers/CompanyDetails/UpdateAllCompanyDetails";
 import { CustomTable } from "../../Components/CustomTable";
 import ProductService from "../../services/ProductService";
+import { Helmet } from "react-helmet";
 
 const filterOption = [
   { label: "Search", value: "search" },
@@ -44,6 +45,28 @@ export const DeadCustomerView = () => {
   const [exportData, setExportData] = useState([]);
   const [product, setProduct] = useState([]);
   const csvLinkRef = useRef(null);
+  const [isPrinting, setIsPrinting] = useState(false);
+
+  useEffect(() => {
+    const beforePrint = () => {
+      setIsPrinting(true);
+      setDeadCustomer([]);
+    };
+
+    const afterPrint = () => {
+      setIsPrinting(false);
+      // Fetch the data again and update the companyData state
+      getAllProductionForecastDetails();
+    };
+
+    window.addEventListener("beforeprint", beforePrint);
+    window.addEventListener("afterprint", afterPrint);
+
+    return () => {
+      window.removeEventListener("beforeprint", beforePrint);
+      window.removeEventListener("afterprint", afterPrint);
+    };
+  }, []);
 
   const handleDownload = async () => {
     try {
@@ -281,6 +304,17 @@ export const DeadCustomerView = () => {
 
   return (
     <div>
+      <Helmet>
+        <style>
+          {`
+            @media print {
+              html, body {
+                filter: ${isPrinting ? "blur(10px)" : "none"} !important;
+              }
+            }
+          `}
+        </style>
+      </Helmet>
       <CustomLoader open={open} />
       <Grid item xs={12}>
         <ErrorMessage errRef={errRef} errMsg={errMsg} />

@@ -30,6 +30,7 @@ import { UpdateCustomerProformaInvoice } from "./UpdateCustomerProformaInvoice";
 import { CustomPagination } from "../../../Components/CustomPagination";
 import { UpdateLeadsProformaInvoice } from "./UpdateLeadsProformaInvoice";
 import LeadServices from "../../../services/LeadService";
+import { Helmet } from "react-helmet";
 
 export const ActivePI = () => {
   const dispatch = useDispatch();
@@ -51,6 +52,28 @@ export const ActivePI = () => {
   const [assigned, setAssigned] = useState([]);
   const data = useSelector((state) => state.auth);
   const users = data.profile;
+  const [isPrinting, setIsPrinting] = useState(false);
+
+  useEffect(() => {
+    const beforePrint = () => {
+      setIsPrinting(true);
+      setInvoiceData([]);
+    };
+
+    const afterPrint = () => {
+      setIsPrinting(false);
+      // Fetch the data again and update the companyData state
+      getProformaInvoiceData();
+    };
+
+    window.addEventListener("beforeprint", beforePrint);
+    window.addEventListener("afterprint", afterPrint);
+
+    return () => {
+      window.removeEventListener("beforeprint", beforePrint);
+      window.removeEventListener("afterprint", afterPrint);
+    };
+  }, []);
 
   const handleSearchValue = () => {
     setSearchValue(searchValue);
@@ -229,6 +252,17 @@ export const ActivePI = () => {
 
   return (
     <>
+      <Helmet>
+        <style>
+          {`
+            @media print {
+              html, body {
+                filter: ${isPrinting ? "blur(10px)" : "none"} !important;
+              }
+            }
+          `}
+        </style>
+      </Helmet>
       <CustomLoader open={open} />
       <Grid item xs={12}>
         <ErrorMessage errRef={errRef} errMsg={errMsg} />
