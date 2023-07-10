@@ -3,11 +3,9 @@ import {
   Grid,
   Box,
   Typography,
-  Paper,
   CircularProgress,
   Autocomplete,
   TextField,
-  Button,
   FormControlLabel,
   Switch,
 } from "@mui/material";
@@ -28,8 +26,6 @@ export const SalesDashboard = (props) => {
     dailyStatus,
     handleSegmentHover,
     total,
-    handlePieChartClick,
-    handlePendingFollowup,
     piData,
     funnelData,
     hoveredSegment,
@@ -38,13 +34,7 @@ export const SalesDashboard = (props) => {
     callPerformance,
     dailyInvoiceQuantity,
     dailyOrderBookQuantity,
-    startDate,
-    endDate,
-    handleStartDateChange,
-    handleEndDateChange,
-    minDate,
-    maxDate,
-    getReset,
+    handleSelectChange,
   } = props;
   const userData = useSelector((state) => state.auth.profile);
   const [privacy] = useState(!userData.groups.includes("Sales"));
@@ -129,15 +119,7 @@ export const SalesDashboard = (props) => {
   };
 
   return (
-    <Box
-      sx={{
-        backgroundColor: "white",
-        borderRadius: "8px",
-        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-        margin: "30px",
-        padding: "20px",
-      }}
-    >
+    <Box sx={{ margin: "20px" }}>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
           <FormControlLabel
@@ -153,6 +135,7 @@ export const SalesDashboard = (props) => {
             container
             spacing={{ xs: 2, md: 3 }}
             columns={{ xs: 4, sm: 8, md: 12 }}
+            sx={{ margin: "20px" }}
           >
             {pieChartData.map((data, index) => {
               let percentage = 0;
@@ -208,29 +191,28 @@ export const SalesDashboard = (props) => {
               );
             })}
           </Grid>
-          {/* actual vs forecast and new customer bar chart */}
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+            <Grid item xs={12} sm={6}>
               <CustomChart
                 chartType="ColumnChart"
                 data={[
                   ["Combination", "Actual", "Forecast"],
                   ...barChartData.map((item) => [
                     item.combination,
-                    Number(item.actual),
-                    Number(item.forecast),
+                    item.actual,
+                    item.forecast,
                   ]),
                 ]}
                 options={{
-                  title: "Actual vs Forecast (Quantity)",
+                  title: "Actual vs Forecast(Quantity)",
                   width: "100%",
                   height: "300px",
                 }}
-                widthStyle="100%"
-                heightStyle="300px"
+                widthStyle={"100%"}
+                heightStyle={"300px"}
               />
             </Grid>
-            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+            <Grid item xs={12} sm={6}>
               <CustomChart
                 chartType="LineChart"
                 data={[
@@ -241,7 +223,7 @@ export const SalesDashboard = (props) => {
                   ]),
                 ]}
                 options={{
-                  title: "New Customer",
+                  title: "New Customer Data",
                   width: "100%",
                   height: "300px",
                 }}
@@ -249,7 +231,9 @@ export const SalesDashboard = (props) => {
                 heightStyle={"300px"}
               />
             </Grid>
-            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+          </Grid>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6} sx={{ marginTop: "20px" }}>
               <CustomChart
                 chartType="PieChart"
                 data={[
@@ -257,7 +241,7 @@ export const SalesDashboard = (props) => {
                   ...pendingTask.map((item) => [item.label, item.value]),
                 ]}
                 options={{
-                  title: "Pending Task",
+                  title: "Pending Task Data",
                   width: "100%",
                   height: "300px",
                   pieHole: 0.4,
@@ -266,10 +250,7 @@ export const SalesDashboard = (props) => {
                 heightStyle={"300px"}
               />
             </Grid>
-          </Grid>
-          {/* pod vs lr bar chart and Task pie chart   */}
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+            <Grid item xs={12} sm={6} sx={{ marginTop: "20px" }}>
               <CustomChart
                 chartType="BarChart"
                 data={[
@@ -277,7 +258,7 @@ export const SalesDashboard = (props) => {
                   ...pendingFollowup.map((item) => [item.label, item.value]),
                 ]}
                 options={{
-                  title: "Pending Follow-Up",
+                  title: "Pending Follow-Up Data",
                   width: "100%",
                   height: "300px",
                   legend: { position: "none" },
@@ -286,6 +267,8 @@ export const SalesDashboard = (props) => {
                 heightStyle={"300px"}
               />
             </Grid>
+          </Grid>
+          <Grid container spacing={2}>
             <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
               <CustomChart
                 chartType={"PieChart"}
@@ -331,9 +314,6 @@ export const SalesDashboard = (props) => {
                 ))}
               </div>
             </Grid>
-          </Grid>
-          {/* Pending follwup and pi data pie chart */}
-          <Grid container spacing={2}>
             <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
               <CustomChart
                 chartType="ColumnChart"
@@ -357,7 +337,9 @@ export const SalesDashboard = (props) => {
                 heightStyle={"300px"}
               />
             </Grid>
-            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+          </Grid>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6} sx={{ marginTop: "20px" }}>
               <CustomChart
                 chartType="LineChart"
                 data={[
@@ -380,7 +362,7 @@ export const SalesDashboard = (props) => {
                 heightStyle={"300px"}
               />
             </Grid>
-            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+            <Grid item xs={12} sm={6} sx={{ marginTop: "20px" }}>
               <CustomChart
                 chartType="ColumnChart"
                 data={[
@@ -403,9 +385,8 @@ export const SalesDashboard = (props) => {
               />
             </Grid>
           </Grid>
-
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+            <Grid item xs={12} sm={6} sx={{ marginTop: "20px" }}>
               <CustomChart
                 chartType="BarChart"
                 data={[
@@ -422,7 +403,7 @@ export const SalesDashboard = (props) => {
                 heightStyle={"300px"}
               />
             </Grid>
-            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+            <Grid item xs={12} sm={6} sx={{ marginTop: "20px" }}>
               <CustomChart
                 chartType="PieChart"
                 data={[
@@ -439,50 +420,19 @@ export const SalesDashboard = (props) => {
               />
             </Grid>
           </Grid>
-
           <Grid container spacing={2}>
-            <Grid
-              item
-              xs={12}
-              sm={12}
-              md={12}
-              lg={12}
-              sx={{ marginTop: "20px" }}
-            >
-              <div>
-                <TextField
-                  width="100%"
-                  sx={{ marginRight: "10px" }}
-                  label="Start Date"
-                  variant="outlined"
-                  size="small"
-                  type="date"
-                  id="start-date"
-                  value={startDate ? startDate.toISOString().split("T")[0] : ""}
-                  min={minDate}
-                  max={maxDate}
-                  onChange={handleStartDateChange}
-                />
-                <TextField
-                  width="100%"
-                  sx={{ marginRight: "10px" }}
-                  label="End Date"
-                  variant="outlined"
-                  size="small"
-                  type="date"
-                  id="end-date"
-                  value={endDate ? endDate.toISOString().split("T")[0] : ""}
-                  min={
-                    startDate ? startDate.toISOString().split("T")[0] : minDate
-                  }
-                  max={maxDate}
-                  onChange={handleEndDateChange}
-                  disabled={!startDate}
-                />
-                <Button variant="contained" color="primary" onClick={getReset}>
-                  Reset
-                </Button>
-              </div>
+            <Grid item xs={12} sm={12} sx={{ marginTop: "20px" }}>
+              <Autocomplete
+                fullWidth
+                size="small"
+                options={["yearly", "monthly", "weekly", "today"]}
+                defaultValue="today"
+                onChange={(event, value) => handleSelectChange(value)}
+                renderInput={(params) => (
+                  <TextField {...params} label="Sort By" variant="standard" />
+                )}
+              />
+
               <CustomChart
                 chartType="BarChart"
                 data={[
@@ -499,13 +449,12 @@ export const SalesDashboard = (props) => {
               />
             </Grid>
           </Grid>
-
-          {/* Daily Sales Invoice Quantity */}
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={12} md={6} lg={6} sx={{ marginTop: "20px" }}>
+            <Grid item xs={12} sm={6} sx={{ marginTop: "20px" }}>
               <Autocomplete
                 sx={{}}
                 size="small"
+                defaultValue={dailyInvoiceQuantity[0]}
                 onChange={(event, value) => handleDataForInvoice(value)}
                 options={descriptionOptionsForInvoice.map((option) => option)}
                 getOptionLabel={(option) => option}
@@ -533,10 +482,11 @@ export const SalesDashboard = (props) => {
                 heightStyle={"300px"}
               />
             </Grid>
-            <Grid item xs={12} sm={12} md={6} lg={6} sx={{ marginTop: "20px" }}>
+            <Grid item xs={12} sm={6} sx={{ marginTop: "20px" }}>
               <Autocomplete
                 sx={{}}
                 size="small"
+                defaultValue={dailyOrderBookQuantity[0]}
                 onChange={(event, value) => handleDataForOrderBook(value)}
                 options={descriptionOptionsForOrderBook.map((option) => option)}
                 getOptionLabel={(option) => option}
@@ -573,6 +523,7 @@ export const SalesDashboard = (props) => {
             container
             spacing={{ xs: 2, md: 3 }}
             columns={{ xs: 4, sm: 8, md: 12 }}
+            sx={{ margin: "20px" }}
           >
             {pieChartData.map((data, index) => {
               let percentage = 0;
@@ -628,29 +579,28 @@ export const SalesDashboard = (props) => {
               );
             })}
           </Grid>
-          {/* actual vs forecast and new customer bar chart */}
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+            <Grid item xs={12} sm={6}>
               <CustomChart
                 chartType="ColumnChart"
                 data={[
                   ["Combination", "Actual", "Forecast"],
                   ...barChartData.map((item) => [
                     item.combination,
-                    Number(item.actual),
-                    Number(item.forecast),
+                    item.actual,
+                    item.forecast,
                   ]),
                 ]}
                 options={{
-                  title: "Actual vs Forecast (Quantity)",
+                  title: "Actual vs Forecast(Quantity)",
                   width: "100%",
                   height: "300px",
                 }}
-                widthStyle="100%"
-                heightStyle="300px"
+                widthStyle={"100%"}
+                heightStyle={"300px"}
               />
             </Grid>
-            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+            <Grid item xs={12} sm={6}>
               <CustomChart
                 chartType="LineChart"
                 data={[
@@ -661,7 +611,7 @@ export const SalesDashboard = (props) => {
                   ]),
                 ]}
                 options={{
-                  title: "New Customer",
+                  title: "New Customer Data",
                   width: "100%",
                   height: "300px",
                 }}
@@ -669,7 +619,9 @@ export const SalesDashboard = (props) => {
                 heightStyle={"300px"}
               />
             </Grid>
-            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+          </Grid>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6} sx={{ marginTop: "20px" }}>
               <CustomChart
                 chartType="PieChart"
                 data={[
@@ -677,7 +629,7 @@ export const SalesDashboard = (props) => {
                   ...pendingTask.map((item) => [item.label, item.value]),
                 ]}
                 options={{
-                  title: "Pending Task",
+                  title: "Pending Task Data",
                   width: "100%",
                   height: "300px",
                   pieHole: 0.4,
@@ -686,10 +638,7 @@ export const SalesDashboard = (props) => {
                 heightStyle={"300px"}
               />
             </Grid>
-          </Grid>
-          {/* pod vs lr bar chart and Task pie chart   */}
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+            <Grid item xs={12} sm={6} sx={{ marginTop: "20px" }}>
               <CustomChart
                 chartType="BarChart"
                 data={[
@@ -697,7 +646,7 @@ export const SalesDashboard = (props) => {
                   ...pendingFollowup.map((item) => [item.label, item.value]),
                 ]}
                 options={{
-                  title: "Pending Follow-Up",
+                  title: "Pending Follow-Up Data",
                   width: "100%",
                   height: "300px",
                   legend: { position: "none" },
@@ -706,6 +655,8 @@ export const SalesDashboard = (props) => {
                 heightStyle={"300px"}
               />
             </Grid>
+          </Grid>
+          <Grid container spacing={2}>
             <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
               <CustomChart
                 chartType={"PieChart"}
@@ -751,9 +702,6 @@ export const SalesDashboard = (props) => {
                 ))}
               </div>
             </Grid>
-          </Grid>
-          {/* Pending follwup and pi data pie chart */}
-          <Grid container spacing={2}>
             <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
               <CustomChart
                 chartType="ColumnChart"
@@ -777,7 +725,9 @@ export const SalesDashboard = (props) => {
                 heightStyle={"300px"}
               />
             </Grid>
-            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+          </Grid>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6} sx={{ marginTop: "20px" }}>
               <CustomChart
                 chartType="LineChart"
                 data={[
@@ -800,7 +750,7 @@ export const SalesDashboard = (props) => {
                 heightStyle={"300px"}
               />
             </Grid>
-            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+            <Grid item xs={12} sm={6} sx={{ marginTop: "20px" }}>
               <CustomChart
                 chartType="ColumnChart"
                 data={[
@@ -823,9 +773,8 @@ export const SalesDashboard = (props) => {
               />
             </Grid>
           </Grid>
-
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+            <Grid item xs={12} sm={6} sx={{ marginTop: "20px" }}>
               <CustomChart
                 chartType="BarChart"
                 data={[
@@ -842,7 +791,7 @@ export const SalesDashboard = (props) => {
                 heightStyle={"300px"}
               />
             </Grid>
-            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+            <Grid item xs={12} sm={6} sx={{ marginTop: "20px" }}>
               <CustomChart
                 chartType="PieChart"
                 data={[
@@ -859,50 +808,19 @@ export const SalesDashboard = (props) => {
               />
             </Grid>
           </Grid>
-
           <Grid container spacing={2}>
-            <Grid
-              item
-              xs={12}
-              sm={12}
-              md={12}
-              lg={12}
-              sx={{ marginTop: "20px" }}
-            >
-              <div>
-                <TextField
-                  width="100%"
-                  sx={{ marginRight: "10px" }}
-                  label="Start Date"
-                  variant="outlined"
-                  size="small"
-                  type="date"
-                  id="start-date"
-                  value={startDate ? startDate.toISOString().split("T")[0] : ""}
-                  min={minDate}
-                  max={maxDate}
-                  onChange={handleStartDateChange}
-                />
-                <TextField
-                  width="100%"
-                  sx={{ marginRight: "10px" }}
-                  label="End Date"
-                  variant="outlined"
-                  size="small"
-                  type="date"
-                  id="end-date"
-                  value={endDate ? endDate.toISOString().split("T")[0] : ""}
-                  min={
-                    startDate ? startDate.toISOString().split("T")[0] : minDate
-                  }
-                  max={maxDate}
-                  onChange={handleEndDateChange}
-                  disabled={!startDate}
-                />
-                <Button variant="contained" color="primary" onClick={getReset}>
-                  Reset
-                </Button>
-              </div>
+            <Grid item xs={12} sm={12} sx={{ marginTop: "20px" }}>
+              <Autocomplete
+                fullWidth
+                size="small"
+                options={["yearly", "monthly", "weekly", "today"]}
+                defaultValue="today"
+                onChange={(event, value) => handleSelectChange(value)}
+                renderInput={(params) => (
+                  <TextField {...params} label="Sort By" variant="standard" />
+                )}
+              />
+
               <CustomChart
                 chartType="BarChart"
                 data={[
@@ -919,13 +837,12 @@ export const SalesDashboard = (props) => {
               />
             </Grid>
           </Grid>
-
-          {/* Daily Sales Invoice Quantity */}
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={12} md={6} lg={6} sx={{ marginTop: "20px" }}>
+            <Grid item xs={12} sm={6} sx={{ marginTop: "20px" }}>
               <Autocomplete
                 sx={{}}
                 size="small"
+                defaultValue={dailyInvoiceQuantity[0]}
                 onChange={(event, value) => handleDataForInvoice(value)}
                 options={descriptionOptionsForInvoice.map((option) => option)}
                 getOptionLabel={(option) => option}
@@ -953,10 +870,11 @@ export const SalesDashboard = (props) => {
                 heightStyle={"300px"}
               />
             </Grid>
-            <Grid item xs={12} sm={12} md={6} lg={6} sx={{ marginTop: "20px" }}>
+            <Grid item xs={12} sm={6} sx={{ marginTop: "20px" }}>
               <Autocomplete
                 sx={{}}
                 size="small"
+                defaultValue={dailyOrderBookQuantity[0]}
                 onChange={(event, value) => handleDataForOrderBook(value)}
                 options={descriptionOptionsForOrderBook.map((option) => option)}
                 getOptionLabel={(option) => option}

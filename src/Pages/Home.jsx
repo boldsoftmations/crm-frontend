@@ -39,8 +39,6 @@ export const Home = () => {
   const userData = useSelector((state) => state.auth.profile);
   const [endDate, setEndDate] = useState(new Date());
   const [startDate, setStartDate] = useState(new Date()); // set default value as current date
-  const minDate = new Date().toISOString().split("T")[0];
-  const maxDate = new Date("2030-12-31").toISOString().split("T")[0];
   // const userData = data.profile;
   useEffect(() => {
     getAllTaskDetails();
@@ -72,20 +70,28 @@ export const Home = () => {
     }
   }, [startDate, endDate]);
 
-  const getReset = () => {
-    setStartDate(new Date());
-    setEndDate(new Date());
-  };
+  const handleSelectChange = (value) => {
+    const today = new Date();
+    let newStartDate = new Date();
+    let newEndDate = new Date();
 
-  const handleStartDateChange = (event) => {
-    const date = new Date(event.target.value);
-    setStartDate(date);
-    setEndDate(new Date());
-  };
+    if (value === "yearly") {
+      newStartDate = new Date(today.getFullYear(), 0, 1); // Set start date to the first day of the current year
+    } else if (value === "monthly") {
+      newStartDate = new Date(today.getFullYear(), today.getMonth(), 1); // Set start date to the first day of the current month
+    } else if (value === "weekly") {
+      const firstDayOfWeek = today.getDate() - today.getDay(); // Get the first day of the week
+      newStartDate = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        firstDayOfWeek
+      ); // Set start date to the first day of the current week
+    } else if (value === "today") {
+      newStartDate = new Date(); // Set start date to today
+    }
 
-  const handleEndDateChange = (event) => {
-    const date = new Date(event.target.value);
-    setEndDate(date);
+    setStartDate(newStartDate);
+    setEndDate(newEndDate);
   };
 
   const getAssignedData = async () => {
@@ -1067,13 +1073,6 @@ export const Home = () => {
     setHoveredSegment(null);
   };
 
-  const handlePieChartClick = () => {
-    navigate("/task/view-task");
-  };
-
-  const handlePendingFollowup = () => {
-    navigate("/leads/view-followup");
-  };
   const handleRowClick = (row) => {
     if (row.label === "New") {
       navigate("/leads/new-lead");
@@ -1081,23 +1080,6 @@ export const Home = () => {
     if (row.label === "Open") {
       navigate("/leads/open-lead");
     }
-    if (row.label === "Oppurtunity") {
-      navigate("/leads/opportunity-lead");
-    }
-    if (row.label === "Potential") {
-      navigate("/leads/potential-lead");
-    }
-    if (row.label === "Not Interested") {
-      navigate("/leads/not_interested-lead");
-    }
-    if (row.label === "Converted") {
-      navigate("/leads/converted-lead");
-    }
-  };
-
-  const handleDispatch = (row) => {
-    setDispatchDataByID(row);
-    setOpenPopup2(true);
   };
 
   return (
@@ -1123,9 +1105,6 @@ export const Home = () => {
           total={total}
           assigned={assigned}
           getResetData={getResetData}
-          handlePieChartClick={handlePieChartClick}
-          handleDispatch={handleDispatch}
-          handlePendingFollowup={handlePendingFollowup}
           funnelData={funnelData}
           hoveredSegment={hoveredSegment}
           handleRowClick={handleRowClick}
@@ -1133,13 +1112,7 @@ export const Home = () => {
           callPerformance={callPerformance}
           dailyInvoiceQuantity={dailyInvoiceQuantity}
           dailyOrderBookQuantity={dailyOrderBookQuantity}
-          startDate={startDate}
-          endDate={endDate}
-          handleStartDateChange={handleStartDateChange}
-          handleEndDateChange={handleEndDateChange}
-          minDate={minDate}
-          maxDate={maxDate}
-          getReset={getReset}
+          handleSelectChange={handleSelectChange}
         />
       ) : (
         <SalesDashboard
@@ -1155,9 +1128,6 @@ export const Home = () => {
           dailyStatus={dailyStatus}
           handleSegmentHover={handleSegmentHover}
           total={total}
-          handlePieChartClick={handlePieChartClick}
-          handleDispatch={handleDispatch}
-          handlePendingFollowup={handlePendingFollowup}
           funnelData={funnelData}
           hoveredSegment={hoveredSegment}
           handleRowClick={handleRowClick}
@@ -1165,13 +1135,7 @@ export const Home = () => {
           callPerformance={callPerformance}
           dailyInvoiceQuantity={dailyInvoiceQuantity}
           dailyOrderBookQuantity={dailyOrderBookQuantity}
-          startDate={startDate}
-          endDate={endDate}
-          handleStartDateChange={handleStartDateChange}
-          handleEndDateChange={handleEndDateChange}
-          minDate={minDate}
-          maxDate={maxDate}
-          getReset={getReset}
+          handleSelectChange={handleSelectChange}
         />
       )}
       <Popup
