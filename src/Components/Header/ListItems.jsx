@@ -2498,36 +2498,6 @@ export const ListItems = (props) => {
                 </List>
               </Collapse>
 
-              {/*Sales Invoice  */}
-              <ListItem
-                button
-                onClick={() => setExpandSalesInvoice(!expandSalesInvoice)}
-                style={{ width: 300 }}
-              >
-                <ListItemIcon>
-                  <DescriptionIcon />
-                </ListItemIcon>
-                <ListItemText primary="Sales Invoice" />
-                {expandSalesInvoice ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-              </ListItem>
-              <Collapse in={expandSalesInvoice} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/invoice/sales-invoice"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Sales Invoice"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
               {/* Forecast */}
               <ListItem
                 button
