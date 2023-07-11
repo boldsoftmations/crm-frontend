@@ -117,8 +117,7 @@ export const NewLeads = () => {
   };
 
   const openInPopup4 = (item) => {
-    const matchedLead = leads.find((lead) => lead.lead_id === item.lead_id);
-    setLeadsByID(matchedLead);
+    setLeadsByID(item.lead_id);
     setOpenModalPI(true);
   };
 
@@ -743,7 +742,7 @@ export const NewLeads = () => {
         setOpenPopup={setOpenModalPI}
       >
         <CreateLeadsProformaInvoice
-          leads={leadsByID}
+          leadsByID={leadsByID}
           setOpenPopup={setOpenModalPI}
         />
       </Popup>

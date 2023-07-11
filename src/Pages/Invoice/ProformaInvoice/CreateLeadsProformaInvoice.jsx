@@ -22,6 +22,7 @@ import { CustomLoader } from "../../../Components/CustomLoader";
 import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 import { Popup } from "../../../Components/Popup";
 import { UpdateLeads } from "../../Leads/UpdateLeads";
+import LeadServices from "../../../services/LeadService";
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -43,7 +44,7 @@ const values = {
 };
 
 export const CreateLeadsProformaInvoice = (props) => {
-  const { setOpenPopup, leads } = props;
+  const { setOpenPopup, leadsByID } = props;
   const navigate = useNavigate();
   const [openPopup2, setOpenPopup2] = useState(false);
   const [openPopup3, setOpenPopup3] = useState(false);
@@ -57,6 +58,7 @@ export const CreateLeadsProformaInvoice = (props) => {
   const [errorMessage, setErrorMessage] = useState();
   const [validationPrice, setValidationPrice] = useState("");
   const [checked, setChecked] = React.useState(true);
+  const [leads, setLeads] = useState([]);
   const [products, setProducts] = useState([
     {
       product: "",
@@ -127,6 +129,23 @@ export const CreateLeadsProformaInvoice = (props) => {
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setInputValue({ ...inputValue, [name]: value });
+  };
+
+  useEffect(() => {
+    if (leadsByID) getLeadsData(leadsByID);
+  }, []);
+
+  const getLeadsData = async (recordForEdit) => {
+    try {
+      setOpen(true);
+      const res = await LeadServices.getLeadsById(recordForEdit);
+      setLeads(res.data);
+
+      setOpen(false);
+    } catch (error) {
+      console.log("error", error);
+      setOpen(false);
+    }
   };
 
   const createLeadProformaInvoiceDetails = async (e) => {

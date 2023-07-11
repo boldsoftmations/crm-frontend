@@ -16,7 +16,9 @@ import {
   Radio,
   Divider,
   Checkbox,
+  Snackbar,
 } from "@mui/material";
+import MuiAlert from "@mui/material/Alert";
 import { styled } from "@mui/material/styles";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/material.css";
@@ -34,10 +36,16 @@ export const CreateLeads = (props) => {
   const [open, setOpen] = useState(false);
   const [checked, setChecked] = useState(false);
   const [leads, setLeads] = useState([]);
-
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setLeads({ ...leads, [name]: value });
+  };
+
+  const handleCloseSnackbar = () => {
+    setErrorMessage("");
+    setSuccessMessage("");
   };
 
   const handleSelectChange = (name, value) => {
@@ -50,7 +58,7 @@ export const CreateLeads = (props) => {
   const handleSameAsAddress = (event) => {
     setChecked(event.target.checked);
   };
-  console.log("leads :>> ", leads);
+
   const createLeadsData = async (e) => {
     try {
       e.preventDefault();
@@ -86,12 +94,26 @@ export const CreateLeads = (props) => {
       };
 
       await LeadServices.createLeads(data);
+      // Set success message
+      setSuccessMessage("Leads created successfully.");
+      setErrorMessage(""); // Reset error message if it was previously set
 
       setOpenPopup(false);
       setOpen(false);
       getleads();
     } catch (error) {
-      console.log("error :>> ", error);
+      setErrorMessage("");
+      // Handle the error response
+      if (error.response && error.response.data && error.response.data.errors) {
+        const errorData = error.response.data.errors;
+
+        // Set error message based on the error data
+        const errorMessage = Object.values(errorData).flat().join(" ");
+        setErrorMessage(errorMessage);
+      } else {
+        setErrorMessage("An error occurred while creating leads.");
+      }
+      setSuccessMessage("");
       setOpen(false);
     }
   };
@@ -99,7 +121,25 @@ export const CreateLeads = (props) => {
   return (
     <>
       <CustomLoader open={open} />
-
+      {/* Snackbar to display the error or success message */}
+      <Snackbar
+        open={errorMessage !== "" || successMessage !== ""}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+        autoHideDuration={6000}
+      >
+        <MuiAlert
+          onClose={handleCloseSnackbar}
+          severity={errorMessage !== "" ? "error" : "success"}
+          elevation={6}
+          variant="filled"
+        >
+          {errorMessage !== "" ? errorMessage : successMessage}
+        </MuiAlert>
+      </Snackbar>
       <Box
         component="form"
         noValidate
