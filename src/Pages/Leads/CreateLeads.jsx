@@ -710,6 +710,11 @@ const StateOption = [
     value: "West Bengal",
     label: "West Bengal",
   },
+  {
+    id: 28,
+    value: "New Delhi",
+    label: "New Delhi",
+  },
 ];
 
 const Root = styled("div")(({ theme }) => ({
