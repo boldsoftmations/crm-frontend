@@ -184,20 +184,18 @@ export const Home = () => {
   const getForecastDetails = async () => {
     try {
       setOpen(true);
-      const users = userData !== null ? userData.is_staff : "";
-      const forecastResponse = users
+      const forecastResponse = userData.is_staff
         ? await DashboardService.getConsLastThreeMonthForecastData()
         : await DashboardService.getLastThreeMonthForecastData();
       const Data = Object.keys(forecastResponse.data).flatMap((key) => {
         return forecastResponse.data[key].map((item) => {
           return {
             combination: `${shortMonths[item.month - 1]}-${item.year}`,
-            actual: item.actual,
-            forecast: item.total_forecast,
+            actual: item.actual || 0,
+            forecast: item.total_forecast || 0,
           };
         });
       });
-
       setBarChartData(Data);
       setOpen(false);
     } catch (err) {
