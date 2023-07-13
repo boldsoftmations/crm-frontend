@@ -43,11 +43,20 @@ export const SalesInvoiceCreate = (props) => {
       user: "",
     },
   ]);
-
+  const [totalAmount, setTotalAmount] = useState(0);
   const handleFormChange = (index, event) => {
     let data = [...products];
     data[index][event.target.name] = event.target.value;
     setProducts(data);
+
+    // Calculate the updated total amount
+    let updatedTotalAmount = 0;
+    for (let i = 0; i < data.length; i++) {
+      updatedTotalAmount += data[i].quantity * data[i].rate;
+    }
+
+    // Update the total amount in the state or wherever it is stored
+    setTotalAmount(updatedTotalAmount);
   };
 
   const handleInputChange = (event) => {
@@ -534,6 +543,17 @@ export const SalesInvoiceCreate = (props) => {
                 );
               })
             : null}
+          {/* Display the total amount */}
+          <Grid item xs={12} sm={2}>
+            <TextField
+              fullWidth
+              name="totalAmount"
+              size="small"
+              label="Total Amount"
+              variant="outlined"
+              value={totalAmount.toFixed(2)}
+            />
+          </Grid>
         </Grid>
 
         <Button
