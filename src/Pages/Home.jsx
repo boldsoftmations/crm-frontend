@@ -225,15 +225,26 @@ export const Home = () => {
       const forecastResponse = userData.is_staff
         ? await DashboardService.getConsLastThreeMonthForecastData()
         : await DashboardService.getLastThreeMonthForecastData();
-      const Data = Object.keys(forecastResponse.data).flatMap((key) => {
-        return forecastResponse.data[key].map((item) => {
-          return {
+      const columnKeys = Object.keys(forecastResponse.data);
+      const isAllColumnsEmpty = columnKeys.every(
+        (key) => forecastResponse.data[key].length === 0
+      );
+
+      let Data = [];
+
+      if (!isAllColumnsEmpty) {
+        Data = columnKeys.flatMap((key) =>
+          forecastResponse.data[key].map((item) => ({
             combination: `${shortMonths[item.month - 1]}-${item.year}`,
             actual: item.actual || 0,
             forecast: item.total_forecast || 0,
-          };
+          }))
+        );
+
+        Data.forEach((item) => {
+          item.combination = String(item.combination); // Convert combination to string explicitly
         });
-      });
+      }
       setBarChartData(Data);
       setOpen(false);
     } catch (err) {
@@ -642,15 +653,26 @@ export const Home = () => {
         await DashboardService.getLastThreeMonthForecastDataByFilter(
           FilterData
         );
-      const Data = Object.keys(forecastResponse.data).flatMap((key) => {
-        return forecastResponse.data[key].map((item) => {
-          return {
+      const columnKeys = Object.keys(forecastResponse.data);
+      const isAllColumnsEmpty = columnKeys.every(
+        (key) => forecastResponse.data[key].length === 0
+      );
+
+      let Data = [];
+
+      if (!isAllColumnsEmpty) {
+        Data = columnKeys.flatMap((key) =>
+          forecastResponse.data[key].map((item) => ({
             combination: `${shortMonths[item.month - 1]}-${item.year}`,
-            actual: item.actual,
-            forecast: item.total_forecast,
-          };
+            actual: item.actual || 0,
+            forecast: item.total_forecast || 0,
+          }))
+        );
+
+        Data.forEach((item) => {
+          item.combination = String(item.combination); // Convert combination to string explicitly
         });
-      });
+      }
 
       setBarChartData(Data);
       setOpen(false);
