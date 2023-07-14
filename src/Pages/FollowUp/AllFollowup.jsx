@@ -9,6 +9,7 @@ import {
   Select,
   IconButton,
   MenuItem,
+  Button,
 } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
 import LeadServices from "../../services/LeadService";
@@ -24,6 +25,7 @@ export const AllFollowup = (props) => {
   const [open, setOpen] = useState(false);
   const [allFollowupData, setAllFollowupData] = useState([]);
   const [openPopup, setOpenPopup] = useState(false);
+  const [openPopup2, setOpenPopup2] = useState(false);
   const [leadsByID, setLeadsByID] = useState(null);
   const [pageCount, setpageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
@@ -46,14 +48,76 @@ export const AllFollowup = (props) => {
   };
 
   const handleStartDateChange = (event) => {
-    const date = new Date(event.target.value);
-    setStartDate(date);
-    setEndDate(new Date());
+    try {
+      setOpen(true);
+      const date = new Date(event.target.value);
+      setStartDate(date);
+      setEndDate(new Date());
+      setOpen(false);
+    } catch (err) {
+      console.log("err", err);
+      setOpen(false);
+    }
   };
 
   const handleEndDateChange = (event) => {
-    const date = new Date(event.target.value);
-    setEndDate(date);
+    try {
+      setOpen(true);
+      const date = new Date(event.target.value);
+      setEndDate(date);
+      setOpen(false);
+    } catch (err) {
+      console.log("err", err);
+      setOpen(false);
+    }
+  };
+
+  const getResetData = () => {
+    setStartDate(new Date());
+    setEndDate(new Date());
+  };
+
+  const handleChange = (event) => {
+    const selectedValue = event.target.value;
+
+    if (selectedValue === "Today") {
+      const today = new Date();
+      setEndDate(today);
+      setStartDate(today);
+    } else if (selectedValue === "Yesterday") {
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      setEndDate(yesterday);
+      setStartDate(yesterday);
+    } else if (selectedValue === "Last 7 Days") {
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - 7);
+      setEndDate(endDate);
+      setStartDate(startDate);
+    } else if (selectedValue === "Last 30 Days") {
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - 30);
+      setEndDate(endDate);
+      setStartDate(startDate);
+    } else if (selectedValue === "This Month") {
+      const endDate = new Date();
+      const startDate = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
+      setEndDate(endDate);
+      setStartDate(startDate);
+    } else if (selectedValue === "Last Month") {
+      const endDate = new Date();
+      endDate.setDate(0);
+      const startDate = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
+      setEndDate(endDate);
+      setStartDate(startDate);
+    } else if (selectedValue === "Custom Date") {
+      // Handle custom date logic, for example:
+      setStartDate(new Date());
+      setEndDate(new Date());
+      setOpenPopup2(true);
+    }
   };
 
   const FilterBySalesPerson = (value) => {
@@ -230,31 +294,24 @@ export const AllFollowup = (props) => {
       <Grid item xs={12}>
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
           <Box display="flex" marginBottom="10px">
-            <TextField
-              sx={{ marginRight: 2 }}
-              label="Start Date"
-              variant="outlined"
+            <FormControl
+              sx={{ minWidth: "300px", marginRight: "10px" }}
               size="small"
-              type="date"
-              id="start-date"
-              value={startDate ? startDate.toISOString().split("T")[0] : ""}
-              min={minDate}
-              max={maxDate}
-              onChange={handleStartDateChange}
-            />
-            <TextField
-              sx={{ marginRight: 2 }}
-              label="End Date"
-              variant="outlined"
-              size="small"
-              type="date"
-              id="end-date"
-              value={endDate ? endDate.toISOString().split("T")[0] : ""}
-              min={startDate ? startDate.toISOString().split("T")[0] : minDate}
-              max={maxDate}
-              onChange={handleEndDateChange}
-              disabled={!startDate}
-            />
+            >
+              <InputLabel id="demo-select-small">Date</InputLabel>
+              <Select
+                labelId="demo-select-small"
+                id="demo-select-small"
+                label="Date"
+                onChange={(event) => handleChange(event)}
+              >
+                {DateOptions.map((option, i) => (
+                  <MenuItem key={i} value={option.value}>
+                    {option.value}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
             <FormControl
               sx={{ minWidth: "200px", marginRight: "1em" }}
               size="small"
@@ -391,6 +448,65 @@ export const AllFollowup = (props) => {
           getAllleadsData={getFollowup}
         />
       </Popup>
+      <Popup
+        openPopup={openPopup2}
+        setOpenPopup={setOpenPopup2}
+        title="Date Filter"
+        maxWidth="md"
+      >
+        <Box
+          sx={{
+            backgroundColor: "white",
+            borderRadius: "8px",
+            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+            margin: "10px",
+            padding: "20px",
+          }}
+        >
+          <Grid container spacing={2}>
+            <Grid item xs={5} sm={5} md={5} lg={5}>
+              <TextField
+                fullWidth
+                label="Start Date"
+                variant="outlined"
+                size="small"
+                type="date"
+                id="start-date"
+                value={startDate ? startDate.toISOString().split("T")[0] : ""}
+                min={minDate}
+                max={maxDate}
+                onChange={handleStartDateChange}
+              />
+            </Grid>
+            <Grid item xs={5} sm={5} md={5} lg={5}>
+              <TextField
+                fullWidth
+                label="End Date"
+                variant="outlined"
+                size="small"
+                type="date"
+                id="end-date"
+                value={endDate ? endDate.toISOString().split("T")[0] : ""}
+                min={
+                  startDate ? startDate.toISOString().split("T")[0] : minDate
+                }
+                max={maxDate}
+                onChange={handleEndDateChange}
+                disabled={!startDate}
+              />
+            </Grid>
+            <Grid item xs={2} sm={2} md={2} lg={2}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={getResetData}
+              >
+                Reset
+              </Button>
+            </Grid>
+          </Grid>
+        </Box>
+      </Popup>
     </>
   );
 };
@@ -521,5 +637,29 @@ const ActivityOption = [
     id: 25,
     value: "Drop the lead",
     label: "Drop the lead",
+  },
+];
+
+const DateOptions = [
+  {
+    value: "Today",
+  },
+  {
+    value: "Yesterday",
+  },
+  {
+    value: "Last 7 Days",
+  },
+  {
+    value: "Last 30 Days",
+  },
+  {
+    value: "This Month",
+  },
+  {
+    value: "Last Month",
+  },
+  {
+    value: "Custom Date",
   },
 ];

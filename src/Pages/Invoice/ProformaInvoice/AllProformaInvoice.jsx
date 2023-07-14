@@ -11,6 +11,7 @@ import {
   MenuItem,
   IconButton,
   TextField,
+  Autocomplete,
 } from "@mui/material";
 import InvoiceServices from "../../../services/InvoiceService";
 import { Popup } from "../../../Components/Popup";
@@ -52,6 +53,31 @@ export const AllProformaInvoice = () => {
     setStartDate(date);
     setEndDate(new Date(date.getTime() + 7 * 24 * 60 * 60 * 1000));
   };
+
+  const handleSelectChange = (value) => {
+    const today = new Date();
+    let newStartDate = new Date();
+    let newEndDate = new Date();
+
+    if (value === "yearly") {
+      newStartDate = new Date(today.getFullYear(), 0, 1); // Set start date to the first day of the current year
+    } else if (value === "monthly") {
+      newStartDate = new Date(today.getFullYear(), today.getMonth(), 1); // Set start date to the first day of the current month
+    } else if (value === "weekly") {
+      const firstDayOfWeek = today.getDate() - today.getDay(); // Get the first day of the week
+      newStartDate = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        firstDayOfWeek
+      ); // Set start date to the first day of the current week
+    } else if (value === "today") {
+      newStartDate = new Date(); // Set start date to today
+    }
+
+    setStartDate(newStartDate);
+    setEndDate(newEndDate);
+  };
+
   const handleSearchValue = () => {
     setSearchValue(searchValue);
     getSearchData(statusValue || typeValue);
@@ -257,41 +283,15 @@ export const AllProformaInvoice = () => {
         <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
           <Box display="flex" marginBottom="10px">
-            <TextField
-              label="Start Date"
-              variant="outlined"
+            <Autocomplete
+              sx={{ width: 300, marginRight: "10px" }}
               size="small"
-              type="date"
-              id="start-date"
-              sx={{ mr: 2, maxWidth: "150px" }}
-              value={startDate ? startDate.toISOString().split("T")[0] : ""}
-              min={minDate}
-              max={
-                endDate
-                  ? new Date(endDate.getTime() - 7 * 24 * 60 * 60 * 1000)
-                      .toISOString()
-                      .split("T")[0]
-                  : maxDate
-              }
-              onChange={handleStartDateChange}
-            />
-            <TextField
-              label="End Date"
-              variant="outlined"
-              size="small"
-              // type="date"
-              id="end-date"
-              sx={{ mr: 2, maxWidth: "150px" }}
-              value={endDate ? endDate.toISOString().split("T")[0] : ""}
-              min={startDate ? startDate.toISOString().split("T")[0] : minDate}
-              max={
-                startDate
-                  ? new Date(startDate.getTime() + 7 * 24 * 60 * 60 * 1000)
-                      .toISOString()
-                      .split("T")[0]
-                  : maxDate
-              }
-              disabled={!startDate}
+              options={["yearly", "monthly", "weekly", "today"]}
+              defaultValue="today"
+              onChange={(event, value) => handleSelectChange(value)}
+              renderInput={(params) => (
+                <TextField {...params} label="Sort By" variant="outlined" />
+              )}
             />
             <FormControl fullWidth size="small" sx={{ maxWidth: "200px" }}>
               <InputLabel id="demo-simple-select-label">Fliter By</InputLabel>
