@@ -31,6 +31,7 @@ export const Home = () => {
   const [dailyOrderBookQuantity, setDailyOrderBookQuantity] = useState([]);
   const [dispatchDataByID, setDispatchDataByID] = useState(null);
   const [openPopup2, setOpenPopup2] = useState(false);
+  const [openPopup3, setOpenPopup3] = useState(false);
   const [hoveredSegment, setHoveredSegment] = useState(null);
   const [assigned, setAssigned] = useState([]);
   const [assign, setAssign] = useState(null);
@@ -39,6 +40,8 @@ export const Home = () => {
   const userData = useSelector((state) => state.auth.profile);
   const [endDate, setEndDate] = useState(new Date());
   const [startDate, setStartDate] = useState(new Date()); // set default value as current date
+  const minDate = new Date().toISOString().split("T")[0];
+  const maxDate = new Date("2030-12-31").toISOString().split("T")[0];
   // const userData = data.profile;
   useEffect(() => {
     getAllTaskDetails();
@@ -70,28 +73,63 @@ export const Home = () => {
     }
   }, [startDate, endDate]);
 
-  const handleSelectChange = (value) => {
-    const today = new Date();
-    let newStartDate = new Date();
-    let newEndDate = new Date();
+  const handleStartDateChange = (event) => {
+    const date = new Date(event.target.value);
+    setStartDate(date);
+    setEndDate(new Date());
+  };
 
-    if (value === "yearly") {
-      newStartDate = new Date(today.getFullYear(), 0, 1); // Set start date to the first day of the current year
-    } else if (value === "monthly") {
-      newStartDate = new Date(today.getFullYear(), today.getMonth(), 1); // Set start date to the first day of the current month
-    } else if (value === "weekly") {
-      const firstDayOfWeek = today.getDate() - today.getDay(); // Get the first day of the week
-      newStartDate = new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        firstDayOfWeek
-      ); // Set start date to the first day of the current week
-    } else if (value === "today") {
-      newStartDate = new Date(); // Set start date to today
+  const handleEndDateChange = (event) => {
+    const date = new Date(event.target.value);
+    setEndDate(date);
+  };
+
+  const handleChange = (event) => {
+    const selectedValue = event.target.value;
+
+    if (selectedValue === "Today") {
+      const today = new Date();
+      setEndDate(today);
+      setStartDate(today);
+    } else if (selectedValue === "Yesterday") {
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      setEndDate(yesterday);
+      setStartDate(yesterday);
+    } else if (selectedValue === "Last 7 Days") {
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - 7);
+      setEndDate(endDate);
+      setStartDate(startDate);
+    } else if (selectedValue === "Last 30 Days") {
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - 30);
+      setEndDate(endDate);
+      setStartDate(startDate);
+    } else if (selectedValue === "This Month") {
+      const endDate = new Date();
+      const startDate = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
+      setEndDate(endDate);
+      setStartDate(startDate);
+    } else if (selectedValue === "Last Month") {
+      const endDate = new Date();
+      endDate.setDate(0);
+      const startDate = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
+      setEndDate(endDate);
+      setStartDate(startDate);
+    } else if (selectedValue === "Custom Date") {
+      // Handle custom date logic, for example:
+      setStartDate(new Date());
+      setEndDate(new Date());
+      setOpenPopup3(true);
     }
+  };
 
-    setStartDate(newStartDate);
-    setEndDate(newEndDate);
+  const getResetData = () => {
+    setStartDate(new Date());
+    setEndDate(new Date());
   };
 
   const getAssignedData = async () => {
@@ -1043,7 +1081,7 @@ export const Home = () => {
       console.log("Error:", err);
     }
   };
-  const getResetData = () => {
+  const getResetDate = () => {
     getForecastDetails();
     getNewCustomerDetails();
     getPendingTaskDetails();
@@ -1110,7 +1148,16 @@ export const Home = () => {
           callPerformance={callPerformance}
           dailyInvoiceQuantity={dailyInvoiceQuantity}
           dailyOrderBookQuantity={dailyOrderBookQuantity}
-          handleSelectChange={handleSelectChange}
+          handleChange={handleChange}
+          handleStartDateChange={handleStartDateChange}
+          handleEndDateChange={handleEndDateChange}
+          startDate={startDate}
+          endDate={endDate}
+          maxDate={maxDate}
+          minDate={minDate}
+          openPopup3={openPopup3}
+          setOpenPopup3={setOpenPopup3}
+          getResetDate={getResetDate}
         />
       ) : (
         <SalesDashboard
@@ -1133,7 +1180,16 @@ export const Home = () => {
           callPerformance={callPerformance}
           dailyInvoiceQuantity={dailyInvoiceQuantity}
           dailyOrderBookQuantity={dailyOrderBookQuantity}
-          handleSelectChange={handleSelectChange}
+          handleChange={handleChange}
+          handleStartDateChange={handleStartDateChange}
+          handleEndDateChange={handleEndDateChange}
+          startDate={startDate}
+          endDate={endDate}
+          maxDate={maxDate}
+          minDate={minDate}
+          openPopup3={openPopup3}
+          setOpenPopup3={setOpenPopup3}
+          getResetDate={getResetDate}
         />
       )}
       <Popup

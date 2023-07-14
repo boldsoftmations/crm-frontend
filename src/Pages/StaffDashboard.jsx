@@ -8,9 +8,14 @@ import {
   Typography,
   CircularProgress,
   Paper,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import PropTypes from "prop-types";
 import { CustomChart } from "../Components/CustomChart";
+import { Popup } from "../Components/Popup";
 
 export const StaffDashboard = (props) => {
   const {
@@ -38,7 +43,16 @@ export const StaffDashboard = (props) => {
     callPerformance,
     dailyInvoiceQuantity,
     dailyOrderBookQuantity,
-    handleSelectChange,
+    handleChange,
+    handleStartDateChange,
+    handleEndDateChange,
+    startDate,
+    endDate,
+    maxDate,
+    minDate,
+    openPopup3,
+    setOpenPopup3,
+    getResetDate,
   } = props;
   const [dIQdata, setDIQData] = useState([]);
   const [dOBQdata, setDOBQData] = useState([]);
@@ -459,16 +473,24 @@ export const StaffDashboard = (props) => {
       </Grid>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={12} sx={{ marginTop: "20px" }}>
-          <Autocomplete
-            fullWidth
+          <FormControl
+            sx={{ width: "300px", marginBottom: "10px" }}
             size="small"
-            options={["yearly", "monthly", "weekly", "today"]}
-            defaultValue="today"
-            onChange={(event, value) => handleSelectChange(value)}
-            renderInput={(params) => (
-              <TextField {...params} label="Sort By" variant="standard" />
-            )}
-          />
+          >
+            <InputLabel id="demo-select-small">Date</InputLabel>
+            <Select
+              labelId="demo-select-small"
+              id="demo-select-small"
+              label="Date"
+              onChange={(event) => handleChange(event)}
+            >
+              {DateOptions.map((option, i) => (
+                <MenuItem key={i} value={option.value}>
+                  {option.value}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           <CustomChart
             chartType="BarChart"
             data={[
@@ -551,6 +573,65 @@ export const StaffDashboard = (props) => {
           />
         </Grid>
       </Grid>
+      <Popup
+        openPopup={openPopup3}
+        setOpenPopup={setOpenPopup3}
+        title="Date Filter"
+        maxWidth="md"
+      >
+        <Box
+          sx={{
+            backgroundColor: "white",
+            borderRadius: "8px",
+            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+            margin: "10px",
+            padding: "20px",
+          }}
+        >
+          <Grid container spacing={2}>
+            <Grid item xs={5} sm={5} md={5} lg={5}>
+              <TextField
+                fullWidth
+                label="Start Date"
+                variant="outlined"
+                size="small"
+                type="date"
+                id="start-date"
+                value={startDate ? startDate.toISOString().split("T")[0] : ""}
+                min={minDate}
+                max={maxDate}
+                onChange={handleStartDateChange}
+              />
+            </Grid>
+            <Grid item xs={5} sm={5} md={5} lg={5}>
+              <TextField
+                fullWidth
+                label="End Date"
+                variant="outlined"
+                size="small"
+                type="date"
+                id="end-date"
+                value={endDate ? endDate.toISOString().split("T")[0] : ""}
+                min={
+                  startDate ? startDate.toISOString().split("T")[0] : minDate
+                }
+                max={maxDate}
+                onChange={handleEndDateChange}
+                disabled={!startDate}
+              />
+            </Grid>
+            <Grid item xs={2} sm={2} md={2} lg={2}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={getResetDate}
+              >
+                Reset
+              </Button>
+            </Grid>
+          </Grid>
+        </Box>
+      </Popup>
     </Box>
   );
 };
@@ -587,3 +668,27 @@ CircularProgressWithLabel.propTypes = {
    */
   value: PropTypes.number.isRequired,
 };
+
+const DateOptions = [
+  {
+    value: "Today",
+  },
+  {
+    value: "Yesterday",
+  },
+  {
+    value: "Last 7 Days",
+  },
+  {
+    value: "Last 30 Days",
+  },
+  {
+    value: "This Month",
+  },
+  {
+    value: "Last Month",
+  },
+  {
+    value: "Custom Date",
+  },
+];
