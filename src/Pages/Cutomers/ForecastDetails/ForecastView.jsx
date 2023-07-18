@@ -179,7 +179,7 @@ export const ForecastView = (props) => {
                       </StyledTableCell>
                     ) : (
                       <StyledTableCell align="center">
-                        - {rowData.forecast}
+                        {rowData.forecast}
                       </StyledTableCell>
                     );
                   })}
