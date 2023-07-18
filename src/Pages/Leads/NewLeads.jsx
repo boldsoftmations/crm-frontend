@@ -93,12 +93,7 @@ export const NewLeads = () => {
 
   const handleInputChange = () => {
     setSearchQuery(searchQuery);
-    getSearchData(filterSelectedQuery, searchQuery);
-  };
-
-  const handleInputChanges = (value) => {
-    setFilterSelectedQuery(value);
-    getSearchData(value, searchQuery);
+    getSearchData(filterQuery, filterSelectedQuery, searchQuery);
   };
 
   const openInPopup = (item) => {
@@ -123,14 +118,19 @@ export const NewLeads = () => {
 
   const getResetSearchData = () => {
     setSearchQuery("");
-    getSearchData(filterSelectedQuery, null); // Pass an empty string as the second parameter
+    getSearchData(filterQuery, filterSelectedQuery, null); // Pass an empty string as the second parameter
   };
 
-  const getResetFilterData = () => {
-    setFilterQuery("");
-    setFilterSelectedQuery(null);
-    getSearchData(null, searchQuery); // Pass an empty string as the second parameter
-  };
+  const renderAutocomplete = (label, options, onChange) => (
+    <Autocomplete
+      sx={{ minWidth: "200px", marginLeft: "1em" }}
+      size="small"
+      onChange={(event, value) => onChange(value)}
+      options={options}
+      getOptionLabel={(option) => option}
+      renderInput={(params) => <TextField {...params} label={label} />}
+    />
+  );
 
   const handlePin = async (e, row) => {
     e.preventDefault();
@@ -232,123 +232,106 @@ export const NewLeads = () => {
   const getleads = async () => {
     try {
       setOpen(true);
-      const filterValue = filterSelectedQuery ? filterSelectedQuery : null;
-      const searchValue = searchQuery ? searchQuery : null;
-      if (filterQuery !== "" && filterValue !== null && searchValue !== null) {
-        const response = await LeadServices.getAllSearchWithFilteredLeads(
+
+      const filterValue = filterSelectedQuery || null;
+      const searchValue = searchQuery || null;
+      const isFiltered =
+        filterQuery !== "" && filterValue !== null && searchValue !== null;
+
+      let response;
+      if (isFiltered) {
+        response = await LeadServices.getAllSearchWithFilteredLeads(
           "new",
           "-lead_id",
           filterQuery,
           filterValue,
           searchValue
         );
-
-        setLeads(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      } else if (filterQuery && filterValue && currentPage) {
-        const response = await LeadServices.getAllPaginateLeads(
+      } else if (currentPage) {
+        response = await LeadServices.getFilterPaginateLeads(
           currentPage,
-          "new",
-          "-lead_id",
-          filterValue,
-          filterSelectedQuery
-        );
-        setLeads(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      } else if (searchValue) {
-        const response = await LeadServices.getFilteredLeads(
           "new",
           "-lead_id",
           filterQuery,
-          filterValue
+          filterValue,
+          searchValue
         );
-        setLeads(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      } else if (currentPage) {
-        const response = await LeadServices.getAllPaginateLeads(
-          currentPage,
-          "new",
-          "-lead_id"
-        );
-        setLeads(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
       } else {
-        const response = await LeadServices.getAllLeads("new", "priority");
-        if (response) {
-          setLeads(response.data.results);
-          const total = response.data.count;
-          setpageCount(Math.ceil(total / 25));
-        }
+        response = await LeadServices.getAllLeads("new", "-lead_id");
       }
+
+      if (response) {
+        setLeads(response.data.results);
+        setpageCount(Math.ceil(response.data.count / 25));
+      }
+
       setOpen(false);
     } catch (err) {
       setOpen(false);
+
       if (!err.response) {
         setErrMsg(
           "Sorry, You Are Not Allowed to Access This Page. Please contact the admin."
         );
       } else if (err.response.status === 400) {
         setErrMsg(
-          err.response.data.errors.name
-            ? err.response.data.errors.name
-            : err.response.data.errors.non_field_errors
+          err.response.data.errors.name ||
+            err.response.data.errors.non_field_errors
         );
       } else if (err.response.status === 401) {
         setErrMsg(err.response.data.errors.code);
       } else {
         setErrMsg("Server Error");
       }
+
       errRef.current.focus();
     }
   };
 
-  const getSearchData = async (filterSelectedQuery, searchQuery) => {
+  const getSearchData = async (
+    filterQuery,
+    filterSelectedQuery,
+    searchQuery
+  ) => {
     try {
       setOpen(true);
-      const filterValue = filterSelectedQuery ? filterSelectedQuery : null;
-      const searchValue = searchQuery ? searchQuery : null;
-      if (filterQuery && filterValue !== null && searchValue !== null) {
-        const response = await LeadServices.getAllSearchWithFilteredLeads(
-          "new",
-          "-lead_id",
-          filterQuery,
-          filterValue,
-          searchValue
-        );
 
-        setLeads(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      } else if (filterQuery && filterValue) {
-        const response = await LeadServices.getFilteredLeads(
+      let response;
+      if (filterQuery && filterSelectedQuery !== null) {
+        if (searchQuery !== null) {
+          response = await LeadServices.getAllSearchWithFilteredLeads(
+            "new",
+            "-lead_id",
+            filterQuery,
+            filterSelectedQuery,
+            searchQuery
+          );
+        } else {
+          response = await LeadServices.getFilteredLeads(
+            "new",
+            "-lead_id",
+            filterQuery,
+            filterSelectedQuery
+          );
+        }
+      } else if (searchQuery) {
+        response = await LeadServices.getSearchLeads(
           "new",
           "-lead_id",
-          filterQuery,
-          filterValue
+          searchQuery
         );
-
-        setLeads(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      } else if (searchValue) {
-        const response = await LeadServices.getSearchLeads(
-          "new",
-          "-lead_id",
-          searchValue
-        );
-        setLeads(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
       } else {
         setFilterQuery("");
         setFilterSelectedQuery(null);
         setSearchQuery(null);
         await getleads();
       }
+
+      if (response) {
+        setLeads(response.data.results);
+        setpageCount(Math.ceil(response.data.count / 25));
+      }
+
       setOpen(false);
     } catch (error) {
       console.log("error Search leads", error);
@@ -492,54 +475,32 @@ export const NewLeads = () => {
               </Select>
             </FormControl>
 
-            {filterQuery === "assigned_to__email" && (
-              <Autocomplete
-                sx={{ minWidth: "200px", marginLeft: "1em" }}
-                size="small"
-                onChange={(event, value) => handleInputChanges(value)}
-                options={assigned.map((option) => option.email)}
-                getOptionLabel={(option) => option}
-                renderInput={(params) => (
-                  <TextField {...params} label="Assigned To" />
-                )}
-              />
-            )}
-            {filterQuery === "references__source" && (
-              <Autocomplete
-                sx={{ minWidth: "200px", marginLeft: "1em" }}
-                size="small"
-                onChange={(event, value) => handleInputChanges(value)}
-                options={referenceData.map((option) => option.source)}
-                getOptionLabel={(option) => option}
-                renderInput={(params) => (
-                  <TextField {...params} label="Reference" />
-                )}
-              />
-            )}
-            {filterQuery === "stage" && (
-              <Autocomplete
-                sx={{ minWidth: "200px", marginLeft: "1em" }}
-                size="small"
-                onChange={(event, value) => handleInputChanges(value)}
-                options={StageOptions.map((option) => option.value)}
-                getOptionLabel={(option) => option}
-                renderInput={(params) => (
-                  <TextField {...params} label="Stage" />
-                )}
-              />
-            )}
-            {filterQuery === "description__name" && (
-              <Autocomplete
-                sx={{ minWidth: "200px", marginLeft: "1em" }}
-                size="small"
-                onChange={(event, value) => handleInputChanges(value)}
-                options={descriptionMenuData.map((option) => option.name)}
-                getOptionLabel={(option) => option}
-                renderInput={(params) => (
-                  <TextField {...params} label="Description" />
-                )}
-              />
-            )}
+            {filterQuery &&
+              renderAutocomplete(
+                filterQuery === "assigned_to__email"
+                  ? "Assigned To"
+                  : filterQuery === "references__source"
+                  ? "Reference"
+                  : filterQuery === "stage"
+                  ? "Stage"
+                  : filterQuery === "description__name"
+                  ? "Description"
+                  : "",
+                filterQuery === "assigned_to__email"
+                  ? assigned.map((option) => option.email)
+                  : filterQuery === "references__source"
+                  ? referenceData.map((option) => option.source)
+                  : filterQuery === "stage"
+                  ? StageOptions.map((option) => option.value)
+                  : filterQuery === "description__name"
+                  ? descriptionMenuData.map((option) => option.name)
+                  : [],
+                (value) => {
+                  setFilterSelectedQuery(value);
+                  getSearchData(filterQuery, value, searchQuery); // Pass filterQuery and filterSelectedQuery as parameters
+                }
+              )}
+
             <CustomSearchWithButton
               filterSelectedQuery={searchQuery}
               setFilterSelectedQuery={setSearchQuery}

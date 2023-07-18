@@ -141,7 +141,7 @@ export const UpdateLeads = (props) => {
 
       setOpen(false);
       setOpenPopup(false);
-      // getAllleadsData();
+      getAllleadsData();
     } catch (error) {
       console.log("error :>> ", error);
       setError(
