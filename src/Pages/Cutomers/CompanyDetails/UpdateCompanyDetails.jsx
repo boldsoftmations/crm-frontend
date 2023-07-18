@@ -36,7 +36,6 @@ export const UpdateCompanyDetails = (props) => {
   const [pinCodeData, setPinCodeData] = useState([]);
   const [assigned, setAssigned] = useState([]);
   const [assign, setAssign] = useState([]);
-  const [errorMessage, setErrorMessage] = useState([]);
   const [followUpData, setFollowUpData] = useState([]);
   const [potential, setPotential] = useState(null);
   const dispatch = useDispatch();
@@ -48,7 +47,11 @@ export const UpdateCompanyDetails = (props) => {
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    setInputValue({ ...inputValue, [name]: value });
+    const updatedValue =
+      name === "gst_number" || name === "pan_number"
+        ? value.toUpperCase()
+        : value;
+    setInputValue({ ...inputValue, [name]: updatedValue });
   };
 
   useEffect(() => {
@@ -106,7 +109,13 @@ export const UpdateCompanyDetails = (props) => {
     }
   };
 
-  const GST_NO = (gst_no) => gst_no.length <= 14;
+  const GST_NO = (gst_no) =>
+    /^[0-9]{2}[A-Za-z]{5}[0-9]{4}[A-Za-z]{1}[1-9A-Za-z]{1}Z[0-9A-Za-z]{1}$/.test(
+      gst_no
+    );
+
+  const PAN_NO = (pan_no) =>
+    /^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?$/.test(pan_no);
 
   const UpdateCompanyDetails = async (e) => {
     try {
@@ -134,9 +143,6 @@ export const UpdateCompanyDetails = (props) => {
       getAllCompanyDetails();
     } catch (error) {
       console.log("createing company detail error", error);
-      setErrorMessage(
-        error.response.data.errors ? error.response.data.errors.pan_number : ""
-      );
       setOpen(false);
     }
   };
@@ -306,15 +312,11 @@ export const UpdateCompanyDetails = (props) => {
               InputLabelProps={{
                 shrink: true,
               }}
-              error={GST_NO(
-                inputValue.gst_number ? inputValue.gst_number.toString() : ""
-              )}
+              error={inputValue.gst_number && !GST_NO(inputValue.gst_number)}
               helperText={
-                GST_NO(
-                  inputValue.gst_number ? inputValue.gst_number.toString() : ""
-                )
-                  ? "GST NO should be less than or equal to 15 Digit"
-                  : ""
+                inputValue.gst_number &&
+                !GST_NO(inputValue.gst_number) &&
+                "Invalid GST Number"
               }
             />
           </Grid>
@@ -328,11 +330,12 @@ export const UpdateCompanyDetails = (props) => {
               variant="outlined"
               value={inputValue.pan_number ? inputValue.pan_number : ""}
               onChange={handleInputChange}
-              error={inputValue.pan_number === ""}
-              helperText={errorMessage}
-              InputLabelProps={{
-                shrink: true,
-              }}
+              error={inputValue.pan_number && !PAN_NO(inputValue.pan_number)}
+              helperText={
+                inputValue.pan_number &&
+                !PAN_NO(inputValue.pan_number) &&
+                "Invalid PAN Number"
+              }
             />
           </Grid>
           <Grid item xs={12} sm={4}>

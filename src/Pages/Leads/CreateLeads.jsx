@@ -38,9 +38,14 @@ export const CreateLeads = (props) => {
   const [leads, setLeads] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    setLeads({ ...leads, [name]: value });
+    const updatedValue =
+      name === "gst_number" || name === "pan_number"
+        ? value.toUpperCase()
+        : value;
+    setLeads({ ...leads, [name]: updatedValue });
   };
 
   const handleCloseSnackbar = () => {
@@ -117,6 +122,14 @@ export const CreateLeads = (props) => {
       setOpen(false);
     }
   };
+
+  const GST_NO = (gst_no) =>
+    /^[0-9]{2}[A-Za-z]{5}[0-9]{4}[A-Za-z]{1}[1-9A-Za-z]{1}Z[0-9A-Za-z]{1}$/.test(
+      gst_no
+    );
+
+  const PAN_NO = (pan_no) =>
+    /^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?$/.test(pan_no);
 
   return (
     <>
@@ -374,6 +387,12 @@ export const CreateLeads = (props) => {
               variant="outlined"
               value={leads.gst_number}
               onChange={handleInputChange}
+              error={leads.gst_number && !GST_NO(leads.gst_number)}
+              helperText={
+                leads.gst_number &&
+                !GST_NO(leads.gst_number) &&
+                "Invalid GST Number"
+              }
             />
           </Grid>
           <Grid item xs={12} sm={3}>
@@ -385,6 +404,12 @@ export const CreateLeads = (props) => {
               variant="outlined"
               value={leads.pan_number}
               onChange={handleInputChange}
+              error={leads.pan_number && !PAN_NO(leads.pan_number)}
+              helperText={
+                leads.pan_number &&
+                !PAN_NO(leads.pan_number) &&
+                "Invalid PAN Number"
+              }
             />
           </Grid>
           <Grid item xs={12} sm={3}>
