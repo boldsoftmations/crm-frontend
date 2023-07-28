@@ -190,7 +190,7 @@ export const ForecastView = (props) => {
                     );
 
                     if (rowData) {
-                      if (rowData.forecast > 0 && rowData.actual !== null) {
+                      if (rowData.actual !== null) {
                         return (
                           <TableCell key={position} align="center">
                             {rowData.actual} - {rowData.forecast}
