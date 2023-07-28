@@ -23,8 +23,7 @@ const Root = styled("div")(({ theme }) => ({
 }));
 
 export const SalesInvoiceCreate = (props) => {
-  const { setOpenPopup, getSalesInvoiceDetails, getAllCustomerWiseOrderBook } =
-    props;
+  const { setOpenPopup, getSalesInvoiceDetails } = props;
   const [open, setOpen] = useState(false);
   const [errorOpen, setErrorOpen] = useState(false);
   const [errMsg, setErrMsg] = useState("");
@@ -182,7 +181,6 @@ export const SalesInvoiceCreate = (props) => {
         await InvoiceServices.createSalesnvoiceData(req);
         setOpenPopup(false);
         getSalesInvoiceDetails();
-        getAllCustomerWiseOrderBook();
       }
       setOpen(false);
     } catch (err) {

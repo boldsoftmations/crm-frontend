@@ -586,7 +586,6 @@ export const SalesInvoiceView = () => {
         setOpenPopup={setOpenPopup}
       >
         <SalesInvoiceCreate
-          getAllCustomerWiseOrderBook={getAllCustomerWiseOrderBook}
           getSalesInvoiceDetails={getSalesInvoiceDetails}
           setOpenPopup={setOpenPopup}
           loading={loading}
