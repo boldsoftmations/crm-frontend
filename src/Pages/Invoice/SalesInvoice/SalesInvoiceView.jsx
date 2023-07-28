@@ -72,6 +72,7 @@ export const SalesInvoiceView = () => {
   const headers = [
     { label: "Date", key: "date" },
     { label: "Invoice No", key: "invoice_no" },
+    { label: "Unit", key: "seller_unit" },
     { label: "Customer", key: "customer" },
     { label: "Taxable Amount", key: "taxabale_amount" },
     { label: "GST", key: "gst" },
@@ -102,6 +103,7 @@ export const SalesInvoiceView = () => {
         return {
           date: item.generation_date,
           invoice_no: item.invoice_no,
+          seller_unit: item.seller_unit,
           customer: item.company,
           taxabale_amount: item.amount,
           gst: item.gst,
@@ -469,7 +471,7 @@ export const SalesInvoiceView = () => {
                 headers={headers}
                 data={exportData}
                 ref={csvLinkRef}
-                filename="Customer Order Book.csv"
+                filename="Sales Invoice.csv"
                 target="_blank"
                 style={{
                   textDecoration: "none",
@@ -519,6 +521,7 @@ export const SalesInvoiceView = () => {
                   <StyledTableCell align="center">
                     SALES INVOICE NUMBER
                   </StyledTableCell>
+                  <StyledTableCell align="center">UNIT</StyledTableCell>
                   <StyledTableCell align="center">
                     TAXABLE AMOUNT
                   </StyledTableCell>
@@ -703,6 +706,7 @@ function Row(props) {
         </StyledTableCell>
         <StyledTableCell align="center">{row.generation_date}</StyledTableCell>
         <StyledTableCell align="center">{row.invoice_no}</StyledTableCell>
+        <StyledTableCell align="center">{row.seller_unit}</StyledTableCell>
         <StyledTableCell align="center">{row.amount}</StyledTableCell>
         <StyledTableCell align="center">{row.gst}</StyledTableCell>
         <StyledTableCell align="center">{row.total}</StyledTableCell>
