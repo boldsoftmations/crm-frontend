@@ -33,8 +33,7 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
 import { CustomPagination } from "../../../Components/CustomPagination";
 import { CustomSearch } from "../../../Components/CustomSearch";
-import { useDispatch, useSelector } from "react-redux";
-import { getCustomerOrderBookData } from "../../../Redux/Action/Action";
+import { useSelector } from "react-redux";
 import { CancelSalesInvoice } from "./CancelSalesInvoice";
 import { CSVLink } from "react-csv";
 
@@ -55,7 +54,6 @@ export const SalesInvoiceView = () => {
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const [sellerUnitOption, setSellerUnitOption] = useState([]);
   const [loading, setLoading] = useState(true);
-  const dispatch = useDispatch();
   const [endDate, setEndDate] = useState(new Date());
   const [startDate, setStartDate] = useState(new Date()); // set default value as current date
   const minDate = new Date().toISOString().split("T")[0];
@@ -99,7 +97,7 @@ export const SalesInvoiceView = () => {
               EndDate,
               "all"
             );
-      console.log("response", response);
+
       let data = response.data.map((item) => {
         return {
           date: item.generation_date,
@@ -180,7 +178,6 @@ export const SalesInvoiceView = () => {
 
   useEffect(() => {
     getAllSellerAccountsDetails();
-    getAllCustomerWiseOrderBook();
   }, []);
 
   useEffect(() => {
@@ -198,31 +195,6 @@ export const SalesInvoiceView = () => {
       setOpen(false);
     } catch (err) {
       setOpen(false);
-    }
-  };
-
-  const getAllCustomerWiseOrderBook = async () => {
-    try {
-      const response = await InvoiceServices.getcustomerOrderBookData("all");
-      dispatch(getCustomerOrderBookData(response.data));
-      setLoading(false);
-    } catch (err) {
-      if (!err.response) {
-        setErrMsg(
-          "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
-        );
-      } else if (err.response.status === 400) {
-        setErrMsg(
-          err.response.data.errors.name
-            ? err.response.data.errors.name
-            : err.response.data.errors.non_field_errors
-        );
-      } else if (err.response.status === 401) {
-        setErrMsg(err.response.data.errors.code);
-      } else {
-        setErrMsg("Server Error");
-      }
-      errRef.current.focus();
     }
   };
 
