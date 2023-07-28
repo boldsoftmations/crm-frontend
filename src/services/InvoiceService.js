@@ -237,27 +237,33 @@ const getTotalPendingQuantity = () => {
   return CustomAxios.get(`/api/invoice/pending-order-total`);
 };
 
-const getSalesInvoiceData = () => {
-  return CustomAxios.get(`/api/invoice/list-sales-invoice`);
-};
-
-const getSalesInvoiceDataWithSearch = (type, search) => {
-  return CustomAxios.get(`/api/invoice/list-sales-invoice/?${type}=${search}`);
-};
-
-const getSalesInvoiceDataWithPagination = (currentPage) => {
+const getSalesInvoiceData = (startDate, endDate) => {
   return CustomAxios.get(
-    `/api/invoice/list-sales-invoice/?page=${currentPage}`
+    `/api/invoice/list-sales-invoice/?start_date=${startDate}&end_date=${endDate}`
+  );
+};
+
+const getSalesInvoiceDataWithSearch = (startDate, endDate, type, search) => {
+  return CustomAxios.get(
+    `/api/invoice/list-sales-invoice/?start_date=${startDate}&end_date=${endDate}&${type}=${search}`
+  );
+};
+
+const getSalesInvoiceDataWithPagination = (startDate, endDate, currentPage) => {
+  return CustomAxios.get(
+    `/api/invoice/list-sales-invoice/?start_date=${startDate}&end_date=${endDate}&page=${currentPage}`
   );
 };
 
 const getSalesInvoiceDataWithPaginationAndSearch = (
+  startDate,
+  endDate,
   currentPage,
   type,
   search
 ) => {
   return CustomAxios.get(
-    `/api/invoice/list-sales-invoice/?page=${currentPage}&${type}=${search}`
+    `/api/invoice/list-sales-invoice/?start_date=${startDate}&end_date=${endDate}&page=${currentPage}&${type}=${search}`
   );
 };
 

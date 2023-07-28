@@ -73,6 +73,18 @@ export const ForecastView = (props) => {
     "December",
   ];
 
+  // Get the unique index_position values to use as column headers
+  const indexPositions = [
+    ...new Set(
+      forecastdata.flatMap((row) =>
+        row.product_forecast.map((rowData) => rowData.index_position)
+      )
+    ),
+  ];
+
+  // Sort the index_positions array in ascending order
+  indexPositions.sort((a, b) => a - b);
+
   return (
     <>
       <Grid item xs={12}>
@@ -136,29 +148,29 @@ export const ForecastView = (props) => {
                   ACTUAL - FORECAST
                 </StyledTableCell>
                 <StyledTableCell align="center">
-                  {`${months[currentMonth]} - ${currentYear}`} <br /> ACTUAL -
-                  FORECAST
+                  {`${months[currentMonth]} - ${currentYear}`} <br />
+                  ACTUAL - FORECAST
                 </StyledTableCell>
                 <StyledTableCell align="center">
                   {` ${months[nextMonth1]} - ${
                     nextMonth1 > currentMonth ? currentYear : currentYear + 1
                   }`}{" "}
                   <br />
-                  FORECAST
+                  ACTUAL - FORECAST
                 </StyledTableCell>
                 <StyledTableCell align="center">
                   {` ${months[nextMonth2]} - ${
                     nextMonth2 > currentMonth ? currentYear : currentYear + 1
                   }`}{" "}
                   <br />
-                  FORECAST
+                  ACTUAL - FORECAST
                 </StyledTableCell>
                 <StyledTableCell align="center">
                   {` ${months[nextMonth3]} - ${
                     nextMonth3 > currentMonth ? currentYear : currentYear + 1
                   }`}{" "}
                   <br />
-                  FORECAST
+                  ACTUAL - FORECAST
                 </StyledTableCell>
                 <StyledTableCell align="center">Action</StyledTableCell>
               </StyledTableRow>
@@ -172,16 +184,33 @@ export const ForecastView = (props) => {
                   <StyledTableCell align="center">
                     {row.product}
                   </StyledTableCell>
-                  {row.product_forecast.map((rowData) => {
-                    return rowData.actual !== null ? (
-                      <StyledTableCell align="center">
-                        {rowData.actual} - {rowData.forecast}
-                      </StyledTableCell>
-                    ) : (
-                      <StyledTableCell align="center">
-                        {rowData.forecast}
-                      </StyledTableCell>
+                  {indexPositions.map((position) => {
+                    const rowData = row.product_forecast.find(
+                      (data) => data.index_position === position
                     );
+
+                    if (rowData) {
+                      if (rowData.forecast > 0 && rowData.actual !== null) {
+                        return (
+                          <TableCell key={position} align="center">
+                            {rowData.actual} - {rowData.forecast}
+                          </TableCell>
+                        );
+                      } else {
+                        return (
+                          <TableCell key={position} align="center">
+                            - {rowData.forecast}
+                          </TableCell>
+                        );
+                      }
+                    } else {
+                      // Render an empty cell if no matching rowData is found
+                      return (
+                        <TableCell key={position} align="center">
+                          N/A
+                        </TableCell>
+                      );
+                    }
                   })}
                   {/* <StyledTableCell align="center"></StyledTableCell> */}
                   <StyledTableCell align="center">

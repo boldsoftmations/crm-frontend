@@ -20,6 +20,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  TextField,
 } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
 import { tableCellClasses } from "@mui/material/TableCell";
@@ -35,6 +36,7 @@ import { CustomSearch } from "../../../Components/CustomSearch";
 import { useDispatch, useSelector } from "react-redux";
 import { getCustomerOrderBookData } from "../../../Redux/Action/Action";
 import { CancelSalesInvoice } from "./CancelSalesInvoice";
+import { CSVLink } from "react-csv";
 
 export const SalesInvoiceView = () => {
   const errRef = useRef();
@@ -44,6 +46,7 @@ export const SalesInvoiceView = () => {
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [openPopup3, setOpenPopup3] = useState(false);
+  const [openPopup4, setOpenPopup4] = useState(false);
   const [idForEdit, setIDForEdit] = useState();
   const [pageCount, setpageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
@@ -53,12 +56,136 @@ export const SalesInvoiceView = () => {
   const [sellerUnitOption, setSellerUnitOption] = useState([]);
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
+  const [endDate, setEndDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(new Date()); // set default value as current date
+  const minDate = new Date().toISOString().split("T")[0];
+  const maxDate = new Date("2030-12-31").toISOString().split("T")[0];
+  const [exportData, setExportData] = useState([]);
+  const csvLinkRef = useRef(null);
+
+  const handleDownload = async () => {
+    const data = await handleExport();
+    setExportData(data);
+    setTimeout(() => {
+      csvLinkRef.current.link.click();
+    });
+  };
+
+  const headers = [
+    { label: "Date", key: "date" },
+    { label: "Invoice No", key: "invoice_no" },
+    { label: "Customer", key: "customer" },
+    { label: "Taxable Amount", key: "taxabale_amount" },
+    { label: "GST", key: "gst" },
+    { label: "Total Amount", key: "total_amount" },
+  ];
+
+  const handleExport = async () => {
+    try {
+      setOpen(true);
+      const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
+      const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
+      const response =
+        filterSelectedQuery || searchQuery
+          ? await InvoiceServices.getSalesInvoiceDataWithPaginationAndSearch(
+              StartDate,
+              EndDate,
+              "all",
+              filterQuery,
+              searchQuery || filterSelectedQuery
+            )
+          : await InvoiceServices.getSalesInvoiceDataWithPagination(
+              StartDate,
+              EndDate,
+              "all"
+            );
+      console.log("response", response);
+      let data = response.data.map((item) => {
+        return {
+          date: item.generation_date,
+          invoice_no: item.invoice_no,
+          customer: item.company,
+          taxabale_amount: item.amount,
+          gst: item.gst,
+          total_amount: item.total,
+        };
+      });
+      setOpen(false);
+      return data;
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setOpen(false);
+    }
+  };
+
+  const handleStartDateChange = (event) => {
+    const date = new Date(event.target.value);
+    setStartDate(date);
+    setEndDate(new Date());
+  };
+
+  const handleEndDateChange = (event) => {
+    const date = new Date(event.target.value);
+    setEndDate(date);
+  };
+
+  const handleChange = (event) => {
+    const selectedValue = event.target.value;
+
+    if (selectedValue === "Today") {
+      const today = new Date();
+      setEndDate(today);
+      setStartDate(today);
+    } else if (selectedValue === "Yesterday") {
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      setEndDate(yesterday);
+      setStartDate(yesterday);
+    } else if (selectedValue === "Last 7 Days") {
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - 7);
+      setEndDate(endDate);
+      setStartDate(startDate);
+    } else if (selectedValue === "Last 30 Days") {
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - 30);
+      setEndDate(endDate);
+      setStartDate(startDate);
+    } else if (selectedValue === "This Month") {
+      const endDate = new Date();
+      const startDate = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
+      setEndDate(endDate);
+      setStartDate(startDate);
+    } else if (selectedValue === "Last Month") {
+      const endDate = new Date();
+      endDate.setDate(0);
+      const startDate = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
+      setEndDate(endDate);
+      setStartDate(startDate);
+    } else if (selectedValue === "Custom Date") {
+      // Handle custom date logic, for example:
+      setStartDate(new Date());
+      setEndDate(new Date());
+      setOpenPopup4(true);
+    }
+  };
+
+  const getResetDate = () => {
+    setStartDate(new Date());
+    setEndDate(new Date());
+  };
 
   useEffect(() => {
     getAllSellerAccountsDetails();
-    getSalesInvoiceDetails();
     getAllCustomerWiseOrderBook();
   }, []);
+
+  useEffect(() => {
+    getSalesInvoiceDetails();
+  }, [startDate, endDate]);
 
   const getAllSellerAccountsDetails = async () => {
     try {
@@ -102,14 +229,23 @@ export const SalesInvoiceView = () => {
   const getSalesInvoiceDetails = async () => {
     try {
       setOpen(true);
+      const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
+      const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
       if (currentPage) {
         const response =
-          await InvoiceServices.getSalesInvoiceDataWithPagination(currentPage);
+          await InvoiceServices.getSalesInvoiceDataWithPagination(
+            currentPage,
+            StartDate,
+            EndDate
+          );
         setSalesInvoiceData(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
       } else {
-        const response = await InvoiceServices.getSalesInvoiceData();
+        const response = await InvoiceServices.getSalesInvoiceData(
+          StartDate,
+          EndDate
+        );
         setSalesInvoiceData(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
@@ -149,8 +285,12 @@ export const SalesInvoiceView = () => {
   const getSearchData = async (value) => {
     try {
       setOpen(true);
+      const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
+      const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
       const filterSearch = value;
       const response = await InvoiceServices.getSalesInvoiceDataWithSearch(
+        StartDate,
+        EndDate,
         filterQuery,
         filterSearch
       );
@@ -173,9 +313,13 @@ export const SalesInvoiceView = () => {
     try {
       const page = value;
       setCurrentPage(page);
+      const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
+      const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
       if (searchQuery) {
         const response =
           await InvoiceServices.getSalesInvoiceDataWithPaginationAndSearch(
+            StartDate,
+            EndDate,
             page,
             filterQuery,
             searchQuery
@@ -191,6 +335,8 @@ export const SalesInvoiceView = () => {
       } else if (filterSelectedQuery) {
         const response =
           await InvoiceServices.getSalesInvoiceDataWithPaginationAndSearch(
+            StartDate,
+            EndDate,
             page,
             filterQuery,
             filterSelectedQuery
@@ -205,7 +351,11 @@ export const SalesInvoiceView = () => {
         }
       } else {
         const response =
-          await InvoiceServices.getSalesInvoiceDataWithPagination(page);
+          await InvoiceServices.getSalesInvoiceDataWithPagination(
+            StartDate,
+            EndDate,
+            page
+          );
         setSalesInvoiceData(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
@@ -234,7 +384,7 @@ export const SalesInvoiceView = () => {
     setIDForEdit(item);
     setOpenPopup3(true);
   };
-
+  console.log("exportData", exportData);
   return (
     <>
       <CustomLoader open={open} />
@@ -242,103 +392,133 @@ export const SalesInvoiceView = () => {
       <Grid item xs={12}>
         <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
-          <Box display="flex">
-            <Box flexGrow={1}>
-              <FormControl fullWidth size="small">
-                <InputLabel id="demo-simple-select-label">Fliter By</InputLabel>
+          <Box display="flex" marginBottom="10px">
+            <FormControl sx={{ width: "200px" }} size="small">
+              <InputLabel id="demo-select-small">Date</InputLabel>
+              <Select
+                labelId="demo-select-small"
+                id="demo-select-small"
+                label="Date"
+                onChange={(event) => handleChange(event)}
+              >
+                {DateOptions.map((option, i) => (
+                  <MenuItem key={i} value={option.value}>
+                    {option.value}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl
+              sx={{ width: "200px", marginLeft: "1em" }}
+              size="small"
+            >
+              <InputLabel id="demo-simple-select-label">Fliter By</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                name="values"
+                label="Fliter By"
+                value={filterQuery}
+                onChange={(event) => setFilterQuery(event.target.value)}
+              >
+                {filterOption.map((option, i) => (
+                  <MenuItem key={i} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            {filterQuery ===
+              "order_book__proforma_invoice__seller_account__unit" && (
+              <FormControl
+                sx={{ minWidth: "200px", marginLeft: "1em" }}
+                size="small"
+              >
+                <InputLabel id="demo-simple-select-label">
+                  Filter By State
+                </InputLabel>
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
                   name="values"
-                  label="Fliter By"
-                  value={filterQuery}
-                  onChange={(event) => setFilterQuery(event.target.value)}
+                  label="Filter By State"
+                  value={filterSelectedQuery}
+                  onChange={(event) => handleInputChanges(event)}
+                  sx={{
+                    "& .MuiSelect-iconOutlined": {
+                      display: filterSelectedQuery ? "none" : "",
+                    },
+                    "&.Mui-focused .MuiIconButton-root": {
+                      color: "primary.main",
+                    },
+                  }}
+                  endAdornment={
+                    <IconButton
+                      sx={{
+                        visibility: filterSelectedQuery ? "visible" : "hidden",
+                      }}
+                      onClick={getResetData}
+                    >
+                      <ClearIcon />
+                    </IconButton>
+                  }
                 >
-                  {filterOption.map((option, i) => (
-                    <MenuItem key={i} value={option.value}>
-                      {option.label}
+                  {sellerUnitOption.map((option, i) => (
+                    <MenuItem key={i} value={option.unit}>
+                      {option.unit}
                     </MenuItem>
                   ))}
                 </Select>
               </FormControl>
-            </Box>
-            <Box flexGrow={1}>
-              {filterQuery ===
-                "order_book__proforma_invoice__seller_account__unit" && (
-                <FormControl
-                  sx={{ minWidth: "200px", marginLeft: "1em" }}
-                  size="small"
-                >
-                  <InputLabel id="demo-simple-select-label">
-                    Filter By State
-                  </InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    name="values"
-                    label="Filter By State"
-                    value={filterSelectedQuery}
-                    onChange={(event) => handleInputChanges(event)}
-                    sx={{
-                      "& .MuiSelect-iconOutlined": {
-                        display: filterSelectedQuery ? "none" : "",
-                      },
-                      "&.Mui-focused .MuiIconButton-root": {
-                        color: "primary.main",
-                      },
-                    }}
-                    endAdornment={
-                      <IconButton
-                        sx={{
-                          visibility: filterSelectedQuery
-                            ? "visible"
-                            : "hidden",
-                        }}
-                        onClick={getResetData}
-                      >
-                        <ClearIcon />
-                      </IconButton>
-                    }
-                  >
-                    {sellerUnitOption.map((option, i) => (
-                      <MenuItem key={i} value={option.unit}>
-                        {option.unit}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              )}
-              {filterQuery === "search" && (
-                <CustomSearch
-                  filterSelectedQuery={searchQuery}
-                  handleInputChange={handleInputChange}
-                  getResetData={getResetData}
-                />
-              )}
-            </Box>
-            <Box flexGrow={1}>
-              <h3
+            )}
+            {filterQuery === "search" && (
+              <CustomSearch
+                filterSelectedQuery={searchQuery}
+                handleInputChange={handleInputChange}
+                getResetData={getResetData}
+              />
+            )}
+            <Button
+              sx={{ marginLeft: "1em", marginRight: "1em" }}
+              onClick={() => setOpenPopup(true)}
+              variant="contained"
+              color="success"
+              startIcon={<AddIcon />}
+            >
+              Create SalesInvoice
+            </Button>
+
+            <Button variant="contained" onClick={handleDownload}>
+              Download CSV
+            </Button>
+            {exportData.length > 0 && (
+              <CSVLink
+                headers={headers}
+                data={exportData}
+                ref={csvLinkRef}
+                filename="Customer Order Book.csv"
+                target="_blank"
                 style={{
-                  textAlign: "left",
-                  marginBottom: "1em",
-                  fontSize: "24px",
-                  color: "rgb(34, 34, 34)",
-                  fontWeight: 800,
+                  textDecoration: "none",
+                  outline: "none",
+                  height: "5vh",
                 }}
-              >
-                Sales Invoice
-              </h3>
-            </Box>
-            <Box flexGrow={0.5} align="right">
-              <Button
-                onClick={() => setOpenPopup(true)}
-                variant="contained"
-                color="success"
-                startIcon={<AddIcon />}
-              >
-                Create SalesInvoice
-              </Button>
-            </Box>
+              />
+            )}
+          </Box>
+          <Box display="flex" alignItems="center" justifyContent="center">
+            <h3
+              style={{
+                textAlign: "left",
+                marginBottom: "1em",
+                fontSize: "24px",
+                color: "rgb(34, 34, 34)",
+                fontWeight: 800,
+              }}
+            >
+              Sales Invoice
+            </h3>
           </Box>
           <TableContainer
             sx={{
@@ -464,6 +644,65 @@ export const SalesInvoiceView = () => {
           setOpenPopup={setOpenPopup3}
         />
       </Popup>
+      <Popup
+        openPopup={openPopup4}
+        setOpenPopup={setOpenPopup4}
+        title="Date Filter"
+        maxWidth="md"
+      >
+        <Box
+          sx={{
+            backgroundColor: "white",
+            borderRadius: "8px",
+            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+            margin: "10px",
+            padding: "20px",
+          }}
+        >
+          <Grid container spacing={2}>
+            <Grid item xs={5} sm={5} md={5} lg={5}>
+              <TextField
+                fullWidth
+                label="Start Date"
+                variant="outlined"
+                size="small"
+                type="date"
+                id="start-date"
+                value={startDate ? startDate.toISOString().split("T")[0] : ""}
+                min={minDate}
+                max={maxDate}
+                onChange={handleStartDateChange}
+              />
+            </Grid>
+            <Grid item xs={5} sm={5} md={5} lg={5}>
+              <TextField
+                fullWidth
+                label="End Date"
+                variant="outlined"
+                size="small"
+                type="date"
+                id="end-date"
+                value={endDate ? endDate.toISOString().split("T")[0] : ""}
+                min={
+                  startDate ? startDate.toISOString().split("T")[0] : minDate
+                }
+                max={maxDate}
+                onChange={handleEndDateChange}
+                disabled={!startDate}
+              />
+            </Grid>
+            <Grid item xs={2} sm={2} md={2} lg={2}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={getResetDate}
+              >
+                Reset
+              </Button>
+            </Grid>
+          </Grid>
+        </Box>
+      </Popup>
     </>
   );
 };
@@ -582,3 +821,27 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     border: 0,
   },
 }));
+
+const DateOptions = [
+  {
+    value: "Today",
+  },
+  {
+    value: "Yesterday",
+  },
+  {
+    value: "Last 7 Days",
+  },
+  {
+    value: "Last 30 Days",
+  },
+  {
+    value: "This Month",
+  },
+  {
+    value: "Last Month",
+  },
+  {
+    value: "Custom Date",
+  },
+];
