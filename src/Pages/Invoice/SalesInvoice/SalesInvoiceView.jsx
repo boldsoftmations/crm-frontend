@@ -99,8 +99,17 @@ export const SalesInvoiceView = () => {
               "all"
             );
 
-      let data = response.data.map((item) => {
-        return {
+      // Filter out items with 'cancelled' as true from the response
+      const filteredData = response.data.filter(
+        (item) => item.cancelled !== true
+      );
+
+      // Initialize the data array
+      const data = [];
+
+      // Map the filtered data to the desired export format
+      filteredData.forEach((item) => {
+        const exportData = {
           date: item.generation_date,
           invoice_no: item.invoice_no,
           seller_unit: item.seller_unit,
@@ -109,7 +118,11 @@ export const SalesInvoiceView = () => {
           gst: item.gst,
           total_amount: item.total,
         };
+
+        // Check if item.cancelled is not true and then add data
+        data.push(exportData);
       });
+
       setOpen(false);
       return data;
     } catch (err) {
@@ -118,7 +131,6 @@ export const SalesInvoiceView = () => {
       setOpen(false);
     }
   };
-
   const handleStartDateChange = (event) => {
     const date = new Date(event.target.value);
     setStartDate(date);
