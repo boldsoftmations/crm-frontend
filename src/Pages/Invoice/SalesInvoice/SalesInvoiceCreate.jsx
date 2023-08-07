@@ -161,6 +161,9 @@ export const SalesInvoiceCreate = (props) => {
       const req = {
         order_book: customerorderBookData.id,
         order_book_list: orderBookID,
+        generation_date: inputValue.generation_date
+          ? inputValue.generation_date
+          : new Date().toISOString().split("T")[0],
         products: PRODUCTS,
         place_of_supply:
           inputValue.place_of_supply !== undefined
@@ -457,7 +460,22 @@ export const SalesInvoiceCreate = (props) => {
               onChange={handleInputChange}
             />
           </Grid>
-
+          <Grid item xs={12} sm={3}>
+            <TextField
+              fullWidth
+              type="date"
+              name="ganeration_date"
+              size="small"
+              label="ganeration_date"
+              variant="outlined"
+              value={
+                inputValue.ganeration_date
+                  ? inputValue.ganeration_date
+                  : new Date().toISOString().split("T")[0] // Set current date if not provided
+              }
+              onChange={handleInputChange}
+            />
+          </Grid>
           <Grid item xs={12}>
             <Root>
               <Divider>
