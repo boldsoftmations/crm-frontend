@@ -135,6 +135,12 @@ const getDailyProfitableReportsDataByFilter = (startDate, endDate) => {
   );
 };
 
+const getDescriptionWiseTurnoverDataByFilter = (startDate, endDate) => {
+  return CustomAxios.get(
+    `/api/dashboard/description-wise-turnover/?start_date=${startDate}&end_date=${endDate}`
+  );
+};
+
 const getDailyProfitableSalesReportsDataByFilter = (
   startDate,
   endDate,
@@ -194,6 +200,7 @@ const DashboardService = {
   getCallPerformanceDataByFilter,
   getDailyProfitableReportsData,
   getDailyProfitableReportsDataByFilter,
+  getDescriptionWiseTurnoverDataByFilter,
   getDailyProfitableSalesReportsDataByFilter,
   getDailyInvoiceQuantityData,
   getDailyInvoiceQuantityDataByFilter,

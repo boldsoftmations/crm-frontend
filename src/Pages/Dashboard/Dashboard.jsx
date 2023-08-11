@@ -23,6 +23,7 @@ import { DailyProfitableReports } from "./DailyProfitableReports/DailyProfitable
 import DashboardService from "../../services/DashboardService";
 import { useSelector } from "react-redux";
 import { Popup } from "../../Components/Popup";
+import { DescriptionWiseTurnover } from "./DescriptionWiseTurnover/DescriptionWiseTurnover";
 
 export function Dashboard() {
   const [open, setOpen] = useState(false);
@@ -43,6 +44,7 @@ export function Dashboard() {
     currentSalesSummaryRM,
     salesPersonSummary,
     dailyProfitableReportsFilterData,
+    descriptionWiseTurnoverFilterData,
   } = state;
 
   const handleStartDateChange = (event) => {
@@ -116,6 +118,7 @@ export function Dashboard() {
     { label: "Current Month Sales(Raw Material)" },
     { label: "Sales Person Summary" },
     { label: "Product Wise Turnover" },
+    { label: "Description Wise Turnover" },
     ...(userData.email === "devannsh@glutape.com" ||
     userData.email === "mahesh@glutaoe.com" ||
     userData.groups.includes("Accounts") ||
@@ -131,6 +134,7 @@ export function Dashboard() {
   useEffect(() => {
     getFilterByDashboard();
     getFilterByDailyProfitableReports();
+    getFilterByDescriptionWiseTurnover();
   }, [startDate, endDate]);
 
   const getFilterByDashboard = async () => {
@@ -188,6 +192,27 @@ export function Dashboard() {
     } catch (err) {
       setOpen(false);
       console.log("Dashboard Filter By error", err);
+    }
+  };
+
+  const getFilterByDescriptionWiseTurnover = async () => {
+    try {
+      setOpen(true);
+      const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
+      const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
+      let response =
+        await DashboardService.getDescriptionWiseTurnoverDataByFilter(
+          StartDate,
+          EndDate
+        );
+      dispatch({
+        type: "SET_DESCRIPTION_WISE_TURNOVER_FILTER_DATA",
+        payload: response.data.description_wise_turnover,
+      });
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      console.log("Description wise turnover Filter By error", err);
     }
   };
 
@@ -307,6 +332,15 @@ export function Dashboard() {
           )}
           {activeTab === 7 && (
             <div>
+              <DescriptionWiseTurnover
+                descriptionWiseTurnoverFilterData={
+                  descriptionWiseTurnoverFilterData
+                }
+              />
+            </div>
+          )}
+          {activeTab === 8 && (
+            <div>
               <DailyProfitableReports
                 dailyProfitableReportsFilterData={
                   dailyProfitableReportsFilterData
@@ -412,6 +446,7 @@ const initialState = {
   currentSalesSummaryRM: [],
   salesPersonSummary: [],
   dailyProfitableReportsFilterData: [],
+  descriptionWiseTurnoverFilterData: [],
 };
 
 // Define the reducer function
@@ -431,6 +466,8 @@ const reducer = (state, action) => {
       return { ...state, salesPersonSummary: action.payload };
     case "SET_DAILY_PROFITABLE_REPORTS_FILTER_DATA":
       return { ...state, dailyProfitableReportsFilterData: action.payload };
+    case "SET_DESCRIPTION_WISE_TURNOVER_FILTER_DATA":
+      return { ...state, descriptionWiseTurnoverFilterData: action.payload };
     default:
       return state;
   }
