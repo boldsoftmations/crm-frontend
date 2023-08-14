@@ -81,13 +81,13 @@ export const CreateLeads = (props) => {
         assigned_to: leads.assigned_to,
         references: leads.references,
         company: leads.company,
-        gst_number: leads.gst_number,
-        pan_number: leads.pan_number,
+        gst_number: leads.gst_number || null,
+        pan_number: leads.pan_number || null,
         address: leads.address,
         city: leads.city,
         state: leads.state,
         country: leads.country,
-        pincode: leads.pincode,
+        pincode: leads.pincode || null,
         website: leads.website,
         type_of_customer: leads.type_of_customer,
         shipping_address:
@@ -95,7 +95,9 @@ export const CreateLeads = (props) => {
         shipping_city: checked === true ? leads.city : leads.shipping_city,
         shipping_state: checked === true ? leads.state : leads.shipping_state,
         shipping_pincode:
-          checked === true ? leads.pincode : leads.shipping_pincode,
+          checked === true
+            ? leads.pincode || null
+            : leads.shipping_pincode || null,
       };
 
       await LeadServices.createLeads(data);

@@ -127,14 +127,16 @@ export const UpdateLeads = (props) => {
         city: leads.city,
         state: leads.state,
         country: leads.country,
-        pincode: leads.pincode,
+        pincode: leads.pincode || null,
         website: leads.website,
         shipping_address:
           checked === true ? leads.address : leads.shipping_address,
         shipping_city: checked === true ? leads.city : leads.shipping_city,
         shipping_state: checked === true ? leads.state : leads.shipping_state,
         shipping_pincode:
-          checked === true ? leads.pincode : leads.shipping_pincode,
+          checked === true
+            ? leads.pincode || null
+            : leads.shipping_pincode || null,
       };
 
       await LeadServices.updateLeads(leadsByID, data);
