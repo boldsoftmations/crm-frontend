@@ -370,7 +370,7 @@ export const SalesInvoiceView = () => {
     setIDForEdit(item);
     setOpenPopup3(true);
   };
-  console.log("exportData", exportData);
+
   return (
     <>
       <CustomLoader open={open} />
@@ -739,7 +739,7 @@ function Row(props) {
             <Button
               variant="text"
               color="error"
-              onClick={() => openInPopup2(row.invoice_no)}
+              onClick={() => openInPopup2(row)}
             >
               Cancel
             </Button>
