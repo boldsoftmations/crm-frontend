@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -7,28 +8,34 @@ import {
   MenuItem,
   Select,
   TextField,
+  Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import ErrorIcon from "@mui/icons-material/Error";
 import { useSelector } from "react-redux";
 import LeadServices from "../../services/LeadService";
 import { CustomLoader } from "../../Components/CustomLoader";
 
-export const LeadActivityCreate = (props) => {
-  const { leadsByID, getLeadByID, setOpenModal } = props;
+export const LeadActivityCreate = ({
+  leadsByID,
+  getLeadByID,
+  setOpenModal,
+}) => {
   const [open, setOpen] = useState(false);
-  const [followUp, setFollowUp] = useState([]);
+  const [followUp, setFollowUp] = useState({});
+  const [errorMessage, setErrorMessage] = useState("");
   const data = useSelector((state) => state.auth);
   const userId = data.profile.email;
+
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    setFollowUp({ ...followUp, [name]: value });
+    setFollowUp((prevFollowUp) => ({ ...prevFollowUp, [name]: value }));
   };
 
   const createFollowUpLeadsData = async (e) => {
     try {
       e.preventDefault();
       setOpen(true);
-      const data = {
+      const followUpData = {
         leads: leadsByID,
         user: userId,
         activity: followUp.activity,
@@ -36,12 +43,13 @@ export const LeadActivityCreate = (props) => {
         next_followup_date: followUp.nextFollowUpDate,
       };
 
-      await LeadServices.createFollowUpLeads(data);
+      await LeadServices.createFollowUpLeads(followUpData);
       setOpenModal(false);
       await getLeadByID(leadsByID);
       setOpen(false);
     } catch (error) {
       console.log("error :>> ", error);
+      setErrorMessage(error.response.data.message);
       setOpen(false);
     }
   };
@@ -67,11 +75,10 @@ export const LeadActivityCreate = (props) => {
                 MenuProps={{
                   PaperProps: {
                     style: {
-                      maxHeight: "200px", // Adjust the maximum height as per your requirement
+                      maxHeight: "200px",
                     },
                   },
                 }}
-                // value={filterQuery}
                 onChange={handleInputChange}
               >
                 {ActivityOption.map((option) => (
@@ -84,13 +91,12 @@ export const LeadActivityCreate = (props) => {
           </Grid>
           <Grid item xs={12}>
             <TextField
-              multiline
               fullWidth
-              name="note"
+              multiline
               size="small"
               label="Note"
               variant="outlined"
-              value={followUp.companyName}
+              value={followUp.note}
               onChange={handleInputChange}
             />
           </Grid>
@@ -102,7 +108,7 @@ export const LeadActivityCreate = (props) => {
               size="small"
               label="Next Followup Date"
               variant="outlined"
-              value={followUp.nextFollowUpDate ? followUp.nextFollowUpDate : ""}
+              value={followUp.nextFollowUpDate || ""}
               onChange={handleInputChange}
               InputLabelProps={{
                 shrink: true,
@@ -113,6 +119,12 @@ export const LeadActivityCreate = (props) => {
         <Button fullWidth type="submit" variant="contained">
           Submit
         </Button>
+        {errorMessage && (
+          <Box sx={{ display: "flex", alignItems: "center", mt: 2 }}>
+            <ErrorIcon color="error" sx={{ mr: 1 }} />
+            <Typography color="error">{errorMessage}</Typography>
+          </Box>
+        )}
       </Box>
     </>
   );
