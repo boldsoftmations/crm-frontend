@@ -45,6 +45,7 @@ export function Dashboard() {
     salesPersonSummary,
     dailyProfitableReportsFilterData,
     descriptionWiseTurnoverFilterData,
+    salesData,
   } = state;
 
   const handleStartDateChange = (event) => {
@@ -209,6 +210,11 @@ export function Dashboard() {
         type: "SET_DESCRIPTION_WISE_TURNOVER_FILTER_DATA",
         payload: response.data.description_wise_turnover,
       });
+
+      dispatch({
+        type: "SET_SALES_DATA",
+        payload: response.data.sales_data,
+      });
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -336,6 +342,7 @@ export function Dashboard() {
                 descriptionWiseTurnoverFilterData={
                   descriptionWiseTurnoverFilterData
                 }
+                salesData={salesData}
               />
             </div>
           )}
@@ -447,6 +454,7 @@ const initialState = {
   salesPersonSummary: [],
   dailyProfitableReportsFilterData: [],
   descriptionWiseTurnoverFilterData: [],
+  salesData: [],
 };
 
 // Define the reducer function
@@ -468,6 +476,8 @@ const reducer = (state, action) => {
       return { ...state, dailyProfitableReportsFilterData: action.payload };
     case "SET_DESCRIPTION_WISE_TURNOVER_FILTER_DATA":
       return { ...state, descriptionWiseTurnoverFilterData: action.payload };
+    case "SET_SALES_DATA":
+      return { ...state, salesData: action.payload };
     default:
       return state;
   }

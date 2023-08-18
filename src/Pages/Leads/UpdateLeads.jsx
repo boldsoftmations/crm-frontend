@@ -30,6 +30,7 @@ import { ViewAllPotential } from "../Potential/ViewAllPotential";
 import { LeadActivity } from "../FollowUp/LeadActivity";
 
 export const UpdateLeads = (props) => {
+  // Destructure props
   const {
     setOpenPopup,
     getAllleadsData,
@@ -38,6 +39,7 @@ export const UpdateLeads = (props) => {
     product,
     leadsByID,
   } = props;
+  // State variables
   const [open, setOpen] = useState(false);
   const [checked, setChecked] = useState(false);
   const [leads, setLeads] = useState([]);
@@ -45,12 +47,14 @@ export const UpdateLeads = (props) => {
   const [potential, setPotential] = useState(null);
   const [error, setError] = useState(null);
 
+  // Helper function to get target date
   const getTargetDate = () => {
     const currentDate = new Date();
     const targetDate = new Date(currentDate.setDate(currentDate.getDate() + 3));
     return targetDate.toISOString().split("T")[0]; // Format targetDate as YYYY-MM-DD
   };
 
+  // Event handlers
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     const updatedValue =
@@ -79,6 +83,7 @@ export const UpdateLeads = (props) => {
     setChecked(event.target.checked);
   };
 
+  // Fetch data on component mount
   useEffect(() => {
     if (leadsByID) getLeadsData(leadsByID);
   }, []);
@@ -98,6 +103,7 @@ export const UpdateLeads = (props) => {
     }
   };
 
+  // Update leads data
   const updateLeadsData = async (e) => {
     try {
       e.preventDefault();
@@ -153,6 +159,7 @@ export const UpdateLeads = (props) => {
     }
   };
 
+  // Regular expressions for GST and PAN validation
   const GST_NO = (gst_no) =>
     /^[0-9]{2}[A-Za-z]{5}[0-9]{4}[A-Za-z]{1}[1-9A-Za-z]{1}Z[0-9A-Za-z]{1}$/.test(
       gst_no
