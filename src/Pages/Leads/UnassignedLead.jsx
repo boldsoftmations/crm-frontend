@@ -248,7 +248,7 @@ export const UnassignedLead = () => {
       selectedRows.length > 0
         ? await LeadServices.AssignMultipleLeads(req)
         : await LeadServices.updateLeads(recordForEdit.id, data);
-      getUnassigned();
+      // getUnassigned();
       setModalOpen(false);
       setOpen(false);
     } catch (error) {
