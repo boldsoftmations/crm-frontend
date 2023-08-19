@@ -43,7 +43,7 @@ export const UnassignedLead = () => {
   const [assign, setAssign] = useState("");
   const [assigned, setAssigned] = useState([]);
   const [pageCount, setpageCount] = useState(0);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [openPopup, setOpenPopup] = useState(false);
   const [recordForEdit, setRecordForEdit] = useState(null);
   const [referenceData, setReferenceData] = useState([]);
@@ -139,23 +139,27 @@ export const UnassignedLead = () => {
   };
   const getUnassigned = async () => {
     try {
-      if (currentPage) {
-        const response = await LeadServices.getAllPaginateUnassigned(
+      console.log("currentPage", currentPage);
+      console.log("filterSelectedQuery", filterSelectedQuery);
+      setOpen(true);
+      if (currentPage || filterSelectedQuery) {
+        const response = await LeadServices.getAllPaginateWithFilterUnassigned(
           currentPage,
+          filterQuery,
           filterSelectedQuery
         );
         setLeads(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
       } else {
-        setOpen(true);
         let response = await LeadServices.getAllUnassignedData();
         if (response) {
           setLeads(response.data.results);
           const total = response.data.count;
           setpageCount(Math.ceil(total / 25));
-
-          setOpen(false);
         }
       }
+      setOpen(false);
     } catch (err) {
       setOpen(false);
       if (!err.response) {
@@ -188,7 +192,6 @@ export const UnassignedLead = () => {
 
       if (response) {
         setLeads(response.data.results);
-
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
       } else {
@@ -214,9 +217,13 @@ export const UnassignedLead = () => {
           filterSelectedQuery
         );
         setLeads(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
       } else {
         const response = await LeadServices.getAllPaginateUnassigned(page);
         setLeads(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
       }
       setOpen(false);
     } catch (error) {
@@ -248,9 +255,9 @@ export const UnassignedLead = () => {
       selectedRows.length > 0
         ? await LeadServices.AssignMultipleLeads(req)
         : await LeadServices.updateLeads(recordForEdit.id, data);
-      // getUnassigned();
-      setModalOpen(false);
+      getUnassigned();
       setOpen(false);
+      setModalOpen(false);
     } catch (error) {
       console.log("error :>> ", error);
       setOpen(false);
