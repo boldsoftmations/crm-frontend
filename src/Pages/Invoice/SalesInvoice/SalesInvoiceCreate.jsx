@@ -464,13 +464,13 @@ export const SalesInvoiceCreate = (props) => {
             <TextField
               fullWidth
               type="date"
-              name="ganeration_date"
+              name="generation_date"
               size="small"
-              label="ganeration_date"
+              label="Generation Date"
               variant="outlined"
               value={
-                inputValue.ganeration_date
-                  ? inputValue.ganeration_date
+                inputValue.generation_date
+                  ? inputValue.generation_date
                   : new Date().toISOString().split("T")[0] // Set current date if not provided
               }
               onChange={handleInputChange}
