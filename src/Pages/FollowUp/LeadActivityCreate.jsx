@@ -40,7 +40,7 @@ export const LeadActivityCreate = ({
         user: userId,
         activity: followUp.activity,
         notes: followUp.note,
-        next_followup_date: followUp.nextFollowUpDate,
+        next_followup_date: followUp.next_followup_date,
       };
 
       await LeadServices.createFollowUpLeads(followUpData);
@@ -93,6 +93,7 @@ export const LeadActivityCreate = ({
             <TextField
               fullWidth
               multiline
+              name="note"
               size="small"
               label="Note"
               variant="outlined"
@@ -104,11 +105,11 @@ export const LeadActivityCreate = ({
             <TextField
               fullWidth
               type="date"
-              name="nextFollowUpDate"
+              name="next_followup_date"
               size="small"
               label="Next Followup Date"
               variant="outlined"
-              value={followUp.nextFollowUpDate || ""}
+              value={followUp.next_followup_date || ""}
               onChange={handleInputChange}
               InputLabelProps={{
                 shrink: true,
