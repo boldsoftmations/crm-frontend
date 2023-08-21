@@ -11,6 +11,7 @@ import { CustomSearch } from "./../../../Components/CustomSearch";
 import { CustomPagination } from "./../../../Components/CustomPagination";
 import { CustomTable } from "../../../Components/CustomTable";
 import "../../CommonStyle.css";
+import { CSVLink } from "react-csv";
 
 export const ViewDescription = () => {
   const [description, setDescription] = useState([]);
@@ -23,6 +24,56 @@ export const ViewDescription = () => {
   const [recordForEdit, setRecordForEdit] = useState(null);
   const [pageCount, setpageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
+  const [exportData, setExportData] = useState([]);
+  const csvLinkRef = useRef(null);
+
+  const handleDownload = async () => {
+    try {
+      const data = await handleExport();
+      setExportData(data);
+      setTimeout(() => {
+        csvLinkRef.current.link.click();
+      });
+    } catch (error) {
+      console.log("CSVLink Download error", error);
+    }
+  };
+
+  const headers = [
+    { label: "ID", key: "id" },
+    { label: "DESCRIPTION", key: "name" },
+    { label: "CONSUMABLE", key: "consumable" },
+  ];
+
+  const handleExport = async () => {
+    try {
+      setOpen(true);
+      let response;
+      if (searchQuery) {
+        response = await ProductService.getDescriptionPaginateWithSearch(
+          "all",
+          searchQuery
+        );
+      } else {
+        response = await ProductService.getDescriptionPaginate("all");
+      }
+      const data = response.data.map((row) => {
+        return {
+          id: row.id,
+          name: row.name,
+          consumable: row.consumable,
+        };
+      });
+
+      setOpen(false);
+      return data;
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setOpen(false);
+    }
+  };
+
   const getDescriptions = async () => {
     try {
       setOpen(true);
@@ -178,6 +229,23 @@ export const ViewDescription = () => {
               >
                 Add
               </Button>
+              <Button variant="contained" onClick={handleDownload}>
+                Download CSV
+              </Button>
+              {exportData.length > 0 && (
+                <CSVLink
+                  data={exportData}
+                  headers={headers}
+                  ref={csvLinkRef}
+                  filename="Description.csv"
+                  target="_blank"
+                  style={{
+                    textDecoration: "none",
+                    outline: "none",
+                    height: "5vh",
+                  }}
+                />
+              )}
             </Box>
           </Box>
           {/* CustomTable */}
