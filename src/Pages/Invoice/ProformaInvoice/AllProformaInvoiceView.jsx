@@ -688,11 +688,7 @@ export const AllProformaInvoiceView = (props) => {
                     <div className="col-md-4 d-flex align-items-end justify-content-center">
                       <div className="text-center">
                         {invoiceData.approval
-                          ? invoiceData.approval.approver_first_name
-                          : ""}
-                        &nbsp;&nbsp;
-                        {invoiceData.approval
-                          ? invoiceData.approval.approver_last_name
+                          ? invoiceData.approval.approve_name
                           : ""}
                         <br />
                         {invoiceData.approval
