@@ -803,7 +803,9 @@ export const MyDocument = (props) => {
                 >
                   <Text style={innerTextStyle}>
                     {invoiceData.approval
-                      ? capitalizeFirstLetter(invoiceData.approval.approve_name)
+                      ? capitalizeFirstLetter(
+                          invoiceData.approval.approve_name || ""
+                        )
                       : ""}{" "}
                   </Text>
                   <Text style={innerTextStyle}>
