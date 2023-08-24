@@ -24,6 +24,7 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/material.css";
 import { CustomLoader } from "./../../Components/CustomLoader";
 import LeadServices from "../../services/LeadService";
+import Option from "../../Options/Options";
 
 export const CreateLeads = (props) => {
   const {
@@ -35,17 +36,31 @@ export const CreateLeads = (props) => {
   } = props;
   const [open, setOpen] = useState(false);
   const [checked, setChecked] = useState(false);
-  const [leads, setLeads] = useState([]);
+  const [leads, setLeads] = useState({
+    estd_year: new Date().getFullYear().toString(),
+  });
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    const updatedValue =
-      name === "gst_number" || name === "pan_number"
-        ? value.toUpperCase()
-        : value;
-    setLeads({ ...leads, [name]: updatedValue });
+    let updatedValue = value;
+
+    // Conditionally update gst_number and pan_number to uppercase
+    if (name === "gst_number" || name === "pan_number") {
+      updatedValue = value.toUpperCase();
+    }
+
+    // Conditionally update purchase_decision_maker based on the presence of leads.name
+    if (name === "name") {
+      setLeads({
+        ...leads,
+        [name]: updatedValue,
+        purchase_decision_maker: updatedValue,
+      });
+    } else {
+      setLeads({ ...leads, [name]: updatedValue });
+    }
   };
 
   const handleCloseSnackbar = () => {
@@ -88,8 +103,6 @@ export const CreateLeads = (props) => {
         state: leads.state,
         country: leads.country,
         pincode: leads.pincode || null,
-        website: leads.website,
-        type_of_customer: leads.type_of_customer,
         shipping_address:
           checked === true ? leads.address : leads.shipping_address,
         shipping_city: checked === true ? leads.city : leads.shipping_city,
@@ -98,6 +111,27 @@ export const CreateLeads = (props) => {
           checked === true
             ? leads.pincode || null
             : leads.shipping_pincode || null,
+        type_of_customer: leads.type_of_customer,
+        website: leads.website,
+        approx_annual_turnover: leads.approx_annual_turnover,
+        industrial_list:
+          leads.type_of_customer === "Industrial Customer"
+            ? leads.industrial_list
+            : null,
+        category:
+          leads.type_of_customer === "Distribution Customer"
+            ? leads.category
+            : null,
+        distribution_type:
+          leads.type_of_customer === "Distribution Customer"
+            ? leads.distribution_type
+            : null,
+        main_distribution:
+          leads.type_of_customer === "Distribution Customer"
+            ? leads.main_distribution
+            : null,
+        estd_year: leads.estd_year,
+        purchase_decision_maker: leads.purchase_decision_maker,
       };
 
       await LeadServices.createLeads(data);
@@ -260,7 +294,7 @@ export const CreateLeads = (props) => {
                   handleSelectChange("business_type", e.target.value)
                 }
               >
-                {BusinessTypeData.map((option, i) => (
+                {Option.LeadBusinessTypeData.map((option, i) => (
                   <MenuItem key={i} value={option.label}>
                     {option.label}
                   </MenuItem>
@@ -340,35 +374,6 @@ export const CreateLeads = (props) => {
               </Divider>
             </Root>
           </Grid>
-          <Grid item xs={12}>
-            <>
-              <FormControl>
-                <FormLabel id="demo-row-radio-buttons-group-label">
-                  Type
-                </FormLabel>
-                <RadioGroup
-                  row
-                  aria-labelledby="demo-row-radio-buttons-group-label"
-                  name="row-radio-buttons-group"
-                  value={leads.type_of_customer}
-                  onChange={(event) =>
-                    handleSelectChange("type_of_customer", event.target.value)
-                  }
-                >
-                  <FormControlLabel
-                    value="Industrial Customer"
-                    control={<Radio />}
-                    label="Industrial Customer"
-                  />
-                  <FormControlLabel
-                    value="Distribution Customer"
-                    control={<Radio />}
-                    label="Distribution Customer"
-                  />
-                </RadioGroup>
-              </FormControl>
-            </>
-          </Grid>
           <Grid item xs={12} sm={3}>
             <TextField
               fullWidth
@@ -445,7 +450,7 @@ export const CreateLeads = (props) => {
               onChange={(event, value) => handleSelectChange("state", value)}
               name="state"
               value={leads.state}
-              options={StateOption.map((option) => option.label)}
+              options={Option.StateOption.map((option) => option.label)}
               getOptionLabel={(option) => option}
               renderInput={(params) => <TextField {...params} label="State" />}
             />
@@ -469,17 +474,6 @@ export const CreateLeads = (props) => {
               label="Pin Code"
               variant="outlined"
               value={leads.pincode}
-              onChange={handleInputChange}
-            />
-          </Grid>
-          <Grid item xs={12} sm={3}>
-            <TextField
-              fullWidth
-              name="website"
-              size="small"
-              label="Website"
-              variant="outlined"
-              value={leads.website}
               onChange={handleInputChange}
             />
           </Grid>
@@ -554,13 +548,202 @@ export const CreateLeads = (props) => {
               }
               name="shipping_state"
               value={checked ? leads.state : leads.shipping_state || ""}
-              options={StateOption.map((option) => option.value)}
+              options={Option.StateOption.map((option) => option.value)}
               getOptionLabel={(option) => option}
               renderInput={(params) => (
                 <TextField {...params} label="Shipping State" />
               )}
             />
           </Grid>
+          {/* kyc Details */}
+          <Grid item xs={12}>
+            <Root>
+              <Divider>
+                <Chip label="KYC Details" />
+              </Divider>
+            </Root>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <>
+              <FormControl>
+                <FormLabel id="demo-row-radio-buttons-group-label">
+                  Type of Customer
+                </FormLabel>
+                <RadioGroup
+                  row
+                  aria-labelledby="demo-row-radio-buttons-group-label"
+                  name="row-radio-buttons-group"
+                  value={leads.type_of_customer}
+                  onChange={(event) =>
+                    handleSelectChange("type_of_customer", event.target.value)
+                  }
+                >
+                  <FormControlLabel
+                    value="Industrial Customer"
+                    control={<Radio />}
+                    label="Industrial Customer"
+                  />
+                  <FormControlLabel
+                    value="Distribution Customer"
+                    control={<Radio />}
+                    label="Distribution Customer"
+                  />
+                </RadioGroup>
+              </FormControl>
+            </>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextField
+              fullWidth
+              name="website"
+              size="small"
+              label="Website"
+              variant="outlined"
+              value={leads.website}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextField
+              fullWidth
+              // type="number"
+              name="estd_year"
+              size="small"
+              label="Established Year"
+              placeholder="YYYY"
+              // inputProps={{
+              //   min: "1900",
+              //   max: "2099",
+              // }}
+              value={leads.estd_year || ""}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <TextField
+              fullWidth
+              name="approx_annual_turnover"
+              size="small"
+              label="Approx Annual Turnover"
+              variant="outlined"
+              value={leads.approx_annual_turnover}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <TextField
+              fullWidth
+              name="purchase_decision_maker"
+              size="small"
+              label="Purchase Decision Maker"
+              variant="outlined"
+              value={leads.name || ""}
+            />
+          </Grid>
+          {leads.type_of_customer === "Industrial Customer" && (
+            <Grid item xs={12} sm={3}>
+              <Autocomplete
+                style={{
+                  minWidth: 220,
+                }}
+                size="small"
+                onChange={(event, value) =>
+                  handleSelectChange("industrial_list", value)
+                }
+                value={leads.industrial_list || ""}
+                options={Option.IndustriesList.map((option) => option.label)}
+                getOptionLabel={(option) => option}
+                renderInput={(params) => (
+                  <TextField {...params} label="Industrial List" />
+                )}
+              />
+            </Grid>
+          )}
+          {leads.type_of_customer === "Distribution Customer" && (
+            <Grid item xs={12} sm={3}>
+              <Autocomplete
+                style={{
+                  minWidth: 220,
+                }}
+                size="small"
+                onChange={(event, value) =>
+                  handleSelectChange("distribution_type", value)
+                }
+                value={leads ? leads.distribution_type : ""}
+                options={Option.DistributionTypeOption.map(
+                  (option) => option.label
+                )}
+                getOptionLabel={(option) => option}
+                renderInput={(params) => (
+                  <TextField {...params} label="Distribution Type" />
+                )}
+              />
+            </Grid>
+          )}
+          {leads.type_of_customer === "Distribution Customer" && (
+            <Grid item xs={12} sm={3}>
+              <Autocomplete
+                size="small"
+                value={leads.category || []}
+                onChange={(event, newValue) => {
+                  handleSelectChange("category", newValue);
+                }}
+                multiple
+                limitTags={3}
+                id="multiple-limit-tags"
+                options={Option.CategoryOption.map((option) => option.label)}
+                freeSolo
+                renderTags={(value, getTagProps) =>
+                  value.map((option, index) => (
+                    <Chip
+                      variant="outlined"
+                      label={option}
+                      {...getTagProps({ index })}
+                    />
+                  ))
+                }
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Category"
+                    placeholder="Category"
+                  />
+                )}
+              />
+            </Grid>
+          )}
+          {leads.type_of_customer === "Distribution Customer" && (
+            <Grid item xs={12} sm={3}>
+              <Autocomplete
+                size="small"
+                value={leads.main_distribution || []}
+                onChange={(event, newValue) => {
+                  handleSelectChange("main_distribution", newValue);
+                }}
+                multiple
+                limitTags={3}
+                id="multiple-limit-tags"
+                options={Option.MainDistribution.map((option) => option.label)}
+                freeSolo
+                renderTags={(value, getTagProps) =>
+                  value.map((option, index) => (
+                    <Chip
+                      variant="outlined"
+                      label={option}
+                      {...getTagProps({ index })}
+                    />
+                  ))
+                }
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Main Distribution"
+                    placeholder="Main Distribution"
+                  />
+                )}
+              />
+            </Grid>
+          )}
         </Grid>
         <Button
           fullWidth
@@ -574,175 +757,6 @@ export const CreateLeads = (props) => {
     </>
   );
 };
-
-const BusinessTypeData = [
-  {
-    value: "trader",
-    label: "Trader",
-  },
-
-  {
-    value: "distributor",
-    label: "Distributor",
-  },
-  {
-    value: "retailer",
-    label: "Retailer",
-  },
-  {
-    value: "end_user",
-    label: "End User",
-  },
-];
-
-const StateOption = [
-  {
-    id: 1,
-    value: "Andhra Pradesh",
-    label: "Andhra Pradesh",
-  },
-
-  {
-    id: 2,
-    value: "Arunachal Pradesh",
-    label: "Arunachal Pradesh",
-  },
-  {
-    id: 3,
-    value: "Assam",
-    label: "Assam",
-  },
-  {
-    id: 4,
-    value: "Bihar",
-    label: "Bihar",
-  },
-  {
-    id: 5,
-    value: "Chhattisgarh",
-    label: "Chhattisgarh",
-  },
-  {
-    id: 6,
-    value: "Goa",
-    label: "Goa",
-  },
-  {
-    id: 7,
-    value: "Gujarat",
-    label: "Gujarat",
-  },
-  {
-    id: 8,
-    value: "Haryana",
-    label: "Haryana",
-  },
-  {
-    id: 9,
-    value: "Himachal Pradesh",
-    label: "Himachal Pradesh",
-  },
-  {
-    id: 10,
-    value: "Jharkhand",
-    label: "Jharkhand",
-  },
-  {
-    id: 11,
-    value: "Karnataka",
-    label: "Karnataka",
-  },
-  {
-    id: 12,
-    value: "Kerala",
-    label: "Kerala",
-  },
-  {
-    id: 13,
-    value: "Madhya Pradesh",
-    label: "Madhya Pradesh",
-  },
-  {
-    id: 14,
-    value: "Maharashtra",
-    label: "Maharashtra",
-  },
-  {
-    id: 15,
-    value: "Manipur",
-    label: "Manipur",
-  },
-  {
-    id: 16,
-    value: "Meghalaya",
-    label: "Meghalaya",
-  },
-  {
-    id: 17,
-    value: "Mizoram",
-    label: "Mizoram",
-  },
-  {
-    id: 18,
-    value: "Nagaland",
-    label: "Nagaland",
-  },
-  {
-    id: 19,
-    value: "Odisha",
-    label: "Odisha",
-  },
-  {
-    id: 20,
-    value: "Punjab",
-    label: "Punjab",
-  },
-  {
-    id: 21,
-    value: "Rajasthan",
-    label: "Rajasthan",
-  },
-  {
-    id: 22,
-    value: "Sikkim",
-    label: "Sikkim",
-  },
-  {
-    id: 23,
-    value: "Tamil Nadu",
-    label: "Tamil Nadu",
-  },
-  {
-    id: 24,
-    value: "Telangana",
-    label: "Telangana",
-  },
-  {
-    id: 25,
-    value: "Tripura",
-    label: "Tripura",
-  },
-  {
-    id: 26,
-    value: "Uttar Pradesh",
-    label: "Uttar Pradesh",
-  },
-  {
-    id: 27,
-    value: "Uttarakhand",
-    label: "Uttarakhand",
-  },
-  {
-    id: 28,
-    value: "West Bengal",
-    label: "West Bengal",
-  },
-  {
-    id: 28,
-    value: "New Delhi",
-    label: "New Delhi",
-  },
-];
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
