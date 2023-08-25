@@ -714,7 +714,7 @@ export const SalesDashboard = (props) => {
             </Grid>
           </Grid>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+            <Grid item xs={12} sm={6} sx={{ marginTop: "20px" }}>
               <CustomChart
                 chartType={"PieChart"}
                 data={[
@@ -731,7 +731,12 @@ export const SalesDashboard = (props) => {
                 heightStyle={"300px"}
               />
             </Grid>
-            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+            <Grid
+              item
+              xs={12}
+              sm={4}
+              sx={{ margin: "2rem 2rem 0 4rem", backgroundColor: "#ffffff" }}
+            >
               <div className="funnelChart" style={funnelStyle}>
                 <h2 style={{ textAlign: "center", color: "#333" }}>
                   Sales Funnel
@@ -759,7 +764,33 @@ export const SalesDashboard = (props) => {
                 ))}
               </div>
             </Grid>
-            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+          </Grid>
+          <Grid item xs={12} sm={12} sx={{ marginTop: "20px" }}>
+            <Button
+              variant={activeButton === "monthly" ? "contained" : "outlined"} // Set variant to 'contained' for the active button
+              sx={{ margin: "0 10px 10px 0" }}
+              color="primary"
+              onClick={() => handleButtonClick("monthly")}
+            >
+              Monthly Call Status
+            </Button>
+            <Button
+              variant={activeButton === "weekly" ? "contained" : "outlined"} // Set variant to 'contained' for the active button
+              sx={{ margin: "0 10px 10px 0" }}
+              color="primary"
+              onClick={() => handleButtonClick("weekly")}
+            >
+              Weekly Call Status
+            </Button>
+            <Button
+              variant={activeButton === "daily" ? "contained" : "outlined"} // Set variant to 'contained' for the active button
+              sx={{ margin: "0 10px 10px 0" }}
+              color="primary"
+              onClick={() => handleButtonClick("daily")}
+            >
+              Daily Call Status
+            </Button>
+            {activeButton === "monthly" && (
               <CustomChart
                 chartType="ColumnChart"
                 data={[
@@ -781,12 +812,10 @@ export const SalesDashboard = (props) => {
                 widthStyle={"100%"}
                 heightStyle={"300px"}
               />
-            </Grid>
-          </Grid>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6} sx={{ marginTop: "20px" }}>
+            )}
+            {activeButton === "weekly" && (
               <CustomChart
-                chartType="LineChart"
+                chartType="ColumnChart"
                 data={[
                   ["Week", "Existing Lead", "New Lead", "Customer"],
                   ...weeklyStatus.map((item) => [
@@ -806,8 +835,8 @@ export const SalesDashboard = (props) => {
                 widthStyle={"100%"}
                 heightStyle={"300px"}
               />
-            </Grid>
-            <Grid item xs={12} sm={6} sx={{ marginTop: "20px" }}>
+            )}
+            {activeButton === "daily" && (
               <CustomChart
                 chartType="ColumnChart"
                 data={[
@@ -828,7 +857,7 @@ export const SalesDashboard = (props) => {
                 widthStyle={"100%"}
                 heightStyle={"300px"}
               />
-            </Grid>
+            )}
           </Grid>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6} sx={{ marginTop: "20px" }}>
