@@ -107,15 +107,15 @@ export const CreateCompanyDetails = (props) => {
         gst_number: inputValue.gst_number || null,
         pan_number: inputValue.pan_number,
         business_type: inputValue.business_type,
-        category: inputValue.category || "",
         assigned_to: inputValue.assigned_to || [],
         type_of_customer: inputValue.type_of_customer,
         website: inputValue.website,
         estd_year: inputValue.estd_year,
         approx_annual_turnover: inputValue.approx_annual_turnover,
-        purchase_decision_maker: inputValue.purchase_decision_maker || [],
+        purchase_decision_maker: inputValue.purchase_decision_maker || "",
         industrial_list: inputValue.industrial_list || "",
         distribution_type: inputValue.distribution_type || "",
+        category: inputValue.category || [],
         main_distribution: inputValue.main_distribution || [],
       };
       const response = await CustomerServices.createCompanyData(req);

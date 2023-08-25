@@ -83,60 +83,62 @@ export const UnassignedLead = () => {
 
   const getResetData = () => {
     setFilterSelectedQuery("");
-    getUnassigned();
   };
 
   useEffect(() => {
-    getReference();
-    getProduct();
-    getDescriptionNoData();
-    getAssignedData();
+    fetchData();
     getUnassigned();
   }, []);
 
-  const getReference = async () => {
-    try {
-      const res = await LeadServices.getAllRefernces();
-
-      setReferenceData(res.data);
-    } catch (err) {
-      console.error(err);
+  useEffect(() => {
+    if (filterSelectedQuery === "") {
+      handlePageClick(null, 1);
     }
-  };
+  }, [filterSelectedQuery]);
 
-  const getAssignedData = async (id) => {
+  const fetchData = async () => {
+    setOpen(true);
     try {
-      setOpen(true);
-
-      const res = await LeadServices.getAllAssignedUser();
-      setAssigned(res.data);
-      setOpen(false);
+      const [
+        referenceResponse,
+        assignedResponse,
+        descriptionResponse,
+        productResponse,
+      ] = await Promise.all([
+        LeadServices.getAllRefernces(),
+        LeadServices.getAllAssignedUser(),
+        ProductService.getNoDescription(),
+        ProductService.getAllProduct(),
+      ]);
+      setReferenceData(referenceResponse.data);
+      setAssigned(assignedResponse.data);
+      setDescriptionMenuData(descriptionResponse.data);
+      setProduct(productResponse.data);
+      getUnassigned();
     } catch (error) {
-      console.log("error", error);
-      setOpen(false);
+      handleFetchError(error);
     }
   };
 
-  const getDescriptionNoData = async () => {
-    try {
-      const res = await ProductService.getNoDescription();
-      setDescriptionMenuData(res.data);
-    } catch (err) {
-      console.error(err);
+  const handleFetchError = (error) => {
+    setOpen(false);
+    if (!error.response) {
+      setErrMsg(
+        "Sorry, You Are Not Allowed to Access This Page. Please contact the admin."
+      );
+    } else if (error.response.status === 400) {
+      setErrMsg(
+        error.response.data.errors.name ||
+          error.response.data.errors.non_field_errors
+      );
+    } else if (error.response.status === 401) {
+      setErrMsg(error.response.data.errors.code);
+    } else {
+      setErrMsg("Server Error");
     }
+    errRef.current.focus();
   };
 
-  const getProduct = async () => {
-    try {
-      setOpen(true);
-      const res = await ProductService.getAllProduct();
-      setProduct(res.data);
-      setOpen(false);
-    } catch (err) {
-      console.error("error potential", err);
-      setOpen(false);
-    }
-  };
   const getUnassigned = async () => {
     try {
       console.log("currentPage", currentPage);
@@ -160,24 +162,8 @@ export const UnassignedLead = () => {
         }
       }
       setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      if (!err.response) {
-        setErrMsg(
-          "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
-        );
-      } else if (err.response.status === 400) {
-        setErrMsg(
-          err.response.data.errors.name
-            ? err.response.data.errors.name
-            : err.response.data.errors.non_field_errors
-        );
-      } else if (err.response.status === 401) {
-        setErrMsg(err.response.data.errors.code);
-      } else {
-        setErrMsg("Server Error");
-      }
-      errRef.current.focus();
+    } catch (error) {
+      handleFetchError(error);
     }
   };
 
@@ -254,14 +240,13 @@ export const UnassignedLead = () => {
       };
       selectedRows.length > 0
         ? await LeadServices.AssignMultipleLeads(req)
-        : await LeadServices.updateLeads(recordForEdit.id, data);
+        : await LeadServices.updateLeads(recordForEdit.lead_id, data);
       getUnassigned();
       setOpen(false);
       setModalOpen(false);
     } catch (error) {
       console.log("error :>> ", error);
       setOpen(false);
-      console.log("error");
     }
   };
 

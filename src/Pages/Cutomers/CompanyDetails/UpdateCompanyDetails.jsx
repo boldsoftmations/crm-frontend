@@ -129,15 +129,15 @@ export const UpdateCompanyDetails = (props) => {
         gst_number: inputValue.gst_number || null,
         pan_number: inputValue.pan_number || null,
         business_type: inputValue.business_type || null,
-        category: inputValue.category || null,
         assigned_to: inputValue.assigned_to || null,
         type_of_customer: inputValue.type_of_customer || null,
         website: inputValue.website || null,
         estd_year: inputValue.estd_year || null,
         approx_annual_turnover: inputValue.approx_annual_turnover || null,
-        purchase_decision_maker: inputValue.purchase_decision_maker || [],
+        purchase_decision_maker: inputValue.purchase_decision_maker || null,
         industrial_list: inputValue.industrial_list || null,
         distribution_type: inputValue.distribution_type || null,
+        category: inputValue.category || [],
         main_distribution: inputValue.main_distribution || [],
       };
       await CustomerServices.updateCompanyData(recordForEdit, req);
