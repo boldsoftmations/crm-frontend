@@ -19,20 +19,23 @@ export const CustomerActivityCreate = (props) => {
   const [followUp, setFollowUp] = useState([]);
   const data = useSelector((state) => state.auth);
   const userId = data.profile.email;
+  const [activityRequiresFollowup, setActivityRequiresFollowup] =
+    useState(false);
 
   const createFollowUpLeadsData = async (e) => {
     try {
       e.preventDefault();
       setOpen(true);
+
       const data = {
         company: recordForEdit,
         user: userId,
         activity: followUp.activity,
-        notes: followUp.note,
-        next_followup_date: followUp.nextFollowUpDate,
+        notes: followUp.notes,
+        next_followup_date: followUp.next_followup_date,
       };
 
-      const res = await CustomerServices.createFollowUpCustomer(data);
+      await CustomerServices.createFollowUpCustomer(data);
       setOpenModal(false);
       getFollowUp();
       setOpen(false);
@@ -45,7 +48,23 @@ export const CustomerActivityCreate = (props) => {
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setFollowUp({ ...followUp, [name]: value });
+
+    // Check if the selected activity requires a followup date
+    const requiresFollowup = [
+      "Not answering/busy/disconnecting",
+      "Having stock",
+      "Rate issue",
+      "Buying a different product from other company",
+      "Transportation cost issue",
+      "Call me back",
+      "Send sample",
+      "Require exclusive distributorship/dealership",
+      "Require credit",
+    ].includes(value);
+
+    setActivityRequiresFollowup(requiresFollowup);
   };
+
   return (
     <div>
       <CustomLoader open={open} />
@@ -86,11 +105,11 @@ export const CustomerActivityCreate = (props) => {
             <TextField
               multiline
               fullWidth
-              name="note"
+              name="notes"
               size="small"
               label="Note"
               variant="outlined"
-              value={followUp.companyName}
+              value={followUp.notes}
               onChange={handleInputChange}
             />
           </Grid>
@@ -98,19 +117,46 @@ export const CustomerActivityCreate = (props) => {
             <TextField
               fullWidth
               type="date"
-              name="nextFollowUpDate"
+              name="next_followup_date"
               size="small"
               label="Next Followup Date"
               variant="outlined"
-              value={followUp.nextFollowUpDate ? followUp.nextFollowUpDate : ""}
+              value={followUp.next_followup_date || ""}
               onChange={handleInputChange}
               InputLabelProps={{
                 shrink: true,
               }}
+              required={activityRequiresFollowup}
+              error={activityRequiresFollowup && !followUp.next_followup_date}
+              helperText={
+                activityRequiresFollowup && !followUp.next_followup_date
+                  ? "Next Followup Date is required."
+                  : ""
+              }
+              inputProps={{
+                min: new Date().toISOString().split("T")[0], // Set minimum date to today
+              }}
             />
           </Grid>
         </Grid>
-        <Button fullWidth type="submit" variant="contained">
+        <Button
+          fullWidth
+          type="submit"
+          variant="contained"
+          disabled={
+            [
+              "Not answering/busy/disconnecting",
+              "Having stock",
+              "Rate issue",
+              "Buying a different product from other company",
+              "Transportation cost issue",
+              "Call me back",
+              "Send sample",
+              "Require exclusive distributorship/dealership",
+              "Require credit",
+            ].includes(followUp.activity) && !followUp.next_followup_date
+          }
+        >
           Submit
         </Button>
       </Box>

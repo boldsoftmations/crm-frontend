@@ -25,10 +25,28 @@ export const LeadActivityCreate = ({
   const [errorMessage, setErrorMessage] = useState("");
   const data = useSelector((state) => state.auth);
   const userId = data.profile.email;
+  const [activityRequiresFollowup, setActivityRequiresFollowup] =
+    useState(false);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setFollowUp((prevFollowUp) => ({ ...prevFollowUp, [name]: value }));
+
+    // Check if the selected activity requires a followup date
+    const requiresFollowup = [
+      "Not answering/busy/disconnecting",
+      "Having stock",
+      "Rate issue",
+      "Send detail on WhatsApp/sms/email",
+      "Dealing in other brand",
+      "Transportation cost issue",
+      "Call me back",
+      "Send sample",
+      "Require exclusive distributorship/dealership",
+      "Require credit",
+    ].includes(value);
+
+    setActivityRequiresFollowup(requiresFollowup);
   };
 
   const createFollowUpLeadsData = async (e) => {
@@ -39,7 +57,7 @@ export const LeadActivityCreate = ({
         leads: leadsByID,
         user: userId,
         activity: followUp.activity,
-        notes: followUp.note,
+        notes: followUp.notes,
         next_followup_date: followUp.next_followup_date,
       };
 
@@ -93,11 +111,11 @@ export const LeadActivityCreate = ({
             <TextField
               fullWidth
               multiline
-              name="note"
+              name="notes"
               size="small"
               label="Note"
               variant="outlined"
-              value={followUp.note}
+              value={followUp.notes}
               onChange={handleInputChange}
             />
           </Grid>
@@ -114,10 +132,38 @@ export const LeadActivityCreate = ({
               InputLabelProps={{
                 shrink: true,
               }}
+              required={activityRequiresFollowup}
+              error={activityRequiresFollowup && !followUp.next_followup_date}
+              helperText={
+                activityRequiresFollowup && !followUp.next_followup_date
+                  ? "Next Followup Date is required."
+                  : ""
+              }
+              inputProps={{
+                min: new Date().toISOString().split("T")[0], // Set minimum date to today
+              }}
             />
           </Grid>
         </Grid>
-        <Button fullWidth type="submit" variant="contained">
+        <Button
+          fullWidth
+          type="submit"
+          variant="contained"
+          disabled={
+            [
+              "Not answering/busy/disconnecting",
+              "Having stock",
+              "Rate issue",
+              "Send detail on WhatsApp/sms/email",
+              "Dealing in other brand",
+              "Transportation cost issue",
+              "Call me back",
+              "Send sample",
+              "Require exclusive distributorship/dealership",
+              "Require credit",
+            ].includes(followUp.activity) && !followUp.next_followup_date
+          }
+        >
           Submit
         </Button>
         {errorMessage && (
