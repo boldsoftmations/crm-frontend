@@ -2398,6 +2398,21 @@ export const ListItems = (props) => {
                       primary="Hot Leads"
                     />
                   </ListItem>
+                  {userData.position === "Sub Team Leader" && (
+                    <ListItem
+                      button
+                      component={RouterLink}
+                      to="/leads/view-unassigned-lead"
+                      style={{ width: 300 }}
+                    >
+                      <ListItemText
+                        component={Button}
+                        onClick={() => setOpen(false)}
+                        inset
+                        primary="Unassigned Leads"
+                      />
+                    </ListItem>
+                  )}
                 </List>
               </Collapse>
 
