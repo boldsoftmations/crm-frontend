@@ -216,7 +216,7 @@ export const SalesDashboard = (props) => {
               );
             })}
           </Grid>
-          {assigned.length > 0 && (
+          {assigned && assigned.length > 0 && (
             <Grid container spacing={1} sx={{ my: "20px" }}>
               <Paper sx={{ width: "100%", padding: "20px" }}>
                 <Grid container alignItems="center" spacing={1}>
