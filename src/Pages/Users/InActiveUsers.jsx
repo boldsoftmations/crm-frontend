@@ -116,7 +116,9 @@ export const InActiveUsers = () => {
         email: inActiveUsersByIDData.email,
         is_active: inActiveUsersByIDData.is_active,
         group_names: inActiveUsersByIDData.groups,
-        ref_users: inActiveUsersByIDData.ref_user.email,
+        ref_user: inActiveUsersByIDData.ref_user
+          ? inActiveUsersByIDData.ref_user.email
+          : null,
       };
       await TaskService.createUsers(inActiveUsersByIDData.emp_id, req);
       setOpenPopup(false);
