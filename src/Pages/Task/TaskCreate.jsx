@@ -14,15 +14,23 @@ import TaskService from "../../services/TaskService";
 import { useSelector } from "react-redux";
 
 export const TaskCreate = (props) => {
-  const { setOpenPopup, getAllTaskDetails, assigned } = props; // 1
+  const { setOpenPopup, getAllTaskDetails } = props; // 1
   const [open, setOpen] = useState(false);
   const [task, setTask] = useState([]);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const data = useSelector((state) => state.auth);
   const users = data.profile;
+  const assigned = users.sales_users || [];
   const handleFormChange = (event) => {
     const { name, value } = event.target;
     setTask({ ...task, [name]: value });
+  };
+
+  const handleSelectChange = (name, value) => {
+    setTask({
+      ...task,
+      [name]: value,
+    });
   };
 
   const createTaskDetails = async (e) => {
@@ -157,7 +165,10 @@ export const TaskCreate = (props) => {
                 labelId="demo-select-small"
                 id="demo-select-small"
                 label="Priority"
-                onChange={(event) => handleFormChange(event)}
+                value={task.priority}
+                onChange={(event) =>
+                  handleSelectChange("priority", event.target.value)
+                }
               >
                 <MenuItem value={"Low"}>Low </MenuItem>
                 <MenuItem value={"Medium"}>Medium</MenuItem>
@@ -173,11 +184,14 @@ export const TaskCreate = (props) => {
                 labelId="demo-select-small"
                 id="demo-select-small"
                 label="Assigned To"
-                onChange={(event) => handleFormChange(event)}
+                value={task.assigned_to}
+                onChange={(event) =>
+                  handleSelectChange("assigned_to", event.target.value)
+                }
               >
                 {assigned.map((option, i) => (
-                  <MenuItem key={i} value={option.email}>
-                    {option.email}
+                  <MenuItem key={i} value={option}>
+                    {option}
                   </MenuItem>
                 ))}
               </Select>

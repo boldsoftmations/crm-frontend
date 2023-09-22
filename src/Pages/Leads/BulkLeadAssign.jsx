@@ -3,6 +3,7 @@ import { Autocomplete, Box, Grid, TextField } from "@mui/material";
 import LeadServices from "../../services/LeadService";
 import { CustomLoader } from "../../Components/CustomLoader";
 import { CustomButton } from "../../Components/CustomButton";
+import Option from "../../Options/Options";
 
 export const BulkLeadAssign = (props) => {
   const { setOpenPopup } = props;
@@ -12,15 +13,18 @@ export const BulkLeadAssign = (props) => {
   const [assigned, setAssigned] = useState([]);
 
   useEffect(() => {
-    getLAssignedData();
+    getAssignedData();
   }, []);
 
-  const getLAssignedData = async (id) => {
+  const getAssignedData = async () => {
     try {
       setOpen(true);
       const res = await LeadServices.getAllAssignedUser();
-
-      setAssigned(res.data);
+      // Filter the data based on the ALLOWED_ROLES
+      const filteredData = res.data.filter((employee) =>
+        employee.groups.some((group) => Option.ALLOWED_ROLES.includes(group))
+      );
+      setAssigned(filteredData);
       setOpen(false);
     } catch (error) {
       console.log("error", error);

@@ -57,6 +57,9 @@ import { Followup } from "../Pages/FollowUp/Followup";
 import { ActivePI } from "../Pages/Invoice/ProformaInvoice/ActivePI";
 import { ApprovePi } from "../Pages/Invoice/ProformaInvoice/ApprovePi";
 import { HotLeads } from "../Pages/Leads/HotLeads";
+import { ActiveUsers } from "./../Pages/Users/ActiveUsers";
+import { InActiveUsers } from "./../Pages/Users/InActiveUsers";
+import { IncompleteKycDetails } from "../Pages/Cutomers/CompanyDetails/IncompleteKycDetails";
 
 export const RouteScreen = () => {
   const tokenData = useSelector((state) => state.auth);
@@ -128,6 +131,10 @@ export const RouteScreen = () => {
             <Route
               path="/customers/company-details"
               element={<CompanyDetails />}
+            />
+            <Route
+              path="/customers/incomplete-kyc-details"
+              element={<IncompleteKycDetails />}
             />
             <Route
               path="/customers/unassigned-company-details"
@@ -233,6 +240,9 @@ export const RouteScreen = () => {
             />
             {/* task Routes */}
             <Route path="/task/view-task" element={<TaskView />} />
+            <Route path="/user/active-user" element={<ActiveUsers />} />
+            <Route path="/user/inactive-user" element={<InActiveUsers />} />
+
             <Route path="*" element={<Home />} />
           </>
         )}

@@ -51,7 +51,7 @@ export const SalesDashboard = (props) => {
     openPopup3,
     setOpenPopup3,
     getResetDate,
-    assigned,
+    // assigned,
     getResetData,
     handleAutocompleteChange,
     assign,
@@ -61,6 +61,7 @@ export const SalesDashboard = (props) => {
   const [dIQdata, setDIQData] = useState();
   const [dOBQdata, setDOBQData] = useState();
   const [activeButton, setActiveButton] = useState("monthly");
+  const assigned = userData.sales_users || [];
 
   const handleButtonClick = (buttonType) => {
     setActiveButton(buttonType);
@@ -216,37 +217,6 @@ export const SalesDashboard = (props) => {
               );
             })}
           </Grid>
-          {assigned && assigned.length > 0 && (
-            <Grid container spacing={1} sx={{ my: "20px" }}>
-              <Paper sx={{ width: "100%", padding: "20px" }}>
-                <Grid container alignItems="center" spacing={1}>
-                  <Grid item xs={9} sm={9} md={9} lg={9}>
-                    <Autocomplete
-                      size="small"
-                      onChange={(event, value) =>
-                        handleAutocompleteChange(value)
-                      }
-                      value={assign}
-                      options={assigned.map((option) => option.email)}
-                      getOptionLabel={(option) => option}
-                      renderInput={(params) => (
-                        <TextField {...params} label="Filter By Sales Person" />
-                      )}
-                    />
-                  </Grid>
-                  <Grid item xs={3} sm={3} md={3} lg={3}>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={getResetData}
-                    >
-                      Reset
-                    </Button>
-                  </Grid>
-                </Grid>
-              </Paper>
-            </Grid>
-          )}
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <CustomChart
@@ -479,7 +449,7 @@ export const SalesDashboard = (props) => {
                   ...pendingDescription.map((item) => [item.name, item.value]),
                 ]}
                 options={{
-                  title: "Pending Quantity by Description",
+                  title: "Pending Orderbook by Description",
                   width: "100%",
                   height: "400px",
                   legend: { position: "none" },
@@ -672,6 +642,37 @@ export const SalesDashboard = (props) => {
               );
             })}
           </Grid>
+          {assigned.length > 0 && (
+            <Grid container spacing={1} sx={{ my: "20px" }}>
+              <Paper sx={{ width: "100%", padding: "20px" }}>
+                <Grid container alignItems="center" spacing={1}>
+                  <Grid item xs={9} sm={9} md={9} lg={9}>
+                    <Autocomplete
+                      size="small"
+                      onChange={(event, value) =>
+                        handleAutocompleteChange(value)
+                      }
+                      value={assign}
+                      options={assigned.map((option) => option)}
+                      getOptionLabel={(option) => option}
+                      renderInput={(params) => (
+                        <TextField {...params} label="Filter By Sales Person" />
+                      )}
+                    />
+                  </Grid>
+                  <Grid item xs={3} sm={3} md={3} lg={3}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={getResetData}
+                    >
+                      Reset
+                    </Button>
+                  </Grid>
+                </Grid>
+              </Paper>
+            </Grid>
+          )}
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <CustomChart

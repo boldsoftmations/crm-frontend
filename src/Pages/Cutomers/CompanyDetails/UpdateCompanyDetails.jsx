@@ -4,13 +4,9 @@ import {
   Box,
   Button,
   FormControl,
-  FormControlLabel,
-  FormLabel,
   Grid,
   InputLabel,
   MenuItem,
-  Radio,
-  RadioGroup,
   Select,
   TextField,
   Chip,
@@ -62,7 +58,11 @@ export const UpdateCompanyDetails = (props) => {
     try {
       setOpen(true);
       const res = await LeadServices.getAllAssignedUser();
-      setAssigned(res.data);
+      // Filter the data based on the ALLOWED_ROLES
+      const filteredData = res.data.filter((employee) =>
+        employee.groups.some((group) => Option.ALLOWED_ROLES.includes(group))
+      );
+      setAssigned(filteredData);
       setOpen(false);
     } catch (error) {
       console.log("error", error);
@@ -185,12 +185,12 @@ export const UpdateCompanyDetails = (props) => {
           <Grid item xs={12} sm={4}>
             <FormControl fullWidth size="small">
               <InputLabel id="demo-simple-select-label">
-                Busniess Type
+                Business Type
               </InputLabel>
               <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
-                label="Busniess Type"
+                label="Business Type"
                 value={inputValue.business_type || ""}
                 onChange={(e, value) =>
                   handleSelectChange("business_type", e.target.value)
@@ -247,8 +247,8 @@ export const UpdateCompanyDetails = (props) => {
           <Grid item xs={12} sm={4}>
             <TextField
               fullWidth
-              size="small"
               name="gst_number"
+              size="small"
               label="GST No."
               variant="outlined"
               value={inputValue.gst_number || ""}
@@ -323,200 +323,6 @@ export const UpdateCompanyDetails = (props) => {
               }}
             />
           </Grid>
-          {/* kyc Details */}
-          <Grid item xs={12}>
-            <Root>
-              <Divider>
-                <Chip label="KYC Details" />
-              </Divider>
-            </Root>
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <FormControl>
-              <FormLabel id="demo-row-radio-buttons-group-label">
-                Type of Customer
-              </FormLabel>
-              <RadioGroup
-                row
-                aria-labelledby="demo-row-radio-buttons-group-label"
-                name="row-radio-buttons-group"
-                value={inputValue.type_of_customer || ""}
-                onChange={(event) =>
-                  handleSelectChange("type_of_customer", event.target.value)
-                }
-              >
-                <FormControlLabel
-                  value="Industrial Customer"
-                  control={<Radio />}
-                  label="Industrial Customer"
-                />
-                <FormControlLabel
-                  value="Distribution Customer"
-                  control={<Radio />}
-                  label="Distribution Customer"
-                />
-              </RadioGroup>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <TextField
-              fullWidth
-              name="website"
-              size="small"
-              label="Website"
-              variant="outlined"
-              value={inputValue.website || ""}
-              onChange={handleInputChange}
-            />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <TextField
-              fullWidth
-              // type="number"
-              name="estd_year"
-              size="small"
-              label="Established Year"
-              placeholder="YYYY"
-              // inputProps={{
-              //   min: "1900",
-              //   max: "2099",
-              // }}
-              value={inputValue.estd_year || ""}
-              onChange={handleInputChange}
-            />
-          </Grid>
-          <Grid item xs={12} sm={3}>
-            <TextField
-              fullWidth
-              name="approx_annual_turnover"
-              size="small"
-              label="Approx Annual Turnover"
-              variant="outlined"
-              value={inputValue.approx_annual_turnover || ""}
-              onChange={handleInputChange}
-            />
-          </Grid>
-          <Grid item xs={12} sm={3}>
-            <Autocomplete
-              style={{
-                minWidth: 220,
-              }}
-              size="small"
-              onChange={(event, value) =>
-                handleSelectChange("purchase_decision_maker", value)
-              }
-              value={inputValue.purchase_decision_maker || ""}
-              options={contactsData.map((option) => option.name)}
-              getOptionLabel={(option) => option}
-              renderInput={(params) => (
-                <TextField {...params} label="Purchase Decision Maker" />
-              )}
-            />
-          </Grid>
-          {inputValue.type_of_customer === "Industrial Customer" && (
-            <Grid item xs={12} sm={3}>
-              <Autocomplete
-                style={{
-                  minWidth: 220,
-                }}
-                size="small"
-                onChange={(event, value) =>
-                  handleSelectChange("industrial_list", value)
-                }
-                value={inputValue.industrial_list || ""}
-                options={Option.IndustriesList.map((option) => option.label)}
-                getOptionLabel={(option) => option}
-                renderInput={(params) => (
-                  <TextField {...params} label="Industrial List" />
-                )}
-              />
-            </Grid>
-          )}
-          {inputValue.type_of_customer === "Distribution Customer" && (
-            <Grid item xs={12} sm={3}>
-              <Autocomplete
-                style={{
-                  minWidth: 220,
-                }}
-                size="small"
-                onChange={(event, value) =>
-                  handleSelectChange("distribution_type", value)
-                }
-                value={inputValue.distribution_type || ""}
-                options={Option.DistributionTypeOption.map(
-                  (option) => option.label
-                )}
-                getOptionLabel={(option) => option}
-                renderInput={(params) => (
-                  <TextField {...params} label="Distribution Type" />
-                )}
-              />
-            </Grid>
-          )}
-          {inputValue.type_of_customer === "Distribution Customer" && (
-            <Grid item xs={12} sm={3}>
-              <Autocomplete
-                size="small"
-                value={inputValue.category || []}
-                onChange={(event, newValue) => {
-                  handleSelectChange("category", newValue);
-                }}
-                multiple
-                limitTags={3}
-                id="multiple-limit-tags"
-                options={Option.CategoryOption.map((option) => option.label)}
-                freeSolo
-                renderTags={(value, getTagProps) =>
-                  value.map((option, index) => (
-                    <Chip
-                      variant="outlined"
-                      label={option}
-                      {...getTagProps({ index })}
-                    />
-                  ))
-                }
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Category"
-                    placeholder="Category"
-                  />
-                )}
-              />
-            </Grid>
-          )}
-          {inputValue.type_of_customer === "Distribution Customer" && (
-            <Grid item xs={12} sm={3}>
-              <Autocomplete
-                size="small"
-                value={inputValue.main_distribution || []}
-                onChange={(event, newValue) => {
-                  handleSelectChange("main_distribution", newValue);
-                }}
-                multiple
-                limitTags={3}
-                id="multiple-limit-tags"
-                options={Option.MainDistribution.map((option) => option.label)}
-                freeSolo
-                renderTags={(value, getTagProps) =>
-                  value.map((option, index) => (
-                    <Chip
-                      variant="outlined"
-                      label={option}
-                      {...getTagProps({ index })}
-                    />
-                  ))
-                }
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Main Distribution"
-                    placeholder="Main Distribution"
-                  />
-                )}
-              />
-            </Grid>
-          )}
         </Grid>
         {userData.groups.toString() === "Accounts" && (
           <Button

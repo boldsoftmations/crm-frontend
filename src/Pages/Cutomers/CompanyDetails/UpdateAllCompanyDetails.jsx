@@ -8,6 +8,7 @@ import { SecurityChequesDetails } from "../SecurityCheckDetails/SecurityChequesD
 import { ForecastView } from "../ForecastDetails/ForecastView";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { CustomTabs } from "../../../Components/CustomTabs";
+import KycUpdate from "../KycDetails/KycUpdate";
 
 export const UpdateAllCompanyDetails = (props) => {
   const [open, setOpen] = useState(false);
@@ -30,6 +31,7 @@ export const UpdateAllCompanyDetails = (props) => {
     { label: "WareHouse" },
     { label: "Security Cheques" },
     { label: "Forecast" },
+    { label: "Kyc" },
   ];
   // All Company Details Api
   useEffect(() => {
@@ -118,6 +120,16 @@ export const UpdateAllCompanyDetails = (props) => {
                 forecastdata={forecastdata}
                 open={open}
                 getAllCompanyDetailsByID={getAllCompanyDetailsByID}
+              />
+            </div>
+          )}
+          {activeTab === 6 && (
+            <div>
+              <KycUpdate
+                contactsData={contactData}
+                setOpenPopup={setOpenPopup}
+                getAllCompanyDetails={getAllCompanyDetails}
+                recordForEdit={recordForEdit}
               />
             </div>
           )}

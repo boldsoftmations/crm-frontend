@@ -14,16 +14,22 @@ import { useSelector } from "react-redux";
 import { CustomLoader } from "../../Components/CustomLoader";
 import { TaskActivityView } from "./TaskActivityView";
 export const TaskUpdate = (props) => {
-  const { setOpenPopup, getAllTaskDetails, assigned, taskByID, activity } =
-    props; // 1
+  const { setOpenPopup, getAllTaskDetails, taskByID, activity } = props; // 1
   const [open, setOpen] = useState(false);
   const [task, setTask] = useState(taskByID);
-
   const data = useSelector((state) => state.auth);
   const users = data.profile;
+  const assigned = users.sales_users || [];
   const handleFormChange = (event) => {
     const { name, value } = event.target;
     setTask({ ...task, [name]: value });
+  };
+
+  const handleSelectChange = (name, value) => {
+    setTask({
+      ...task,
+      [name]: value,
+    });
   };
 
   const updateTaskDetails = async (e) => {
@@ -116,7 +122,9 @@ export const TaskUpdate = (props) => {
                 id="demo-select-small"
                 label="Priority"
                 value={task.priority}
-                onChange={(event) => handleFormChange(event)}
+                onChange={(event) =>
+                  handleSelectChange("priority", event.target.value)
+                }
               >
                 <MenuItem value={"Low"}>Low </MenuItem>
                 <MenuItem value={"Medium"}>Medium</MenuItem>
@@ -133,11 +141,13 @@ export const TaskUpdate = (props) => {
                 id="demo-select-small"
                 label="Assigned To"
                 value={task.assigned_to}
-                onChange={(event) => handleFormChange(event)}
+                onChange={(event) =>
+                  handleSelectChange("assigned_to", event.target.value)
+                }
               >
                 {assigned.map((option, i) => (
-                  <MenuItem key={i} value={option.email}>
-                    {option.email}
+                  <MenuItem key={i} value={option}>
+                    {option}
                   </MenuItem>
                 ))}
               </Select>

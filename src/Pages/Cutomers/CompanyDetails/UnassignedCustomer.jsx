@@ -9,6 +9,7 @@ import { CustomTable } from "./../../../Components/CustomTable";
 import { CustomPagination } from "../../../Components/CustomPagination";
 import LeadServices from "../../../services/LeadService";
 import { useSelector } from "react-redux";
+import Option from "../../../Options/Options";
 
 export const UnassignedCustomer = () => {
   const [openPopup, setOpenPopup] = useState(false);
@@ -23,7 +24,6 @@ export const UnassignedCustomer = () => {
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const [assigned, setAssigned] = useState([]);
   const [assign, setAssign] = useState([]);
-  const userData = useSelector((state) => state.auth.profile);
 
   const getResetData = () => {
     setFilterSelectedQuery("");
@@ -49,51 +49,20 @@ export const UnassignedCustomer = () => {
 
   useEffect(() => {
     getUnassignedCompanyDetails();
-    getTeamLeadData();
+    getAssignedData();
   }, []);
 
-  const getTeamLeadData = async () => {
+  const getAssignedData = async (id) => {
     try {
       setOpen(true);
-      const res = await LeadServices.getTeamLeader();
-      console.log("res", res);
+      const res = await LeadServices.getAllAssignedUser();
+      // Filter the data based on the ALLOWED_ROLES
+      const filteredData = res.data.filter((employee) =>
+        employee.groups.some((group) => Option.ALLOWED_ROLES.includes(group))
+      );
 
-      // Assuming res is an object with properties team_leader_name, sub_team_leaders, and team_leader_sales_user
-      const { position, sub_team_leaders, team_leader_sales_user } =
-        res.data[0];
-      // const { position } = userData;
-      console.log("position", position);
-
-      if (userData.position === position) {
-        // If team_leader_name matches position, add sub_team_leaders and team_leader_sales_user to your data
-        let subTeamLeadersWithEmail = [];
-        // Check if sub_team_leaders exists and add them to subTeamLeadersWithEmail
-        if (
-          sub_team_leaders &&
-          position === "Team Leader" &&
-          sub_team_leaders.length > 0
-        ) {
-          subTeamLeadersWithEmail = sub_team_leaders.map((email) => ({
-            email,
-          }));
-        }
-        // Check if team_leader_sales_user exists and add them to subTeamLeadersWithEmail
-        if (
-          team_leader_sales_user &&
-          position === "Sub Team Leader" &&
-          team_leader_sales_user.length > 0
-        ) {
-          subTeamLeadersWithEmail = team_leader_sales_user.map((email) => ({
-            email,
-          }));
-        }
-
-        console.log("Sub team leaders with email:", subTeamLeadersWithEmail);
-        setAssigned(subTeamLeadersWithEmail);
-
-        // You can add the logic here to update your data with subTeamLeadersWithEmail
-      }
-
+      console.log("filteredData", filteredData);
+      setAssigned(filteredData);
       setOpen(false);
     } catch (error) {
       console.log("error", error);

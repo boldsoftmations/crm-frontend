@@ -20,7 +20,7 @@ import { CSVLink } from "react-csv";
 import { Button } from "@mui/material";
 import { Helmet } from "react-helmet";
 
-export const CompanyDetails = () => {
+export const IncompleteKycDetails = () => {
   const dispatch = useDispatch();
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
@@ -103,12 +103,17 @@ export const CompanyDetails = () => {
       setOpen(true);
       let response;
       if (filterSelectedQuery) {
-        response = await CustomerServices.getAllPaginateCompanyDataWithSearch(
-          "all",
-          filterSelectedQuery
-        );
+        response =
+          await CustomerServices.getAllPaginateIncompleteKycDataWithSearch(
+            "false",
+            "all",
+            filterSelectedQuery
+          );
       } else {
-        response = await CustomerServices.getAllPaginateCompanyData("all");
+        response = await CustomerServices.getAllPaginateIncompleteKycData(
+          "false",
+          "all"
+        );
       }
       const data = response.data.map((row) => {
         return {
@@ -216,7 +221,8 @@ export const CompanyDetails = () => {
       setOpen(true);
       if (filterSelectedQuery !== "" && currentPage) {
         const response =
-          await CustomerServices.getAllPaginateCompanyDataWithSearch(
+          await CustomerServices.getAllPaginateIncompleteKycDataWithSearch(
+            "false",
             currentPage,
             filterSelectedQuery
           );
@@ -224,14 +230,17 @@ export const CompanyDetails = () => {
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
       } else if (currentPage) {
-        const response = await CustomerServices.getAllPaginateCompanyData(
+        const response = await CustomerServices.getAllPaginateIncompleteKycData(
+          "false",
           currentPage
         );
         setCompanyData(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
       } else {
-        const response = await CustomerServices.getAllCompanyData();
+        const response = await CustomerServices.getAllIncompleteKycData(
+          "false"
+        );
         setCompanyData(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
@@ -263,7 +272,8 @@ export const CompanyDetails = () => {
       setOpen(true);
       const filterSearch = value;
       if (filterSearch !== "") {
-        const response = await CustomerServices.getAllSearchCompanyData(
+        const response = await CustomerServices.getAllSearchIncompleteKycData(
+          "false",
           filterSearch
         );
         setCompanyData(response.data.results);
@@ -287,7 +297,8 @@ export const CompanyDetails = () => {
 
       if (filterSelectedQuery) {
         const response =
-          await CustomerServices.getAllPaginateCompanyDataWithSearch(
+          await CustomerServices.getAllPaginateIncompleteKycDataWithSearch(
+            "false",
             page,
             filterSelectedQuery
           );
@@ -300,7 +311,10 @@ export const CompanyDetails = () => {
           setFilterSelectedQuery("");
         }
       } else {
-        const response = await CustomerServices.getAllPaginateCompanyData(page);
+        const response = await CustomerServices.getAllPaginateIncompleteKycData(
+          "false",
+          page
+        );
         setCompanyData(response.data.results);
       }
 
@@ -378,7 +392,7 @@ export const CompanyDetails = () => {
                   fontWeight: 800,
                 }}
               >
-                Customer
+                Incomplete KYC Details
               </h3>
             </div>
             <div style={{ flexGrow: 0.5 }} align="right">

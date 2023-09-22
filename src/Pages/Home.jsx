@@ -44,11 +44,9 @@ export const Home = () => {
   const [startDate, setStartDate] = useState(new Date()); // set default value as current date
   const minDate = new Date().toISOString().split("T")[0];
   const maxDate = new Date("2030-12-31").toISOString().split("T")[0];
-  // const userData = data.profile;
   useEffect(() => {
     getAllTaskDetails();
     getCustomerDetails();
-    getTeamLeadData();
     getAllDispatchData();
     getNewCustomerDetails();
     getPendingTaskDetails();
@@ -145,63 +143,7 @@ export const Home = () => {
   const getResetData = () => {
     setStartDate(new Date());
     setEndDate(new Date());
-  };
-
-  const getTeamLeadData = async () => {
-    try {
-      setOpen(true);
-      const res = await LeadServices.getTeamLeader();
-      console.log("res", res);
-
-      // Assuming res is an object with properties team_leader_name, sub_team_leaders, and team_leader_sales_user
-      const { position, sub_team_leaders, team_leader_sales_user } =
-        res.data[0];
-      // const { position } = userData;
-      console.log("position", position);
-
-      if (userData.position === position) {
-        // If team_leader_name matches position, add sub_team_leaders and team_leader_sales_user to your data
-        console.log("Adding sub_team_leaders to your data:", sub_team_leaders);
-        console.log(
-          "Adding team_leader_sales_user to your data:",
-          team_leader_sales_user
-        );
-
-        let subTeamLeadersWithEmail = [];
-
-        // Check if sub_team_leaders exists and add them to subTeamLeadersWithEmail
-        if (
-          sub_team_leaders &&
-          position === "Team Leader" &&
-          sub_team_leaders.length > 0
-        ) {
-          subTeamLeadersWithEmail = sub_team_leaders.map((email) => ({
-            email,
-          }));
-        }
-
-        // Check if team_leader_sales_user exists and add them to subTeamLeadersWithEmail
-        if (
-          team_leader_sales_user &&
-          position === "Sub Team Leader" &&
-          team_leader_sales_user.length > 0
-        ) {
-          subTeamLeadersWithEmail = team_leader_sales_user.map((email) => ({
-            email,
-          }));
-        }
-
-        console.log("Sub team leaders with email:", subTeamLeadersWithEmail);
-        setAssigned(subTeamLeadersWithEmail);
-
-        // You can add the logic here to update your data with subTeamLeadersWithEmail
-      }
-
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
+    setAssign(null);
   };
 
   const getAllTaskDetails = async () => {
@@ -213,7 +155,7 @@ export const Home = () => {
         { name: "open", label: "Open", value: response.data.open },
         {
           name: "opportunity",
-          label: "Oppurtunity",
+          label: "Opportunity",
           value: response.data.opportunity,
         },
         {
@@ -285,6 +227,7 @@ export const Home = () => {
       const forecastResponse = userData.is_staff
         ? await DashboardService.getConsLastThreeMonthForecastData()
         : await DashboardService.getLastThreeMonthForecastData();
+
       const columnKeys = Object.keys(forecastResponse.data);
       const isAllColumnsEmpty = columnKeys.every(
         (key) => forecastResponse.data[key].length === 0
@@ -305,6 +248,7 @@ export const Home = () => {
           item.combination = String(item.combination); // Convert combination to string explicitly
         });
       }
+
       setBarChartData(Data);
       setOpen(false);
     } catch (err) {
@@ -713,6 +657,7 @@ export const Home = () => {
         await DashboardService.getLastThreeMonthForecastDataByFilter(
           FilterData
         );
+
       const columnKeys = Object.keys(forecastResponse.data);
       const isAllColumnsEmpty = columnKeys.every(
         (key) => forecastResponse.data[key].length === 0
@@ -906,7 +851,7 @@ export const Home = () => {
         { name: "open", label: "Open", value: response.data.open },
         {
           name: "opportunity",
-          label: "Oppurtunity",
+          label: "Opportunity",
           value: response.data.opportunity,
         },
         {
@@ -1204,7 +1149,10 @@ export const Home = () => {
     <>
       <CustomLoader open={open} />
       {/* filter by sales person */}
-      {userData.is_staff === true ? (
+      {userData.is_staff === true ||
+      userData.groups.includes("Sales Manager") ||
+      userData.groups.includes("Sales Deputy Manager") ||
+      userData.groups.includes("Sales Assistant Deputy Manager") ? (
         <StaffDashboard
           barChartData={barChartData}
           pieChartData={pieChartData}
@@ -1272,6 +1220,10 @@ export const Home = () => {
           openPopup3={openPopup3}
           setOpenPopup3={setOpenPopup3}
           getResetDate={getResetDate}
+          handleAutocompleteChange={handleAutocompleteChange}
+          assign={assign}
+          assigned={assigned}
+          getResetData={getResetData}
         />
       )}
       <Popup

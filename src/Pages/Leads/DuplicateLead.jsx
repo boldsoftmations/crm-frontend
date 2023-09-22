@@ -36,6 +36,7 @@ import InvoiceServices from "../../services/InvoiceService";
 import { getSellerAccountData } from "../../Redux/Action/Action";
 import { LeadActivityCreate } from "../FollowUp/LeadActivityCreate";
 import { PotentialCreate } from "../Potential/PotentialCreate";
+import Option from "../../Options/Options";
 
 export const DuplicateLead = () => {
   const dispatch = useDispatch();
@@ -145,7 +146,11 @@ export const DuplicateLead = () => {
     try {
       setOpen(true);
       const res = await LeadServices.getAllAssignedUser();
-      setAssigned(res.data);
+      // Filter the data based on the ALLOWED_ROLES
+      const filteredData = res.data.filter((employee) =>
+        employee.groups.some((group) => Option.ALLOWED_ROLES.includes(group))
+      );
+      setAssigned(filteredData);
       setOpen(false);
     } catch (error) {
       console.log("error", error);

@@ -16,6 +16,7 @@ import {
 import PropTypes from "prop-types";
 import { CustomChart } from "../Components/CustomChart";
 import { Popup } from "../Components/Popup";
+import { useSelector } from "react-redux";
 
 export const StaffDashboard = (props) => {
   const {
@@ -33,7 +34,7 @@ export const StaffDashboard = (props) => {
     handleAutocompleteChange,
     assign,
     total,
-    assigned,
+    // assigned,
     getResetData,
     piData,
     funnelData,
@@ -54,10 +55,11 @@ export const StaffDashboard = (props) => {
     setOpenPopup3,
     getResetDate,
   } = props;
+  const userData = useSelector((state) => state.auth.profile);
   const [dIQdata, setDIQData] = useState([]);
   const [dOBQdata, setDOBQData] = useState([]);
   const [activeButton, setActiveButton] = useState("monthly");
-
+  const assigned = userData.sales_users || [];
   const handleButtonClick = (buttonType) => {
     setActiveButton(buttonType);
   };
@@ -212,7 +214,7 @@ export const StaffDashboard = (props) => {
                 size="small"
                 onChange={(event, value) => handleAutocompleteChange(value)}
                 value={assign}
-                options={assigned.map((option) => option.email)}
+                options={assigned.map((option) => option)}
                 getOptionLabel={(option) => option}
                 renderInput={(params) => (
                   <TextField {...params} label="Filter By Sales Person" />
@@ -375,100 +377,100 @@ export const StaffDashboard = (props) => {
             ))}
           </div>
         </Grid>
-      </Grid>
-      <Grid item xs={12} sm={12} sx={{ marginTop: "20px" }}>
-        <Button
-          variant={activeButton === "monthly" ? "contained" : "outlined"} // Set variant to 'contained' for the active button
-          sx={{ margin: "0 10px 10px 0" }}
-          color="primary"
-          onClick={() => handleButtonClick("monthly")}
-        >
-          Monthly Call Status
-        </Button>
-        <Button
-          variant={activeButton === "weekly" ? "contained" : "outlined"} // Set variant to 'contained' for the active button
-          sx={{ margin: "0 10px 10px 0" }}
-          color="primary"
-          onClick={() => handleButtonClick("weekly")}
-        >
-          Weekly Call Status
-        </Button>
-        <Button
-          variant={activeButton === "daily" ? "contained" : "outlined"} // Set variant to 'contained' for the active button
-          sx={{ margin: "0 10px 10px 0" }}
-          color="primary"
-          onClick={() => handleButtonClick("daily")}
-        >
-          Daily Call Status
-        </Button>
-        {activeButton === "monthly" && (
-          <CustomChart
-            chartType="ColumnChart"
-            data={[
-              ["Month", "Existing Lead", "New Lead", "Customer"],
-              ...monthlyStatus.map((item) => [
-                item.combination,
-                item.existing_lead,
-                item.new_lead,
-                item.customer,
-              ]),
-            ]}
-            options={{
-              title: "Monthly Call Status",
-              width: "100%",
-              height: "400px",
-              isStacked: true,
-              legend: { position: "top" },
-            }}
-            widthStyle={"100%"}
-            heightStyle={"300px"}
-          />
-        )}
-        {activeButton === "weekly" && (
-          <CustomChart
-            chartType="ColumnChart"
-            data={[
-              ["Week", "Existing Lead", "New Lead", "Customer"],
-              ...weeklyStatus.map((item) => [
-                item.combination,
-                item.existing_lead,
-                item.new_lead,
-                item.customer,
-              ]),
-            ]}
-            options={{
-              title: "Weekly Call Status",
-              width: "100%",
-              height: "400px",
-              curveType: "function",
-              legend: { position: "top" },
-            }}
-            widthStyle={"100%"}
-            heightStyle={"300px"}
-          />
-        )}
-        {activeButton === "daily" && (
-          <CustomChart
-            chartType="ColumnChart"
-            data={[
-              ["Day", "Existing Lead", "New Lead", "Customer"],
-              ...dailyStatus.map((item) => [
-                item.combination,
-                item.existing_lead,
-                item.new_lead,
-                item.customer,
-              ]),
-            ]}
-            options={{
-              title: "Daily Call Status",
-              width: "100%",
-              height: "400px",
-              legend: { position: "top" },
-            }}
-            widthStyle={"100%"}
-            heightStyle={"300px"}
-          />
-        )}
+        <Grid item xs={12} sm={12} sx={{ marginTop: "20px" }}>
+          <Button
+            variant={activeButton === "monthly" ? "contained" : "outlined"} // Set variant to 'contained' for the active button
+            sx={{ margin: "0 10px 10px 0" }}
+            color="primary"
+            onClick={() => handleButtonClick("monthly")}
+          >
+            Monthly Call Status
+          </Button>
+          <Button
+            variant={activeButton === "weekly" ? "contained" : "outlined"} // Set variant to 'contained' for the active button
+            sx={{ margin: "0 10px 10px 0" }}
+            color="primary"
+            onClick={() => handleButtonClick("weekly")}
+          >
+            Weekly Call Status
+          </Button>
+          <Button
+            variant={activeButton === "daily" ? "contained" : "outlined"} // Set variant to 'contained' for the active button
+            sx={{ margin: "0 10px 10px 0" }}
+            color="primary"
+            onClick={() => handleButtonClick("daily")}
+          >
+            Daily Call Status
+          </Button>
+          {activeButton === "monthly" && (
+            <CustomChart
+              chartType="ColumnChart"
+              data={[
+                ["Month", "Existing Lead", "New Lead", "Customer"],
+                ...monthlyStatus.map((item) => [
+                  item.combination,
+                  item.existing_lead,
+                  item.new_lead,
+                  item.customer,
+                ]),
+              ]}
+              options={{
+                title: "Monthly Call Status",
+                width: "100%",
+                height: "400px",
+                isStacked: true,
+                legend: { position: "top" },
+              }}
+              widthStyle={"100%"}
+              heightStyle={"300px"}
+            />
+          )}
+          {activeButton === "weekly" && (
+            <CustomChart
+              chartType="ColumnChart"
+              data={[
+                ["Week", "Existing Lead", "New Lead", "Customer"],
+                ...weeklyStatus.map((item) => [
+                  item.combination,
+                  item.existing_lead,
+                  item.new_lead,
+                  item.customer,
+                ]),
+              ]}
+              options={{
+                title: "Weekly Call Status",
+                width: "100%",
+                height: "400px",
+                curveType: "function",
+                legend: { position: "top" },
+              }}
+              widthStyle={"100%"}
+              heightStyle={"300px"}
+            />
+          )}
+          {activeButton === "daily" && (
+            <CustomChart
+              chartType="ColumnChart"
+              data={[
+                ["Day", "Existing Lead", "New Lead", "Customer"],
+                ...dailyStatus.map((item) => [
+                  item.combination,
+                  item.existing_lead,
+                  item.new_lead,
+                  item.customer,
+                ]),
+              ]}
+              options={{
+                title: "Daily Call Status",
+                width: "100%",
+                height: "400px",
+                legend: { position: "top" },
+              }}
+              widthStyle={"100%"}
+              heightStyle={"300px"}
+            />
+          )}
+        </Grid>
       </Grid>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6} sx={{ marginTop: "20px" }}>

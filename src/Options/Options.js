@@ -397,6 +397,13 @@ const MainDistribution = [
   { id: 79, label: "VST - Spray Paint", value: "VST - Spray Paint" },
 ];
 
+const ALLOWED_ROLES = [
+  "Sales Manager",
+  "Sales Deputy Manager",
+  "Sales Assistant Deputy",
+  "Sales Executive",
+];
+
 const Option = {
   LeadBusinessTypeData,
   CustomerBusinessTypeData,
@@ -407,5 +414,6 @@ const Option = {
   businessMismatchsOption,
   interestOption,
   MainDistribution,
+  ALLOWED_ROLES,
 };
 export default Option;

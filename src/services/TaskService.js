@@ -28,6 +28,14 @@ const createActivityTask = (data) => {
   return CustomAxios.post("/api/task/list-tasks-activity/", data);
 };
 
+// users
+const getAllUsers = (users) => {
+  return CustomAxios.get(`/api/user/users/?is_active=${users}`);
+};
+
+const createUsers = (id, data) => {
+  return CustomAxios.patch(`/api/user/users/${id}/`, data);
+};
 const TaskService = {
   getAllTask,
   getTaskPaginatewithSearch,
@@ -36,6 +44,8 @@ const TaskService = {
   createTask,
   updateTask,
   createActivityTask,
+  getAllUsers,
+  createUsers,
 };
 
 export default TaskService;
