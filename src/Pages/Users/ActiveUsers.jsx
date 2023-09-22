@@ -159,7 +159,9 @@ export const ActiveUsers = () => {
         email: activeUsersByIDData.email,
         is_active: activeUsersByIDData.is_active,
         group_names: activeUsersByIDData.groups,
-        ref_user: activeUsersByIDData.ref_user.email || null,
+        ref_user: activeUsersByIDData.ref_user
+          ? activeUsersByIDData.ref_user.email
+          : null,
       };
       await TaskService.createUsers(activeUsersByIDData.emp_id, req);
       setOpenPopup(false);
