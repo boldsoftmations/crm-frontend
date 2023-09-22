@@ -34,6 +34,7 @@ export const ActiveUsers = () => {
     const desiredRoles = [
       "Sales Executive",
       "Sales Assistant Deputy Manager",
+      "Sales Deputy Manager",
       "Sales",
     ];
 
@@ -75,7 +76,8 @@ export const ActiveUsers = () => {
         // Check if the user is part of "Sales Deputy Manager" or "Sales Assistant Deputy Manager"
         const isManagerRole =
           employee.groups.includes("Sales Deputy Manager") ||
-          employee.groups.includes("Sales Assistant Deputy Manager");
+          employee.groups.includes("Sales Assistant Deputy Manager") ||
+          employee.groups.includes("Sales Manager");
 
         return isManagerRole;
       });
@@ -85,6 +87,7 @@ export const ActiveUsers = () => {
       const desiredRoles = [
         "Sales Executive",
         "Sales Assistant Deputy Manager",
+        "Sales Deputy Manager",
         "Sales",
       ];
       // Check if any of the users in response.data.users have a role in the desiredRoles array
@@ -119,6 +122,10 @@ export const ActiveUsers = () => {
       filteredList = list.filter((user) =>
         user.groups.includes("Sales Deputy Manager")
       );
+    } else if (group.includes("Sales Deputy Manager")) {
+      filteredList = list.filter((user) =>
+        user.groups.includes("Sales Manager")
+      );
     }
 
     return filteredList.reduce((acc, user) => {
@@ -132,6 +139,11 @@ export const ActiveUsers = () => {
         !acc.some((u) => u.email === user.email)
       ) {
         acc.push({ ...user, primaryGroup: "Sales Assistant Deputy Manager" });
+      } else if (
+        user.groups.includes("Sales Manager") &&
+        !acc.some((u) => u.email === user.email)
+      ) {
+        acc.push({ ...user, primaryGroup: "Sales Manager" });
       }
       return acc;
     }, []);
