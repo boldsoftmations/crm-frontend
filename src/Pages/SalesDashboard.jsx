@@ -57,7 +57,10 @@ export const SalesDashboard = (props) => {
     assign,
   } = props;
   const userData = useSelector((state) => state.auth.profile);
-  const [privacy] = useState(!userData.groups.includes("Sales"));
+  const [privacy] = useState(
+    !userData.groups.includes("Sales") ||
+      !userData.groups.includes("Sales Excutive")
+  );
   const [dIQdata, setDIQData] = useState();
   const [dOBQdata, setDOBQData] = useState();
   const [activeButton, setActiveButton] = useState("monthly");
