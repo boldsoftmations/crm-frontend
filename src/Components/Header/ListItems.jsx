@@ -948,6 +948,50 @@ export const ListItems = (props) => {
               </ListItem>
             </List>
           </Collapse>
+          {/* Users */}
+          <ListItem
+            button
+            onClick={() => setExpandUser(!expandUser)}
+            style={{ width: 300 }}
+          >
+            <ListItemIcon>
+              <PersonIcon />
+            </ListItemIcon>
+            <ListItemText primary="Users" />
+            {expandUser ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          </ListItem>
+
+          <Collapse in={expandUser} timeout="auto" unmountOnExit>
+            <Divider />
+            <List component="div" disablePadding>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/user/active-user"
+                style={{ width: 300 }}
+              >
+                <ListItemText
+                  component={Button}
+                  onClick={() => setOpen(false)}
+                  inset
+                  primary="Active Users"
+                />
+              </ListItem>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/user/inactive-user"
+                style={{ width: 300 }}
+              >
+                <ListItemText
+                  component={Button}
+                  onClick={() => setOpen(false)}
+                  inset
+                  primary="InActive Users"
+                />
+              </ListItem>
+            </List>
+          </Collapse>
         </>
       ) : (
         <>
