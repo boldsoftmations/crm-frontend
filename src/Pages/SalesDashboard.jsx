@@ -41,6 +41,7 @@ export const SalesDashboard = (props) => {
     dailyInvoiceQuantity,
     dailyOrderBookQuantity,
     handleChange,
+    selectedDate,
     handleStartDateChange,
     handleEndDateChange,
     startDate,
@@ -52,9 +53,7 @@ export const SalesDashboard = (props) => {
     getResetDate,
   } = props;
   const userData = useSelector((state) => state.auth.profile);
-  const [privacy] = useState(
-      !userData.groups.includes("Sales Executive")
-  );
+  const [privacy] = useState(!userData.groups.includes("Sales Executive"));
   const [dIQdata, setDIQData] = useState();
   const [dOBQdata, setDOBQData] = useState();
   const [activeButton, setActiveButton] = useState("monthly");
@@ -907,6 +906,7 @@ export const SalesDashboard = (props) => {
                   labelId="demo-select-small"
                   id="demo-select-small"
                   label="Date"
+                  value={selectedDate}
                   onChange={(event) => handleChange(event)}
                 >
                   {DateOptions.map((option, i) => (

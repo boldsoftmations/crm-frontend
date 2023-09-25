@@ -38,10 +38,23 @@ export const Home = () => {
   const [total, setTotal] = useState(0);
   const [filterValue, setFilterValue] = useState(null);
   const userData = useSelector((state) => state.auth.profile);
+  // Get the current date
   const currentDate = new Date();
-  currentDate.setDate(currentDate.getDate() + 1); // Add 1 day to get the next date
-  const [endDate, setEndDate] = useState(currentDate);
-  const [startDate, setStartDate] = useState(new Date()); // set default value as current date
+  // Set the initial startDate to the first day of the current month
+  const initialStartDate = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth(),
+    1
+  );
+  // Set the initial endDate to the last day of the current month
+  const initialEndDate = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth() + 1,
+    0
+  );
+  const [selectedDate, setSelectedDate] = useState("This Month");
+  const [endDate, setEndDate] = useState(initialEndDate);
+  const [startDate, setStartDate] = useState(initialStartDate); // set default value as current date
   const minDate = new Date().toISOString().split("T")[0];
   const maxDate = new Date("2030-12-31").toISOString().split("T")[0];
   useEffect(() => {
@@ -86,7 +99,7 @@ export const Home = () => {
 
   const handleChange = (event) => {
     const selectedValue = event.target.value;
-
+    setSelectedDate(selectedValue);
     if (selectedValue === "Today") {
       const currentDate = new Date();
       const nextDate = new Date();
@@ -1179,6 +1192,7 @@ export const Home = () => {
           dailyInvoiceQuantity={dailyInvoiceQuantity}
           dailyOrderBookQuantity={dailyOrderBookQuantity}
           handleChange={handleChange}
+          selectedDate={selectedDate}
           handleStartDateChange={handleStartDateChange}
           handleEndDateChange={handleEndDateChange}
           startDate={startDate}
@@ -1211,6 +1225,7 @@ export const Home = () => {
           dailyInvoiceQuantity={dailyInvoiceQuantity}
           dailyOrderBookQuantity={dailyOrderBookQuantity}
           handleChange={handleChange}
+          selectedDate={selectedDate}
           handleStartDateChange={handleStartDateChange}
           handleEndDateChange={handleEndDateChange}
           startDate={startDate}
