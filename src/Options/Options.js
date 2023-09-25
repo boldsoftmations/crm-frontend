@@ -400,7 +400,7 @@ const MainDistribution = [
 const ALLOWED_ROLES = [
   "Sales Manager",
   "Sales Deputy Manager",
-  "Sales Assistant Deputy",
+  "Sales Assistant Deputy Manager",
   "Sales Executive",
 ];
 
