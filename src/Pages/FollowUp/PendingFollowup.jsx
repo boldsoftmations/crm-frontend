@@ -96,7 +96,7 @@ export const PendingFollowup = (props) => {
                 fontWeight: 800,
               }}
             >
-              Pending Followup
+              Overdue Followup
             </h3>
           </Box>
 

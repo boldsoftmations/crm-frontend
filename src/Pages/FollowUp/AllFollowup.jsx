@@ -290,7 +290,7 @@ export const AllFollowup = (props) => {
     <>
       <CustomLoader open={open} />
 
-      {/* Pending FollowUp */}
+      {/* Overdue FollowUp */}
       <Grid item xs={12}>
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
           <Box display="flex" marginBottom="10px">

@@ -395,7 +395,7 @@ export const ListItems = (props) => {
                   component={Button}
                   onClick={() => setOpen(false)}
                   inset
-                  primary="Incomplete Kyc"
+                  primary="Incomplete KYC"
                 />
               </ListItem>
             </List>
@@ -2631,7 +2631,7 @@ export const ListItems = (props) => {
                       component={Button}
                       onClick={() => setOpen(false)}
                       inset
-                      primary="Incomplete Kyc"
+                      primary="Incomplete KYC"
                     />
                   </ListItem>
                 </List>
@@ -3103,7 +3103,7 @@ export const ListItems = (props) => {
                       component={Button}
                       onClick={() => setOpen(false)}
                       inset
-                      primary="Incomplete Kyc"
+                      primary="Incomplete KYC"
                     />
                   </ListItem>
                 </List>
@@ -3484,7 +3484,7 @@ export const ListItems = (props) => {
                       component={Button}
                       onClick={() => setOpen(false)}
                       inset
-                      primary="Incomplete Kyc"
+                      primary="Incomplete KYC"
                     />
                   </ListItem>
                 </List>
@@ -3920,7 +3920,7 @@ export const ListItems = (props) => {
                       component={Button}
                       onClick={() => setOpen(false)}
                       inset
-                      primary="Incomplete Kyc"
+                      primary="Incomplete KYC"
                     />
                   </ListItem>
                 </List>

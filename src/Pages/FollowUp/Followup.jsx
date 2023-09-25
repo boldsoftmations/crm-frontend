@@ -122,13 +122,13 @@ export const Followup = () => {
   };
 
   const SalesTabs = [
-    { label: "Pending Followup" },
+    { label: "Overdue Followup" },
     { label: "Today Followup" },
     { label: "Upcoming Followup" },
   ];
 
   const StaffTabs = [
-    { label: "Pending Followup" },
+    { label: "Overdue Followup" },
     { label: "Today Followup" },
     { label: "Upcoming Followup" },
     { label: "All Followup" },
