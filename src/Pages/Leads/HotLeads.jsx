@@ -203,11 +203,11 @@ export const HotLeads = () => {
     try {
       setOpen(true);
       const res = await LeadServices.getAllAssignedUser();
-   // Filter the data based on the ALLOWED_ROLES
-   const filteredData = res.data.filter((employee) =>
-   employee.groups.some((group) => Option.ALLOWED_ROLES.includes(group))
- );
- setAssigned(filteredData);
+      // Filter the data based on the ALLOWED_ROLES
+      const filteredData = res.data.filter((employee) =>
+        employee.groups.some((group) => Option.ALLOWED_ROLES.includes(group))
+      );
+      setAssigned(filteredData);
       setOpen(false);
     } catch (error) {
       console.log("error", error);
@@ -513,7 +513,9 @@ export const HotLeads = () => {
               getResetData={getResetSearchData}
             />
 
-            {users.is_staff === true && (
+            {(users.groups.toString() === "Sales Manager" ||
+              users.groups.toString() === "Sales Deputy Manager" ||
+              users.groups.toString() === "Sales Assistant Deputy Manager") && (
               <Button
                 onClick={() => setOpenModal(true)}
                 variant="contained"

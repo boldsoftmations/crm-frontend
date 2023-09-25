@@ -441,7 +441,8 @@ export const ClosedLead = () => {
               getResetData={getResetSearchData}
             />
 
-            {users.is_staff === true && (
+            {(users.groups.toString() === "Sales Manager" ||
+              users.groups.toString() === "Sales Deputy Manager") && (
               <Button
                 onClick={() => setOpenModal(true)}
                 variant="contained"

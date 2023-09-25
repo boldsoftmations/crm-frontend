@@ -358,7 +358,8 @@ export const DuplicateLead = () => {
             >
               Search
             </Button>
-            {users.is_staff === true && (
+            {(users.groups.toString() === "Sales Manager" ||
+              users.groups.toString() === "Sales Deputy Manager") && (
               <button
                 onClick={() => setOpenModal(true)}
                 className="btn btn-primary me-2"
