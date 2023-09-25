@@ -492,7 +492,11 @@ export const ActivePI = () => {
                         <Button variant="text" onClick={() => openInPopup(row)}>
                           View
                         </Button>
-                        {(users.groups.toString() === "Sales" ||
+                        {(users.groups.toString() === "Sales Manager" ||
+                          users.groups.toString() === "Sales Deputy Manager" ||
+                          users.groups.toString() ===
+                            "Sales Assistant Deputy Manager" ||
+                          users.groups.toString() === "Sales Executive" ||
                           users.groups.toString() === "Customer Service") &&
                           row.status === "Raised" && (
                             <Button
