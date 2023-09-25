@@ -31,7 +31,7 @@ export const UpdateAllCompanyDetails = (props) => {
     { label: "WareHouse" },
     { label: "Security Cheques" },
     { label: "Forecast" },
-    { label: "Kyc" },
+    { label: "KYC" },
   ];
   // All Company Details Api
   useEffect(() => {

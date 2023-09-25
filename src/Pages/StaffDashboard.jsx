@@ -481,7 +481,7 @@ export const StaffDashboard = (props) => {
               ...pendingDescription.map((item) => [item.name, item.value]),
             ]}
             options={{
-              title: "Pending Quantity by Description",
+              title: "OrderBook Pending Quantity by Description",
               width: "100%",
               height: "400px",
               legend: { position: "none" },

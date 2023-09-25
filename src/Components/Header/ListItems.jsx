@@ -48,7 +48,7 @@ export const ListItems = (props) => {
   return (
     <div>
       {/* Staff */}
-      {userData.is_staff === true || userData.groups.includes("Director") ? (
+      {userData.groups.includes("Director") ? (
         <>
           {/* Dashboard */}
           <ListItem
