@@ -13,13 +13,16 @@ export const ProductForecastViewAll = () => {
   const userData = data.profile;
 
   const isAdmin =
-    userData.is_staff === true ||
+    userData.groups.includes("Director") ||
     userData.groups.includes("Accounts") ||
-    userData.groups.includes("Sales") ||
+    userData.groups.includes("Sales Executive") ||
+    userData.groups.includes("Sales Manager") ||
+    userData.groups.includes("Sales Deputy Manager") ||
+    userData.groups.includes("Sales Assistant Deputy Manager") ||
     userData.groups.includes("Customer Service");
 
   const isPurchase =
-    userData.is_staff === true ||
+    userData.groups.includes("Director") ||
     userData.groups.includes("Accounts") ||
     userData.groups.includes("Purchase");
 
