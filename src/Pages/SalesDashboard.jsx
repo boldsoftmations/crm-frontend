@@ -53,8 +53,7 @@ export const SalesDashboard = (props) => {
   } = props;
   const userData = useSelector((state) => state.auth.profile);
   const [privacy] = useState(
-    !userData.groups.includes("Sales") ||
-      !userData.groups.includes("Sales Excutive")
+      !userData.groups.includes("Sales Executive")
   );
   const [dIQdata, setDIQData] = useState();
   const [dOBQdata, setDOBQData] = useState();
