@@ -279,36 +279,40 @@ export const UpdateCompanyDetails = (props) => {
               }
             />
           </Grid>
-          <Grid item xs={12} sm={4}>
-            <Autocomplete
-              size="small"
-              value={inputValue.assigned_to || []}
-              onChange={(event, newValue) => {
-                handleSelectChange("assigned_to", newValue);
-              }}
-              multiple
-              limitTags={3}
-              id="multiple-limit-tags"
-              options={assigned.map((option) => option.email)}
-              freeSolo
-              renderTags={(value, getTagProps) =>
-                value.map((option, index) => (
-                  <Chip
-                    variant="outlined"
-                    label={option}
-                    {...getTagProps({ index })}
+          {(userData.groups.includes("Director") ||
+            userData.groups.includes("Accounts") ||
+            userData.groups.includes("Sales Manager")) && (
+            <Grid item xs={12} sm={4}>
+              <Autocomplete
+                size="small"
+                value={inputValue.assigned_to || []}
+                onChange={(event, newValue) => {
+                  handleSelectChange("assigned_to", newValue);
+                }}
+                multiple
+                limitTags={3}
+                id="multiple-limit-tags"
+                options={assigned.map((option) => option.email)}
+                freeSolo
+                renderTags={(value, getTagProps) =>
+                  value.map((option, index) => (
+                    <Chip
+                      variant="outlined"
+                      label={option}
+                      {...getTagProps({ index })}
+                    />
+                  ))
+                }
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Assign To"
+                    placeholder="Assign To"
                   />
-                ))
-              }
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Assign To"
-                  placeholder="Assign To"
-                />
-              )}
-            />
-          </Grid>
+                )}
+              />
+            </Grid>
+          )}
           <Grid item xs={12}>
             <TextField
               fullWidth
@@ -324,7 +328,9 @@ export const UpdateCompanyDetails = (props) => {
             />
           </Grid>
         </Grid>
-        {userData.groups.toString() === "Accounts" && (
+        {(userData.groups.includes("Director") ||
+          userData.groups.includes("Accounts") ||
+          userData.groups.includes("Sales Manager")) && (
           <Button
             type="submit"
             fullWidth
