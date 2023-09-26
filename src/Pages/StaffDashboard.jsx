@@ -273,28 +273,30 @@ export const StaffDashboard = (props) => {
         </Grid>
       </Grid>
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
-          <CustomChart
-            chartType="BarChart"
-            data={[
-              ["Name", "Value", { role: "style" }],
-              ...horizontalBarData.map((item) => [
-                item.name,
-                item.value,
-                item.type === "LR" ? "blue" : "green",
-              ]),
-            ]}
-            options={{
-              title: "Dispatch Data",
-              width: "100%",
-              height: "300px",
-              legend: { position: "none" },
-              hAxis: { title: "Value" },
-            }}
-            widthStyle={"100%"}
-            heightStyle={"300px"}
-          />
-        </Grid>
+        {userData.groups.includes("Director") && (
+          <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+            <CustomChart
+              chartType="BarChart"
+              data={[
+                ["Name", "Value", { role: "style" }],
+                ...horizontalBarData.map((item) => [
+                  item.name,
+                  item.value,
+                  item.type === "LR" ? "blue" : "green",
+                ]),
+              ]}
+              options={{
+                title: "Dispatch Data",
+                width: "100%",
+                height: "300px",
+                legend: { position: "none" },
+                hAxis: { title: "Value" },
+              }}
+              widthStyle={"100%"}
+              heightStyle={"300px"}
+            />
+          </Grid>
+        )}
         <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
           <CustomChart
             chartType="PieChart"

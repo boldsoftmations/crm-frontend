@@ -1162,7 +1162,7 @@ export const Home = () => {
     <>
       <CustomLoader open={open} />
       {/* filter by sales person */}
-      {userData.is_staff === true ||
+      {userData.groups.includes("Director") ||
       userData.groups.includes("Sales Manager") ||
       userData.groups.includes("Sales Deputy Manager") ||
       userData.groups.includes("Sales Assistant Deputy Manager") ? (
