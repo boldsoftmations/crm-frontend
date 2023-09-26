@@ -17,12 +17,7 @@ import Option from "../../../Options/Options";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomerServices from "../../../services/CustomerService";
 
-const KycUpdate = ({
-  setOpenPopup,
-  getAllCompanyDetails,
-  recordForEdit,
-  contactsData,
-}) => {
+const KycUpdate = ({ setOpenPopup, getAllCompanyDetails, recordForEdit }) => {
   const [inputValue, setInputValue] = useState([]);
   const [open, setOpen] = useState(false);
 
@@ -57,7 +52,8 @@ const KycUpdate = ({
       console.log("company data by id error", err);
     }
   };
-
+  console.log("recordForEdit", recordForEdit);
+  console.log("inputValue", inputValue);
   const UpdateCompanyDetails = async (e) => {
     try {
       e.preventDefault();
@@ -93,7 +89,7 @@ const KycUpdate = ({
       setOpen(false);
     }
   };
-
+  const contactsData = inputValue.contacts || []; // Handle cases when inputValue.contacts is undefined or null
   return (
     <>
       <CustomLoader open={open} />
@@ -295,7 +291,7 @@ const KycUpdate = ({
               <Autocomplete
                 size="small"
                 value={inputValue.main_distribution || []}
-                onChange={(newValue) => {
+                onChange={(event, newValue) => {
                   handleSelectChange("main_distribution", newValue);
                 }}
                 multiple

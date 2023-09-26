@@ -126,7 +126,6 @@ export const UpdateAllCompanyDetails = (props) => {
           {activeTab === 6 && (
             <div>
               <KycUpdate
-                contactsData={contactData}
                 setOpenPopup={setOpenPopup}
                 getAllCompanyDetails={getAllCompanyDetails}
                 recordForEdit={recordForEdit}

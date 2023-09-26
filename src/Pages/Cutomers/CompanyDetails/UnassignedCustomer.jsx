@@ -168,7 +168,7 @@ export const UnassignedCustomer = () => {
       e.preventDefault();
       setOpen(true);
       const req = {
-        type: recordForEdit.type,
+        type_of_customer: recordForEdit.type_of_customer,
         name: recordForEdit.name,
         address: recordForEdit.address,
         pincode: recordForEdit.pincode,

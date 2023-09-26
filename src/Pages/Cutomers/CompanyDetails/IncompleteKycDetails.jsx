@@ -1,6 +1,4 @@
 import React, { useState, useRef, useEffect } from "react";
-import { UpdateAllCompanyDetails } from "./UpdateAllCompanyDetails";
-import { CreateCompanyDetails } from "./CreateCompanyDetails";
 import { Popup } from "./../../../Components/Popup";
 import CustomerServices from "../../../services/CustomerService";
 import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
@@ -12,21 +10,15 @@ import { CustomSearchWithButton } from "../../../Components/CustomSearchWithButt
 import { BulkCustomerAssign } from "./BulkCustomerAssign";
 import { CustomTable } from "./../../../Components/CustomTable";
 import { CustomPagination } from "../../../Components/CustomPagination";
-import { CustomerActivityCreate } from "../../FollowUp/CustomerActivityCreate";
 import ProductService from "../../../services/ProductService";
-import { CustomerPotentialCreate } from "../../Potential/CustomerPotentialCreate";
-import { CreateCustomerProformaInvoice } from "./../../Invoice/ProformaInvoice/CreateCustomerProformaInvoice";
 import { CSVLink } from "react-csv";
 import { Button } from "@mui/material";
 import { Helmet } from "react-helmet";
+import KycUpdate from "../KycDetails/KycUpdate";
 
 export const IncompleteKycDetails = () => {
   const dispatch = useDispatch();
   const [openPopup, setOpenPopup] = useState(false);
-  const [openPopup2, setOpenPopup2] = useState(false);
-  const [openPopup3, setOpenPopup3] = useState(false);
-  const [openPopupActivity, setOpenPopupActivity] = useState(false);
-  const [openPopupPotential, setOpenPopupPotential] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [open, setOpen] = useState(false);
@@ -159,21 +151,6 @@ export const IncompleteKycDetails = () => {
   const openInPopup = (item) => {
     setRecordForEdit(item.id);
     setOpenPopup(true);
-  };
-
-  const openInPopup2 = (item) => {
-    setRecordForEdit(item.id);
-    setOpenPopup3(true);
-  };
-
-  const openInPopup3 = (item) => {
-    setRecordForEdit(item.id);
-    setOpenPopupActivity(true);
-  };
-
-  const openInPopup4 = (item) => {
-    setRecordForEdit(item.id);
-    setOpenPopupPotential(true);
   };
 
   const handleSnackbarClose = () => {
@@ -405,15 +382,7 @@ export const IncompleteKycDetails = () => {
                   Assign Bulk Customer
                 </button>
               )}
-              {userData.groups.toString() !== "Sales" && (
-                <button
-                  onClick={() => setOpenPopup2(true)}
-                  className="btn btn-success"
-                  size="small"
-                >
-                  Add
-                </button>
-              )}
+
               <Button variant="contained" onClick={handleDownload}>
                 Download CSV
               </Button>
@@ -479,9 +448,9 @@ export const IncompleteKycDetails = () => {
             headers={Tableheaders}
             data={Tabledata}
             openInPopup={openInPopup}
-            openInPopup2={openInPopup2}
-            openInPopup3={openInPopup3}
-            openInPopup4={openInPopup4}
+            openInPopup2={null}
+            openInPopup3={null}
+            openInPopup4={null}
             ButtonText={"PI"}
             ButtonText1={"Activity"}
             ButtonText2={"Potential"}
@@ -502,40 +471,16 @@ export const IncompleteKycDetails = () => {
           </div>
         </div>
       </div>
-
-      <Popup
-        fullScreen={true}
-        title={"Create Customer Details"}
-        openPopup={openPopup2}
-        setOpenPopup={setOpenPopup2}
-      >
-        <CreateCompanyDetails
-          setOpenPopup={setOpenPopup2}
-          getAllCompanyDetails={getAllCompanyDetails}
-        />
-      </Popup>
       <Popup
         fullScreen={true}
         title={"Update Customer"}
         openPopup={openPopup}
         setOpenPopup={setOpenPopup}
       >
-        <UpdateAllCompanyDetails
+        <KycUpdate
           setOpenPopup={setOpenPopup}
           getAllCompanyDetails={getAllCompanyDetails}
           recordForEdit={recordForEdit}
-          product={product}
-        />
-      </Popup>
-      <Popup
-        maxWidth={"xl"}
-        title={"Create Customer Proforma Invoice"}
-        openPopup={openPopup3}
-        setOpenPopup={setOpenPopup3}
-      >
-        <CreateCustomerProformaInvoice
-          recordForEdit={recordForEdit}
-          setOpenPopup={setOpenPopup3}
         />
       </Popup>
       <Popup
@@ -547,30 +492,6 @@ export const IncompleteKycDetails = () => {
         <BulkCustomerAssign
           setOpenPopup={setOpenModal}
           setOpenSnackbar={setOpenSnackbar}
-        />
-      </Popup>
-      <Popup
-        maxWidth={"xl"}
-        title={"Create Activity"}
-        openPopup={openPopupActivity}
-        setOpenPopup={setOpenPopupActivity}
-      >
-        <CustomerActivityCreate
-          recordForEdit={recordForEdit}
-          setOpenModal={setOpenPopupActivity}
-          getFollowUp={getAllCompanyDetails}
-        />
-      </Popup>
-      <Popup
-        maxWidth={"lg"}
-        title={"Create Potential"}
-        openPopup={openPopupPotential}
-        setOpenPopup={setOpenPopupPotential}
-      >
-        <CustomerPotentialCreate
-          recordForEdit={recordForEdit}
-          product={product}
-          setOpenModal={setOpenPopupPotential}
         />
       </Popup>
     </>
