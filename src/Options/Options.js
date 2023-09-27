@@ -404,6 +404,7 @@ const ALLOWED_ROLES = [
   "Sales Executive",
 ];
 
+const Marital_Status_Options = ["Married", "UnMarried"];
 const Option = {
   LeadBusinessTypeData,
   CustomerBusinessTypeData,
@@ -415,5 +416,6 @@ const Option = {
   interestOption,
   MainDistribution,
   ALLOWED_ROLES,
+  Marital_Status_Options,
 };
 export default Option;

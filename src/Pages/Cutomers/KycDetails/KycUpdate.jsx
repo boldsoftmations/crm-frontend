@@ -4,13 +4,13 @@ import {
   FormLabel,
   Radio,
   RadioGroup,
-  TextField,
   Grid,
   Chip,
   Divider,
   FormControlLabel,
   Button,
   Box,
+  TextField,
 } from "@mui/material";
 import Autocomplete from "@mui/lab/Autocomplete";
 import Option from "../../../Options/Options";
@@ -20,7 +20,6 @@ import CustomerServices from "../../../services/CustomerService";
 const KycUpdate = ({ setOpenPopup, getAllCompanyDetails, recordForEdit }) => {
   const [inputValue, setInputValue] = useState([]);
   const [open, setOpen] = useState(false);
-
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     const updatedValue =
@@ -52,8 +51,7 @@ const KycUpdate = ({ setOpenPopup, getAllCompanyDetails, recordForEdit }) => {
       console.log("company data by id error", err);
     }
   };
-  console.log("recordForEdit", recordForEdit);
-  console.log("inputValue", inputValue);
+
   const UpdateCompanyDetails = async (e) => {
     try {
       e.preventDefault();
@@ -75,6 +73,7 @@ const KycUpdate = ({ setOpenPopup, getAllCompanyDetails, recordForEdit }) => {
         purchase_decision_maker: inputValue.purchase_decision_maker || null,
         industrial_list: inputValue.industrial_list || null,
         distribution_type: inputValue.distribution_type || null,
+        customer_serve_count: inputValue.customer_serve_count || null,
         category: inputValue.category || [],
         main_distribution: inputValue.main_distribution || [],
         birth_date: inputValue.birth_date || null,
@@ -190,7 +189,7 @@ const KycUpdate = ({ setOpenPopup, getAllCompanyDetails, recordForEdit }) => {
               type="date"
               name="birth_date"
               size="small"
-              label="Enter Birth date"
+              label="Birth date"
               variant="outlined"
               value={inputValue.birth_date || ""}
               onChange={handleInputChange}
@@ -200,20 +199,39 @@ const KycUpdate = ({ setOpenPopup, getAllCompanyDetails, recordForEdit }) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              type="date"
-              name="anniversary_date"
-              size="small"
-              label="Enter Aniversary Date"
-              variant="outlined"
-              value={inputValue.anniversary_date || ""}
-              onChange={handleInputChange}
-              InputLabelProps={{
-                shrink: true,
+            <Autocomplete
+              style={{
+                minWidth: 220,
               }}
+              size="small"
+              onChange={(event, value) =>
+                handleSelectChange("marital_status", value)
+              }
+              value={inputValue.handleSelectChange || ""}
+              options={Option.Marital_Status_Options.map((options) => options)}
+              getOptionLabel={(option) => option}
+              renderInput={(params) => (
+                <TextField {...params} label="Marital Status" />
+              )}
             />
           </Grid>
+          {inputValue.marital_status === "Married" && (
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                type="date"
+                name="anniversary_date"
+                size="small"
+                label="Aniversary Date"
+                variant="outlined"
+                value={inputValue.anniversary_date || ""}
+                onChange={handleInputChange}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+            </Grid>
+          )}
           {inputValue.type_of_customer === "Industrial Customer" && (
             <Grid item xs={12} sm={6}>
               <Autocomplete
@@ -251,6 +269,20 @@ const KycUpdate = ({ setOpenPopup, getAllCompanyDetails, recordForEdit }) => {
                 renderInput={(params) => (
                   <TextField {...params} label="Distribution Type" />
                 )}
+              />
+            </Grid>
+          )}
+          {inputValue.distribution_type === "Wholeseller" && (
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                type="number"
+                name="customer_serve_count"
+                size="small"
+                label="Customer Serve Count"
+                variant="outlined"
+                value={inputValue.customer_serve_count || ""}
+                onChange={handleInputChange}
               />
             </Grid>
           )}
