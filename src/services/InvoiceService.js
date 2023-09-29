@@ -172,6 +172,12 @@ const getTotalPendingQuantity = () => {
   return CustomAxios.get(`/api/invoice/pending-order-total`);
 };
 
+const getAllOrderBookDataWithSearch = (data, type, searchvalue) => {
+  return CustomAxios.get(
+    `/api/invoice/list-order-book-company/?page=${data}&ordering=${type}&search=${searchvalue}`
+  );
+};
+
 // sales invoice api
 const getSalesInvoiceData = (startDate, endDate) => {
   return CustomAxios.get(
@@ -330,6 +336,7 @@ const InvoiceServices = {
   updateCustomerProformaInvoiceData,
   getOrderBookData,
   getTotalPendingQuantity,
+  getAllOrderBookDataWithSearch,
   getSalesInvoiceData,
   getSalesInvoiceDataWithSearch,
   getSalesInvoiceDataWithPagination,
