@@ -59,7 +59,7 @@ export const UpdateCompanyDetails = (props) => {
       setOpen(true);
       const ALLOWED_ROLES = [
         "Director",
-        "Customer Serive",
+        "Customer Service",
         "Sales Manager",
         "Sales Deputy Manager",
         "Sales Assistant Deputy Manager",
