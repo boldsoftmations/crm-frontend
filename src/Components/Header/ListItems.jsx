@@ -1255,6 +1255,7 @@ export const ListItems = (props) => {
           {/* customer services */}
           {userData.groups.includes("Customer Service") && (
             <>
+              {/* products */}
               <ListItem
                 button
                 onClick={() => setExpandProduct(!expandProduct)}
@@ -1411,64 +1412,6 @@ export const ListItems = (props) => {
                       onClick={() => setOpen(false)}
                       inset
                       primary="Price List"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
-              {/* Leads */}
-              {userData.groups.toString() !== "Accounts" && (
-                <ListItem
-                  button
-                  onClick={() => setExpand(!expand)}
-                  style={{ width: 300 }}
-                >
-                  <ListItemIcon>
-                    <AssignmentIndIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Leads" />
-                  {expand ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                </ListItem>
-              )}
-              <Collapse in={expand} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/leads/new-lead"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="New Leads"
-                    />
-                  </ListItem>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/leads/open-lead"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Open Leads"
-                    />
-                  </ListItem>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/leads/hot-lead"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Hot Leads"
                     />
                   </ListItem>
                 </List>
