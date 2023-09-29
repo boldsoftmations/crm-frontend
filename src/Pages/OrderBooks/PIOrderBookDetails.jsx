@@ -63,13 +63,16 @@ export const PIOrderBookDetails = () => {
       setOpen(true);
       const response =
         filterSelectedQuery || searchQuery
-          ? await InvoiceServices.getAllOrderBookDatawithSearchWithPagination(
-              "pi",
-              "all",
-              filterQuery,
-              filterSelectedQuery || searchQuery
-            )
-          : await InvoiceServices.getAllOrderBookData("all", "pi");
+          ? await InvoiceServices.getOrderBookData({
+              type: "pi",
+              page: "all",
+              searchType: filterQuery,
+              searchValue: searchQuery || filterSelectedQuery,
+            })
+          : await InvoiceServices.getOrderBookData({
+              type: "pi",
+              page: "all",
+            });
       let data = response.data.map((item) => {
         if (
           userData.groups.toString() === "Factory-Mumbai-OrderBook" ||
@@ -160,20 +163,21 @@ export const PIOrderBookDetails = () => {
   const getAllPIWiseOrderBook = async () => {
     try {
       setOpen(true);
+      let response;
       if (currentPage) {
-        const response = await InvoiceServices.getAllOrderBookDatawithPage(
-          "pi",
-          currentPage
-        );
-        setOrderBookData(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
+        response = await InvoiceServices.getOrderBookData({
+          type: "pi",
+          page: currentPage,
+        });
       } else {
-        const response = await InvoiceServices.getOrderBookData("pi");
-        setOrderBookData(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
+        response = await InvoiceServices.getOrderBookData({
+          type: "pi",
+          page: currentPage,
+        });
       }
+      setOrderBookData(response.data.results);
+      const total = response.data.count;
+      setpageCount(Math.ceil(total / 25));
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -200,11 +204,12 @@ export const PIOrderBookDetails = () => {
     try {
       setOpen(true);
       const filterSearch = value;
-      const response = await InvoiceServices.getAllOrderBookDatawithSearch(
-        "pi",
-        filterQuery,
-        filterSearch
-      );
+      const response = await InvoiceServices.getOrderBookData({
+        type: "pi",
+        page: currentPage,
+        searchType: filterQuery,
+        searchValue: filterSearch,
+      });
       if (response) {
         setOrderBookData(response.data.results);
         const total = response.data.count;
@@ -225,33 +230,28 @@ export const PIOrderBookDetails = () => {
       const page = value;
       setCurrentPage(page);
       setOpen(true);
-
+      let response;
       if (searchQuery || filterSelectedQuery) {
-        const response =
-          await InvoiceServices.getAllOrderBookDatawithSearchWithPagination(
-            "pi",
-            page,
-            filterQuery,
-            searchQuery || filterSelectedQuery
-          );
-        if (response) {
-          setOrderBookData(response.data.results);
-          const total = response.data.count;
-          setpageCount(Math.ceil(total / 25));
-        } else {
-          getAllPIWiseOrderBook();
-          setSearchQuery("");
-        }
+        response = await InvoiceServices.getOrderBookData({
+          type: "pi",
+          page: page,
+          searchType: filterQuery,
+          searchValue: searchQuery || filterSelectedQuery,
+        });
       } else {
-        const response = await InvoiceServices.getAllOrderBookDatawithPage(
-          "pi",
-          page
-        );
+        response = await InvoiceServices.getOrderBookData({
+          type: "pi",
+          page: page,
+        });
+      }
+      if (response) {
         setOrderBookData(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
+      } else {
+        getAllPIWiseOrderBook();
+        setSearchQuery("");
       }
-
       setOpen(false);
     } catch (error) {
       console.log("error", error);

@@ -150,86 +150,21 @@ const updateCustomerProformaInvoiceData = (id, data) => {
 };
 
 // All order Api
-const getOrderBookData = (type) => {
-  return CustomAxios.get(`/api/invoice/list-order-book/?ordering=${type}`);
+// Generic function to get order book data
+const getOrderBookData = ({ type, page, searchType, searchValue }) => {
+  let url = `/api/invoice/list-order-book/?ordering=${type}&`;
+  if (page) url += `page=${page}&`;
+  if (searchType && searchValue) url += `${searchType}=${searchValue}&`;
+  return CustomAxios.get(url);
 };
 
-const getAllOrderBookData = (data, type) => {
-  return CustomAxios.get(
-    `/api/invoice/list-order-book/?page=${data}&ordering=${type}`
-  );
-};
-
-const getAllOrderBookDataWithSearch = (data, type, searchvalue) => {
-  return CustomAxios.get(
-    `/api/invoice/list-order-book-company/?page=${data}&ordering=${type}&search=${searchvalue}`
-  );
-};
-
-const getcustomerOrderBookData = (data) => {
-  return CustomAxios.get(`/api/invoice/list-order-book-company/?page=${data}`);
-};
-
-const getcustomerOrderBookDataByID = (data) => {
-  return CustomAxios.get(
-    `/api/invoice/list-order-book-company/?proforma_invoice=${data}`
-  );
-};
-
-const getProductOrderBookDatawithPage = (type, data) => {
-  return CustomAxios.get(
-    `/api/invoice/list-order-book/?ordering=${type}&page=${data}`
-  );
-};
-
-const getAllOrderBookDatawithSearch = (type, searchType, data) => {
-  return CustomAxios.get(
-    `/api/invoice/list-order-book/?ordering=${type}&${searchType}=${data}`
-  );
-};
-
-const getAllOrderBookDatawithSearchWithPagination = (
-  type,
-  value,
-  searchType,
-  data
-) => {
-  return CustomAxios.get(
-    `/api/invoice/list-order-book/?ordering=${type}&page=${value}&${searchType}=${data}`
-  );
-};
-
-const getAllOrderBookDatawithPage = (type, data) => {
-  return CustomAxios.get(
-    `/api/invoice/list-order-book/?ordering=${type}&page=${data}`
-  );
-};
-
-const getAllcustomerOrderBookData = () => {
-  return CustomAxios.get(`/api/invoice/list-order-book-company`);
-};
-
+// Generic function to update order book data
 const updateOrderBookData = (id, data) => {
   return CustomAxios.patch(`/api/invoice/list-order-book/${id}`, data);
 };
 
-const getCustomerOrderBookByID = (id) => {
-  return CustomAxios.get(`/api/invoice/list-order-book/${id}`);
-};
-
-const updateProductOrderBookData = (id, data) => {
-  return CustomAxios.patch(`/api/invoice/list-order-book/${id}`, data);
-};
-
-const getProductOrderBookDataByID = (id) => {
-  return CustomAxios.get(`/api/invoice/list-order-book/${id}`);
-};
-
-const updatePIOrderBookData = (id, data) => {
-  return CustomAxios.patch(`/api/invoice/list-order-book/${id}`, data);
-};
-
-const getPIOrderBookDataByID = (id) => {
+// Generic function to get order book data by ID
+const getOrderBookDataByID = (id) => {
   return CustomAxios.get(`/api/invoice/list-order-book/${id}`);
 };
 
@@ -237,6 +172,7 @@ const getTotalPendingQuantity = () => {
   return CustomAxios.get(`/api/invoice/pending-order-total`);
 };
 
+// sales invoice api
 const getSalesInvoiceData = (startDate, endDate) => {
   return CustomAxios.get(
     `/api/invoice/list-sales-invoice/?start_date=${startDate}&end_date=${endDate}`
@@ -369,15 +305,8 @@ const InvoiceServices = {
   getAllSearchSellerAccountData,
   getAllSellerAccountDataPaginate,
   createSellerAccountData,
-  getAllOrderBookData,
-  getAllOrderBookDataWithSearch,
-  getAllcustomerOrderBookData,
   updateOrderBookData,
-  getCustomerOrderBookByID,
-  getcustomerOrderBookData,
-  getcustomerOrderBookDataByID,
-  getProductOrderBookDataByID,
-  getPIOrderBookDataByID,
+  getOrderBookDataByID,
   getSellerAccountDataById,
   updateSellerAccountData,
   getPIDataWithDateRange,
@@ -400,11 +329,6 @@ const InvoiceServices = {
   getCustomerProformaInvoiceDataByID,
   updateCustomerProformaInvoiceData,
   getOrderBookData,
-  getProductOrderBookDatawithPage,
-  getAllOrderBookDatawithSearch,
-  getAllOrderBookDatawithSearchWithPagination,
-  getAllOrderBookDatawithPage,
-  // getAllcustomerOrderBookData,
   getTotalPendingQuantity,
   getSalesInvoiceData,
   getSalesInvoiceDataWithSearch,

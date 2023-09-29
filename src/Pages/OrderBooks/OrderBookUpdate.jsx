@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import InvoiceServices from "../../services/InvoiceService";
 import { ErrorMessage } from "../../Components/ErrorMessage/ErrorMessage";
 import { CustomLoader } from "../../Components/CustomLoader";
-import { Box, Button, Grid, TextField } from "@mui/material";
+import { Box, Button, Grid } from "@mui/material";
 import { useSelector } from "react-redux";
+import CustomTextField from "../../Components/CustomTextField";
 
 export const OrderBookUpdate = (props) => {
   const { recordForEdit, setOpenPopup, getAllOrderBook } = props;
@@ -50,7 +51,7 @@ export const OrderBookUpdate = (props) => {
         <Grid container spacing={2}>
           {/* <ErrorMessage errMsg={errMsg} errRef={errRef} /> */}
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               label="Product"
@@ -59,7 +60,7 @@ export const OrderBookUpdate = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               label="Pending Quantity"
@@ -72,7 +73,7 @@ export const OrderBookUpdate = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               label="Requested Date"
@@ -84,7 +85,7 @@ export const OrderBookUpdate = (props) => {
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               type="date"
               name="estimated_date"
@@ -162,7 +163,7 @@ export const OrderBookPeningQuantityUpdate = (props) => {
         <Grid container spacing={2}>
           {/* <ErrorMessage errMsg={errMsg} errRef={errRef} /> */}
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               label="Product"
@@ -171,7 +172,7 @@ export const OrderBookPeningQuantityUpdate = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               label="Pending Quantity"
@@ -181,7 +182,7 @@ export const OrderBookPeningQuantityUpdate = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               label="Requested Date"
@@ -193,7 +194,7 @@ export const OrderBookPeningQuantityUpdate = (props) => {
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               type="date"
               name="estimated_date"

@@ -41,7 +41,7 @@ export const CustomerOrderBookDetails = () => {
   const [openModal2, setOpenModal2] = useState(false);
   const [errMsg, setErrMsg] = useState("");
   const [pageCount, setpageCount] = useState(0);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [exportData, setExportData] = useState([]);
   const [filterQuery, setFilterQuery] = useState("search");
@@ -100,13 +100,16 @@ export const CustomerOrderBookDetails = () => {
       setOpen(true);
       const response =
         filterSelectedQuery || searchQuery
-          ? await InvoiceServices.getAllOrderBookDatawithSearchWithPagination(
-              "customer",
-              "all",
-              filterQuery,
-              filterSelectedQuery || searchQuery
-            )
-          : await InvoiceServices.getAllOrderBookData("all", "customer");
+          ? await InvoiceServices.getOrderBookData({
+              type: "customer",
+              page: "all",
+              searchType: filterQuery,
+              searchValue: searchQuery || filterSelectedQuery,
+            })
+          : await InvoiceServices.getOrderBookData({
+              type: "customer",
+              page: "all",
+            });
       let data = response.data.map((item) => {
         if (
           userData.groups.toString() === "Factory-Mumbai-OrderBook" ||
@@ -184,20 +187,21 @@ export const CustomerOrderBookDetails = () => {
   const getAllCustomerWiseOrderBook = async () => {
     try {
       setOpen(true);
+      let response;
       if (currentPage) {
-        const response = await InvoiceServices.getAllOrderBookDatawithPage(
-          "customer",
-          currentPage
-        );
-        setOrderBookData(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
+        response = await InvoiceServices.getOrderBookData({
+          type: "customer",
+          page: currentPage,
+        });
       } else {
-        const response = await InvoiceServices.getOrderBookData("customer");
-        setOrderBookData(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
+        response = await InvoiceServices.getOrderBookData({
+          type: "customer",
+          page: currentPage,
+        });
       }
+      setOrderBookData(response.data.results);
+      const total = response.data.count;
+      setpageCount(Math.ceil(total / 25));
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -224,11 +228,12 @@ export const CustomerOrderBookDetails = () => {
     try {
       setOpen(true);
       const filterSearch = value;
-      const response = await InvoiceServices.getAllOrderBookDatawithSearch(
-        "customer",
-        filterQuery,
-        filterSearch
-      );
+      const response = await InvoiceServices.getOrderBookData({
+        type: "customer",
+        page: currentPage,
+        searchType: filterQuery,
+        searchValue: filterSearch,
+      });
       if (response) {
         setOrderBookData(response.data.results);
         const total = response.data.count;
@@ -249,33 +254,28 @@ export const CustomerOrderBookDetails = () => {
       const page = value;
       setCurrentPage(page);
       setOpen(true);
-
+      let response;
       if (searchQuery || filterSelectedQuery) {
-        const response =
-          await InvoiceServices.getAllOrderBookDatawithSearchWithPagination(
-            "customer",
-            page,
-            filterQuery,
-            searchQuery || filterSelectedQuery
-          );
-        if (response) {
-          setOrderBookData(response.data.results);
-          const total = response.data.count;
-          setpageCount(Math.ceil(total / 25));
-        } else {
-          getAllCustomerWiseOrderBook();
-          setSearchQuery("");
-        }
+        response = await InvoiceServices.getOrderBookData({
+          type: "customer",
+          page: page,
+          searchType: filterQuery,
+          searchValue: searchQuery || filterSelectedQuery,
+        });
       } else {
-        const response = await InvoiceServices.getAllOrderBookDatawithPage(
-          "customer",
-          page
-        );
+        response = await InvoiceServices.getOrderBookData({
+          type: "customer",
+          page: page,
+        });
+      }
+      if (response) {
         setOrderBookData(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
+      } else {
+        getAllCustomerWiseOrderBook();
+        setSearchQuery("");
       }
-
       setOpen(false);
     } catch (error) {
       console.log("error", error);

@@ -58,13 +58,16 @@ export const ProductOrderBookDetails = () => {
       setOpen(true);
       const response =
         filterSelectedQuery || searchQuery
-          ? await InvoiceServices.getAllOrderBookDatawithSearchWithPagination(
-              "product",
-              "all",
-              filterQuery,
-              filterSelectedQuery || searchQuery
-            )
-          : await InvoiceServices.getAllOrderBookData("all", "product");
+          ? await InvoiceServices.getOrderBookData({
+              type: "product",
+              page: "all",
+              searchType: filterQuery,
+              searchValue: searchQuery || filterSelectedQuery,
+            })
+          : await InvoiceServices.getOrderBookData({
+              type: "product",
+              page: "all",
+            });
       let data = response.data.map((item) => {
         if (
           userData.groups.toString() === "Factory-Mumbai-OrderBook" ||
@@ -170,20 +173,21 @@ export const ProductOrderBookDetails = () => {
   const getAllProductDataOrderBook = async () => {
     try {
       setOpen(true);
+      let response;
       if (currentPage) {
-        const response = await InvoiceServices.getProductOrderBookDatawithPage(
-          "product",
-          currentPage
-        );
-        setOrderBookData(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
+        response = await InvoiceServices.getOrderBookData({
+          type: "product",
+          page: currentPage,
+        });
       } else {
-        const response = await InvoiceServices.getOrderBookData("product");
-        setOrderBookData(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
+        response = await InvoiceServices.getOrderBookData({
+          type: "product",
+          page: currentPage,
+        });
       }
+      setOrderBookData(response.data.results);
+      const total = response.data.count;
+      setpageCount(Math.ceil(total / 25));
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -210,11 +214,12 @@ export const ProductOrderBookDetails = () => {
     try {
       setOpen(true);
       const filterSearch = value;
-      const response = await InvoiceServices.getAllOrderBookDatawithSearch(
-        "product",
-        filterQuery,
-        filterSearch
-      );
+      const response = await InvoiceServices.getOrderBookData({
+        type: "product",
+        page: currentPage,
+        searchType: filterQuery,
+        searchValue: filterSearch,
+      });
       if (response) {
         setOrderBookData(response.data.results);
         const total = response.data.count;
@@ -235,33 +240,28 @@ export const ProductOrderBookDetails = () => {
       const page = value;
       setCurrentPage(page);
       setOpen(true);
-
+      let response;
       if (searchQuery || filterSelectedQuery) {
-        const response =
-          await InvoiceServices.getAllOrderBookDatawithSearchWithPagination(
-            "product",
-            page,
-            filterQuery,
-            searchQuery || filterSelectedQuery
-          );
-        if (response) {
-          setOrderBookData(response.data.results);
-          const total = response.data.count;
-          setpageCount(Math.ceil(total / 25));
-        } else {
-          getAllProductDataOrderBook();
-          setSearchQuery("");
-        }
+        response = await InvoiceServices.getOrderBookData({
+          type: "product",
+          page: page,
+          searchType: filterQuery,
+          searchValue: searchQuery || filterSelectedQuery,
+        });
       } else {
-        const response = await InvoiceServices.getProductOrderBookDatawithPage(
-          "product",
-          page
-        );
+        response = await InvoiceServices.getOrderBookData({
+          type: "product",
+          page: page,
+        });
+      }
+      if (response) {
         setOrderBookData(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
+      } else {
+        getAllProductDataOrderBook();
+        setSearchQuery("");
       }
-
       setOpen(false);
     } catch (error) {
       console.log("error", error);
