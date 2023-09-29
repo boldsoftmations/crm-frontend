@@ -3,7 +3,6 @@ import {
   Grid,
   Button,
   Paper,
-  TextField,
   Box,
   IconButton,
   Autocomplete,
@@ -33,6 +32,7 @@ import { CustomPagination } from "../../Components/CustomPagination";
 import ProductService from "../../services/ProductService";
 import { useSelector } from "react-redux";
 import Option from "../../Options/Options";
+import CustomTextField from "../../Components/CustomTextField";
 
 export const UnassignedLead = () => {
   const [leads, setLeads] = useState([]);
@@ -103,13 +103,10 @@ export const UnassignedLead = () => {
   const fetchData = async () => {
     setOpen(true);
     try {
-      const [referenceResponse, descriptionResponse, productResponse] =
-        await Promise.all([
-          LeadServices.getAllRefernces(),
-          ProductService.getNoDescription(),
-          ProductService.getAllProduct(),
-        ]);
-      setReferenceData(referenceResponse.data);
+      const [descriptionResponse, productResponse] = await Promise.all([
+        ProductService.getNoDescription(),
+        ProductService.getAllProduct(),
+      ]);
       setDescriptionMenuData(descriptionResponse.data);
       setProduct(productResponse.data);
       getUnassigned();
@@ -153,31 +150,44 @@ export const UnassignedLead = () => {
     errRef.current.focus();
   };
 
+  // Main function to get unassigned leads
   const getUnassigned = async () => {
     try {
-      console.log("currentPage", currentPage);
-      console.log("filterSelectedQuery", filterSelectedQuery);
       setOpen(true);
+      let response;
+
       if (currentPage || filterSelectedQuery) {
-        const response = await LeadServices.getAllPaginateWithFilterUnassigned(
+        response = await LeadServices.getAllPaginateWithFilterUnassigned(
           currentPage,
           filterQuery,
           filterSelectedQuery
         );
+      } else {
+        response = await LeadServices.getAllUnassignedData();
+      }
+
+      if (response) {
+        // Assuming response.data.references_list is the array you are referring to
+        const references_list = response.data.references_list;
+
+        // Filter out null values from references_list
+        const filteredReferences = references_list.filter((ref) => ref != null);
+
+        // Only update state if filteredReferences is not empty
+        if (filteredReferences.length > 0) {
+          setReferenceData(filteredReferences); // Assuming you have a state variable called references
+        }
+
         setLeads(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
-      } else {
-        let response = await LeadServices.getAllUnassignedData();
-        if (response) {
-          setLeads(response.data.results);
-          const total = response.data.count;
-          setpageCount(Math.ceil(total / 25));
-        }
       }
-      setOpen(false);
     } catch (error) {
-      handleFetchError(error);
+      setOpen(false);
+      // Handle the error as per your requirement
+      console.error(error);
+    } finally {
+      setOpen(false);
     }
   };
 
@@ -353,8 +363,8 @@ export const UnassignedLead = () => {
                     }
                   >
                     {referenceData.map((option) => (
-                      <MenuItem key={option.id} value={option.source}>
-                        {option.source}
+                      <MenuItem key={option.id} value={option}>
+                        {option}
                       </MenuItem>
                     ))}
                   </Select>
@@ -520,7 +530,11 @@ export const UnassignedLead = () => {
               options={assigned.map((option) => option.email)}
               getOptionLabel={(option) => `${option}`}
               renderInput={(params) => (
-                <TextField {...params} name={"assign"} label={"Assign To"} />
+                <CustomTextField
+                  {...params}
+                  name={"assign"}
+                  label={"Assign To"}
+                />
               )}
             />
           </Grid>

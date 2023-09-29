@@ -7,7 +7,6 @@ import {
   Grid,
   InputLabel,
   MenuItem,
-  TextField,
   Select,
   Button,
   FormControlLabel,
@@ -25,6 +24,7 @@ import "react-phone-input-2/lib/material.css";
 import { CustomLoader } from "./../../Components/CustomLoader";
 import LeadServices from "../../services/LeadService";
 import Option from "../../Options/Options";
+import CustomTextField from "../../Components/CustomTextField";
 
 export const CreateLeads = (props) => {
   const {
@@ -205,7 +205,7 @@ export const CreateLeads = (props) => {
             </Root>
           </Grid>
           <Grid item xs={12} sm={3}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="name"
               size="small"
@@ -216,7 +216,7 @@ export const CreateLeads = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={3}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="alternate_contact_name"
               size="small"
@@ -227,7 +227,7 @@ export const CreateLeads = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={3}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="email"
               size="small"
@@ -238,7 +238,7 @@ export const CreateLeads = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={3}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="alternate_email"
               size="small"
@@ -314,7 +314,7 @@ export const CreateLeads = (props) => {
               options={referenceData.map((option) => option.source)}
               getOptionLabel={(option) => `${option}`}
               renderInput={(params) => (
-                <TextField {...params} label="Reference" />
+                <CustomTextField {...params} label="Reference" />
               )}
             />
           </Grid>
@@ -331,7 +331,7 @@ export const CreateLeads = (props) => {
               getOptionLabel={(option) => option}
               // sx={{ minWidth: 300 }}
               renderInput={(params) => (
-                <TextField {...params} label="Assignied To" />
+                <CustomTextField {...params} label="Assignied To" />
               )}
             />
           </Grid>
@@ -357,7 +357,7 @@ export const CreateLeads = (props) => {
                 ))
               }
               renderInput={(params) => (
-                <TextField
+                <CustomTextField
                   {...params}
                   label="Description"
                   placeholder="Description"
@@ -375,7 +375,7 @@ export const CreateLeads = (props) => {
             </Root>
           </Grid>
           <Grid item xs={12} sm={3}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="company"
               size="small"
@@ -386,7 +386,7 @@ export const CreateLeads = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={3}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="gst_number"
               size="small"
@@ -403,7 +403,7 @@ export const CreateLeads = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={3}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="pan_number"
               size="small"
@@ -420,7 +420,7 @@ export const CreateLeads = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={3}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="address"
               size="small"
@@ -431,7 +431,7 @@ export const CreateLeads = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={3}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="city"
               size="small"
@@ -452,11 +452,13 @@ export const CreateLeads = (props) => {
               value={leads.state}
               options={Option.StateOption.map((option) => option.label)}
               getOptionLabel={(option) => option}
-              renderInput={(params) => <TextField {...params} label="State" />}
+              renderInput={(params) => (
+                <CustomTextField {...params} label="State" />
+              )}
             />
           </Grid>
           <Grid item xs={12} sm={3}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="country"
               size="small"
@@ -467,7 +469,7 @@ export const CreateLeads = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={3}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="pincode"
               size="small"
@@ -500,7 +502,7 @@ export const CreateLeads = (props) => {
           </Grid>
 
           <Grid item xs={12} sm={3}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="shipping_address"
               size="small"
@@ -513,7 +515,7 @@ export const CreateLeads = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={3}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="shipping_pincode"
               size="small"
@@ -526,7 +528,7 @@ export const CreateLeads = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={3}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="shipping_city"
               size="small"
@@ -551,7 +553,7 @@ export const CreateLeads = (props) => {
               options={Option.StateOption.map((option) => option.value)}
               getOptionLabel={(option) => option}
               renderInput={(params) => (
-                <TextField {...params} label="Shipping State" />
+                <CustomTextField {...params} label="Shipping State" />
               )}
             />
           </Grid>
@@ -593,7 +595,7 @@ export const CreateLeads = (props) => {
             </>
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="website"
               size="small"
@@ -604,7 +606,7 @@ export const CreateLeads = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               // type="number"
               name="estd_year"
@@ -620,7 +622,7 @@ export const CreateLeads = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={3}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="approx_annual_turnover"
               size="small"
@@ -631,7 +633,7 @@ export const CreateLeads = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={3}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="purchase_decision_maker"
               size="small"
@@ -654,7 +656,7 @@ export const CreateLeads = (props) => {
                 options={Option.IndustriesList.map((option) => option.label)}
                 getOptionLabel={(option) => option}
                 renderInput={(params) => (
-                  <TextField {...params} label="Industrial List" />
+                  <CustomTextField {...params} label="Industrial List" />
                 )}
               />
             </Grid>
@@ -675,7 +677,7 @@ export const CreateLeads = (props) => {
                 )}
                 getOptionLabel={(option) => option}
                 renderInput={(params) => (
-                  <TextField {...params} label="Distribution Type" />
+                  <CustomTextField {...params} label="Distribution Type" />
                 )}
               />
             </Grid>
@@ -703,7 +705,7 @@ export const CreateLeads = (props) => {
                   ))
                 }
                 renderInput={(params) => (
-                  <TextField
+                  <CustomTextField
                     {...params}
                     label="Category"
                     placeholder="Category"
@@ -735,7 +737,7 @@ export const CreateLeads = (props) => {
                   ))
                 }
                 renderInput={(params) => (
-                  <TextField
+                  <CustomTextField
                     {...params}
                     label="Main Distribution"
                     placeholder="Main Distribution"

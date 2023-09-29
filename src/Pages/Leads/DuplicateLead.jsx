@@ -17,7 +17,6 @@ import {
   TableRow,
   TableCell,
   Checkbox,
-  TextField,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
 import ClearIcon from "@mui/icons-material/Clear";
@@ -37,6 +36,7 @@ import { getSellerAccountData } from "../../Redux/Action/Action";
 import { LeadActivityCreate } from "../FollowUp/LeadActivityCreate";
 import { PotentialCreate } from "../Potential/PotentialCreate";
 import Option from "../../Options/Options";
+import CustomTextField from "../../Components/CustomTextField";
 
 export const DuplicateLead = () => {
   const dispatch = useDispatch();
@@ -316,7 +316,7 @@ export const DuplicateLead = () => {
               </Select>
             </FormControl>
 
-            <TextField
+            <CustomTextField
               value={filterSelectedQuery}
               onChange={(event) => setFilterSelectedQuery(event.target.value)}
               name="search"

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Autocomplete, Box, Grid, TextField } from "@mui/material";
+import { Autocomplete, Box, Grid } from "@mui/material";
 import LeadServices from "../../services/LeadService";
 import { CustomLoader } from "../../Components/CustomLoader";
 import { CustomButton } from "../../Components/CustomButton";
 import Option from "../../Options/Options";
+import CustomTextField from "../../Components/CustomTextField";
 
 export const BulkLeadAssign = (props) => {
   const { setOpenPopup } = props;
@@ -65,7 +66,7 @@ export const BulkLeadAssign = (props) => {
               getOptionLabel={(option) => option}
               // sx={{ minWidth: 300 }}
               renderInput={(params) => (
-                <TextField
+                <CustomTextField
                   {...params}
                   label="Assign From"
                   error={assignFrom === assignTo}
@@ -88,7 +89,7 @@ export const BulkLeadAssign = (props) => {
               getOptionLabel={(option) => option}
               // sx={{ minWidth: 300 }}
               renderInput={(params) => (
-                <TextField
+                <CustomTextField
                   {...params}
                   label="Assign To"
                   error={assignFrom === assignTo}
