@@ -57,10 +57,19 @@ export const UpdateCompanyDetails = (props) => {
   const getAssignedData = async (id) => {
     try {
       setOpen(true);
+      const ALLOWED_ROLES = [
+        "Director",
+        "Customer Serives",
+        "Sales Manager",
+        "Sales Deputy Manager",
+        "Sales Assistant Deputy Manager",
+        "Sales Executive",
+      ];
+
       const res = await LeadServices.getAllAssignedUser();
       // Filter the data based on the ALLOWED_ROLES
       const filteredData = res.data.filter((employee) =>
-        employee.groups.some((group) => Option.ALLOWED_ROLES.includes(group))
+        employee.groups.some((group) => ALLOWED_ROLES.includes(group))
       );
       setAssigned(filteredData);
       setOpen(false);
