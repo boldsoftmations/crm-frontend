@@ -76,9 +76,10 @@ export const ForecastView = (props) => {
   // Get the unique index_position values to use as column headers
   const indexPositions = [
     ...new Set(
-      forecastdata.flatMap((row) =>
-        row.product_forecast.map((rowData) => rowData.index_position)
-      )
+      forecastdata &&
+        forecastdata.flatMap((row) =>
+          row.product_forecast.map((rowData) => rowData.index_position)
+        )
     ),
   ];
 
@@ -176,56 +177,57 @@ export const ForecastView = (props) => {
               </StyledTableRow>
             </TableHead>
             <TableBody>
-              {forecastdata.map((row) => (
-                <StyledTableRow>
-                  <StyledTableCell align="center">
-                    {row.sales_person}
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    {row.product}
-                  </StyledTableCell>
-                  {indexPositions.map((position) => {
-                    const rowData = row.product_forecast.find(
-                      (data) => data.index_position === position
-                    );
+              {forecastdata &&
+                forecastdata.map((row) => (
+                  <StyledTableRow>
+                    <StyledTableCell align="center">
+                      {row.sales_person}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.product}
+                    </StyledTableCell>
+                    {indexPositions.map((position) => {
+                      const rowData = row.product_forecast.find(
+                        (data) => data.index_position === position
+                      );
 
-                    if (rowData) {
-                      if (rowData.actual !== null) {
-                        return (
-                          <TableCell key={position} align="center">
-                            {rowData.actual} - {rowData.forecast}
-                          </TableCell>
-                        );
+                      if (rowData) {
+                        if (rowData.actual !== null) {
+                          return (
+                            <TableCell key={position} align="center">
+                              {rowData.actual} - {rowData.forecast}
+                            </TableCell>
+                          );
+                        } else {
+                          return (
+                            <TableCell key={position} align="center">
+                              - {rowData.forecast}
+                            </TableCell>
+                          );
+                        }
                       } else {
+                        // Render an empty cell if no matching rowData is found
                         return (
                           <TableCell key={position} align="center">
-                            - {rowData.forecast}
+                            N/A
                           </TableCell>
                         );
                       }
-                    } else {
-                      // Render an empty cell if no matching rowData is found
-                      return (
-                        <TableCell key={position} align="center">
-                          N/A
-                        </TableCell>
-                      );
-                    }
-                  })}
-                  {/* <StyledTableCell align="center"></StyledTableCell> */}
-                  <StyledTableCell align="center">
-                    <Button
-                      variant="contained"
-                      onClick={() => {
-                        setOpenPopup(true);
-                        setForecastDataByID(row);
-                      }}
-                    >
-                      View
-                    </Button>
-                  </StyledTableCell>
-                </StyledTableRow>
-              ))}
+                    })}
+                    {/* <StyledTableCell align="center"></StyledTableCell> */}
+                    <StyledTableCell align="center">
+                      <Button
+                        variant="contained"
+                        onClick={() => {
+                          setOpenPopup(true);
+                          setForecastDataByID(row);
+                        }}
+                      >
+                        View
+                      </Button>
+                    </StyledTableCell>
+                  </StyledTableRow>
+                ))}
             </TableBody>
           </Table>
         </TableContainer>

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { Box, Button, Grid, TextField, Autocomplete } from "@mui/material";
+import { Box, Button, Grid, Autocomplete } from "@mui/material";
 import CustomerServices from "../../../services/CustomerService";
 import axios from "axios";
 import { CustomLoader } from "../../../Components/CustomLoader";
+import CustomTextField from "../../../Components/CustomTextField";
 
 export const UpdateWareHouseDetails = (props) => {
   const { IDForEdit, getAllCompanyDetailsByID, setOpenPopup, contactData } =
@@ -82,7 +83,7 @@ export const UpdateWareHouseDetails = (props) => {
       >
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               name="contact"
@@ -107,12 +108,12 @@ export const UpdateWareHouseDetails = (props) => {
               getOptionLabel={(option) => `${option.name} ${option.contact}`}
               // sx={{ minWidth: 300 }}
               renderInput={(params) => (
-                <TextField {...params} label="Update Contact" />
+                <CustomTextField {...params} label="Update Contact" />
               )}
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField
+            <CustomTextField
               fullWidth
               multiline
               onChange={handleInputChange}
@@ -124,7 +125,7 @@ export const UpdateWareHouseDetails = (props) => {
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField
+            <CustomTextField
               sx={{ minWidth: "400px" }}
               onChange={handleInputChange}
               size="small"
@@ -142,7 +143,7 @@ export const UpdateWareHouseDetails = (props) => {
             </Button>
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               name="state"
@@ -155,7 +156,7 @@ export const UpdateWareHouseDetails = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               name="city"

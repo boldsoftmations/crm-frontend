@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Grid, TextField } from "@mui/material";
+import { Box, Button, Grid } from "@mui/material";
 import CustomerServices from "../../../services/CustomerService";
 import { useSelector } from "react-redux";
 import { CustomLoader } from "./../../../Components/CustomLoader";
+import CustomTextField from "../../../Components/CustomTextField";
 
 export const UpdateSecurityChequesDetails = (props) => {
   const { IDForEdit, getAllCompanyDetailsByID, setOpenPopup } = props;
@@ -66,7 +67,7 @@ export const UpdateSecurityChequesDetails = (props) => {
       >
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               name="bank_name"
@@ -77,7 +78,7 @@ export const UpdateSecurityChequesDetails = (props) => {
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField
+            <CustomTextField
               multiline
               fullWidth
               name="cheque_no"
@@ -89,7 +90,7 @@ export const UpdateSecurityChequesDetails = (props) => {
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               name="micr_code"
@@ -101,7 +102,7 @@ export const UpdateSecurityChequesDetails = (props) => {
           </Grid>
 
           <Grid item xs={12}>
-            <TextField
+            <CustomTextField
               multiline
               fullWidth
               name="address"

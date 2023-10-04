@@ -163,35 +163,36 @@ export const BankDetails = (props) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {bankData.map((row, i) => {
-                return (
-                  <StyledTableRow key={i}>
-                    <StyledTableCell align="center">{row.id}</StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.bank_name}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.current_account_no}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.ifsc_code}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.branch}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {userData.groups.toString() === "Accounts" && (
-                        <Button
-                          variant="contained"
-                          onClick={() => openInPopup(row.id)}
-                        >
-                          View
-                        </Button>
-                      )}
-                    </StyledTableCell>
-                  </StyledTableRow>
-                );
-              })}
+              {bankData &&
+                bankData.map((row, i) => {
+                  return (
+                    <StyledTableRow key={i}>
+                      <StyledTableCell align="center">{row.id}</StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.bank_name}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.current_account_no}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.ifsc_code}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.branch}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {userData.groups.toString() === "Accounts" && (
+                          <Button
+                            variant="contained"
+                            onClick={() => openInPopup(row.id)}
+                          >
+                            View
+                          </Button>
+                        )}
+                      </StyledTableCell>
+                    </StyledTableRow>
+                  );
+                })}
             </TableBody>
           </Table>
         </TableContainer>

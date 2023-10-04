@@ -9,11 +9,11 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  TextField,
   // Typography,
 } from "@mui/material";
 import CustomerServices from "../../../services/CustomerService";
 import { CustomLoader } from "../../../Components/CustomLoader";
+import CustomTextField from "../../../Components/CustomTextField";
 
 export const UpdateContactDetails = (props) => {
   const { setOpenPopup, getAllCompanyDetailsByID, IDForEdit } = props;
@@ -137,7 +137,7 @@ export const UpdateContactDetails = (props) => {
             {errMsg}
           </p>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               name="name"
@@ -193,7 +193,7 @@ export const UpdateContactDetails = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               name="email"
@@ -204,7 +204,7 @@ export const UpdateContactDetails = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               name="alternate_email"
@@ -220,7 +220,7 @@ export const UpdateContactDetails = (props) => {
             {designation === "Director" ||
             designation === "Owner" ||
             designation === "Partner" ? (
-              <TextField
+              <CustomTextField
                 fullWidth
                 disabled={
                   designation !== "Director" &&
@@ -243,7 +243,7 @@ export const UpdateContactDetails = (props) => {
             {designation === "Director" ||
             designation === "Owner" ||
             designation === "Partner" ? (
-              <TextField
+              <CustomTextField
                 fullWidth
                 disabled={
                   designation !== "Director" &&

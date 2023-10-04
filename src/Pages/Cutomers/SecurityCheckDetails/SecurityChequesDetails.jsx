@@ -119,38 +119,39 @@ export const SecurityChequesDetails = (props) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {securityChequedata.map((row, i) => {
-                return (
-                  <StyledTableRow>
-                    <StyledTableCell align="center">
-                      {row.company}
-                    </StyledTableCell>
+              {securityChequedata &&
+                securityChequedata.map((row, i) => {
+                  return (
+                    <StyledTableRow>
+                      <StyledTableCell align="center">
+                        {row.company}
+                      </StyledTableCell>
 
-                    <StyledTableCell align="center">
-                      {row.bank_name}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.cheque_no}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.micr_code}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.address}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {userData.groups.toString() === "Accounts" && (
-                        <Button
-                          variant="contained"
-                          onClick={() => openInPopup(row.id)}
-                        >
-                          View
-                        </Button>
-                      )}
-                    </StyledTableCell>
-                  </StyledTableRow>
-                );
-              })}
+                      <StyledTableCell align="center">
+                        {row.bank_name}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.cheque_no}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.micr_code}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.address}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {userData.groups.toString() === "Accounts" && (
+                          <Button
+                            variant="contained"
+                            onClick={() => openInPopup(row.id)}
+                          >
+                            View
+                          </Button>
+                        )}
+                      </StyledTableCell>
+                    </StyledTableRow>
+                  );
+                })}
             </TableBody>
           </Table>
         </TableContainer>

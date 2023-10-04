@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Autocomplete, Box, Button, Grid, TextField } from "@mui/material";
+import { Autocomplete, Box, Button, Grid } from "@mui/material";
 import CustomerServices from "../../../services/CustomerService";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { CustomLoader } from "../../../Components/CustomLoader";
+import CustomTextField from "../../../Components/CustomTextField";
 
 export const CreateWareHouseDetails = (props) => {
   const { setOpenPopup, getAllCompanyDetailsByID, contactData } = props;
@@ -77,12 +78,12 @@ export const CreateWareHouseDetails = (props) => {
               getOptionLabel={(option) => `${option.name} ${option.contact}`}
               // sx={{ minWidth: 300 }}
               renderInput={(params) => (
-                <TextField {...params} label="Contact" />
+                <CustomTextField {...params} label="Contact" />
               )}
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField
+            <CustomTextField
               fullWidth
               multiline
               onChange={handleInputChange}
@@ -94,7 +95,7 @@ export const CreateWareHouseDetails = (props) => {
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField
+            <CustomTextField
               sx={{ minWidth: "400px" }}
               onChange={handleInputChange}
               size="small"
@@ -113,7 +114,7 @@ export const CreateWareHouseDetails = (props) => {
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               name="state"
@@ -123,7 +124,7 @@ export const CreateWareHouseDetails = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               name="city"

@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Box, Button, Grid, TextField } from "@mui/material";
+import { Box, Button, Grid } from "@mui/material";
 import axios from "axios";
 import CustomerServices from "../../../services/CustomerService";
 import { useSelector } from "react-redux";
 import { CustomLoader } from "../../../Components/CustomLoader";
+import CustomTextField from "../../../Components/CustomTextField";
 
 export const CreateBankDetails = (props) => {
   const { setOpenPopup, getAllCompanyDetailsByID } = props;
@@ -67,7 +68,7 @@ export const CreateBankDetails = (props) => {
       <Box component="form" noValidate onSubmit={(e) => createBankDetails(e)}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               name="current_account_no"
@@ -78,7 +79,7 @@ export const CreateBankDetails = (props) => {
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField
+            <CustomTextField
               sx={{ minWidth: "400px" }}
               name="ifsc_code"
               size="small"
@@ -99,7 +100,7 @@ export const CreateBankDetails = (props) => {
           </Grid>
 
           <Grid item xs={12}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               name="bank_name"
@@ -109,7 +110,7 @@ export const CreateBankDetails = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               name="branch"
@@ -119,7 +120,7 @@ export const CreateBankDetails = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               name="micr_code"
@@ -129,7 +130,7 @@ export const CreateBankDetails = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               name="district"
@@ -139,7 +140,7 @@ export const CreateBankDetails = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               name="city"
@@ -149,7 +150,7 @@ export const CreateBankDetails = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               name="state"
@@ -159,7 +160,7 @@ export const CreateBankDetails = (props) => {
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField
+            <CustomTextField
               multiline
               fullWidth
               name="address"

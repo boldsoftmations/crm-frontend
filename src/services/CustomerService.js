@@ -4,13 +4,13 @@ const getAllCompanyData = () => {
   return CustomAxios.get(`/api/customer/list-company/`);
 };
 
-const getAllPaginateCompanyData = (all) => {
-  return CustomAxios.get(`/api/customer/list-company/?page=${all}`);
+const getAllPaginateCompanyData = (currentPage) => {
+  return CustomAxios.get(`/api/customer/list-company/?page=${currentPage}`);
 };
 
-const getAllPaginateCompanyDataWithSearch = (all, search) => {
+const getAllPaginateCompanyDataWithSearch = (currentPage, search) => {
   return CustomAxios.get(
-    `/api/customer/list-company/?page=${all}&search=${search}`
+    `/api/customer/list-company/?page=${currentPage}&search=${search}`
   );
 };
 
@@ -18,14 +18,32 @@ const getAllSearchCompanyData = (search) => {
   return CustomAxios.get(`/api/customer/list-company/?search=${search}`);
 };
 
-const getAllCompanyDataPaginate = (currentPage, search) => {
+const getAllIncompleteKycData = (boolValue) => {
   return CustomAxios.get(
-    `/api/customer/list-company/?page=${currentPage}&search=${search}`
+    `/api/customer/list-company/?is_verified=${boolValue}`
   );
 };
 
-const getCompanyPaginateData = (currentPage) => {
-  return CustomAxios.get(`/api/customer/list-company/?page=${currentPage}`);
+const getAllPaginateIncompleteKycData = (boolValue, currentPage) => {
+  return CustomAxios.get(
+    `/api/customer/list-company/?is_verified=${boolValue}&page=${currentPage}`
+  );
+};
+
+const getAllPaginateIncompleteKycDataWithSearch = (
+  boolValue,
+  currentPage,
+  search
+) => {
+  return CustomAxios.get(
+    `/api/customer/list-company/?is_verified=${boolValue}&page=${currentPage}&search=${search}`
+  );
+};
+
+const getAllSearchIncompleteKycData = (boolValue, search) => {
+  return CustomAxios.get(
+    `/api/customer/list-company/?is_verified=${boolValue}&search=${search}`
+  );
 };
 
 const createCompanyData = (data) => {
@@ -34,6 +52,10 @@ const createCompanyData = (data) => {
 
 const getCompanyDataById = (id) => {
   return CustomAxios.get(`/api/customer/list-company/${id}`);
+};
+
+const getCompanyDataByIdWithType = (id, typeValue) => {
+  return CustomAxios.get(`/api/customer/list-company/${id}?type=${typeValue}`);
 };
 
 const updateCompanyData = (id, data) => {
@@ -290,10 +312,13 @@ const CustomerServices = {
   getAllPaginateCompanyData,
   getAllPaginateCompanyDataWithSearch,
   getAllSearchCompanyData,
-  getAllCompanyDataPaginate,
-  getCompanyPaginateData,
+  getAllIncompleteKycData,
+  getAllPaginateIncompleteKycData,
+  getAllPaginateIncompleteKycDataWithSearch,
+  getAllSearchIncompleteKycData,
   createCompanyData,
   getCompanyDataById,
+  getCompanyDataByIdWithType,
   updateCompanyData,
   getUnassignedData,
   getSearchByUnassignedData,

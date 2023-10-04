@@ -162,36 +162,39 @@ export const ContactDetails = (props) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {contactData.map((row, i) => {
-                return (
-                  <StyledTableRow key={i}>
-                    <StyledTableCell align="center">{row.name}</StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.company}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.designation}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.contact}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.alternate_contact}
-                    </StyledTableCell>
+              {contactData &&
+                contactData.map((row, i) => {
+                  return (
+                    <StyledTableRow key={i}>
+                      <StyledTableCell align="center">
+                        {row.name}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.company}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.designation}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.contact}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.alternate_contact}
+                      </StyledTableCell>
 
-                    <StyledTableCell align="center">
-                      {userData.groups.toString() === "Accounts" && (
-                        <Button
-                          variant="contained"
-                          onClick={() => openInPopup(row.id)}
-                        >
-                          View
-                        </Button>
-                      )}
-                    </StyledTableCell>
-                  </StyledTableRow>
-                );
-              })}
+                      <StyledTableCell align="center">
+                        {userData.groups.toString() === "Accounts" && (
+                          <Button
+                            variant="contained"
+                            onClick={() => openInPopup(row.id)}
+                          >
+                            View
+                          </Button>
+                        )}
+                      </StyledTableCell>
+                    </StyledTableRow>
+                  );
+                })}
             </TableBody>
           </Table>
         </TableContainer>

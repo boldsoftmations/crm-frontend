@@ -82,7 +82,7 @@ export const WareHouseDetails = (props) => {
         {/* <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}> */}
         <Box display="flex">
           <Box flexGrow={2}>
-            {/* <TextField
+            {/* <CustomTextField
               // value={searchQuery}
               // onChange={(e) => setSearchQuery(e.target.value)}
               name="search"
@@ -161,33 +161,36 @@ export const WareHouseDetails = (props) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {wareHousedata.map((row, i) => {
-                return (
-                  <StyledTableRow>
-                    <StyledTableCell align="center">
-                      {row.contact_number}
-                    </StyledTableCell>
+              {wareHousedata &&
+                wareHousedata.map((row, i) => {
+                  return (
+                    <StyledTableRow>
+                      <StyledTableCell align="center">
+                        {row.contact_number}
+                      </StyledTableCell>
 
-                    <StyledTableCell align="center">
-                      {row.state}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">{row.city}</StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.pincode}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {userData.groups.toString() === "Accounts" && (
-                        <Button
-                          variant="contained"
-                          onClick={() => openInPopup(row.id)}
-                        >
-                          View
-                        </Button>
-                      )}
-                    </StyledTableCell>
-                  </StyledTableRow>
-                );
-              })}
+                      <StyledTableCell align="center">
+                        {row.state}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.city}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.pincode}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {userData.groups.toString() === "Accounts" && (
+                          <Button
+                            variant="contained"
+                            onClick={() => openInPopup(row.id)}
+                          >
+                            View
+                          </Button>
+                        )}
+                      </StyledTableCell>
+                    </StyledTableRow>
+                  );
+                })}
             </TableBody>
           </Table>
         </TableContainer>

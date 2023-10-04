@@ -3,7 +3,6 @@ import {
   Grid,
   Paper,
   Box,
-  TextField,
   FormControl,
   InputLabel,
   Select,
@@ -19,6 +18,7 @@ import { UpdateLeads } from "../Leads/UpdateLeads";
 import { CustomLoader } from "../../Components/CustomLoader";
 import { CustomTable } from "../../Components/CustomTable";
 import { CustomPagination } from "../../Components/CustomPagination";
+import CustomTextField from "../../Components/CustomTextField";
 
 export const AllFollowup = (props) => {
   const { assigned, descriptionMenuData, product } = props;
@@ -465,7 +465,7 @@ export const AllFollowup = (props) => {
         >
           <Grid container spacing={2}>
             <Grid item xs={5} sm={5} md={5} lg={5}>
-              <TextField
+              <CustomTextField
                 fullWidth
                 label="Start Date"
                 variant="outlined"
@@ -479,7 +479,7 @@ export const AllFollowup = (props) => {
               />
             </Grid>
             <Grid item xs={5} sm={5} md={5} lg={5}>
-              <TextField
+              <CustomTextField
                 fullWidth
                 label="End Date"
                 variant="outlined"

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Button, Paper, Typography } from "@mui/material";
 import {
   Timeline,
@@ -13,14 +13,76 @@ import {
 import moment from "moment";
 import { Popup } from "../../Components/Popup";
 import { CustomerActivityCreate } from "./CustomerActivityCreate";
+import CustomerServices from "../../services/CustomerService";
 
-export const ViewCustomerFollowUp = (props) => {
-  const { recordForEdit, followUpData, getAllCompanyDetailsByID } = props;
+export const ViewCustomerFollowUp = ({ recordForEdit }) => {
   const [openModal, setOpenModal] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [followUpData, setFollowUpData] = useState([]);
 
-  const handleClickOpen = () => {
-    setOpenModal(true);
+  useEffect(() => {
+    getCompanyDetailsByID();
+  }, []);
+
+  // API call to fetch company details based on type
+  const getCompanyDetailsByID = async () => {
+    try {
+      setOpen(true);
+
+      const [followupResponse, potentialResponse] = await Promise.all([
+        CustomerServices.getCompanyDataByIdWithType(recordForEdit, "followup"),
+        CustomerServices.getCompanyDataByIdWithType(recordForEdit, "potential"),
+      ]);
+      setFollowUpData(followupResponse.data.followup);
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      console.log("company data by id error", err);
+    }
   };
+
+  const handleClickOpen = () => setOpenModal(true);
+
+  const renderTimelineItems = () =>
+    followUpData.map((data) => (
+      <div key={data.id}>
+        <Timeline
+          sx={{
+            [`& .${timelineOppositeContentClasses.root}`]: {
+              flex: 0.2,
+            },
+          }}
+        >
+          <TimelineItem>
+            <TimelineOppositeContent sx={{ px: 2 }}>
+              <Typography variant="h6">
+                {moment(data.current_date).format("DD/MM/YYYY h:mm")}
+              </Typography>
+            </TimelineOppositeContent>
+            <TimelineSeparator>
+              <TimelineDot />
+              <TimelineConnector />
+            </TimelineSeparator>
+            <TimelineContent sx={{ width: "50%", color: "#333" }}>
+              <Typography
+                variant="h6"
+                sx={{ fontFamily: "Arial", fontWeight: "bold" }}
+              >
+                {data.activity} - {data.user} -{" "}
+                {data.next_followup_date &&
+                  moment(data.next_followup_date).format("DD/MM/YYYY")}
+              </Typography>
+              <Typography
+                variant="body1"
+                sx={{ fontFamily: "Verdana", fontSize: "16px" }}
+              >
+                {data.notes}
+              </Typography>
+            </TimelineContent>
+          </TimelineItem>
+        </Timeline>
+      </div>
+    ));
 
   return (
     <>
@@ -34,97 +96,42 @@ export const ViewCustomerFollowUp = (props) => {
             backgroundColor: "#F5F5F5",
           }}
         >
-          <Box display="flex">
-            <Box flexGrow={0.9} align="left"></Box>
-            <Box flexGrow={2.5} align="center">
-              <h3 className="Auth-form-title">View Activity</h3>
-            </Box>
-            <Box flexGrow={0.3} align="right">
-              <Button
-                variant="contained"
-                color="success"
-                onClick={handleClickOpen}
-              >
-                Create Activity
-              </Button>
-            </Box>
+          <Box display="flex" justifyContent="space-around">
+            <Typography variant="h5" align="center">
+              View Activity
+            </Typography>
+            <Button
+              variant="contained"
+              color="success"
+              onClick={handleClickOpen}
+            >
+              Create Activity
+            </Button>
           </Box>
-          {followUpData.length > 0 && (
+          {followUpData && followUpData.length && (
             <Box
               sx={{
                 display: "flex",
                 flexDirection: "column",
                 height: 260,
-                overflow: "hidden",
-                overflowY: "scroll",
-                // justifyContent="flex-end" # DO NOT USE THIS WITH 'scroll'
+                overflow: "auto",
               }}
             >
-              {followUpData && (
-                <>
-                  {followUpData.map((data) => {
-                    return (
-                      <div key={data.id}>
-                        <Timeline
-                          sx={{
-                            [`& .${timelineOppositeContentClasses.root}`]: {
-                              flex: 0.2,
-                            },
-                          }}
-                        >
-                          <TimelineItem>
-                            <TimelineOppositeContent sx={{ px: 2 }}>
-                              <Typography variant="h6">
-                                {moment(data.current_date).format(
-                                  "DD/MM/YYYY h:mm"
-                                )}
-                              </Typography>
-                            </TimelineOppositeContent>
-                            <TimelineSeparator>
-                              <TimelineDot />
-                              <TimelineConnector />
-                            </TimelineSeparator>
-                            <TimelineContent
-                              sx={{ width: "50%", color: "#333" }}
-                            >
-                              <Typography
-                                variant="h6"
-                                sx={{ fontFamily: "Arial", fontWeight: "bold" }}
-                              >
-                                {data.activity} - {data.user} -{" "}
-                                {data.next_followup_date &&
-                                  moment(data.next_followup_date).format(
-                                    "DD/MM/YYYY"
-                                  )}
-                              </Typography>
-                              <Typography
-                                variant="body1"
-                                sx={{ fontFamily: "Verdana", fontSize: "16px" }}
-                              >
-                                {data.notes}
-                              </Typography>
-                            </TimelineContent>
-                          </TimelineItem>
-                        </Timeline>
-                      </div>
-                    );
-                  })}
-                </>
-              )}
+              {renderTimelineItems()}
             </Box>
           )}
         </Paper>
       </Box>
       <Popup
-        maxWidth={"xl"}
-        title={"Create Follow Up"}
+        maxWidth="xl"
+        title="Create Follow Up"
         openPopup={openModal}
         setOpenPopup={setOpenModal}
       >
         <CustomerActivityCreate
           recordForEdit={recordForEdit}
           setOpenModal={setOpenModal}
-          getFollowUp={getAllCompanyDetailsByID}
+          getFollowUp={getCompanyDetailsByID}
         />
       </Popup>
     </>

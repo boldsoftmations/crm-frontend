@@ -8,7 +8,6 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  TextField,
   Chip,
   Divider,
 } from "@mui/material";
@@ -22,14 +21,14 @@ import { CustomLoader } from "../../../Components/CustomLoader";
 import { ViewCustomerFollowUp } from "../../FollowUp/ViewCustomerFollowUp";
 import { CustomerAllPotential } from "../../Potential/CustomerAllPotential";
 import Option from "../../../Options/Options";
+import CustomTextField from "../../../Components/CustomTextField";
 
 export const UpdateCompanyDetails = (props) => {
   const { setOpenPopup, getAllCompanyDetails, recordForEdit, product } = props;
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState([]);
   const [assigned, setAssigned] = useState([]);
-  const [followUpData, setFollowUpData] = useState([]);
-  const [potential, setPotential] = useState(null);
+
   const dispatch = useDispatch();
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
@@ -65,7 +64,6 @@ export const UpdateCompanyDetails = (props) => {
         "Sales Assistant Deputy Manager",
         "Sales Executive",
       ];
-
       const res = await LeadServices.getAllAssignedUser();
       // Filter the data based on the ALLOWED_ROLES
       const filteredData = res.data.filter((employee) =>
@@ -108,8 +106,6 @@ export const UpdateCompanyDetails = (props) => {
       const response = await CustomerServices.getCompanyDataById(recordForEdit);
       setInputValue(response.data);
       dispatch(getCompanyName(response.data.name));
-      setFollowUpData(response.data.followup);
-      setPotential(response.data.potential);
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -180,7 +176,7 @@ export const UpdateCompanyDetails = (props) => {
             </Root>
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="name"
               size="small"
@@ -214,7 +210,7 @@ export const UpdateCompanyDetails = (props) => {
             </FormControl>
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               sx={{ minWidth: "200px" }}
               name="pincode"
               size="small"
@@ -234,7 +230,7 @@ export const UpdateCompanyDetails = (props) => {
           </Grid>
 
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               label="State"
@@ -244,7 +240,7 @@ export const UpdateCompanyDetails = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               label="City"
@@ -254,7 +250,7 @@ export const UpdateCompanyDetails = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="gst_number"
               size="small"
@@ -271,7 +267,7 @@ export const UpdateCompanyDetails = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               required
               size="small"
@@ -313,7 +309,7 @@ export const UpdateCompanyDetails = (props) => {
                   ))
                 }
                 renderInput={(params) => (
-                  <TextField
+                  <CustomTextField
                     {...params}
                     label="Assign To"
                     placeholder="Assign To"
@@ -323,7 +319,7 @@ export const UpdateCompanyDetails = (props) => {
             </Grid>
           )}
           <Grid item xs={12}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="address"
               size="small"
@@ -352,19 +348,13 @@ export const UpdateCompanyDetails = (props) => {
       </Box>
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <ViewCustomerFollowUp
-            recordForEdit={recordForEdit}
-            followUpData={followUpData}
-            getAllCompanyDetailsByID={getAllCompanyDetailsByID}
-          />
+          <ViewCustomerFollowUp recordForEdit={recordForEdit} />
         </Grid>
       </Grid>
 
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <CustomerAllPotential
-            getAllleadsData={getAllCompanyDetails}
-            potential={potential}
             product={product}
             recordForEdit={recordForEdit}
           />

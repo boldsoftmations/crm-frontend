@@ -11,7 +11,6 @@ import {
   Radio,
   RadioGroup,
   Select,
-  TextField,
   Autocomplete,
   Chip,
   Divider,
@@ -24,6 +23,7 @@ import { CreateAllCompanyDetails } from "./CreateAllCompanyDetails";
 import LeadServices from "../../../services/LeadService";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import Option from "../../../Options/Options";
+import CustomTextField from "../../../Components/CustomTextField";
 
 export const CreateCompanyDetails = (props) => {
   const { getAllCompanyDetails } = props;
@@ -149,7 +149,7 @@ export const CreateCompanyDetails = (props) => {
             </Root>
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="name"
               size="small"
@@ -182,7 +182,7 @@ export const CreateCompanyDetails = (props) => {
             </FormControl>
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               sx={{ minWidth: "200px" }}
               name="pin_code"
               size="small"
@@ -202,7 +202,7 @@ export const CreateCompanyDetails = (props) => {
           </Grid>
 
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               label="State"
@@ -212,7 +212,7 @@ export const CreateCompanyDetails = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               label="City"
@@ -222,7 +222,7 @@ export const CreateCompanyDetails = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               name="gst_number"
@@ -239,7 +239,7 @@ export const CreateCompanyDetails = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               required
               size="small"
@@ -278,7 +278,7 @@ export const CreateCompanyDetails = (props) => {
                 ))
               }
               renderInput={(params) => (
-                <TextField
+                <CustomTextField
                   {...params}
                   label="Assign To"
                   placeholder="Assign To"
@@ -287,7 +287,7 @@ export const CreateCompanyDetails = (props) => {
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField
+            <CustomTextField
               multiline
               fullWidth
               name="address"
@@ -334,7 +334,7 @@ export const CreateCompanyDetails = (props) => {
             </FormControl>
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="website"
               size="small"
@@ -345,7 +345,7 @@ export const CreateCompanyDetails = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               // type="number"
               name="estd_year"
@@ -361,7 +361,7 @@ export const CreateCompanyDetails = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={3}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="approx_annual_turnover"
               size="small"
@@ -372,7 +372,7 @@ export const CreateCompanyDetails = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={3}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="purchase_decision_maker"
               size="small"
@@ -396,7 +396,7 @@ export const CreateCompanyDetails = (props) => {
                 options={Option.IndustriesList.map((option) => option.label)}
                 getOptionLabel={(option) => option}
                 renderInput={(params) => (
-                  <TextField {...params} label="Industrial List" />
+                  <CustomTextField {...params} label="Industrial List" />
                 )}
               />
             </Grid>
@@ -417,7 +417,7 @@ export const CreateCompanyDetails = (props) => {
                 )}
                 getOptionLabel={(option) => option}
                 renderInput={(params) => (
-                  <TextField {...params} label="Distribution Type" />
+                  <CustomTextField {...params} label="Distribution Type" />
                 )}
               />
             </Grid>
@@ -445,7 +445,7 @@ export const CreateCompanyDetails = (props) => {
                   ))
                 }
                 renderInput={(params) => (
-                  <TextField
+                  <CustomTextField
                     {...params}
                     label="Category"
                     placeholder="Category"
@@ -477,7 +477,7 @@ export const CreateCompanyDetails = (props) => {
                   ))
                 }
                 renderInput={(params) => (
-                  <TextField
+                  <CustomTextField
                     {...params}
                     label="Main Distribution"
                     placeholder="Main Distribution"

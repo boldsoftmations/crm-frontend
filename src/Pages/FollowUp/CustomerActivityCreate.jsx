@@ -9,9 +9,9 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  TextField,
 } from "@mui/material";
 import { useSelector } from "react-redux";
+import CustomTextField from "../../Components/CustomTextField";
 
 export const CustomerActivityCreate = (props) => {
   const { recordForEdit, setOpenModal, getFollowUp } = props;
@@ -102,7 +102,7 @@ export const CustomerActivityCreate = (props) => {
             </FormControl>
           </Grid>
           <Grid item xs={12}>
-            <TextField
+            <CustomTextField
               multiline
               fullWidth
               name="notes"
@@ -114,7 +114,7 @@ export const CustomerActivityCreate = (props) => {
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField
+            <CustomTextField
               fullWidth
               type="date"
               name="next_followup_date"

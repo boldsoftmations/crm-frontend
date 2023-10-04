@@ -18,6 +18,7 @@ export const UpdateAllCompanyDetails = (props) => {
   const [wareHousedata, setWareHouseData] = useState([]);
   const [securityChequedata, setSecurityChequeData] = useState([]);
   const [forecastdata, setForecastData] = useState([]);
+  const [kycData, setKycData] = useState([]);
   const [activeTab, setActiveTab] = useState(0);
 
   const handleTabChange = (index) => {
@@ -34,21 +35,41 @@ export const UpdateAllCompanyDetails = (props) => {
     { label: "KYC" },
   ];
   // All Company Details Api
+  // Fetch company details based on the active tab when the component mounts or the active tab changes
   useEffect(() => {
-    if (recordForEdit) getAllCompanyDetailsByID();
+    if (recordForEdit) {
+      getAllCompanyDetailsByID();
+    }
   }, [recordForEdit]);
 
+  // API call to fetch company details based on type
   const getAllCompanyDetailsByID = async () => {
     try {
       setOpen(true);
-      const response = await CustomerServices.getCompanyDataById(recordForEdit);
-
-      setBankData(response.data.bank);
-      setContactData(response.data.contacts);
-      setWareHouseData(response.data.warehouse);
-      setSecurityChequeData(response.data.security_cheque);
-      setForecastData(response.data.forecast);
-
+      const [
+        bankResponse,
+        contactResponse,
+        warehouseResponse,
+        securitychequeResponse,
+        forecastResponse,
+        kycResponse,
+      ] = await Promise.all([
+        CustomerServices.getCompanyDataByIdWithType(recordForEdit, "bank"),
+        CustomerServices.getCompanyDataByIdWithType(recordForEdit, "contacts"),
+        CustomerServices.getCompanyDataByIdWithType(recordForEdit, "warehouse"),
+        CustomerServices.getCompanyDataByIdWithType(
+          recordForEdit,
+          "security_cheque"
+        ),
+        CustomerServices.getCompanyDataByIdWithType(recordForEdit, "forecast"),
+        CustomerServices.getCompanyDataById(recordForEdit),
+      ]);
+      setBankData(bankResponse.data.bank);
+      setContactData(contactResponse.data.contacts);
+      setWareHouseData(warehouseResponse.data.warehouse);
+      setSecurityChequeData(securitychequeResponse.data.security_cheque);
+      setForecastData(forecastResponse.data.forecast);
+      setKycData(kycResponse.data);
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -127,7 +148,9 @@ export const UpdateAllCompanyDetails = (props) => {
             <div>
               <KycUpdate
                 setOpenPopup={setOpenPopup}
-                getAllCompanyDetails={getAllCompanyDetails}
+                getAllCompanyDetailsByID={getAllCompanyDetailsByID}
+                contactData={contactData}
+                kycData={kycData}
                 recordForEdit={recordForEdit}
               />
             </div>

@@ -10,15 +10,21 @@ import {
   FormControlLabel,
   Button,
   Box,
-  TextField,
 } from "@mui/material";
 import Autocomplete from "@mui/lab/Autocomplete";
 import Option from "../../../Options/Options";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomerServices from "../../../services/CustomerService";
+import CustomTextField from "../../../Components/CustomTextField";
 
-const KycUpdate = ({ setOpenPopup, getAllCompanyDetails, recordForEdit }) => {
-  const [inputValue, setInputValue] = useState([]);
+const KycUpdate = ({
+  setOpenPopup,
+  getAllCompanyDetailsByID,
+  contactData,
+  recordForEdit,
+  kycData,
+}) => {
+  const [inputValue, setInputValue] = useState(kycData);
   const [open, setOpen] = useState(false);
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -28,28 +34,13 @@ const KycUpdate = ({ setOpenPopup, getAllCompanyDetails, recordForEdit }) => {
         : value;
     setInputValue({ ...inputValue, [name]: updatedValue });
   };
-
+  console.log("kycData", kycData);
+  console.log("inputValue", inputValue);
   const handleSelectChange = (name, value) => {
     setInputValue({
       ...inputValue,
       [name]: value,
     });
-  };
-
-  useEffect(() => {
-    getAllCompanyDetailsByID();
-  }, []);
-
-  const getAllCompanyDetailsByID = async () => {
-    try {
-      setOpen(true);
-      const response = await CustomerServices.getCompanyDataById(recordForEdit);
-      setInputValue(response.data);
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("company data by id error", err);
-    }
   };
 
   const UpdateCompanyDetails = async (e) => {
@@ -82,13 +73,13 @@ const KycUpdate = ({ setOpenPopup, getAllCompanyDetails, recordForEdit }) => {
       await CustomerServices.updateCompanyData(recordForEdit, req);
       setOpenPopup(false);
       setOpen(false);
-      getAllCompanyDetails();
+      getAllCompanyDetailsByID();
     } catch (error) {
       console.log("createing company detail error", error);
       setOpen(false);
     }
   };
-  const contactsData = inputValue.contacts || []; // Handle cases when inputValue.contacts is undefined or null
+
   return (
     <>
       <CustomLoader open={open} />
@@ -133,7 +124,7 @@ const KycUpdate = ({ setOpenPopup, getAllCompanyDetails, recordForEdit }) => {
             </FormControl>
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="website"
               size="small"
@@ -144,7 +135,7 @@ const KycUpdate = ({ setOpenPopup, getAllCompanyDetails, recordForEdit }) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="estd_year"
               size="small"
@@ -155,7 +146,7 @@ const KycUpdate = ({ setOpenPopup, getAllCompanyDetails, recordForEdit }) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="approx_annual_turnover"
               size="small"
@@ -175,16 +166,16 @@ const KycUpdate = ({ setOpenPopup, getAllCompanyDetails, recordForEdit }) => {
                 handleSelectChange("purchase_decision_maker", value)
               }
               value={inputValue.purchase_decision_maker || ""}
-              options={contactsData.map((option) => option.name)}
+              options={contactData.map((option) => option.name)}
               getOptionLabel={(option) => option}
               renderInput={(params) => (
-                <TextField {...params} label="Purchase Decision Maker" />
+                <CustomTextField {...params} label="Purchase Decision Maker" />
               )}
             />
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               type="date"
               name="birth_date"
@@ -211,13 +202,13 @@ const KycUpdate = ({ setOpenPopup, getAllCompanyDetails, recordForEdit }) => {
               options={Option.Marital_Status_Options.map((options) => options)}
               getOptionLabel={(option) => option}
               renderInput={(params) => (
-                <TextField {...params} label="Marital Status" />
+                <CustomTextField {...params} label="Marital Status" />
               )}
             />
           </Grid>
           {inputValue.marital_status === "Married" && (
             <Grid item xs={12} sm={6}>
-              <TextField
+              <CustomTextField
                 fullWidth
                 type="date"
                 name="anniversary_date"
@@ -246,7 +237,7 @@ const KycUpdate = ({ setOpenPopup, getAllCompanyDetails, recordForEdit }) => {
                 options={Option.IndustriesList.map((option) => option.label)}
                 getOptionLabel={(option) => option}
                 renderInput={(params) => (
-                  <TextField {...params} label="Industrial List" />
+                  <CustomTextField {...params} label="Industrial List" />
                 )}
               />
             </Grid>
@@ -267,14 +258,14 @@ const KycUpdate = ({ setOpenPopup, getAllCompanyDetails, recordForEdit }) => {
                 )}
                 getOptionLabel={(option) => option}
                 renderInput={(params) => (
-                  <TextField {...params} label="Distribution Type" />
+                  <CustomTextField {...params} label="Distribution Type" />
                 )}
               />
             </Grid>
           )}
           {inputValue.distribution_type === "Wholeseller" && (
             <Grid item xs={12} sm={6}>
-              <TextField
+              <CustomTextField
                 fullWidth
                 type="number"
                 name="customer_serve_count"
@@ -309,7 +300,7 @@ const KycUpdate = ({ setOpenPopup, getAllCompanyDetails, recordForEdit }) => {
                   ))
                 }
                 renderInput={(params) => (
-                  <TextField
+                  <CustomTextField
                     {...params}
                     label="Category"
                     placeholder="Category"
@@ -341,7 +332,7 @@ const KycUpdate = ({ setOpenPopup, getAllCompanyDetails, recordForEdit }) => {
                   ))
                 }
                 renderInput={(params) => (
-                  <TextField
+                  <CustomTextField
                     {...params}
                     label="Main Distribution"
                     placeholder="Main Distribution"
