@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   Box,
@@ -18,6 +18,7 @@ import { CreateSecurityChequesDetails } from "./CreateSecurityChequesDetails";
 import { UpdateSecurityChequesDetails } from "./UpdateSecurityChequesDetails";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { useSelector } from "react-redux";
+import CustomerServices from "../../../services/CustomerService";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -39,19 +40,39 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-export const SecurityChequesDetails = (props) => {
-  const { securityChequedata, getAllCompanyDetailsByID, open } = props;
+export const SecurityChequesDetails = ({ recordForEdit }) => {
+  const [open, setOpen] = useState(false);
+  const [securityChequedata, setSecurityChequeData] = useState([]);
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [IDForEdit, setIDForEdit] = useState();
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
-  // const [recordForEdit, setRecordForEdit] = useState(null);
 
-  // const getResetData = () => {
-  //   setSearchQuery("");
-  //   // getUnits();
-  // };
+  // Fetch company details based on the active tab when the component mounts or the active tab changes
+  useEffect(() => {
+    if (recordForEdit) {
+      getAllCompanyDetailsByID();
+    }
+  }, [recordForEdit]);
+
+  // API call to fetch company details based on type
+  const getAllCompanyDetailsByID = async () => {
+    try {
+      setOpen(true);
+      const securitychequeResponse =
+        await CustomerServices.getCompanyDataByIdWithType(
+          recordForEdit,
+          "security_cheque"
+        );
+
+      setSecurityChequeData(securitychequeResponse.data.security_cheque);
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      console.log("company data by id error", err);
+    }
+  };
 
   const openInPopup = (item) => {
     setIDForEdit(item);
@@ -60,9 +81,7 @@ export const SecurityChequesDetails = (props) => {
 
   return (
     <>
-      <div>
-        <CustomLoader open={open} />
-      </div>
+      <CustomLoader open={open} />
 
       <Grid item xs={12}>
         <Box display="flex">

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   Box,
@@ -19,6 +19,7 @@ import { CreateContactDetails } from "./CreateContactDetails";
 import { UpdateContactDetails } from "./UpdateContactDetails";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { useSelector } from "react-redux";
+import CustomerServices from "../../../services/CustomerService";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -40,17 +41,37 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-export const ContactDetails = (props) => {
-  const { contactData, getAllCompanyDetailsByID, open } = props;
+export const ContactDetails = ({ recordForEdit }) => {
+  const [open, setOpen] = useState(false);
+  const [contactData, setContactData] = useState([]);
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [IDForEdit, setIDForEdit] = useState();
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
-  // const getResetData = () => {
-  //   setSearchQuery("");
-  //   // getUnits();
-  // };
+
+  // Fetch company details based on the active tab when the component mounts or the active tab changes
+  useEffect(() => {
+    if (recordForEdit) {
+      getAllCompanyDetailsByID();
+    }
+  }, [recordForEdit]);
+
+  // API call to fetch company details based on type
+  const getAllCompanyDetailsByID = async () => {
+    try {
+      setOpen(true);
+      const contactResponse = await CustomerServices.getCompanyDataByIdWithType(
+        recordForEdit,
+        "contacts"
+      );
+      setContactData(contactResponse.data.contacts);
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      console.log("company data by id error", err);
+    }
+  };
 
   const openInPopup = (item) => {
     setIDForEdit(item);

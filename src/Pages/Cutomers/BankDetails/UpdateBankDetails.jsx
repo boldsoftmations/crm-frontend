@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Box, Button, Grid } from "@mui/material";
 import axios from "axios";
 import CustomerServices from "../../../services/CustomerService";
-import { useSelector } from "react-redux";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomTextField from "../../../Components/CustomTextField";
 
@@ -10,9 +9,7 @@ export const UpdateBankDetails = (props) => {
   const { setOpenPopup, getAllCompanyDetailsByID, idForEdit } = props;
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState([]);
-  const [bankData, setBankData] = useState([]);
   const [errMsg, setErrMsg] = useState("");
-  const data = useSelector((state) => state.auth);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -27,8 +24,6 @@ export const UpdateBankDetails = (props) => {
     try {
       setOpen(true);
       const response = await CustomerServices.getBankDataById(idForEdit);
-      console.log("response", response);
-
       setInputValue(response.data);
       setOpen(false);
     } catch (err) {
@@ -42,7 +37,16 @@ export const UpdateBankDetails = (props) => {
       setOpen(true);
       const ifsc = inputValue.ifsc_code;
       const response = await axios.get(`https://ifsc.razorpay.com/${ifsc}`);
-      setBankData(response.data);
+      setInputValue({
+        ...inputValue,
+        bank_name: response.data.BANK,
+        address: response.data.ADDRESS,
+        district: response.data.DISTRICT,
+        state: response.data.STATE,
+        city: response.data.CITY,
+        branch: response.data.BRANCH,
+        micr_code: response.data.MICR,
+      });
       setErrMsg("");
       setOpen(false);
     } catch (error) {
@@ -59,16 +63,16 @@ export const UpdateBankDetails = (props) => {
       e.preventDefault();
       setOpen(true);
       const req = {
-        company: data ? data.companyName : "",
+        company: inputValue.company,
         current_account_no: inputValue.current_account_no,
         ifsc_code: inputValue.ifsc_code,
-        bank_name: bankData.BANK ? bankData.BANK : inputValue.bank_name,
-        address: bankData.ADDRESS ? bankData.ADDRESS : inputValue.address,
-        state: bankData.STATE ? bankData.STATE : inputValue.state,
-        district: bankData.DISTRICT ? bankData.DISTRICT : inputValue.district,
-        city: bankData.CITY ? bankData.CITY : inputValue.city,
-        branch: bankData.BRANCH ? bankData.BRANCH : inputValue.branch,
-        micr_code: bankData.MICR ? bankData.MICR : inputValue.micr_code,
+        bank_name: inputValue.bank_name,
+        address: inputValue.address,
+        state: inputValue.state,
+        district: inputValue.district,
+        city: inputValue.city,
+        branch: inputValue.branch,
+        micr_code: inputValue.micr_code,
       };
       await CustomerServices.updateBankData(idForEdit, req);
       setOpenPopup(false);
@@ -108,7 +112,7 @@ export const UpdateBankDetails = (props) => {
               size="small"
               label="IFSC Code"
               variant="outlined"
-              value={inputValue.ifsc_code ? inputValue.ifsc_code : ""}
+              value={inputValue.ifsc_code || ""}
               onChange={handleInputChange}
               error={errMsg && errMsg}
               helperText={errMsg && errMsg}
@@ -129,10 +133,7 @@ export const UpdateBankDetails = (props) => {
               name="bank_name"
               label="Bank Name"
               variant="outlined"
-              value={bankData.BANK ? bankData.BANK : inputValue.bank_name}
-              InputLabelProps={{
-                shrink: true,
-              }}
+              value={inputValue.bank_name || ""}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -142,10 +143,7 @@ export const UpdateBankDetails = (props) => {
               name="branch"
               label="Branch"
               variant="outlined"
-              value={bankData.BRANCH ? bankData.BRANCH : inputValue.branch}
-              InputLabelProps={{
-                shrink: true,
-              }}
+              value={inputValue.branch || ""}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -155,10 +153,7 @@ export const UpdateBankDetails = (props) => {
               name="micr"
               label="MICR"
               variant="outlined"
-              value={bankData.MICR ? bankData.MICR : inputValue.micr_code}
-              InputLabelProps={{
-                shrink: true,
-              }}
+              value={inputValue.micr_code || ""}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -168,12 +163,7 @@ export const UpdateBankDetails = (props) => {
               name="district"
               label="District"
               variant="outlined"
-              value={
-                bankData.DISTRICT ? bankData.DISTRICT : inputValue.district
-              }
-              InputLabelProps={{
-                shrink: true,
-              }}
+              value={inputValue.district || ""}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -183,10 +173,7 @@ export const UpdateBankDetails = (props) => {
               name="city"
               label="City"
               variant="outlined"
-              value={bankData.CITY ? bankData.CITY : inputValue.city}
-              InputLabelProps={{
-                shrink: true,
-              }}
+              value={inputValue.city || ""}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -196,7 +183,7 @@ export const UpdateBankDetails = (props) => {
               name="state"
               label="State"
               variant="outlined"
-              value={bankData.STATE ? bankData.STATE : inputValue.state}
+              value={inputValue.state || ""}
               InputLabelProps={{
                 shrink: true,
               }}
@@ -210,10 +197,7 @@ export const UpdateBankDetails = (props) => {
               size="small"
               label="Address"
               variant="outlined"
-              value={bankData.ADDRESS ? bankData.ADDRESS : inputValue.address}
-              InputLabelProps={{
-                shrink: true,
-              }}
+              value={inputValue.address || ""}
             />
           </Grid>
         </Grid>

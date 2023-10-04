@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   Box,
@@ -16,7 +16,7 @@ import { tableCellClasses } from "@mui/material/TableCell";
 import { Popup } from "./../../../Components/Popup";
 import { CreateBankDetails } from "./CreateBankDetails";
 import { UpdateBankDetails } from "./UpdateBankDetails";
-// import CustomerServices from "../../../services/CustomerService";
+import CustomerServices from "../../../services/CustomerService";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { useSelector } from "react-redux";
 
@@ -40,17 +40,37 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-export const BankDetails = (props) => {
-  const { bankData, open, getAllCompanyDetailsByID } = props;
+export const BankDetails = ({ recordForEdit }) => {
+  const [open, setOpen] = useState(false);
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [idForEdit, setIDForEdit] = useState();
+  const [bankData, setBankData] = useState([]);
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
-  // const getResetData = () => {
-  //   setSearchQuery("");
-  //   // getUnits();
-  // };
+
+  // Fetch company details based on the active tab when the component mounts or the active tab changes
+  useEffect(() => {
+    if (recordForEdit) {
+      getAllCompanyDetailsByID();
+    }
+  }, [recordForEdit]);
+
+  // API call to fetch company details based on type
+  const getAllCompanyDetailsByID = async () => {
+    try {
+      setOpen(true);
+      const bankResponse = await CustomerServices.getCompanyDataByIdWithType(
+        recordForEdit,
+        "bank"
+      );
+      setBankData(bankResponse.data.bank);
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      console.log("company data by id error", err);
+    }
+  };
 
   const openInPopup = (item) => {
     setIDForEdit(item);
@@ -63,54 +83,8 @@ export const BankDetails = (props) => {
       <CustomLoader open={open} />
 
       <Grid item xs={12}>
-        {/* <p
-          style={{
-            width: "100%",
-            padding: 10,
-            marginBottom: 10,
-            borderRadius: 4,
-            backgroundColor: errMsg ? "red" : "offscreen",
-            textAlign: "center",
-            color: "white",
-            textTransform: "capitalize",
-          }}
-          ref={errRef}
-          className={errMsg ? "errmsg" : "offscreen"}
-          aria-live="assertive"
-        >
-          {errMsg}
-        </p> */}
-
         <Box display="flex">
-          <Box flexGrow={2}>
-            {/* <TextField
-              // value={searchQuery}
-              // onChange={(e) => setSearchQuery(e.target.value)}
-              name="search"
-              size="small"
-              label="Search"
-              variant="outlined"
-              sx={{ backgroundColor: "#ffffff" }}
-            />
-
-            <Button
-              // onClick={getSearchData}
-              size="medium"
-              sx={{ marginLeft: "1em" }}
-              variant="contained"
-              // startIcon={<SearchIcon />}
-            >
-              Search
-            </Button> */}
-            {/* <Button
-              // onClick={getResetData}
-              sx={{ marginLeft: "1em" }}
-              size="medium"
-              variant="contained"
-            >
-              Reset
-            </Button> */}
-          </Box>
+          <Box flexGrow={2}></Box>
           <Box flexGrow={2}>
             <h3
               style={{
@@ -130,7 +104,6 @@ export const BankDetails = (props) => {
                 onClick={() => setOpenPopup2(true)}
                 variant="contained"
                 color="success"
-                // startIcon={<AddIcon />}
               >
                 Add
               </Button>

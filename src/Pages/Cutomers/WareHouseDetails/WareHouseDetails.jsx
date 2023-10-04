@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   Box,
@@ -18,6 +18,7 @@ import { CreateWareHouseDetails } from "./CreateWareHouseDetails";
 import { UpdateWareHouseDetails } from "./UpdateWareHouseDetails";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { useSelector } from "react-redux";
+import CustomerServices from "../../../services/CustomerService";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -39,18 +40,40 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-export const WareHouseDetails = (props) => {
-  const { getAllCompanyDetailsByID, wareHousedata, open, contactData } = props;
+export const WareHouseDetails = ({ recordForEdit }) => {
+  const [open, setOpen] = useState(false);
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
+  const [wareHousedata, setWareHouseData] = useState([]);
+  const [contactData, setContactData] = useState([]);
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
   const [IDForEdit, setIDForEdit] = useState();
 
-  // const getResetData = () => {
-  //   setSearchQuery("");
-  //   // getUnits();
-  // };
+  // Fetch company details based on the active tab when the component mounts or the active tab changes
+  useEffect(() => {
+    if (recordForEdit) {
+      getAllCompanyDetailsByID();
+    }
+  }, [recordForEdit]);
+
+  // API call to fetch company details based on type
+  const getAllCompanyDetailsByID = async () => {
+    try {
+      setOpen(true);
+      const [contactResponse, warehouseResponse] = await Promise.all([
+        CustomerServices.getCompanyDataByIdWithType(recordForEdit, "contacts"),
+        CustomerServices.getCompanyDataByIdWithType(recordForEdit, "warehouse"),
+      ]);
+      setContactData(contactResponse.data.contacts);
+      setWareHouseData(warehouseResponse.data.warehouse);
+
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      console.log("company data by id error", err);
+    }
+  };
 
   const openInPopup = (item) => {
     setIDForEdit(item);

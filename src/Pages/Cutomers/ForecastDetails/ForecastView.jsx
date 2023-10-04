@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Grid,
@@ -16,6 +16,7 @@ import { ForecastCreate } from "./ForecastCreate";
 import { ForecastUpdate } from "./ForecastUpdate";
 import { Popup } from "../../../Components/Popup";
 import CustomerServices from "../../../services/CustomerService";
+import { CustomLoader } from "../../../Components/CustomLoader";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -37,8 +38,9 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-export const ForecastView = (props) => {
-  const { forecastdata, getAllCompanyDetailsByID } = props;
+export const ForecastView = ({ recordForEdit }) => {
+  const [open, setOpen] = useState(false);
+  const [forecastdata, setForecastData] = useState([]);
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [forecastDataByID, setForecastDataByID] = useState([]);
@@ -73,6 +75,31 @@ export const ForecastView = (props) => {
     "December",
   ];
 
+  // Fetch company details based on the active tab when the component mounts or the active tab changes
+  useEffect(() => {
+    if (recordForEdit) {
+      getAllCompanyDetailsByID();
+    }
+  }, [recordForEdit]);
+
+  // API call to fetch company details based on type
+  const getAllCompanyDetailsByID = async () => {
+    try {
+      setOpen(true);
+      const forecastResponse =
+        await CustomerServices.getCompanyDataByIdWithType(
+          recordForEdit,
+          "forecast"
+        );
+      setForecastData(forecastResponse.data.forecast);
+
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      console.log("company data by id error", err);
+    }
+  };
+
   // Get the unique index_position values to use as column headers
   const indexPositions = [
     ...new Set(
@@ -88,6 +115,7 @@ export const ForecastView = (props) => {
 
   return (
     <>
+      <CustomLoader open={open} />
       <Grid item xs={12}>
         <Box display="flex">
           <Box flexGrow={2}></Box>

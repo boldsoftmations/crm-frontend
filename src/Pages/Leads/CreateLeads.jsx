@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Autocomplete,
   Box,
@@ -27,18 +27,13 @@ import Option from "../../Options/Options";
 import CustomTextField from "../../Components/CustomTextField";
 
 export const CreateLeads = (props) => {
-  const {
-    setOpenPopup,
-    getleads,
-    descriptionMenuData,
-    referenceData,
-    assigned,
-  } = props;
+  const { setOpenPopup, getleads, descriptionMenuData, assigned } = props;
   const [open, setOpen] = useState(false);
   const [checked, setChecked] = useState(false);
   const [leads, setLeads] = useState({
     estd_year: new Date().getFullYear().toString(),
   });
+  const [referenceData, setReferenceData] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
@@ -77,6 +72,20 @@ export const CreateLeads = (props) => {
 
   const handleSameAsAddress = (event) => {
     setChecked(event.target.checked);
+  };
+
+  useEffect(() => {
+    getReference();
+  }, []);
+
+  const getReference = async () => {
+    try {
+      const res = await LeadServices.getAllRefernces();
+
+      setReferenceData(res.data);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const createLeadsData = async (e) => {

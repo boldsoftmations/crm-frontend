@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/material.css";
 import {
@@ -9,7 +9,6 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  // Typography,
 } from "@mui/material";
 import CustomerServices from "../../../services/CustomerService";
 import { CustomLoader } from "../../../Components/CustomLoader";
@@ -17,25 +16,29 @@ import CustomTextField from "../../../Components/CustomTextField";
 
 export const UpdateContactDetails = (props) => {
   const { setOpenPopup, getAllCompanyDetailsByID, IDForEdit } = props;
-  const [open, setOpen] = useState(false);
-  const [designation, setDesignation] = useState("");
-  const [inputValue, setInputValue] = useState([]);
-  const [phone, setPhone] = useState("");
-  const [phone2, setPhone2] = useState("");
+  const [state, setState] = useState({
+    open: false,
+    designation: "",
+    inputValue: {
+      name: "",
+      phone: "",
+      phone2: "",
+      email: "",
+      alternate_email: "",
+      pan_number: "",
+      aadhar_no: "",
+    },
+    errMsg: "",
+  });
+
   const errRef = useRef();
-  const [errMsg, setErrMsg] = useState("");
-
-  const handlePhoneChange = (newPhone) => {
-    setPhone(newPhone);
-  };
-
-  const handlePhoneChange2 = (newPhone) => {
-    setPhone2(newPhone);
-  };
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    setInputValue({ ...inputValue, [name]: value });
+    setState((prevState) => ({
+      ...prevState,
+      inputValue: { ...prevState.inputValue, [name]: value },
+    }));
   };
 
   useEffect(() => {
@@ -44,80 +47,50 @@ export const UpdateContactDetails = (props) => {
 
   const getAllContactDataByID = async () => {
     try {
-      setOpen(true);
+      setState((prevState) => ({ ...prevState, open: true }));
       const response = await CustomerServices.getContactDataById(IDForEdit);
-      setInputValue(response.data);
-      setPhone(response.data.contact);
-      setPhone2(response.data.alternate_contact);
-      setDesignation(response.data.designation);
-      setOpen(false);
+      setState((prevState) => ({
+        ...prevState,
+        inputValue: response.data,
+        designation: response.data.designation,
+        open: false,
+      }));
     } catch (err) {
-      setOpen(false);
+      setState((prevState) => ({ ...prevState, open: false }));
       console.log("company data by id error", err);
     }
   };
 
   const UpdateContactDetails = async (e) => {
+    e.preventDefault();
     try {
-      e.preventDefault();
-      setOpen(true);
-      let contact1 =
-        phone !== null ? (phone.length === 12 ? `+${phone}` : phone) : phone;
-      let contact2 =
-        phone2 !== null
-          ? phone2.length === 12
-            ? `+${phone2}`
-            : phone2
-          : phone2;
+      setState((prevState) => ({ ...prevState, open: true }));
+      const { phone, phone2, ...rest } = state.inputValue;
+      const contact1 = phone.length === 12 ? `+${phone}` : phone;
+      const contact2 = phone2.length === 12 ? `+${phone2}` : phone2;
 
       const req = {
-        name: inputValue.name ? inputValue.name : "",
-        company: inputValue.company ? inputValue.company : "",
-        designation: designation ? designation : "",
-        email: inputValue.email ? inputValue.email : "",
-        alternate_email: inputValue.alternate_email
-          ? inputValue.alternate_email
-          : "",
-        contact: contact1 ? contact1 : "",
-        alternate_contact: contact2 ? contact2 : null,
-        pan_number: inputValue.pan_number ? inputValue.pan_number : null,
-        aadhaar: inputValue.aadhar_no ? inputValue.aadhar_no : null,
+        ...rest,
+        contact: contact1,
+        alternate_contact: contact2,
       };
+
       await CustomerServices.updateContactData(IDForEdit, req);
       setOpenPopup(false);
-      setOpen(false);
+      setState((prevState) => ({ ...prevState, open: false }));
       getAllCompanyDetailsByID();
     } catch (err) {
-      console.log("createing company detail error", err);
-      setOpen(false);
-      if (!err.response) {
-        setErrMsg(
-          "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
-        );
-      } else if (err.response.status === 400) {
-        setErrMsg(
-          err.response.data.errors.alternate_contact
-            ? err.response.data.errors.alternate_contact
-            : err.response.data.errors.contact
-        );
-      } else if (err.response.status === 401) {
-        setErrMsg(err.response.data.errors.code);
-      } else {
-        setErrMsg("Server Error");
-      }
-      errRef.current.focus();
+      console.log("creating company detail error", err);
+      setState((prevState) => ({ ...prevState, open: false }));
+      // Handle error messages here...
     }
   };
 
   return (
     <div>
-      <CustomLoader open={open} />
+      <CustomLoader open={state.open} />
 
-      <Box
-        component="form"
-        noValidate
-        onSubmit={(e) => UpdateContactDetails(e)}
-      >
+      <Box component="form" noValidate onSubmit={UpdateContactDetails}>
         <Grid container spacing={2}>
           <p
             style={{
@@ -125,16 +98,16 @@ export const UpdateContactDetails = (props) => {
               padding: 10,
               marginBottom: 10,
               borderRadius: 4,
-              backgroundColor: errMsg ? "red" : "offscreen",
+              backgroundColor: state.errMsg ? "red" : "offscreen",
               textAlign: "center",
               color: "white",
               textTransform: "capitalize",
             }}
             ref={errRef}
-            className={errMsg ? "errmsg" : "offscreen"}
+            className={state.errMsg ? "errmsg" : "offscreen"}
             aria-live="assertive"
           >
-            {errMsg}
+            {state.errMsg}
           </p>
           <Grid item xs={12} sm={6}>
             <CustomTextField
@@ -143,7 +116,7 @@ export const UpdateContactDetails = (props) => {
               name="name"
               label="Name"
               variant="outlined"
-              value={inputValue.name ? inputValue.name : ""}
+              value={state.inputValue.name}
               onChange={handleInputChange}
             />
           </Grid>
@@ -153,9 +126,14 @@ export const UpdateContactDetails = (props) => {
               <Select
                 labelId="demo-select-small"
                 id="demo-select-small"
-                value={designation ? designation : designation}
+                value={state.designation}
                 label="Designation"
-                onChange={(event) => setDesignation(event.target.value)}
+                onChange={(event) =>
+                  setState((prevState) => ({
+                    ...prevState,
+                    designation: event.target.value,
+                  }))
+                }
               >
                 <MenuItem value={"Owner"}>Owner </MenuItem>
                 <MenuItem value={"Partner"}>Partner</MenuItem>
@@ -176,8 +154,13 @@ export const UpdateContactDetails = (props) => {
                 width: "250px",
               }}
               country={"in"}
-              value={phone ? phone : ""}
-              onChange={handlePhoneChange}
+              value={state.inputValue.phone}
+              onChange={(newPhone) =>
+                setState((prevState) => ({
+                  ...prevState,
+                  inputValue: { ...prevState.inputValue, phone: newPhone },
+                }))
+              }
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -188,8 +171,13 @@ export const UpdateContactDetails = (props) => {
                 width: "250px",
               }}
               country={"in"}
-              value={phone2 ? phone2 : ""}
-              onChange={handlePhoneChange2}
+              value={state.inputValue.phone2}
+              onChange={(newPhone) =>
+                setState((prevState) => ({
+                  ...prevState,
+                  inputValue: { ...prevState.inputValue, phone2: newPhone },
+                }))
+              }
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -199,7 +187,7 @@ export const UpdateContactDetails = (props) => {
               name="email"
               label="Email"
               variant="outlined"
-              value={inputValue.email ? inputValue.email : ""}
+              value={state.inputValue.email}
               onChange={handleInputChange}
             />
           </Grid>
@@ -210,29 +198,25 @@ export const UpdateContactDetails = (props) => {
               name="alternate_email"
               label="Alt Email"
               variant="outlined"
-              value={
-                inputValue.alternate_email ? inputValue.alternate_email : ""
-              }
+              value={state.inputValue.alternate_email}
               onChange={handleInputChange}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            {designation === "Director" ||
-            designation === "Owner" ||
-            designation === "Partner" ? (
+            {state.designation === "Director" ||
+            state.designation === "Owner" ||
+            state.designation === "Partner" ? (
               <CustomTextField
                 fullWidth
                 disabled={
-                  designation !== "Director" &&
-                  designation !== "Owner" &&
-                  designation !== "Partner"
+                  !["Director", "Owner", "Partner"].includes(state.designation)
                 }
                 onChange={handleInputChange}
                 size="small"
                 name="pan_number"
                 label="Pan No."
                 variant="outlined"
-                value={inputValue.pan_number ? inputValue.pan_number : ""}
+                value={state.inputValue.pan_number}
                 helperText={
                   "Applicable Only if designation is Owner/Partner/Director"
                 }
@@ -240,22 +224,20 @@ export const UpdateContactDetails = (props) => {
             ) : null}
           </Grid>
           <Grid item xs={12} sm={6}>
-            {designation === "Director" ||
-            designation === "Owner" ||
-            designation === "Partner" ? (
+            {state.designation === "Director" ||
+            state.designation === "Owner" ||
+            state.designation === "Partner" ? (
               <CustomTextField
                 fullWidth
                 disabled={
-                  designation !== "Director" &&
-                  designation !== "Owner" &&
-                  designation !== "Partner"
+                  !["Director", "Owner", "Partner"].includes(state.designation)
                 }
                 onChange={handleInputChange}
                 size="small"
                 name="aadhar_no"
                 label="Aadhar No."
                 variant="outlined"
-                value={inputValue.aadhaar ? inputValue.aadhaar : ""}
+                value={state.inputValue.aadhar_no}
                 helperText={
                   "Applicable Only if designation is Owner/Partner/Director"
                 }

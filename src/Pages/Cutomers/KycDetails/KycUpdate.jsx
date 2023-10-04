@@ -17,15 +17,35 @@ import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomerServices from "../../../services/CustomerService";
 import CustomTextField from "../../../Components/CustomTextField";
 
-const KycUpdate = ({
-  setOpenPopup,
-  getAllCompanyDetailsByID,
-  contactData,
-  recordForEdit,
-  kycData,
-}) => {
-  const [inputValue, setInputValue] = useState(kycData);
+const KycUpdate = ({ recordForEdit }) => {
+  const [inputValue, setInputValue] = useState([]);
+  const [contactData, setContactData] = useState([]);
   const [open, setOpen] = useState(false);
+
+  // Fetch company details based on the active tab when the component mounts or the active tab changes
+  useEffect(() => {
+    if (recordForEdit) {
+      getAllCompanyDetailsByID();
+    }
+  }, [recordForEdit]);
+
+  // API call to fetch company details based on type
+  const getAllCompanyDetailsByID = async () => {
+    try {
+      setOpen(true);
+      const [contactResponse, kycResponse] = await Promise.all([
+        CustomerServices.getCompanyDataByIdWithType(recordForEdit, "contacts"),
+        CustomerServices.getCompanyDataById(recordForEdit),
+      ]);
+      setContactData(contactResponse.data.contacts);
+      setInputValue(kycResponse.data);
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      console.log("company data by id error", err);
+    }
+  };
+
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     const updatedValue =
@@ -34,8 +54,7 @@ const KycUpdate = ({
         : value;
     setInputValue({ ...inputValue, [name]: updatedValue });
   };
-  console.log("kycData", kycData);
-  console.log("inputValue", inputValue);
+
   const handleSelectChange = (name, value) => {
     setInputValue({
       ...inputValue,
@@ -71,7 +90,6 @@ const KycUpdate = ({
         anniversary_date: inputValue.anniversary_date || null,
       };
       await CustomerServices.updateCompanyData(recordForEdit, req);
-      setOpenPopup(false);
       setOpen(false);
       getAllCompanyDetailsByID();
     } catch (error) {
