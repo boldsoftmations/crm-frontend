@@ -307,6 +307,39 @@ const BulCustomerAssign = (data) => {
   return CustomAxios.post("/api/customer/assign-bulk-customers/ ", data);
 };
 
+// Competitor API
+const getAllCompetitors = () => {
+  return CustomAxios.get("/api/customer/list-main-distribution");
+};
+
+const getCompetitorsPaginatewithSearch = (all, search) => {
+  return CustomAxios.get(
+    `/api/customer/list-main-distribution/?page=${all}&search=${search}`
+  );
+};
+
+const getAllPaginateCompetitors = (all) => {
+  return CustomAxios.get(`/api/customer/list-main-distribution/?page=${all}`);
+};
+
+const getCompetitorsById = (id) => {
+  return CustomAxios.get(`/api/customer/list-main-distribution/${id}`);
+};
+
+const createCompetitorAPI = (data) => {
+  return CustomAxios.post("/api/customer/list-main-distribution/", data);
+};
+
+const getAllSearchCompetitors = (search) => {
+  return CustomAxios.get(
+    `/api/customer/list-main-distribution/?search=${search}`
+  );
+};
+
+const updateCompetitors = (id, data) => {
+  return CustomAxios.patch(`/api/customer/list-main-distribution/${id}`, data);
+};
+
 const CustomerServices = {
   getAllCompanyData,
   getAllPaginateCompanyData,
@@ -368,6 +401,13 @@ const CustomerServices = {
   getAllProductHavingForecastPaginate,
   getProductHavingForecastPaginateData,
   BulCustomerAssign,
+  getAllCompetitors,
+  getCompetitorsPaginatewithSearch,
+  getAllPaginateCompetitors,
+  getCompetitorsById,
+  createCompetitorAPI,
+  getAllSearchCompetitors,
+  updateCompetitors,
 };
 
 export default CustomerServices;

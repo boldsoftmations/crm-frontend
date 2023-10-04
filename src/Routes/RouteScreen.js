@@ -60,6 +60,7 @@ import { HotLeads } from "../Pages/Leads/HotLeads";
 import { ActiveUsers } from "./../Pages/Users/ActiveUsers";
 import { InActiveUsers } from "./../Pages/Users/InActiveUsers";
 import { IncompleteKycDetails } from "../Pages/Cutomers/CompanyDetails/IncompleteKycDetails";
+import { CompetitorView } from "../Pages/MarketAnalysis/CompetitorView";
 
 export const RouteScreen = () => {
   const tokenData = useSelector((state) => state.auth);
@@ -242,7 +243,10 @@ export const RouteScreen = () => {
             <Route path="/task/view-task" element={<TaskView />} />
             <Route path="/user/active-user" element={<ActiveUsers />} />
             <Route path="/user/inactive-user" element={<InActiveUsers />} />
-
+            <Route
+              path="/market-analysis/competitor"
+              element={<CompetitorView />}
+            />
             <Route path="*" element={<Home />} />
           </>
         )}

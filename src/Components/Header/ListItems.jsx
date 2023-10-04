@@ -25,7 +25,7 @@ import Inventory2Icon from "@mui/icons-material/Inventory2";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
 import FollowTheSignsIcon from "@mui/icons-material/FollowTheSigns";
-
+import BarChartIcon from "@mui/icons-material/BarChart";
 export const ListItems = (props) => {
   const { setOpen } = props;
   const [expand, setExpand] = useState(false);
@@ -42,6 +42,7 @@ export const ListItems = (props) => {
   const [expandFollowup, setExpandFollowup] = useState(false);
   const [expandTask, setExpandTask] = useState(false);
   const [expandUser, setExpandUser] = useState(false);
+  const [expandCompetitor, setExpandCompetitor] = useState(false);
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
 
@@ -988,6 +989,38 @@ export const ListItems = (props) => {
                   onClick={() => setOpen(false)}
                   inset
                   primary="InActive Users"
+                />
+              </ListItem>
+            </List>
+          </Collapse>
+
+          {/* Market Analysis */}
+          <ListItem
+            button
+            onClick={() => setExpandCompetitor(!expandCompetitor)}
+            style={{ width: 300 }}
+          >
+            <ListItemIcon>
+              <BarChartIcon />
+            </ListItemIcon>
+            <ListItemText primary="Market Analysis" />
+            {expandCompetitor ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          </ListItem>
+
+          <Collapse in={expandCompetitor} timeout="auto" unmountOnExit>
+            <Divider />
+            <List component="div" disablePadding>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/market-analysis/competitor"
+                style={{ width: 300 }}
+              >
+                <ListItemText
+                  component={Button}
+                  onClick={() => setOpen(false)}
+                  inset
+                  primary="Competitor"
                 />
               </ListItem>
             </List>
@@ -2871,6 +2904,38 @@ export const ListItems = (props) => {
                       onClick={() => setOpen(false)}
                       inset
                       primary="Task"
+                    />
+                  </ListItem>
+                </List>
+              </Collapse>
+
+              {/* Market Analysis */}
+              <ListItem
+                button
+                onClick={() => setExpandCompetitor(!expandCompetitor)}
+                style={{ width: 300 }}
+              >
+                <ListItemIcon>
+                  <BarChartIcon />
+                </ListItemIcon>
+                <ListItemText primary="Market Analysis" />
+                {expandCompetitor ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+              </ListItem>
+
+              <Collapse in={expandCompetitor} timeout="auto" unmountOnExit>
+                <Divider />
+                <List component="div" disablePadding>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/market-analysis/competitor"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Competitor"
                     />
                   </ListItem>
                 </List>
