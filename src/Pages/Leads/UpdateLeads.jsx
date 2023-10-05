@@ -37,7 +37,6 @@ export const UpdateLeads = (props) => {
     setOpenPopup,
     getAllleadsData,
     descriptionMenuData,
-    assigned,
     product,
     leadsByID,
   } = props;
@@ -51,6 +50,7 @@ export const UpdateLeads = (props) => {
   const [potential, setPotential] = useState(null);
   const [error, setError] = useState(null);
   const [allCompetitors, setAllCompetitors] = useState([]);
+  const [assigned, setAssigned] = useState([]);
 
   // Helper function to get target date
   const getTargetDate = () => {
@@ -107,7 +107,24 @@ export const UpdateLeads = (props) => {
 
   useEffect(() => {
     getCompetitors();
+    getAssignedData();
   }, []);
+
+  const getAssignedData = async () => {
+    try {
+      setOpen(true);
+      const res = await LeadServices.getAllAssignedUser();
+      // Filter the data based on the ALLOWED_ROLES
+      const filteredData = res.data.filter((employee) =>
+        employee.groups.some((group) => Option.ALLOWED_ROLES.includes(group))
+      );
+      setAssigned(filteredData);
+      setOpen(false);
+    } catch (error) {
+      console.log("error", error);
+      setOpen(false);
+    }
+  };
 
   const getCompetitors = async () => {
     try {

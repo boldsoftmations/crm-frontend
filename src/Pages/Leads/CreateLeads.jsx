@@ -27,7 +27,7 @@ import Option from "../../Options/Options";
 import CustomTextField from "../../Components/CustomTextField";
 
 export const CreateLeads = (props) => {
-  const { setOpenPopup, getleads, descriptionMenuData, assigned } = props;
+  const { setOpenPopup, getleads, descriptionMenuData } = props;
   const [open, setOpen] = useState(false);
   const [checked, setChecked] = useState(false);
   const [leads, setLeads] = useState({
@@ -36,6 +36,7 @@ export const CreateLeads = (props) => {
   const [referenceData, setReferenceData] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [assigned, setAssigned] = useState([]);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -76,7 +77,24 @@ export const CreateLeads = (props) => {
 
   useEffect(() => {
     getReference();
+    getAssignedData();
   }, []);
+
+  const getAssignedData = async () => {
+    try {
+      setOpen(true);
+      const res = await LeadServices.getAllAssignedUser();
+      // Filter the data based on the ALLOWED_ROLES
+      const filteredData = res.data.filter((employee) =>
+        employee.groups.some((group) => Option.ALLOWED_ROLES.includes(group))
+      );
+      setAssigned(filteredData);
+      setOpen(false);
+    } catch (error) {
+      console.log("error", error);
+      setOpen(false);
+    }
+  };
 
   const getReference = async () => {
     try {
