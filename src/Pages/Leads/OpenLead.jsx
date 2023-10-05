@@ -62,7 +62,6 @@ export const OpenLead = () => {
   const [pinnedRows, setPinnedRows] = useState([]);
   const [openModalPI, setOpenModalPI] = useState(false);
   const [leadsByID, setLeadsByID] = useState(null);
-  const [assigned, setAssigned] = useState([]);
   const [referenceData, setReferenceData] = useState([]);
   const [descriptionMenuData, setDescriptionMenuData] = useState([]);
   const [product, setProduct] = useState([]);
@@ -70,7 +69,7 @@ export const OpenLead = () => {
   const tokenData = useSelector((state) => state.auth);
   const users = tokenData.profile;
   const [isPrinting, setIsPrinting] = useState(false);
-
+  const assigned = users.sales_users || [];
   useEffect(() => {
     const beforePrint = () => {
       setIsPrinting(true);
@@ -169,7 +168,6 @@ export const OpenLead = () => {
     getReference();
     getAllSellerAccountsDetails();
     getProduct();
-    getAssignedData();
     getDescriptionNoData();
     getleads();
   }, []);
@@ -209,21 +207,21 @@ export const OpenLead = () => {
     }
   };
 
-  const getAssignedData = async () => {
-    try {
-      setOpen(true);
-      const res = await LeadServices.getAllAssignedUser();
-      // Filter the data based on the ALLOWED_ROLES
-      const filteredData = res.data.filter((employee) =>
-        employee.groups.some((group) => Option.ALLOWED_ROLES.includes(group))
-      );
-      setAssigned(filteredData);
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
-  };
+  // const getAssignedData = async () => {
+  //   try {
+  //     setOpen(true);
+  //     const res = await LeadServices.getAllAssignedUser();
+  //     // Filter the data based on the ALLOWED_ROLES
+  //     const filteredData = res.data.filter((employee) =>
+  //       employee.groups.some((group) => Option.ALLOWED_ROLES.includes(group))
+  //     );
+  //     setAssigned(filteredData);
+  //     setOpen(false);
+  //   } catch (error) {
+  //     console.log("error", error);
+  //     setOpen(false);
+  //   }
+  // };
 
   const getDescriptionNoData = async () => {
     try {
@@ -503,7 +501,7 @@ export const OpenLead = () => {
                   ? "Description"
                   : "",
                 filterQuery === "assigned_to__email"
-                  ? assigned.map((option) => option.email)
+                  ? assigned.map((option) => option)
                   : filterQuery === "references__source"
                   ? referenceData.map((option) => option.source)
                   : filterQuery === "stage"
