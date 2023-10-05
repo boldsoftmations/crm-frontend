@@ -72,6 +72,7 @@ export const IncompleteKycDetails = () => {
   const headers = [
     { label: "ID", key: "id" },
     { label: "NAME", key: "name" },
+    { label: "Assigned To", key: "assigned_to" },
     { label: "PAN NUMBER", key: "pan_number" },
     { label: "GST NUMBER", key: "gst_number" },
     { label: "ADDRESS", key: "address" },
@@ -111,6 +112,7 @@ export const IncompleteKycDetails = () => {
         return {
           id: row.id,
           name: row.name,
+          assigned_to: row.assigned_to,
           pan_number: row.pan_number,
           gst_number: row.gst_number,
           address: row.address,
@@ -305,6 +307,7 @@ export const IncompleteKycDetails = () => {
   const Tableheaders = [
     "ID",
     "NAME",
+    "Assigned To",
     "PAN NO.",
     "GST NO.",
     "CITY",
@@ -315,6 +318,7 @@ export const IncompleteKycDetails = () => {
   const Tabledata = companyData.map((value) => ({
     id: value.id,
     name: value.name,
+    assigned_to: value.assigned_to,
     pan_number: value.pan_number,
     gst_number: value.gst_number,
     city: value.city,
