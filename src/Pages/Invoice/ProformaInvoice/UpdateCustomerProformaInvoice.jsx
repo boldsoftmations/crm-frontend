@@ -95,25 +95,7 @@ export const UpdateCustomerProformaInvoice = (props) => {
   useEffect(() => {
     getProduct();
     getCustomerProformaInvoiceDetailsByID();
-    getAllCompanyDetailsByID();
-    getContactsDetailsByID();
   }, []);
-
-  const getContactsDetailsByID = async () => {
-    try {
-      setOpen(true);
-      const [contactResponse, warehouseResponse] = await Promise.all([
-        CustomerServices.getCompanyDataByIdWithType(idForEdit, "contacts"),
-        CustomerServices.getCompanyDataByIdWithType(idForEdit, "warehouse"),
-      ]);
-      setContactOptions(contactResponse.data.contacts);
-      setWarehouseOptions(warehouseResponse.data.warehouse);
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("company data by id error", err);
-    }
-  };
 
   const getProduct = async () => {
     try {
@@ -136,7 +118,6 @@ export const UpdateCustomerProformaInvoice = (props) => {
       setCustomerPIdataByID(response.data);
       setPaymentTermData(response.data.payment_terms);
       setDeliveryTermData(response.data.delivery_terms);
-      getAllCompanyDetailsByID(response.data.company);
 
       var arr = [];
       var arr = response.data.products.map((fruit) => ({
@@ -150,7 +131,7 @@ export const UpdateCustomerProformaInvoice = (props) => {
         unit: fruit.unit,
       }));
       setProducts(arr);
-
+      getAllCompanyDetailsByID(response.data.company);
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -158,12 +139,19 @@ export const UpdateCustomerProformaInvoice = (props) => {
     }
   };
 
-  const getAllCompanyDetailsByID = async (value) => {
+  const getAllCompanyDetailsByID = async (id) => {
     try {
       setOpen(true);
-      const data = value;
-      const response = await CustomerServices.getCompanyDataById(data);
-      setCustomerData(response.data);
+      const COMPANY_ID = id;
+      const [customerResponse, contactResponse, warehouseResponse] =
+        await Promise.all([
+          await CustomerServices.getCompanyDataById(COMPANY_ID),
+          CustomerServices.getCompanyDataByIdWithType(COMPANY_ID, "contacts"),
+          CustomerServices.getCompanyDataByIdWithType(COMPANY_ID, "warehouse"),
+        ]);
+      setCustomerData(customerResponse.data);
+      setContactOptions(contactResponse.data.contacts);
+      setWarehouseOptions(warehouseResponse.data.warehouse);
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -300,7 +288,7 @@ export const UpdateCustomerProformaInvoice = (props) => {
   const handleCloseSnackbar = () => {
     setError(null);
   };
-  console.log("error", error);
+
   return (
     <div>
       <CustomLoader open={open} />
@@ -425,9 +413,7 @@ export const UpdateCustomerProformaInvoice = (props) => {
                 {contactOptions &&
                   contactOptions.map((option, i) => (
                     <MenuItem key={i} value={option}>
-                      {option
-                        ? `${option.name} - ${option.contact}`
-                        : "Please First Select Company"}
+                      {option ? option.name : "Please First Select Company"}
                     </MenuItem>
                   ))}
               </Select>
