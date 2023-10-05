@@ -16,6 +16,7 @@ export const ProductForecastViewAll = () => {
     userData.groups.includes("Director") ||
     userData.groups.includes("Accounts") ||
     userData.groups.includes("Sales Executive") ||
+    userData.groups.includes("Sales Manager without Leads") ||
     userData.groups.includes("Sales Manager") ||
     userData.groups.includes("Sales Deputy Manager") ||
     userData.groups.includes("Sales Assistant Deputy Manager") ||

@@ -46,14 +46,14 @@ export const ClosedLead = () => {
   const [openModalFollowup, setOpenModalFollowup] = useState(false);
   const [openModalPotential, setOpenModalPotential] = useState(false);
   const [leadsByID, setLeadsByID] = useState(null);
-  const [assigned, setAssigned] = useState([]);
+
   const [referenceData, setReferenceData] = useState([]);
   const [descriptionMenuData, setDescriptionMenuData] = useState([]);
   const [product, setProduct] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const tokenData = useSelector((state) => state.auth);
   const users = tokenData.profile;
-
+  const assigned = users.sales_users || [];
   const handleInputChange = () => {
     setSearchQuery(searchQuery);
     getSearchData(filterQuery, filterSelectedQuery, searchQuery);
@@ -94,7 +94,6 @@ export const ClosedLead = () => {
     getReference();
     getAllSellerAccountsDetails();
     getProduct();
-    getAssignedData();
     getDescriptionNoData();
     getleads();
   }, []);
@@ -130,22 +129,6 @@ export const ClosedLead = () => {
       setOpen(false);
     } catch (err) {
       console.error("error potential", err);
-      setOpen(false);
-    }
-  };
-
-  const getAssignedData = async () => {
-    try {
-      setOpen(true);
-      const res = await LeadServices.getAllAssignedUser();
-      // Filter the data based on the ALLOWED_ROLES
-      const filteredData = res.data.filter((employee) =>
-        employee.groups.some((group) => Option.ALLOWED_ROLES.includes(group))
-      );
-      setAssigned(filteredData);
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
       setOpen(false);
     }
   };
@@ -429,7 +412,7 @@ export const ClosedLead = () => {
                   ? "Description"
                   : "",
                 filterQuery === "assigned_to__email"
-                  ? assigned.map((option) => option.email)
+                  ? assigned.map((option) => option)
                   : filterQuery === "references__source"
                   ? referenceData.map((option) => option.source)
                   : filterQuery === "stage"
