@@ -21,12 +21,12 @@ export const UpdateContactDetails = (props) => {
     designation: "",
     inputValue: {
       name: "",
-      phone: "",
-      phone2: "",
+      contact: "",
+      alternate_contact: "",
       email: "",
       alternate_email: "",
       pan_number: "",
-      aadhar_no: "",
+      aadhaar: "",
     },
     errMsg: "",
   });
@@ -65,9 +65,12 @@ export const UpdateContactDetails = (props) => {
     e.preventDefault();
     try {
       setState((prevState) => ({ ...prevState, open: true }));
-      const { phone, phone2, ...rest } = state.inputValue;
-      const contact1 = phone.length === 12 ? `+${phone}` : phone;
-      const contact2 = phone2.length === 12 ? `+${phone2}` : phone2;
+      const { contact, alternate_contact, ...rest } = state.inputValue;
+      const contact1 = contact.length === 12 ? `+${contact}` : contact;
+      const contact2 =
+        alternate_contact.length === 12
+          ? `+${alternate_contact}`
+          : alternate_contact;
 
       const req = {
         ...rest,
@@ -154,11 +157,11 @@ export const UpdateContactDetails = (props) => {
                 width: "250px",
               }}
               country={"in"}
-              value={state.inputValue.phone}
+              value={state.inputValue.contact}
               onChange={(newPhone) =>
                 setState((prevState) => ({
                   ...prevState,
-                  inputValue: { ...prevState.inputValue, phone: newPhone },
+                  inputValue: { ...prevState.inputValue, contact: newPhone },
                 }))
               }
             />
@@ -171,11 +174,14 @@ export const UpdateContactDetails = (props) => {
                 width: "250px",
               }}
               country={"in"}
-              value={state.inputValue.phone2}
+              value={state.inputValue.alternate_contact}
               onChange={(newPhone) =>
                 setState((prevState) => ({
                   ...prevState,
-                  inputValue: { ...prevState.inputValue, phone2: newPhone },
+                  inputValue: {
+                    ...prevState.inputValue,
+                    alternate_contact: newPhone,
+                  },
                 }))
               }
             />
@@ -234,10 +240,10 @@ export const UpdateContactDetails = (props) => {
                 }
                 onChange={handleInputChange}
                 size="small"
-                name="aadhar_no"
+                name="aadhaar"
                 label="Aadhar No."
                 variant="outlined"
-                value={state.inputValue.aadhar_no}
+                value={state.inputValue.aadhaar}
                 helperText={
                   "Applicable Only if designation is Owner/Partner/Director"
                 }

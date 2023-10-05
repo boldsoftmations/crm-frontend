@@ -20,6 +20,7 @@ import CustomTextField from "../../../Components/CustomTextField";
 const KycUpdate = ({ recordForEdit }) => {
   const [inputValue, setInputValue] = useState([]);
   const [contactData, setContactData] = useState([]);
+  const [allCompetitors, setAllCompetitors] = useState([]);
   const [open, setOpen] = useState(false);
 
   // Fetch company details based on the active tab when the component mounts or the active tab changes
@@ -28,6 +29,23 @@ const KycUpdate = ({ recordForEdit }) => {
       getAllCompanyDetailsByID();
     }
   }, [recordForEdit]);
+
+  useEffect(() => {
+    getCompetitors();
+  }, []);
+
+  const getCompetitors = async () => {
+    try {
+      setOpen(true);
+      const response = await CustomerServices.getAllPaginateCompetitors("all");
+      setAllCompetitors(response.data);
+
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      console.log("Error", err);
+    }
+  };
 
   // API call to fetch company details based on type
   const getAllCompanyDetailsByID = async () => {
@@ -338,7 +356,7 @@ const KycUpdate = ({ recordForEdit }) => {
                 multiple
                 limitTags={3}
                 id="multiple-limit-tags"
-                options={Option.MainDistribution.map((option) => option.label)}
+                options={allCompetitors.map((option) => option.name)}
                 freeSolo
                 renderTags={(value, getTagProps) =>
                   value.map((option, index) => (

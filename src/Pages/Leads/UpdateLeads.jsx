@@ -29,6 +29,7 @@ import { ViewAllPotential } from "../Potential/ViewAllPotential";
 import { LeadActivity } from "../FollowUp/LeadActivity";
 import Option from "../../Options/Options";
 import CustomTextField from "../../Components/CustomTextField";
+import CustomerServices from "../../services/CustomerService";
 
 export const UpdateLeads = (props) => {
   // Destructure props
@@ -49,6 +50,7 @@ export const UpdateLeads = (props) => {
   const [followup, setFollowup] = useState(null);
   const [potential, setPotential] = useState(null);
   const [error, setError] = useState(null);
+  const [allCompetitors, setAllCompetitors] = useState([]);
 
   // Helper function to get target date
   const getTargetDate = () => {
@@ -58,7 +60,6 @@ export const UpdateLeads = (props) => {
   };
 
   // Event handlers
-
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     let updatedValue = value;
@@ -103,6 +104,23 @@ export const UpdateLeads = (props) => {
   useEffect(() => {
     if (leadsByID) getLeadsData(leadsByID);
   }, []);
+
+  useEffect(() => {
+    getCompetitors();
+  }, []);
+
+  const getCompetitors = async () => {
+    try {
+      setOpen(true);
+      const response = await CustomerServices.getAllPaginateCompetitors("all");
+      setAllCompetitors(response.data);
+
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      console.log("Error", err);
+    }
+  };
 
   const getLeadsData = async (recordForEdit) => {
     try {
@@ -845,7 +863,7 @@ export const UpdateLeads = (props) => {
                 multiple
                 limitTags={3}
                 id="multiple-limit-tags"
-                options={Option.MainDistribution.map((option) => option.label)}
+                options={allCompetitors.map((option) => option.name)}
                 freeSolo
                 renderTags={(value, getTagProps) =>
                   value.map((option, index) => (

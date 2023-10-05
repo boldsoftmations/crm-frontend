@@ -17,13 +17,13 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  TextField,
 } from "@mui/material";
 import { DailyProfitableReports } from "./DailyProfitableReports/DailyProfitableReports";
 import DashboardService from "../../services/DashboardService";
 import { useSelector } from "react-redux";
 import { Popup } from "../../Components/Popup";
 import { DescriptionWiseTurnover } from "./DescriptionWiseTurnover/DescriptionWiseTurnover";
+import CustomTextField from "../../Components/CustomTextField";
 
 export function Dashboard() {
   const [open, setOpen] = useState(false);
@@ -118,7 +118,7 @@ export function Dashboard() {
     { label: "Current Month Sales(Finish Good)" },
     { label: "Current Month Sales(Raw Material)" },
     { label: "Sales Person Summary" },
-    { label: "Product Wise Turnover" },
+    { label: "Forecast Turnover" },
     { label: "Description Wise Turnover" },
     ...(userData.email === "devannsh@glutape.com" ||
     userData.email === "mahesh@glutaoe.com" ||
@@ -374,7 +374,7 @@ export function Dashboard() {
         >
           <Grid container spacing={2}>
             <Grid item xs={5} sm={5} md={5} lg={5}>
-              <TextField
+              <CustomTextField
                 fullWidth
                 label="Start Date"
                 variant="outlined"
@@ -388,7 +388,7 @@ export function Dashboard() {
               />
             </Grid>
             <Grid item xs={5} sm={5} md={5} lg={5}>
-              <TextField
+              <CustomTextField
                 fullWidth
                 label="End Date"
                 variant="outlined"
