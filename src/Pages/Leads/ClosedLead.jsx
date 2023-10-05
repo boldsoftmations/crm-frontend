@@ -91,12 +91,23 @@ export const ClosedLead = () => {
   );
 
   useEffect(() => {
+    getReference();
     getAllSellerAccountsDetails();
     getProduct();
     getAssignedData();
     getDescriptionNoData();
     getleads();
   }, []);
+
+  const getReference = async () => {
+    try {
+      const res = await LeadServices.getAllRefernces();
+
+      setReferenceData(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const getAllSellerAccountsDetails = async () => {
     try {
@@ -180,16 +191,16 @@ export const ClosedLead = () => {
       }
 
       if (response) {
-        // Assuming response.data.references_list is the array you are referring to
-        const references_list = response.data.references_list;
+        // // Assuming response.data.references_list is the array you are referring to
+        // const references_list = response.data.references_list;
 
-        // Filter out null values from references_list
-        const filteredReferences = references_list.filter((ref) => ref != null);
+        // // Filter out null values from references_list
+        // const filteredReferences = references_list.filter((ref) => ref != null);
 
-        // Only update state if filteredReferences is not empty
-        if (filteredReferences.length > 0) {
-          setReferenceData(filteredReferences); // Assuming you have a state variable called references
-        }
+        // // Only update state if filteredReferences is not empty
+        // if (filteredReferences.length > 0) {
+        //   setReferenceData(filteredReferences); // Assuming you have a state variable called references
+        // }
         setLeads(response.data.results);
         setpageCount(Math.ceil(response.data.count / 25));
       }
@@ -420,7 +431,7 @@ export const ClosedLead = () => {
                 filterQuery === "assigned_to__email"
                   ? assigned.map((option) => option.email)
                   : filterQuery === "references__source"
-                  ? referenceData.map((option) => option)
+                  ? referenceData.map((option) => option.source)
                   : filterQuery === "stage"
                   ? StageOptions.map((option) => option.value)
                   : filterQuery === "description__name"

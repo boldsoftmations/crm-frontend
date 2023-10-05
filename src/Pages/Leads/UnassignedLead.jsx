@@ -89,6 +89,7 @@ export const UnassignedLead = () => {
   };
 
   useEffect(() => {
+    getReference();
     fetchData();
     getUnassigned();
     getAssignedData();
@@ -99,6 +100,16 @@ export const UnassignedLead = () => {
       handlePageClick(null, 1);
     }
   }, [filterSelectedQuery]);
+
+  const getReference = async () => {
+    try {
+      const res = await LeadServices.getAllRefernces();
+
+      setReferenceData(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const fetchData = async () => {
     setOpen(true);
@@ -167,16 +178,16 @@ export const UnassignedLead = () => {
       }
 
       if (response) {
-        // Assuming response.data.references_list is the array you are referring to
-        const references_list = response.data.references_list;
+        // // Assuming response.data.references_list is the array you are referring to
+        // const references_list = response.data.references_list;
 
-        // Filter out null values from references_list
-        const filteredReferences = references_list.filter((ref) => ref != null);
+        // // Filter out null values from references_list
+        // const filteredReferences = references_list.filter((ref) => ref != null);
 
-        // Only update state if filteredReferences is not empty
-        if (filteredReferences.length > 0) {
-          setReferenceData(filteredReferences); // Assuming you have a state variable called references
-        }
+        // // Only update state if filteredReferences is not empty
+        // if (filteredReferences.length > 0) {
+        //   setReferenceData(filteredReferences); // Assuming you have a state variable called references
+        // }
 
         setLeads(response.data.results);
         const total = response.data.count;
@@ -363,8 +374,8 @@ export const UnassignedLead = () => {
                     }
                   >
                     {referenceData.map((option) => (
-                      <MenuItem key={option.id} value={option}>
-                        {option}
+                      <MenuItem key={option.id} value={option.source}>
+                        {option.source}
                       </MenuItem>
                     ))}
                   </Select>

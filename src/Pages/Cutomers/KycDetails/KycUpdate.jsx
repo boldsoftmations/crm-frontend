@@ -18,10 +18,19 @@ import CustomerServices from "../../../services/CustomerService";
 import CustomTextField from "../../../Components/CustomTextField";
 
 const KycUpdate = ({ recordForEdit }) => {
-  const [inputValue, setInputValue] = useState([]);
   const [contactData, setContactData] = useState([]);
   const [allCompetitors, setAllCompetitors] = useState([]);
   const [open, setOpen] = useState(false);
+  const currentDate = new Date().toISOString().split("T")[0];
+  const [inputValue, setInputValue] = useState({
+    purchase_decision_maker: "",
+    birth_date: "",
+    marital_status: "",
+    anniversary_date: "",
+  });
+
+  // State to store data for each purchase_decision_maker
+  const [decisionMakerData, setDecisionMakerData] = useState({});
 
   // Fetch company details based on the active tab when the component mounts or the active tab changes
   useEffect(() => {
@@ -66,18 +75,44 @@ const KycUpdate = ({ recordForEdit }) => {
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    const updatedValue =
-      name === "gst_number" || name === "pan_number"
-        ? value.toUpperCase()
-        : value;
-    setInputValue({ ...inputValue, [name]: updatedValue });
+    setInputValue((prevState) => ({ ...prevState, [name]: value }));
+
+    // If there's a selected purchase_decision_maker, update decisionMakerData
+    if (inputValue.purchase_decision_maker) {
+      setDecisionMakerData((prevData) => ({
+        ...prevData,
+        [inputValue.purchase_decision_maker]: {
+          ...prevData[inputValue.purchase_decision_maker],
+          [name]: value,
+        },
+      }));
+    }
   };
 
   const handleSelectChange = (name, value) => {
-    setInputValue({
-      ...inputValue,
-      [name]: value,
-    });
+    if (name === "purchase_decision_maker") {
+      // Save current data before switching
+      const currentData = {
+        ...inputValue,
+      };
+      delete currentData.purchase_decision_maker; // We don't want to store the decision maker's name in their data
+      setDecisionMakerData((prevData) => ({
+        ...prevData,
+        [inputValue.purchase_decision_maker]: currentData,
+      }));
+
+      // Populate fields based on the new decision maker
+      const newData = decisionMakerData[value] || {};
+      setInputValue((prevState) => ({
+        ...prevState, // Retain other fields
+        purchase_decision_maker: value,
+        birth_date: newData.birth_date || "",
+        marital_status: newData.marital_status || "",
+        anniversary_date: newData.anniversary_date || "",
+      }));
+    } else {
+      setInputValue((prevState) => ({ ...prevState, [name]: value }));
+    }
   };
 
   const UpdateCompanyDetails = async (e) => {
@@ -105,6 +140,7 @@ const KycUpdate = ({ recordForEdit }) => {
         category: inputValue.category || [],
         main_distribution: inputValue.main_distribution || [],
         birth_date: inputValue.birth_date || null,
+        marital_status: inputValue.marital_status || null,
         anniversary_date: inputValue.anniversary_date || null,
       };
       await CustomerServices.updateCompanyData(recordForEdit, req);
@@ -223,8 +259,12 @@ const KycUpdate = ({ recordForEdit }) => {
               InputLabelProps={{
                 shrink: true,
               }}
+              inputProps={{
+                max: currentDate, // restrict to current and previous dates only
+              }}
             />
           </Grid>
+
           <Grid item xs={12} sm={6}>
             <Autocomplete
               style={{
@@ -234,7 +274,7 @@ const KycUpdate = ({ recordForEdit }) => {
               onChange={(event, value) =>
                 handleSelectChange("marital_status", value)
               }
-              value={inputValue.handleSelectChange || ""}
+              value={inputValue.marital_status || ""}
               options={Option.Marital_Status_Options.map((options) => options)}
               getOptionLabel={(option) => option}
               renderInput={(params) => (
@@ -249,12 +289,15 @@ const KycUpdate = ({ recordForEdit }) => {
                 type="date"
                 name="anniversary_date"
                 size="small"
-                label="Aniversary Date"
+                label="Anniversary Date"
                 variant="outlined"
                 value={inputValue.anniversary_date || ""}
                 onChange={handleInputChange}
                 InputLabelProps={{
                   shrink: true,
+                }}
+                inputProps={{
+                  max: currentDate, // restrict to current and previous dates only
                 }}
               />
             </Grid>
