@@ -127,15 +127,15 @@ export const CompanyDetails = () => {
           est_date: row.est_date,
           total_sales_turnover: row.total_sales_turnover,
           type: row.type,
-          contact_name: row.contacts.map((contact) => contact.name).join(", "),
-          contact: row.contacts.map((contact) => contact.contact).join(", "),
-          alternate_contact: row.contacts
-            .map((contact) => contact.alternate_contact)
-            .join(", "),
-          email: row.contacts.map((contact) => contact.email).join(", "),
-          alternate_email: row.contacts
-            .map((contact) => contact.alternate_email)
-            .join(", "),
+          // contact_name: row.contacts.map((contact) => contact.name).join(", "),
+          // contact: row.contacts.map((contact) => contact.contact).join(", "),
+          // alternate_contact: row.contacts
+          //   .map((contact) => contact.alternate_contact)
+          //   .join(", "),
+          // email: row.contacts.map((contact) => contact.email).join(", "),
+          // alternate_email: row.contacts
+          //   .map((contact) => contact.alternate_email)
+          //   .join(", "),
         };
       });
       console.log("data", data);
