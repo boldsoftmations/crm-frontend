@@ -99,7 +99,8 @@ export const BankDetails = ({ recordForEdit }) => {
             </h3>
           </Box>
           <Box flexGrow={0.5} align="right">
-            {userData.groups.toString() === "Accounts" && (
+            {(userData.groups.includes("Accounts") ||
+              userData.groups.includes("Director")) && (
               <Button
                 onClick={() => setOpenPopup2(true)}
                 variant="contained"
@@ -154,7 +155,8 @@ export const BankDetails = ({ recordForEdit }) => {
                         {row.branch}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {userData.groups.toString() === "Accounts" && (
+                        {(userData.groups.includes("Accounts") ||
+                          userData.groups.includes("Director")) && (
                           <Button
                             variant="contained"
                             onClick={() => openInPopup(row.id)}
