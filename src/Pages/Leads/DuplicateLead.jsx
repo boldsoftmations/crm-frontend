@@ -25,21 +25,16 @@ import "../CommonStyle.css";
 import { CreateLeads } from "./CreateLeads";
 import { UpdateLeads } from "./UpdateLeads";
 import { Popup } from "../../Components/Popup";
-import ProductService from "../../services/ProductService";
 import { ErrorMessage } from "../../Components/ErrorMessage/ErrorMessage";
 import { CustomPagination } from "../../Components/CustomPagination";
 import { CustomLoader } from "../../Components/CustomLoader";
 import { BulkLeadAssign } from "./BulkLeadAssign";
-import { useDispatch, useSelector } from "react-redux";
-import InvoiceServices from "../../services/InvoiceService";
-import { getSellerAccountData } from "../../Redux/Action/Action";
+import { useSelector } from "react-redux";
 import { LeadActivityCreate } from "../FollowUp/LeadActivityCreate";
 import { PotentialCreate } from "../Potential/PotentialCreate";
-import Option from "../../Options/Options";
 import CustomTextField from "../../Components/CustomTextField";
 
 export const DuplicateLead = () => {
-  const dispatch = useDispatch();
   const [leads, setLeads] = useState([]);
   const [open, setOpen] = useState(false);
   const [filterQuery, setFilterQuery] = useState("gst_number");
@@ -53,10 +48,6 @@ export const DuplicateLead = () => {
   const [openModalFollowup, setOpenModalFollowup] = useState(false);
   const [openModalPotential, setOpenModalPotential] = useState(false);
   const [leadsByID, setLeadsByID] = useState(null);
-  const [assigned, setAssigned] = useState([]);
-  const [referenceData, setReferenceData] = useState([]);
-  const [descriptionMenuData, setDescriptionMenuData] = useState([]);
-  const [product, setProduct] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [selectedRows, setSelectedRows] = useState([]);
   const tokenData = useSelector((state) => state.auth);
@@ -109,73 +100,8 @@ export const DuplicateLead = () => {
   };
 
   useEffect(() => {
-    getAllSellerAccountsDetails();
-    getProduct();
-    getAssignedData();
-    getReference();
-    getDescriptionNoData();
     getleads();
   }, []);
-
-  const getAllSellerAccountsDetails = async () => {
-    try {
-      setOpen(true);
-      const response = await InvoiceServices.getAllPaginateSellerAccountData(
-        "all"
-      );
-      dispatch(getSellerAccountData(response.data));
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-    }
-  };
-
-  const getProduct = async () => {
-    try {
-      setOpen(true);
-      const res = await ProductService.getAllProduct();
-      setProduct(res.data);
-      setOpen(false);
-    } catch (err) {
-      console.error("error potential", err);
-      setOpen(false);
-    }
-  };
-
-  const getAssignedData = async () => {
-    try {
-      setOpen(true);
-      const res = await LeadServices.getAllAssignedUser();
-      // Filter the data based on the ALLOWED_ROLES
-      const filteredData = res.data.filter((employee) =>
-        employee.groups.some((group) => Option.ALLOWED_ROLES.includes(group))
-      );
-      setAssigned(filteredData);
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
-  };
-
-  const getReference = async () => {
-    try {
-      const res = await LeadServices.getAllRefernces();
-
-      setReferenceData(res.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const getDescriptionNoData = async () => {
-    try {
-      const res = await ProductService.getNoDescription();
-      setDescriptionMenuData(res.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
 
   const getleads = async () => {
     try {
@@ -501,13 +427,7 @@ export const DuplicateLead = () => {
         openPopup={openPopup2}
         setOpenPopup={setOpenPopup2}
       >
-        <CreateLeads
-          assigned={assigned}
-          referenceData={referenceData}
-          descriptionMenuData={descriptionMenuData}
-          getleads={getleads}
-          setOpenPopup={setOpenPopup2}
-        />
+        <CreateLeads getleads={getleads} setOpenPopup={setOpenPopup2} />
       </Popup>
       <Popup
         fullScreen={true}
@@ -516,10 +436,7 @@ export const DuplicateLead = () => {
         setOpenPopup={setOpenPopup}
       >
         <UpdateLeads
-          assigned={assigned}
-          descriptionMenuData={descriptionMenuData}
           leadsByID={leadsByID}
-          product={product}
           setOpenPopup={setOpenPopup}
           getAllleadsData={getleads}
         />
@@ -546,7 +463,6 @@ export const DuplicateLead = () => {
         <PotentialCreate
           getLeadByID={null}
           leadsByID={leadsByID}
-          product={product}
           setOpenModal={setOpenModalPotential}
         />
       </Popup>

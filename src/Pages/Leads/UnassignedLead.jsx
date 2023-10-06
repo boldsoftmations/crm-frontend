@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Grid,
   Button,
@@ -25,12 +25,9 @@ import ClearIcon from "@mui/icons-material/Clear";
 import "../CommonStyle.css";
 import { Popup } from "../../Components/Popup";
 import { UpdateLeads } from "./UpdateLeads";
-import { ErrorMessage } from "../../Components/ErrorMessage/ErrorMessage";
 import { CustomSearch } from "../../Components/CustomSearch";
 import { CustomLoader } from "../../Components/CustomLoader";
 import { CustomPagination } from "../../Components/CustomPagination";
-import ProductService from "../../services/ProductService";
-import { useSelector } from "react-redux";
 import Option from "../../Options/Options";
 import CustomTextField from "../../Components/CustomTextField";
 
@@ -40,20 +37,15 @@ export const UnassignedLead = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [filterQuery, setFilterQuery] = useState("");
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
-  const errRef = useRef();
-  const [errMsg, setErrMsg] = useState("");
   const [assign, setAssign] = useState("");
   const [assigned, setAssigned] = useState([]);
   const [pageCount, setpageCount] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
   const [openPopup, setOpenPopup] = useState(false);
   const [recordForEdit, setRecordForEdit] = useState(null);
   const [referenceData, setReferenceData] = useState([]);
-  const [descriptionMenuData, setDescriptionMenuData] = useState([]);
-  const [product, setProduct] = useState([]);
   const [leadsByID, setLeadsByID] = useState(null);
   const [selectedRows, setSelectedRows] = useState([]);
-  const userData = useSelector((state) => state.auth.profile);
 
   const handleInputChange = (event) => {
     setFilterSelectedQuery(event.target.value);
@@ -88,43 +80,25 @@ export const UnassignedLead = () => {
     setFilterSelectedQuery("");
   };
 
+  const FetchData = async (value) => {
+    try {
+      setOpen(true);
+      setFilterQuery(value);
+      if (value.includes("references__source")) {
+        const res = await LeadServices.getAllRefernces();
+        setReferenceData(res.data);
+      }
+      setOpen(false);
+    } catch (error) {
+      console.log("error", error);
+      setOpen(false);
+    }
+  };
+
   useEffect(() => {
-    getReference();
-    fetchData();
     getUnassigned();
     getAssignedData();
   }, []);
-
-  useEffect(() => {
-    if (filterSelectedQuery === "") {
-      handlePageClick(null, 1);
-    }
-  }, [filterSelectedQuery]);
-
-  const getReference = async () => {
-    try {
-      const res = await LeadServices.getAllRefernces();
-
-      setReferenceData(res.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const fetchData = async () => {
-    setOpen(true);
-    try {
-      const [descriptionResponse, productResponse] = await Promise.all([
-        ProductService.getNoDescription(),
-        ProductService.getAllProduct(),
-      ]);
-      setDescriptionMenuData(descriptionResponse.data);
-      setProduct(productResponse.data);
-      getUnassigned();
-    } catch (error) {
-      handleFetchError(error);
-    }
-  };
 
   const getAssignedData = async () => {
     try {
@@ -142,25 +116,6 @@ export const UnassignedLead = () => {
     }
   };
 
-  const handleFetchError = (error) => {
-    setOpen(false);
-    if (!error.response) {
-      setErrMsg(
-        "Sorry, You Are Not Allowed to Access This Page. Please contact the admin."
-      );
-    } else if (error.response.status === 400) {
-      setErrMsg(
-        error.response.data.errors.name ||
-          error.response.data.errors.non_field_errors
-      );
-    } else if (error.response.status === 401) {
-      setErrMsg(error.response.data.errors.code);
-    } else {
-      setErrMsg("Server Error");
-    }
-    errRef.current.focus();
-  };
-
   // Main function to get unassigned leads
   const getUnassigned = async () => {
     try {
@@ -173,22 +128,13 @@ export const UnassignedLead = () => {
           filterQuery,
           filterSelectedQuery
         );
+      } else if (currentPage) {
+        response = await LeadServices.getAllPaginateUnassigned(currentPage);
       } else {
         response = await LeadServices.getAllUnassignedData();
       }
 
       if (response) {
-        // // Assuming response.data.references_list is the array you are referring to
-        // const references_list = response.data.references_list;
-
-        // // Filter out null values from references_list
-        // const filteredReferences = references_list.filter((ref) => ref != null);
-
-        // // Only update state if filteredReferences is not empty
-        // if (filteredReferences.length > 0) {
-        //   setReferenceData(filteredReferences); // Assuming you have a state variable called references
-        // }
-
         setLeads(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
@@ -314,7 +260,6 @@ export const UnassignedLead = () => {
     <>
       <CustomLoader open={open} />
       <Grid item xs={12}>
-        <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
           <Box display="flex">
             <Box flexGrow={1}>
@@ -326,7 +271,7 @@ export const UnassignedLead = () => {
                   name="values"
                   label="Fliter By"
                   value={filterQuery}
-                  onChange={(event) => setFilterQuery(event.target.value)}
+                  onChange={(event) => FetchData(event.target.value)}
                 >
                   {FilterOptions.map((option, i) => (
                     <MenuItem key={i} value={option.value}>
@@ -516,11 +461,8 @@ export const UnassignedLead = () => {
       >
         <UpdateLeads
           leadsByID={leadsByID}
-          assigned={assigned}
-          descriptionMenuData={descriptionMenuData}
           setOpenPopup={setOpenPopup}
           getAllleadsData={getUnassigned}
-          product={product}
         />
       </Popup>
       <Popup

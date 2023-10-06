@@ -25,9 +25,10 @@ import { CustomLoader } from "./../../Components/CustomLoader";
 import LeadServices from "../../services/LeadService";
 import Option from "../../Options/Options";
 import CustomTextField from "../../Components/CustomTextField";
+import ProductService from "../../services/ProductService";
 
 export const CreateLeads = (props) => {
-  const { setOpenPopup, getleads, descriptionMenuData } = props;
+  const { setOpenPopup, getleads } = props;
   const [open, setOpen] = useState(false);
   const [checked, setChecked] = useState(false);
   const [leads, setLeads] = useState({
@@ -37,6 +38,7 @@ export const CreateLeads = (props) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [assigned, setAssigned] = useState([]);
+  const [descriptionMenuData, setDescriptionMenuData] = useState([]);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -76,9 +78,19 @@ export const CreateLeads = (props) => {
   };
 
   useEffect(() => {
+    getDescriptionNoData();
     getReference();
     getAssignedData();
   }, []);
+
+  const getDescriptionNoData = async () => {
+    try {
+      const res = await ProductService.getNoDescription();
+      setDescriptionMenuData(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const getAssignedData = async () => {
     try {

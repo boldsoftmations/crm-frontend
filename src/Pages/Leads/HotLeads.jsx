@@ -25,7 +25,6 @@ import { tableCellClasses } from "@mui/material/TableCell";
 import { styled } from "@mui/material/styles";
 import LeadServices from "../../services/LeadService";
 import "../CommonStyle.css";
-import { CreateLeads } from "./CreateLeads";
 import { UpdateLeads } from "./UpdateLeads";
 import { Popup } from "../../Components/Popup";
 import ProductService from "../../services/ProductService";
@@ -33,19 +32,16 @@ import { ErrorMessage } from "../../Components/ErrorMessage/ErrorMessage";
 import { CustomPagination } from "../../Components/CustomPagination";
 import { CustomLoader } from "../../Components/CustomLoader";
 import { BulkLeadAssign } from "./BulkLeadAssign";
-import { useDispatch, useSelector } from "react-redux";
-import InvoiceServices from "../../services/InvoiceService";
-import { getSellerAccountData } from "../../Redux/Action/Action";
+import { useSelector } from "react-redux";
 import { CustomSearchWithButton } from "../../Components/CustomSearchWithButton";
 import { LeadActivityCreate } from "../FollowUp/LeadActivityCreate";
 import { PotentialCreate } from "../Potential/PotentialCreate";
 import { CreateLeadsProformaInvoice } from "../Invoice/ProformaInvoice/CreateLeadsProformaInvoice";
 import { Helmet } from "react-helmet";
-import Option from "../../Options/Options";
 import CustomTextField from "../../Components/CustomTextField";
+import { CreateLeads } from "./CreateLeads";
 
 export const HotLeads = () => {
-  const dispatch = useDispatch();
   const [leads, setLeads] = useState([]);
   const [open, setOpen] = useState(false);
   const [filterQuery, setFilterQuery] = useState("");
@@ -64,7 +60,6 @@ export const HotLeads = () => {
   const [leadsByID, setLeadsByID] = useState(null);
   const [referenceData, setReferenceData] = useState([]);
   const [descriptionMenuData, setDescriptionMenuData] = useState([]);
-  const [product, setProduct] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const tokenData = useSelector((state) => state.auth);
   const users = tokenData.profile;
@@ -120,7 +115,24 @@ export const HotLeads = () => {
     setSearchQuery("");
     getSearchData(filterQuery, filterSelectedQuery, null); // Pass an empty string as the second parameter
   };
-
+  const FetchData = async (value) => {
+    try {
+      setOpen(true);
+      setFilterQuery(value);
+      if (value.includes("references__source")) {
+        const res = await LeadServices.getAllRefernces();
+        setReferenceData(res.data);
+      }
+      if (value.includes("description__name")) {
+        const res = await ProductService.getNoDescription();
+        setDescriptionMenuData(res.data);
+      }
+      setOpen(false);
+    } catch (error) {
+      console.log("error", error);
+      setOpen(false);
+    }
+  };
   const renderAutocomplete = (label, options, onChange) => (
     <Autocomplete
       sx={{ minWidth: "200px", marginLeft: "1em" }}
@@ -165,56 +177,8 @@ export const HotLeads = () => {
   };
 
   useEffect(() => {
-    getReference();
-    getAllSellerAccountsDetails();
-    getProduct();
-    getDescriptionNoData();
     getleads();
   }, []);
-
-  const getReference = async () => {
-    try {
-      const res = await LeadServices.getAllRefernces();
-
-      setReferenceData(res.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const getAllSellerAccountsDetails = async () => {
-    try {
-      setOpen(true);
-      const response = await InvoiceServices.getAllPaginateSellerAccountData(
-        "all"
-      );
-      dispatch(getSellerAccountData(response.data));
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-    }
-  };
-
-  const getProduct = async () => {
-    try {
-      setOpen(true);
-      const res = await ProductService.getAllProduct();
-      setProduct(res.data);
-      setOpen(false);
-    } catch (err) {
-      console.error("error potential", err);
-      setOpen(false);
-    }
-  };
-
-  const getDescriptionNoData = async () => {
-    try {
-      const res = await ProductService.getNoDescription();
-      setDescriptionMenuData(res.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
 
   const getleads = async () => {
     try {
@@ -452,7 +416,7 @@ export const HotLeads = () => {
                 name="values"
                 label="Fliter By"
                 value={filterQuery}
-                onChange={(event) => setFilterQuery(event.target.value)}
+                onChange={(event) => FetchData(event.target.value)}
               >
                 {FilterOptions.map((option, i) => (
                   <MenuItem key={i} value={option.value}>
@@ -636,13 +600,7 @@ export const HotLeads = () => {
         openPopup={openPopup2}
         setOpenPopup={setOpenPopup2}
       >
-        <CreateLeads
-          assigned={assigned}
-          referenceData={referenceData}
-          descriptionMenuData={descriptionMenuData}
-          getleads={getleads}
-          setOpenPopup={setOpenPopup2}
-        />
+        <CreateLeads getleads={getleads} setOpenPopup={setOpenPopup2} />
       </Popup>
       <Popup
         fullScreen={true}
@@ -651,10 +609,7 @@ export const HotLeads = () => {
         setOpenPopup={setOpenPopup}
       >
         <UpdateLeads
-          assigned={assigned}
-          descriptionMenuData={descriptionMenuData}
           leadsByID={leadsByID}
-          product={product}
           setOpenPopup={setOpenPopup}
           getAllleadsData={getleads}
         />
@@ -681,7 +636,6 @@ export const HotLeads = () => {
         <PotentialCreate
           getLeadByID={null}
           leadsByID={leadsByID}
-          product={product}
           setOpenModal={setOpenModalPotential}
         />
       </Popup>

@@ -30,16 +30,11 @@ import { LeadActivity } from "../FollowUp/LeadActivity";
 import Option from "../../Options/Options";
 import CustomTextField from "../../Components/CustomTextField";
 import CustomerServices from "../../services/CustomerService";
+import ProductService from "../../services/ProductService";
 
 export const UpdateLeads = (props) => {
   // Destructure props
-  const {
-    setOpenPopup,
-    getAllleadsData,
-    descriptionMenuData,
-    product,
-    leadsByID,
-  } = props;
+  const { setOpenPopup, getAllleadsData, leadsByID } = props;
   // State variables
   const [open, setOpen] = useState(false);
   const [checked, setChecked] = useState(false);
@@ -51,7 +46,7 @@ export const UpdateLeads = (props) => {
   const [error, setError] = useState(null);
   const [allCompetitors, setAllCompetitors] = useState([]);
   const [assigned, setAssigned] = useState([]);
-
+  const [descriptionMenuData, setDescriptionMenuData] = useState([]);
   // Helper function to get target date
   const getTargetDate = () => {
     const currentDate = new Date();
@@ -106,9 +101,19 @@ export const UpdateLeads = (props) => {
   }, []);
 
   useEffect(() => {
+    getDescriptionNoData();
     getCompetitors();
     getAssignedData();
   }, []);
+
+  const getDescriptionNoData = async () => {
+    try {
+      const res = await ProductService.getNoDescription();
+      setDescriptionMenuData(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const getAssignedData = async () => {
     try {
@@ -949,7 +954,6 @@ export const UpdateLeads = (props) => {
           <ViewAllPotential
             getLeadByID={getLeadsData}
             potential={potential}
-            product={product}
             leadsByID={leadsByID}
           />
         </Grid>
