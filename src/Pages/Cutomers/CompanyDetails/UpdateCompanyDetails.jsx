@@ -63,6 +63,7 @@ export const UpdateCompanyDetails = (props) => {
         "Sales Deputy Manager",
         "Sales Assistant Deputy Manager",
         "Sales Executive",
+        "Sales Manager without Leads",
       ];
       const res = await LeadServices.getAllAssignedUser();
       // Filter the data based on the ALLOWED_ROLES
@@ -186,7 +187,6 @@ export const UpdateCompanyDetails = (props) => {
               onChange={handleInputChange}
             />
           </Grid>
-
           <Grid item xs={12} sm={4}>
             <FormControl fullWidth size="small">
               <InputLabel id="demo-simple-select-label">
@@ -228,7 +228,6 @@ export const UpdateCompanyDetails = (props) => {
               Validate
             </Button>
           </Grid>
-
           <Grid item xs={12} sm={4}>
             <CustomTextField
               fullWidth
@@ -284,40 +283,44 @@ export const UpdateCompanyDetails = (props) => {
               }
             />
           </Grid>
-          {(userData.groups.includes("Director") ||
-            userData.groups.includes("Accounts") ||
-            userData.groups.includes("Sales Manager")) && (
-            <Grid item xs={12} sm={4}>
-              <Autocomplete
-                size="small"
-                value={inputValue.assigned_to || []}
-                onChange={(event, newValue) => {
-                  handleSelectChange("assigned_to", newValue);
-                }}
-                multiple
-                limitTags={3}
-                id="multiple-limit-tags"
-                options={assigned.map((option) => option.email)}
-                freeSolo
-                renderTags={(value, getTagProps) =>
-                  value.map((option, index) => (
-                    <Chip
-                      variant="outlined"
-                      label={option}
-                      {...getTagProps({ index })}
-                    />
-                  ))
-                }
-                renderInput={(params) => (
-                  <CustomTextField
-                    {...params}
-                    label="Assign To"
-                    placeholder="Assign To"
+          <Grid item xs={12} sm={4}>
+            <Autocomplete
+              size="small"
+              disabled={
+                !(
+                  userData.groups.includes("Director") ||
+                  userData.groups.includes("Accounts") ||
+                  userData.groups.includes("Sales Manager")
+                )
+              }
+              value={inputValue.assigned_to || []}
+              onChange={(event, newValue) => {
+                handleSelectChange("assigned_to", newValue);
+              }}
+              multiple
+              limitTags={3}
+              id="multiple-limit-tags"
+              options={assigned.map((option) => option.email)}
+              freeSolo
+              renderTags={(value, getTagProps) =>
+                value.map((option, index) => (
+                  <Chip
+                    variant="outlined"
+                    label={option}
+                    {...getTagProps({ index })}
                   />
-                )}
-              />
-            </Grid>
-          )}
+                ))
+              }
+              renderInput={(params) => (
+                <CustomTextField
+                  {...params}
+                  label="Assign To"
+                  placeholder="Assign To"
+                />
+              )}
+            />
+          </Grid>
+
           <Grid item xs={12}>
             <CustomTextField
               fullWidth

@@ -391,7 +391,7 @@ export const CompanyDetails = () => {
                   Assign Bulk Customer
                 </button>
               )}
-              {userData.groups.toString() !== "Sales" && (
+              {userData.groups.includes("Accounts") && (
                 <button
                   onClick={() => setOpenPopup2(true)}
                   className="btn btn-success"
