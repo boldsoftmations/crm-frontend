@@ -10,6 +10,7 @@ export const DescriptionWiseTurnover = ({
   const Tableheaders = ["Description", "Brand", "Turnover"];
 
   const headers = [
+    { label: "State", key: "state" },
     { label: "Date", key: "date" },
     { label: "Customer", key: "customer_name" },
     { label: "Invoice No", key: "invoice_no" },
@@ -22,6 +23,7 @@ export const DescriptionWiseTurnover = ({
   const data =
     salesData.length > 0 &&
     salesData.map((row, i) => ({
+      state: row.state,
       date: row.date,
       customer_name: row.customer_name,
       invoice_no: row.invoice_no,
