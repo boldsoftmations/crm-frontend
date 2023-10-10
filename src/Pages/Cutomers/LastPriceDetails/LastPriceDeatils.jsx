@@ -61,7 +61,7 @@ export const LastPriceDeatils = ({ recordForEdit }) => {
     date: value.date,
     description: value.description,
     product: value.product,
-    price: value.amount,
+    price: value.rate,
     quantity: value.quantity,
   }));
 
