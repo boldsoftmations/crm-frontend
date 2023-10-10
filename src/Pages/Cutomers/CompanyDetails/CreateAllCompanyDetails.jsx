@@ -7,8 +7,7 @@ import { SecurityChequesDetails } from "./../SecurityCheckDetails/SecurityCheque
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { CustomTabs } from "../../../Components/CustomTabs";
 
-export const CreateAllCompanyDetails = (props) => {
-  const { recordForEdit } = props;
+export const CreateAllCompanyDetails = ({ recordForEdit }) => {
   const [open, setOpen] = useState(false);
   const [bankData, setBankData] = useState([]);
   const [contactData, setContactData] = useState([]);
@@ -63,6 +62,7 @@ export const CreateAllCompanyDetails = (props) => {
                 bankData={bankData}
                 open={open}
                 getAllCompanyDetailsByID={getAllCompanyDetailsByID}
+                recordForEdit={recordForEdit}
               />
             </div>
           )}
@@ -72,6 +72,7 @@ export const CreateAllCompanyDetails = (props) => {
                 contactData={contactData}
                 open={open}
                 getAllCompanyDetailsByID={getAllCompanyDetailsByID}
+                recordForEdit={recordForEdit}
               />
             </div>
           )}
@@ -82,6 +83,7 @@ export const CreateAllCompanyDetails = (props) => {
                 wareHousedata={wareHousedata}
                 open={open}
                 getAllCompanyDetailsByID={getAllCompanyDetailsByID}
+                recordForEdit={recordForEdit}
               />
             </div>
           )}
@@ -91,6 +93,7 @@ export const CreateAllCompanyDetails = (props) => {
                 securityChequedata={securityChequedata}
                 open={open}
                 getAllCompanyDetailsByID={getAllCompanyDetailsByID}
+                recordForEdit={recordForEdit}
               />
             </div>
           )}

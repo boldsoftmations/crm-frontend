@@ -24,6 +24,8 @@ import LeadServices from "../../../services/LeadService";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import Option from "../../../Options/Options";
 import CustomTextField from "../../../Components/CustomTextField";
+import { useDispatch } from "react-redux";
+import { getCompanyID, getCompanyName } from "../../../Redux/Action/Action";
 
 export const CreateCompanyDetails = (props) => {
   const { getAllCompanyDetails } = props;
@@ -32,7 +34,7 @@ export const CreateCompanyDetails = (props) => {
   const [inputValue, setInputValue] = useState([]);
   const [idForEdit, setIdForEdit] = useState("");
   const [assigned, setAssigned] = useState([]);
-
+  const dispatch = useDispatch();
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     const updatedValue =
@@ -70,10 +72,10 @@ export const CreateCompanyDetails = (props) => {
   };
 
   useEffect(() => {
-    getLAssignedData();
+    getAssignedData();
   }, []);
 
-  const getLAssignedData = async (id) => {
+  const getAssignedData = async (id) => {
     try {
       setOpen(true);
       const res = await LeadServices.getAllAssignedUser();
@@ -120,6 +122,7 @@ export const CreateCompanyDetails = (props) => {
       };
       const response = await CustomerServices.createCompanyData(req);
       setIdForEdit(response.data.company_id);
+      getAllCompanyDetailsByID(response.data.company_id);
       // setOpenPopup(false);
       setOpen(false);
       setOpenPopup2(true);
@@ -127,6 +130,18 @@ export const CreateCompanyDetails = (props) => {
     } catch (error) {
       console.log("createing company detail error", error);
       setOpen(false);
+    }
+  };
+
+  const getAllCompanyDetailsByID = async (COMPANY_ID) => {
+    try {
+      setOpen(true);
+      const response = await CustomerServices.getCompanyDataById(COMPANY_ID);
+      dispatch(getCompanyName(response.data.name));
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      console.log("company data by id error", err);
     }
   };
 
