@@ -420,6 +420,17 @@ const KycUpdate = ({ recordForEdit }) => {
               />
             </Grid>
           )}
+          <Grid item xs={12} sm={6}>
+            <CustomTextField
+              fullWidth
+              name="whatsapp_url"
+              size="small"
+              label="Whatsapp URL"
+              placeholder="YYYY"
+              value={inputValue.whatsapp_url || ""}
+              onChange={handleInputChange}
+            />
+          </Grid>
         </Grid>
         <Grid item xs={12} sm={3}>
           <Button
