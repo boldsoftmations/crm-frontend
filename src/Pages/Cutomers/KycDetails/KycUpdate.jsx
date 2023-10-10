@@ -27,6 +27,7 @@ const KycUpdate = ({ recordForEdit }) => {
     birth_date: "",
     marital_status: "",
     anniversary_date: "",
+    religion: "",
   });
 
   // State to store data for each purchase_decision_maker
@@ -142,6 +143,8 @@ const KycUpdate = ({ recordForEdit }) => {
         birth_date: inputValue.birth_date || null,
         marital_status: inputValue.marital_status || null,
         anniversary_date: inputValue.anniversary_date || null,
+        relogion: inputValue.relogion || null,
+        whatsapp_url: inputValue.whatsapp_url || null,
       };
       await CustomerServices.updateCompanyData(recordForEdit, req);
       setOpen(false);
@@ -245,7 +248,21 @@ const KycUpdate = ({ recordForEdit }) => {
               )}
             />
           </Grid>
-
+          <Grid item xs={12} sm={6}>
+            <Autocomplete
+              style={{
+                minWidth: 220,
+              }}
+              size="small"
+              onChange={(event, value) => handleSelectChange("religion", value)}
+              value={inputValue.religion || ""}
+              options={Option.religionsInIndia.map((option) => option)}
+              getOptionLabel={(option) => option}
+              renderInput={(params) => (
+                <CustomTextField {...params} label="Religion" />
+              )}
+            />
+          </Grid>
           <Grid item xs={12} sm={6}>
             <CustomTextField
               fullWidth
