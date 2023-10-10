@@ -443,7 +443,6 @@ const KycUpdate = ({ recordForEdit }) => {
               name="whatsapp_url"
               size="small"
               label="Whatsapp URL"
-              placeholder="YYYY"
               value={inputValue.whatsapp_url || ""}
               onChange={handleInputChange}
             />
