@@ -7,6 +7,7 @@ import { SecurityChequesDetails } from "../SecurityCheckDetails/SecurityChequesD
 import { ForecastView } from "../ForecastDetails/ForecastView";
 import { CustomTabs } from "../../../Components/CustomTabs";
 import KycUpdate from "../KycDetails/KycUpdate";
+import { LastPriceDeatils } from "../LastPriceDetails/LastPriceDeatils";
 
 export const UpdateAllCompanyDetails = (props) => {
   const { setOpenPopup, getAllCompanyDetails, recordForEdit, product } = props;
@@ -24,6 +25,7 @@ export const UpdateAllCompanyDetails = (props) => {
     { label: "Security Cheques" },
     { label: "Forecast" },
     { label: "KYC" },
+    { label: "Last Price" },
   ];
 
   return (
@@ -73,6 +75,11 @@ export const UpdateAllCompanyDetails = (props) => {
           {activeTab === 6 && (
             <div>
               <KycUpdate recordForEdit={recordForEdit} />
+            </div>
+          )}
+          {activeTab === 7 && (
+            <div>
+              <LastPriceDeatils recordForEdit={recordForEdit} />
             </div>
           )}
         </div>

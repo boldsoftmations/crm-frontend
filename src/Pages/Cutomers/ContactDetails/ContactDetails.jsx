@@ -146,6 +146,7 @@ export const ContactDetails = ({ recordForEdit }) => {
           </Box>
           <Box flexGrow={0.5} align="right">
             {(userData.groups.includes("Accounts") ||
+              userData.groups.includes("Customer Service") ||
               userData.groups.includes("Director")) && (
               <Button
                 onClick={() => setOpenPopup2(true)}
@@ -206,6 +207,7 @@ export const ContactDetails = ({ recordForEdit }) => {
 
                       <StyledTableCell align="center">
                         {(userData.groups.includes("Accounts") ||
+                          userData.groups.includes("Customer Service") ||
                           userData.groups.includes("Director")) && (
                           <Button
                             variant="contained"
