@@ -10,6 +10,10 @@ import {
   Select,
   Chip,
   Divider,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
 } from "@mui/material";
 import CustomerServices from "../../../services/CustomerService";
 import { useDispatch, useSelector } from "react-redux";
@@ -24,7 +28,7 @@ import Option from "../../../Options/Options";
 import CustomTextField from "../../../Components/CustomTextField";
 
 export const UpdateCompanyDetails = (props) => {
-  const { setOpenPopup, getAllCompanyDetails, recordForEdit, product } = props;
+  const { setOpenPopup, getAllCompanyDetails, recordForEdit } = props;
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState([]);
   const [assigned, setAssigned] = useState([]);
@@ -357,10 +361,7 @@ export const UpdateCompanyDetails = (props) => {
 
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <CustomerAllPotential
-            product={product}
-            recordForEdit={recordForEdit}
-          />
+          <CustomerAllPotential recordForEdit={recordForEdit} />
         </Grid>
       </Grid>
     </>

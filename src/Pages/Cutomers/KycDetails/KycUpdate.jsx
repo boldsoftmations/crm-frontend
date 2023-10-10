@@ -171,33 +171,6 @@ const KycUpdate = ({ recordForEdit }) => {
               <Chip label="KYC Details" />
             </Divider>
           </Grid>
-          <Grid item xs={12}>
-            <FormControl>
-              <FormLabel id="demo-row-radio-buttons-group-label">
-                Type of Customer
-              </FormLabel>
-              <RadioGroup
-                row
-                aria-labelledby="demo-row-radio-buttons-group-label"
-                name="row-radio-buttons-group"
-                value={inputValue.type_of_customer || ""}
-                onChange={(event) =>
-                  handleSelectChange("type_of_customer", event.target.value)
-                }
-              >
-                <FormControlLabel
-                  value="Industrial Customer"
-                  control={<Radio />}
-                  label="Industrial Customer"
-                />
-                <FormControlLabel
-                  value="Distribution Customer"
-                  control={<Radio />}
-                  label="Distribution Customer"
-                />
-              </RadioGroup>
-            </FormControl>
-          </Grid>
           <Grid item xs={12} sm={6}>
             <CustomTextField
               fullWidth
