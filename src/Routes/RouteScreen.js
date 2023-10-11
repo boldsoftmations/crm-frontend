@@ -61,6 +61,7 @@ import { ActiveUsers } from "./../Pages/Users/ActiveUsers";
 import { InActiveUsers } from "./../Pages/Users/InActiveUsers";
 import { IncompleteKycDetails } from "../Pages/Cutomers/CompanyDetails/IncompleteKycDetails";
 import { CompetitorView } from "../Pages/MarketAnalysis/CompetitorView";
+import { PriceApprovalPI } from "../Pages/Invoice/ProformaInvoice/PriceApprovalPI";
 
 export const RouteScreen = () => {
   const tokenData = useSelector((state) => state.auth);
@@ -147,6 +148,10 @@ export const RouteScreen = () => {
             <Route path="/invoice/seller-account" element={<SellerAccount />} />
             <Route path="/invoice/approve-pi" element={<ApprovePi />} />
             <Route path="/invoice/active-pi" element={<ActivePI />} />
+            <Route
+              path="/invoice/price-approval-pi"
+              element={<PriceApprovalPI />}
+            />
             <Route
               path="/invoice/all-performa-invoice"
               element={<AllProformaInvoice />}

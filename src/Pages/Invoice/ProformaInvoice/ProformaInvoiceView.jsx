@@ -218,6 +218,30 @@ export const ProformaInvoiceView = (props) => {
     }
   };
 
+  // from Pending Approval to Approved Status
+  const SendForRejectPI = async (e) => {
+    e.preventDefault();
+    try {
+      setOpen(true);
+      const req = {
+        proformainvoice: invoiceData.pi_number,
+        approved_by: users.email,
+        status: "Reject",
+      };
+      await InvoiceServices.sendForApprovalData(req);
+      setOpenPopup(false);
+      getProformaInvoiceData();
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      setErrMsg(
+        err.response.data.errors.non_field_errors
+          ? err.response.data.errors.non_field_errors
+          : err.response.data.errors
+      );
+    }
+  };
+
   const TOTAL_GST_DATA = invoiceData.total - invoiceData.amount;
   const TOTAL_GST = TOTAL_GST_DATA.toFixed(2);
   return (
@@ -303,6 +327,36 @@ export const ProformaInvoiceView = (props) => {
                   }}
                 >
                   Approve
+                </Button>
+              )}
+          </div>
+          <div className="col-xs-6">
+            {(users.groups.includes("Accounts") ||
+              users.groups.includes("Accounts Billing Department")) &&
+              invoiceData.status === "Price Approval" && (
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={(e) => {
+                    SendForApprovedPI(e);
+                    // SendForApprovalStatus(e);
+                  }}
+                >
+                  Approve
+                </Button>
+              )}
+            {(users.groups.includes("Accounts") ||
+              users.groups.includes("Accounts Billing Department")) &&
+              invoiceData.status === "Price Approval" && (
+                <Button
+                  variant="contained"
+                  color="error"
+                  onClick={(e) => {
+                    SendForRejectPI(e);
+                    // SendForApprovalStatus(e);
+                  }}
+                >
+                  Reject
                 </Button>
               )}
           </div>
