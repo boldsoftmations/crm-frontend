@@ -1,18 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  Backdrop,
-  Box,
-  CircularProgress,
-  Grid,
-  Button,
-  Paper,
-} from "@mui/material";
+import { Box, Grid, Button, Paper } from "@mui/material";
 import { Popup } from "./../../../Components/Popup";
 import { CreateSellerAccounts } from "./CreateSellerAccounts";
 import { UpdateSellerAccounts } from "./UpdateSellerAccounts";
 import InvoiceServices from "./../../../services/InvoiceService";
 import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
 import { CustomTable } from "../../../Components/CustomTable";
+import { CustomLoader } from "../../../Components/CustomLoader";
 
 export const SellerAccount = () => {
   const [openPopup, setOpenPopup] = useState(false);
@@ -88,14 +82,7 @@ export const SellerAccount = () => {
 
   return (
     <>
-      <div>
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={open}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </div>
+      <CustomLoader open={open} />
 
       <Grid item xs={12}>
         <ErrorMessage errRef={errRef} errMsg={errMsg} />

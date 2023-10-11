@@ -65,6 +65,7 @@ export const CreateCustomerProformaInvoice = (props) => {
   const [errorMessage, setErrorMessage] = useState();
   const [validationPrice, setValidationPrice] = useState("");
   const [checked, setChecked] = useState(true);
+  const [priceApproval, setPriceApproval] = useState(false);
   const [products, setProducts] = useState([
     {
       product: "",
@@ -216,7 +217,8 @@ export const CreateCustomerProformaInvoice = (props) => {
         buyer_order_date: inputValue.buyer_order_date,
         payment_terms: paymentTermData,
         delivery_terms: deliveryTermData,
-        status: "Raised",
+        status: priceApproval ? "Price Approval" : "Approved",
+        price_approval: priceApproval,
         products: products,
       };
       setOpen(true);
@@ -229,7 +231,11 @@ export const CreateCustomerProformaInvoice = (props) => {
       ) {
         await InvoiceServices.createCustomerProformaInvoiceData(req);
         setOpenPopup(false);
-        navigate("/invoice/active-pi");
+        if (priceApproval) {
+          navigate("/invoice/price-approval-pi");
+        } else {
+          navigate("/invoice/active-pi");
+        }
       } else {
         setOpenPopup2(true);
       }
@@ -608,6 +614,17 @@ export const CreateCustomerProformaInvoice = (props) => {
             </Root>
           </Grid>
           <ErrorMessage errMsg={validationPrice} />
+          <Grid item xs={12}>
+            <FormControlLabel
+              label="Price Approval"
+              control={
+                <Checkbox
+                  checked={priceApproval}
+                  onChange={(event) => setPriceApproval(event.target.checked)}
+                />
+              }
+            />
+          </Grid>
           {products.map((input, index) => {
             return (
               <>

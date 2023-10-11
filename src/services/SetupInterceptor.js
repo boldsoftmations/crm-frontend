@@ -8,72 +8,60 @@ import {
 } from "./TokenService";
 
 const SetupInterceptor = (store) => {
+  const { dispatch } = store;
+
   CustomAxios.interceptors.request.use(
     (config) => {
       const token = getLocalAccessToken();
-      // config.baseURL = process.env.REACT_APP_DEPLOY_BACKEND_URL;
       if (token) {
-        config.headers = {
-          Authorization: `Bearer ${token}`,
-          Accept: "application/json",
-          // "Content-Type": "multipart/form-data",
-        };
+        config.headers.Authorization = `Bearer ${token}`;
       }
       return config;
     },
-    (error) => {
-      return Promise.reject(error);
-    }
+    (error) => Promise.reject(error)
   );
-  const { dispatch } = store;
 
   CustomAxios.interceptors.response.use(
-    (res) => {
-      return res;
-    },
-    async (err) => {
-      console.log("err respoanse :>> ", err);
-      if (err.response.data.code === "token_not_valid") {
+    (response) => response,
+    async (error) => {
+      const originalRequest = error.config;
+
+      // If error response is not available, reject promise
+      if (!error.response) return Promise.reject(error);
+
+      // Logout user if token is not valid
+      if (error.response.data.code === "token_not_valid") {
         removeUser();
-        window.location.reload(); // refresh page to redirect user to login screen
+        window.location.reload();
+        return Promise.reject(error);
       }
-      const originalConfig = err.config;
 
-      if (err.response) {
-        // Access Token was expired
-        if (err.response.status === 401 && !originalConfig._retry) {
-          originalConfig._retry = true;
+      // Refresh token on 401 error
+      if (error.response.status === 401 && !originalRequest._retry) {
+        originalRequest._retry = true;
 
-          try {
-            const rs = await CustomAxios.post("/api/token/refresh/", {
+        try {
+          const { data, status } = await CustomAxios.post(
+            "/api/token/refresh/",
+            {
               refresh: getLocalRefreshToken(),
-            });
-
-            const accessToken = rs.data.access;
-            if (rs.status === 200) {
-              dispatch(refreshToken(accessToken));
-              updateLocalAccessToken(accessToken);
-              CustomAxios.defaults.headers.common[
-                "Authorization"
-              ] = `Bearer ${accessToken.access}`;
-
-              return CustomAxios(originalConfig);
             }
-          } catch (_error) {
-            if (_error.response && _error.response.data) {
-              return Promise.reject(_error.response.data);
-            }
+          );
 
-            return Promise.reject(_error);
+          if (status === 200) {
+            dispatch(refreshToken(data.access));
+            updateLocalAccessToken(data.access);
+            originalRequest.headers.Authorization = `Bearer ${data.access}`;
+            return CustomAxios(originalRequest);
           }
-        }
-
-        if (err.response.status === 403 && err.response.data) {
-          return Promise.reject(err.response.data);
+        } catch (_error) {
+          removeUser();
+          window.location.reload();
+          return Promise.reject(_error);
         }
       }
 
-      return Promise.reject(err);
+      return Promise.reject(error);
     }
   );
 };

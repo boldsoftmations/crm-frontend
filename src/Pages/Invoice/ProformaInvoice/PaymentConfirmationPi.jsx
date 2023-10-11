@@ -7,10 +7,10 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  TextField,
 } from "@mui/material";
 import InvoiceServices from "../../../services/InvoiceService";
 import { CustomLoader } from "../../../Components/CustomLoader";
+import CustomTextField from "../../../Components/CustomTextField";
 
 export const PaymentConfirmationPi = (props) => {
   const {
@@ -115,7 +115,7 @@ export const PaymentConfirmationPi = (props) => {
           {inputValue.status === "Partially Paid" && (
             <>
               <Grid item xs={12} sm={6}>
-                <TextField
+                <CustomTextField
                   fullWidth
                   required
                   name="amount_recieved"
@@ -127,7 +127,7 @@ export const PaymentConfirmationPi = (props) => {
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <TextField
+                <CustomTextField
                   fullWidth
                   required
                   name="balance_amount"

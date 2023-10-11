@@ -9,16 +9,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  styled,
-  Table,
-  TableBody,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TableCell,
-  TextField,
 } from "@mui/material";
-import { tableCellClasses } from "@mui/material/TableCell";
 import InvoiceServices from "../../../services/InvoiceService";
 import { Popup } from "../../../Components/Popup";
 import { ProformaInvoiceView } from "./ProformaInvoiceView";
@@ -29,6 +20,8 @@ import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 import { UpdateCustomerProformaInvoice } from "./UpdateCustomerProformaInvoice";
 import { CustomPagination } from "../../../Components/CustomPagination";
 import { UpdateLeadsProformaInvoice } from "./UpdateLeadsProformaInvoice";
+import { CustomSearchWithButton } from "../../../Components/CustomSearchWithButton";
+import { CustomTable } from "../../../Components/CustomTable";
 
 export const ApprovePi = () => {
   const dispatch = useDispatch();
@@ -45,9 +38,19 @@ export const ApprovePi = () => {
   const [searchValue, setSearchValue] = useState("");
   const [statusValue, setStatusValue] = useState("");
   const [typeValue, setTypeValue] = useState("");
+  const [assign, setAssign] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
   const data = useSelector((state) => state.auth);
   const users = data.profile;
+  const assigned = users.sales_users || [];
+
+  const FilterOptions = [
+    { label: "Status", value: "status" },
+    { label: "Type", value: "type" },
+    ...(!users.groups.includes("Sales Executive")
+      ? [{ label: "Sales Person", value: "raised_by__email" }]
+      : []),
+  ];
 
   const handleSearchValue = () => {
     setSearchValue(searchValue);
@@ -64,11 +67,22 @@ export const ApprovePi = () => {
     getSearchData(event.target.value);
   };
 
+  const handleAssignValue = (event) => {
+    setAssign(event.target.value);
+    getSearchData(event.target.value);
+  };
+
   const getResetData = () => {
     setSearchValue("");
     setStatusValue("");
     setTypeValue("");
     setFilterType("");
+    setAssign("");
+    getProformaInvoiceData();
+  };
+
+  const getResetSearchData = () => {
+    setSearchValue("");
     getProformaInvoiceData();
   };
 
@@ -107,9 +121,13 @@ export const ApprovePi = () => {
   const getProformaInvoiceData = async () => {
     try {
       setOpen(true);
-      const response = currentPage
-        ? await InvoiceServices.getAllPIPagination("unapproved", currentPage)
-        : await InvoiceServices.getAllPIData("unapproved");
+      const response = await InvoiceServices.getAllPIData({
+        piType: "unapproved",
+        page: currentPage,
+        filterType: filterType,
+        filterValue: statusValue || typeValue || assign,
+        searchValue: searchValue,
+      });
       setInvoiceData(response.data.results);
       const total = response.data.count;
       setpageCount(Math.ceil(total / 25));
@@ -140,13 +158,12 @@ export const ApprovePi = () => {
       setOpen(true);
       const Search = searchValue ? "search" : "";
       if (filterValue || searchValue) {
-        const response = await InvoiceServices.getAllPISearch(
-          "unapproved",
-          filterType,
-          filterValue,
-          Search,
-          searchValue
-        );
+        const response = await InvoiceServices.getAllPIData({
+          piType: "unapproved",
+          filterType: filterType,
+          filterValue: filterValue,
+          searchValue: searchValue,
+        });
         if (response) {
           setInvoiceData(response.data.results);
           const total = response.data.count;
@@ -170,40 +187,66 @@ export const ApprovePi = () => {
       const page = value;
       setCurrentPage(page);
       setOpen(true);
-      const Search = searchValue ? "search" : "";
+      let response;
       if (statusValue || typeValue || searchValue) {
-        const response = await InvoiceServices.getAllPIPaginationWithFilterBy(
-          "unapproved",
-          page,
-          filterType,
-          statusValue || typeValue,
-          Search,
-          searchValue
-        );
-        if (response) {
-          setInvoiceData(response.data.results);
-          const total = response.data.count;
-          setpageCount(Math.ceil(total / 25));
-        } else {
-          getProformaInvoiceData();
-          setSearchValue(null);
-          setStatusValue(null);
-          setTypeValue(null);
-        }
+        response = await InvoiceServices.getAllPIData({
+          piType: "unapproved",
+          page: page,
+          filterType: filterType,
+          filterValue: statusValue || typeValue || assign,
+          searchValue: searchValue,
+        });
       } else {
-        const response = await InvoiceServices.getAllPIPagination(
-          "unapproved",
-          page
-        );
-        setInvoiceData(response.data.results);
+        response = await InvoiceServices.getAllPIData({
+          piType: "unapproved",
+          page: page,
+        });
       }
-
+      if (response) {
+        setInvoiceData(response.data.results);
+        const total = response.data.count;
+        setpageCount(Math.ceil(total / 25));
+      } else {
+        getProformaInvoiceData();
+        setSearchValue(null);
+        setStatusValue(null);
+        setTypeValue(null);
+      }
       setOpen(false);
     } catch (error) {
       console.log("error", error);
       setOpen(false);
     }
   };
+
+  const Tabledata = invoiceData.map((row, i) => ({
+    type: row.type,
+    pi_number: row.pi_number,
+    generation_date: row.generation_date,
+    raised_by: row.raised_by,
+    customer: row.company_name,
+    billing_city: row.billing_city,
+    contact: row.contact,
+    status: row.status,
+    total: row.total,
+    balance_amount: row.balance_amount,
+    payment_terms: row.payment_terms,
+  }));
+
+  const Tableheaders = [
+    "Type",
+    "PI Numer",
+    "PI Date",
+    "Raised By",
+    "Customer",
+    "Billing City",
+    "Contact",
+    "Status",
+    "PI Amount",
+    "Balance",
+    "Payment Terms",
+    "ACTION",
+  ];
 
   return (
     <>
@@ -274,24 +317,45 @@ export const ApprovePi = () => {
                 </Select>
               </FormControl>
             )}
-            <TextField
-              value={searchValue}
-              onChange={(event) => setSearchValue(event.target.value)}
-              name="search"
-              size="small"
-              placeholder="search"
-              label="Search"
-              variant="outlined"
-              sx={{ marginLeft: "1em" }}
+            {filterType === "raised_by__email" &&
+              !users.groups.includes("Sales Executive") && (
+                <FormControl
+                  sx={{ minWidth: "200px", marginLeft: "1em" }}
+                  size="small"
+                >
+                  <InputLabel id="demo-simple-select-label">
+                    Filter By Sales Person
+                  </InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    name="values"
+                    label="Filter By Sales Person"
+                    value={assign}
+                    onChange={(event) => handleAssignValue(event)}
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          maxHeight: 300,
+                          width: 250,
+                        },
+                      },
+                    }}
+                  >
+                    {assigned.map((option, i) => (
+                      <MenuItem key={i} value={option}>
+                        {option}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              )}
+            <CustomSearchWithButton
+              filterSelectedQuery={searchValue}
+              setFilterSelectedQuery={setSearchValue}
+              handleInputChange={handleSearchValue}
+              getResetData={getResetSearchData}
             />
-            <Button
-              variant="contained"
-              color="success"
-              sx={{ marginLeft: "1em" }}
-              onClick={handleSearchValue}
-            >
-              Search
-            </Button>
             <Button
               variant="contained"
               color="primary"
@@ -313,99 +377,15 @@ export const ApprovePi = () => {
               Approve Pi
             </h3>
           </Box>
-          <TableContainer
-            sx={{
-              maxHeight: 440,
-              "&::-webkit-scrollbar": {
-                width: 15,
-              },
-              "&::-webkit-scrollbar-track": {
-                backgroundColor: "#f2f2f2",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                backgroundColor: "#aaa9ac",
-              },
-            }}
-          >
-            <Table
-              sx={{ minWidth: 1200 }}
-              stickyHeader
-              aria-label="sticky table"
-            >
-              <TableHead>
-                <TableRow>
-                  <StyledTableCell align="center">TYPE</StyledTableCell>
-                  <StyledTableCell align="center">PI NUMBER</StyledTableCell>
-                  <StyledTableCell align="center">PI DATE</StyledTableCell>
-                  <StyledTableCell align="center">COMPANY</StyledTableCell>
-                  <StyledTableCell align="center">BILLING CITY</StyledTableCell>
-                  <StyledTableCell align="center">CONTACT</StyledTableCell>
-                  <StyledTableCell align="center">STATUS</StyledTableCell>
-                  <StyledTableCell align="center">PI AMOUNT</StyledTableCell>
-                  <StyledTableCell align="center">BALANCE</StyledTableCell>
-                  <StyledTableCell align="center">
-                    PAYMENT TERMS
-                  </StyledTableCell>
-                  <StyledTableCell align="center">Action</StyledTableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {invoiceData.map((row, i) => {
-                  return (
-                    <StyledTableRow key={i}>
-                      <StyledTableCell align="center">
-                        {row.type}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.pi_number}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.generation_date}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.company_name}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.billing_city}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.contact}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.status}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.total}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.balance_amount}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.payment_terms}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        <Button variant="text" onClick={() => openInPopup(row)}>
-                          View
-                        </Button>
-                        {(users.groups.toString() === "Sales" ||
-                          users.groups.toString() === "Customer Service") &&
-                          row.status === "Raised" && (
-                            <Button
-                              variant="text"
-                              color="success"
-                              onClick={() => openInPopup2(row)}
-                            >
-                              PI Edit
-                            </Button>
-                          )}
-                      </StyledTableCell>
-                    </StyledTableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-
+          <CustomTable
+            headers={Tableheaders}
+            data={Tabledata}
+            openInPopup={openInPopup}
+            openInPopup2={null}
+            openInPopup3={null}
+            openInPopup4={null}
+            Styles={{ paddingLeft: "10px", paddingRight: "10px" }}
+          />
           <CustomPagination
             pageCount={pageCount}
             handlePageClick={handlePageClick}
@@ -452,11 +432,6 @@ export const ApprovePi = () => {
   );
 };
 
-const FilterOptions = [
-  { label: "Status", value: "status" },
-  { label: "Type", value: "type" },
-];
-
 const StatusOptions = [
   { label: "Raised", value: "raised" },
   { label: "Pending Approval", value: "pending_approval" },
@@ -470,34 +445,3 @@ const TypeOptions = [
   { label: "Customer", value: "customer" },
   { label: "Lead", value: "lead" },
 ];
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-    padding: "1px", // Adjust the padding value to reduce space
-    marginLeft: "10px", // Add margin to the left
-    marginRight: "10px", // Add margin to the right
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-    padding: "1px", // Adjust the padding value to reduce space
-    marginLeft: "10px", // Add margin to the left
-    marginRight: "10px", // Add margin to the right
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-  "& td": {
-    padding: "1px", // Adjust the padding value to reduce space
-    marginLeft: "10px", // Add margin to the left
-    marginRight: "10px", // Add margin to the right
-  },
-}));

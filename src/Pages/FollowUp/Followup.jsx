@@ -10,44 +10,16 @@ import { AllFollowup } from "./AllFollowup";
 import { PendingFollowup } from "./PendingFollowup";
 import { UpcomingFollowup } from "./UpcomingFollowup";
 import { TodayFollowup } from "./TodayFollowup";
-import { Helmet } from "react-helmet";
 
 export const Followup = () => {
   const [open, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
-  const [pendingFollowUp, setPendingFollowUp] = useState([]);
-  const [todayFollowUp, setTodayFollowUp] = useState([]);
-  const [upcomingFollowUp, setUpcomingFollowUp] = useState([]);
   const [assigned, setAssigned] = useState([]);
   const [descriptionMenuData, setDescriptionMenuData] = useState([]);
   const [product, setProduct] = useState([]);
   const dispatch = useDispatch();
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
-  const [isPrinting, setIsPrinting] = useState(false);
-
-  useEffect(() => {
-    const beforePrint = () => {
-      setIsPrinting(true);
-      setPendingFollowUp([]);
-      setTodayFollowUp([]);
-      setUpcomingFollowUp([]);
-    };
-
-    const afterPrint = () => {
-      setIsPrinting(false);
-      // Fetch the data again and update the companyData state
-      getFollowUp();
-    };
-
-    window.addEventListener("beforeprint", beforePrint);
-    window.addEventListener("afterprint", afterPrint);
-
-    return () => {
-      window.removeEventListener("beforeprint", beforePrint);
-      window.removeEventListener("afterprint", afterPrint);
-    };
-  }, []);
 
   const handleTabChange = (index) => {
     setActiveTab(index);
@@ -58,7 +30,6 @@ export const Followup = () => {
     getProduct();
     getAssignedData();
     getDescriptionNoData();
-    getFollowUp();
   }, []);
 
   const getAllSellerAccountsDetails = async () => {
@@ -107,20 +78,6 @@ export const Followup = () => {
     }
   };
 
-  const getFollowUp = async () => {
-    try {
-      setOpen(true);
-      const res = await LeadServices.getAllFollowUp();
-      setPendingFollowUp(res.data.pending_followups);
-      setTodayFollowUp(res.data.todays_followups);
-      setUpcomingFollowUp(res.data.upcoming_followups);
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.error("error followup", err);
-    }
-  };
-
   const SalesTabs = [
     { label: "Overdue Followup" },
     { label: "Today Followup" },
@@ -136,17 +93,6 @@ export const Followup = () => {
 
   return (
     <div>
-      <Helmet>
-        <style>
-          {`
-            @media print {
-              html, body {
-                filter: ${isPrinting ? "blur(10px)" : "none"} !important;
-              }
-            }
-          `}
-        </style>
-      </Helmet>
       <CustomLoader open={open} />
       <div>
         <CustomTabs
@@ -157,44 +103,22 @@ export const Followup = () => {
         <div>
           {activeTab === 0 && (
             <div>
-              <PendingFollowup
-                assigned={assigned}
-                descriptionMenuData={descriptionMenuData}
-                product={product}
-                pendingFollowUp={pendingFollowUp}
-                getFollowUp={getFollowUp}
-              />
+              <PendingFollowup />
             </div>
           )}
           {activeTab === 1 && (
             <div>
-              <TodayFollowup
-                assigned={assigned}
-                descriptionMenuData={descriptionMenuData}
-                product={product}
-                todayFollowUp={todayFollowUp}
-                getFollowUp={getFollowUp}
-              />
+              <TodayFollowup />
             </div>
           )}
           {activeTab === 2 && (
             <div>
-              <UpcomingFollowup
-                assigned={assigned}
-                descriptionMenuData={descriptionMenuData}
-                product={product}
-                upcomingFollowUp={upcomingFollowUp}
-                getFollowUp={getFollowUp}
-              />
+              <UpcomingFollowup />
             </div>
           )}
           {activeTab === 3 && (
             <div>
-              <AllFollowup
-                assigned={assigned}
-                descriptionMenuData={descriptionMenuData}
-                product={product}
-              />
+              <AllFollowup />
             </div>
           )}
         </div>

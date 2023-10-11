@@ -7,12 +7,13 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  TextField,
 } from "@mui/material";
 import TaskService from "../../services/TaskService";
 import { useSelector } from "react-redux";
 import { CustomLoader } from "../../Components/CustomLoader";
 import { TaskActivityView } from "./TaskActivityView";
+import CustomTextField from "../../Components/CustomTextField";
+
 export const TaskUpdate = (props) => {
   const { setOpenPopup, getAllTaskDetails, taskByID, activity } = props; // 1
   const [open, setOpen] = useState(false);
@@ -62,7 +63,7 @@ export const TaskUpdate = (props) => {
       <Box component="form" noValidate onSubmit={(e) => updateTaskDetails(e)}>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="created_by"
               size="small"
@@ -73,7 +74,7 @@ export const TaskUpdate = (props) => {
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="name"
               size="small"
@@ -84,7 +85,7 @@ export const TaskUpdate = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="description"
               size="small"
@@ -96,7 +97,7 @@ export const TaskUpdate = (props) => {
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               type="date"
               name="due_date"

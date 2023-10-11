@@ -15,7 +15,6 @@ import { CSVLink } from "react-csv";
 import { CustomPagination } from "../../Components/CustomPagination";
 import { ErrorMessage } from "../../Components/ErrorMessage/ErrorMessage";
 import { CustomLoader } from "../../Components/CustomLoader";
-import LeadServices from "../../services/LeadService";
 import ProductForecastService from "../../services/ProductForecastService";
 import { CustomSearchWithButton } from "../../Components/CustomSearchWithButton";
 import { Popup } from "../../Components/Popup";
@@ -23,6 +22,7 @@ import { ForecastUpdate } from "../Cutomers/ForecastDetails/ForecastUpdate";
 import { CustomTable } from "../../Components/CustomTable";
 import { ProductForecastAssignTo } from "./ProductForecastAssignTo";
 import { Helmet } from "react-helmet";
+import { useSelector } from "react-redux";
 
 export const CustomerNotHavingForecastView = () => {
   const [open, setOpen] = useState(false);
@@ -33,7 +33,6 @@ export const CustomerNotHavingForecastView = () => {
   const [filterQuery, setFilterQuery] = useState("search");
   const [searchQuery, setSearchQuery] = useState("");
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
-  const [assigned, setAssigned] = useState([]);
   const [productNotHavingForecast, setProductNotHavingForecast] = useState([]);
   const [exportData, setExportData] = useState([]);
   const [forecastDataByID, setForecastDataByID] = useState(null);
@@ -41,6 +40,28 @@ export const CustomerNotHavingForecastView = () => {
   const [openPopup2, setOpenPopup2] = useState(false);
   const csvLinkRef = useRef(null);
   const [isPrinting, setIsPrinting] = useState(false);
+  const UserData = useSelector((state) => state.auth.profile);
+  const assigned = UserData.sales_users || [];
+
+  const filterOption = [
+    {
+      label: "Company",
+      value: "product_forecast__company__name",
+    },
+    {
+      label: "Product",
+      value: "product_forecast__product__name",
+    },
+    ...(!UserData.groups.includes("Sales Executive")
+      ? [
+          {
+            label: "Sales Person",
+            value: "product_forecast__sales_person__email",
+          },
+        ]
+      : []),
+    { label: "Search", value: "search" },
+  ];
 
   useEffect(() => {
     const beforePrint = () => {
@@ -140,22 +161,8 @@ export const CustomerNotHavingForecastView = () => {
   ];
 
   useEffect(() => {
-    getAssignedData();
     getAllProductionForecastDetails();
   }, []);
-
-  const getAssignedData = async (id) => {
-    try {
-      setOpen(true);
-      const res = await LeadServices.getAllAssignedUser();
-
-      setAssigned(res.data);
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
-  };
 
   const getAllProductionForecastDetails = async () => {
     try {
@@ -461,8 +468,8 @@ export const CustomerNotHavingForecastView = () => {
                     }
                   >
                     {assigned.map((option, i) => (
-                      <MenuItem key={i} value={option.email}>
-                        {option.first_name} {option.last_name}
+                      <MenuItem key={i} value={option}>
+                        {option}
                       </MenuItem>
                     ))}
                   </Select>
@@ -550,19 +557,3 @@ export const CustomerNotHavingForecastView = () => {
     </div>
   );
 };
-
-const filterOption = [
-  {
-    label: "Sales Person",
-    value: "sales_person__email",
-  },
-  {
-    label: "Product",
-    value: "product__name",
-  },
-  {
-    label: "Company",
-    value: "company__name",
-  },
-  { label: "Search", value: "search" },
-];

@@ -15,7 +15,6 @@ import { CSVLink } from "react-csv";
 import { CustomPagination } from "../../Components/CustomPagination";
 import { ErrorMessage } from "../../Components/ErrorMessage/ErrorMessage";
 import { CustomLoader } from "../../Components/CustomLoader";
-import LeadServices from "../../services/LeadService";
 import ProductForecastService from "../../services/ProductForecastService";
 import { CustomSearchWithButton } from "./../../Components/CustomSearchWithButton";
 import { Popup } from "../../Components/Popup";
@@ -23,11 +22,7 @@ import { UpdateAllCompanyDetails } from "../Cutomers/CompanyDetails/UpdateAllCom
 import { CustomTable } from "../../Components/CustomTable";
 import ProductService from "../../services/ProductService";
 import { Helmet } from "react-helmet";
-
-const filterOption = [
-  { label: "Search", value: "search" },
-  { label: "Sales Person", value: "assigned_to__email" },
-];
+import { useSelector } from "react-redux";
 
 export const DeadCustomerView = () => {
   const [open, setOpen] = useState(false);
@@ -38,7 +33,6 @@ export const DeadCustomerView = () => {
   const [filterQuery, setFilterQuery] = useState("search");
   const [searchQuery, setSearchQuery] = useState("");
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
-  const [assigned, setAssigned] = useState([]);
   const [deadCustomer, setDeadCustomer] = useState([]);
   const [recordForEdit, setRecordForEdit] = useState(null);
   const [openPopup, setOpenPopup] = useState(false);
@@ -46,6 +40,20 @@ export const DeadCustomerView = () => {
   const [product, setProduct] = useState([]);
   const csvLinkRef = useRef(null);
   const [isPrinting, setIsPrinting] = useState(false);
+  const UserData = useSelector((state) => state.auth.profile);
+  const assigned = UserData.sales_users || [];
+
+  const filterOption = [
+    { label: "Search", value: "search" },
+    ...(!UserData.groups.includes("Sales Executive")
+      ? [
+          {
+            label: "Sales Person",
+            value: "assigned_to__email",
+          },
+        ]
+      : []),
+  ];
 
   useEffect(() => {
     const beforePrint = () => {
@@ -152,7 +160,6 @@ export const DeadCustomerView = () => {
 
   useEffect(() => {
     getProduct();
-    getAssignedData();
     getAllProductionForecastDetails();
   }, []);
 
@@ -164,19 +171,6 @@ export const DeadCustomerView = () => {
       setOpen(false);
     } catch (err) {
       console.error("error potential", err);
-      setOpen(false);
-    }
-  };
-
-  const getAssignedData = async () => {
-    try {
-      setOpen(true);
-      const res = await LeadServices.getAllAssignedUser();
-
-      setAssigned(res.data);
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
       setOpen(false);
     }
   };
@@ -377,8 +371,8 @@ export const DeadCustomerView = () => {
                     }
                   >
                     {assigned.map((option, i) => (
-                      <MenuItem key={i} value={option.email}>
-                        {option.email}
+                      <MenuItem key={i} value={option}>
+                        {option}
                       </MenuItem>
                     ))}
                   </Select>

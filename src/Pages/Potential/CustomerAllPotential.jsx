@@ -1,99 +1,118 @@
-import React, { useState } from "react";
-import { Box, Button, Divider, Grid, Paper } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Box, Button, Divider, Grid, Paper, Typography } from "@mui/material";
 import { Popup } from "../../Components/Popup";
-import { PotentialCreate } from "./PotentialCreate";
 import { CustomerPotentialCreate } from "./CustomerPotentialCreate";
+import CustomerServices from "../../services/CustomerService";
 
-export const CustomerAllPotential = (props) => {
-  const { potential, getAllleadsData, product, recordForEdit, openInPopup } =
-    props;
+const PotentialDetail = ({ label, value }) => (
+  <Grid item xs={24} sm={4}>
+    {label} : {value || ""}
+  </Grid>
+);
+
+export const CustomerAllPotential = ({ recordForEdit }) => {
   const [openModal, setOpenModal] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [potential, setPotential] = useState([]);
+  useEffect(() => {
+    getCompanyDetailsByID();
+  }, []);
+
+  // API call to fetch company details based on type
+  const getCompanyDetailsByID = async () => {
+    try {
+      setOpen(true);
+      const potentialResponse =
+        await CustomerServices.getCompanyDataByIdWithType(
+          recordForEdit,
+          "potential"
+        );
+      setPotential(potentialResponse.data.potential);
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      console.log("company data by id error", err);
+    }
+  };
+
   return (
     <>
-      {potential && (
-        <Box component="form" noValidate sx={{ mt: 1 }}>
-          <Paper
-            sx={{
-              p: 2,
-              m: 4,
-              display: "flex",
-              flexDirection: "column",
-              backgroundColor: "#F5F5F5",
-            }}
-          >
-            <Box display="flex">
-              <Box flexGrow={0.9} align="left"></Box>
-              <Box flexGrow={2.5} align="center">
-                <h3 className="Auth-form-title">View Potential</h3>
-              </Box>
-              <Box flexGrow={0.3} align="right">
-                <Button
-                  variant="contained"
-                  color="success"
-                  onClick={() => setOpenModal(true)}
-                >
-                  Create Potential
-                </Button>
-              </Box>
-            </Box>
+      <Box component="form" noValidate sx={{ mt: 1 }}>
+        <Paper
+          sx={{
+            p: 2,
+            m: 4,
+            display: "flex",
+            flexDirection: "column",
+            backgroundColor: "#F5F5F5",
+          }}
+        >
+          <Box display="flex" justifyContent="space-around">
+            <Typography variant="h5" align="center">
+              View Potential
+            </Typography>
+            <Button
+              variant="contained"
+              color="success"
+              onClick={() => setOpenModal(true)}
+            >
+              Create Potential
+            </Button>
+          </Box>
 
-            {potential.map((potentialInput, index) => {
-              return (
-                <>
-                  <Grid
-                    key={index}
-                    sx={{ marginBottom: "1em", marginTop: "1em" }}
-                    container
-                    spacing={2}
-                  >
-                    <Grid item xs={24} sm={4}>
-                      ProductName :{" "}
-                      {potentialInput.product ? potentialInput.product : ""}
-                    </Grid>
-                    <Grid item xs={24} sm={4}>
-                      Current Brand :{" "}
-                      {potentialInput.current_brand
-                        ? potentialInput.current_brand
-                        : ""}
-                    </Grid>
-                    <Grid item xs={24} sm={4}>
-                      Current Buying Price :{" "}
-                      {potentialInput.current_buying_price
-                        ? potentialInput.current_buying_price
-                        : ""}
-                    </Grid>
-                    <Grid item xs={24} sm={4}>
-                      Current Buying Quantity :{" "}
-                      {potentialInput.current_buying_quantity}
-                    </Grid>
-                    <Grid item xs={24} sm={4}>
-                      Target Price :{" "}
-                      {potentialInput.target_price
-                        ? potentialInput.target_price
-                        : ""}
-                    </Grid>
-                    <Grid item xs={24} sm={4}>
-                      Qunatity :{" "}
-                      {potentialInput.quantity ? potentialInput.quantity : ""}
-                    </Grid>
+          {potential && (
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                height: 260,
+                overflow: "auto",
+              }}
+            >
+              {potential.map((potentialInput, index) => (
+                <Box key={index}>
+                  <Grid container spacing={2}>
+                    <PotentialDetail
+                      label="ProductName"
+                      value={potentialInput.product}
+                    />
+                    <PotentialDetail
+                      label="Current Brand"
+                      value={potentialInput.current_brand}
+                    />
+                    <PotentialDetail
+                      label="Current Buying Price"
+                      value={potentialInput.current_buying_price}
+                    />
+                    <PotentialDetail
+                      label="Current Buying Quantity"
+                      value={potentialInput.current_buying_quantity}
+                    />
+                    <PotentialDetail
+                      label="Target Price"
+                      value={potentialInput.target_price}
+                    />
+                    <PotentialDetail
+                      label="Quantity"
+                      value={potentialInput.quantity}
+                    />
                   </Grid>
-                  <Divider />
-                </>
-              );
-            })}
-          </Paper>
-        </Box>
-      )}
+                  <Divider sx={{ my: 1 }} />
+                </Box>
+              ))}
+            </Box>
+          )}
+        </Paper>
+      </Box>
       <Popup
-        maxWidth={"lg"}
-        title={"Create Potential"}
+        maxWidth="xl"
+        title="Create Potential"
         openPopup={openModal}
         setOpenPopup={setOpenModal}
       >
         <CustomerPotentialCreate
-          getAllleadsData={getAllleadsData}
+          getCompanyDetailsByID={getCompanyDetailsByID}
           recordForEdit={recordForEdit}
-          product={product}
           setOpenModal={setOpenModal}
         />
       </Popup>

@@ -1,17 +1,9 @@
 import React, { useState } from "react";
-import {
-  Box,
-  Button,
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-} from "@mui/material";
+import { Box, Button, Grid } from "@mui/material";
 import { useSelector } from "react-redux";
 import TaskService from "../../services/TaskService";
 import { CustomLoader } from "../../Components/CustomLoader";
+import CustomTextField from "../../Components/CustomTextField";
 
 export const TaskActivityCreate = (props) => {
   const { setOpenModalActivity, getAllTaskDetails, activity } = props;
@@ -102,7 +94,7 @@ export const TaskActivityCreate = (props) => {
         </div>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="created_by"
               size="small"
@@ -113,7 +105,7 @@ export const TaskActivityCreate = (props) => {
           </Grid>
 
           <Grid item xs={12}>
-            <TextField
+            <CustomTextField
               multiline
               fullWidth
               name="description"

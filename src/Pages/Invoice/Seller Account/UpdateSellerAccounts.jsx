@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Grid, TextField } from "@mui/material";
+import { Box, Button, Grid } from "@mui/material";
 import axios from "axios";
-// import CustomerServices from "../../../services/CustomerService";
-// import { useSelector } from "react-redux";
 import InvoiceServices from "./../../../services/InvoiceService";
 import { CustomLoader } from "../../../Components/CustomLoader";
+import CustomTextField from "../../../Components/CustomTextField";
 
 export const UpdateSellerAccounts = (props) => {
   const { setOpenPopup, getAllSellerAccountsDetails, idForEdit } = props;
@@ -97,7 +96,7 @@ export const UpdateSellerAccounts = (props) => {
       <Box component="form" noValidate onSubmit={(e) => updateBankDetails(e)}>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               multiline
               size="small"
@@ -110,7 +109,7 @@ export const UpdateSellerAccounts = (props) => {
           </Grid>
 
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               name="current_account_no"
@@ -125,7 +124,7 @@ export const UpdateSellerAccounts = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               multiline
               fullWidth
               name="gst_number"
@@ -137,7 +136,7 @@ export const UpdateSellerAccounts = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="grn_prefix"
               size="small"
@@ -148,7 +147,7 @@ export const UpdateSellerAccounts = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               multiline
               fullWidth
               name="address"
@@ -160,7 +159,7 @@ export const UpdateSellerAccounts = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="unit"
               size="small"
@@ -171,7 +170,7 @@ export const UpdateSellerAccounts = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="pincode"
               size="small"
@@ -182,7 +181,7 @@ export const UpdateSellerAccounts = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="state"
               size="small"
@@ -193,7 +192,7 @@ export const UpdateSellerAccounts = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="city"
               size="small"
@@ -204,7 +203,7 @@ export const UpdateSellerAccounts = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="state_code"
               size="small"
@@ -215,7 +214,7 @@ export const UpdateSellerAccounts = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="cin_number"
               size="small"
@@ -226,7 +225,7 @@ export const UpdateSellerAccounts = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="email"
               size="small"
@@ -237,7 +236,7 @@ export const UpdateSellerAccounts = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="pan_number"
               size="small"
@@ -248,7 +247,7 @@ export const UpdateSellerAccounts = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="prefix"
               size="small"
@@ -259,7 +258,7 @@ export const UpdateSellerAccounts = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="suffix"
               size="small"
@@ -270,7 +269,7 @@ export const UpdateSellerAccounts = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               // type={"number"}
               fullWidth
               name="contact"
@@ -282,7 +281,7 @@ export const UpdateSellerAccounts = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               sx={{ minWidth: "200px" }}
               name="ifsc_code"
               size="small"
@@ -302,7 +301,7 @@ export const UpdateSellerAccounts = (props) => {
             </Button>
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               name="bank_name"
@@ -315,7 +314,7 @@ export const UpdateSellerAccounts = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               name="branch"

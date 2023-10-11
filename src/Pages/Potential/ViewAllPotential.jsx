@@ -4,7 +4,7 @@ import { Popup } from "../../Components/Popup";
 import { PotentialCreate } from "./PotentialCreate";
 
 export const ViewAllPotential = (props) => {
-  const { potential, getLeadByID, product, leadsByID } = props;
+  const { potential, getLeadByID, leadsByID } = props;
   const [openModal, setOpenModal] = useState(false);
   return (
     <>
@@ -91,7 +91,6 @@ export const ViewAllPotential = (props) => {
         <PotentialCreate
           getLeadByID={getLeadByID}
           leadsByID={leadsByID}
-          product={product}
           setOpenModal={setOpenModal}
         />
       </Popup>

@@ -7,7 +7,6 @@ import {
   Divider,
   FormControlLabel,
   Grid,
-  TextField,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import React, { useEffect, useState } from "react";
@@ -17,6 +16,7 @@ import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 import InvoiceServices from "../../../services/InvoiceService";
 import LeadServices from "../../../services/LeadService";
 import ProductService from "../../../services/ProductService";
+import CustomTextField from "../../../Components/CustomTextField";
 
 export const UpdateLeadsProformaInvoice = (props) => {
   const { idForEdit, getAllLeadsPIDetails, setOpenPopup } = props;
@@ -279,7 +279,7 @@ export const UpdateLeadsProformaInvoice = (props) => {
       >
         <Grid container spacing={2}>
           <Grid item xs={12} sm={2}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               label="Seller Account"
@@ -303,7 +303,7 @@ export const UpdateLeadsProformaInvoice = (props) => {
               getOptionLabel={(option) => option.unit}
               sx={{ minWidth: 200 }}
               renderInput={(params) => (
-                <TextField
+                <CustomTextField
                   {...params}
                   label="Update Seller Account"
                   required
@@ -324,7 +324,7 @@ export const UpdateLeadsProformaInvoice = (props) => {
               getOptionLabel={(option) => option}
               sx={{ minWidth: 300 }}
               renderInput={(params) => (
-                <TextField
+                <CustomTextField
                   {...params}
                   label="Payment Terms"
                   required
@@ -345,7 +345,11 @@ export const UpdateLeadsProformaInvoice = (props) => {
               getOptionLabel={(option) => option}
               sx={{ minWidth: 300 }}
               renderInput={(params) => (
-                <TextField {...params} label="Delivery Terms" sx={tfStyle} />
+                <CustomTextField
+                  {...params}
+                  label="Delivery Terms"
+                  sx={tfStyle}
+                />
               )}
             />
           </Grid>
@@ -357,7 +361,7 @@ export const UpdateLeadsProformaInvoice = (props) => {
             </Root>
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               required
               name="Lead ID"
@@ -368,7 +372,7 @@ export const UpdateLeadsProformaInvoice = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               required
               name="contact"
@@ -379,7 +383,7 @@ export const UpdateLeadsProformaInvoice = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="alternate_contact"
               size="small"
@@ -389,7 +393,7 @@ export const UpdateLeadsProformaInvoice = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               multiline
               required
@@ -402,7 +406,7 @@ export const UpdateLeadsProformaInvoice = (props) => {
           </Grid>
 
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               required
               name="city"
@@ -413,7 +417,7 @@ export const UpdateLeadsProformaInvoice = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               required
               name="state"
@@ -424,7 +428,7 @@ export const UpdateLeadsProformaInvoice = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               required
               name="pincode"
@@ -436,7 +440,7 @@ export const UpdateLeadsProformaInvoice = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               required
               name="shipping_address"
@@ -447,7 +451,7 @@ export const UpdateLeadsProformaInvoice = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               required
               fullWidth
               name="shipping_pincode"
@@ -459,7 +463,7 @@ export const UpdateLeadsProformaInvoice = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               required
               name="shipping_city"
@@ -470,7 +474,7 @@ export const UpdateLeadsProformaInvoice = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               required
               name="shipping_state"
@@ -491,7 +495,7 @@ export const UpdateLeadsProformaInvoice = (props) => {
               }
             />
 
-            <TextField
+            <CustomTextField
               required
               name="buyer_order_no"
               size="small"
@@ -516,7 +520,7 @@ export const UpdateLeadsProformaInvoice = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               type={"date"}
               name="buyer_order_date"
@@ -535,7 +539,7 @@ export const UpdateLeadsProformaInvoice = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="place_of_supply"
               size="small"
@@ -555,7 +559,7 @@ export const UpdateLeadsProformaInvoice = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="transporter_name"
               size="small"
@@ -599,7 +603,7 @@ export const UpdateLeadsProformaInvoice = (props) => {
                     getOptionLabel={(option) => option}
                     sx={{ minWidth: 300 }}
                     renderInput={(params) => (
-                      <TextField
+                      <CustomTextField
                         {...params}
                         label="Product Name"
                         sx={tfStyle}
@@ -608,7 +612,7 @@ export const UpdateLeadsProformaInvoice = (props) => {
                   />
                 </Grid>
                 <Grid item xs={12} sm={3}>
-                  <TextField
+                  <CustomTextField
                     fullWidth
                     name="quantity"
                     size="small"
@@ -619,7 +623,7 @@ export const UpdateLeadsProformaInvoice = (props) => {
                   />
                 </Grid>
                 <Grid item xs={12} sm={2}>
-                  <TextField
+                  <CustomTextField
                     fullWidth
                     size="small"
                     label="Unit"
@@ -628,7 +632,7 @@ export const UpdateLeadsProformaInvoice = (props) => {
                   />
                 </Grid>
                 <Grid item xs={12} sm={3}>
-                  <TextField
+                  <CustomTextField
                     type={"number"}
                     fullWidth
                     name="rate"
@@ -642,7 +646,7 @@ export const UpdateLeadsProformaInvoice = (props) => {
                   />
                 </Grid>
                 <Grid item xs={12} sm={4}>
-                  <TextField
+                  <CustomTextField
                     fullWidth
                     type={"number"}
                     name="amount"
@@ -658,7 +662,7 @@ export const UpdateLeadsProformaInvoice = (props) => {
                   />
                 </Grid>
                 <Grid item xs={12} sm={2}>
-                  <TextField
+                  <CustomTextField
                     fullWidth
                     type={"date"}
                     name="requested_date"
@@ -677,7 +681,7 @@ export const UpdateLeadsProformaInvoice = (props) => {
                   />
                 </Grid>
                 <Grid item xs={12} sm={2}>
-                  <TextField
+                  <CustomTextField
                     fullWidth
                     name="special_instructions"
                     size="small"

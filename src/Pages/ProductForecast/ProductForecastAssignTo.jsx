@@ -1,9 +1,10 @@
-import { Autocomplete, Box, Grid, TextField } from "@mui/material";
+import { Autocomplete, Box, Grid } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { CustomButton } from "../../Components/CustomButton";
 import { CustomLoader } from "../../Components/CustomLoader";
 import ProductForecastService from "../../services/ProductForecastService";
 import LeadServices from "../../services/LeadService";
+import CustomTextField from "../../Components/CustomTextField";
 
 export const ProductForecastAssignTo = (props) => {
   const { getAllCompanyDetailsByID, setOpenPopup2, forecastDataByID } = props;
@@ -57,7 +58,7 @@ export const ProductForecastAssignTo = (props) => {
       <Box component="form" noValidate onSubmit={AssignToProduct}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               label="Assign From"
@@ -79,7 +80,7 @@ export const ProductForecastAssignTo = (props) => {
               getOptionLabel={(option) => option}
               // sx={{ minWidth: 300 }}
               renderInput={(params) => (
-                <TextField {...params} label="Assign To" />
+                <CustomTextField {...params} label="Assign To" />
               )}
             />
           </Grid>

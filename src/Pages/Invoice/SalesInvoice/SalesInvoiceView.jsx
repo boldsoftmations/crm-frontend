@@ -20,7 +20,6 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  TextField,
 } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
 import { tableCellClasses } from "@mui/material/TableCell";
@@ -36,6 +35,7 @@ import { CustomSearch } from "../../../Components/CustomSearch";
 import { useSelector } from "react-redux";
 import { CancelSalesInvoice } from "./CancelSalesInvoice";
 import { CSVLink } from "react-csv";
+import CustomTextField from "../../../Components/CustomTextField";
 
 export const SalesInvoiceView = () => {
   const errRef = useRef();
@@ -131,6 +131,7 @@ export const SalesInvoiceView = () => {
       setOpen(false);
     }
   };
+
   const handleStartDateChange = (event) => {
     const date = new Date(event.target.value);
     setStartDate(date);
@@ -647,7 +648,7 @@ export const SalesInvoiceView = () => {
         >
           <Grid container spacing={2}>
             <Grid item xs={5} sm={5} md={5} lg={5}>
-              <TextField
+              <CustomTextField
                 fullWidth
                 label="Start Date"
                 variant="outlined"
@@ -661,7 +662,7 @@ export const SalesInvoiceView = () => {
               />
             </Grid>
             <Grid item xs={5} sm={5} md={5} lg={5}>
-              <TextField
+              <CustomTextField
                 fullWidth
                 label="End Date"
                 variant="outlined"

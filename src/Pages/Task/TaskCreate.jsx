@@ -6,12 +6,12 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  TextField,
 } from "@mui/material";
 import React, { useState } from "react";
 import { CustomLoader } from "../../Components/CustomLoader";
 import TaskService from "../../services/TaskService";
 import { useSelector } from "react-redux";
+import CustomTextField from "../../Components/CustomTextField";
 
 export const TaskCreate = (props) => {
   const { setOpenPopup, getAllTaskDetails } = props; // 1
@@ -108,7 +108,7 @@ export const TaskCreate = (props) => {
         </div>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="created_by"
               size="small"
@@ -119,7 +119,7 @@ export const TaskCreate = (props) => {
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="name"
               size="small"
@@ -129,7 +129,7 @@ export const TaskCreate = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               multiline
               fullWidth
               name="description"
@@ -141,7 +141,7 @@ export const TaskCreate = (props) => {
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               type="date"
               name="due_date"

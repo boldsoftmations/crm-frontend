@@ -10,6 +10,9 @@ import { Popup } from "../../Components/Popup";
 import { TaskUpdate } from "./TaskUpdate";
 import { TaskCreate } from "./TaskCreate";
 import { TaskActivityCreate } from "./TaskActivityCreate";
+import { useSelector } from "react-redux";
+import { Autocomplete, Box, Button } from "@mui/material";
+import CustomTextField from "../../Components/CustomTextField";
 
 export const TaskView = () => {
   const [openPopup, setOpenPopup] = useState(false);
@@ -20,18 +23,26 @@ export const TaskView = () => {
   const [assigned, setAssigned] = useState([]);
   const [task, setTask] = useState([]);
   const [filterSelectedQuery, setFilterSelectedQuery] = useState(null);
+  const [searchValue, setSearchValue] = useState(null);
   const [activity, setActivity] = useState(null);
   const [pageCount, setpageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [taskByID, setTaskByID] = useState([]);
   const [openModalactivity, setOpenModalActivity] = useState(false);
+  const UsersData = useSelector((state) => state.auth.profile);
+  const assignedOption = UsersData.sales_users || [];
+
+  const handleFilterChange = (value) => {
+    setFilterSelectedQuery(value);
+    getSearchData(value, searchValue);
+  };
   const handleInputChange = () => {
-    setFilterSelectedQuery(filterSelectedQuery);
-    getSearchData(filterSelectedQuery);
+    setSearchValue(searchValue);
+    getSearchData(filterSelectedQuery, searchValue);
   };
 
   const getResetData = async () => {
-    setFilterSelectedQuery("");
+    setSearchValue("");
     await getAllTaskDetails();
   };
 
@@ -50,10 +61,11 @@ export const TaskView = () => {
   };
 
   useEffect(() => {
-    getLAssignedData();
+    getAssignedData();
+    getAllTaskDetails();
   }, []);
 
-  const getLAssignedData = async (id) => {
+  const getAssignedData = async (id) => {
     try {
       setOpen(true);
       const res = await LeadServices.getAllAssignedUser();
@@ -65,16 +77,15 @@ export const TaskView = () => {
     }
   };
 
-  useEffect(() => {
-    getAllTaskDetails();
-  }, []);
-
   const getAllTaskDetails = async () => {
     try {
       setOpen(true);
-      const response = currentPage
-        ? await TaskService.getAllPaginateTask(currentPage)
-        : await TaskService.getAllTask();
+      const response = await TaskService.getAllTaskData({
+        page: currentPage,
+        assignToFilter: filterSelectedQuery,
+        searchValue: searchValue,
+      });
+
       setTask(response.data.results);
       const total = response.data.count;
       setpageCount(Math.ceil(total / 25));
@@ -100,18 +111,22 @@ export const TaskView = () => {
     }
   };
 
-  const getSearchData = async (value) => {
+  const getSearchData = async (filterValue, searchValue) => {
     try {
       setOpen(true);
-      const filterSearch = value;
-      if (filterSearch !== "") {
-        const response = await TaskService.getAllSearchTask(filterSearch);
+
+      const response = await TaskService.getAllTaskData({
+        assignToFilter: filterValue,
+        searchValue: searchValue,
+      });
+      if (response) {
         setTask(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
       } else {
         await getAllTaskDetails();
         setFilterSelectedQuery("");
+        setSearchValue("");
       }
     } catch (error) {
       console.log("error Search leads", error);
@@ -126,9 +141,14 @@ export const TaskView = () => {
       setCurrentPage(page);
       setOpen(true);
 
-      const response = filterSelectedQuery
-        ? await TaskService.getTaskPaginatewithSearch(page, filterSelectedQuery)
-        : await TaskService.getAllPaginateTask(page);
+      const response =
+        filterSelectedQuery || searchValue
+          ? await TaskService.getAllTaskData({
+              page: page,
+              assignToFilter: filterSelectedQuery,
+              searchValue: searchValue,
+            })
+          : await TaskService.getAllTaskData({ page: page });
 
       if (response) {
         setTask(response.data.results);
@@ -204,51 +224,52 @@ export const TaskView = () => {
             backgroundColor: "rgb(255, 255, 255)", // set background color to default Paper color
           }}
         >
-          <div style={{ display: "flex" }}>
-            <div style={{ flexGrow: 0.9 }}>
-              <CustomSearchWithButton
-                filterSelectedQuery={filterSelectedQuery}
-                setFilterSelectedQuery={setFilterSelectedQuery}
-                handleInputChange={handleInputChange}
-                getResetData={getResetData}
+          <Box display="flex" marginBottom="10px">
+            {!UsersData.groups.includes("Sales Executive") && (
+              <Autocomplete
+                size="small"
+                sx={{ width: 300 }}
+                onChange={(event, value) => handleFilterChange(value)}
+                value={filterSelectedQuery}
+                options={assignedOption.map((option) => option)}
+                getOptionLabel={(option) => option}
+                renderInput={(params) => (
+                  <CustomTextField {...params} label="Filter By Sales Person" />
+                )}
               />
-            </div>
-            <div style={{ flexGrow: 2 }}>
-              <h3
-                style={{
-                  textAlign: "left",
-                  marginBottom: "1em",
-                  fontSize: "24px",
-                  color: "rgb(34, 34, 34)",
-                  fontWeight: 800,
-                }}
-              >
-                Task
-              </h3>
-            </div>
-            <div style={{ flexGrow: 0.5 }} align="right">
-              <div
-                className="btn btn-success"
-                style={{
-                  display: "inline-block",
-                  padding: "6px 16px",
-                  margin: "10px",
-                  fontSize: "0.875rem",
-                  minWidth: "64px",
-                  fontWeight: 500,
-                  lineHeight: 1.75,
-                  borderRadius: "4px",
-                  letterSpacing: "0.02857em",
-                  textTransform: "uppercase",
-                  boxShadow:
-                    "0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2)",
-                }}
-                onClick={() => setOpenPopup(true)}
-              >
-                Add
-              </div>
-            </div>
-          </div>
+            )}
+            <CustomSearchWithButton
+              filterSelectedQuery={searchValue}
+              setFilterSelectedQuery={setSearchValue}
+              handleInputChange={handleInputChange}
+              getResetData={getResetData}
+            />
+            <Button
+              variant="contained"
+              onClick={() => setOpenPopup(true)}
+              style={{
+                backgroundColor: "#006ba1",
+                color: "#fff",
+                marginLeft: "auto",
+                marginRight: "1em",
+              }}
+            >
+              Create Task
+            </Button>
+          </Box>
+          <Box display="flex" alignItems="center" justifyContent="center">
+            <h3
+              style={{
+                textAlign: "left",
+                marginBottom: "1em",
+                fontSize: "24px",
+                color: "rgb(34, 34, 34)",
+                fontWeight: 800,
+              }}
+            >
+              Task
+            </h3>
+          </Box>
 
           <CustomTable
             headers={Tableheaders}

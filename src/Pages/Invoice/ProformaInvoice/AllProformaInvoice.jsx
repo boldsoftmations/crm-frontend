@@ -10,12 +10,10 @@ import {
   Select,
   MenuItem,
   IconButton,
-  TextField,
   Autocomplete,
 } from "@mui/material";
 import InvoiceServices from "../../../services/InvoiceService";
 import { Popup } from "../../../Components/Popup";
-import ClearIcon from "@mui/icons-material/Clear";
 import { getSellerAccountData } from "../../../Redux/Action/Action";
 import { useDispatch, useSelector } from "react-redux";
 import { CustomLoader } from "../../../Components/CustomLoader";
@@ -23,6 +21,8 @@ import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 import { CustomTable } from "../../../Components/CustomTable";
 import { CustomPagination } from "../../../Components/CustomPagination";
 import { AllProformaInvoiceView } from "./AllProformaInvoiceView";
+import CustomTextField from "../../../Components/CustomTextField";
+import { CustomSearchWithButton } from "../../../Components/CustomSearchWithButton";
 
 export const AllProformaInvoice = () => {
   const dispatch = useDispatch();
@@ -38,15 +38,25 @@ export const AllProformaInvoice = () => {
   const [searchValue, setSearchValue] = useState("");
   const [statusValue, setStatusValue] = useState("");
   const [typeValue, setTypeValue] = useState("");
+  const [assign, setAssign] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
   const data = useSelector((state) => state.auth);
   const users = data.profile;
+  const assigned = users.sales_users || [];
   const [endDate, setEndDate] = useState(new Date()); // set endDate as one week ahead of startDate
   const [startDate, setStartDate] = useState(
     new Date(endDate.getTime() - 7 * 24 * 60 * 60 * 1000)
   ); // set default value as current date
   const minDate = new Date().toISOString().split("T")[0];
   const maxDate = new Date("2030-12-31").toISOString().split("T")[0];
+
+  const FilterOptions = [
+    { label: "Status", value: "status" },
+    { label: "Type", value: "type" },
+    ...(!users.groups.includes("Sales Executive")
+      ? [{ label: "Sales Person", value: "raised_by__email" }]
+      : []),
+  ];
 
   const handleStartDateChange = (event) => {
     const date = new Date(event.target.value);
@@ -93,11 +103,21 @@ export const AllProformaInvoice = () => {
     getSearchData(event.target.value);
   };
 
+  const handleAssignValue = (event) => {
+    setAssign(event.target.value);
+    getSearchData(event.target.value);
+  };
+
   const getResetData = () => {
     setSearchValue("");
     setStatusValue("");
     setTypeValue("");
     setFilterType("");
+    getProformaInvoiceData();
+  };
+
+  const getResetSearchData = () => {
+    setSearchValue("");
     getProformaInvoiceData();
   };
 
@@ -253,6 +273,7 @@ export const AllProformaInvoice = () => {
     type: row.type,
     pi_number: row.pi_number,
     generation_date: row.generation_date,
+    raised_by: row.raised_by,
     customer: row.company_name,
     billing_city: row.billing_city,
     contact: row.contact,
@@ -266,6 +287,7 @@ export const AllProformaInvoice = () => {
     "Type",
     "PI Numer",
     "PI Date",
+    "Raised By",
     "Customer",
     "Billing City",
     "Contact",
@@ -290,7 +312,11 @@ export const AllProformaInvoice = () => {
               defaultValue="today"
               onChange={(event, value) => handleSelectChange(value)}
               renderInput={(params) => (
-                <TextField {...params} label="Sort By" variant="outlined" />
+                <CustomTextField
+                  {...params}
+                  label="Sort By"
+                  variant="outlined"
+                />
               )}
             />
             <FormControl fullWidth size="small" sx={{ maxWidth: "200px" }}>
@@ -355,24 +381,45 @@ export const AllProformaInvoice = () => {
                 </Select>
               </FormControl>
             )}
-            <TextField
-              value={searchValue}
-              onChange={(event) => setSearchValue(event.target.value)}
-              name="search"
-              size="small"
-              placeholder="search"
-              label="Search"
-              variant="outlined"
-              sx={{ marginLeft: "1em" }}
+            {filterType === "raised_by__email" &&
+              !users.groups.includes("Sales Executive") && (
+                <FormControl
+                  sx={{ minWidth: "200px", marginLeft: "1em" }}
+                  size="small"
+                >
+                  <InputLabel id="demo-simple-select-label">
+                    Filter By Sales Person
+                  </InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    name="values"
+                    label="Filter By Sales Person"
+                    value={assign}
+                    onChange={(event) => handleAssignValue(event)}
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          maxHeight: 300,
+                          width: 250,
+                        },
+                      },
+                    }}
+                  >
+                    {assigned.map((option, i) => (
+                      <MenuItem key={i} value={option}>
+                        {option}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              )}
+            <CustomSearchWithButton
+              filterSelectedQuery={searchValue}
+              setFilterSelectedQuery={setSearchValue}
+              handleInputChange={handleSearchValue}
+              getResetData={getResetSearchData}
             />
-            <Button
-              variant="contained"
-              color="success"
-              sx={{ marginLeft: "1rem" }}
-              onClick={handleSearchValue}
-            >
-              Search
-            </Button>
             <Button
               variant="contained"
               color="primary"
@@ -425,11 +472,6 @@ export const AllProformaInvoice = () => {
     </>
   );
 };
-
-const FilterOptions = [
-  { label: "Status", value: "status" },
-  { label: "Type", value: "type" },
-];
 
 const StatusOptions = [
   { label: "Raised", value: "raised" },

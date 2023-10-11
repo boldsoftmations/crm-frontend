@@ -74,33 +74,19 @@ const getPIPaginationWithFilterByWithDateRange = (
   );
 };
 
-const getAllPIData = (piValue) => {
-  return CustomAxios.get(`/api/invoice/list-proforma-invoice/?pi=${piValue}`);
-};
-
-const getAllPISearch = (piValue, filter, filterValue, search, searchValue) => {
-  return CustomAxios.get(
-    `/api/invoice/list-proforma-invoice/?pi=${piValue}&${filter}=${filterValue}&${search}=${searchValue}`
-  );
-};
-
-const getAllPIPagination = (piValue, currentPage) => {
-  return CustomAxios.get(
-    `/api/invoice/list-proforma-invoice/?pi=${piValue}&page=${currentPage}`
-  );
-};
-
-const getAllPIPaginationWithFilterBy = (
-  piValue,
-  currentPage,
-  filter,
+// Generic function to get order book data
+const getAllPIData = ({
+  piType,
+  page,
+  filterType,
   filterValue,
-  search,
-  searchValue
-) => {
-  return CustomAxios.get(
-    `/api/invoice/list-proforma-invoice/?pi=${piValue}&page=${currentPage}&${filter}=${filterValue}&${search}=${searchValue}`
-  );
+  searchValue,
+}) => {
+  let url = `/api/invoice/list-proforma-invoice/?pi=${piType}`;
+  if (page) url += `&page=${page}`;
+  if (filterType && filterValue) url += `&${filterType}=${filterValue}`;
+  if (searchValue) url += `&search=${searchValue}`;
+  return CustomAxios.get(url);
 };
 
 // All Lead Api
@@ -151,10 +137,17 @@ const updateCustomerProformaInvoiceData = (id, data) => {
 
 // All order Api
 // Generic function to get order book data
-const getOrderBookData = ({ type, page, searchType, searchValue }) => {
-  let url = `/api/invoice/list-order-book/?ordering=${type}&`;
-  if (page) url += `page=${page}&`;
-  if (searchType && searchValue) url += `${searchType}=${searchValue}&`;
+const getOrderBookData = ({
+  type,
+  page,
+  filterType,
+  filterValue,
+  searchValue,
+}) => {
+  let url = `/api/invoice/list-order-book/?ordering=${type}`;
+  if (page) url += `&page=${page}`;
+  if (filterType && filterValue) url += `&${filterType}=${filterValue}`;
+  if (searchValue) url += `&search=${searchValue}`;
   return CustomAxios.get(url);
 };
 
@@ -320,9 +313,6 @@ const InvoiceServices = {
   getPIPaginationWithDateRange,
   getPIPaginationWithFilterByWithDateRange,
   getAllPIData,
-  getAllPISearch,
-  getAllPIPagination,
-  getAllPIPaginationWithFilterBy,
   getCompanyPerformaInvoiceByIDData,
   getLeadsPerformaInvoiceByIDData,
   sendForApprovalCompanyData,

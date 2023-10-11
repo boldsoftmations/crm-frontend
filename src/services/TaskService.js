@@ -1,23 +1,16 @@
 import CustomAxios from "./api";
 
-const getAllTask = () => {
-  return CustomAxios.get("/api/task/list-tasks");
-};
-
-const getTaskPaginatewithSearch = (all, search) => {
-  return CustomAxios.get(`/api/task/list-tasks/?page=${all}&search=${search}`);
-};
-
-const getAllPaginateTask = (all) => {
-  return CustomAxios.get(`/api/task/list-tasks/?page=${all}`);
+// Generic function to get order book data
+const getAllTaskData = ({ page, assignToFilter, searchValue }) => {
+  let url = `/api/task/list-tasks/?`;
+  if (page) url += `page=${page}&`;
+  if (assignToFilter) url += `assigned_to__email=${assignToFilter}&`;
+  if (searchValue) url += `search=${searchValue}&`;
+  return CustomAxios.get(url);
 };
 
 const createTask = (data) => {
   return CustomAxios.post("/api/task/list-tasks/", data);
-};
-
-const getAllSearchTask = (search) => {
-  return CustomAxios.get(`/api/task/list-tasks/?search=${search}`);
 };
 
 const updateTask = (id, data) => {
@@ -37,10 +30,7 @@ const createUsers = (id, data) => {
   return CustomAxios.patch(`/api/user/users/${id}/`, data);
 };
 const TaskService = {
-  getAllTask,
-  getTaskPaginatewithSearch,
-  getAllPaginateTask,
-  getAllSearchTask,
+  getAllTaskData,
   createTask,
   updateTask,
   createActivityTask,

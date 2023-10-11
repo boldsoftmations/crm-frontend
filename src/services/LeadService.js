@@ -4,10 +4,6 @@ const getProfile = () => {
   return CustomAxios.get(`/api/user/profile/`);
 };
 
-const getTeamLeader = () => {
-  return CustomAxios.get(`/api/user/team-leader/`);
-};
-
 const getAllLeads = (stage, lead_id) => {
   return CustomAxios.get(
     `/api/lead/list-lead/?funnel=${stage}&ordering=${lead_id}`
@@ -172,8 +168,11 @@ const createFollowUpLeads = (data) => {
   return CustomAxios.post("/api/lead/list-followup/", data);
 };
 
-const getAllFollowUp = () => {
-  return CustomAxios.get(`/api/lead/list-followup/`);
+// Generic function to get order book data
+const getAllFollowUp = ({ typeValue, assignToFilter }) => {
+  let url = `/api/lead/list-followup/?type=${typeValue}`;
+  if (assignToFilter) url += `&user__email=${assignToFilter}`;
+  return CustomAxios.get(url);
 };
 
 const createPotentialLead = (data) => {
@@ -196,52 +195,36 @@ const AssignMultipleLeads = (data) => {
   return CustomAxios.post("/api/lead/assign-multiple-leads/", data);
 };
 
-const getAllFollowup = (startDate, endDate) => {
-  return CustomAxios.get(
-    `/api/lead/list-all-follow-ups/?date_range_after=${startDate}&date_range_before=${endDate}`
-  );
-};
+const getAllFollowup = (options) => {
+  const {
+    startDate,
+    endDate,
+    currentPage,
+    filter,
+    filterValue,
+    search,
+    searchValue,
+  } = options;
 
-const getFollowupWithPagination = (startDate, endDate, currentPage) => {
-  return CustomAxios.get(
-    `/api/lead/list-all-follow-ups/?date_range_after=${startDate}&date_range_before=${endDate}&page=${currentPage}`
-  );
-};
+  let url = `/api/lead/list-all-follow-ups/?date_range_after=${startDate}&date_range_before=${endDate}`;
 
-const getFollowupWithFilter = (startDate, endDate, filter, filterValue) => {
-  return CustomAxios.get(
-    `/api/lead/list-all-follow-ups/?date_range_after=${startDate}&date_range_before=${endDate}&${filter}=${filterValue}`
-  );
-};
+  if (currentPage) {
+    url += `&page=${currentPage}`;
+  }
 
-const getFollowupWithSearch = (
-  startDate,
-  endDate,
-  search,
-  searchValue,
-  filter,
-  filterValue
-) => {
-  return CustomAxios.get(
-    `/api/lead/list-all-follow-ups/?date_range_after=${startDate}&date_range_before=${endDate}&${search}=${searchValue}&${filter}=${filterValue}`
-  );
-};
+  if (filter && filterValue) {
+    url += `&${filter}=${filterValue}`;
+  }
 
-const getFollowupWithPaginationAndSearch = (
-  startDate,
-  endDate,
-  currentPage,
-  search,
-  searchValue
-) => {
-  return CustomAxios.get(
-    `/api/lead/list-all-follow-ups/?date_range_after=${startDate}&date_range_before=${endDate}&page=${currentPage}&${search}=${searchValue}`
-  );
+  if (search && searchValue) {
+    url += `&${search}=${searchValue}`;
+  }
+
+  return CustomAxios.get(url);
 };
 
 const LeadServices = {
   getProfile,
-  getTeamLeader,
   getAllLeads,
   getAllAssignedUser,
   getAllUnassignedData,
@@ -275,10 +258,6 @@ const LeadServices = {
   BulkLeadAssign,
   AssignMultipleLeads,
   getAllFollowup,
-  getFollowupWithPagination,
-  getFollowupWithSearch,
-  getFollowupWithFilter,
-  getFollowupWithPaginationAndSearch,
 };
 
 export default LeadServices;

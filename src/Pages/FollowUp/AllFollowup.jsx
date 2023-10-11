@@ -9,6 +9,7 @@ import {
   IconButton,
   MenuItem,
   Button,
+  Autocomplete,
 } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
 import LeadServices from "../../services/LeadService";
@@ -19,27 +20,53 @@ import { CustomLoader } from "../../Components/CustomLoader";
 import { CustomTable } from "../../Components/CustomTable";
 import { CustomPagination } from "../../Components/CustomPagination";
 import CustomTextField from "../../Components/CustomTextField";
+import { UpdateCompanyDetails } from "../Cutomers/CompanyDetails/UpdateCompanyDetails";
+import { useSelector } from "react-redux";
 
-export const AllFollowup = (props) => {
-  const { assigned, descriptionMenuData, product } = props;
+export const AllFollowup = () => {
   const [open, setOpen] = useState(false);
   const [allFollowupData, setAllFollowupData] = useState([]);
-  const [openPopup, setOpenPopup] = useState(false);
+  const [popupLead, setPopupLead] = useState(false);
+  const [popupCustomer, setPopupCustomer] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [leadsByID, setLeadsByID] = useState(null);
   const [pageCount, setpageCount] = useState(0);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [endDate, setEndDate] = useState(new Date());
-  const [startDate, setStartDate] = useState(new Date());
+  const [currentPage, setCurrentPage] = useState(1);
+  // Get the current date
+  const currentDate = new Date();
+  // Set the initial startDate to the first day of the current month
+  const initialStartDate = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth(),
+    1
+  );
+  // Set the initial endDate to the last day of the current month
+  const initialEndDate = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth() + 1,
+    0
+  );
+  const [selectedDate, setSelectedDate] = useState("This Month");
+  const [endDate, setEndDate] = useState(initialEndDate);
+  const [startDate, setStartDate] = useState(initialStartDate); // set default value as current date
   const minDate = new Date().toISOString().split("T")[0];
   const maxDate = new Date("2030-12-31").toISOString().split("T")[0];
   const [filterBySalesperson, setFilterBySalesperson] = useState("");
   const [filterByActivity, setFilterByActivity] = useState("");
+  const userData = useSelector((state) => state.auth.profile);
+  const assigned = userData.sales_users || [];
 
   const openInPopup = async (item) => {
     try {
       setOpen(true);
-      setLeadsByID(item.lead);
+      if (item.lead !== null) {
+        setLeadsByID(item.lead);
+        setPopupLead(true);
+      }
+      if (item.company !== null) {
+        setLeadsByID(item.company);
+        setPopupCustomer(true);
+      }
       setOpen(false);
     } catch (err) {
       console.log("err", err);
@@ -77,9 +104,9 @@ export const AllFollowup = (props) => {
     setEndDate(new Date());
   };
 
-  const handleChange = (event) => {
-    const selectedValue = event.target.value;
-
+  const handleChange = (value) => {
+    const selectedValue = value;
+    setSelectedDate(selectedValue);
     if (selectedValue === "Today") {
       const today = new Date();
       setEndDate(today);
@@ -130,16 +157,6 @@ export const AllFollowup = (props) => {
     getSearchData(filterBySalesperson, value);
   };
 
-  const getResetSalesPersonData = () => {
-    setFilterBySalesperson("");
-    getSearchData(null, filterByActivity);
-  };
-
-  const getResetActivityData = () => {
-    setFilterByActivity("");
-    getSearchData(filterBySalesperson, null);
-  };
-
   useEffect(() => {
     getFollowup();
   }, [startDate, endDate]);
@@ -149,22 +166,19 @@ export const AllFollowup = (props) => {
       setOpen(true);
       const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
       const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
-      if (currentPage) {
-        const response = await LeadServices.getFollowupWithPagination(
-          StartDate,
-          EndDate,
-          currentPage
-        );
+
+      const options = {
+        startDate: StartDate,
+        endDate: EndDate,
+        currentPage: currentPage,
+      };
+
+      const response = await LeadServices.getAllFollowup(options);
+
+      if (response) {
         setAllFollowupData(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
-      } else {
-        const response = await LeadServices.getAllFollowup(StartDate, EndDate);
-        if (response) {
-          setAllFollowupData(response.data.results);
-          const total = response.data.count;
-          setpageCount(Math.ceil(total / 25));
-        }
       }
       setOpen(false);
     } catch (err) {
@@ -179,34 +193,25 @@ export const AllFollowup = (props) => {
       const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
       const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
 
-      let response;
+      let options = {
+        startDate: StartDate,
+        endDate: EndDate,
+      };
 
       if (filterBySalesPerson && filterByActivity) {
-        response = await LeadServices.getFollowupWithSearch(
-          StartDate,
-          EndDate,
-          "user_email",
-          filterBySalesPerson,
-          "activity",
-          filterByActivity
-        );
+        options.search = "user_email";
+        options.searchValue = filterBySalesPerson;
+        options.filter = "activity";
+        options.filterValue = filterByActivity;
       } else if (filterBySalesPerson) {
-        response = await LeadServices.getFollowupWithFilter(
-          StartDate,
-          EndDate,
-          "user_email",
-          filterBySalesPerson
-        );
+        options.search = "user_email";
+        options.searchValue = filterBySalesPerson;
       } else if (filterByActivity) {
-        response = await LeadServices.getFollowupWithFilter(
-          StartDate,
-          EndDate,
-          "activity",
-          filterByActivity
-        );
-      } else {
-        response = await LeadServices.getAllFollowup(StartDate, EndDate);
+        options.filter = "activity";
+        options.filterValue = filterByActivity;
       }
+
+      const response = await LeadServices.getAllFollowup(options);
 
       setAllFollowupData(response.data.results);
       const total = response.data.count;
@@ -221,36 +226,32 @@ export const AllFollowup = (props) => {
   const handlePageClick = async (event, value) => {
     try {
       const page = value;
+      setCurrentPage(page);
       const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
       const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
-      setCurrentPage(page);
-      setOpen(true);
+
+      let options = {
+        startDate: StartDate,
+        endDate: EndDate,
+        currentPage: page,
+      };
+
       if (filterBySalesperson) {
-        const response = await LeadServices.getFollowupWithPaginationAndSearch(
-          StartDate,
-          EndDate,
-          page,
-          "user_email",
-          filterBySalesperson
-        );
-        if (response) {
-          setAllFollowupData(response.data.results);
-          const total = response.data.count;
-          setpageCount(Math.ceil(total / 25));
-        } else {
-          getFollowup();
-          setFilterBySalesperson("");
-        }
-      } else {
-        const response = await LeadServices.getFollowupWithPagination(
-          StartDate,
-          EndDate,
-          page
-        );
+        options.search = "user_email";
+        options.searchValue = filterBySalesperson;
+      }
+
+      const response = await LeadServices.getAllFollowup(options);
+
+      if (response) {
         setAllFollowupData(response.data.results);
         const total = response.data.count;
         setpageCount(Math.ceil(total / 25));
+      } else {
+        getFollowup();
+        setFilterBySalesperson("");
       }
+
       setOpen(false);
     } catch (error) {
       console.log("error", error);
@@ -294,120 +295,39 @@ export const AllFollowup = (props) => {
       <Grid item xs={12}>
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
           <Box display="flex" marginBottom="10px">
-            <FormControl
-              sx={{ minWidth: "300px", marginRight: "10px" }}
+            <Autocomplete
               size="small"
-            >
-              <InputLabel id="demo-select-small">Date</InputLabel>
-              <Select
-                labelId="demo-select-small"
-                id="demo-select-small"
-                label="Date"
-                onChange={(event) => handleChange(event)}
-              >
-                {DateOptions.map((option, i) => (
-                  <MenuItem key={i} value={option.value}>
-                    {option.value}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl
-              sx={{ minWidth: "200px", marginRight: "1em" }}
+              sx={{ width: 300 }}
+              value={selectedDate}
+              onChange={(event, value) => handleChange(value)}
+              options={DateOptions.map((option) => option.value)}
+              getOptionLabel={(option) => option}
+              renderInput={(params) => (
+                <CustomTextField {...params} label="Date" />
+              )}
+            />
+            <Autocomplete
               size="small"
-            >
-              <InputLabel id="demo-simple-select-label">
-                Filter By SalesPerson
-              </InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                name="values"
-                label="Filter By SalesPerson"
-                value={filterBySalesperson}
-                onChange={(event) => FilterBySalesPerson(event.target.value)}
-                sx={{
-                  "& .MuiSelect-iconOutlined": {
-                    display: filterBySalesperson ? "none" : "",
-                  },
-                  "&.Mui-focused .MuiIconButton-root": {
-                    color: "primary.main",
-                  },
-                }}
-                endAdornment={
-                  <IconButton
-                    sx={{
-                      visibility: filterBySalesperson ? "visible" : "hidden",
-                    }}
-                    onClick={getResetSalesPersonData}
-                  >
-                    <ClearIcon />
-                  </IconButton>
-                }
-                MenuProps={{
-                  PaperProps: {
-                    style: {
-                      maxHeight: 300,
-                      width: 250,
-                    },
-                  },
-                }}
-              >
-                {assigned.map((option, i) => (
-                  <MenuItem key={i} value={option.email}>
-                    {option.email}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl
-              sx={{ minWidth: "200px", marginRight: "1em" }}
+              sx={{ width: 300 }}
+              onChange={(event, value) => FilterBySalesPerson(value)}
+              value={filterBySalesperson}
+              options={assigned.map((option) => option)}
+              getOptionLabel={(option) => option}
+              renderInput={(params) => (
+                <CustomTextField {...params} label="Filter By Sales Person" />
+              )}
+            />
+            <Autocomplete
               size="small"
-            >
-              <InputLabel id="demo-simple-select-label">
-                Filter By Activity
-              </InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                name="values"
-                label="Filter By Activity"
-                value={filterByActivity}
-                onChange={(event) => FilterByActivity(event.target.value)}
-                sx={{
-                  "& .MuiSelect-iconOutlined": {
-                    display: filterByActivity ? "none" : "",
-                  },
-                  "&.Mui-focused .MuiIconButton-root": {
-                    color: "primary.main",
-                  },
-                }}
-                endAdornment={
-                  <IconButton
-                    sx={{
-                      visibility: filterByActivity ? "visible" : "hidden",
-                    }}
-                    onClick={getResetActivityData}
-                  >
-                    <ClearIcon />
-                  </IconButton>
-                }
-                MenuProps={{
-                  PaperProps: {
-                    style: {
-                      maxHeight: 300,
-                      width: 250,
-                    },
-                  },
-                }}
-              >
-                {ActivityOption.map((option, i) => (
-                  <MenuItem key={i} value={option.label}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+              sx={{ width: 300 }}
+              onChange={(event, value) => FilterByActivity(value)}
+              value={filterByActivity}
+              options={ActivityOption.map((option) => option.label)}
+              getOptionLabel={(option) => option}
+              renderInput={(params) => (
+                <CustomTextField {...params} label="Filter By Activity" />
+              )}
+            />
           </Box>
           <Box display="flex" alignItems="center" justifyContent="center">
             <h3
@@ -436,16 +356,25 @@ export const AllFollowup = (props) => {
       <Popup
         maxWidth={"xl"}
         title={"Update Leads"}
-        openPopup={openPopup}
-        setOpenPopup={setOpenPopup}
+        openPopup={popupLead}
+        setOpenPopup={setPopupLead}
       >
         <UpdateLeads
-          assigned={assigned}
-          descriptionMenuData={descriptionMenuData}
           leadsByID={leadsByID}
-          product={product}
-          setOpenPopup={setOpenPopup}
+          setOpenPopup={setPopupLead}
           getAllleadsData={getFollowup}
+        />
+      </Popup>
+      <Popup
+        maxWidth={"xl"}
+        title={"Update customer"}
+        openPopup={popupCustomer}
+        setOpenPopup={setPopupCustomer}
+      >
+        <UpdateCompanyDetails
+          setOpenPopup={setPopupCustomer}
+          getAllCompanyDetails={getFollowup}
+          recordForEdit={leadsByID}
         />
       </Popup>
       <Popup
