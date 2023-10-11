@@ -79,8 +79,8 @@ export const Header = () => {
   const getAllTaskDetails = async () => {
     try {
       setOpen(true);
-      const response = await TaskService.getAllTask();
-      setTask(response.data.results);
+      const response = await TaskService.getAllTaskData({ page: "all" });
+      setTask(response.data);
     } catch (err) {
       console.log(err);
     } finally {
