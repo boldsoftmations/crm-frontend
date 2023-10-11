@@ -14,7 +14,9 @@ import ProductService from "../../../services/ProductService";
 import { CSVLink } from "react-csv";
 import { Button } from "@mui/material";
 import { Helmet } from "react-helmet";
+import { Autocomplete, Box } from "@mui/material";
 import KycUpdate from "../KycDetails/KycUpdate";
+import CustomTextField from "../../../Components/CustomTextField";
 
 export const IncompleteKycDetails = () => {
   const dispatch = useDispatch();
@@ -26,14 +28,16 @@ export const IncompleteKycDetails = () => {
   const [errMsg, setErrMsg] = useState("");
   const [companyData, setCompanyData] = useState([]);
   const [recordForEdit, setRecordForEdit] = useState();
-  const [pageCount, setpageCount] = useState(0);
+  const [pageCount, setpageCount] = useState(1);
   const [currentPage, setCurrentPage] = useState(0);
   const [product, setProduct] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const [exportData, setExportData] = useState([]);
   const csvLinkRef = useRef(null);
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
+  const assigned = userData.sales_users || [];
   const [isPrinting, setIsPrinting] = useState(false);
 
   useEffect(() => {
@@ -45,7 +49,7 @@ export const IncompleteKycDetails = () => {
     const afterPrint = () => {
       setIsPrinting(false);
       // Fetch the data again and update the companyData state
-      getAllCompanyDetails();
+      getIncompleteKycCustomerData();
     };
 
     window.addEventListener("beforeprint", beforePrint);
@@ -94,20 +98,11 @@ export const IncompleteKycDetails = () => {
   const handleExport = async () => {
     try {
       setOpen(true);
-      let response;
-      if (filterSelectedQuery) {
-        response =
-          await CustomerServices.getAllPaginateIncompleteKycDataWithSearch(
-            "false",
-            "all",
-            filterSelectedQuery
-          );
-      } else {
-        response = await CustomerServices.getAllPaginateIncompleteKycData(
-          "false",
-          "all"
-        );
-      }
+      let response = await CustomerServices.getIncompleteKycCustomerData({
+        page: "all",
+        assignToFilter: filterSelectedQuery,
+        searchValue: searchQuery,
+      });
       const data = response.data.map((row) => {
         return {
           id: row.id,
@@ -146,8 +141,9 @@ export const IncompleteKycDetails = () => {
   };
 
   const getResetData = () => {
+    getSearchData("", "");
+    setSearchQuery("");
     setFilterSelectedQuery("");
-    getAllCompanyDetails();
   };
 
   const openInPopup = (item) => {
@@ -159,14 +155,19 @@ export const IncompleteKycDetails = () => {
     setOpenSnackbar(false);
   };
 
-  const handleInputChange = () => {
-    setFilterSelectedQuery(filterSelectedQuery);
-    getSearchData(filterSelectedQuery);
+  const handleSearchChange = () => {
+    setSearchQuery(searchQuery);
+    getSearchData(filterSelectedQuery, searchQuery);
+  };
+
+  const handleFilterChange = (filterSelectedValue) => {
+    setFilterSelectedQuery(filterSelectedValue);
+    getSearchData(filterSelectedValue, searchQuery);
   };
 
   useEffect(() => {
     getAllSellerAccountsDetails();
-    getAllCompanyDetails();
+    getIncompleteKycCustomerData();
     getProduct();
   }, []);
 
@@ -195,35 +196,26 @@ export const IncompleteKycDetails = () => {
     }
   };
 
-  const getAllCompanyDetails = async () => {
+  const getIncompleteKycCustomerData = async () => {
     try {
       setOpen(true);
-      if (filterSelectedQuery !== "" && currentPage) {
-        const response =
-          await CustomerServices.getAllPaginateIncompleteKycDataWithSearch(
-            "false",
-            currentPage,
-            filterSelectedQuery
-          );
-        setCompanyData(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      } else if (currentPage) {
-        const response = await CustomerServices.getAllPaginateIncompleteKycData(
-          "false",
-          currentPage
-        );
-        setCompanyData(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
+      const filterValue = filterSelectedQuery || null;
+      const searchValue = searchQuery || null;
+
+      let response;
+      if (filterValue || searchValue) {
+        response = await CustomerServices.getIncompleteKycCustomerData({
+          page: currentPage,
+          assignToFilter: filterValue,
+          searchValue: searchValue,
+        });
       } else {
-        const response = await CustomerServices.getAllIncompleteKycData(
-          "false"
-        );
-        setCompanyData(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
+        response = await CustomerServices.getIncompleteKycCustomerData({
+          page: currentPage,
+        });
       }
+      setCompanyData(response.data.results);
+      setpageCount(Math.ceil(response.data.count / 25));
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -246,22 +238,26 @@ export const IncompleteKycDetails = () => {
     }
   };
 
-  const getSearchData = async (value) => {
+  const getSearchData = async (filterValue, searchValue) => {
     try {
       setOpen(true);
-      const filterSearch = value;
-      if (filterSearch !== "") {
-        const response = await CustomerServices.getAllSearchIncompleteKycData(
-          "false",
-          filterSearch
-        );
-        setCompanyData(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
+      console.log("filterValue", filterValue);
+      console.log("searchValue", searchValue);
+      console.log("currentPage", currentPage);
+      let response;
+      if (filterValue || searchValue) {
+        response = await CustomerServices.getIncompleteKycCustomerData({
+          assignToFilter: filterValue,
+          searchValue: searchValue,
+          page: currentPage,
+        });
       } else {
-        getAllCompanyDetails();
-        setFilterSelectedQuery("");
+        response = await CustomerServices.getIncompleteKycCustomerData({
+          page: currentPage,
+        });
       }
+      setCompanyData(response.data.results);
+      setpageCount(Math.ceil(response.data.count / 25));
       setOpen(false);
     } catch (error) {
       console.log("error Search leads", error);
@@ -273,29 +269,21 @@ export const IncompleteKycDetails = () => {
       const page = value;
       setCurrentPage(page);
       setOpen(true);
-
-      if (filterSelectedQuery) {
-        const response =
-          await CustomerServices.getAllPaginateIncompleteKycDataWithSearch(
-            "false",
-            page,
-            filterSelectedQuery
-          );
-        if (response) {
-          setCompanyData(response.data.results);
-          const total = response.data.count;
-          setpageCount(Math.ceil(total / 25));
-        } else {
-          getAllCompanyDetails();
-          setFilterSelectedQuery("");
-        }
+      let response;
+      if (filterSelectedQuery || searchQuery) {
+        response = await CustomerServices.getIncompleteKycCustomerData({
+          page: page,
+          assignToFilter: filterSelectedQuery,
+          searchValue: searchQuery,
+        });
       } else {
-        const response = await CustomerServices.getAllPaginateIncompleteKycData(
-          "false",
-          page
-        );
+        response = await CustomerServices.getIncompleteKycCustomerData({
+          page: page,
+        });
         setCompanyData(response.data.results);
       }
+      setCompanyData(response.data.results);
+      setpageCount(Math.ceil(response.data.count / 25));
 
       setOpen(false);
     } catch (error) {
@@ -338,141 +326,159 @@ export const IncompleteKycDetails = () => {
           `}
         </style>
       </Helmet>
-
       <CustomLoader open={open} />
-      <div>
-        <ErrorMessage errRef={errRef} errMsg={errMsg} />
+      <ErrorMessage errRef={errRef} errMsg={errMsg} />
+      <div
+        style={{
+          padding: "16px",
+          margin: "16px",
+          boxShadow: "0px 3px 6px #00000029",
+          borderRadius: "4px",
+          display: "flex",
+          flexDirection: "column",
+          backgroundColor: "rgb(255, 255, 255)", // set background color to default Paper color
+        }}
+      >
+        <Box display="flex" alignItems="center">
+          {!userData.groups.includes("Sales Executive") && (
+            <Autocomplete
+              size="small"
+              sx={{ width: 300 }}
+              onChange={(event, value) => handleFilterChange(value)}
+              value={filterSelectedQuery}
+              options={assigned.map((option) => option)}
+              getOptionLabel={(option) => option}
+              renderInput={(params) => (
+                <CustomTextField {...params} label="Filter By Sales Person" />
+              )}
+            />
+          )}
+          <CustomSearchWithButton
+            filterSelectedQuery={searchQuery}
+            setFilterSelectedQuery={setSearchQuery}
+            handleInputChange={handleSearchChange}
+            getResetData={getResetData}
+          />
+
+          <Button
+            variant="contained"
+            onClick={() => getResetData()}
+            sx={{ marginLeft: "10px", marginRight: "10px" }}
+            size="small"
+          >
+            Reset
+          </Button>
+
+          {userData.is_staff === true && (
+            <Button
+              variant="contained"
+              onClick={() => setOpenModal(true)}
+              sx={{ marginLeft: "10px", marginRight: "10px" }}
+              size="small"
+            >
+              Assign Bulk Customer
+            </Button>
+          )}
+
+          <Button variant="contained" onClick={handleDownload}>
+            Download CSV
+          </Button>
+        </Box>
+
+        {exportData.length > 0 && (
+          <CSVLink
+            data={exportData}
+            headers={headers}
+            ref={csvLinkRef}
+            filename="Customer.csv"
+            target="_blank"
+            style={{
+              textDecoration: "none",
+              outline: "none",
+              height: "5vh",
+            }}
+          />
+        )}
 
         <div
           style={{
-            padding: "16px",
-            margin: "16px",
-            boxShadow: "0px 3px 6px #00000029",
+            position: "fixed",
+            top: "20px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            backgroundColor: "green",
+            color: "white",
+            padding: "10px",
             borderRadius: "4px",
-            display: "flex",
-            flexDirection: "column",
-            backgroundColor: "rgb(255, 255, 255)", // set background color to default Paper color
+            display: openSnackbar ? "block" : "none",
+            zIndex: 9999,
           }}
         >
-          <div style={{ display: "flex" }}>
-            <div style={{ flexGrow: 0.9 }}>
-              <CustomSearchWithButton
-                filterSelectedQuery={filterSelectedQuery}
-                setFilterSelectedQuery={setFilterSelectedQuery}
-                handleInputChange={handleInputChange}
-                getResetData={getResetData}
-              />
-            </div>
-            <div style={{ flexGrow: 2 }}>
-              <h3
-                style={{
-                  textAlign: "left",
-                  marginBottom: "1em",
-                  fontSize: "24px",
-                  color: "rgb(34, 34, 34)",
-                  fontWeight: 800,
-                }}
-              >
-                Incomplete KYC Details
-              </h3>
-            </div>
-            <div style={{ flexGrow: 0.5 }} align="right">
-              {userData.is_staff === true && (
-                <button
-                  onClick={() => setOpenModal(true)}
-                  className="btn btn-primary me-2"
-                  size="small"
-                >
-                  Assign Bulk Customer
-                </button>
-              )}
-
-              <Button variant="contained" onClick={handleDownload}>
-                Download CSV
-              </Button>
-              {exportData.length > 0 && (
-                <CSVLink
-                  data={exportData}
-                  headers={headers}
-                  ref={csvLinkRef}
-                  filename="Customer.csv"
-                  target="_blank"
-                  style={{
-                    textDecoration: "none",
-                    outline: "none",
-                    height: "5vh",
-                  }}
-                />
-              )}
-            </div>
-          </div>
-          <div
+          <span style={{ marginRight: "10px" }}>
+            Bulk Customer Assigned Successfully!
+          </span>
+          <button
             style={{
-              position: "fixed",
-              top: "20px",
-              left: "50%",
-              transform: "translateX(-50%)",
-              backgroundColor: "green",
+              backgroundColor: "transparent",
+              border: "none",
               color: "white",
-              padding: "10px",
-              borderRadius: "4px",
-              display: openSnackbar ? "block" : "none",
-              zIndex: 9999,
+              cursor: "pointer",
+              padding: "0",
             }}
+            onClick={handleSnackbarClose}
           >
-            <span style={{ marginRight: "10px" }}>
-              Bulk Customer Assigned Successfully!
-            </span>
-            <button
-              style={{
-                backgroundColor: "transparent",
-                border: "none",
-                color: "white",
-                cursor: "pointer",
-                padding: "0",
-              }}
-              onClick={handleSnackbarClose}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              viewBox="0 0 16 16"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                fill="currentColor"
-                viewBox="0 0 16 16"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M8 7.293l2.146-2.147a.5.5 0 11.708.708L8.707 8l2.147 2.146a.5.5 0 01-.708.708L8 8.707l-2.146 2.147a.5.5 0 01-.708-.708L7.293 8 5.146 5.854a.5.5 0 01.708-.708L8 7.293z"
-                />
-              </svg>
-            </button>
-          </div>
+              <path
+                fillRule="evenodd"
+                d="M8 7.293l2.146-2.147a.5.5 0 11.708.708L8.707 8l2.147 2.146a.5.5 0 01-.708.708L8 8.707l-2.146 2.147a.5.5 0 01-.708-.708L7.293 8 5.146 5.854a.5.5 0 01.708-.708L8 7.293z"
+              />
+            </svg>
+          </button>
+        </div>
 
-          <CustomTable
-            headers={Tableheaders}
-            data={Tabledata}
-            openInPopup={openInPopup}
-            openInPopup2={null}
-            openInPopup3={null}
-            openInPopup4={null}
-            ButtonText={"PI"}
-            ButtonText1={"Activity"}
-            ButtonText2={"Potential"}
-          />
-
-          <div
+        <Box display="flex" alignItems="center" justifyContent="center">
+          <h3
             style={{
-              display: "flex",
-              justifyContent: "center",
-              // marginTop: "2em",
+              textAlign: "left",
+              marginBottom: "1em",
+              fontSize: "24px",
+              color: "rgb(34, 34, 34)",
+              fontWeight: 800,
             }}
           >
-            <CustomPagination
-              currentPage={currentPage}
-              pageCount={pageCount}
-              handlePageClick={handlePageClick}
-            />
-          </div>
+            Incomplete KYC Details
+          </h3>
+        </Box>
+        <CustomTable
+          headers={Tableheaders}
+          data={Tabledata}
+          openInPopup={openInPopup}
+          openInPopup2={null}
+          openInPopup3={null}
+          openInPopup4={null}
+          ButtonText={"PI"}
+          ButtonText1={"Activity"}
+          ButtonText2={"Potential"}
+        />
+
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            // marginTop: "2em",
+          }}
+        >
+          <CustomPagination
+            currentPage={currentPage}
+            pageCount={pageCount}
+            handlePageClick={handlePageClick}
+          />
         </div>
       </div>
       <Popup
@@ -483,7 +489,7 @@ export const IncompleteKycDetails = () => {
       >
         <KycUpdate
           setOpenPopup={setOpenPopup}
-          getAllCompanyDetails={getAllCompanyDetails}
+          getIncompleteKycCustomerData={getIncompleteKycCustomerData}
           recordForEdit={recordForEdit}
         />
       </Popup>
@@ -498,6 +504,7 @@ export const IncompleteKycDetails = () => {
           setOpenSnackbar={setOpenSnackbar}
         />
       </Popup>
+      );
     </>
   );
 };
