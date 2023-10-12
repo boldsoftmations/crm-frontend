@@ -22,17 +22,8 @@ const KycUpdate = ({ recordForEdit }) => {
   const [allCompetitors, setAllCompetitors] = useState([]);
   const [open, setOpen] = useState(false);
   const currentDate = new Date().toISOString().split("T")[0];
-  const [inputValue, setInputValue] = useState({
-    purchase_decision_maker: "",
-    birth_date: "",
-    marital_status: "",
-    anniversary_date: "",
-    religion: "",
-  });
-
-  // State to store data for each purchase_decision_maker
-  const [decisionMakerData, setDecisionMakerData] = useState({});
-
+  const [inputValue, setInputValue] = useState([]);
+  const [contactValue, setContactValue] = useState([]);
   // Fetch company details based on the active tab when the component mounts or the active tab changes
   useEffect(() => {
     if (recordForEdit) {
@@ -44,81 +35,155 @@ const KycUpdate = ({ recordForEdit }) => {
     getCompetitors();
   }, []);
 
+  // Fetch competitors
   const getCompetitors = async () => {
     try {
       setOpen(true);
       const response = await CustomerServices.getAllPaginateCompetitors("all");
       setAllCompetitors(response.data);
-
+    } finally {
       setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("Error", err);
     }
   };
 
-  // API call to fetch company details based on type
+  // Fetch company details based on ID
   const getAllCompanyDetailsByID = async () => {
+    setOpen(true);
     try {
-      setOpen(true);
       const [contactResponse, kycResponse] = await Promise.all([
         CustomerServices.getCompanyDataByIdWithType(recordForEdit, "contacts"),
         CustomerServices.getCompanyDataById(recordForEdit),
       ]);
-      setContactData(contactResponse.data.contacts);
-      setInputValue(kycResponse.data);
+
+      // Extract only the required fields for setInputValue
+      const {
+        website,
+        estd_year,
+        approx_annual_turnover,
+        purchase_decision_maker,
+        industrial_list,
+        distribution_type,
+        customer_serve_count,
+        category,
+        main_distribution,
+        address,
+        business_type,
+        city,
+        name,
+        pan_number,
+        pincode,
+        state,
+        type_of_customer,
+      } = kycResponse.data;
+      setInputValue({
+        website,
+        estd_year,
+        approx_annual_turnover,
+        purchase_decision_maker,
+        industrial_list,
+        distribution_type,
+        customer_serve_count,
+        category,
+        main_distribution,
+        address,
+        business_type,
+        city,
+        name,
+        pan_number,
+        pincode,
+        state,
+        type_of_customer,
+      });
+
+      // Extract only the required fields for setContactData
+      const filteredContacts = contactResponse.data.contacts.map((contact) => ({
+        id: contact.id,
+        name: contact.name,
+        company: contact.company,
+        contact: contact.contact,
+        alternate_contact: contact.alternate_contact,
+        designation: contact.designation,
+        birth_date: contact.birth_date,
+        marital_status: contact.marital_status,
+        anniversary_date: contact.anniversary_date,
+        religion: contact.religion,
+      }));
+      setContactData(filteredContacts);
+      console.log("filteredContacts", filteredContacts);
+      // Find the ID for the purchase decision maker
+      const decisionMaker = filteredContacts.find(
+        (item) => item.name === kycResponse.data.purchase_decision_maker
+      );
+      if (decisionMaker) {
+        setContactValue(decisionMaker);
+      }
+    } catch (error) {
+      console.error("Error fetching company details:", error);
+    } finally {
       setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("company data by id error", err);
     }
   };
 
+  // Handle input changes
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setInputValue((prevState) => ({ ...prevState, [name]: value }));
-
-    // If there's a selected purchase_decision_maker, update decisionMakerData
-    if (inputValue.purchase_decision_maker) {
-      setDecisionMakerData((prevData) => ({
-        ...prevData,
-        [inputValue.purchase_decision_maker]: {
-          ...prevData[inputValue.purchase_decision_maker],
-          [name]: value,
-        },
-      }));
-    }
   };
 
+  // Handle Contacts changes
+  const handleContactsInputChange = (event) => {
+    const { name, value } = event.target;
+    setContactValue((prevState) => ({ ...prevState, [name]: value }));
+  };
+
+  // Handle select changes
   const handleSelectChange = (name, value) => {
     if (name === "purchase_decision_maker") {
-      // Save current data before switching
-      const currentData = {
-        ...inputValue,
-      };
-      delete currentData.purchase_decision_maker; // We don't want to store the decision maker's name in their data
-      setDecisionMakerData((prevData) => ({
-        ...prevData,
-        [inputValue.purchase_decision_maker]: currentData,
-      }));
-
-      // Populate fields based on the new decision maker
-      const newData = decisionMakerData[value] || {};
-      setInputValue((prevState) => ({
-        ...prevState, // Retain other fields
-        purchase_decision_maker: value,
-        birth_date: newData.birth_date || "",
-        marital_status: newData.marital_status || "",
-        anniversary_date: newData.anniversary_date || "",
-      }));
+      setInputValue((prevState) => ({ ...prevState, [name]: value }));
+      const filterID = contactData.find((item) => item.name === value);
+      console.log("filterID", filterID);
+      if (filterID) {
+        // getPurchaseDecisionMakerDataByID(filterID.id);
+        setContactValue(filterID);
+      }
     } else {
       setInputValue((prevState) => ({ ...prevState, [name]: value }));
     }
   };
 
+  // Handle Contacts changes
+  const handleContactsChange = (name, value) => {
+    setContactValue((prevState) => ({ ...prevState, [name]: value }));
+  };
+
+  // Fetch purchase decision maker data by ID
+  // const getPurchaseDecisionMakerDataByID = async (ID) => {
+  //   try {
+  //     setOpen(true);
+  //     const contactResponse = await CustomerServices.getCompanyDataByIdWithType(
+  //       ID,
+  //       "contacts"
+  //     );
+
+  //     if (contactResponse.data && contactResponse.data.contacts) {
+  //       const contact = contactResponse.data.contacts;
+  //       setContactValue((prevState) => ({
+  //         ...prevState,
+  //         religion: contact.religion || "",
+  //         birth_date: contact.birth_date || "",
+  //         marital_status: contact.marital_status || "",
+  //         anniversary_date: contact.anniversary_date || "",
+  //       }));
+  //     }
+  //   } finally {
+  //     setOpen(false);
+  //   }
+  // };
+
+  // Update company details
   const UpdateCompanyDetails = async (e) => {
+    e.preventDefault();
     try {
-      e.preventDefault();
       setOpen(true);
       const req = {
         name: inputValue.name || null,
@@ -129,7 +194,7 @@ const KycUpdate = ({ recordForEdit }) => {
         gst_number: inputValue.gst_number || null,
         pan_number: inputValue.pan_number || null,
         business_type: inputValue.business_type || null,
-        assigned_to: inputValue.assigned_to || null,
+        assigned_to: inputValue.assigned_to || [],
         type_of_customer: inputValue.type_of_customer || null,
         website: inputValue.website || null,
         estd_year: inputValue.estd_year || null,
@@ -140,17 +205,34 @@ const KycUpdate = ({ recordForEdit }) => {
         customer_serve_count: inputValue.customer_serve_count || null,
         category: inputValue.category || [],
         main_distribution: inputValue.main_distribution || [],
-        birth_date: inputValue.birth_date || null,
-        marital_status: inputValue.marital_status || null,
-        anniversary_date: inputValue.anniversary_date || null,
-        relogion: inputValue.relogion || null,
         whatsapp_url: inputValue.whatsapp_url || null,
       };
       await CustomerServices.updateCompanyData(recordForEdit, req);
+      UpdateContactDetails();
+    } finally {
       setOpen(false);
+    }
+  };
+
+  // Update contact details
+  const UpdateContactDetails = async () => {
+    try {
+      setOpen(true);
+      const req = {
+        name: contactValue.name || null,
+        company: contactValue.company || null,
+        contact: contactValue.contact || null,
+        alternate_contact: contactValue.alternate_contact || null,
+        designation: contactValue.designation || null,
+        birth_date: contactValue.birth_date || null,
+        marital_status: contactValue.marital_status || null,
+        anniversary_date: contactValue.anniversary_date || null,
+        religion: contactValue.religion || null, // Fixed typo from 'relogion' to 'religion'
+      };
+
+      await CustomerServices.updateContactData(contactValue.id, req);
       getAllCompanyDetailsByID();
-    } catch (error) {
-      console.log("createing company detail error", error);
+    } finally {
       setOpen(false);
     }
   };
@@ -158,12 +240,8 @@ const KycUpdate = ({ recordForEdit }) => {
   return (
     <>
       <CustomLoader open={open} />
-
-      <Box
-        component="form"
-        noValidate
-        onSubmit={(e) => UpdateCompanyDetails(e)}
-      >
+      {/* Form for KYC Details */}
+      <Box component="form" noValidate onSubmit={UpdateCompanyDetails}>
         <Grid container spacing={2}>
           {/* KYC Details */}
           <Grid item xs={12}>
@@ -227,8 +305,10 @@ const KycUpdate = ({ recordForEdit }) => {
                 minWidth: 220,
               }}
               size="small"
-              onChange={(event, value) => handleSelectChange("religion", value)}
-              value={inputValue.religion || ""}
+              onChange={(event, value) =>
+                handleContactsChange("religion", value)
+              }
+              value={contactValue.religion || ""}
               options={Option.religionsInIndia.map((option) => option)}
               getOptionLabel={(option) => option}
               renderInput={(params) => (
@@ -244,8 +324,8 @@ const KycUpdate = ({ recordForEdit }) => {
               size="small"
               label="Birth date"
               variant="outlined"
-              value={inputValue.birth_date || ""}
-              onChange={handleInputChange}
+              value={contactValue.birth_date || ""}
+              onChange={handleContactsInputChange}
               InputLabelProps={{
                 shrink: true,
               }}
@@ -262,9 +342,9 @@ const KycUpdate = ({ recordForEdit }) => {
               }}
               size="small"
               onChange={(event, value) =>
-                handleSelectChange("marital_status", value)
+                handleContactsChange("marital_status", value)
               }
-              value={inputValue.marital_status || ""}
+              value={contactValue.marital_status || ""}
               options={Option.Marital_Status_Options.map((options) => options)}
               getOptionLabel={(option) => option}
               renderInput={(params) => (
@@ -272,7 +352,7 @@ const KycUpdate = ({ recordForEdit }) => {
               )}
             />
           </Grid>
-          {inputValue.marital_status === "Married" && (
+          {contactValue.marital_status === "Married" && (
             <Grid item xs={12} sm={6}>
               <CustomTextField
                 fullWidth
@@ -281,8 +361,8 @@ const KycUpdate = ({ recordForEdit }) => {
                 size="small"
                 label="Anniversary Date"
                 variant="outlined"
-                value={inputValue.anniversary_date || ""}
-                onChange={handleInputChange}
+                value={contactValue.anniversary_date || ""}
+                onChange={handleContactsInputChange}
                 InputLabelProps={{
                   shrink: true,
                 }}

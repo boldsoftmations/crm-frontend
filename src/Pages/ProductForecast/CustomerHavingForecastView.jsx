@@ -430,7 +430,7 @@ export const CustomerHavingForecastView = () => {
               </FormControl>
             </Box>
             <Box flexGrow={1}>
-              {filterQuery === "sales_person__email" ? (
+              {filterQuery === "product_forecast__sales_person__email" ? (
                 <FormControl
                   sx={{ minWidth: "200px", marginLeft: "1em" }}
                   size="small"

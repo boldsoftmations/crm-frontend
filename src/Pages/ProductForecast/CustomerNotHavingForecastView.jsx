@@ -431,13 +431,13 @@ export const CustomerNotHavingForecastView = () => {
               </FormControl>
             </Box>
             <Box flexGrow={1}>
-              {filterQuery === "sales_person__email" ? (
+              {filterQuery === "product_forecast__sales_person__email" ? (
                 <FormControl
                   sx={{ minWidth: "200px", marginLeft: "1em" }}
                   size="small"
                 >
                   <InputLabel id="demo-simple-select-label">
-                    Filter By State
+                    Filter By Sales Person
                   </InputLabel>
                   <Select
                     labelId="demo-simple-select-label"

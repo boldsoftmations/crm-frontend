@@ -67,6 +67,13 @@ export const NewLeads = () => {
   const [isPrinting, setIsPrinting] = useState(false);
   const assigned = users.sales_users || [];
 
+  const FilterOptions = [
+    { label: "References", value: "references__source" },
+    { label: "Description", value: "description__name" },
+    ...(!users.groups.includes("Sales Executive")
+      ? [{ label: "Assigned To", value: "assigned_to__email" }]
+      : []),
+  ];
   useEffect(() => {
     const beforePrint = () => {
       setIsPrinting(true);
@@ -667,13 +674,6 @@ export const NewLeads = () => {
     </>
   );
 };
-
-const FilterOptions = [
-  { label: "References", value: "references__source" },
-  { label: "Description", value: "description__name" },
-  { label: "Assigned To", value: "assigned_to__email" },
-  // { label: "Search", value: "search" },
-];
 
 const StageOptions = [
   { label: "New", value: "new" },

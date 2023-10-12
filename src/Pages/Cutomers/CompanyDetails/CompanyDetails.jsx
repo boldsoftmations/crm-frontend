@@ -480,6 +480,7 @@ export const CompanyDetails = () => {
               Customer
             </h3>
           </Box>
+
           <CustomTable
             headers={Tableheaders}
             data={Tabledata}
@@ -487,7 +488,11 @@ export const CompanyDetails = () => {
             openInPopup2={openInPopup2}
             openInPopup3={openInPopup3}
             openInPopup4={openInPopup4}
-            ButtonText={"PI"}
+            ButtonText={
+              !userData.groups.includes("Accounts Billing Department")
+                ? "PI"
+                : null
+            }
             ButtonText1={"Activity"}
             ButtonText2={"Potential"}
           />
