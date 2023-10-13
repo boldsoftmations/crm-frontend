@@ -6,6 +6,7 @@ export const CustomTable = ({
   data,
   PriorityColor,
   openInPopup,
+  hideViewForStatus = [],
   ButtonText,
   ButtonText1,
   ButtonText2,
@@ -159,7 +160,7 @@ export const CustomTable = ({
                     zIndex: 0,
                   }}
                 >
-                  {openInPopup && (
+                  {openInPopup && !hideViewForStatus.includes(row.status) && (
                     <div
                       style={{
                         display: "inline-block",

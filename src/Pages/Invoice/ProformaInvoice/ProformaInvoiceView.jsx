@@ -241,7 +241,6 @@ export const ProformaInvoiceView = (props) => {
       );
     }
   };
-
   const TOTAL_GST_DATA = invoiceData.total - invoiceData.amount;
   const TOTAL_GST = TOTAL_GST_DATA.toFixed(2);
   return (
@@ -254,7 +253,10 @@ export const ProformaInvoiceView = (props) => {
       >
         <div className="row p-4">
           <div className="col-xs-6 ">
-            {invoiceData.status !== "Pending Approval" &&
+            {invoiceData &&
+              invoiceData.status &&
+              invoiceData.status !== "Pending Approval" &&
+              invoiceData.status !== "Price Approval" &&
               invoiceData.status !== "Raised" && (
                 <Button
                   variant="contained"
@@ -265,7 +267,11 @@ export const ProformaInvoiceView = (props) => {
                   Download
                 </Button>
               )}
-            {invoiceData.status !== "Pending Approval" &&
+
+            {invoiceData &&
+              invoiceData.status &&
+              invoiceData.status !== "Pending Approval" &&
+              invoiceData.status !== "Price Approval" &&
               invoiceData.status !== "Raised" && (
                 <Button
                   variant="contained"

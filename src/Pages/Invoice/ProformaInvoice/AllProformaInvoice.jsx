@@ -297,6 +297,7 @@ export const AllProformaInvoice = () => {
     "Payment Terms",
     "ACTION",
   ];
+
   return (
     <>
       <CustomLoader open={open} />
@@ -446,6 +447,7 @@ export const AllProformaInvoice = () => {
             headers={Tableheaders}
             data={Tabledata}
             openInPopup={openInPopup}
+            hideViewForStatus={["Price Approval", "Raised", "Pending Approval"]}
             openInPopup2={null}
             openInPopup3={null}
             openInPopup4={null}
