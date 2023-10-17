@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import LeadServices from "../services/LeadService";
 import DashboardService from "../services/DashboardService";
 import { Popup } from "../Components/Popup";
 import { DispatchData } from "./DispatchData";
 import { CustomLoader } from "../Components/CustomLoader";
 import InvoiceServices from "../services/InvoiceService";
-import { StaffDashboard } from "./StaffDashboard";
-import { SalesDashboard } from "./SalesDashboard";
+import { SalesPersonAnalytics } from "./SalesPersonAnalytics";
 
 export const Home = () => {
   const navigate = useNavigate();
@@ -237,10 +235,8 @@ export const Home = () => {
   const getForecastDetails = async () => {
     try {
       setOpen(true);
-      const forecastResponse = userData.is_staff
-        ? await DashboardService.getConsLastThreeMonthForecastData()
-        : await DashboardService.getLastThreeMonthForecastData();
-
+      const forecastResponse =
+        await DashboardService.getLastThreeMonthForecastData();
       const columnKeys = Object.keys(forecastResponse.data);
       const isAllColumnsEmpty = columnKeys.every(
         (key) => forecastResponse.data[key].length === 0
@@ -643,23 +639,45 @@ export const Home = () => {
     }
   };
   const handleAutocompleteChange = (value) => {
-    setFilterValue(value);
-    setAssign(value);
-    getDataByFilter(value);
-    getNewCustomerByFilter(value);
-    getPendingTaskByFilter(value);
-    getPendingFollowupByFilter(value);
-    getPIByFilter(value);
-    getCustomerByFilter(value);
-    geTaskByFilter(value);
-    getPendingDescriptionByFilter(value);
-    getMonthlyCallStatusByFilter(value);
-    getWeeklyCallStatusByFilter(value);
-    getDailyCallStatusByFilter(value);
-    getDescriptionQuantityByFilter(value);
-    getCallPerformanceByFilter(value, startDate, endDate);
-    getDailyInvoiceQuantityByFilter(value);
-    getDailyOrderBookQuantityByFilter(value);
+    // Check if value is not null before accessing its properties
+    if (value) {
+      setFilterValue(value.email);
+      setAssign(value.email);
+      getDataByFilter(value.email);
+      getNewCustomerByFilter(value.email);
+      getPendingTaskByFilter(value.email);
+      getPendingFollowupByFilter(value.email);
+      getPIByFilter(value.email);
+      getCustomerByFilter(value.email);
+      geTaskByFilter(value.email);
+      getPendingDescriptionByFilter(value.email);
+      getMonthlyCallStatusByFilter(value.email);
+      getWeeklyCallStatusByFilter(value.email);
+      getDailyCallStatusByFilter(value.email);
+      getDescriptionQuantityByFilter(value.email);
+      getCallPerformanceByFilter(value.email, startDate, endDate);
+      getDailyInvoiceQuantityByFilter(value.email);
+      getDailyOrderBookQuantityByFilter(value.email);
+    } else {
+      // Handle the case when value is null (i.e., when the Autocomplete is reset)
+      getForecastDetails();
+      getNewCustomerDetails();
+      getPendingTaskDetails();
+      getPendingFollowupDetails();
+      getCustomerDetails();
+      getPIDetails();
+      getAllTaskDetails();
+      setAssign(null);
+      getPendingDescriptionDetails();
+      setFilterValue(null);
+      getMonthlyCallStatusDetails();
+      getWeeklyCallStatusDetails();
+      getDailyCallStatusDetails();
+      getDescriptionQuantityDetails();
+      getCallPerformanceDetails();
+      getDailyInvoiceQuantityDetails();
+      getDailyOrderBookQuantityDetails();
+    }
   };
 
   const getDataByFilter = async (value) => {
@@ -1121,25 +1139,6 @@ export const Home = () => {
       console.log("Error:", err);
     }
   };
-  const getResetDate = () => {
-    getForecastDetails();
-    getNewCustomerDetails();
-    getPendingTaskDetails();
-    getPendingFollowupDetails();
-    getCustomerDetails();
-    getPIDetails();
-    getAllTaskDetails();
-    setAssign(null);
-    getPendingDescriptionDetails();
-    setFilterValue(null);
-    getMonthlyCallStatusDetails();
-    getWeeklyCallStatusDetails();
-    getDailyCallStatusDetails();
-    getDescriptionQuantityDetails();
-    getCallPerformanceDetails();
-    getDailyInvoiceQuantityDetails();
-    getDailyOrderBookQuantityDetails();
-  };
 
   const handleSegmentHover = (segment) => {
     setHoveredSegment(segment);
@@ -1161,86 +1160,43 @@ export const Home = () => {
   return (
     <>
       <CustomLoader open={open} />
-      {/* filter by sales person */}
-      {userData.groups.includes("Director") ||
-      userData.groups.includes("Sales Manager") ||
-      userData.groups.includes("Sales Deputy Manager") ||
-      userData.groups.includes("Sales Assistant Deputy Manager") ? (
-        <StaffDashboard
-          barChartData={barChartData}
-          pieChartData={pieChartData}
-          horizontalBarData={horizontalBarData}
-          newCustomerData={newCustomerData}
-          pendingTask={pendingTask}
-          pendingFollowup={pendingFollowup}
-          pendingDescription={pendingDescription}
-          piData={piData}
-          monthlyStatus={monthlyStatus}
-          weeklyStatus={weeklyStatus}
-          dailyStatus={dailyStatus}
-          handleSegmentHover={handleSegmentHover}
-          handleAutocompleteChange={handleAutocompleteChange}
-          assign={assign}
-          total={total}
-          assigned={assigned}
-          getResetData={getResetData}
-          funnelData={funnelData}
-          hoveredSegment={hoveredSegment}
-          handleRowClick={handleRowClick}
-          descriptionQuantity={descriptionQuantity}
-          callPerformance={callPerformance}
-          dailyInvoiceQuantity={dailyInvoiceQuantity}
-          dailyOrderBookQuantity={dailyOrderBookQuantity}
-          handleChange={handleChange}
-          selectedDate={selectedDate}
-          handleStartDateChange={handleStartDateChange}
-          handleEndDateChange={handleEndDateChange}
-          startDate={startDate}
-          endDate={endDate}
-          maxDate={maxDate}
-          minDate={minDate}
-          openPopup3={openPopup3}
-          setOpenPopup3={setOpenPopup3}
-          getResetDate={getResetDate}
-        />
-      ) : (
-        <SalesDashboard
-          barChartData={barChartData}
-          pieChartData={pieChartData}
-          newCustomerData={newCustomerData}
-          pendingTask={pendingTask}
-          pendingFollowup={pendingFollowup}
-          pendingDescription={pendingDescription}
-          piData={piData}
-          monthlyStatus={monthlyStatus}
-          weeklyStatus={weeklyStatus}
-          dailyStatus={dailyStatus}
-          handleSegmentHover={handleSegmentHover}
-          total={total}
-          funnelData={funnelData}
-          hoveredSegment={hoveredSegment}
-          handleRowClick={handleRowClick}
-          descriptionQuantity={descriptionQuantity}
-          callPerformance={callPerformance}
-          dailyInvoiceQuantity={dailyInvoiceQuantity}
-          dailyOrderBookQuantity={dailyOrderBookQuantity}
-          handleChange={handleChange}
-          selectedDate={selectedDate}
-          handleStartDateChange={handleStartDateChange}
-          handleEndDateChange={handleEndDateChange}
-          startDate={startDate}
-          endDate={endDate}
-          maxDate={maxDate}
-          minDate={minDate}
-          openPopup3={openPopup3}
-          setOpenPopup3={setOpenPopup3}
-          getResetDate={getResetDate}
-          handleAutocompleteChange={handleAutocompleteChange}
-          assign={assign}
-          assigned={assigned}
-          getResetData={getResetData}
-        />
-      )}
+      <SalesPersonAnalytics
+        barChartData={barChartData}
+        pieChartData={pieChartData}
+        horizontalBarData={horizontalBarData}
+        newCustomerData={newCustomerData}
+        pendingTask={pendingTask}
+        pendingFollowup={pendingFollowup}
+        pendingDescription={pendingDescription}
+        piData={piData}
+        monthlyStatus={monthlyStatus}
+        weeklyStatus={weeklyStatus}
+        dailyStatus={dailyStatus}
+        handleSegmentHover={handleSegmentHover}
+        handleAutocompleteChange={handleAutocompleteChange}
+        assign={assign}
+        total={total}
+        assigned={assigned}
+        getResetData={getResetData}
+        funnelData={funnelData}
+        hoveredSegment={hoveredSegment}
+        handleRowClick={handleRowClick}
+        descriptionQuantity={descriptionQuantity}
+        callPerformance={callPerformance}
+        dailyInvoiceQuantity={dailyInvoiceQuantity}
+        dailyOrderBookQuantity={dailyOrderBookQuantity}
+        handleChange={handleChange}
+        selectedDate={selectedDate}
+        handleStartDateChange={handleStartDateChange}
+        handleEndDateChange={handleEndDateChange}
+        startDate={startDate}
+        endDate={endDate}
+        maxDate={maxDate}
+        minDate={minDate}
+        openPopup3={openPopup3}
+        setOpenPopup3={setOpenPopup3}
+        team={false}
+      />
       <Popup
         maxWidth={"xl"}
         title={`View ${dispatchDataByID && dispatchDataByID.type} dashboard`}

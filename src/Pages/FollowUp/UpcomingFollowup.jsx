@@ -155,7 +155,7 @@ export const UpcomingFollowup = ({ product }) => {
                 sx={{ width: 300 }}
                 onChange={(event, value) => handleFilterChange(value)}
                 value={filterSelectedQuery}
-                options={assigned.map((option) => option)}
+                options={assigned.map((option) => option.email)}
                 getOptionLabel={(option) => option}
                 renderInput={(params) => (
                   <CustomTextField {...params} label="Filter By Sales Person" />

@@ -377,7 +377,7 @@ export const ClosedLead = () => {
                   ? "Description"
                   : "",
                 filterQuery === "assigned_to__email"
-                  ? assigned.map((option) => option)
+                  ? assigned.map((option) => option.email)
                   : filterQuery === "references__source"
                   ? referenceData.map((option) => option.source)
                   : filterQuery === "stage"

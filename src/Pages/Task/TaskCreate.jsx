@@ -177,25 +177,27 @@ export const TaskCreate = (props) => {
             </FormControl>
           </Grid>
           <Grid item xs={12} sm={6}>
-            <FormControl fullWidth size="small">
-              <InputLabel id="demo-select-small">Assigned To</InputLabel>
-              <Select
-                name="assigned_to"
-                labelId="demo-select-small"
-                id="demo-select-small"
-                label="Assigned To"
-                value={task.assigned_to}
-                onChange={(event) =>
-                  handleSelectChange("assigned_to", event.target.value)
-                }
-              >
-                {assigned.map((option, i) => (
-                  <MenuItem key={i} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            {!users.groups.includes("Sales Executive") && (
+              <FormControl fullWidth size="small">
+                <InputLabel id="demo-select-small">Assigned To</InputLabel>
+                <Select
+                  name="assigned_to"
+                  labelId="demo-select-small"
+                  id="demo-select-small"
+                  label="Assigned To"
+                  value={task.assigned_to}
+                  onChange={(event) =>
+                    handleSelectChange("assigned_to", event.target.value)
+                  }
+                >
+                  {assigned.map((option, i) => (
+                    <MenuItem key={i} value={option.email}>
+                      {option.email}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
           </Grid>
         </Grid>
         <Button

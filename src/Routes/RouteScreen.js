@@ -62,6 +62,7 @@ import { InActiveUsers } from "./../Pages/Users/InActiveUsers";
 import { IncompleteKycDetails } from "../Pages/Cutomers/CompanyDetails/IncompleteKycDetails";
 import { CompetitorView } from "../Pages/MarketAnalysis/CompetitorView";
 import { PriceApprovalPI } from "../Pages/Invoice/ProformaInvoice/PriceApprovalPI";
+import { TeamWiseDashboard } from "../Pages/TeamWiseDashboard";
 
 export const RouteScreen = () => {
   const tokenData = useSelector((state) => state.auth);
@@ -83,7 +84,12 @@ export const RouteScreen = () => {
 
         {token && (
           <>
-            <Route path="/user/home" exact element={<Home />} />
+            <Route path="/user/analytics" exact element={<Home />} />
+            <Route
+              path="/user/team-analytics"
+              exact
+              element={<TeamWiseDashboard />}
+            />
             <Route path="/user/dashoard" element={<Dashboard />} />
             <Route path="/user/profile" exact element={<Profile />} />
             {/* Leads Routes */}

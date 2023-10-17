@@ -231,7 +231,7 @@ export const TaskView = () => {
                 sx={{ width: 300 }}
                 onChange={(event, value) => handleFilterChange(value)}
                 value={filterSelectedQuery}
-                options={assignedOption.map((option) => option)}
+                options={assignedOption.map((option) => option.email)}
                 getOptionLabel={(option) => option}
                 renderInput={(params) => (
                   <CustomTextField {...params} label="Filter By Sales Person" />

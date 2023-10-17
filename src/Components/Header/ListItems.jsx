@@ -82,14 +82,27 @@ export const ListItems = (props) => {
               <ListItem
                 button
                 component={RouterLink}
-                to="/user/home"
+                to="/user/analytics"
                 style={{ width: 300 }}
               >
                 <ListItemText
                   component={Button}
                   onClick={() => setOpen(false)}
                   inset
-                  primary="Analytics"
+                  primary="Sales Person Analytics"
+                />
+              </ListItem>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/user/team-analytics"
+                style={{ width: 300 }}
+              >
+                <ListItemText
+                  component={Button}
+                  onClick={() => setOpen(false)}
+                  inset
+                  primary="Sales Team Analytics"
                 />
               </ListItem>
             </List>
@@ -2458,14 +2471,27 @@ export const ListItems = (props) => {
                   <ListItem
                     button
                     component={RouterLink}
-                    to="/user/home"
+                    to="/user/analytics"
                     style={{ width: 300 }}
                   >
                     <ListItemText
                       component={Button}
                       onClick={() => setOpen(false)}
                       inset
-                      primary="Analytics"
+                      primary="Sales Person Analytics"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/user/team-analytics"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Sales Team Analytics"
                     />
                   </ListItem>
                 </List>
@@ -2878,14 +2904,27 @@ export const ListItems = (props) => {
                   <ListItem
                     button
                     component={RouterLink}
-                    to="/user/home"
+                    to="/user/analytics"
                     style={{ width: 300 }}
                   >
                     <ListItemText
                       component={Button}
                       onClick={() => setOpen(false)}
                       inset
-                      primary="Analytics"
+                      primary="Sales Person Analytics"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/user/team-analytics"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Sales Team Analytics"
                     />
                   </ListItem>
                 </List>
@@ -3253,14 +3292,14 @@ export const ListItems = (props) => {
                   <ListItem
                     button
                     component={RouterLink}
-                    to="/user/home"
+                    to="/user/analytics"
                     style={{ width: 300 }}
                   >
                     <ListItemText
                       component={Button}
                       onClick={() => setOpen(false)}
                       inset
-                      primary="Analytics"
+                      primary="Sales Person Analytics"
                     />
                   </ListItem>
                 </List>
@@ -3628,14 +3667,14 @@ export const ListItems = (props) => {
                   <ListItem
                     button
                     component={RouterLink}
-                    to="/user/home"
+                    to="/user/analytics"
                     style={{ width: 300 }}
                   >
                     <ListItemText
                       component={Button}
                       onClick={() => setOpen(false)}
                       inset
-                      primary="Analytics"
+                      primary="Sales Person Analytics"
                     />
                   </ListItem>
                 </List>
@@ -3963,14 +4002,14 @@ export const ListItems = (props) => {
                   <ListItem
                     button
                     component={RouterLink}
-                    to="/user/home"
+                    to="/user/analytics"
                     style={{ width: 300 }}
                   >
                     <ListItemText
                       component={Button}
                       onClick={() => setOpen(false)}
                       inset
-                      primary="Analytics"
+                      primary="Sales Person Analytics"
                     />
                   </ListItem>
                 </List>

@@ -77,6 +77,10 @@ export const CustomerOrderBookDetails = () => {
     }
   };
 
+  const selectedOption = filterOption.find(
+    (option) => option.value === filterQuery
+  );
+
   const handleStateFilterChange = (event, newValue) => {
     setFilterSelectedQuery(newValue);
     getSearchData(newValue, searchQuery);
@@ -103,8 +107,9 @@ export const CustomerOrderBookDetails = () => {
           ? await InvoiceServices.getOrderBookData({
               type: "customer",
               page: "all",
-              searchType: filterQuery,
-              searchValue: searchQuery || filterSelectedQuery,
+              filterType: filterQuery,
+              filterValue: filterSelectedQuery,
+              searchValue: searchQuery,
             })
           : await InvoiceServices.getOrderBookData({
               type: "customer",
@@ -337,31 +342,45 @@ export const CustomerOrderBookDetails = () => {
         <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
           <Box display="flex" marginBottom="10px">
-            <FilterAutocomplete
-              label="Filter By"
-              options={filterOption}
-              // value={filterQuery}
+            <Autocomplete
+              size="small"
+              sx={{ width: 300 }}
+              value={selectedOption} // Pass the entire option object here
               onChange={handleMainFilterChange}
+              options={filterOption}
+              getOptionLabel={(option) => option.label}
+              renderInput={(params) => (
+                <CustomTextField {...params} label="Filter By" />
+              )}
             />
-
             {filterQuery ===
               "orderbook__proforma_invoice__seller_account__state" && (
-              <FilterAutocomplete
-                label="Filter By State"
-                options={StateOption}
+              <Autocomplete
+                size="small"
+                sx={{ width: 300, marginLeft: "10px" }}
                 value={filterSelectedQuery}
                 onChange={handleStateFilterChange}
+                options={StateOption.map((option) => option)}
+                getOptionLabel={(option) => option}
+                renderInput={(params) => (
+                  <CustomTextField {...params} label="Filter By State" />
+                )}
               />
             )}
 
             {filterQuery.includes(
               "orderbook__proforma_invoice__raised_by__email"
             ) && (
-              <FilterAutocomplete
-                label="Filter By Sales Person"
-                options={assigned}
+              <Autocomplete
+                size="small"
+                sx={{ width: 300, marginLeft: "10px" }}
                 value={filterSelectedQuery}
                 onChange={handleSalesPersonFilterChange}
+                options={assigned.map((option) => option.email)}
+                getOptionLabel={(option) => option}
+                renderInput={(params) => (
+                  <CustomTextField {...params} label="Filter By Sales Person" />
+                )}
               />
             )}
 
@@ -579,15 +598,3 @@ const headers2 = [
     key: "special_instructions",
   },
 ];
-
-const FilterAutocomplete = ({ label, options, value, onChange }) => (
-  <Autocomplete
-    size="small"
-    sx={{ width: 300, marginLeft: "10px" }}
-    value={value}
-    onChange={onChange}
-    options={options}
-    getOptionLabel={(option) => option.label || option}
-    renderInput={(params) => <CustomTextField {...params} label={label} />}
-  />
-);
