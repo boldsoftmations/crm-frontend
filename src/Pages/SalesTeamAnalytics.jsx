@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Autocomplete,
   Grid,
@@ -59,7 +59,9 @@ export const SalesTeamAnalytics = (props) => {
   } = props;
   const userData = useSelector((state) => state.auth.profile);
   const [dIQdata, setDIQData] = useState([]);
+  const [selectedDIQData, setSelectedDIQData] = useState(null);
   const [dOBQdata, setDOBQData] = useState([]);
+  const [selectedDOBQData, setSelectedDOBQData] = useState(null);
   const [activeButton, setActiveButton] = useState("monthly");
   const assigned = userData.sales_users || [];
   const [privacy] = useState(
@@ -123,31 +125,54 @@ export const SalesTeamAnalytics = (props) => {
     setActiveButton(buttonType);
   };
 
-  const descriptionOptionsForInvoice = dailyInvoiceQuantity.flatMap((entry) =>
-    Object.keys(entry)
+  // UseEffect hook to set initial data state for DIQDATA and DOBQDATA
+  useEffect(() => {
+    if (dailyInvoiceQuantity.length) {
+      const firstKey = Object.keys(dailyInvoiceQuantity[0])[0];
+      setSelectedDIQData(firstKey); // Set the first option as selected
+      setDIQData(dailyInvoiceQuantity[0][firstKey]);
+    }
+    if (dailyOrderBookQuantity.length) {
+      const firstKey = Object.keys(dailyOrderBookQuantity[0])[0];
+      setSelectedDOBQData(firstKey); // Set the first option as selected
+      setDOBQData(dailyOrderBookQuantity[0][firstKey]);
+    }
+  }, [dailyInvoiceQuantity, dailyOrderBookQuantity]);
+
+  // Map the dailyInvoiceQuantity to get description options
+  const descriptionOptionsForInvoice = dailyInvoiceQuantity.map(
+    (entry) => Object.keys(entry)[0]
   );
 
-  const descriptionOptionsForOrderBook = dailyOrderBookQuantity.flatMap(
-    (entry) => Object.keys(entry)
+  // Map the dailyOrderBookQuantity to get description options
+  const descriptionOptionsForOrderBook = dailyOrderBookQuantity.map(
+    (entry) => Object.keys(entry)[0]
   );
 
+  // Handler function to set data for invoice
   const handleDataForInvoice = (value) => {
-    // Filter the dailyInvoiceQuantity data based on the selected option
-    const filteredData = dailyInvoiceQuantity
-      .filter((entry) => entry.hasOwnProperty(value))
-      .map((entry) => entry[value]);
+    setSelectedDIQData(value); // Update the selected option
 
-    // Store the filtered data in the dIQdata state variable
-    setDIQData(filteredData[0]);
+    const filteredData = dailyInvoiceQuantity.find((entry) =>
+      entry.hasOwnProperty(value)
+    );
+
+    if (filteredData && filteredData[value]) {
+      setDIQData(filteredData[value]);
+    }
   };
 
+  // Handler function to set data for order book
   const handleDataForOrderBook = (value) => {
-    // Filter the dailyInvoiceQuantity data based on the selected option
-    const filteredData = dailyOrderBookQuantity
-      .filter((entry) => entry.hasOwnProperty(value))
-      .map((entry) => entry[value]);
-    // Store the filtered data in the dIQdata state variable
-    setDOBQData(filteredData[0]);
+    setSelectedDOBQData(value); // Update the selected option
+
+    const filteredData = dailyOrderBookQuantity.find((entry) =>
+      entry.hasOwnProperty(value)
+    );
+
+    if (filteredData && filteredData[value]) {
+      setDOBQData(filteredData[value]);
+    }
   };
 
   const paletteColors = [
@@ -1103,24 +1128,23 @@ export const SalesTeamAnalytics = (props) => {
               <Autocomplete
                 sx={{}}
                 size="small"
-                defaultValue={dailyInvoiceQuantity[0]}
+                value={selectedDIQData}
                 onChange={(event, value) => handleDataForInvoice(value)}
-                options={descriptionOptionsForInvoice.map((option) => option)}
+                options={descriptionOptionsForInvoice}
                 getOptionLabel={(option) => option}
                 renderInput={(params) => (
                   <CustomTextField {...params} label="Filter By Description" />
                 )}
               />
+
               <CustomChart
                 chartType="LineChart"
                 data={[
                   ["Date", "Total"],
-                  ...((dIQdata &&
-                    dIQdata.map((entry) => [
-                      entry.sales_invoice__generation_date,
-                      entry.total,
-                    ])) ||
-                    []),
+                  ...dIQdata.map((entry) => [
+                    entry.sales_invoice__generation_date,
+                    entry.total,
+                  ]),
                 ]}
                 options={{
                   title: "Daily Sales Invoice Quantity",
@@ -1131,13 +1155,14 @@ export const SalesTeamAnalytics = (props) => {
                 heightStyle={"300px"}
               />
             </Grid>
+
             <Grid item xs={12} sm={6} sx={{ marginTop: "20px" }}>
               <Autocomplete
                 sx={{}}
                 size="small"
-                defaultValue={dailyOrderBookQuantity[0]}
+                value={selectedDOBQData}
                 onChange={(event, value) => handleDataForOrderBook(value)}
-                options={descriptionOptionsForOrderBook.map((option) => option)}
+                options={descriptionOptionsForOrderBook}
                 getOptionLabel={(option) => option}
                 renderInput={(params) => (
                   <CustomTextField {...params} label="Filter By Description" />
