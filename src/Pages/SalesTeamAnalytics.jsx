@@ -102,6 +102,7 @@ export const SalesTeamAnalytics = (props) => {
       "Sales Assistant Deputy Manager",
       "Director",
     ];
+
     const groupOrderA = order.indexOf(a.primaryGroup);
     const groupOrderB = order.indexOf(b.primaryGroup);
 
@@ -109,7 +110,10 @@ export const SalesTeamAnalytics = (props) => {
     if (groupOrderA > groupOrderB) return 1;
 
     // If groups are the same, sort by email
-    return a.email.localeCompare(b.email);
+    const emailA = a.email || ""; // Use empty string if a.email is undefined or falsy
+    const emailB = b.email || ""; // Use empty string if b.email is undefined or falsy
+
+    return emailA.localeCompare(emailB);
   };
 
   // Sort the displayOptions array
