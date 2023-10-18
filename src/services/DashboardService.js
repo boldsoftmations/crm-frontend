@@ -5,12 +5,6 @@ const getLastThreeMonthForecastData = () => {
   return CustomAxios.get(`/api/dashboard/last-three-months-forecast/`);
 };
 
-const getConsLastThreeMonthForecastData = () => {
-  return CustomAxios.get(
-    `/api/dashboard/consolidated-last-three-month-forecast/`
-  );
-};
-
 const getLastThreeMonthForecastDataByFilter = (filter) => {
   return CustomAxios.get(
     `/api/dashboard/last-three-months-forecast/?email=${filter}`
@@ -170,9 +164,200 @@ const getDailyOrderBookQuantityDataByFilter = (filter) => {
     `/api/dashboard/daily-order-book-quantity/?email=${filter}`
   );
 };
+
+// consolidate API
+
+// last Three Month Forecast End Point
+const getConsLastThreeMonthForecastData = () => {
+  return CustomAxios.get(
+    `/api/dashboard/consolidated-last-three-month-forecast/`
+  );
+};
+
+const getConsLastThreeMonthForecastDataByFilter = (filter) => {
+  return CustomAxios.get(
+    `/api/dashboard/consolidated-last-three-months-forecast/?email=${filter}`
+  );
+};
+
+const getConsNewCustomerData = () => {
+  return CustomAxios.get(
+    `/api/dashboard/consolidated-new-customer-month-on-month/`
+  );
+};
+
+const getConsNewCustomerDataByFilter = (filter) => {
+  return CustomAxios.get(
+    `/api/dashboard/consolidated-new-customer-month-on-month/?email=${filter}`
+  );
+};
+
+const getConsPendingTaskData = () => {
+  return CustomAxios.get(`/api/dashboard/consolidated-pending-tasks/`);
+};
+
+const getConsPendingTaskDataByFilter = (filter) => {
+  return CustomAxios.get(`/api/dashboard/pending-tasks/?email=${filter}`);
+};
+
+const getConsPendingFollowupData = () => {
+  return CustomAxios.get(`/api/dashboard/consolidated-pending-followups/`);
+};
+
+const getConsPendingFollowupDataByFilter = (filter) => {
+  return CustomAxios.get(
+    `/api/dashboard/consolidated-pending-followups/?email=${filter}`
+  );
+};
+
+const getConsPIData = () => {
+  return CustomAxios.get(`/api/dashboard/consolidated-list-pi-data/`);
+};
+
+const getConsPIDataByFilter = (filter) => {
+  return CustomAxios.get(
+    `/api/dashboard/consolidated-list-pi-data/?email=${filter}`
+  );
+};
+
+const getConsCustomerDashboard = () => {
+  return CustomAxios.get("/api/dashboard/consolidated-customer-dashboard/");
+};
+
+const getConsCustomerDataByFilter = (filter) => {
+  return CustomAxios.get(
+    `/api/dashboard/consolidated-customer-dashboard/?email=${filter}`
+  );
+};
+
+const getConsLeadDashboard = () => {
+  return CustomAxios.get("/api/dashboard/consolidated-lead-dashboard");
+};
+
+const getConsLeadDataByFilter = (filter) => {
+  return CustomAxios.get(
+    `/api/dashboard/consolidated-lead-dashboard/?email=${filter}`
+  );
+};
+
+const getConsDescriptionWisePendingQuantityData = () => {
+  return CustomAxios.get(
+    "/api/dashboard/consolidated-list-pending-order-description-wise/"
+  );
+};
+
+const getConsDescriptionWisePendingQuantityDataByFilter = (filter) => {
+  return CustomAxios.get(
+    `/api/dashboard/consolidated-list-pending-order-description-wise/?email=${filter}`
+  );
+};
+
+const getConsMonthlyCallStatusData = () => {
+  return CustomAxios.get("/api/dashboard/consolidated-monthly-call-status/");
+};
+
+const getConsMonthlyCallStatusDataByFilter = (filter) => {
+  return CustomAxios.get(
+    `/api/dashboard/consolidated-monthly-call-status/?email=${filter}`
+  );
+};
+
+const getConsWeeklyCallStatusData = () => {
+  return CustomAxios.get("/api/dashboard/consolidated-weekly-call-status/");
+};
+
+const getConsWeeklyCallStatusDataByFilter = (filter) => {
+  return CustomAxios.get(
+    `/api/dashboard/consolidated-weekly-call-status/?email=${filter}`
+  );
+};
+
+const getConsDailyCallStatusData = () => {
+  return CustomAxios.get("/api/dashboard/consolidated-daily-call-status/");
+};
+
+const getConsDailyCallStatusDataByFilter = (filter) => {
+  return CustomAxios.get(
+    `/api/dashboard/consolidated-daily-call-status/?email=${filter}`
+  );
+};
+
+const getConsDescriptionWiseQuantityData = () => {
+  return CustomAxios.get(
+    "/api/dashboard/consolidated-list-current-month-orders-description-wise/"
+  );
+};
+
+const getConsDescriptionWiseQuantityDataByFilter = (filter) => {
+  return CustomAxios.get(
+    `/api/dashboard/consolidated-list-current-month-orders-description-wise/?email=${filter}`
+  );
+};
+
+const getConsCallPerformanceData = (startDate, endDate) => {
+  return CustomAxios.get(
+    `/api/dashboard/consolidated-call-performance/?start_date=${startDate}&end_date=${endDate}`
+  );
+};
+
+const getConsCallPerformanceDataByFilter = (filter, startDate, endDate) => {
+  return CustomAxios.get(
+    `/api/dashboard/consolidated-call-performance/?email=${filter}&start_date=${startDate}&end_date=${endDate}`
+  );
+};
+
+const getConsDailyProfitableReportsData = () => {
+  return CustomAxios.get(
+    "/api/dashboard/consolidated-daily-profitablity-report/"
+  );
+};
+
+const getConsDailyProfitableReportsDataByFilter = (startDate, endDate) => {
+  return CustomAxios.get(
+    `/api/dashboard/consolidated-daily-profitablity-report/?date_range_after=${startDate}&date_range_before=${endDate}`
+  );
+};
+
+const getConsDescriptionWiseTurnoverDataByFilter = (startDate, endDate) => {
+  return CustomAxios.get(
+    `/api/dashboard/consolidated-description-wise-turnover/?start_date=${startDate}&end_date=${endDate}`
+  );
+};
+
+const getConsDailyProfitableSalesReportsDataByFilter = (
+  startDate,
+  endDate,
+  unit
+) => {
+  return CustomAxios.get(
+    `/api/dashboard/consolidated-daily-profitablity-report-sales-invoice-wise/?date_range_after=${startDate}&date_range_before=${endDate}&sales_invoice__order_book__proforma_invoice__seller_account__unit=${unit}`
+  );
+};
+
+const getConsDailyInvoiceQuantityData = () => {
+  return CustomAxios.get("/api/dashboard/consolidated-daily-invoice-quantity/");
+};
+
+const getConsDailyInvoiceQuantityDataByFilter = (filter) => {
+  return CustomAxios.get(
+    `/api/dashboard/consolidated-daily-invoice-quantity/?email=${filter}`
+  );
+};
+
+const getConsDailyOrderBookQuantityData = () => {
+  return CustomAxios.get(
+    "/api/dashboard/consolidated-daily-order-book-quantity/"
+  );
+};
+
+const getConsDailyOrderBookQuantityDataByFilter = (filter) => {
+  return CustomAxios.get(
+    `/api/dashboard/consolidated-daily-order-book-quantity/?email=${filter}`
+  );
+};
+
 const DashboardService = {
   getLastThreeMonthForecastData,
-  getConsLastThreeMonthForecastData,
   getLastThreeMonthForecastDataByFilter,
   getNewCustomerData,
   getNewCustomerDataByFilter,
@@ -206,6 +391,42 @@ const DashboardService = {
   getDailyInvoiceQuantityDataByFilter,
   getDailyOrderBookQuantityData,
   getDailyOrderBookQuantityDataByFilter,
+  // consolidate
+
+  getConsLastThreeMonthForecastData,
+  getConsLastThreeMonthForecastDataByFilter,
+  getConsNewCustomerData,
+  getConsNewCustomerDataByFilter,
+  getConsPendingTaskData,
+  getConsPendingTaskDataByFilter,
+  getConsPendingFollowupData,
+  getConsPendingFollowupDataByFilter,
+  getConsPIData,
+  getConsPIDataByFilter,
+  getConsCustomerDashboard,
+  getConsLeadDashboard,
+  getConsCustomerDataByFilter,
+  getConsLeadDataByFilter,
+  getConsDescriptionWisePendingQuantityData,
+  getConsDescriptionWisePendingQuantityDataByFilter,
+  getConsMonthlyCallStatusData,
+  getConsMonthlyCallStatusDataByFilter,
+  getConsWeeklyCallStatusData,
+  getConsWeeklyCallStatusDataByFilter,
+  getConsDailyCallStatusData,
+  getConsDailyCallStatusDataByFilter,
+  getConsDescriptionWiseQuantityData,
+  getConsDescriptionWiseQuantityDataByFilter,
+  getConsCallPerformanceData,
+  getConsCallPerformanceDataByFilter,
+  getConsDailyProfitableReportsData,
+  getConsDailyProfitableReportsDataByFilter,
+  getConsDescriptionWiseTurnoverDataByFilter,
+  getConsDailyProfitableSalesReportsDataByFilter,
+  getConsDailyInvoiceQuantityData,
+  getConsDailyInvoiceQuantityDataByFilter,
+  getConsDailyOrderBookQuantityData,
+  getConsDailyOrderBookQuantityDataByFilter,
 };
 
 export default DashboardService;
