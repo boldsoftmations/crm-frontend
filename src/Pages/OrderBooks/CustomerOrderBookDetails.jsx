@@ -148,7 +148,9 @@ export const CustomerOrderBookDetails = () => {
             pending_quantity: item.pending_quantity,
             seller_state: item.seller_state,
             billing_address: item.billing_address,
+            billing_pincode: item.billing_pincode,
             shipping_address: item.shipping_address,
+            shipping_pincode: item.shipping_pincode,
             payment_terms: item.payment_terms,
             delivery_terms: item.delivery_terms,
             transporter_name: item.transporter_name,
@@ -503,8 +505,10 @@ const headers = [
 
   { label: "Billing City", key: "billing_city" },
   { label: "Billing Address", key: "billing_address" },
+  { label: "Billing Pincode", key: "billing_pincode" },
   { label: "Shipping City", key: "shipping_city" },
   { label: "Shipping Address", key: "shipping_address" },
+  { label: "Shipping Pincode", key: "shipping_pincode" },
   {
     label: "Product",
     key: "product",
