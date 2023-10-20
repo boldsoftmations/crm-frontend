@@ -47,6 +47,13 @@ export const getProfileUser = (data) => {
   };
 };
 
+export const getAllProfileUser = (data) => {
+  return {
+    type: types.ALL_PROFILE_USER,
+    payload: data,
+  };
+};
+
 export const getSellerAccountData = (data) => {
   return {
     type: types.SELLER_ACCOUNT,

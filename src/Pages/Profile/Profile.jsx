@@ -1,18 +1,54 @@
-import React from "react";
-import { Avatar, Grid, Paper, Switch, Typography } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Avatar, Button, Grid, Paper, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
-import { useSelector } from 'react-redux';
+import { useDispatch } from "react-redux";
+import { Popup } from "../../Components/Popup";
+import { UserProfileCreate } from "./UserProfile/UserProfileCreate";
+import UserProfileService from "../../services/UserProfileService";
+import { getAllProfileUser, getProfileUser } from "../../Redux/Action/Action";
+import { CustomLoader } from "../../Components/CustomLoader";
+
 export const Profile = () => {
-    const data = useSelector((state) => state.auth);
-    const userData = data.profile;
+  const dispatch = useDispatch();
+  const [open, setOpen] = useState(false);
+  const [openPopup, setOpenPopup] = useState(false);
+  const [userData, setUserData] = useState([]);
+
+  useEffect(() => {
+    getUsers();
+  }, []);
+
+  const getUsers = async () => {
+    try {
+      setOpen(true);
+      const response = await UserProfileService.getProfile();
+      setUserData(response.data);
+      getUserProfileData(response.data.emp_id);
+      setOpen(false);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setOpen(false);
+    }
+  };
+
+  const getUserProfileData = async (ID) => {
+    try {
+      console.log("ID", ID);
+      const response = await UserProfileService.getUserProfileDataById(ID);
+      dispatch(getAllProfileUser(response.data));
+    } catch (err) {
+      console.log("error profile", err);
+    }
+  };
 
   return (
     <Grid sx={{ marginTop: "5em" }}>
+      <CustomLoader open={open} />
       <Paper style={paperStyle}>
         <Grid align="center">
           <Avatar style={avatarStyle}>
-            <AccountCircleOutlinedIcon />
+            {/* <AccountCircleOutlinedIcon /> */}
           </Avatar>
           <h2>User Profile</h2>
         </Grid>
@@ -26,7 +62,7 @@ export const Profile = () => {
             <Text>
               Name :-{" "}
               <span>
-                {userData.first_name}
+                {userData.first_name} &nbsp;
                 {userData.last_name}
               </span>
             </Text>
@@ -37,22 +73,31 @@ export const Profile = () => {
             </Text>
           </Grid>
           <Grid item xs={12}>
-            {userData.is_staff === true ? (
-              <Text>
-                Staff :-{" "}
-                <Switch
-                  checked={userData.is_staff ? userData.is_staff : false}
-                  inputProps={{ "aria-label": "controlled" }}
-                />
-              </Text>
-            ) : (
-              <Text>
-                Staff :- <span>{userData.groups}</span>
-              </Text>
-            )}
+            <Text>
+              Staff :- <span>{userData.groups}</span>
+            </Text>
           </Grid>
+          {!userData.is_created && (
+            <Grid item xs={12}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => setOpenPopup(true)}
+              >
+                Complete Profile
+              </Button>
+            </Grid>
+          )}
         </Grid>
       </Paper>
+      <Popup
+        fullScreen={true}
+        title={"Create User Profile"}
+        openPopup={openPopup}
+        setOpenPopup={setOpenPopup}
+      >
+        <UserProfileCreate setOpenPopup={setOpenPopup} getUsers={getUsers} />
+      </Popup>
     </Grid>
   );
 };

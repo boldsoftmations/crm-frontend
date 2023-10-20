@@ -1,5 +1,4 @@
 import * as types from "../Action/actiontypes";
-import { CUSTOMER_ORDERBOOK_DATA } from "./../Action/actiontypes";
 
 const initialState = {
   user: null,
@@ -31,6 +30,7 @@ const userReducer = (state = initialState, action) => {
         ...state,
         user: null,
         profile: null,
+        allProfile: null,
         companyName: null,
         brandAllData: null,
         colourAllData: null,
@@ -57,6 +57,12 @@ const userReducer = (state = initialState, action) => {
         ...state,
         loading: false,
         profile: action.payload,
+      };
+    case types.ALL_PROFILE_USER:
+      return {
+        ...state,
+        loading: false,
+        allProfile: action.payload,
       };
     case types.SELLER_ACCOUNT:
       return {
@@ -136,7 +142,6 @@ const userReducer = (state = initialState, action) => {
         loading: false,
         consumableProduct: action.payload,
       };
-
     default:
       return state;
   }

@@ -14,7 +14,6 @@ import {
   createTheme,
   Box,
   Grid,
-  TextField,
   OutlinedInput,
   FormControl,
   InputLabel,
@@ -22,6 +21,7 @@ import {
   InputAdornment,
   Paper,
   Avatar,
+  TextField,
 } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
@@ -32,7 +32,7 @@ import { CustomButton } from "../../Components/CustomButton";
 import { ErrorMessage } from "./../../Components/ErrorMessage/ErrorMessage";
 import { CustomLoader } from "./../../Components/CustomLoader";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import LeadServices from "../../services/LeadService";
+import UserProfileService from "../../services/UserProfileService";
 
 const paperStyle = {
   padding: 20,
@@ -133,9 +133,8 @@ export const Login = () => {
   const getUsers = async () => {
     try {
       setOpen(true);
-      const res = await LeadServices.getProfile();
-      dispatch(getProfileUser(res.data));
-      // setUserData(res.data);
+      const response = await UserProfileService.getProfile();
+      dispatch(getProfileUser(response.data));
       setOpen(false);
     } catch (err) {
       console.error(err);
@@ -202,17 +201,6 @@ export const Login = () => {
                   label="Password"
                 />
               </FormControl>
-              {/* <TextField
-                  fullWidth
-                  name="password"
-                  size="small"
-                  type="Password"
-                  label="Password"
-                  variant="outlined"
-                  onChange={(e) => setPwd(e.target.value)}
-                  value={pwd}
-                  required
-                /> */}
             </Grid>
           </Grid>
           <CustomButton

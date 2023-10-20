@@ -6,6 +6,7 @@ export const LOGIN_FAIL = "LOGIN_FAIL";
 export const LOGOUT_USER = "LOGOUT_USER";
 export const REFRESH_TOKEN = "REFRESH_TOKEN";
 export const PROFILE_USER = "PROFILE_USER";
+export const ALL_PROFILE_USER = "ALL_PROFILE_USER";
 export const SELLER_ACCOUNT = "SELLER_ACCOUNT";
 export const COMPANY_NAME = "COMPANY_NAME";
 export const BRAND = "BRAND";

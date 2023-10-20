@@ -24,6 +24,7 @@ import { ProductOrderBookDetails } from "./../Pages/OrderBooks/ProductOrderBookD
 import { SalesInvoiceView } from "./../Pages/Invoice/SalesInvoice/SalesInvoiceView";
 import { Auths } from "../Pages/Auth/Auths";
 import { Profile } from "./../Pages/Profile/Profile";
+
 import { ViewDispatch } from "./../Pages/Dispatch/ViewDispatch";
 import { Dispatched } from "./../Pages/Dispatch/Dispatched";
 import { SalesRegisterView } from "./../Pages/Dispatch/SalesRegisterView";
@@ -63,6 +64,8 @@ import { IncompleteKycDetails } from "../Pages/Cutomers/CompanyDetails/Incomplet
 import { CompetitorView } from "../Pages/MarketAnalysis/CompetitorView";
 import { PriceApprovalPI } from "../Pages/Invoice/ProformaInvoice/PriceApprovalPI";
 import { TeamWiseDashboard } from "../Pages/TeamWiseDashboard";
+import { UserProfileView } from "../Pages/Profile/UserProfile/UserProfileView";
+import IndiaMartLeads from "../Pages/Leads/IndiaMartLeads";
 
 export const RouteScreen = () => {
   const tokenData = useSelector((state) => state.auth);
@@ -92,9 +95,15 @@ export const RouteScreen = () => {
             />
             <Route path="/user/dashoard" element={<Dashboard />} />
             <Route path="/user/profile" exact element={<Profile />} />
+            <Route
+              path="/user/user-profile"
+              exact
+              element={<UserProfileView />}
+            />
             {/* Leads Routes */}
             <Route path="/leads/hot-lead" element={<HotLeads />} />
             <Route path="/leads/new-lead" element={<NewLeads />} />
+            <Route path="/leads/indiamart-lead" element={<IndiaMartLeads />} />
             <Route path="/leads/open-lead" element={<OpenLead />} />
             <Route path="/leads/closed-lead" element={<ClosedLead />} />
             <Route path="/leads/duplicate-lead" element={<DuplicateLead />} />

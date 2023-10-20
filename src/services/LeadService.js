@@ -1,9 +1,5 @@
 import CustomAxios from "./api";
 
-const getProfile = () => {
-  return CustomAxios.get(`/api/user/profile/`);
-};
-
 const getAllLeads = (stage, lead_id) => {
   return CustomAxios.get(
     `/api/lead/list-lead/?funnel=${stage}&ordering=${lead_id}`
@@ -223,8 +219,12 @@ const getAllFollowup = (options) => {
   return CustomAxios.get(url);
 };
 
+// IndiaMart Leads API
+const getIndiaMartLeads = (data) => {
+  return CustomAxios.get(`/api/lead/indiamart-leads-list/?month=${data}`);
+};
+
 const LeadServices = {
-  getProfile,
   getAllLeads,
   getAllAssignedUser,
   getAllUnassignedData,
@@ -258,6 +258,7 @@ const LeadServices = {
   BulkLeadAssign,
   AssignMultipleLeads,
   getAllFollowup,
+  getIndiaMartLeads,
 };
 
 export default LeadServices;
