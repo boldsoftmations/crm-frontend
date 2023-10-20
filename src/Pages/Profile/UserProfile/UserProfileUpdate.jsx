@@ -187,7 +187,10 @@ export const UserProfileUpdate = ({
       const formDataWithoutUser = { ...formData };
       delete formDataWithoutUser.user;
 
-      await UserProfileService.updateUserProfileData(formDataWithoutUser.id);
+      await UserProfileService.updateUserProfileData(
+        formDataWithoutUser.id,
+        formDataWithoutUser
+      );
       console.log("Form Data Submitted (excluding user):", formDataWithoutUser);
       setOpenPopup(false);
       getAllUserProfileData();
