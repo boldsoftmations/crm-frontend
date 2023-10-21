@@ -87,6 +87,7 @@ export const KycFields = ({ formData, setFormData }) => {
       label: "Bank Address",
       name: "address",
       disabled: true,
+      multiline: true,
     },
     { label: "PAN Card No", name: "pan_card_number" },
     { label: "Aadhar Card No", name: "aadhar_card_number" },
