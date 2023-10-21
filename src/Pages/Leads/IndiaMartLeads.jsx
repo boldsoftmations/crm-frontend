@@ -15,6 +15,7 @@ import { styled } from "@mui/material/styles";
 import { tableCellClasses } from "@mui/material/TableCell";
 import LeadServices from "../../services/LeadService";
 import CustomTextField from "./../../Components/CustomTextField";
+import { CustomLoader } from "./../../Components/CustomLoader";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -51,6 +52,7 @@ const monthOptions = [
 ];
 export const IndiaMartLeads = () => {
   const currentMonth = new Date().getMonth() + 1;
+  const [open, setOpen] = useState(false);
   const [data, setData] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState(currentMonth.toString());
 
@@ -68,10 +70,13 @@ export const IndiaMartLeads = () => {
 
   const getIndiaMartLeads = async () => {
     try {
+      setOpen(true);
       const response = await LeadServices.getIndiaMartLeads(selectedMonth);
       setData(response.data);
+      setOpen(false);
     } catch (error) {
       console.error(error);
+      setOpen(false);
     }
   };
 
@@ -81,11 +86,13 @@ export const IndiaMartLeads = () => {
 
   return (
     <>
+      <CustomLoader open={open} />
       <Grid item xs={12}>
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
-          <Box display="flex" alignItems="center" marginBottom="10px">
+          <Box display="flex" marginBottom="10px">
             <Autocomplete
               id="combo-box-demo"
+              size="small"
               value={monthOptions.find(
                 (option) => option.value === selectedMonth
               )}
@@ -94,14 +101,12 @@ export const IndiaMartLeads = () => {
               onChange={(event, value) =>
                 setSelectedMonth(value ? value.value : currentMonth.toString())
               }
-              sx={{ width: 300 }}
+              sx={{ width: 300, marginRight: "15rem" }}
               renderInput={(params) => (
                 <CustomTextField {...params} label="Filter By Month" />
               )}
             />
-          </Box>
 
-          <Box display="flex" alignItems="center" justifyContent="center">
             <h3
               style={{
                 marginBottom: "1em",
@@ -138,16 +143,16 @@ export const IndiaMartLeads = () => {
                   <StyledTableRow key={index}>
                     <StyledTableCell align="center">{row.date}</StyledTableCell>
                     <StyledTableCell align="center">
-                      {row.directLead || 0}
+                      {row.direct_leads || 0}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {row.buyLead || 0}
+                      {row.buy_leads || 0}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {row.callLead || 0}
+                      {row.call_leads || 0}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {row.totalLead || 0}
+                      {row.total_leads || 0}
                     </StyledTableCell>
                   </StyledTableRow>
                 ))}
