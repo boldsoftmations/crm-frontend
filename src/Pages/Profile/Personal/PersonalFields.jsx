@@ -7,9 +7,9 @@ const fieldData = [
   { type: "text", label: "Middle Name", name: "middle_name" },
   { type: "text", label: "Last Name", name: "last_name" },
   { type: "email", label: "Email", name: "email" },
-  { type: "email", label: "Alternate Email", name: "alternate_email" },
+  // { type: "email", label: "Alternate Email", name: "alternate_email" },
   { type: "tel", label: "Contact", name: "contact" },
-  { type: "tel", label: "Alternate Contact", name: "alternate_contact" },
+  // { type: "tel", label: "Alternate Contact", name: "alternate_contact" },
   {
     type: "autocomplete",
     label: "Gender",

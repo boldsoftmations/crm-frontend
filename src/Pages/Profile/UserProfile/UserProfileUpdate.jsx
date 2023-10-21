@@ -35,9 +35,9 @@ export const UserProfileUpdate = ({
       middle_name: null,
       last_name: null,
       email: null,
-      alternate_email: null,
+      // alternate_email: null,
       contact: null,
-      alternate_contact: null,
+      // alternate_contact: null,
       date_of_birth: null,
       place_of_birth: null,
       nationality: null,
@@ -155,8 +155,7 @@ export const UserProfileUpdate = ({
       },
     ],
   });
-  console.log("IDForEdit", IDForEdit);
-  console.log("formData update", formData);
+
   useEffect(() => {
     if (IDForEdit) {
       getUserProfileData(IDForEdit);

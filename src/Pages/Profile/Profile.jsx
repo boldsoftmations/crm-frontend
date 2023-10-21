@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Avatar, Button, Grid, Paper, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { useDispatch } from "react-redux";
 import { Popup } from "../../Components/Popup";
 import { UserProfileCreate } from "./UserProfile/UserProfileCreate";
 import UserProfileService from "../../services/UserProfileService";
-import { getAllProfileUser, getProfileUser } from "../../Redux/Action/Action";
 import { CustomLoader } from "../../Components/CustomLoader";
 
 export const Profile = () => {
-  const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
   const [openPopup, setOpenPopup] = useState(false);
   const [userData, setUserData] = useState([]);
@@ -23,22 +20,11 @@ export const Profile = () => {
       setOpen(true);
       const response = await UserProfileService.getProfile();
       setUserData(response.data);
-      getUserProfileData(response.data.emp_id);
       setOpen(false);
     } catch (err) {
       console.error(err);
     } finally {
       setOpen(false);
-    }
-  };
-
-  const getUserProfileData = async (ID) => {
-    try {
-      console.log("ID", ID);
-      const response = await UserProfileService.getUserProfileDataById(ID);
-      dispatch(getAllProfileUser(response.data));
-    } catch (err) {
-      console.log("error profile", err);
     }
   };
 

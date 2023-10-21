@@ -86,8 +86,7 @@ export const AddressFields = ({
   };
 
   const fieldPath = (field) => `${type}_${field}`;
-  console.log(formData.address[type].is_permanent_same_as_current);
-  console.log("formData address", formData);
+
   return (
     <>
       <CustomLoader open={open} />

@@ -1,6 +1,15 @@
-import React, { useState } from "react";
-import { Button, Container, Grid, Divider, Chip, Box } from "@mui/material";
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  Button,
+  Container,
+  Grid,
+  Divider,
+  Chip,
+  Box,
+  Snackbar,
+} from "@mui/material";
 import { styled } from "@mui/material/styles";
+import Alert from "@mui/lab/Alert";
 import UserProfileService from "../../../services/UserProfileService";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { PersonalFields } from "../Personal/PersonalFields";
@@ -26,6 +35,9 @@ const Root = styled("div")(({ theme }) => ({
 
 export const UserProfileCreate = ({ setOpenPopup, getUsers }) => {
   const [open, setOpen] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [errorMessages, setErrorMessages] = useState([]);
+  const [currentErrorIndex, setCurrentErrorIndex] = useState(0);
   const auth = useSelector((state) => state.auth);
   const Profile = auth.profile ? auth.profile : [];
   const [formData, setFormData] = useState({
@@ -35,9 +47,9 @@ export const UserProfileCreate = ({ setOpenPopup, getUsers }) => {
       middle_name: null,
       last_name: null,
       email: null,
-      alternate_email: null,
+      // alternate_email: null,
       contact: null,
-      alternate_contact: null,
+      // alternate_contact: null,
       date_of_birth: null,
       place_of_birth: null,
       nationality: null,
@@ -156,24 +168,54 @@ export const UserProfileCreate = ({ setOpenPopup, getUsers }) => {
     ],
   });
 
-  const CreateUserProfile = async (e) => {
-    try {
-      e.preventDefault();
-      setOpen(true);
+  const handleCloseSnackbar = useCallback(() => {
+    if (currentErrorIndex < errorMessages.length - 1) {
+      setCurrentErrorIndex((prevIndex) => prevIndex + 1);
+    } else {
+      setOpenSnackbar(false);
+      setCurrentErrorIndex(0); // Reset for any future errors
+    }
+  }, [currentErrorIndex, errorMessages.length]);
 
+  const extractErrorMessages = (data) => {
+    return Object.values(data).flatMap((errors) => errors);
+  };
+
+  const CreateUserProfile = async (e) => {
+    e.preventDefault();
+    setOpen(true);
+
+    try {
       await UserProfileService.createUserProfileData(formData);
       setOpenPopup(false);
       getUsers();
-      setOpen(false);
     } catch (error) {
-      console.log("error user Profile", error);
-      setOpen(false);
+      console.error("Error creating user profile:", error);
+      console.log("Entering catch block");
+      const newErrors = extractErrorMessages(error.response.data);
+      setErrorMessages((prevErrors) => [...prevErrors, ...newErrors]);
+      setCurrentErrorIndex(0); // Reset the error index when new errors arrive
+      setOpenSnackbar((prevOpen) => !prevOpen);
+    } finally {
+      setOpen(false); // Close loader in either case (success or error)
     }
   };
 
   return (
     <Container>
       <CustomLoader open={open} />
+      {/* Display errors */}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity="error">
+          {errorMessages[currentErrorIndex]}
+        </Alert>
+      </Snackbar>
+
       <Box component="form" noValidate onSubmit={CreateUserProfile}>
         <Grid container spacing={2}>
           {/* Personal Details */}

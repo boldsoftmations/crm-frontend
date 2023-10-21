@@ -41,6 +41,8 @@ export const FamilyFields = ({ formData, setFormData }) => {
   const relationshipOptions = [
     "Father",
     "Mother",
+    "Brother",
+    "Sister",
     "Spouse",
     "Son",
     "Daughter",
