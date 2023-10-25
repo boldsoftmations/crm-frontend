@@ -218,7 +218,7 @@ export const UserProfileUpdate = ({
           <Grid item xs={12}>
             <Root>
               <Divider>
-                <Chip label="Address Details" />
+                <Chip label="Current Address Details" />
               </Divider>
             </Root>
           </Grid>
@@ -230,7 +230,7 @@ export const UserProfileUpdate = ({
           <Grid item xs={12}>
             <Root>
               <Divider>
-                <Chip label="Permanent Details" />
+                <Chip label="Permanent Address Details" />
               </Divider>
             </Root>
           </Grid>
