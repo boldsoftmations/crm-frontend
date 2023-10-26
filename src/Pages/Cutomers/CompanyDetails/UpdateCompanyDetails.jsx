@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Autocomplete,
   Box,
@@ -14,6 +14,8 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import CustomerServices from "../../../services/CustomerService";
 import { useDispatch, useSelector } from "react-redux";
@@ -32,7 +34,9 @@ export const UpdateCompanyDetails = (props) => {
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState([]);
   const [assigned, setAssigned] = useState([]);
-
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [errorMessages, setErrorMessages] = useState([]);
+  const [currentErrorIndex, setCurrentErrorIndex] = useState(0);
   const dispatch = useDispatch();
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
@@ -126,6 +130,19 @@ export const UpdateCompanyDetails = (props) => {
   const PAN_NO = (pan_no) =>
     /^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?$/.test(pan_no);
 
+  const extractErrorMessages = (data) => {
+    let messages = [];
+    if (data.errors) {
+      for (const [key, value] of Object.entries(data.errors)) {
+        // Assuming each key has an array of messages, concatenate them.
+        value.forEach((msg) => {
+          messages.push(`${key}: ${msg}`);
+        });
+      }
+    }
+    return messages;
+  };
+
   const UpdateCompanyDetails = async (e) => {
     try {
       e.preventDefault();
@@ -156,16 +173,38 @@ export const UpdateCompanyDetails = (props) => {
       getAllCompanyDetails();
     } catch (error) {
       console.log("createing company detail error", error);
+      const newErrors = extractErrorMessages(error.response.data);
+      setErrorMessages(newErrors);
+      setCurrentErrorIndex(0); // Reset the error index when new errors arrive
+      setOpenSnackbar((prevOpen) => !prevOpen);
+    } finally {
       setOpen(false);
     }
   };
 
-  const contactsData = inputValue.contacts || []; // Handle cases when inputValue.contacts is undefined or null
+  const handleCloseSnackbar = useCallback(() => {
+    if (currentErrorIndex < errorMessages.length - 1) {
+      setCurrentErrorIndex((prevIndex) => prevIndex + 1);
+    } else {
+      setOpenSnackbar(false);
+      setCurrentErrorIndex(0); // Reset for any future errors
+    }
+  }, [currentErrorIndex, errorMessages.length]);
 
   return (
     <>
       <CustomLoader open={open} />
-
+      {/* Display errors */}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity="error">
+          {errorMessages[currentErrorIndex]}
+        </Alert>
+      </Snackbar>
       <Box
         component="form"
         noValidate

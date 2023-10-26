@@ -191,7 +191,6 @@ export const UserProfileCreate = ({ setOpenPopup, getUsers }) => {
       getUsers();
     } catch (error) {
       console.error("Error creating user profile:", error);
-      console.log("Entering catch block");
       const newErrors = extractErrorMessages(error.response.data);
       setErrorMessages((prevErrors) => [...prevErrors, ...newErrors]);
       setCurrentErrorIndex(0); // Reset the error index when new errors arrive
