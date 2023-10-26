@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Grid, Paper, Box } from "@mui/material";
+import React, { useCallback, useEffect, useState } from "react";
+import { Grid, Paper, Box, Snackbar, Alert } from "@mui/material";
 import { CustomTable } from "../../../Components/CustomTable";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomerServices from "../../../services/CustomerService";
@@ -8,8 +8,22 @@ import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 export const LastPriceDeatils = ({ recordForEdit }) => {
   const [lastPrice, setLastPrice] = useState([]);
   const [open, setOpen] = useState(false);
-  const errRef = useRef();
-  const [errMsg, setErrMsg] = useState("");
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [errorMessages, setErrorMessages] = useState([]);
+  const [currentErrorIndex, setCurrentErrorIndex] = useState(0);
+
+  const extractErrorMessages = (data) => {
+    let messages = [];
+    if (data.errors) {
+      for (const [key, value] of Object.entries(data.errors)) {
+        // Assuming each key has an array of messages, concatenate them.
+        value.forEach((msg) => {
+          messages.push(`${key}: ${msg}`);
+        });
+      }
+    }
+    return messages;
+  };
 
   useEffect(() => {
     getLastPriceData();
@@ -24,26 +38,25 @@ export const LastPriceDeatils = ({ recordForEdit }) => {
       );
       setLastPrice(response.data.last_price);
       setOpen(false);
-    } catch (err) {
+    } catch (error) {
+      console.log("getting Last Price api error", error);
+      const newErrors = extractErrorMessages(error.response.data);
+      setErrorMessages(newErrors);
+      setCurrentErrorIndex(0); // Reset the error index when new errors arrive
+      setOpenSnackbar((prevOpen) => !prevOpen);
+    } finally {
       setOpen(false);
-      if (!err.response) {
-        setErrMsg(
-          "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
-        );
-      } else if (err.response.status === 400) {
-        setErrMsg(
-          err.response.data.errors.name
-            ? err.response.data.errors.name
-            : err.response.data.errors.non_field_errors
-        );
-      } else if (err.response.status === 401) {
-        setErrMsg(err.response.data.errors.code);
-      } else {
-        setErrMsg("Server Error");
-      }
-      errRef.current.focus();
     }
   };
+
+  const handleCloseSnackbar = useCallback(() => {
+    if (currentErrorIndex < errorMessages.length - 1) {
+      setCurrentErrorIndex((prevIndex) => prevIndex + 1);
+    } else {
+      setOpenSnackbar(false);
+      setCurrentErrorIndex(0); // Reset for any future errors
+    }
+  }, [currentErrorIndex, errorMessages.length]);
 
   const TableHeader = [
     "PI",
@@ -68,9 +81,16 @@ export const LastPriceDeatils = ({ recordForEdit }) => {
   return (
     <>
       <CustomLoader open={open} />
-
+      <Snackbar
+        open={openSnackbar}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity="error">
+          {errorMessages[currentErrorIndex]}
+        </Alert>
+      </Snackbar>
       <Grid item xs={12}>
-        <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
           <Box display="flex" alignItems="center" justifyContent="center">
             <h3
