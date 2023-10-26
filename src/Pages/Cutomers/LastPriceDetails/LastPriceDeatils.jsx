@@ -3,7 +3,6 @@ import { Grid, Paper, Box, Snackbar, Alert } from "@mui/material";
 import { CustomTable } from "../../../Components/CustomTable";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomerServices from "../../../services/CustomerService";
-import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 
 export const LastPriceDeatils = ({ recordForEdit }) => {
   const [lastPrice, setLastPrice] = useState([]);
