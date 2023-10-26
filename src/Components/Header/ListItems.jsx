@@ -1389,167 +1389,6 @@ export const ListItems = (props) => {
           {/* customer services */}
           {userData.groups.includes("Customer Service") && (
             <>
-              {/* products */}
-              <ListItem
-                button
-                onClick={() => setExpandProduct(!expandProduct)}
-                style={{ width: 300 }}
-              >
-                <ListItemIcon>
-                  <CategoryIcon />
-                </ListItemIcon>
-                <ListItemText primary="Products" />
-                {expandProduct ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-              </ListItem>
-              <Collapse in={expandProduct} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/products/view-colors"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Colors"
-                    />
-                  </ListItem>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/products/view-brand"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Brand"
-                    />
-                  </ListItem>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/products/view-basic-unit"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Basic Unit"
-                    />
-                  </ListItem>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/products/view-unit"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Unit"
-                    />
-                  </ListItem>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/products/view-packing-unit"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Packing Unit"
-                    />
-                  </ListItem>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/products/view-description"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Description"
-                    />
-                  </ListItem>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/products/view-product-code"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Product Code"
-                    />
-                  </ListItem>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/products/view-consumable"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Consumable"
-                    />
-                  </ListItem>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/products/view-finish-goods"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Finish Goods"
-                    />
-                  </ListItem>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/products/view-raw-materials"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Raw Materials"
-                    />
-                  </ListItem>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/products/view-price-list"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Price List"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
-
               {/* Customer */}
               <ListItem
                 button
@@ -1647,36 +1486,6 @@ export const ListItems = (props) => {
                 </List>
               </Collapse>
 
-              {/*Sales Invoice  */}
-              <ListItem
-                button
-                onClick={() => setExpandSalesInvoice(!expandSalesInvoice)}
-                style={{ width: 300 }}
-              >
-                <ListItemIcon>
-                  <DescriptionIcon />
-                </ListItemIcon>
-                <ListItemText primary="Sales Invoice" />
-                {expandSalesInvoice ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-              </ListItem>
-              <Collapse in={expandSalesInvoice} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/invoice/sales-invoice"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Sales Invoice"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
               {/* Forecast */}
               <ListItem
                 button
@@ -1707,6 +1516,7 @@ export const ListItems = (props) => {
                   </ListItem>
                 </List>
               </Collapse>
+
               {/* Seller Account */}
               {userData.groups.toString() !== "Sales" && (
                 <ListItem
@@ -1739,6 +1549,7 @@ export const ListItems = (props) => {
                   </ListItem>
                 </List>
               </Collapse>
+
               {/* Order book */}
               <ListItem
                 button
@@ -1782,6 +1593,7 @@ export const ListItems = (props) => {
                   </ListItem>
                 </List>
               </Collapse>
+
               {/* Dispatch */}
               <ListItem
                 button

@@ -81,7 +81,8 @@ export const IndiaMartLeads = () => {
   };
 
   const filteredData = data.filter(
-    (row) => new Date(row.date).getMonth() + 1 === parseInt(selectedMonth)
+    (row) =>
+      new Date(row.date_time__date).getMonth() + 1 === parseInt(selectedMonth)
   );
 
   return (
@@ -141,7 +142,9 @@ export const IndiaMartLeads = () => {
               <TableBody>
                 {filteredData.map((row, index) => (
                   <StyledTableRow key={index}>
-                    <StyledTableCell align="center">{row.date}</StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.date_time__date}
+                    </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.direct_leads || 0}
                     </StyledTableCell>

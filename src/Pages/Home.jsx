@@ -21,6 +21,7 @@ export const Home = () => {
   const [pendingDescription, setPendingDescription] = useState([]);
   const [descriptionQuantity, setDescriptionQuantity] = useState([]);
   const [piData, setPiData] = useState([]);
+  const [indiaMartLeadData, setIndiaMartLeadData] = useState([]);
   const [monthlyStatus, setMonthlyStatus] = useState([]);
   const [weeklyStatus, setWeeklyStatus] = useState([]);
   const [dailyStatus, setDailyStatus] = useState([]);
@@ -55,6 +56,8 @@ export const Home = () => {
   const [startDate, setStartDate] = useState(initialStartDate); // set default value as current date
   const minDate = new Date().toISOString().split("T")[0];
   const maxDate = new Date("2030-12-31").toISOString().split("T")[0];
+  const formattedCurrentDate = currentDate.toISOString().split("T")[0];
+  const [selectedWeek, setSelectedWeek] = useState(formattedCurrentDate);
   useEffect(() => {
     getAllTaskDetails();
     getCustomerDetails();
@@ -63,6 +66,7 @@ export const Home = () => {
     getPendingTaskDetails();
     getPendingFollowupDetails();
     getPIDetails();
+    getIndiaMartLeadDetails();
     getPendingDescriptionDetails();
     getMonthlyCallStatusDetails();
     getWeeklyCallStatusDetails();
@@ -93,6 +97,11 @@ export const Home = () => {
   const handleEndDateChange = (event) => {
     const date = new Date(event.target.value);
     setEndDate(date);
+  };
+
+  const handleDateChange = (event) => {
+    setSelectedWeek(event.target.value);
+    getIndiaMartLeadByFilter(event);
   };
 
   const handleChange = (event) => {
@@ -313,7 +322,6 @@ export const Home = () => {
           };
         });
       });
-
       setNewCustomerData(Data);
       setOpen(false);
     } catch (err) {
@@ -403,6 +411,25 @@ export const Home = () => {
     } catch (err) {
       setOpen(false);
       console.log("err", err);
+    }
+  };
+
+  const getIndiaMartLeadDetails = async () => {
+    try {
+      setOpen(true);
+      const indiaMartLeadResponse =
+        await DashboardService.getIndiaMartLeadData();
+      const formattedData = indiaMartLeadResponse.data.map((item) => {
+        return {
+          day: item.day,
+          totalLeads: item.total_leads,
+        };
+      });
+      setIndiaMartLeadData(formattedData);
+      setOpen(false);
+    } catch (err) {
+      setOpen(false);
+      console.error("Error:", err);
     }
   };
 
@@ -832,6 +859,26 @@ export const Home = () => {
     }
   };
 
+  const getIndiaMartLeadByFilter = async (event) => {
+    try {
+      setOpen(true);
+      const FilterData = event.target.value;
+      const indiaMartLeadResponse =
+        await DashboardService.getIndiaMartLeadDataByFilter(FilterData);
+      const formattedData = indiaMartLeadResponse.data.map((item) => {
+        return {
+          day: item.day,
+          totalLeads: item.total_leads,
+        };
+      });
+      setIndiaMartLeadData(formattedData);
+      setOpen(false);
+    } catch (error) {
+      console.log("error", error);
+      setOpen(false);
+    }
+  };
+
   const getCustomerByFilter = async (value) => {
     try {
       const FilterData = value;
@@ -1169,6 +1216,7 @@ export const Home = () => {
         pendingFollowup={pendingFollowup}
         pendingDescription={pendingDescription}
         piData={piData}
+        indiaMartLeadData={indiaMartLeadData}
         monthlyStatus={monthlyStatus}
         weeklyStatus={weeklyStatus}
         dailyStatus={dailyStatus}
@@ -1196,6 +1244,8 @@ export const Home = () => {
         openPopup3={openPopup3}
         setOpenPopup3={setOpenPopup3}
         team={false}
+        selectedWeek={selectedWeek}
+        handleDateChange={handleDateChange}
       />
       <Popup
         maxWidth={"xl"}

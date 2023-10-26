@@ -45,6 +45,14 @@ const getPIDataByFilter = (filter) => {
   return CustomAxios.get(`/api/dashboard/list-pi-data/?email=${filter}`);
 };
 
+const getIndiaMartLeadData = () => {
+  return CustomAxios.get(`/api/dashboard/india-mart-lead/`);
+};
+
+const getIndiaMartLeadDataByFilter = (filter) => {
+  return CustomAxios.get(`/api/dashboard/india-mart-lead/?date=${filter}`);
+};
+
 const getCustomerDashboard = () => {
   return CustomAxios.get("/api/dashboard/customer-dashboard/");
 };
@@ -165,7 +173,7 @@ const getDailyOrderBookQuantityDataByFilter = (filter) => {
   );
 };
 
-// consolidate API 
+// consolidate API
 
 // last Three Month Forecast End Point
 const getConsLastThreeMonthForecastData = () => {
@@ -181,7 +189,9 @@ const getConsLastThreeMonthForecastDataByFilter = (filter) => {
 };
 
 const getConsNewCustomerData = () => {
-  return CustomAxios.get(`/api/dashboard/consolidated-new-customer-month-on-month/`);
+  return CustomAxios.get(
+    `/api/dashboard/consolidated-new-customer-month-on-month/`
+  );
 };
 
 const getConsNewCustomerDataByFilter = (filter) => {
@@ -203,7 +213,9 @@ const getConsPendingFollowupData = () => {
 };
 
 const getConsPendingFollowupDataByFilter = (filter) => {
-  return CustomAxios.get(`/api/dashboard/consolidated-pending-followups/?email=${filter}`);
+  return CustomAxios.get(
+    `/api/dashboard/consolidated-pending-followups/?email=${filter}`
+  );
 };
 
 const getConsPIData = () => {
@@ -211,7 +223,9 @@ const getConsPIData = () => {
 };
 
 const getConsPIDataByFilter = (filter) => {
-  return CustomAxios.get(`/api/dashboard/consolidated-list-pi-data/?email=${filter}`);
+  return CustomAxios.get(
+    `/api/dashboard/consolidated-list-pi-data/?email=${filter}`
+  );
 };
 
 const getConsCustomerDashboard = () => {
@@ -219,7 +233,9 @@ const getConsCustomerDashboard = () => {
 };
 
 const getConsCustomerDataByFilter = (filter) => {
-  return CustomAxios.get(`/api/dashboard/consolidated-customer-dashboard/?email=${filter}`);
+  return CustomAxios.get(
+    `/api/dashboard/consolidated-customer-dashboard/?email=${filter}`
+  );
 };
 
 const getConsLeadDashboard = () => {
@@ -227,11 +243,15 @@ const getConsLeadDashboard = () => {
 };
 
 const getConsLeadDataByFilter = (filter) => {
-  return CustomAxios.get(`/api/dashboard/consolidated-lead-dashboard/?email=${filter}`);
+  return CustomAxios.get(
+    `/api/dashboard/consolidated-lead-dashboard/?email=${filter}`
+  );
 };
 
 const getConsDescriptionWisePendingQuantityData = () => {
-  return CustomAxios.get("/api/dashboard/consolidated-list-pending-order-description-wise/");
+  return CustomAxios.get(
+    "/api/dashboard/consolidated-list-pending-order-description-wise/"
+  );
 };
 
 const getConsDescriptionWisePendingQuantityDataByFilter = (filter) => {
@@ -245,7 +265,9 @@ const getConsMonthlyCallStatusData = () => {
 };
 
 const getConsMonthlyCallStatusDataByFilter = (filter) => {
-  return CustomAxios.get(`/api/dashboard/consolidated-monthly-call-status/?email=${filter}`);
+  return CustomAxios.get(
+    `/api/dashboard/consolidated-monthly-call-status/?email=${filter}`
+  );
 };
 
 const getConsWeeklyCallStatusData = () => {
@@ -253,7 +275,9 @@ const getConsWeeklyCallStatusData = () => {
 };
 
 const getConsWeeklyCallStatusDataByFilter = (filter) => {
-  return CustomAxios.get(`/api/dashboard/consolidated-weekly-call-status/?email=${filter}`);
+  return CustomAxios.get(
+    `/api/dashboard/consolidated-weekly-call-status/?email=${filter}`
+  );
 };
 
 const getConsDailyCallStatusData = () => {
@@ -261,7 +285,9 @@ const getConsDailyCallStatusData = () => {
 };
 
 const getConsDailyCallStatusDataByFilter = (filter) => {
-  return CustomAxios.get(`/api/dashboard/consolidated-daily-call-status/?email=${filter}`);
+  return CustomAxios.get(
+    `/api/dashboard/consolidated-daily-call-status/?email=${filter}`
+  );
 };
 
 const getConsDescriptionWiseQuantityData = () => {
@@ -289,7 +315,9 @@ const getConsCallPerformanceDataByFilter = (filter, startDate, endDate) => {
 };
 
 const getConsDailyProfitableReportsData = () => {
-  return CustomAxios.get("/api/dashboard/consolidated-daily-profitablity-report/");
+  return CustomAxios.get(
+    "/api/dashboard/consolidated-daily-profitablity-report/"
+  );
 };
 
 const getConsDailyProfitableReportsDataByFilter = (startDate, endDate) => {
@@ -325,7 +353,9 @@ const getConsDailyInvoiceQuantityDataByFilter = (filter) => {
 };
 
 const getConsDailyOrderBookQuantityData = () => {
-  return CustomAxios.get("/api/dashboard/consolidated-daily-order-book-quantity/");
+  return CustomAxios.get(
+    "/api/dashboard/consolidated-daily-order-book-quantity/"
+  );
 };
 
 const getConsDailyOrderBookQuantityDataByFilter = (filter) => {
@@ -333,7 +363,6 @@ const getConsDailyOrderBookQuantityDataByFilter = (filter) => {
     `/api/dashboard/consolidated-daily-order-book-quantity/?email=${filter}`
   );
 };
-
 
 const DashboardService = {
   getLastThreeMonthForecastData,
@@ -346,6 +375,8 @@ const DashboardService = {
   getPendingFollowupDataByFilter,
   getPIData,
   getPIDataByFilter,
+  getIndiaMartLeadData,
+  getIndiaMartLeadDataByFilter,
   getCustomerDashboard,
   getLeadDashboard,
   getCustomerDataByFilter,
@@ -406,7 +437,6 @@ const DashboardService = {
   getConsDailyInvoiceQuantityDataByFilter,
   getConsDailyOrderBookQuantityData,
   getConsDailyOrderBookQuantityDataByFilter,
-  
 };
 
 export default DashboardService;

@@ -38,6 +38,7 @@ export const SalesPersonAnalytics = (props) => {
     assign,
     total,
     piData,
+    indiaMartLeadData,
     funnelData,
     hoveredSegment,
     handleRowClick,
@@ -57,6 +58,8 @@ export const SalesPersonAnalytics = (props) => {
     setOpenPopup3,
     getResetDate,
     team,
+    selectedWeek,
+    handleDateChange,
   } = props;
   // Retrieving user data from Redux store
   const userData = useSelector((state) => state.auth.profile);
@@ -65,6 +68,9 @@ export const SalesPersonAnalytics = (props) => {
   const [dOBQdata, setDOBQData] = useState([]);
   const [selectedDOBQData, setSelectedDOBQData] = useState(null);
   const [activeButton, setActiveButton] = useState("monthly");
+  // Get the current date
+  const currentDate = new Date();
+  const formattedCurrentDate = currentDate.toISOString().split("T")[0];
   // Filter user data to determine the sales roles assigned to the user
   const assigned = userData.sales_users || [];
   // Determine if the user has limited privacy rights based on group membership
@@ -248,6 +254,7 @@ export const SalesPersonAnalytics = (props) => {
           />
         </Grid>
       </Grid>
+      {/* Privacy */}
       {privacy ? (
         <div style={{ filter: "blur(4px)" }}>
           {/* Customer Stats */}
@@ -310,35 +317,6 @@ export const SalesPersonAnalytics = (props) => {
                 </Grid>
               );
             })}
-          </Grid>
-
-          {/* Filter By Sales Person */}
-          <Grid container spacing={1} sx={{ my: "20px" }}>
-            {(!userData.groups.includes("Sales Executive") ||
-              !userData.groups.includes("Sales Manager Without Leads")) && (
-              <Paper sx={{ width: "100%", padding: "20px" }}>
-                <Grid container alignItems="center" spacing={1}>
-                  <Grid item xs={9} sm={9} md={9} lg={9}>
-                    <Autocomplete
-                      size="small"
-                      onChange={(event, value) =>
-                        handleAutocompleteChange(value)
-                      }
-                      value={selectedOption}
-                      options={displayOptions}
-                      groupBy={(option) => option.primaryGroup || ""}
-                      getOptionLabel={(option) => option.email}
-                      renderInput={(params) => (
-                        <CustomTextField
-                          {...params}
-                          label="Filter By Sales Person"
-                        />
-                      )}
-                    />
-                  </Grid>
-                </Grid>
-              </Paper>
-            )}
           </Grid>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
@@ -659,74 +637,9 @@ export const SalesPersonAnalytics = (props) => {
               />
             </Grid>
           </Grid>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6} sx={{ marginTop: "20px" }}>
-              <Autocomplete
-                sx={{}}
-                size="small"
-                defaultValue={dailyInvoiceQuantity[0]}
-                onChange={(event, value) => handleDataForInvoice(value)}
-                options={descriptionOptionsForInvoice.map((option) => option)}
-                getOptionLabel={(option) => option}
-                renderInput={(params) => (
-                  <CustomTextField {...params} label="Filter By Description" />
-                )}
-              />
-              <CustomChart
-                chartType="LineChart"
-                data={[
-                  ["Date", "Total"],
-                  ...((dIQdata &&
-                    dIQdata.map((entry) => [
-                      entry.sales_invoice__generation_date,
-                      entry.total,
-                    ])) ||
-                    []),
-                ]}
-                options={{
-                  title: "Daily Sales Invoice Quantity",
-                  width: "100%",
-                  height: "400px",
-                }}
-                widthStyle={"100%"}
-                heightStyle={"300px"}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} sx={{ marginTop: "20px" }}>
-              <Autocomplete
-                sx={{}}
-                size="small"
-                defaultValue={dailyOrderBookQuantity[0]}
-                onChange={(event, value) => handleDataForOrderBook(value)}
-                options={descriptionOptionsForOrderBook.map((option) => option)}
-                getOptionLabel={(option) => option}
-                renderInput={(params) => (
-                  <CustomTextField {...params} label="Filter By Description" />
-                )}
-              />
-              <CustomChart
-                chartType="LineChart"
-                data={[
-                  ["Date", "Total"],
-                  ...((dOBQdata &&
-                    dOBQdata.map((entry) => [
-                      entry.orderbook__proforma_invoice__generation_date,
-                      entry.total,
-                    ])) ||
-                    []),
-                ]}
-                options={{
-                  title: "Daily Sales OrderBook Quantity",
-                  width: "100%",
-                  height: "400px",
-                }}
-                widthStyle={"100%"}
-                heightStyle={"300px"}
-              />
-            </Grid>
-          </Grid>
         </div>
       ) : (
+        // No Privacy
         <div>
           <Grid
             container
@@ -882,7 +795,12 @@ export const SalesPersonAnalytics = (props) => {
                 />
               </Grid>
             )}
-            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+            <Grid
+              item
+              xs={12}
+              sm={userData.groups.includes("Director") ? 4 : 6}
+              sx={{ marginTop: "20px" }}
+            >
               <CustomChart
                 chartType="PieChart"
                 data={[
@@ -899,7 +817,12 @@ export const SalesPersonAnalytics = (props) => {
                 heightStyle={"300px"}
               />
             </Grid>
-            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+            <Grid
+              item
+              xs={12}
+              sm={userData.groups.includes("Director") ? 4 : 6}
+              sx={{ marginTop: "20px" }}
+            >
               <CustomChart
                 chartType="BarChart"
                 data={[
@@ -917,6 +840,44 @@ export const SalesPersonAnalytics = (props) => {
               />
             </Grid>
           </Grid>
+          {(!userData.groups.includes("Sales Executive") ||
+            !userData.groups.includes("Sales Assistant Deputy Manager")) && (
+            <Grid container spacing={2}>
+              <Grid item xs={12} sx={{ marginTop: "20px" }}>
+                <CustomTextField
+                  id="date"
+                  size="small"
+                  label="Date"
+                  type="date"
+                  value={selectedWeek}
+                  onChange={handleDateChange}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  sx={{ width: "300px", marginBottom: "10px" }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <CustomChart
+                  chartType="ColumnChart"
+                  data={[
+                    ["Day", "Total Leads"],
+                    ...indiaMartLeadData.map((item) => [
+                      item.day,
+                      item.totalLeads,
+                    ]),
+                  ]}
+                  options={{
+                    title: "IndiaMart Leads",
+                    width: "100%",
+                    height: "300px",
+                  }}
+                  widthStyle={"100%"}
+                  heightStyle={"300px"}
+                />
+              </Grid>
+            </Grid>
+          )}
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6} sx={{ marginTop: "20px" }}>
               <CustomChart
