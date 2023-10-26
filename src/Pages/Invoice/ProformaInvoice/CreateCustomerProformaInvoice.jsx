@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
+  Alert,
   Autocomplete,
   Box,
   Button,
@@ -11,6 +12,7 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Snackbar,
   Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
@@ -22,7 +24,6 @@ import CustomerServices from "../../../services/CustomerService";
 import ProductService from "../../../services/ProductService";
 import InvoiceServices from "../../../services/InvoiceService";
 import { CustomLoader } from "../../../Components/CustomLoader";
-import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 import { Popup } from "../../../Components/Popup";
 import { UpdateCompanyDetails } from "../../Cutomers/CompanyDetails/UpdateCompanyDetails";
 import CustomTextField from "../../../Components/CustomTextField";
@@ -62,8 +63,6 @@ export const CreateCustomerProformaInvoice = (props) => {
   const [warehouseOptions, setWarehouseOptions] = useState([]);
   const [contactData, setContactData] = useState([]);
   const [warehouseData, setWarehouseData] = useState([]);
-  const [errorMessage, setErrorMessage] = useState();
-  const [validationPrice, setValidationPrice] = useState("");
   const [checked, setChecked] = useState(true);
   const [priceApproval, setPriceApproval] = useState(false);
   const [products, setProducts] = useState([
@@ -79,6 +78,9 @@ export const CreateCustomerProformaInvoice = (props) => {
   const data = useSelector((state) => state.auth);
   const users = data.profile;
   const sellerData = data.sellerAccount;
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [errorMessages, setErrorMessages] = useState([]);
+  const [currentErrorIndex, setCurrentErrorIndex] = useState(0);
 
   const handleAutocompleteChange = (index, event, value) => {
     let data = [...products];
@@ -172,6 +174,19 @@ export const CreateCustomerProformaInvoice = (props) => {
     setInputValue({ ...inputValue, [name]: value });
   };
 
+  const extractErrorMessages = (data) => {
+    let messages = [];
+    if (data.errors) {
+      for (const [key, value] of Object.entries(data.errors)) {
+        // Assuming each key has an array of messages, concatenate them.
+        value.forEach((msg) => {
+          messages.push(`${key}: ${msg}`);
+        });
+      }
+    }
+    return messages;
+  };
+
   const createCustomerProformaInvoiceDetails = async (e) => {
     try {
       e.preventDefault();
@@ -236,18 +251,15 @@ export const CreateCustomerProformaInvoice = (props) => {
         setOpenPopup2(true);
       }
       setOpen(false);
-    } catch (err) {
-      if (err.response.status === 400) {
-        setErrorMessage(err.response.data.errors.buyer_order_no);
-        setValidationPrice(
-          err.response.data.errors.non_field_errors
-            ? err.response.data.errors.non_field_errors
-            : err.response.data.errors
-        );
-      }
-      // setIDForEdit(leadIDData.lead_id);
-      setOpen(false);
+    } catch (error) {
+      console.log("creating Customer PI error", error);
+      const newErrors = extractErrorMessages(error.response.data);
+      setErrorMessages(newErrors);
+      setCurrentErrorIndex(0); // Reset the error index when new errors arrive
+      setOpenSnackbar((prevOpen) => !prevOpen);
       // setOpenPopup2(true);
+    } finally {
+      setOpen(false);
     }
   };
 
@@ -256,8 +268,27 @@ export const CreateCustomerProformaInvoice = (props) => {
     setOpenPopup2(false);
   };
 
+  const handleCloseSnackbar = useCallback(() => {
+    if (currentErrorIndex < errorMessages.length - 1) {
+      setCurrentErrorIndex((prevIndex) => prevIndex + 1);
+    } else {
+      setOpenSnackbar(false);
+      setCurrentErrorIndex(0); // Reset for any future errors
+    }
+  }, [currentErrorIndex, errorMessages.length]);
+
   return (
     <div>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity="error">
+          {errorMessages[currentErrorIndex]}
+        </Alert>
+      </Snackbar>
       <CustomLoader open={open} />
       <Box
         component="form"
@@ -554,8 +585,6 @@ export const CreateCustomerProformaInvoice = (props) => {
                   : ""
               }
               onChange={handleInputChange}
-              error={errorMessage}
-              helperText={errorMessage}
               InputLabelProps={{
                 shrink: true,
               }}
@@ -609,7 +638,6 @@ export const CreateCustomerProformaInvoice = (props) => {
               </Divider>
             </Root>
           </Grid>
-          <ErrorMessage errMsg={validationPrice} />
           <Grid item xs={12}>
             <FormControlLabel
               label="Price Approval"
@@ -673,9 +701,6 @@ export const CreateCustomerProformaInvoice = (props) => {
                     size="small"
                     label="Rate"
                     variant="outlined"
-                    // error={validationPrice}
-                    // helperText={validationPrice}
-                    // value={input.rate}
                     onChange={(event) => handleFormChange(index, event)}
                   />
                 </Grid>

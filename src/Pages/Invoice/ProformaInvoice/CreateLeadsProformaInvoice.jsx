@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
+  Alert,
   Autocomplete,
   Backdrop,
   Box,
@@ -7,6 +8,7 @@ import {
   Checkbox,
   FormControlLabel,
   Grid,
+  Snackbar,
   Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
@@ -54,8 +56,6 @@ export const CreateLeadsProformaInvoice = (props) => {
   const [paymentTermData, setPaymentTermData] = useState([]);
   const [deliveryTermData, setDeliveryTermData] = useState([]);
   const [idForEdit, setIDForEdit] = useState();
-  const [errorMessage, setErrorMessage] = useState();
-  const [validationPrice, setValidationPrice] = useState("");
   const [checked, setChecked] = useState(true);
   const [priceApproval, setPriceApproval] = useState(false);
   const [leads, setLeads] = useState([]);
@@ -72,6 +72,9 @@ export const CreateLeadsProformaInvoice = (props) => {
   const [sellerData, setSellerData] = useState([]);
   const data = useSelector((state) => state.auth);
   const users = data.profile;
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [errorMessages, setErrorMessages] = useState([]);
+  const [currentErrorIndex, setCurrentErrorIndex] = useState(0);
 
   const handleAutocompleteChange = (index, event, value) => {
     let data = [...products];
@@ -161,6 +164,19 @@ export const CreateLeadsProformaInvoice = (props) => {
     }
   };
 
+  const extractErrorMessages = (data) => {
+    let messages = [];
+    if (data.errors) {
+      for (const [key, value] of Object.entries(data.errors)) {
+        // Assuming each key has an array of messages, concatenate them.
+        value.forEach((msg) => {
+          messages.push(`${key}: ${msg}`);
+        });
+      }
+    }
+    return messages;
+  };
+
   const createLeadProformaInvoiceDetails = async (e) => {
     try {
       e.preventDefault();
@@ -233,23 +249,38 @@ export const CreateLeadsProformaInvoice = (props) => {
         setOpenPopup2(true);
       }
       setOpen(false);
-    } catch (err) {
-      if (err.response.status === 400) {
-        setErrorMessage(err.response.data.errors.buyer_order_no);
-        setValidationPrice(
-          err.response.data.errors.non_field_errors
-            ? err.response.data.errors.non_field_errors
-            : err.response.data.errors
-        );
-      }
-      setIDForEdit(leads.lead_id);
-      setOpenPopup2(true);
+    } catch (error) {
+      console.log("creating Lead PI error", error);
+      const newErrors = extractErrorMessages(error.response.data);
+      setErrorMessages(newErrors);
+      setCurrentErrorIndex(0); // Reset the error index when new errors arrive
+      setOpenSnackbar((prevOpen) => !prevOpen);
+    } finally {
       setOpen(false);
     }
   };
 
+  const handleCloseSnackbar = useCallback(() => {
+    if (currentErrorIndex < errorMessages.length - 1) {
+      setCurrentErrorIndex((prevIndex) => prevIndex + 1);
+    } else {
+      setOpenSnackbar(false);
+      setCurrentErrorIndex(0); // Reset for any future errors
+    }
+  }, [currentErrorIndex, errorMessages.length]);
+
   return (
     <div>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity="error">
+          {errorMessages[currentErrorIndex]}
+        </Alert>
+      </Snackbar>
       <CustomLoader open={open} />
 
       <Box
@@ -472,8 +503,6 @@ export const CreateLeadsProformaInvoice = (props) => {
                   : ""
               }
               onChange={handleInputChange}
-              error={errorMessage}
-              helperText={errorMessage}
               InputLabelProps={{
                 shrink: true,
               }}
@@ -527,7 +556,6 @@ export const CreateLeadsProformaInvoice = (props) => {
               </Divider>
             </Root>
           </Grid>
-          <ErrorMessage errMsg={validationPrice} />
           <Grid item xs={12}>
             <FormControlLabel
               label="Price Approval"
@@ -591,9 +619,6 @@ export const CreateLeadsProformaInvoice = (props) => {
                     size="small"
                     label="Rate"
                     variant="outlined"
-                    // error={validationPrice}
-                    // helperText={validationPrice}
-                    // value={input.rate}
                     onChange={(event) => handleFormChange(index, event)}
                   />
                 </Grid>
@@ -681,9 +706,7 @@ export const CreateLeadsProformaInvoice = (props) => {
         setOpenPopup={setOpenPopup2}
       >
         <Typography>
-          {validationPrice
-            ? validationPrice
-            : "Kindly update all Shipping Details & Laeds Details in required field"}
+          "Kindly update all Shipping Details & Laeds Details in required field"
         </Typography>
         <Button variant="contained" onClick={() => setOpenPopup(false)}>
           Update Leads
