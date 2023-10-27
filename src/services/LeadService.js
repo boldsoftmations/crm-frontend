@@ -221,7 +221,7 @@ const getAllFollowup = (options) => {
 
 // IndiaMart Leads API
 const getIndiaMartLeads = (data) => {
-  return CustomAxios.get(`/api/lead/indiamart-leads-list/?month=${data}`);
+  return CustomAxios.get(`/api/lead/indiamart-leads-list/?year_month=${data}`);
 };
 
 const LeadServices = {

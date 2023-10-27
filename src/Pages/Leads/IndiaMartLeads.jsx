@@ -54,8 +54,12 @@ export const IndiaMartLeads = () => {
   const currentMonth = new Date().getMonth() + 1;
   const [open, setOpen] = useState(false);
   const [data, setData] = useState([]);
-  const [selectedMonth, setSelectedMonth] = useState(currentMonth.toString());
-
+  const currentYearMonth = `${new Date().getFullYear()}-${(
+    new Date().getMonth() + 1
+  )
+    .toString()
+    .padStart(2, "0")}`;
+  const [selectedYearMonth, setSelectedYearMonth] = useState(currentYearMonth);
   const Tableheaders = [
     "Date",
     "Direct Lead",
@@ -66,12 +70,12 @@ export const IndiaMartLeads = () => {
 
   useEffect(() => {
     getIndiaMartLeads();
-  }, [selectedMonth]);
+  }, [selectedYearMonth]);
 
   const getIndiaMartLeads = async () => {
     try {
       setOpen(true);
-      const response = await LeadServices.getIndiaMartLeads(selectedMonth);
+      const response = await LeadServices.getIndiaMartLeads(selectedYearMonth);
       setData(response.data);
       setOpen(false);
     } catch (error) {
@@ -80,32 +84,26 @@ export const IndiaMartLeads = () => {
     }
   };
 
-  const filteredData = data.filter(
-    (row) =>
-      new Date(row.date_time__date).getMonth() + 1 === parseInt(selectedMonth)
-  );
-
+  const filteredData = data.filter((row) => {
+    const rowDate = new Date(row.date_time__date);
+    const rowYearMonth = `${rowDate.getFullYear()}-${(rowDate.getMonth() + 1)
+      .toString()
+      .padStart(2, "0")}`;
+    return rowYearMonth === selectedYearMonth;
+  });
   return (
     <>
       <CustomLoader open={open} />
       <Grid item xs={12}>
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
           <Box display="flex" marginBottom="10px">
-            <Autocomplete
-              id="combo-box-demo"
+            <CustomTextField
               size="small"
-              value={monthOptions.find(
-                (option) => option.value === selectedMonth
-              )}
-              options={monthOptions}
-              getOptionLabel={(option) => option.label}
-              onChange={(event, value) =>
-                setSelectedMonth(value ? value.value : currentMonth.toString())
-              }
-              sx={{ width: 300, marginRight: "15rem" }}
-              renderInput={(params) => (
-                <CustomTextField {...params} label="Filter By Month" />
-              )}
+              type="month"
+              label="Filter By Month and Year"
+              value={selectedYearMonth}
+              onChange={(e) => setSelectedYearMonth(e.target.value)}
+              sx={{ width: 200, marginRight: "15rem" }}
             />
 
             <h3
@@ -167,5 +165,3 @@ export const IndiaMartLeads = () => {
     </>
   );
 };
-
-export default IndiaMartLeads;
