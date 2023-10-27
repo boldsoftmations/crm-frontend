@@ -8,6 +8,7 @@ import { ForecastView } from "../ForecastDetails/ForecastView";
 import { CustomTabs } from "../../../Components/CustomTabs";
 import KycUpdate from "../KycDetails/KycUpdate";
 import { LastPriceDeatils } from "../LastPriceDetails/LastPriceDeatils";
+import { SalesHistoryView } from "../SalesHistory/SalesHistoryView";
 
 export const UpdateAllCompanyDetails = (props) => {
   const { setOpenPopup, getAllCompanyDetails, recordForEdit, product } = props;
@@ -26,6 +27,7 @@ export const UpdateAllCompanyDetails = (props) => {
     { label: "Forecast" },
     { label: "KYC" },
     { label: "Last Price" },
+    { label: "Sales History" },
   ];
 
   return (
@@ -80,6 +82,11 @@ export const UpdateAllCompanyDetails = (props) => {
           {activeTab === 7 && (
             <div>
               <LastPriceDeatils recordForEdit={recordForEdit} />
+            </div>
+          )}
+          {activeTab === 8 && (
+            <div>
+              <SalesHistoryView recordForEdit={recordForEdit} />
             </div>
           )}
         </div>
