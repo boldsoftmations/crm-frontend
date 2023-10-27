@@ -52,7 +52,7 @@ export const SalesHistoryView = ({ recordForEdit }) => {
 
   const TableHeader = [
     "Date",
-    "Invoice Number",
+    "Sales Invoice",
     "Description",
     "Product",
     "Quantity",
@@ -67,7 +67,16 @@ export const SalesHistoryView = ({ recordForEdit }) => {
     salesHistory &&
     salesHistory.map((value) => ({
       date: value.date,
-      invoiceNumber: value.invoice_number,
+      sales_invoice: value.sales_invoice,
+      description: value.description,
+      product: value.product,
+      quantity: value.quantity,
+      unit: value.unit,
+      rate: value.rate,
+      amount: value.amount,
+      total_gst: value.gst,
+      total_amount: value.total,
+
       // ... other fields
     }));
 
