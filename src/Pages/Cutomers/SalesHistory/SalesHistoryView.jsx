@@ -7,8 +7,6 @@ import CustomTextField from "../../../Components/CustomTextField";
 
 export const SalesHistoryView = ({ recordForEdit }) => {
   const [salesHistory, setSalesHistory] = useState([]);
-  const [noOfPiDropped, setNoOfPiDropped] = useState(69);
-  const [totalSales, setTotalSales] = useState(7);
   const [isLoading, setIsLoading] = useState(false);
   const [filterDate, setFilterDate] = useState(
     `${new Date().getFullYear()}-${(new Date().getMonth() + 1)
@@ -123,7 +121,7 @@ export const SalesHistoryView = ({ recordForEdit }) => {
                   fontWeight: 800,
                 }}
               >
-                No of PI Dropped: {noOfPiDropped}
+                No of PI Dropped: {salesHistory.drop_pi}
               </h5>
               <h5
                 style={{
@@ -134,7 +132,7 @@ export const SalesHistoryView = ({ recordForEdit }) => {
                   fontWeight: 800,
                 }}
               >
-                Total Sales for the Month: {totalSales}
+                Total Sales for the Month: {salesHistory.total_sales}
               </h5>
             </Box>
           </Box>
