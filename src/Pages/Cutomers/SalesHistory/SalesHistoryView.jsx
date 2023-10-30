@@ -6,7 +6,11 @@ import CustomerServices from "../../../services/CustomerService";
 import CustomTextField from "../../../Components/CustomTextField";
 
 export const SalesHistoryView = ({ recordForEdit }) => {
-  const [salesHistory, setSalesHistory] = useState([]);
+  const [salesRecords, setSalesRecords] = useState([]);
+  const [salesSummary, setSalesSummary] = useState({
+    drop_pi: 0,
+    total_sales: 0,
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [filterDate, setFilterDate] = useState(
     `${new Date().getFullYear()}-${(new Date().getMonth() + 1)
@@ -30,8 +34,12 @@ export const SalesHistoryView = ({ recordForEdit }) => {
         "sales_history",
         filterDate
       );
-      // Process and set data here...
-      setSalesHistory(response.data.sales_history);
+
+      setSalesRecords(response.data.sales_history);
+      setSalesSummary({
+        drop_pi: response.data.drop_pi,
+        total_sales: response.data.total_sales,
+      });
       setIsLoading(false);
     } catch (error) {
       console.error("Error fetching sales history:", error);
@@ -64,8 +72,8 @@ export const SalesHistoryView = ({ recordForEdit }) => {
   ];
 
   const TableData =
-    salesHistory &&
-    salesHistory.map((value) => ({
+    salesRecords &&
+    salesRecords.map((value) => ({
       date: value.date,
       sales_invoice: value.sales_invoice,
       description: value.description,
@@ -76,8 +84,6 @@ export const SalesHistoryView = ({ recordForEdit }) => {
       amount: value.amount,
       total_gst: value.gst,
       total_amount: value.total,
-
-      // ... other fields
     }));
 
   return (
@@ -130,7 +136,7 @@ export const SalesHistoryView = ({ recordForEdit }) => {
                   fontWeight: 800,
                 }}
               >
-                No of PI Dropped: {salesHistory.drop_pi}
+                No of PI Dropped: {salesSummary.drop_pi}
               </h5>
               <h5
                 style={{
@@ -141,7 +147,7 @@ export const SalesHistoryView = ({ recordForEdit }) => {
                   fontWeight: 800,
                 }}
               >
-                Total Sales for the Month: {salesHistory.total_sales}
+                Total Sales for the Month: {salesSummary.total_sales}
               </h5>
             </Box>
           </Box>
