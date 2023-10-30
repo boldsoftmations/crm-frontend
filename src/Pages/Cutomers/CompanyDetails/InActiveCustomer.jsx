@@ -7,7 +7,6 @@ import { CustomSearchWithButton } from "../../../Components/CustomSearchWithButt
 import { CustomTable } from "./../../../Components/CustomTable";
 import { CustomPagination } from "../../../Components/CustomPagination";
 import LeadServices from "../../../services/LeadService";
-import Option from "../../../Options/Options";
 import CustomTextField from "../../../Components/CustomTextField";
 
 export const InActiveCustomer = () => {
@@ -52,10 +51,19 @@ export const InActiveCustomer = () => {
   const getAssignedData = async (id) => {
     try {
       setOpen(true);
+      const ALLOWED_ROLES = [
+        "Director",
+        "Customer Service",
+        "Sales Manager",
+        "Sales Deputy Manager",
+        "Sales Assistant Deputy Manager",
+        "Sales Executive",
+        "Sales Manager without Leads",
+      ];
       const res = await LeadServices.getAllAssignedUser();
       // Filter the data based on the ALLOWED_ROLES
       const filteredData = res.data.filter((employee) =>
-        employee.groups.some((group) => Option.ALLOWED_ROLES.includes(group))
+        employee.groups.some((group) => ALLOWED_ROLES.includes(group))
       );
 
       console.log("filteredData", filteredData);
