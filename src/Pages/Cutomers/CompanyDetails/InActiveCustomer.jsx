@@ -206,7 +206,7 @@ export const InActiveCustomer = () => {
                 fontWeight: 800,
               }}
             >
-              InActive Customer
+              Customers Assigned to InActive Employees
             </h3>
           </div>
           <div style={{ flexGrow: 0.5 }} align="right"></div>
