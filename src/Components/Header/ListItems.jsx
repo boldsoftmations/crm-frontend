@@ -418,6 +418,19 @@ export const ListItems = (props) => {
               <ListItem
                 button
                 component={RouterLink}
+                to="/customers/inactive-company-details"
+                style={{ width: 300 }}
+              >
+                <ListItemText
+                  component={Button}
+                  onClick={() => setOpen(false)}
+                  inset
+                  primary="InActive Customer"
+                />
+              </ListItem>
+              <ListItem
+                button
+                component={RouterLink}
                 to="/customers/incomplete-kyc-details"
                 style={{ width: 300 }}
               >
@@ -2538,6 +2551,19 @@ export const ListItems = (props) => {
                   <ListItem
                     button
                     component={RouterLink}
+                    to="/customers/inactive-company-details"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="InActive Customer"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
                     to="/customers/incomplete-kyc-details"
                     style={{ width: 300 }}
                   >
@@ -4463,6 +4489,19 @@ export const ListItems = (props) => {
                       onClick={() => setOpen(false)}
                       inset
                       primary="Unassigned Customer"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/customers/inactive-company-details"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="InActive Customer"
                     />
                   </ListItem>
                   <ListItem
