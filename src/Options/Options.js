@@ -402,7 +402,7 @@ const ALLOWED_ROLES = [
   "Sales Deputy Manager",
   "Sales Assistant Deputy Manager",
   "Sales Executive",
-  "Sales Manager without Leads"
+  "Sales Manager without Leads",
 ];
 
 const Marital_Status_Options = ["Married", "UnMarried"];
@@ -432,6 +432,8 @@ const religionsInIndia = [
   "Others",
 ];
 
+const CustomerStatusData = ["Active", "Closed", "Blacklisted"];
+
 const Option = {
   LeadBusinessTypeData,
   CustomerBusinessTypeData,
@@ -445,5 +447,6 @@ const Option = {
   ALLOWED_ROLES,
   Marital_Status_Options,
   religionsInIndia,
+  CustomerStatusData,
 };
 export default Option;
