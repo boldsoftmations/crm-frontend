@@ -8,7 +8,13 @@ const getAllCustomerData = ({ page, assignToFilter, searchValue }) => {
   if (searchValue) url += `search=${searchValue}&`;
   return CustomAxios.get(url);
 };
-
+const getClosedOrBlacklistedCustomers = ({ page, searchValue }) => {
+  let url = `/api/customer/list-company/?`;
+  url += `status=closed,blacklisted&`;
+  if (page) url += `page=${page}&`;
+  if (searchValue) url += `search=${searchValue}&`;
+  return CustomAxios.get(url);
+};
 const getIncompleteKycCustomerData = ({
   page,
   assignToFilter,
@@ -162,6 +168,10 @@ const DoneFollowup = (id, data) => {
 // Potential Customer endpoints
 const createPotentialCustomer = (data) => {
   return CustomAxios.post("/api/customer/list-company-potential/", data);
+};
+
+const updatePotentialCustomer = (id, data) => {
+  return CustomAxios.patch(`/api/customer/list-company-potential/${id}`, data);
 };
 
 // Product Forecast
@@ -331,6 +341,7 @@ const updateCompetitors = (id, data) => {
 
 const CustomerServices = {
   getAllCustomerData,
+  getClosedOrBlacklistedCustomers,
   getIncompleteKycCustomerData,
   getInActiveCustomerData,
   createCompanyData,
@@ -364,6 +375,7 @@ const CustomerServices = {
   getCustomerFollowUp,
   DoneFollowup,
   createPotentialCustomer,
+  updatePotentialCustomer,
   getProductForecast,
   getByFilterProductForecast,
   getAllPaginateProductForecast,

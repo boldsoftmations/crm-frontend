@@ -24,8 +24,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { CustomTable } from "../../Components/CustomTable";
 import { CustomSearchWithButton } from "../../Components/CustomSearchWithButton";
 import { LeadActivityCreate } from "../FollowUp/LeadActivityCreate";
-import { PotentialCreate } from "../Potential/PotentialCreate";
 import CustomTextField from "../../Components/CustomTextField";
+import { LeadPotentialCreate } from "./LeadPotential/LeadPotentialCreate";
 
 export const ClosedLead = () => {
   const dispatch = useDispatch();
@@ -485,7 +485,7 @@ export const ClosedLead = () => {
         openPopup={openModalPotential}
         setOpenPopup={setOpenModalPotential}
       >
-        <PotentialCreate
+        <LeadPotentialCreate
           getLeadByID={null}
           leadsByID={leadsByID}
           setOpenModal={setOpenModalPotential}

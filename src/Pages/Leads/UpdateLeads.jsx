@@ -25,12 +25,12 @@ import "react-phone-input-2/lib/material.css";
 import CloseIcon from "@mui/icons-material/Close";
 import LeadServices from "../../services/LeadService";
 import { CustomLoader } from "../../Components/CustomLoader";
-import { ViewAllPotential } from "../Potential/ViewAllPotential";
 import { LeadActivity } from "../FollowUp/LeadActivity";
 import Option from "../../Options/Options";
 import CustomTextField from "../../Components/CustomTextField";
 import CustomerServices from "../../services/CustomerService";
 import ProductService from "../../services/ProductService";
+import { LeadPotentialView } from "./LeadPotential/LeadPotentialView";
 
 export const UpdateLeads = (props) => {
   // Destructure props
@@ -951,7 +951,7 @@ export const UpdateLeads = (props) => {
 
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <ViewAllPotential
+          <LeadPotentialView
             getLeadByID={getLeadsData}
             potential={potential}
             leadsByID={leadsByID}

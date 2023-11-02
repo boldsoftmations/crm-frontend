@@ -441,6 +441,19 @@ export const ListItems = (props) => {
                   primary="Incomplete KYC"
                 />
               </ListItem>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/customers/blacklisted-customer-details"
+                style={{ width: 300 }}
+              >
+                <ListItemText
+                  component={Button}
+                  onClick={() => setOpen(false)}
+                  inset
+                  primary="Blacklisted Customers"
+                />
+              </ListItem>
             </List>
           </Collapse>
 

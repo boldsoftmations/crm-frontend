@@ -36,10 +36,10 @@ import { BulkLeadAssign } from "./BulkLeadAssign";
 import { useSelector } from "react-redux";
 import { CustomSearchWithButton } from "../../Components/CustomSearchWithButton";
 import { LeadActivityCreate } from "../FollowUp/LeadActivityCreate";
-import { PotentialCreate } from "../Potential/PotentialCreate";
 import { CreateLeadsProformaInvoice } from "./../Invoice/ProformaInvoice/CreateLeadsProformaInvoice";
 import { Helmet } from "react-helmet";
 import CustomTextField from "../../Components/CustomTextField";
+import { LeadPotentialCreate } from "./LeadPotential/LeadPotentialCreate";
 
 export const OpenLead = () => {
   const [leads, setLeads] = useState([]);
@@ -656,7 +656,7 @@ export const OpenLead = () => {
         openPopup={openModalPotential}
         setOpenPopup={setOpenModalPotential}
       >
-        <PotentialCreate
+        <LeadPotentialCreate
           getLeadByID={null}
           leadsByID={leadsByID}
           setOpenModal={setOpenModalPotential}

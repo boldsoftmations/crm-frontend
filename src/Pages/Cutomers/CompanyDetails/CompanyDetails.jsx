@@ -14,12 +14,12 @@ import { CustomTable } from "./../../../Components/CustomTable";
 import { CustomPagination } from "../../../Components/CustomPagination";
 import { CustomerActivityCreate } from "../../FollowUp/CustomerActivityCreate";
 import ProductService from "../../../services/ProductService";
-import { CustomerPotentialCreate } from "../../Potential/CustomerPotentialCreate";
 import { CreateCustomerProformaInvoice } from "./../../Invoice/ProformaInvoice/CreateCustomerProformaInvoice";
 import { CSVLink } from "react-csv";
 import { Autocomplete, Box, Button } from "@mui/material";
 import { Helmet } from "react-helmet";
 import CustomTextField from "../../../Components/CustomTextField";
+import { CustomerPotentialCreate } from "../CustomerPotential/CustomerPotentialCreate";
 
 export const CompanyDetails = () => {
   const dispatch = useDispatch();

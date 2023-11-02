@@ -41,9 +41,14 @@ export const CreateContactDetails = (props) => {
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    setInputValue({ ...inputValue, [name]: value.toUpperCase() });
+    if (name === "name") {
+      const formattedValue =
+        value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+      setInputValue({ ...inputValue, [name]: formattedValue });
+    } else {
+      setInputValue({ ...inputValue, [name]: value });
+    }
   };
-
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();

@@ -16,7 +16,6 @@ import {
   TableHead,
   TableRow,
   TableCell,
-  Checkbox,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
 import ClearIcon from "@mui/icons-material/Clear";
@@ -31,8 +30,8 @@ import { CustomLoader } from "../../Components/CustomLoader";
 import { BulkLeadAssign } from "./BulkLeadAssign";
 import { useSelector } from "react-redux";
 import { LeadActivityCreate } from "../FollowUp/LeadActivityCreate";
-import { PotentialCreate } from "../Potential/PotentialCreate";
 import CustomTextField from "../../Components/CustomTextField";
+import { LeadPotentialCreate } from "./LeadPotential/LeadPotentialCreate";
 
 export const DuplicateLead = () => {
   const [leads, setLeads] = useState([]);
@@ -460,7 +459,7 @@ export const DuplicateLead = () => {
         openPopup={openModalPotential}
         setOpenPopup={setOpenModalPotential}
       >
-        <PotentialCreate
+        <LeadPotentialCreate
           getLeadByID={null}
           leadsByID={leadsByID}
           setOpenModal={setOpenModalPotential}
