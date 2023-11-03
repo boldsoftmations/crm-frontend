@@ -67,8 +67,7 @@ import { TeamWiseDashboard } from "../Pages/TeamWiseDashboard";
 import { UserProfileView } from "../Pages/Profile/UserProfile/UserProfileView";
 import { IndiaMartLeads } from "../Pages/Leads/IndiaMartLeads";
 import { InActiveCustomer } from "../Pages/Cutomers/CompanyDetails/InActiveCustomer";
-import { BlackListedCustomerView } from "../Pages/Cutomers/BlacklistedCompany/BlackListedCustomerView";
-import { FaqAllTab } from "../Pages/FAQ/FaqAllTab/FaqAllTab";
+import { FaqAllTab } from "../Pages/Faq/FaqAllTab/FaqAllTab";
 
 export const RouteScreen = () => {
   const tokenData = useSelector((state) => state.auth);
@@ -163,10 +162,6 @@ export const RouteScreen = () => {
             <Route
               path="/customers/inactive-company-details"
               element={<InActiveCustomer />}
-            />
-            <Route
-              path="/customers/blacklisted-customer-details"
-              element={<BlackListedCustomerView />}
             />
             <Route path="/followp/view-followup" element={<Followup />} />
             {/* Invoice - Seller Account Route */}

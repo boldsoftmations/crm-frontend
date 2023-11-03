@@ -1,20 +1,30 @@
 import CustomAxios from "./api";
 
 // Generic function to get order book data
-const getAllCustomerData = ({ page, assignToFilter, searchValue }) => {
-  let url = `/api/customer/list-company/?`;
-  if (page) url += `page=${page}&`;
-  if (assignToFilter) url += `assigned_to__email=${assignToFilter}&`;
-  if (searchValue) url += `search=${searchValue}&`;
-  return CustomAxios.get(url);
+const getAllCustomerData = (statusValue, page, assignToFilter, searchValue) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
+
+  if (statusValue) {
+    params.append("status", statusValue);
+  }
+
+  if (page) {
+    params.append("page", page);
+  }
+
+  if (assignToFilter) {
+    params.append("assigned_to__email", assignToFilter);
+  }
+
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+
+  // Sending a GET request with query parameters
+  return CustomAxios.get(`/api/customer/list-company/?${params.toString()}`);
 };
-const getClosedOrBlacklistedCustomers = ({ page, searchValue }) => {
-  let url = `/api/customer/list-company/?`;
-  url += `status=closed,blacklisted&`;
-  if (page) url += `page=${page}&`;
-  if (searchValue) url += `search=${searchValue}&`;
-  return CustomAxios.get(url);
-};
+
 const getIncompleteKycCustomerData = ({
   page,
   assignToFilter,
@@ -341,7 +351,6 @@ const updateCompetitors = (id, data) => {
 
 const CustomerServices = {
   getAllCustomerData,
-  getClosedOrBlacklistedCustomers,
   getIncompleteKycCustomerData,
   getInActiveCustomerData,
   createCompanyData,

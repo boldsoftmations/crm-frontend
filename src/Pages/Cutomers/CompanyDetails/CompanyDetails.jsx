@@ -1,14 +1,26 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import {
+  Autocomplete,
+  Box,
+  Button,
+  Grid,
+  Table,
+  TableBody,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TableCell,
+} from "@mui/material";
+import { tableCellClasses } from "@mui/material/TableCell";
+import { styled } from "@mui/material/styles";
 import { UpdateAllCompanyDetails } from "./UpdateAllCompanyDetails";
 import { CreateCompanyDetails } from "./CreateCompanyDetails";
 import { Popup } from "./../../../Components/Popup";
 import CustomerServices from "../../../services/CustomerService";
-import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
 import { useDispatch, useSelector } from "react-redux";
 import { getSellerAccountData } from "../../../Redux/Action/Action";
 import InvoiceServices from "../../../services/InvoiceService";
 import { CustomLoader } from "../../../Components/CustomLoader";
-import { CustomSearchWithButton } from "../../../Components/CustomSearchWithButton";
 import { BulkCustomerAssign } from "./BulkCustomerAssign";
 import { CustomTable } from "./../../../Components/CustomTable";
 import { CustomPagination } from "../../../Components/CustomPagination";
@@ -16,7 +28,6 @@ import { CustomerActivityCreate } from "../../FollowUp/CustomerActivityCreate";
 import ProductService from "../../../services/ProductService";
 import { CreateCustomerProformaInvoice } from "./../../Invoice/ProformaInvoice/CreateCustomerProformaInvoice";
 import { CSVLink } from "react-csv";
-import { Autocomplete, Box, Button } from "@mui/material";
 import { Helmet } from "react-helmet";
 import CustomTextField from "../../../Components/CustomTextField";
 import { CustomerPotentialCreate } from "../CustomerPotential/CustomerPotentialCreate";
@@ -31,8 +42,6 @@ export const CompanyDetails = () => {
   const [openModal, setOpenModal] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [open, setOpen] = useState(false);
-  const errRef = useRef();
-  const [errMsg, setErrMsg] = useState("");
   const [companyData, setCompanyData] = useState([]);
   const [recordForEdit, setRecordForEdit] = useState();
   const [pageCount, setpageCount] = useState(0);
@@ -46,7 +55,7 @@ export const CompanyDetails = () => {
   const userData = data.profile;
   const assigned = userData.sales_users || [];
   const [isPrinting, setIsPrinting] = useState(false);
-
+  const [statusFilter, setStatusFilter] = useState("Active");
   useEffect(() => {
     const beforePrint = () => {
       setIsPrinting(true);
@@ -100,16 +109,18 @@ export const CompanyDetails = () => {
     { label: "ALTERNATE CONTACT", key: "alternate_contact" },
     { label: "EMAIL", key: "email" },
     { label: "ALTERNATE EMAIL", key: "alternate_email" },
+    { label: "STATUS", key: "status" },
   ];
 
   const handleExport = async () => {
     try {
       setOpen(true);
-      let response = await CustomerServices.getAllCustomerData({
-        page: "all",
-        assignToFilter: filterSelectedQuery,
-        searchValue: searchQuery,
-      });
+      let response = await CustomerServices.getAllCustomerData(
+        statusFilter,
+        "all",
+        filterSelectedQuery,
+        searchQuery
+      );
       const data = response.data.map((row) => {
         return {
           id: row.id,
@@ -126,6 +137,7 @@ export const CompanyDetails = () => {
           est_date: row.est_date,
           total_sales_turnover: row.total_sales_turnover,
           type: row.type,
+          status: row.status,
           // contact_name: row.contacts.map((contact) => contact.name).join(", "),
           // contact: row.contacts.map((contact) => contact.contact).join(", "),
           // alternate_contact: row.contacts
@@ -145,12 +157,6 @@ export const CompanyDetails = () => {
     } finally {
       setOpen(false);
     }
-  };
-
-  const getResetData = () => {
-    getSearchData("", "");
-    setSearchQuery("");
-    setFilterSelectedQuery("");
   };
 
   const openInPopup = (item) => {
@@ -177,19 +183,8 @@ export const CompanyDetails = () => {
     setOpenSnackbar(false);
   };
 
-  const handleSearchChange = () => {
-    setSearchQuery(searchQuery);
-    getSearchData(filterSelectedQuery, searchQuery);
-  };
-
-  const handleFilterChange = (filterSelectedValue) => {
-    setFilterSelectedQuery(filterSelectedValue);
-    getSearchData(filterSelectedValue, searchQuery);
-  };
-
   useEffect(() => {
     getAllSellerAccountsDetails();
-    getAllCompanyDetails();
     getProduct();
   }, []);
 
@@ -218,105 +213,63 @@ export const CompanyDetails = () => {
     }
   };
 
-  const getAllCompanyDetails = async () => {
-    try {
-      setOpen(true);
+  useEffect(() => {
+    getAllCompanyDetails(currentPage, statusFilter, filterSelectedQuery);
+  }, [currentPage, statusFilter, filterSelectedQuery, getAllCompanyDetails]);
 
-      const filterValue = filterSelectedQuery || null;
-      const searchValue = searchQuery || null;
+  const getAllCompanyDetails = useCallback(
+    async (
+      page,
+      statusValue = statusFilter,
+      assignToValue = filterSelectedQuery,
+      searchValue = searchQuery
+    ) => {
+      try {
+        setOpen(true);
 
-      let response;
-      if (filterValue || searchValue) {
-        response = await CustomerServices.getAllCustomerData({
-          page: currentPage,
-          assignToFilter: filterValue,
-          searchValue: searchValue,
-        });
-      } else {
-        response = await CustomerServices.getAllCustomerData({
-          page: currentPage,
-        });
-      }
-      setCompanyData(response.data.results);
-      setpageCount(Math.ceil(response.data.count / 25));
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      if (!err.response) {
-        setErrMsg(
-          "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
+        const response = await CustomerServices.getAllCustomerData(
+          statusValue,
+          page,
+          assignToValue,
+          searchValue
         );
-      } else if (err.response.status === 400) {
-        setErrMsg(
-          err.response.data.errors.name
-            ? err.response.data.errors.name
-            : err.response.data.errors.non_field_errors
-        );
-      } else if (err.response.status === 401) {
-        setErrMsg(err.response.data.errors.code);
-      } else {
-        setErrMsg("Server Error");
-      }
-      errRef.current.focus();
-    }
-  };
 
-  const getSearchData = async (filterValue, searchValue) => {
-    try {
-      setOpen(true);
-      let response;
-      if (filterValue || searchValue) {
-        response = await CustomerServices.getAllCustomerData({
-          assignToFilter: filterValue,
-          searchValue: searchValue,
-        });
-      } else {
-        response = await CustomerServices.getAllCustomerData({
-          page: currentPage,
-        });
-      }
-      setCompanyData(response.data.results);
-      setpageCount(Math.ceil(response.data.count / 25));
-      setOpen(false);
-    } catch (error) {
-      console.log("error Search leads", error);
-      setOpen(false);
-    }
-  };
-
-  const handlePageClick = async (event, value) => {
-    try {
-      const page = value;
-      setCurrentPage(page);
-      setOpen(true);
-      let response;
-      if (filterSelectedQuery || searchQuery) {
-        response = await CustomerServices.getAllCustomerData({
-          page: page,
-          assignToFilter: filterSelectedQuery,
-          searchValue: searchQuery,
-        });
-      } else {
-        response = await CustomerServices.getAllCustomerData({ page: page });
         setCompanyData(response.data.results);
+        setpageCount(Math.ceil(response.data.count / 25));
+        setOpen(false);
+      } catch (error) {
+        setOpen(false);
+        console.log("error", error);
       }
-      setCompanyData(response.data.results);
-      setpageCount(Math.ceil(response.data.count / 25));
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
+    },
+    [searchQuery]
+  );
+
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const handleSearch = () => {
+    getAllCompanyDetails(
+      currentPage,
+      statusFilter,
+      filterSelectedQuery,
+      searchQuery
+    );
+  };
+
+  const handlePageClick = (event, value) => {
+    setCurrentPage(value);
   };
 
   const Tableheaders = [
-    "ID",
     "NAME",
     "Assigned To",
     "PAN NO.",
     "GST NO.",
     "CITY",
     "STATE",
+    "STATUS",
     "ACTION",
   ];
 
@@ -328,7 +281,13 @@ export const CompanyDetails = () => {
     gst_number: value.gst_number,
     city: value.city,
     state: value.state,
+    status: value.status,
   }));
+
+  const isStatusFilterEnabled =
+    userData.groups.includes("Director") ||
+    userData.groups.includes("Accounts") ||
+    userData.groups.includes("Sales Manager");
 
   return (
     <>
@@ -346,8 +305,6 @@ export const CompanyDetails = () => {
 
       <CustomLoader open={open} />
       <div>
-        <ErrorMessage errRef={errRef} errMsg={errMsg} />
-
         <div
           style={{
             padding: "16px",
@@ -359,143 +316,291 @@ export const CompanyDetails = () => {
             backgroundColor: "rgb(255, 255, 255)", // set background color to default Paper color
           }}
         >
-          <Box display="flex" marginBottom="10px">
-            {!userData.groups.includes("Sales Executive") && (
-              <Autocomplete
-                size="small"
-                sx={{ width: 300 }}
-                onChange={(event, value) => handleFilterChange(value)}
-                value={filterSelectedQuery}
-                options={assigned.map((option) => option.email)}
-                getOptionLabel={(option) => option}
-                renderInput={(params) => (
-                  <CustomTextField {...params} label="Filter By Sales Person" />
-                )}
-              />
-            )}
-            <CustomSearchWithButton
-              filterSelectedQuery={searchQuery}
-              setFilterSelectedQuery={setSearchQuery}
-              handleInputChange={handleSearchChange}
-              // getResetData={getResetData}
-            />
-            <Button
-              variant="contained"
-              onClick={() => getResetData()}
-              sx={{ marginLeft: "10px", marginRight: "10px" }}
-              size="small"
-            >
-              Reset
-            </Button>
-            {userData.is_staff === true && (
-              <Button
-                variant="contained"
-                onClick={() => setOpenModal(true)}
-                sx={{ marginLeft: "10px", marginRight: "10px" }}
-                size="small"
-              >
-                Assign Bulk Customer
-              </Button>
-            )}
-            {userData.groups.includes("Accounts") && (
-              <Button
-                variant="contained"
-                onClick={() => setOpenPopup2(true)}
-                sx={{ marginLeft: "10px", marginRight: "10px" }}
-                size="small"
-              >
-                Add
-              </Button>
-            )}
-            <Button variant="contained" onClick={handleDownload}>
-              Download CSV
-            </Button>
-            {exportData.length > 0 && (
-              <CSVLink
-                data={exportData}
-                headers={headers}
-                ref={csvLinkRef}
-                filename="Customer.csv"
-                target="_blank"
-                style={{
-                  textDecoration: "none",
-                  outline: "none",
-                  height: "5vh",
-                }}
-              />
-            )}
-
-            <div
-              style={{
-                position: "fixed",
-                top: "20px",
-                left: "50%",
-                transform: "translateX(-50%)",
-                backgroundColor: "green",
-                color: "white",
-                padding: "10px",
-                borderRadius: "4px",
-                display: openSnackbar ? "block" : "none",
-                zIndex: 9999,
-              }}
-            >
-              <span style={{ marginRight: "10px" }}>
-                Bulk Customer Assigned Successfully!
-              </span>
-              <button
-                style={{
-                  backgroundColor: "transparent",
-                  border: "none",
-                  color: "white",
-                  cursor: "pointer",
-                  padding: "0",
-                }}
-                onClick={handleSnackbarClose}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  viewBox="0 0 16 16"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M8 7.293l2.146-2.147a.5.5 0 11.708.708L8.707 8l2.147 2.146a.5.5 0 01-.708.708L8 8.707l-2.146 2.147a.5.5 0 01-.708-.708L7.293 8 5.146 5.854a.5.5 0 01.708-.708L8 7.293z"
+          <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={12} sm={3}>
+                <Autocomplete
+                  disabled={!isStatusFilterEnabled} // Disable based on user group
+                  size="small"
+                  sx={{ minWidth: 300 }}
+                  options={["Active", "Closed", "Blacklist"]}
+                  getOptionLabel={(option) => option}
+                  value={statusFilter}
+                  onChange={(event, newValue) => {
+                    setStatusFilter(newValue);
+                    getAllCompanyDetails(
+                      currentPage,
+                      newValue,
+                      filterSelectedQuery,
+                      searchQuery
+                    );
+                  }}
+                  renderInput={(params) => (
+                    <CustomTextField {...params} label="Filter By Status" />
+                  )}
+                />
+              </Grid>
+              {!userData.groups.includes("Sales Executive") && (
+                <Grid item xs={12} sm={3}>
+                  <Autocomplete
+                    size="small"
+                    sx={{ minWidth: 300 }}
+                    value={filterSelectedQuery}
+                    onChange={(event, newValue) => {
+                      setFilterSelectedQuery(newValue);
+                      getAllCompanyDetails(
+                        currentPage,
+                        statusFilter,
+                        newValue,
+                        searchQuery
+                      );
+                    }}
+                    options={assigned.map((option) => option.email)}
+                    getOptionLabel={(option) => option}
+                    renderInput={(params) => (
+                      <CustomTextField
+                        {...params}
+                        label="Filter By Sales Person"
+                      />
+                    )}
                   />
-                </svg>
-              </button>
-            </div>
+                </Grid>
+              )}
+              <Grid item xs={12} sm={3}>
+                <CustomTextField
+                  size="small"
+                  label="Search"
+                  variant="outlined"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={12} sm={1}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleSearch} // Call `handleSearch` when the button is clicked
+                >
+                  Search
+                </Button>
+              </Grid>
+              <Grid item xs={12} sm={1}>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => {
+                    setSearchQuery("");
+                    getAllCompanyDetails(
+                      1,
+                      statusFilter,
+                      filterSelectedQuery,
+                      ""
+                    );
+                  }}
+                >
+                  Reset
+                </Button>
+              </Grid>
+            </Grid>
           </Box>
-          <Box display="flex" alignItems="center" justifyContent="center">
-            <h3
-              style={{
-                textAlign: "left",
-                marginBottom: "1em",
-                fontSize: "24px",
-                color: "rgb(34, 34, 34)",
-                fontWeight: 800,
-              }}
-            >
-              Customer
-            </h3>
-          </Box>
+          <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={12} sm={6}>
+                {/* Bulk Assign Button */}
+                {userData.is_staff === true && (
+                  <Button
+                    variant="contained"
+                    onClick={() => setOpenModal(true)}
+                  >
+                    Assign Bulk Customer
+                  </Button>
+                )}
+                {/* Add Button */}
+                {userData.groups.includes("Accounts") && (
+                  <Button
+                    variant="contained"
+                    onClick={() => setOpenPopup2(true)}
+                  >
+                    Add
+                  </Button>
+                )}
+              </Grid>
 
-          <CustomTable
-            headers={Tableheaders}
-            data={Tabledata}
-            openInPopup={openInPopup}
-            openInPopup2={openInPopup2}
-            openInPopup3={openInPopup3}
-            openInPopup4={openInPopup4}
-            ButtonText={
-              !userData.groups.includes("Accounts Billing Department")
-                ? "PI"
-                : null
-            }
-            ButtonText1={"Activity"}
-            ButtonText2={"Potential"}
-          />
+              <Grid item xs={12} sm={3}>
+                {/* Customer Header */}
+                <h3
+                  style={{
+                    textAlign: "left",
+                    fontSize: "24px",
+                    color: "rgb(34, 34, 34)",
+                    fontWeight: 800,
+                  }}
+                >
+                  Customer
+                </h3>
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                {/* Download CSV Button */}
+                <Button variant="contained" onClick={handleDownload}>
+                  Download CSV
+                </Button>
+
+                {/* Hidden CSVLink for downloading the CSV */}
+                {exportData.length > 0 && (
+                  <CSVLink
+                    data={exportData}
+                    headers={headers}
+                    ref={csvLinkRef}
+                    filename="Customer.csv"
+                    target="_blank"
+                    style={{
+                      textDecoration: "none",
+                      outline: "none",
+                      visibility: "hidden",
+                    }}
+                  />
+                )}
+              </Grid>
+            </Grid>
+          </Box>
+          <div
+            style={{
+              position: "fixed",
+              top: "20px",
+              left: "50%",
+              transform: "translateX(-50%)",
+              backgroundColor: "green",
+              color: "white",
+              padding: "10px",
+              borderRadius: "4px",
+              display: openSnackbar ? "block" : "none",
+              zIndex: 9999,
+            }}
+          >
+            <span style={{ marginRight: "10px" }}>
+              Bulk Customer Assigned Successfully!
+            </span>
+            <button
+              style={{
+                backgroundColor: "transparent",
+                border: "none",
+                color: "white",
+                cursor: "pointer",
+                padding: "0",
+              }}
+              onClick={handleSnackbarClose}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M8 7.293l2.146-2.147a.5.5 0 11.708.708L8.707 8l2.147 2.146a.5.5 0 01-.708.708L8 8.707l-2.146 2.147a.5.5 0 01-.708-.708L7.293 8 5.146 5.854a.5.5 0 01.708-.708L8 7.293z"
+                />
+              </svg>
+            </button>
+          </div>
+          <TableContainer
+            sx={{
+              maxHeight: 400,
+              "&::-webkit-scrollbar": {
+                width: 15,
+              },
+              "&::-webkit-scrollbar-track": {
+                backgroundColor: "#f2f2f2",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: "#aaa9ac",
+              },
+            }}
+          >
+            <Table
+              sx={{ minWidth: 1200 }}
+              stickyHeader
+              aria-label="sticky table"
+            >
+              <TableHead>
+                <StyledTableRow>
+                  {Tableheaders.map((header) => (
+                    <StyledTableCell key={header} align="center">
+                      {header}
+                    </StyledTableCell>
+                  ))}
+                </StyledTableRow>
+              </TableHead>
+              <TableBody>
+                {companyData.map((row, i) => (
+                  <StyledTableRow key={row.i}>
+                    <StyledTableCell align="center">{row.name}</StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.assigned_to.map((assignee, index) => (
+                        <div
+                          key={index}
+                          style={{
+                            border: "1px solid #4caf50",
+                            borderRadius: "20px",
+                            color: "#4caf50",
+                          }}
+                        >
+                          {assignee}
+                        </div>
+                      ))}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.pan_number}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.gst_number}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">{row.city}</StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.state}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.status}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      <Button
+                        sx={{ color: "#1976d2" }}
+                        onClick={() => openInPopup(row)}
+                      >
+                        View,
+                      </Button>
+                      {!userData.groups.includes(
+                        "Accounts Billing Department"
+                      ) && (
+                        <Button
+                          sx={{ color: "#28a745" }}
+                          onClick={() => openInPopup2(row)}
+                        >
+                          PI,
+                        </Button>
+                      )}
+                      <Button
+                        sx={{ color: "#5e35b1" }}
+                        onClick={() => openInPopup3(row)}
+                      >
+                        Activity,
+                      </Button>
+                      {row.is_potential_completed === false && (
+                        <Button
+                          sx={{ color: "#eb5042" }}
+                          onClick={() => openInPopup4(row)}
+                        >
+                          Potential
+                        </Button>
+                      )}
+                    </StyledTableCell>
+                  </StyledTableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
 
           <div
             style={{
@@ -586,3 +691,27 @@ export const CompanyDetails = () => {
     </>
   );
 };
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+    padding: 1, // adjust padding as needed
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+    padding: 1, // adjust padding as needed
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  "&:nth-of-type(odd)": {
+    backgroundColor: theme.palette.action.hover,
+  },
+  "&:last-child td, &:last-child th": {
+    border: 0,
+  },
+  "& > td, & > th": {
+    padding: 0, // adjust padding as needed
+  },
+}));
