@@ -68,9 +68,7 @@ import { UserProfileView } from "../Pages/Profile/UserProfile/UserProfileView";
 import { IndiaMartLeads } from "../Pages/Leads/IndiaMartLeads";
 import { InActiveCustomer } from "../Pages/Cutomers/CompanyDetails/InActiveCustomer";
 import { BlackListedCustomerView } from "../Pages/Cutomers/BlacklistedCompany/BlackListedCustomerView";
-
-
-
+import { FaqAllTab } from "../Pages/FAQ/FaqAllTab/FaqAllTab";
 
 export const RouteScreen = () => {
   const tokenData = useSelector((state) => state.auth);
@@ -101,7 +99,7 @@ export const RouteScreen = () => {
             <Route path="/user/dashoard" element={<Dashboard />} />
             <Route path="/user/profile" exact element={<Profile />} />
             <Route
-              path="/user/user-profile"
+              path="/user/personal-profile"
               exact
               element={<UserProfileView />}
             />
@@ -166,7 +164,7 @@ export const RouteScreen = () => {
               path="/customers/inactive-company-details"
               element={<InActiveCustomer />}
             />
-             <Route
+            <Route
               path="/customers/blacklisted-customer-details"
               element={<BlackListedCustomerView />}
             />
@@ -279,6 +277,8 @@ export const RouteScreen = () => {
               path="/market-analysis/competitor"
               element={<CompetitorView />}
             />
+            // FAQ Routes
+            <Route path="/user/faq" element={<FaqAllTab />} />
             <Route path="*" element={<Home />} />
           </>
         )}

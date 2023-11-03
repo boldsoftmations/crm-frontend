@@ -233,7 +233,7 @@ export const UserProfileView = () => {
             />
           </div>
           <div style={{ flexGrow: 2 }}>
-            <h3 style={styles.header}>User Profile</h3>
+            <h3 style={styles.header}>Personal Profile</h3>
           </div>
           <div style={{ flexGrow: 1 }}>
             <Button variant="contained" color="primary">

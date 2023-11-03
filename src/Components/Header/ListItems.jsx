@@ -26,24 +26,19 @@ import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
 import FollowTheSignsIcon from "@mui/icons-material/FollowTheSigns";
 import BarChartIcon from "@mui/icons-material/BarChart";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+
 export const ListItems = (props) => {
   const { setOpen } = props;
   const [expand, setExpand] = useState(false);
   const [expandDashboard, setExpandDashboard] = useState(false);
   const [expandProduct, setExpandProduct] = useState(false);
-  const [expandProfiles, setExpandProfiles] = useState(false);
   const [expandCustomer, setExpandCustomer] = useState(false);
   const [expandProformaInvoice, setExpandProformaInvoice] = useState(false);
-  const [expandSalesInvoice, setExpandSalesInvoice] = useState(false);
   const [expandOrderBook, setExpandOrderBook] = useState(false);
-  const [sellerAccount, setSellerAccount] = useState(false);
-  const [productForecast, setProductForecast] = useState(false);
   const [dispatchDetails, setDispatchDetails] = useState(false);
   const [expandInventory, setExpandInventory] = useState(false);
-  const [expandFollowup, setExpandFollowup] = useState(false);
-  const [expandTask, setExpandTask] = useState(false);
   const [expandUser, setExpandUser] = useState(false);
-  const [expandCompetitor, setExpandCompetitor] = useState(false);
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
 
@@ -460,33 +455,17 @@ export const ListItems = (props) => {
           {/* All Followup */}
           <ListItem
             button
-            onClick={() => setExpandFollowup(!expandFollowup)}
+            component={RouterLink}
+            to="/followp/view-followup"
             style={{ width: 300 }}
+            onClick={() => setOpen(false)}
           >
             <ListItemIcon>
               <FollowTheSignsIcon />
             </ListItemIcon>
             <ListItemText primary="Followup" />
-            {expandFollowup ? <ExpandLessIcon /> : <ExpandMoreIcon />}
           </ListItem>
-          <Collapse in={expandFollowup} timeout="auto" unmountOnExit>
-            <Divider />
-            <List component="div" disablePadding>
-              <ListItem
-                button
-                component={RouterLink}
-                to="/followp/view-followup"
-                style={{ width: 300 }}
-              >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="Followup"
-                />
-              </ListItem>
-            </List>
-          </Collapse>
+
           {/*Proforma Invoice  */}
           <ListItem
             button
@@ -559,93 +538,44 @@ export const ListItems = (props) => {
           {/*Sales Invoice  */}
           <ListItem
             button
-            onClick={() => setExpandSalesInvoice(!expandSalesInvoice)}
+            component={RouterLink}
+            to="/invoice/sales-invoice"
             style={{ width: 300 }}
+            onClick={() => setOpen(false)}
           >
             <ListItemIcon>
               <DescriptionIcon />
             </ListItemIcon>
             <ListItemText primary="Sales Invoice" />
-            {expandSalesInvoice ? <ExpandLessIcon /> : <ExpandMoreIcon />}
           </ListItem>
-          <Collapse in={expandSalesInvoice} timeout="auto" unmountOnExit>
-            <Divider />
-            <List component="div" disablePadding>
-              <ListItem
-                button
-                component={RouterLink}
-                to="/invoice/sales-invoice"
-                style={{ width: 300 }}
-              >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="Sales Invoice"
-                />
-              </ListItem>
-            </List>
-          </Collapse>
+
           {/* Forecast */}
           <ListItem
             button
-            onClick={() => setProductForecast(!productForecast)}
+            component={RouterLink}
+            to="/forecast/view-product-forecast"
             style={{ width: 300 }}
+            onClick={() => setOpen(false)}
           >
             <ListItemIcon>
               <TrendingUpIcon />
             </ListItemIcon>
             <ListItemText primary="Forecast" />
-            {productForecast ? <ExpandLessIcon /> : <ExpandMoreIcon />}
           </ListItem>
-          <Collapse in={productForecast} timeout="auto" unmountOnExit>
-            <Divider />
-            <List component="div" disablePadding>
-              <ListItem
-                button
-                component={RouterLink}
-                to="/forecast/view-product-forecast"
-                style={{ width: 300 }}
-              >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="Forecast"
-                />
-              </ListItem>
-            </List>
-          </Collapse>
           {/* Seller Account */}
           <ListItem
             button
-            onClick={() => setSellerAccount(!sellerAccount)}
+            component={RouterLink}
+            to="/invoice/seller-account"
             style={{ width: 300 }}
+            onClick={() => setOpen(false)}
           >
             <ListItemIcon>
               <AccountCircleIcon />
             </ListItemIcon>
             <ListItemText primary="Seller Account" />
-            {sellerAccount ? <ExpandLessIcon /> : <ExpandMoreIcon />}
           </ListItem>
-          <Collapse in={sellerAccount} timeout="auto" unmountOnExit>
-            <Divider />
-            <List component="div" disablePadding>
-              <ListItem
-                button
-                component={RouterLink}
-                to="/invoice/seller-account"
-                style={{ width: 300 }}
-              >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="Seller Account"
-                />
-              </ListItem>
-            </List>
-          </Collapse>
+
           {/* Order book */}
           <ListItem
             button
@@ -989,66 +919,31 @@ export const ListItems = (props) => {
           {/* Tasks */}
           <ListItem
             button
-            onClick={() => setExpandTask(!expandTask)}
+            component={RouterLink}
+            to="/task/view-task"
             style={{ width: 300 }}
+            onClick={() => setOpen(false)}
           >
             <ListItemIcon>
               <AssignmentTurnedInIcon />
             </ListItemIcon>
             <ListItemText primary="Task" />
-            {expandTask ? <ExpandLessIcon /> : <ExpandMoreIcon />}
           </ListItem>
-
-          <Collapse in={expandTask} timeout="auto" unmountOnExit>
-            <Divider />
-            <List component="div" disablePadding>
-              <ListItem
-                button
-                component={RouterLink}
-                to="/task/view-task"
-                style={{ width: 300 }}
-              >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="Task"
-                />
-              </ListItem>
-            </List>
-          </Collapse>
 
           {/* Market Analysis */}
           <ListItem
             button
-            onClick={() => setExpandCompetitor(!expandCompetitor)}
+            component={RouterLink}
+            to="/market-analysis/competitor"
             style={{ width: 300 }}
+            onClick={() => setOpen(false)}
           >
             <ListItemIcon>
               <BarChartIcon />
             </ListItemIcon>
             <ListItemText primary="Market Analysis" />
-            {expandCompetitor ? <ExpandLessIcon /> : <ExpandMoreIcon />}
           </ListItem>
 
-          <Collapse in={expandCompetitor} timeout="auto" unmountOnExit>
-            <Divider />
-            <List component="div" disablePadding>
-              <ListItem
-                button
-                component={RouterLink}
-                to="/market-analysis/competitor"
-                style={{ width: 300 }}
-              >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="Competitor"
-                />
-              </ListItem>
-            </List>
-          </Collapse>
           {/* Users */}
           <ListItem
             button
@@ -1058,7 +953,7 @@ export const ListItems = (props) => {
             <ListItemIcon>
               <PersonIcon />
             </ListItemIcon>
-            <ListItemText primary="Users" />
+            <ListItemText primary="Profile" />
             {expandUser ? <ExpandLessIcon /> : <ExpandMoreIcon />}
           </ListItem>
 
@@ -1091,38 +986,35 @@ export const ListItems = (props) => {
                   primary="InActive Users"
                 />
               </ListItem>
-            </List>
-          </Collapse>
-          {/* Profile */}
-          <ListItem
-            button
-            onClick={() => setExpandProfiles(!expandProfiles)}
-            style={{ width: 300 }}
-          >
-            <ListItemIcon>
-              <DashboardIcon />
-            </ListItemIcon>
-            <ListItemText primary="User Profile" />
-            {expandProfiles ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-          </ListItem>
-          <Collapse in={expandProfiles} timeout="auto" unmountOnExit>
-            <Divider />
-            <List component="div" disablePadding>
               <ListItem
                 button
                 component={RouterLink}
-                to="/user/user-profile"
+                to="/user/personal-profile"
                 style={{ width: 300 }}
               >
                 <ListItemText
                   component={Button}
                   onClick={() => setOpen(false)}
                   inset
-                  primary="User Profile"
+                  primary="Personal Profile"
                 />
               </ListItem>
             </List>
           </Collapse>
+
+          {/* Script */}
+          <ListItem
+            button
+            component={RouterLink}
+            to="/user/faq"
+            style={{ width: 300 }}
+            onClick={() => setOpen(false)}
+          >
+            <ListItemIcon>
+              <HelpOutlineIcon />
+            </ListItemIcon>
+            <ListItemText primary="Script" />
+          </ListItem>
         </>
       ) : (
         <>
@@ -1132,42 +1024,13 @@ export const ListItems = (props) => {
               {/* Users */}
               <ListItem
                 button
-                onClick={() => setExpandProfiles(!expandProfiles)}
-                style={{ width: 300 }}
-              >
-                <ListItemIcon>
-                  <DashboardIcon />
-                </ListItemIcon>
-                <ListItemText primary="User Profile" />
-                {expandProfiles ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-              </ListItem>
-              <Collapse in={expandProfiles} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/user/user-profile"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="User Profile"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
-              <ListItem
-                button
                 onClick={() => setExpandUser(!expandUser)}
                 style={{ width: 300 }}
               >
                 <ListItemIcon>
                   <PersonIcon />
                 </ListItemIcon>
-                <ListItemText primary="Users" />
+                <ListItemText primary="Profile" />
                 {expandUser ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
 
@@ -1200,40 +1063,35 @@ export const ListItems = (props) => {
                       primary="InActive Users"
                     />
                   </ListItem>
-                </List>
-              </Collapse>
-
-              {/* Tasks */}
-              <ListItem
-                button
-                onClick={() => setExpandTask(!expandTask)}
-                style={{ width: 300 }}
-              >
-                <ListItemIcon>
-                  <AssignmentTurnedInIcon />
-                </ListItemIcon>
-                <ListItemText primary="Task" />
-                {expandTask ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-              </ListItem>
-
-              <Collapse in={expandTask} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
                   <ListItem
                     button
                     component={RouterLink}
-                    to="/task/view-task"
+                    to="/user/personal-profile"
                     style={{ width: 300 }}
                   >
                     <ListItemText
                       component={Button}
                       onClick={() => setOpen(false)}
                       inset
-                      primary="Task"
+                      primary="Personal Profile"
                     />
                   </ListItem>
                 </List>
               </Collapse>
+
+              {/* Tasks */}
+              <ListItem
+                button
+                component={RouterLink}
+                to="/task/view-task"
+                style={{ width: 300 }}
+                onClick={() => setOpen(false)}
+              >
+                <ListItemIcon>
+                  <AssignmentTurnedInIcon />
+                </ListItemIcon>
+                <ListItemText primary="Task" />
+              </ListItem>
             </>
           )}
           {/* Factory orderbook */}
@@ -1297,36 +1155,19 @@ export const ListItems = (props) => {
                 </List>
               </Collapse>
 
+              {/* Tasks */}
               <ListItem
                 button
-                onClick={() => setExpandTask(!expandTask)}
+                component={RouterLink}
+                to="/task/view-task"
                 style={{ width: 300 }}
+                onClick={() => setOpen(false)}
               >
                 <ListItemIcon>
                   <AssignmentTurnedInIcon />
                 </ListItemIcon>
                 <ListItemText primary="Task" />
-                {expandTask ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
-
-              <Collapse in={expandTask} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/task/view-task"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Task"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
             </>
           )}
 
@@ -1379,36 +1220,19 @@ export const ListItems = (props) => {
                 </List>
               </Collapse>
 
+              {/* Tasks */}
               <ListItem
                 button
-                onClick={() => setExpandTask(!expandTask)}
+                component={RouterLink}
+                to="/task/view-task"
                 style={{ width: 300 }}
+                onClick={() => setOpen(false)}
               >
                 <ListItemIcon>
                   <AssignmentTurnedInIcon />
                 </ListItemIcon>
                 <ListItemText primary="Task" />
-                {expandTask ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
-
-              <Collapse in={expandTask} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/task/view-task"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Task"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
             </>
           )}
 
@@ -1449,33 +1273,16 @@ export const ListItems = (props) => {
               {/* All Followup */}
               <ListItem
                 button
-                onClick={() => setExpandFollowup(!expandFollowup)}
+                component={RouterLink}
+                to="/followp/view-followup"
                 style={{ width: 300 }}
+                onClick={() => setOpen(false)}
               >
                 <ListItemIcon>
                   <FollowTheSignsIcon />
                 </ListItemIcon>
                 <ListItemText primary="Followup" />
-                {expandFollowup ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
-              <Collapse in={expandFollowup} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/followp/view-followup"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Followup"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
 
               {/*Proforma Invoice  */}
               <ListItem
@@ -1515,67 +1322,30 @@ export const ListItems = (props) => {
               {/* Forecast */}
               <ListItem
                 button
-                onClick={() => setProductForecast(!productForecast)}
+                component={RouterLink}
+                to="/forecast/view-product-forecast"
                 style={{ width: 300 }}
+                onClick={() => setOpen(false)}
               >
                 <ListItemIcon>
                   <TrendingUpIcon />
                 </ListItemIcon>
                 <ListItemText primary="Forecast" />
-                {productForecast ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
-              <Collapse in={productForecast} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/forecast/view-product-forecast"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Forecast"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
 
               {/* Seller Account */}
-              {userData.groups.toString() !== "Sales" && (
-                <ListItem
-                  button
-                  onClick={() => setSellerAccount(!sellerAccount)}
-                  style={{ width: 300 }}
-                >
-                  <ListItemIcon>
-                    <AccountCircleIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Seller Account" />
-                  {sellerAccount ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                </ListItem>
-              )}
-              <Collapse in={sellerAccount} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/invoice/seller-account"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Seller Account"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
-
+              <ListItem
+                button
+                component={RouterLink}
+                to="/invoice/seller-account"
+                style={{ width: 300 }}
+                onClick={() => setOpen(false)}
+              >
+                <ListItemIcon>
+                  <AccountCircleIcon />
+                </ListItemIcon>
+                <ListItemText primary="Seller Account" />
+              </ListItem>
               {/* Order book */}
               <ListItem
                 button
@@ -1672,36 +1442,33 @@ export const ListItems = (props) => {
                 </List>
               </Collapse>
 
+              {/* Tasks */}
               <ListItem
                 button
-                onClick={() => setExpandTask(!expandTask)}
+                component={RouterLink}
+                to="/task/view-task"
                 style={{ width: 300 }}
+                onClick={() => setOpen(false)}
               >
                 <ListItemIcon>
                   <AssignmentTurnedInIcon />
                 </ListItemIcon>
                 <ListItemText primary="Task" />
-                {expandTask ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
 
-              <Collapse in={expandTask} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/task/view-task"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Task"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
+              {/* Script */}
+              <ListItem
+                button
+                component={RouterLink}
+                to="/user/faq"
+                style={{ width: 300 }}
+                onClick={() => setOpen(false)}
+              >
+                <ListItemIcon>
+                  <HelpOutlineIcon />
+                </ListItemIcon>
+                <ListItemText primary="Script" />
+              </ListItem>
             </>
           )}
 
@@ -1780,63 +1547,30 @@ export const ListItems = (props) => {
               {/* Forecast */}
               <ListItem
                 button
-                onClick={() => setProductForecast(!productForecast)}
+                component={RouterLink}
+                to="/forecast/view-product-forecast"
                 style={{ width: 300 }}
+                onClick={() => setOpen(false)}
               >
                 <ListItemIcon>
                   <TrendingUpIcon />
                 </ListItemIcon>
                 <ListItemText primary="Forecast" />
-                {productForecast ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
-              <Collapse in={productForecast} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/forecast/view-product-forecast"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Forecast"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
+
+              {/* Tasks */}
               <ListItem
                 button
-                onClick={() => setExpandTask(!expandTask)}
+                component={RouterLink}
+                to="/task/view-task"
                 style={{ width: 300 }}
+                onClick={() => setOpen(false)}
               >
                 <ListItemIcon>
                   <AssignmentTurnedInIcon />
                 </ListItemIcon>
                 <ListItemText primary="Task" />
-                {expandTask ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
-
-              <Collapse in={expandTask} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/task/view-task"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Task"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
             </>
           )}
 
@@ -1925,36 +1659,19 @@ export const ListItems = (props) => {
                   </ListItem>
                 </List>
               </Collapse>
+              {/* Tasks */}
               <ListItem
                 button
-                onClick={() => setExpandTask(!expandTask)}
+                component={RouterLink}
+                to="/task/view-task"
                 style={{ width: 300 }}
+                onClick={() => setOpen(false)}
               >
                 <ListItemIcon>
                   <AssignmentTurnedInIcon />
                 </ListItemIcon>
                 <ListItemText primary="Task" />
-                {expandTask ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
-
-              <Collapse in={expandTask} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/task/view-task"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Task"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
             </>
           )}
 
@@ -2186,36 +1903,19 @@ export const ListItems = (props) => {
                 </List>
               </Collapse>
 
+              {/* Tasks */}
               <ListItem
                 button
-                onClick={() => setExpandTask(!expandTask)}
+                component={RouterLink}
+                to="/task/view-task"
                 style={{ width: 300 }}
+                onClick={() => setOpen(false)}
               >
                 <ListItemIcon>
                   <AssignmentTurnedInIcon />
                 </ListItemIcon>
                 <ListItemText primary="Task" />
-                {expandTask ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
-
-              <Collapse in={expandTask} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/task/view-task"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Task"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
             </>
           )}
 
@@ -2318,36 +2018,19 @@ export const ListItems = (props) => {
                 </List>
               </Collapse>
 
+              {/* Tasks */}
               <ListItem
                 button
-                onClick={() => setExpandTask(!expandTask)}
+                component={RouterLink}
+                to="/task/view-task"
                 style={{ width: 300 }}
+                onClick={() => setOpen(false)}
               >
                 <ListItemIcon>
                   <AssignmentTurnedInIcon />
                 </ListItemIcon>
                 <ListItemText primary="Task" />
-                {expandTask ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
-
-              <Collapse in={expandTask} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/task/view-task"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Task"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
             </>
           )}
 
@@ -2593,33 +2276,16 @@ export const ListItems = (props) => {
               {/* All Followup */}
               <ListItem
                 button
-                onClick={() => setExpandFollowup(!expandFollowup)}
+                component={RouterLink}
+                to="/followp/view-followup"
                 style={{ width: 300 }}
+                onClick={() => setOpen(false)}
               >
                 <ListItemIcon>
                   <FollowTheSignsIcon />
                 </ListItemIcon>
                 <ListItemText primary="Followup" />
-                {expandFollowup ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
-              <Collapse in={expandFollowup} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/followp/view-followup"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Followup"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
               {/*Proforma Invoice  */}
               <ListItem
                 button
@@ -2671,33 +2337,16 @@ export const ListItems = (props) => {
               {/* Forecast */}
               <ListItem
                 button
-                onClick={() => setProductForecast(!productForecast)}
+                component={RouterLink}
+                to="/forecast/view-product-forecast"
                 style={{ width: 300 }}
+                onClick={() => setOpen(false)}
               >
                 <ListItemIcon>
                   <TrendingUpIcon />
                 </ListItemIcon>
                 <ListItemText primary="Forecast" />
-                {productForecast ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
-              <Collapse in={productForecast} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/forecast/view-product-forecast"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Forecast"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
               {/* Seller Account */}
 
               {/* Order book */}
@@ -2761,65 +2410,44 @@ export const ListItems = (props) => {
               {/* Tasks */}
               <ListItem
                 button
-                onClick={() => setExpandTask(!expandTask)}
+                component={RouterLink}
+                to="/task/view-task"
                 style={{ width: 300 }}
+                onClick={() => setOpen(false)}
               >
                 <ListItemIcon>
                   <AssignmentTurnedInIcon />
                 </ListItemIcon>
                 <ListItemText primary="Task" />
-                {expandTask ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
 
-              <Collapse in={expandTask} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/task/view-task"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Task"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
               {/* Market Analysis */}
               <ListItem
                 button
-                onClick={() => setExpandCompetitor(!expandCompetitor)}
+                component={RouterLink}
+                to="/market-analysis/competitor"
                 style={{ width: 300 }}
+                onClick={() => setOpen(false)}
               >
                 <ListItemIcon>
                   <BarChartIcon />
                 </ListItemIcon>
                 <ListItemText primary="Market Analysis" />
-                {expandCompetitor ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
 
-              <Collapse in={expandCompetitor} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/market-analysis/competitor"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Competitor"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
+              {/* Script */}
+              <ListItem
+                button
+                component={RouterLink}
+                to="/user/faq"
+                style={{ width: 300 }}
+                onClick={() => setOpen(false)}
+              >
+                <ListItemIcon>
+                  <HelpOutlineIcon />
+                </ListItemIcon>
+                <ListItemText primary="Script" />
+              </ListItem>
             </>
           )}
 
@@ -3026,33 +2654,16 @@ export const ListItems = (props) => {
               {/* All Followup */}
               <ListItem
                 button
-                onClick={() => setExpandFollowup(!expandFollowup)}
+                component={RouterLink}
+                to="/followp/view-followup"
                 style={{ width: 300 }}
+                onClick={() => setOpen(false)}
               >
                 <ListItemIcon>
                   <FollowTheSignsIcon />
                 </ListItemIcon>
                 <ListItemText primary="Followup" />
-                {expandFollowup ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
-              <Collapse in={expandFollowup} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/followp/view-followup"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Followup"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
 
               {/*Proforma Invoice  */}
               <ListItem
@@ -3105,33 +2716,16 @@ export const ListItems = (props) => {
               {/* Forecast */}
               <ListItem
                 button
-                onClick={() => setProductForecast(!productForecast)}
+                component={RouterLink}
+                to="/forecast/view-product-forecast"
                 style={{ width: 300 }}
+                onClick={() => setOpen(false)}
               >
                 <ListItemIcon>
                   <TrendingUpIcon />
                 </ListItemIcon>
                 <ListItemText primary="Forecast" />
-                {productForecast ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
-              <Collapse in={productForecast} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/forecast/view-product-forecast"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Forecast"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
 
               {/* Order book */}
               <ListItem
@@ -3193,33 +2787,29 @@ export const ListItems = (props) => {
               {/* Tasks */}
               <ListItem
                 button
-                onClick={() => setExpandTask(!expandTask)}
+                component={RouterLink}
+                to="/task/view-task"
                 style={{ width: 300 }}
+                onClick={() => setOpen(false)}
               >
                 <ListItemIcon>
                   <AssignmentTurnedInIcon />
                 </ListItemIcon>
                 <ListItemText primary="Task" />
-                {expandTask ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
-              <Collapse in={expandTask} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/task/view-task"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Task"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
+              {/* Script */}
+              <ListItem
+                button
+                component={RouterLink}
+                to="/user/faq"
+                style={{ width: 300 }}
+                onClick={() => setOpen(false)}
+              >
+                <ListItemIcon>
+                  <HelpOutlineIcon />
+                </ListItemIcon>
+                <ListItemText primary="Script" />
+              </ListItem>
             </>
           )}
 
@@ -3401,33 +2991,16 @@ export const ListItems = (props) => {
               {/* All Followup */}
               <ListItem
                 button
-                onClick={() => setExpandFollowup(!expandFollowup)}
+                component={RouterLink}
+                to="/followp/view-followup"
                 style={{ width: 300 }}
+                onClick={() => setOpen(false)}
               >
                 <ListItemIcon>
                   <FollowTheSignsIcon />
                 </ListItemIcon>
                 <ListItemText primary="Followup" />
-                {expandFollowup ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
-              <Collapse in={expandFollowup} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/followp/view-followup"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Followup"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
 
               {/*Proforma Invoice  */}
               <ListItem
@@ -3480,33 +3053,16 @@ export const ListItems = (props) => {
               {/* Forecast */}
               <ListItem
                 button
-                onClick={() => setProductForecast(!productForecast)}
+                component={RouterLink}
+                to="/forecast/view-product-forecast"
                 style={{ width: 300 }}
+                onClick={() => setOpen(false)}
               >
                 <ListItemIcon>
                   <TrendingUpIcon />
                 </ListItemIcon>
                 <ListItemText primary="Forecast" />
-                {productForecast ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
-              <Collapse in={productForecast} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/forecast/view-product-forecast"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Forecast"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
 
               {/* Order book */}
               <ListItem
@@ -3565,36 +3121,33 @@ export const ListItems = (props) => {
                 </List>
               </Collapse>
 
-              {/* Task */}
+              {/* Tasks */}
               <ListItem
                 button
-                onClick={() => setExpandTask(!expandTask)}
+                component={RouterLink}
+                to="/task/view-task"
                 style={{ width: 300 }}
+                onClick={() => setOpen(false)}
               >
                 <ListItemIcon>
                   <AssignmentTurnedInIcon />
                 </ListItemIcon>
                 <ListItemText primary="Task" />
-                {expandTask ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
-              <Collapse in={expandTask} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/task/view-task"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Task"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
+
+              {/* Script */}
+              <ListItem
+                button
+                component={RouterLink}
+                to="/user/faq"
+                style={{ width: 300 }}
+                onClick={() => setOpen(false)}
+              >
+                <ListItemIcon>
+                  <HelpOutlineIcon />
+                </ListItemIcon>
+                <ListItemText primary="Script" />
+              </ListItem>
             </>
           )}
 
@@ -3737,33 +3290,16 @@ export const ListItems = (props) => {
               {/* All Followup */}
               <ListItem
                 button
-                onClick={() => setExpandFollowup(!expandFollowup)}
+                component={RouterLink}
+                to="/followp/view-followup"
                 style={{ width: 300 }}
+                onClick={() => setOpen(false)}
               >
                 <ListItemIcon>
                   <FollowTheSignsIcon />
                 </ListItemIcon>
                 <ListItemText primary="Followup" />
-                {expandFollowup ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
-              <Collapse in={expandFollowup} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/followp/view-followup"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Followup"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
 
               {/*Proforma Invoice  */}
               <ListItem
@@ -3816,33 +3352,16 @@ export const ListItems = (props) => {
               {/* Forecast */}
               <ListItem
                 button
-                onClick={() => setProductForecast(!productForecast)}
+                component={RouterLink}
+                to="/forecast/view-product-forecast"
                 style={{ width: 300 }}
+                onClick={() => setOpen(false)}
               >
                 <ListItemIcon>
                   <TrendingUpIcon />
                 </ListItemIcon>
                 <ListItemText primary="Forecast" />
-                {productForecast ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
-              <Collapse in={productForecast} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/forecast/view-product-forecast"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Forecast"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
 
               {/* Order book */}
               <ListItem
@@ -3901,36 +3420,33 @@ export const ListItems = (props) => {
                 </List>
               </Collapse>
 
-              {/* Task */}
+              {/* Tasks */}
               <ListItem
                 button
-                onClick={() => setExpandTask(!expandTask)}
+                component={RouterLink}
+                to="/task/view-task"
                 style={{ width: 300 }}
+                onClick={() => setOpen(false)}
               >
                 <ListItemIcon>
                   <AssignmentTurnedInIcon />
                 </ListItemIcon>
                 <ListItemText primary="Task" />
-                {expandTask ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
-              <Collapse in={expandTask} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/task/view-task"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Task"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
+
+              {/* Script */}
+              <ListItem
+                button
+                component={RouterLink}
+                to="/user/faq"
+                style={{ width: 300 }}
+                onClick={() => setOpen(false)}
+              >
+                <ListItemIcon>
+                  <HelpOutlineIcon />
+                </ListItemIcon>
+                <ListItemText primary="Script" />
+              </ListItem>
             </>
           )}
           {/* Sales Manager without Leads  */}
@@ -4072,33 +3588,16 @@ export const ListItems = (props) => {
               {/* All Followup */}
               <ListItem
                 button
-                onClick={() => setExpandFollowup(!expandFollowup)}
+                component={RouterLink}
+                to="/followp/view-followup"
                 style={{ width: 300 }}
+                onClick={() => setOpen(false)}
               >
                 <ListItemIcon>
                   <FollowTheSignsIcon />
                 </ListItemIcon>
                 <ListItemText primary="Followup" />
-                {expandFollowup ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
-              <Collapse in={expandFollowup} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/followp/view-followup"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Followup"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
 
               {/*Proforma Invoice  */}
               <ListItem
@@ -4151,33 +3650,16 @@ export const ListItems = (props) => {
               {/* Forecast */}
               <ListItem
                 button
-                onClick={() => setProductForecast(!productForecast)}
+                component={RouterLink}
+                to="/forecast/view-product-forecast"
                 style={{ width: 300 }}
+                onClick={() => setOpen(false)}
               >
                 <ListItemIcon>
                   <TrendingUpIcon />
                 </ListItemIcon>
                 <ListItemText primary="Forecast" />
-                {productForecast ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
-              <Collapse in={productForecast} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/forecast/view-product-forecast"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Forecast"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
 
               {/* Order book */}
               <ListItem
@@ -4236,36 +3718,33 @@ export const ListItems = (props) => {
                 </List>
               </Collapse>
 
-              {/* Task */}
+              {/* Tasks */}
               <ListItem
                 button
-                onClick={() => setExpandTask(!expandTask)}
+                component={RouterLink}
+                to="/task/view-task"
                 style={{ width: 300 }}
+                onClick={() => setOpen(false)}
               >
                 <ListItemIcon>
                   <AssignmentTurnedInIcon />
                 </ListItemIcon>
                 <ListItemText primary="Task" />
-                {expandTask ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
-              <Collapse in={expandTask} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/task/view-task"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Task"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
+
+              {/* Script */}
+              <ListItem
+                button
+                component={RouterLink}
+                to="/user/faq"
+                style={{ width: 300 }}
+                onClick={() => setOpen(false)}
+              >
+                <ListItemIcon>
+                  <HelpOutlineIcon />
+                </ListItemIcon>
+                <ListItemText primary="Script" />
+              </ListItem>
             </>
           )}
 
@@ -4610,93 +4089,43 @@ export const ListItems = (props) => {
               {/*Sales Invoice  */}
               <ListItem
                 button
-                onClick={() => setExpandSalesInvoice(!expandSalesInvoice)}
+                component={RouterLink}
+                to="/invoice/sales-invoice"
                 style={{ width: 300 }}
+                onClick={() => setOpen(false)}
               >
                 <ListItemIcon>
                   <DescriptionIcon />
                 </ListItemIcon>
                 <ListItemText primary="Sales Invoice" />
-                {expandSalesInvoice ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
-              <Collapse in={expandSalesInvoice} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/invoice/sales-invoice"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Sales Invoice"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
               {/* Forecast */}
               <ListItem
                 button
-                onClick={() => setProductForecast(!productForecast)}
+                component={RouterLink}
+                to="/forecast/view-product-forecast"
                 style={{ width: 300 }}
+                onClick={() => setOpen(false)}
               >
                 <ListItemIcon>
                   <TrendingUpIcon />
                 </ListItemIcon>
                 <ListItemText primary="Forecast" />
-                {productForecast ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
-              <Collapse in={productForecast} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/forecast/view-product-forecast"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Forecast"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
+
               {/* Seller Account */}
               <ListItem
                 button
-                onClick={() => setSellerAccount(!sellerAccount)}
+                component={RouterLink}
+                to="/invoice/seller-account"
                 style={{ width: 300 }}
+                onClick={() => setOpen(false)}
               >
                 <ListItemIcon>
                   <AccountCircleIcon />
                 </ListItemIcon>
                 <ListItemText primary="Seller Account" />
-                {sellerAccount ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
-              <Collapse in={sellerAccount} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/invoice/seller-account"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Seller Account"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
 
               {/* Order book */}
               <ListItem
@@ -5042,36 +4471,19 @@ export const ListItems = (props) => {
                 </List>
               </Collapse>
 
+              {/* Tasks */}
               <ListItem
                 button
-                onClick={() => setExpandTask(!expandTask)}
+                component={RouterLink}
+                to="/task/view-task"
                 style={{ width: 300 }}
+                onClick={() => setOpen(false)}
               >
                 <ListItemIcon>
                   <AssignmentTurnedInIcon />
                 </ListItemIcon>
                 <ListItemText primary="Task" />
-                {expandTask ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
-
-              <Collapse in={expandTask} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/task/view-task"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Task"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
             </>
           )}
 
@@ -5321,34 +4733,16 @@ export const ListItems = (props) => {
               {/*Sales Invoice  */}
               <ListItem
                 button
-                onClick={() => setExpandSalesInvoice(!expandSalesInvoice)}
+                component={RouterLink}
+                to="/invoice/sales-invoice"
                 style={{ width: 300 }}
+                onClick={() => setOpen(false)}
               >
                 <ListItemIcon>
                   <DescriptionIcon />
                 </ListItemIcon>
                 <ListItemText primary="Sales Invoice" />
-                {expandSalesInvoice ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
-              <Collapse in={expandSalesInvoice} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/invoice/sales-invoice"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Sales Invoice"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
-
               {/* Order book */}
               <ListItem
                 button
@@ -5406,36 +4800,19 @@ export const ListItems = (props) => {
                 </List>
               </Collapse>
 
+              {/* Tasks */}
               <ListItem
                 button
-                onClick={() => setExpandTask(!expandTask)}
+                component={RouterLink}
+                to="/task/view-task"
                 style={{ width: 300 }}
+                onClick={() => setOpen(false)}
               >
                 <ListItemIcon>
                   <AssignmentTurnedInIcon />
                 </ListItemIcon>
                 <ListItemText primary="Task" />
-                {expandTask ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
-
-              <Collapse in={expandTask} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/task/view-task"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Task"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
             </>
           )}
 
@@ -5764,36 +5141,19 @@ export const ListItems = (props) => {
                 </List>
               </Collapse>
 
+              {/* Tasks */}
               <ListItem
                 button
-                onClick={() => setExpandTask(!expandTask)}
+                component={RouterLink}
+                to="/task/view-task"
                 style={{ width: 300 }}
+                onClick={() => setOpen(false)}
               >
                 <ListItemIcon>
                   <AssignmentTurnedInIcon />
                 </ListItemIcon>
                 <ListItemText primary="Task" />
-                {expandTask ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItem>
-
-              <Collapse in={expandTask} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/task/view-task"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Task"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
             </>
           )}
         </>
