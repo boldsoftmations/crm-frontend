@@ -11,23 +11,20 @@ export const ProductObjectionsCreate = ({
 }) => {
   const [productObjection, setProductObjection] = useState([]);
   const [open, setOpen] = useState(false);
-  const [product, setProduct] = useState([]);
+  const [descriptionMenuData, setDescriptionMenuData] = useState([]);
 
   useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        setOpen(true);
-        const res = await ProductService.getAllProduct();
-        setProduct(res.data);
-      } catch (err) {
-        console.error("error potential", err);
-      } finally {
-        setOpen(false);
-      }
-    };
-
-    fetchProduct();
+    getDescriptionNoData();
   }, []);
+
+  const getDescriptionNoData = async () => {
+    try {
+      const res = await ProductService.getNoDescription();
+      setDescriptionMenuData(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const handleFormChange = (event) => {
     const { name, value } = event.target;
@@ -38,7 +35,7 @@ export const ProductObjectionsCreate = ({
     try {
       e.preventDefault();
       const req = {
-        product: productObjection.product,
+        product: productObjection.description,
         question: productObjection.question,
         answer: productObjection.answer,
       };
@@ -67,16 +64,16 @@ export const ProductObjectionsCreate = ({
               onChange={(event, newValue) => {
                 handleFormChange({
                   target: {
-                    name: `product`,
+                    name: `description`,
                     value: newValue || "",
                   },
                 });
               }}
-              value={productObjection.product}
-              options={product.map((option) => option.name)}
+              value={productObjection.description}
+              options={descriptionMenuData.map((option) => option.name)}
               getOptionLabel={(option) => `${option ? option : "No Options"}`}
               renderInput={(params) => (
-                <CustomTextField {...params} label="Product" />
+                <CustomTextField {...params} label="Description" />
               )}
             />
           </Grid>
