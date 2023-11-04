@@ -11,7 +11,7 @@ export const ProductObjectionsUpdate = ({
   recordForEdit,
 }) => {
   const [productObjection, setProductObjection] = useState(
-    recordForEdit || { product: "", question: "", answer: "" }
+    recordForEdit || { description: "", question: "", answer: "" }
   );
   const [open, setOpen] = useState(false);
   const [descriptionMenuData, setDescriptionMenuData] = useState([]);
@@ -37,7 +37,7 @@ export const ProductObjectionsUpdate = ({
     setOpen(true);
     try {
       await UserProfileService.updateProductObjectionData(productObjection.id, {
-        product: productObjection.description,
+        description: productObjection.description,
         question: productObjection.question,
         answer: productObjection.answer,
       });

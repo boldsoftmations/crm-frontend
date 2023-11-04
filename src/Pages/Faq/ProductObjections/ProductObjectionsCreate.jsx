@@ -35,7 +35,7 @@ export const ProductObjectionsCreate = ({
     try {
       e.preventDefault();
       const req = {
-        product: productObjection.description,
+        description: productObjection.description,
         question: productObjection.question,
         answer: productObjection.answer,
       };
