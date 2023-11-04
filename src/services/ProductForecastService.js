@@ -85,6 +85,10 @@ const getCurrentMonthForecastPaginateData = (currentPage) => {
   );
 };
 
+const updateAnticipatedDate = (id, data) => {
+  return CustomAxios.patch(`/api/forecast/list-quantity-forecast/${id}`, data);
+};
+
 // Product Not Having Forecast
 
 const getProductNotHavingForecast = () => {
@@ -354,6 +358,7 @@ const ProductForecastService = {
   getAllSearchCurrentMonthForecast,
   getAllCurrentMonthForecastPaginate,
   getCurrentMonthForecastPaginateData,
+  updateAnticipatedDate,
   getProductNotHavingForecast,
   getByFilterProductNotHavingForecast,
   getAllPaginateProductNotHavingForecast,
