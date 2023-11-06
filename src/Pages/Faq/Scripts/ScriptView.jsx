@@ -172,15 +172,22 @@ export const ScriptView = () => {
                       Updation Date: {formatDate(item.updation_date)}
                     </Typography>
                   </Grid>
-                  <Grid item xs={12} sm={1}>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={() => handleEditClick(item)}
-                    >
-                      Edit
-                    </Button>
-                  </Grid>
+                  {(userData.groups.includes("Sales Manager") ||
+                    userData.groups.includes("Sales Deputy Manager") ||
+                    userData.groups.includes(
+                      "Sales Assistant Deputy Manager"
+                    ) ||
+                    userData.groups.includes("Director")) && (
+                    <Grid item xs={12} sm={1}>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => handleEditClick(item)}
+                      >
+                        Edit
+                      </Button>
+                    </Grid>
+                  )}
                 </Grid>
               </Box>
             </AccordionDetails>
