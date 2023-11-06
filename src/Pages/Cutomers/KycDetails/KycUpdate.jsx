@@ -17,13 +17,19 @@ import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomerServices from "../../../services/CustomerService";
 import CustomTextField from "../../../Components/CustomTextField";
 
-const KycUpdate = ({ recordForEdit }) => {
+const KycUpdate = ({
+  recordForEdit,
+  setOpenPopup,
+  getIncompleteKycCustomerData,
+}) => {
   const [contactData, setContactData] = useState([]);
   const [allCompetitors, setAllCompetitors] = useState([]);
   const [open, setOpen] = useState(false);
   const currentDate = new Date().toISOString().split("T")[0];
   const [inputValue, setInputValue] = useState([]);
   const [contactValue, setContactValue] = useState([]);
+  const [error, setError] = useState(null);
+
   // Fetch company details based on the active tab when the component mounts or the active tab changes
   useEffect(() => {
     if (recordForEdit) {
@@ -125,8 +131,7 @@ const KycUpdate = ({ recordForEdit }) => {
   };
 
   // Handle input changes
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
+  const handleInputChange = (name, value) => {
     setInputValue((prevState) => ({ ...prevState, [name]: value }));
   };
 
@@ -209,6 +214,8 @@ const KycUpdate = ({ recordForEdit }) => {
       };
       await CustomerServices.updateCompanyData(recordForEdit, req);
       UpdateContactDetails();
+      setOpenPopup(false);
+      getIncompleteKycCustomerData();
     } finally {
       setOpen(false);
     }
@@ -240,6 +247,7 @@ const KycUpdate = ({ recordForEdit }) => {
   return (
     <>
       <CustomLoader open={open} />
+
       {/* Form for KYC Details */}
       <Box component="form" noValidate onSubmit={UpdateCompanyDetails}>
         <Grid container spacing={2}>
@@ -257,7 +265,7 @@ const KycUpdate = ({ recordForEdit }) => {
               label="Website"
               variant="outlined"
               value={inputValue.website || ""}
-              onChange={handleInputChange}
+              onChange={(e) => handleInputChange("website", e.target.value)}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -268,18 +276,38 @@ const KycUpdate = ({ recordForEdit }) => {
               label="Established Year"
               placeholder="YYYY"
               value={inputValue.estd_year || ""}
-              onChange={handleInputChange}
+              onChange={(e) => handleInputChange("estd_year", e.target.value)}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <CustomTextField
+            <Autocomplete
               fullWidth
-              name="approx_annual_turnover"
               size="small"
-              label="Approx Annual Turnover"
-              variant="outlined"
+              options={[
+                "1cr to 10cr",
+                "10cr to 20cr",
+                "20cr to 30cr",
+                "30cr to 40cr",
+                "40cr to 50cr",
+                "50cr to 60cr",
+                "60cr to 70cr",
+                "70cr to 80cr",
+                "80cr to 90cr",
+                "90cr to 100cr",
+                "Above 100cr",
+              ]}
+              getOptionLabel={(option) => option}
+              renderInput={(params) => (
+                <CustomTextField
+                  {...params}
+                  label="Approx Annual Turnover"
+                  variant="outlined"
+                />
+              )}
               value={inputValue.approx_annual_turnover || ""}
-              onChange={handleInputChange}
+              onChange={(event, value) =>
+                handleInputChange("approx_annual_turnover", value)
+              }
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -422,7 +450,9 @@ const KycUpdate = ({ recordForEdit }) => {
                 label="Customer Serve Count"
                 variant="outlined"
                 value={inputValue.customer_serve_count || ""}
-                onChange={handleInputChange}
+                onChange={(e) =>
+                  handleInputChange("customer_serve_count", e.target.value)
+                }
               />
             </Grid>
           )}
@@ -490,16 +520,18 @@ const KycUpdate = ({ recordForEdit }) => {
               />
             </Grid>
           )}
-          <Grid item xs={12} sm={6}>
-            <CustomTextField
-              fullWidth
-              name="whatsapp_url"
-              size="small"
-              label="Whatsapp URL"
-              value={inputValue.whatsapp_url || ""}
-              onChange={handleInputChange}
-            />
-          </Grid>
+          {inputValue.type_of_customer === "Distribution Customer" && (
+            <Grid item xs={12} sm={6}>
+              <CustomTextField
+                fullWidth
+                name="whatsapp_url"
+                size="small"
+                label="Whatsapp URL"
+                value={inputValue.whatsapp_url || ""}
+                onChange={handleInputChange}
+              />
+            </Grid>
+          )}
         </Grid>
         <Grid item xs={12} sm={3}>
           <Button
