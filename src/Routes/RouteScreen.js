@@ -274,7 +274,7 @@ export const RouteScreen = () => {
             />
             // FAQ Routes
             <Route path="/user/faq" element={<FaqAllTab />} />
-            <Route path="*" element={<Home />} />
+            {/* <Route path="*" element={<Home />} /> */}
           </>
         )}
         <Route path="*" element={<Auths />} />

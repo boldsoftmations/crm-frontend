@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import React, { useEffect, useState } from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import {
   AppBar,
   Toolbar,
@@ -39,6 +39,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 
 export const Header = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const theme = useTheme();
   const auth = useSelector((state) => state.auth);
@@ -70,11 +71,12 @@ export const Header = () => {
   const logout = () => {
     dispatch(logoutUser());
     localStorage.removeItem("user");
+    navigate("/"); // Navigate to home page after logout
   };
 
   useEffect(() => {
-    getAllTaskDetails();
-  }, []);
+    if (auth.user) getAllTaskDetails();
+  }, [auth.user]);
 
   const getAllTaskDetails = async () => {
     try {

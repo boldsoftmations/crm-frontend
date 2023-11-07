@@ -27,7 +27,6 @@ const userReducer = (state = initialState, action) => {
       };
     case types.LOGOUT_USER:
       return {
-        ...state,
         user: null,
         profile: null,
         allProfile: null,

@@ -19,7 +19,6 @@ import {
   InputLabel,
   IconButton,
   InputAdornment,
-  Paper,
   Avatar,
   TextField,
 } from "@mui/material";
@@ -123,12 +122,6 @@ export const Login = () => {
       errRef.current.focus();
     }
   };
-
-  useEffect(() => {
-    if (token) {
-      getUsers();
-    }
-  }, [token]);
 
   const getUsers = async () => {
     try {

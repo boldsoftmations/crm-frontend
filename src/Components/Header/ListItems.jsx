@@ -42,6 +42,11 @@ export const ListItems = (props) => {
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
 
+  // Check if userData and userData.groups are defined before rendering
+  if (!userData || !userData.groups) {
+    // You can return a loader, empty fragment, or any placeholder
+    return <div>Loading...</div>; // or <></> for an empty fragment
+  }
   return (
     <div>
       {/* Staff */}
