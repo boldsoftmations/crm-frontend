@@ -403,6 +403,7 @@ const ALLOWED_ROLES = [
   "Sales Assistant Deputy Manager",
   "Sales Executive",
   "Sales Manager without Leads",
+  "Customer Service",
 ];
 
 const Marital_Status_Options = ["Married", "UnMarried"];
