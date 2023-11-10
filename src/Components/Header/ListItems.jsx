@@ -998,8 +998,8 @@ export const ListItems = (props) => {
             <ListItemText primary="Script" />
           </ListItem>
           // Daily Sale Review
-          {userData.email === "devannsh@glutape.com" &&
-            userData.email === "admin@glutape.com" && (
+          {userData.email === "devannsh@glutape.com" ||
+            (userData.email === "admin@glutape.com" && (
               <ListItem
                 button
                 component={RouterLink}
@@ -1012,7 +1012,7 @@ export const ListItems = (props) => {
                 </ListItemIcon>
                 <ListItemText primary="Sales Review" />
               </ListItem>
-            )}
+            ))}
         </>
       ) : (
         <>
