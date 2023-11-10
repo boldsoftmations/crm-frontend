@@ -277,7 +277,7 @@ export const RouteScreen = () => {
             <Route path="/user/faq" element={<FaqAllTab />} />
             {/* Daily sale review */}
             <Route path="/user/sale-review" element={<DailySaleReviewView />} />
-            <Route path="/" element={<Home />} />
+            <Route path="/user/analytics" element={<Home />} />
           </>
         )}
         <Route path="*" element={<Auths />} />
