@@ -997,7 +997,7 @@ export const ListItems = (props) => {
             </ListItemIcon>
             <ListItemText primary="Script" />
           </ListItem>
-          // Daily Sale Review
+          {/* // Daily Sale Review */}
           {userData.email === "devannsh@glutape.com" ||
             (userData.email === "admin@glutape.com" && (
               <ListItem
