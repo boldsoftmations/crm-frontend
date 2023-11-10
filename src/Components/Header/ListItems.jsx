@@ -27,6 +27,7 @@ import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
 import FollowTheSignsIcon from "@mui/icons-material/FollowTheSigns";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import AnalyticsIcon from "@mui/icons-material/Analytics";
 
 export const ListItems = (props) => {
   const { setOpen } = props;
@@ -47,6 +48,7 @@ export const ListItems = (props) => {
     // You can return a loader, empty fragment, or any placeholder
     return <div>Loading...</div>; // or <></> for an empty fragment
   }
+
   return (
     <div>
       {/* Staff */}
@@ -108,7 +110,6 @@ export const ListItems = (props) => {
               </ListItem>
             </List>
           </Collapse>
-
           {/* Products */}
           <ListItem
             button
@@ -373,7 +374,6 @@ export const ListItems = (props) => {
               </ListItem>
             </List>
           </Collapse>
-
           {/* Customer */}
           <ListItem
             button
@@ -443,7 +443,6 @@ export const ListItems = (props) => {
               </ListItem>
             </List>
           </Collapse>
-
           {/* All Followup */}
           <ListItem
             button
@@ -457,7 +456,6 @@ export const ListItems = (props) => {
             </ListItemIcon>
             <ListItemText primary="Followup" />
           </ListItem>
-
           {/*Proforma Invoice  */}
           <ListItem
             button
@@ -540,7 +538,6 @@ export const ListItems = (props) => {
             </ListItemIcon>
             <ListItemText primary="Sales Invoice" />
           </ListItem>
-
           {/* Forecast */}
           <ListItem
             button
@@ -567,7 +564,6 @@ export const ListItems = (props) => {
             </ListItemIcon>
             <ListItemText primary="Seller Account" />
           </ListItem>
-
           {/* Order book */}
           <ListItem
             button
@@ -692,7 +688,6 @@ export const ListItems = (props) => {
             <ListItemText primary="Inventory" />
             {expandInventory ? <ExpandLessIcon /> : <ExpandMoreIcon />}
           </ListItem>
-
           <Collapse in={expandInventory} timeout="auto" unmountOnExit>
             <Divider />
             <List component="div" disablePadding>
@@ -907,7 +902,6 @@ export const ListItems = (props) => {
               </ListItem>
             </List>
           </Collapse>
-
           {/* Tasks */}
           <ListItem
             button
@@ -921,7 +915,6 @@ export const ListItems = (props) => {
             </ListItemIcon>
             <ListItemText primary="Task" />
           </ListItem>
-
           {/* Market Analysis */}
           <ListItem
             button
@@ -935,7 +928,6 @@ export const ListItems = (props) => {
             </ListItemIcon>
             <ListItemText primary="Market Analysis" />
           </ListItem>
-
           {/* Users */}
           <ListItem
             button
@@ -948,7 +940,6 @@ export const ListItems = (props) => {
             <ListItemText primary="Profile" />
             {expandUser ? <ExpandLessIcon /> : <ExpandMoreIcon />}
           </ListItem>
-
           <Collapse in={expandUser} timeout="auto" unmountOnExit>
             <Divider />
             <List component="div" disablePadding>
@@ -993,7 +984,6 @@ export const ListItems = (props) => {
               </ListItem>
             </List>
           </Collapse>
-
           {/* Script */}
           <ListItem
             button
@@ -1007,6 +997,21 @@ export const ListItems = (props) => {
             </ListItemIcon>
             <ListItemText primary="Script" />
           </ListItem>
+          // Daily Sale Review
+          {userData.email.includes("devannsh@glutape.com") && (
+            <ListItem
+              button
+              component={RouterLink}
+              to="/user/sale-review"
+              style={{ width: 300 }}
+              onClick={() => setOpen(false)}
+            >
+              <ListItemIcon>
+                <AnalyticsIcon />
+              </ListItemIcon>
+              <ListItemText primary="Sales Review" />
+            </ListItem>
+          )}
         </>
       ) : (
         <>
@@ -1257,6 +1262,62 @@ export const ListItems = (props) => {
                       onClick={() => setOpen(false)}
                       inset
                       primary="Customer"
+                    />
+                  </ListItem>
+                </List>
+              </Collapse>
+              {/* Leads */}
+              <ListItem
+                button
+                onClick={() => setExpand(!expand)}
+                style={{ width: 300 }}
+              >
+                <ListItemIcon>
+                  <AssignmentIndIcon />
+                </ListItemIcon>
+                <ListItemText primary="Leads" />
+                {expand ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+              </ListItem>
+              <Collapse in={expand} timeout="auto" unmountOnExit>
+                <Divider />
+                <List component="div" disablePadding>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/leads/new-lead"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="New Leads"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/leads/open-lead"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Opened Leads"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/leads/hot-lead"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Hot Leads"
                     />
                   </ListItem>
                 </List>
@@ -2440,6 +2501,20 @@ export const ListItems = (props) => {
                 </ListItemIcon>
                 <ListItemText primary="Script" />
               </ListItem>
+
+              {/* Daily Sale Review */}
+              {/* <ListItem
+                button
+                component={RouterLink}
+                to="/user/sale-review"
+                style={{ width: 300 }}
+                onClick={() => setOpen(false)}
+              >
+                <ListItemIcon>
+                  <AnalyticsIcon />
+                </ListItemIcon>
+                <ListItemText primary="Sales Review" />
+              </ListItem> */}
             </>
           )}
 
@@ -2802,6 +2877,19 @@ export const ListItems = (props) => {
                 </ListItemIcon>
                 <ListItemText primary="Script" />
               </ListItem>
+              {/* Daily Sale Review */}
+              {/* <ListItem
+                button
+                component={RouterLink}
+                to="/user/sale-review"
+                style={{ width: 300 }}
+                onClick={() => setOpen(false)}
+              >
+                <ListItemIcon>
+                  <AnalyticsIcon />
+                </ListItemIcon>
+                <ListItemText primary="Sales Review" />
+              </ListItem> */}
             </>
           )}
 
@@ -3140,6 +3228,20 @@ export const ListItems = (props) => {
                 </ListItemIcon>
                 <ListItemText primary="Script" />
               </ListItem>
+
+              {/* Daily Sale Review */}
+              {/* <ListItem
+                button
+                component={RouterLink}
+                to="/user/sale-review"
+                style={{ width: 300 }}
+                onClick={() => setOpen(false)}
+              >
+                <ListItemIcon>
+                  <AnalyticsIcon />
+                </ListItemIcon>
+                <ListItemText primary="Sales Review" />
+              </ListItem> */}
             </>
           )}
 
@@ -3439,6 +3541,20 @@ export const ListItems = (props) => {
                 </ListItemIcon>
                 <ListItemText primary="Script" />
               </ListItem>
+
+              {/* Daily Sale Review */}
+              {/* <ListItem
+                button
+                component={RouterLink}
+                to="/user/sale-review"
+                style={{ width: 300 }}
+                onClick={() => setOpen(false)}
+              >
+                <ListItemIcon>
+                  <AnalyticsIcon />
+                </ListItemIcon>
+                <ListItemText primary="Sales Review" />
+              </ListItem> */}
             </>
           )}
           {/* Sales Manager without Leads  */}
@@ -3737,6 +3853,20 @@ export const ListItems = (props) => {
                 </ListItemIcon>
                 <ListItemText primary="Script" />
               </ListItem>
+
+              {/* Daily Sale Review */}
+              {/* <ListItem
+                button
+                component={RouterLink}
+                to="/user/sale-review"
+                style={{ width: 300 }}
+                onClick={() => setOpen(false)}
+              >
+                <ListItemIcon>
+                  <AnalyticsIcon />
+                </ListItemIcon>
+                <ListItemText primary="Sales Review" />
+              </ListItem> */}
             </>
           )}
 

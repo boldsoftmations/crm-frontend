@@ -68,6 +68,7 @@ import { UserProfileView } from "../Pages/Profile/UserProfile/UserProfileView";
 import { IndiaMartLeads } from "../Pages/Leads/IndiaMartLeads";
 import { InActiveCustomer } from "../Pages/Cutomers/CompanyDetails/InActiveCustomer";
 import { FaqAllTab } from "../Pages/Faq/FaqAllTab/FaqAllTab";
+import { DailySaleReviewView } from "../Pages/DailySaleReview/DailySaleReviewView";
 
 export const RouteScreen = () => {
   const tokenData = useSelector((state) => state.auth);
@@ -274,6 +275,8 @@ export const RouteScreen = () => {
             />
             // FAQ Routes
             <Route path="/user/faq" element={<FaqAllTab />} />
+            {/* Daily sale review */}
+            <Route path="/user/sale-review" element={<DailySaleReviewView />} />
             <Route path="/" element={<Home />} />
           </>
         )}
