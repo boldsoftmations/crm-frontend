@@ -3871,7 +3871,7 @@ export const ListItems = (props) => {
             </>
           )}
           {/* Sales Manager with Leads  */}
-          {userData.groups.includes("Sales Manager with Leads") && (
+          {userData.groups.includes("Sales Manager with Lead") && (
             <>
               {/* Dashboard */}
               <ListItem
