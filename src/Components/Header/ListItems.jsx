@@ -998,21 +998,21 @@ export const ListItems = (props) => {
             <ListItemText primary="Script" />
           </ListItem>
           {/* // Daily Sale Review */}
-          {userData.email === "devannsh@glutape.com" ||
-            (userData.email === "admin@glutape.com" && (
-              <ListItem
-                button
-                component={RouterLink}
-                to="/user/sale-review"
-                style={{ width: 300 }}
-                onClick={() => setOpen(false)}
-              >
-                <ListItemIcon>
-                  <AnalyticsIcon />
-                </ListItemIcon>
-                <ListItemText primary="Sales Review" />
-              </ListItem>
-            ))}
+          {(userData.email === "devannsh@glutape.com" ||
+            userData.email === "admin@glutape.com") && (
+            <ListItem
+              button
+              component={RouterLink}
+              to="/user/sale-review"
+              style={{ width: 300 }}
+              onClick={() => setOpen(false)}
+            >
+              <ListItemIcon>
+                <AnalyticsIcon />
+              </ListItemIcon>
+              <ListItemText primary="Sales Review" />
+            </ListItem>
+          )}
         </>
       ) : (
         <>
