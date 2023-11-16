@@ -139,60 +139,77 @@ export const ScriptView = () => {
         </Grid>
       </Box>
       <Box sx={{ maxHeight: "500px", overflow: "auto" }}>
-        {script.map((item, index) => (
-          <Accordion key={item.id} sx={{ margin: 1 }}>
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls={`panel${index}a-content`}
-              id={`panel${index}a-header`}
-            >
-              <Typography>
-                {index + 1}) Subject: {item.subject}
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <Box sx={{ marginBottom: 4 }}>
-                <Typography sx={{ my: 2 }}>Script: {item.script}</Typography>
-                <Grid container spacing={2} alignItems="center">
-                  <Grid item xs={12} sm={6}>
-                    <Typography>Author: {item.author || "N/A"}</Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Typography>
-                      Updated Author: {item.updated_author || "N/A"}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Typography>
-                      Creation Date: {formatDate(item.creation_date)}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={5}>
-                    <Typography>
-                      Updation Date: {formatDate(item.updation_date)}
-                    </Typography>
-                  </Grid>
-                  {(userData.groups.includes("Sales Manager") ||
-                    userData.groups.includes("Sales Deputy Manager") ||
-                    userData.groups.includes(
-                      "Sales Assistant Deputy Manager"
-                    ) ||
-                    userData.groups.includes("Director")) && (
-                    <Grid item xs={12} sm={1}>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() => handleEditClick(item)}
-                      >
-                        Edit
-                      </Button>
+        {script.map((item, index) => {
+          const paragraphs = item.script
+            ? item.script
+                .split("\n")
+                .filter((paragraph) => paragraph.trim() !== "")
+            : [];
+
+          return (
+            <Accordion key={item.id} sx={{ margin: 1 }}>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls={`panel${index}a-content`}
+                id={`panel${index}a-header`}
+              >
+                <Typography>
+                  {index + 1}) Subject: {item.subject}
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Box sx={{ marginBottom: 4 }}>
+                  <Typography sx={{ my: 2 }}>
+                    Script:
+                    {paragraphs.map((paragraph, pIndex) => (
+                      <React.Fragment key={pIndex}>
+                        {paragraph}
+                        <br />
+                        <br />
+                      </React.Fragment>
+                    ))}
+                  </Typography>
+                  <Grid container spacing={2} alignItems="center">
+                    <Grid item xs={12} sm={6}>
+                      <Typography>Author: {item.author || "N/A"}</Typography>
                     </Grid>
-                  )}
-                </Grid>
-              </Box>
-            </AccordionDetails>
-          </Accordion>
-        ))}
+                    <Grid item xs={12} sm={6}>
+                      <Typography>
+                        Updated Author: {item.updated_author || "N/A"}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <Typography>
+                        Creation Date: {formatDate(item.creation_date)}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12} sm={5}>
+                      <Typography>
+                        Updation Date: {formatDate(item.updation_date)}
+                      </Typography>
+                    </Grid>
+                    {(userData.groups.includes("Sales Manager") ||
+                      userData.groups.includes("Sales Deputy Manager") ||
+                      userData.groups.includes(
+                        "Sales Assistant Deputy Manager"
+                      ) ||
+                      userData.groups.includes("Director")) && (
+                      <Grid item xs={12} sm={1}>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          onClick={() => handleEditClick(item)}
+                        >
+                          Edit
+                        </Button>
+                      </Grid>
+                    )}
+                  </Grid>
+                </Box>
+              </AccordionDetails>
+            </Accordion>
+          );
+        })}
       </Box>
 
       <Box sx={{ marginBottom: 4 }}>
