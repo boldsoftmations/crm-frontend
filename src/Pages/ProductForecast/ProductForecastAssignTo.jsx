@@ -19,9 +19,21 @@ export const ProductForecastAssignTo = (props) => {
   const getAssignedData = async (id) => {
     try {
       setOpen(true);
+      const ALLOWED_ROLES = [
+        "Director",
+        "Customer Service",
+        "Sales Manager",
+        "Sales Deputy Manager",
+        "Sales Assistant Deputy Manager",
+        "Sales Executive",
+        "Sales Manager without Leads",
+      ];
       const res = await LeadServices.getAllAssignedUser();
-
-      setAssigned(res.data);
+      // Filter the data based on the ALLOWED_ROLES
+      const filteredData = res.data.filter((employee) =>
+        employee.groups.some((group) => ALLOWED_ROLES.includes(group))
+      );
+      setAssigned(filteredData);
       setOpen(false);
     } catch (error) {
       console.log("error", error);

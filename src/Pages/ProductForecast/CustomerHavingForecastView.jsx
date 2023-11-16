@@ -1,149 +1,59 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
-  Button,
-  Box,
+  Autocomplete,
   Paper,
+  Box,
   Grid,
-  InputLabel,
-  FormControl,
-  Select,
-  IconButton,
-  MenuItem,
+  styled,
+  Table,
+  TableBody,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TableCell,
+  Button,
 } from "@mui/material";
-import ClearIcon from "@mui/icons-material/Clear";
+import { tableCellClasses } from "@mui/material/TableCell";
 import { CSVLink } from "react-csv";
 import { CustomPagination } from "../../Components/CustomPagination";
-import { ErrorMessage } from "../../Components/ErrorMessage/ErrorMessage";
 import { CustomLoader } from "../../Components/CustomLoader";
 import ProductForecastService from "../../services/ProductForecastService";
-import { CustomSearchWithButton } from "../../Components/CustomSearchWithButton";
 import { Popup } from "./../../Components/Popup";
 import { ForecastUpdate } from "./../Cutomers/ForecastDetails/ForecastUpdate";
-import { CustomTable } from "../../Components/CustomTable";
 import { ProductForecastAssignTo } from "./ProductForecastAssignTo";
 import { Helmet } from "react-helmet";
 import { useSelector } from "react-redux";
+import CustomTextField from "../../Components/CustomTextField";
 
 export const CustomerHavingForecastView = () => {
   const [open, setOpen] = useState(false);
-  const errRef = useRef();
-  const [errMsg, setErrMsg] = useState("");
-  const [pageCount, setpageCount] = useState(0);
+  const [pageCount, setPageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
-  const [filterQuery, setFilterQuery] = useState("search");
+  const [salesPersonByFilter, setSalesPersonByFilter] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
-  const [productHavingForecast, setProductHavingForecast] = useState([]);
+  const [customerHavingForecast, setCustomerHavingForecast] = useState([]);
   const [exportData, setExportData] = useState([]);
   const [forecastDataByID, setForecastDataByID] = useState(null);
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const csvLinkRef = useRef(null);
+  const [isDownloadReady, setIsDownloadReady] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
   const UserData = useSelector((state) => state.auth.profile);
-  const assigned = UserData.sales_users || [];
-
-  const filterOption = [
-    {
-      label: "Company",
-      value: "product_forecast__company__name",
-    },
-    {
-      label: "Product",
-      value: "product_forecast__product__name",
-    },
-    ...(!UserData.groups.includes("Sales Executive")
-      ? [
-          {
-            label: "Sales Person",
-            value: "product_forecast__sales_person__email",
-          },
-        ]
-      : []),
-    { label: "Search", value: "search" },
-  ];
-
-  useEffect(() => {
-    const beforePrint = () => {
-      setIsPrinting(true);
-      setProductHavingForecast([]);
-    };
-
-    const afterPrint = () => {
-      setIsPrinting(false);
-      // Fetch the data again and update the companyData state
-      getAllProductionForecastDetails();
-    };
-
-    window.addEventListener("beforeprint", beforePrint);
-    window.addEventListener("afterprint", afterPrint);
-
-    return () => {
-      window.removeEventListener("beforeprint", beforePrint);
-      window.removeEventListener("afterprint", afterPrint);
-    };
-  }, []);
-
-  const openInPopup = (item) => {
-    const matchedForecast = productHavingForecast.find(
-      (forecast) => forecast.id === item.id
-    );
-    setForecastDataByID(matchedForecast);
-    setOpenPopup(true);
-  };
-
-  const openInPopup2 = (item) => {
-    const matchedForecast = productHavingForecast.find(
-      (forecast) => forecast.id === item.id
-    );
-    setForecastDataByID(matchedForecast);
-    setOpenPopup2(true);
-  };
-
-  const handleDownload = async () => {
-    try {
-      const data = await handleExport();
-      setExportData(data);
-      setTimeout(() => {
-        csvLinkRef.current.link.click();
-      });
-    } catch (error) {
-      console.log("CSVLink Download error", error);
-    }
-  };
-
-  const getResetData = () => {
-    setSearchQuery("");
-    setFilterSelectedQuery("");
-    getAllProductionForecastDetails();
-  };
-
-  const handleInputChange = () => {
-    setSearchQuery(searchQuery);
-    getSearchData(searchQuery);
-  };
-
-  const handleInputChanges = (event) => {
-    setFilterSelectedQuery(event.target.value);
-    getSearchData(event.target.value);
-  };
-
-  // Get the current date
+  const assignedOption = UserData.sales_users || [];
+  // Get the current date, month, and year
   const currentDate = new Date();
-
-  // Get the current month and year
   const currentMonth = currentDate.getMonth();
   const currentYear = currentDate.getFullYear();
 
-  // Get the last 2 months
+  // Calculate the previous and next months
   const lastMonth1 = (currentMonth - 2 + 12) % 12;
   const lastMonth2 = (currentMonth - 1 + 12) % 12;
-
-  // Get the next 2 months
   const nextMonth1 = (currentMonth + 1) % 12;
   const nextMonth2 = (currentMonth + 2) % 12;
   const nextMonth3 = (currentMonth + 3) % 12;
-  // Convert month number to month name
+
+  // Define the months array
   const months = [
     "January",
     "February",
@@ -160,237 +70,193 @@ export const CustomerHavingForecastView = () => {
   ];
 
   useEffect(() => {
-    getAllProductionForecastDetails();
+    const beforePrint = () => {
+      setIsPrinting(true);
+      setCustomerHavingForecast([]);
+    };
+
+    const afterPrint = () => {
+      setIsPrinting(false);
+      // Fetch the data again and update the companyData state
+      getAllCustomerForecastDetails();
+    };
+
+    window.addEventListener("beforeprint", beforePrint);
+    window.addEventListener("afterprint", afterPrint);
+
+    return () => {
+      window.removeEventListener("beforeprint", beforePrint);
+      window.removeEventListener("afterprint", afterPrint);
+    };
   }, []);
 
-  const getAllProductionForecastDetails = async () => {
-    try {
-      setOpen(true);
-      if (currentPage) {
-        const response =
-          await ProductForecastService.getProductHavingForecastPaginateData(
-            currentPage
-          );
-        setProductHavingForecast(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      } else {
-        const response =
-          await ProductForecastService.getProductHavingForecast();
-        setProductHavingForecast(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      }
-      setOpen(false);
-    } catch (err) {
-      handleErrorResponse(err);
+  const generateHeaders = () => {
+    // Basic headers
+    const basicHeaders = [
+      { label: "Company", key: "company" },
+      { label: "Sales Person", key: "sales_person" },
+      { label: "Product", key: "product" },
+    ];
+
+    // Generating headers for each forecast month
+    const forecastHeaders = [];
+    for (let i = -2; i <= 3; i++) {
+      const monthIndex = (currentMonth + i + 12) % 12;
+      const year =
+        i < 0
+          ? monthIndex > currentMonth
+            ? currentYear
+            : currentYear - 1
+          : monthIndex < currentMonth
+          ? currentYear + 1
+          : currentYear;
+      const monthName = months[monthIndex];
+      forecastHeaders.push({
+        label: `${monthName} - ${year} Actual-Forecast`,
+        key: `${monthName}-${year} Actual-Forecast`,
+      });
     }
+
+    return [...basicHeaders, ...forecastHeaders];
   };
 
-  const handleErrorResponse = (err) => {
-    if (!err.response) {
-      setErrMsg(
-        "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
-      );
-    } else if (err.response.status === 400) {
-      setErrMsg(
-        err.response.data.errors.name ||
-          err.response.data.errors.non_field_errors
-      );
-    } else if (err.response.status === 401) {
-      setErrMsg(err.response.data.errors.code);
-    } else if (err.response.status === 404 || !err.response.data) {
-      setErrMsg("Data not found or request was null/empty");
-    } else {
-      setErrMsg("Server Error");
-    }
-  };
+  const headers = generateHeaders();
 
-  const getSearchData = async (value) => {
+  useEffect(() => {
+    if (isDownloadReady && exportData.length > 0) {
+      csvLinkRef.current.link.click();
+      setIsDownloadReady(false); // Reset the flag after download
+    }
+  }, [isDownloadReady, exportData]);
+
+  const handleDownload = async () => {
     try {
       setOpen(true);
-      const filterSearch = value;
-      const response =
-        await ProductForecastService.getAllSearchProductHavingForecast(
-          filterQuery,
-          filterSearch
-        );
-      if (response) {
-        setProductHavingForecast(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      } else {
-        getAllProductionForecastDetails();
-        setSearchQuery("");
-      }
-      setOpen(false);
+      const data = await handleExport();
+      setExportData(data);
+      // Using a small delay to ensure state update
+      setTimeout(() => {
+        csvLinkRef.current.link.click();
+      }, 0);
     } catch (error) {
-      console.log("error Search leads", error);
+      console.error("CSVLink Download error", error);
+    } finally {
       setOpen(false);
     }
   };
-
-  const handlePageClick = async (event, value) => {
-    try {
-      const page = value;
-      setCurrentPage(page);
-      setOpen(true);
-      console.log("first", searchQuery || filterSelectedQuery);
-      if (searchQuery || filterSelectedQuery) {
-        const response =
-          await ProductForecastService.getAllProductHavingForecastPaginate(
-            page,
-            filterQuery,
-            searchQuery || filterSelectedQuery
-          );
-        if (response) {
-          setProductHavingForecast(response.data.results);
-          const total = response.data.count;
-          setpageCount(Math.ceil(total / 25));
-        } else {
-          getAllProductionForecastDetails();
-          setSearchQuery("");
-        }
-      } else {
-        const response =
-          await ProductForecastService.getProductHavingForecastPaginateData(
-            page
-          );
-        setProductHavingForecast(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      }
-
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
-  };
-
-  const headers = [
-    { label: "Company", key: "company" },
-    { label: "Sales Person", key: "sales_person" },
-    { label: "Product", key: "product" },
-    {
-      label: `${months[lastMonth1]} -- ${
-        lastMonth1 < currentMonth ? currentYear : currentYear - 1
-      } Actual-Forecast`,
-      key: "product_forecast_0",
-    },
-    {
-      label: `${months[lastMonth2]} -- ${
-        lastMonth2 < currentMonth ? currentYear : currentYear - 1
-      } Actual-Forecast`,
-      key: "product_forecast_1",
-    },
-    {
-      label: `${months[currentMonth]} -- ${currentYear} Actual-Forecast`,
-      key: "product_forecast_2",
-    },
-    {
-      label: `${months[nextMonth1]} - ${
-        nextMonth1 > currentMonth ? currentYear : currentYear + 1
-      } Forecast`,
-      key: "product_forecast_3",
-    },
-    {
-      label: `${months[nextMonth2]} - ${
-        nextMonth2 > currentMonth ? currentYear : currentYear + 1
-      } Forecast`,
-      key: "product_forecast_4",
-    },
-    {
-      label: `${months[nextMonth3]} - ${
-        nextMonth3 > currentMonth ? currentYear : currentYear + 1
-      } Forecast`,
-      key: "product_forecast_5",
-    },
-  ];
 
   const handleExport = async () => {
     try {
       setOpen(true);
-      let response;
-      if (searchQuery || filterSelectedQuery) {
-        response =
-          await ProductForecastService.getAllPaginateProductHavingForecastWithSearch(
-            "all",
-            filterQuery,
-            searchQuery || filterSelectedQuery
-          );
-      } else {
-        response =
-          await ProductForecastService.getAllPaginateProductHavingForecast(
-            "all"
-          );
-      }
+      const response = await ProductForecastService.getAllCustomerHavingData(
+        "all",
+        salesPersonByFilter,
+        searchQuery
+      );
+
       const data = response.data.map((row) => {
         const obj = {
           company: row.company,
           sales_person: row.sales_person,
           product: row.product,
         };
-        row.product_forecast.forEach((rowData, index) => {
-          obj[`product_forecast_${index}`] =
-            rowData.actual !== null
-              ? `${rowData.actual}--${rowData.forecast}`
-              : `-${rowData.forecast}`;
+
+        row.product_forecast.forEach((forecast) => {
+          // Convert month number to month name and create the key
+          const monthName = months[parseInt(forecast.month) - 1];
+          const forecastKey = `${monthName}-${forecast.year} Actual-Forecast`;
+
+          // Assign the actual-forecast data to the corresponding month-year key
+          obj[forecastKey] =
+            forecast.actual !== null
+              ? `${forecast.actual}--${forecast.forecast}`
+              : `-${forecast.forecast}`;
         });
+
         return obj;
       });
+
       setOpen(false);
+      console.log("Export Data: ", data); // This line is for debugging, you can remove it later
       return data;
     } catch (err) {
-      console.log(err);
-    } finally {
+      console.error("Error in handleExport", err);
       setOpen(false);
     }
   };
 
-  const Tabledata = productHavingForecast.map((row) => {
-    const tableRow = {
-      id: row.id,
-      company: row.company,
-      sales_person: row.sales_person,
-      product: row.product,
-    };
+  useEffect(() => {
+    getAllCustomerForecastDetails(currentPage);
+  }, [currentPage, getAllCustomerForecastDetails]);
 
-    row.product_forecast.forEach((rowData, index) => {
-      tableRow[`product_forecast_${index}`] =
-        rowData.actual !== null
-          ? `${rowData.actual}--${rowData.forecast}`
-          : `-${rowData.forecast}`;
-    });
+  const getAllCustomerForecastDetails = useCallback(
+    async (page, filter = salesPersonByFilter, query = searchQuery) => {
+      try {
+        setOpen(true);
+        const response = await ProductForecastService.getAllCustomerHavingData(
+          page,
+          filter,
+          query
+        );
+        setCustomerHavingForecast(response.data.results);
+        const total = response.data.count;
+        setPageCount(Math.ceil(total / 25));
+        setOpen(false);
+      } catch (error) {
+        console.error("Error fetching Customer Having Forecast", error);
+        setOpen(false);
+      }
+    },
+    [salesPersonByFilter, searchQuery]
+  );
 
-    return tableRow;
-  });
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
 
-  const Tableheaders = [
-    "ID",
-    "Company",
-    "Sales Person",
-    "Product",
-    `${months[lastMonth1]} -- ${
-      lastMonth1 < currentMonth ? currentYear : currentYear - 1
-    } Actual-Forecast`,
-    `${months[lastMonth2]} -- ${
-      lastMonth2 < currentMonth ? currentYear : currentYear - 1
-    } Actual-Forecast`,
-    `${months[currentMonth]} -- ${currentYear} Actual-Forecast`,
-    `${months[nextMonth1]} - ${
-      nextMonth1 > currentMonth ? currentYear : currentYear + 1
-    } Forecast`,
+  const handlePageClick = (event, value) => {
+    setCurrentPage(value);
+  };
 
-    `${months[nextMonth2]} - ${
-      nextMonth2 > currentMonth ? currentYear : currentYear + 1
-    } Forecast`,
+  const handleEditClick = useCallback(
+    (item) => {
+      const matchedForecast = customerHavingForecast.find(
+        (forecast) => forecast.id === item.id
+      );
+      setForecastDataByID(matchedForecast);
+      setOpenPopup(true);
+    },
+    [customerHavingForecast]
+  );
 
-    `${months[nextMonth3]} - ${
-      nextMonth3 > currentMonth ? currentYear : currentYear + 1
-    } Forecast`,
-    "ACTION",
+  const handleAssignTo = useCallback(
+    (item) => {
+      const matchedForecast = customerHavingForecast.find(
+        (forecast) => forecast.id === item.id
+      );
+      setForecastDataByID(matchedForecast);
+      setOpenPopup2(true);
+    },
+    [customerHavingForecast]
+  );
+
+  const handleFilterChange = (value) => {
+    setSalesPersonByFilter(value);
+    getAllCustomerForecastDetails(currentPage, value, searchQuery);
+  };
+
+  // Get the unique index_position values to use as column headers
+  const indexPositions = [
+    ...new Set(
+      customerHavingForecast &&
+        customerHavingForecast.flatMap((row) =>
+          row.product_forecast.map((rowData) => rowData.index_position)
+        )
+    ),
   ];
+
+  // Sort the index_positions array in ascending order
+  indexPositions.sort((a, b) => a - b);
 
   return (
     <div>
@@ -407,125 +273,231 @@ export const CustomerHavingForecastView = () => {
       </Helmet>
       <CustomLoader open={open} />
       <Grid item xs={12}>
-        <ErrorMessage errRef={errRef} errMsg={errMsg} />
-        <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
-          <Box display="flex">
-            <Box flexGrow={1}>
-              <FormControl fullWidth size="small">
-                <InputLabel id="demo-simple-select-label">Fliter By</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  name="values"
-                  label="Fliter By"
-                  value={filterQuery}
-                  onChange={(event) => setFilterQuery(event.target.value)}
-                >
-                  {filterOption.map((option, i) => (
-                    <MenuItem key={i} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Box>
-            <Box flexGrow={1}>
-              {filterQuery === "product_forecast__sales_person__email" ? (
-                <FormControl
-                  sx={{ minWidth: "200px", marginLeft: "1em" }}
+        <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
+          <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
+            <Grid
+              container
+              spacing={2}
+              alignItems="center"
+              sx={{ marginRight: 5, marginLeft: 5 }}
+            >
+              {!UserData.groups.includes("Sales Executive") && (
+                <Grid item xs={12} sm={3}>
+                  <Autocomplete
+                    size="small"
+                    sx={{ minWidth: 150 }}
+                    onChange={(event, value) => handleFilterChange(value)}
+                    value={salesPersonByFilter}
+                    options={assignedOption.map((option) => option.email)}
+                    getOptionLabel={(option) => option}
+                    renderInput={(params) => (
+                      <CustomTextField
+                        {...params}
+                        label="Filter By Sales Person"
+                      />
+                    )}
+                  />
+                </Grid>
+              )}
+              <Grid item xs={12} sm={3}>
+                <CustomTextField
                   size="small"
+                  label="Search"
+                  variant="outlined"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={12} sm={2}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() =>
+                    getAllCustomerForecastDetails(
+                      currentPage,
+                      salesPersonByFilter,
+                      searchQuery
+                    )
+                  }
+                  fullWidth
                 >
-                  <InputLabel id="demo-simple-select-label">
-                    Filter By Sales Person
-                  </InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    name="values"
-                    label="Filter By Sales Person"
-                    value={filterSelectedQuery}
-                    onChange={(event) => handleInputChanges(event)}
-                    sx={{
-                      "& .MuiSelect-iconOutlined": {
-                        display: filterSelectedQuery ? "none" : "",
-                      },
-                      "&.Mui-focused .MuiIconButton-root": {
-                        color: "primary.main",
-                      },
-                    }}
-                    endAdornment={
-                      <IconButton
-                        sx={{
-                          visibility: filterSelectedQuery
-                            ? "visible"
-                            : "hidden",
-                        }}
-                        onClick={getResetData}
-                      >
-                        <ClearIcon />
-                      </IconButton>
-                    }
-                  >
-                    {assigned.map((option, i) => (
-                      <MenuItem key={i} value={option.email}>
-                        {option.email}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              ) : (
-                <CustomSearchWithButton
-                  filterSelectedQuery={searchQuery}
-                  setFilterSelectedQuery={setSearchQuery}
-                  handleInputChange={handleInputChange}
-                  getResetData={getResetData}
-                />
-              )}
-            </Box>
-            <Box flexGrow={2}>
-              <h3
-                style={{
-                  textAlign: "left",
-                  marginBottom: "1em",
-                  fontSize: "24px",
-                  color: "rgb(34, 34, 34)",
-                  fontWeight: 800,
-                }}
-              >
-                Customer Having Forecast
-              </h3>
-            </Box>
-            <Box flexGrow={0.5}>
-              <Button variant="contained" onClick={handleDownload}>
-                Download CSV
-              </Button>
-              {exportData.length > 0 && (
-                <CSVLink
-                  data={exportData}
-                  headers={headers}
-                  ref={csvLinkRef}
-                  filename={"Customer Having forecast.csv"}
-                  target="_blank"
-                  style={{
-                    textDecoration: "none",
-                    outline: "none",
-                    height: "5vh",
+                  Search
+                </Button>
+              </Grid>
+              <Grid item xs={12} sm={2}>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => {
+                    setSearchQuery("");
+                    setCurrentPage(1);
+                    getAllCustomerForecastDetails(1, salesPersonByFilter, "");
                   }}
-                />
-              )}
-            </Box>
+                  fullWidth
+                >
+                  Reset
+                </Button>
+              </Grid>
+              <Grid item xs={12} sm={2}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleDownload}
+                >
+                  Download CSV
+                </Button>
+                {exportData.length > 0 && (
+                  <CSVLink
+                    data={exportData}
+                    headers={headers}
+                    ref={csvLinkRef}
+                    filename={"Customer Having forecast.csv"}
+                    style={{ display: "none" }} // Hide the link
+                  />
+                )}
+              </Grid>
+            </Grid>
           </Box>
-          <CustomTable
-            headers={Tableheaders}
-            data={Tabledata}
-            openInPopup={openInPopup}
-            openInPopup2={openInPopup2}
-            openInPopup3={null}
-            openInPopup4={null}
-            ButtonText={"AssignTo"}
-            Styles={{ paddingLeft: "10px", paddingRight: "10px" }}
-          />
+          <Box display="flex" justifyContent="center" marginBottom="10px">
+            <h3
+              style={{
+                marginBottom: "1em",
+                fontSize: "24px",
+                color: "rgb(34, 34, 34)",
+                fontWeight: 800,
+                textAlign: "center",
+              }}
+            >
+              Customer Having Forecast
+            </h3>
+          </Box>
+          <TableContainer
+            sx={{
+              maxHeight: 440,
+              "&::-webkit-scrollbar": {
+                width: 15,
+              },
+              "&::-webkit-scrollbar-track": {
+                backgroundColor: "#f2f2f2",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: "#aaa9ac",
+              },
+            }}
+          >
+            <Table
+              sx={{ minWidth: 700 }}
+              stickyHeader
+              aria-label="sticky table"
+            >
+              <TableHead>
+                <StyledTableRow>
+                  <StyledTableCell align="center">COMPANY</StyledTableCell>
+                  <StyledTableCell align="center">SALES PERSON</StyledTableCell>
+                  <StyledTableCell align="center">PRODUCT</StyledTableCell>
+                  <StyledTableCell align="center">
+                    {` ${months[lastMonth1]} - ${
+                      lastMonth1 < currentMonth ? currentYear : currentYear - 1
+                    }`}
+                    <br />
+                    ACTUAL - FORECAST
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    {` ${months[lastMonth2]} - ${
+                      lastMonth2 < currentMonth ? currentYear : currentYear - 1
+                    }`}{" "}
+                    <br />
+                    ACTUAL - FORECAST
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    {`${months[currentMonth]} - ${currentYear}`} <br />
+                    ACTUAL - FORECAST
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    {` ${months[nextMonth1]} - ${
+                      nextMonth1 > currentMonth ? currentYear : currentYear + 1
+                    }`}{" "}
+                    <br />
+                    ACTUAL - FORECAST
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    {` ${months[nextMonth2]} - ${
+                      nextMonth2 > currentMonth ? currentYear : currentYear + 1
+                    }`}{" "}
+                    <br />
+                    ACTUAL - FORECAST
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    {` ${months[nextMonth3]} - ${
+                      nextMonth3 > currentMonth ? currentYear : currentYear + 1
+                    }`}{" "}
+                    <br />
+                    ACTUAL - FORECAST
+                  </StyledTableCell>
+                  <StyledTableCell align="center">Action</StyledTableCell>
+                </StyledTableRow>
+              </TableHead>
+              <TableBody>
+                {customerHavingForecast &&
+                  customerHavingForecast.map((row) => (
+                    <StyledTableRow>
+                      <StyledTableCell align="center">
+                        {row.company}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.sales_person}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.product}
+                      </StyledTableCell>
+                      {indexPositions.map((position) => {
+                        const rowData = row.product_forecast.find(
+                          (data) => data.index_position === position
+                        );
 
+                        if (rowData) {
+                          if (rowData.actual !== null) {
+                            return (
+                              <TableCell key={position} align="center">
+                                {rowData.actual} - {rowData.forecast}
+                              </TableCell>
+                            );
+                          } else {
+                            return (
+                              <TableCell key={position} align="center">
+                                - {rowData.forecast}
+                              </TableCell>
+                            );
+                          }
+                        } else {
+                          // Render an empty cell if no matching rowData is found
+                          return (
+                            <TableCell key={position} align="center">
+                              N/A
+                            </TableCell>
+                          );
+                        }
+                      })}
+                      <StyledTableCell align="center">
+                        <Button
+                          sx={{ color: "#1976d2" }}
+                          onClick={() => handleEditClick(row)}
+                        >
+                          View
+                        </Button>
+                        <Button
+                          sx={{ color: "#28a745" }}
+                          onClick={() => handleAssignTo(row)}
+                        >
+                          Assign To
+                        </Button>
+                      </StyledTableCell>
+                    </StyledTableRow>
+                  ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
           <CustomPagination
             pageCount={pageCount}
             handlePageClick={handlePageClick}
@@ -538,7 +510,7 @@ export const CustomerHavingForecastView = () => {
         setOpenPopup={setOpenPopup}
       >
         <ForecastUpdate
-          getAllCompanyDetailsByID={getAllProductionForecastDetails}
+          getAllCompanyDetailsByID={getAllCustomerForecastDetails}
           setOpenPopup={setOpenPopup}
           forecastDataByID={forecastDataByID}
         />
@@ -549,7 +521,7 @@ export const CustomerHavingForecastView = () => {
         setOpenPopup={setOpenPopup2}
       >
         <ProductForecastAssignTo
-          getAllCompanyDetailsByID={getAllProductionForecastDetails}
+          getAllCompanyDetailsByID={getAllCustomerForecastDetails}
           setOpenPopup2={setOpenPopup2}
           forecastDataByID={forecastDataByID}
         />
@@ -557,3 +529,25 @@ export const CustomerHavingForecastView = () => {
     </div>
   );
 };
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+    padding: 0, // Remove padding from header cells
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+    padding: 0, // Remove padding from body cells
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  "&:nth-of-type(odd)": {
+    backgroundColor: theme.palette.action.hover,
+  },
+  // hide last border
+  "&:last-child td, &:last-child th": {
+    border: 0,
+  },
+}));

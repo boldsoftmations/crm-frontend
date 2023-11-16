@@ -44,44 +44,26 @@ const updateProductForecast = (id, data) => {
   return CustomAxios.patch(`/api/forecast/list-product-forecast/${id}`, data);
 };
 // Current MMonth Forecast
+// Generic function to get Customer Not Having Forecast data
+const getAllCurrentMonthData = (page, assignToFilter, searchValue) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
 
-const getCurrentMonthForecast = () => {
-  return CustomAxios.get(`/api/forecast/list-current-month-forecast/`);
-};
+  if (page) {
+    params.append("page", page);
+  }
 
-const getByFilterCurrentMonthForecast = (type, data) => {
+  if (assignToFilter) {
+    params.append("product_forecast__sales_person__email", assignToFilter);
+  }
+
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+
+  // Sending a GET request with query parameters
   return CustomAxios.get(
-    `/api/forecast/list-current-month-forecast/?${type}=${data}`
-  );
-};
-
-const getAllPaginateCurrentMonthForecast = (all) => {
-  return CustomAxios.get(
-    `/api/forecast/list-current-month-forecast/?page=${all}`
-  );
-};
-
-const getAllPaginateCurrentMonthForecastWithSearch = (all, type, search) => {
-  return CustomAxios.get(
-    `/api/forecast/list-current-month-forecast/?page=${all}&${type}=${search}`
-  );
-};
-
-const getAllSearchCurrentMonthForecast = (type, search) => {
-  return CustomAxios.get(
-    `/api/forecast/list-current-month-forecast/?${type}=${search}`
-  );
-};
-
-const getAllCurrentMonthForecastPaginate = (currentPage, type, search) => {
-  return CustomAxios.get(
-    `/api/forecast/list-current-month-forecast/?page=${currentPage}&${type}=${search}`
-  );
-};
-
-const getCurrentMonthForecastPaginateData = (currentPage) => {
-  return CustomAxios.get(
-    `/api/forecast/list-current-month-forecast/?page=${currentPage}`
+    `/api/forecast/list-current-month-forecast/?${params.toString()}`
   );
 };
 
@@ -89,213 +71,110 @@ const updateAnticipatedDate = (id, data) => {
   return CustomAxios.patch(`/api/forecast/list-quantity-forecast/${id}`, data);
 };
 
-// Product Not Having Forecast
+// Generic function to get Customer Not Having Forecast data
+const getAllCustomerNotHavingData = (page, assignToFilter, searchValue) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
 
-const getProductNotHavingForecast = () => {
-  return CustomAxios.get(`/api/forecast/list-product-not-having-forecast/`);
-};
+  if (page) {
+    params.append("page", page);
+  }
 
-const getByFilterProductNotHavingForecast = (type, data) => {
+  if (assignToFilter) {
+    params.append("sales_person__email", assignToFilter);
+  }
+
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+
+  // Sending a GET request with query parameters
   return CustomAxios.get(
-    `/api/forecast/list-product-not-having-forecast/?${type}=${data}`
+    `/api/forecast/list-product-not-having-forecast/?${params.toString()}`
   );
 };
 
-const getAllPaginateProductNotHavingForecast = (all) => {
+// Generic function to get product Forecast data
+const getAllCustomerHavingData = (page, assignToFilter, searchValue) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
+
+  if (page) {
+    params.append("page", page);
+  }
+
+  if (assignToFilter) {
+    params.append("sales_person__email", assignToFilter);
+  }
+
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+
+  // Sending a GET request with query parameters
   return CustomAxios.get(
-    `/api/forecast/list-product-not-having-forecast/?page=${all}`
+    `/api/forecast/list-product-having-forecast/?${params.toString()}`
   );
 };
 
-const getAllPaginateProductNotHavingForecastWithSearch = (
-  all,
-  type,
-  search
-) => {
+// Generic function to get Dead Customer data
+const getAllDeadCustomerData = (page, assignToFilter, searchValue) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
+
+  if (page) {
+    params.append("page", page);
+  }
+
+  if (assignToFilter) {
+    params.append("assigned_to__email", assignToFilter);
+  }
+
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+
+  // Sending a GET request with query parameters
   return CustomAxios.get(
-    `/api/forecast/list-product-not-having-forecast/?page=${all}&${type}=${search}`
+    `/api/forecast/list-dead-customers/?${params.toString()}`
   );
 };
 
-const getAllSearchProductNotHavingForecast = (type, search) => {
+// Generic function to get Product Wise Forecast data
+const getAllProductWiseForecastData = (page, searchValue) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
+
+  if (page) {
+    params.append("page", page);
+  }
+
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+
+  // Sending a GET request with query parameters
   return CustomAxios.get(
-    `/api/forecast/list-product-not-having-forecast/?${type}=${search}`
+    `/api/forecast/list-product-wise-forecast/?${params.toString()}`
   );
 };
 
-const getAllProductNotHavingForecastPaginate = (currentPage, type, search) => {
+// Generic function to get Description Wise Forecast data
+const getAllDescriptionWiseForecastData = (page, searchValue) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
+
+  if (page) {
+    params.append("page", page);
+  }
+
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+
+  // Sending a GET request with query parameters
   return CustomAxios.get(
-    `/api/forecast/list-product-not-having-forecast/?page=${currentPage}&${type}=${search}`
-  );
-};
-
-const getProductNotHavingForecastPaginateData = (currentPage) => {
-  return CustomAxios.get(
-    `/api/forecast/list-product-not-having-forecast/?page=${currentPage}`
-  );
-};
-
-// Product Having Forecast
-
-const getProductHavingForecast = () => {
-  return CustomAxios.get(`/api/forecast/list-product-having-forecast/`);
-};
-
-const getByFilterProductHavingForecast = (type, data) => {
-  return CustomAxios.get(
-    `/api/forecast/list-product-having-forecast/?${type}=${data}`
-  );
-};
-
-const getAllPaginateProductHavingForecast = (all) => {
-  return CustomAxios.get(
-    `/api/forecast/list-product-having-forecast/?page=${all}`
-  );
-};
-
-const getAllPaginateProductHavingForecastWithSearch = (all, type, search) => {
-  return CustomAxios.get(
-    `/api/forecast/list-product-having-forecast/?page=${all}&${type}=${search}`
-  );
-};
-
-const getAllSearchProductHavingForecast = (type, search) => {
-  return CustomAxios.get(
-    `/api/forecast/list-product-having-forecast/?${type}=${search}`
-  );
-};
-
-const getAllProductHavingForecastPaginate = (currentPage, type, search) => {
-  return CustomAxios.get(
-    `/api/forecast/list-product-having-forecast/?page=${currentPage}&${type}=${search}`
-  );
-};
-
-const getProductHavingForecastPaginateData = (currentPage) => {
-  return CustomAxios.get(
-    `/api/forecast/list-product-having-forecast/?page=${currentPage}`
-  );
-};
-
-// Dead Customer
-
-const getDeadCustomer = () => {
-  return CustomAxios.get(`/api/forecast/list-dead-customers/`);
-};
-
-const getByFilterDeadCustomer = (type, data) => {
-  return CustomAxios.get(`/api/forecast/list-dead-customers/?${type}=${data}`);
-};
-
-const getAllPaginateDeadCustomer = (all) => {
-  return CustomAxios.get(`/api/forecast/list-dead-customers/?page=${all}`);
-};
-
-const getAllPaginateDeadCustomerWithSearch = (all, type, search) => {
-  return CustomAxios.get(
-    `/api/forecast/list-dead-customers/?page=${all}&${type}=${search}`
-  );
-};
-
-const getAllSearchDeadCustomer = (type, search) => {
-  return CustomAxios.get(
-    `/api/forecast/list-dead-customers/?${type}=${search}`
-  );
-};
-
-const getAllDeadCustomerPaginate = (currentPage, type, search) => {
-  return CustomAxios.get(
-    `/api/forecast/list-dead-customers/?page=${currentPage}&${type}=${search}`
-  );
-};
-
-const getDeadCustomerPaginateData = (currentPage) => {
-  return CustomAxios.get(
-    `/api/forecast/list-dead-customers/?page=${currentPage}`
-  );
-};
-
-// Product Wise Forecast
-
-const getProductWiseForecast = () => {
-  return CustomAxios.get(`/api/forecast/list-product-wise-forecast/`);
-};
-
-const getByFilterProductWiseForecast = (type, data) => {
-  return CustomAxios.get(
-    `/api/forecast/list-product-wise-forecast/?${type}=${data}`
-  );
-};
-
-const getAllPaginateProductWiseForecast = (all) => {
-  return CustomAxios.get(
-    `/api/forecast/list-product-wise-forecast/?page=${all}`
-  );
-};
-
-const getAllPaginateProductWiseForecastWithSearch = (all, type, search) => {
-  return CustomAxios.get(
-    `/api/forecast/list-product-wise-forecast/?page=${all}&${type}=${search}`
-  );
-};
-
-const getAllSearchProductWiseForecast = (type, search) => {
-  return CustomAxios.get(
-    `/api/forecast/list-product-wise-forecast/?${type}=${search}`
-  );
-};
-
-const getAllProductWiseForecastPaginate = (currentPage, type, search) => {
-  return CustomAxios.get(
-    `/api/forecast/list-product-wise-forecast/?page=${currentPage}&${type}=${search}`
-  );
-};
-
-const getProductWiseForecastPaginateData = (currentPage) => {
-  return CustomAxios.get(
-    `/api/forecast/list-product-wise-forecast/?page=${currentPage}`
-  );
-};
-
-// Description Wise Forecast
-
-const getDescriptionWiseForecast = () => {
-  return CustomAxios.get(`/api/forecast/list-description-wise-forecast/`);
-};
-
-const getByFilterDescriptionWiseForecast = (type, data) => {
-  return CustomAxios.get(
-    `/api/forecast/list-description-wise-forecast/?${type}=${data}`
-  );
-};
-
-const getAllPaginateDescriptionWiseForecast = (all) => {
-  return CustomAxios.get(
-    `/api/forecast/list-description-wise-forecast/?page=${all}`
-  );
-};
-
-const getAllPaginateDescriptionWiseForecastWithSearch = (all, type, search) => {
-  return CustomAxios.get(
-    `/api/forecast/list-description-wise-forecast/?page=${all}&${type}=${search}`
-  );
-};
-
-const getAllSearchDescriptionWiseForecast = (type, search) => {
-  return CustomAxios.get(
-    `/api/forecast/list-description-wise-forecast/?${type}=${search}`
-  );
-};
-
-const getAllDescriptionWiseForecastPaginate = (currentPage, type, search) => {
-  return CustomAxios.get(
-    `/api/forecast/list-description-wise-forecast/?page=${currentPage}&${type}=${search}`
-  );
-};
-
-const getDescriptionWiseForecastPaginateData = (currentPage) => {
-  return CustomAxios.get(
-    `/api/forecast/list-description-wise-forecast/?page=${currentPage}`
+    `/api/forecast/list-description-wise-forecast/?${params.toString()}`
   );
 };
 
@@ -351,49 +230,13 @@ const ProductForecastService = {
   getAllProductForecastPaginate,
   getProductForecastPaginateData,
   updateProductForecast,
-  getCurrentMonthForecast,
-  getByFilterCurrentMonthForecast,
-  getAllPaginateCurrentMonthForecast,
-  getAllPaginateCurrentMonthForecastWithSearch,
-  getAllSearchCurrentMonthForecast,
-  getAllCurrentMonthForecastPaginate,
-  getCurrentMonthForecastPaginateData,
+  getAllCurrentMonthData,
   updateAnticipatedDate,
-  getProductNotHavingForecast,
-  getByFilterProductNotHavingForecast,
-  getAllPaginateProductNotHavingForecast,
-  getAllPaginateProductNotHavingForecastWithSearch,
-  getAllSearchProductNotHavingForecast,
-  getAllProductNotHavingForecastPaginate,
-  getProductNotHavingForecastPaginateData,
-  getProductHavingForecast,
-  getByFilterProductHavingForecast,
-  getAllPaginateProductHavingForecast,
-  getAllPaginateProductHavingForecastWithSearch,
-  getAllSearchProductHavingForecast,
-  getAllProductHavingForecastPaginate,
-  getProductHavingForecastPaginateData,
-  getDeadCustomer,
-  getByFilterDeadCustomer,
-  getAllPaginateDeadCustomer,
-  getAllPaginateDeadCustomerWithSearch,
-  getAllSearchDeadCustomer,
-  getAllDeadCustomerPaginate,
-  getDeadCustomerPaginateData,
-  getProductWiseForecast,
-  getByFilterProductWiseForecast,
-  getAllPaginateProductWiseForecast,
-  getAllPaginateProductWiseForecastWithSearch,
-  getAllSearchProductWiseForecast,
-  getAllProductWiseForecastPaginate,
-  getProductWiseForecastPaginateData,
-  getDescriptionWiseForecast,
-  getByFilterDescriptionWiseForecast,
-  getAllPaginateDescriptionWiseForecast,
-  getAllPaginateDescriptionWiseForecastWithSearch,
-  getAllSearchDescriptionWiseForecast,
-  getAllDescriptionWiseForecastPaginate,
-  getDescriptionWiseForecastPaginateData,
+  getAllCustomerNotHavingData,
+  getAllCustomerHavingData,
+  getAllDeadCustomerData,
+  getAllProductWiseForecastData,
+  getAllDescriptionWiseForecastData,
   getLastThreeMonthForecastData,
   getConsLastThreeMonthForecastData,
   getLastThreeMonthForecastDataByFilter,

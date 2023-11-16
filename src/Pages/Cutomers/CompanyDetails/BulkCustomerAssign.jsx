@@ -37,7 +37,7 @@ export const BulkCustomerAssign = (props) => {
         assign_from: assignFrom,
         assign_to: assignTo,
       };
-      await CustomerServices.BulCustomerAssign(req);
+      await CustomerServices.BulkCustomerAssign(req);
       setOpenPopup(false);
       setOpen(false);
       // Show success snackbar

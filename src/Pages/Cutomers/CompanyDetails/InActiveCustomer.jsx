@@ -65,8 +65,6 @@ export const InActiveCustomer = () => {
       const filteredData = res.data.filter((employee) =>
         employee.groups.some((group) => ALLOWED_ROLES.includes(group))
       );
-
-      console.log("filteredData", filteredData);
       setAssigned(filteredData);
       setOpen(false);
     } catch (error) {
