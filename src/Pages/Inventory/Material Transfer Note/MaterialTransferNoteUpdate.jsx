@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Autocomplete, Box, Button, Grid, TextField } from "@mui/material";
+import { Autocomplete, Box, Button, Grid } from "@mui/material";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import InventoryServices from "../../../services/InventoryService";
 import { useSelector } from "react-redux";
-
+import CustomTextField from "../../../Components/CustomTextField";
 export const MaterialTransferNoteUpdate = (props) => {
   const {
     setOpenPopup,
@@ -145,7 +145,7 @@ export const MaterialTransferNoteUpdate = (props) => {
               getOptionLabel={(option) => option}
               sx={{ minWidth: 300 }}
               renderInput={(params) => (
-                <TextField {...params} label="Seller Account" />
+                <CustomTextField {...params} label="Seller Account" />
               )}
             />
           </Grid>
@@ -163,12 +163,12 @@ export const MaterialTransferNoteUpdate = (props) => {
               getOptionLabel={(option) => option}
               sx={{ minWidth: 300 }}
               renderInput={(params) => (
-                <TextField {...params} label="Product Name" />
+                <CustomTextField {...params} label="Product Name" />
               )}
             />
           </Grid>
           <Grid item xs={12} sm={3}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="unit"
               size="small"
@@ -178,7 +178,7 @@ export const MaterialTransferNoteUpdate = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={3}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="quantity"
               size="small"

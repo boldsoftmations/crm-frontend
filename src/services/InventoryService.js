@@ -452,38 +452,29 @@ const updateProductionEntryData = (id, data) => {
 };
 
 // Material Requisition Form List Api
+const getAllMaterialTransferNoteData = (
+  page,
+  acceptedToFilter,
+  searchValue
+) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
 
-const getAllMaterialTransferNoteData = () => {
-  return CustomAxios.get(`/api/inventory/list-material-transfer-note/`);
-};
+  if (page) {
+    params.append("page", page);
+  }
 
-const getAllPaginateMaterialTransferNoteData = (all) => {
+  if (acceptedToFilter) {
+    params.append("accepted", acceptedToFilter);
+  }
+
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+
+  // Sending a GET request with query parameters
   return CustomAxios.get(
-    `/api/inventory/list-material-transfer-note/?page=${all}`
-  );
-};
-
-const getAllPaginateMaterialTransferNoteDataWithSearch = (all, search) => {
-  return CustomAxios.get(
-    `/api/inventory/list-material-transfer-note/?page=${all}&search=${search}`
-  );
-};
-
-const getAllSearchMaterialTransferNoteData = (search) => {
-  return CustomAxios.get(
-    `/api/inventory/list-material-transfer-note/?search=${search}`
-  );
-};
-
-const getAllMaterialTransferNoteDataPaginate = (currentPage, search) => {
-  return CustomAxios.get(
-    `/api/inventory/list-material-transfer-note/?page=${currentPage}&search=${search}`
-  );
-};
-
-const getMaterialTransferNotePaginateData = (currentPage) => {
-  return CustomAxios.get(
-    `/api/inventory/list-material-transfer-note/?page=${currentPage}`
+    `/api/inventory/list-material-transfer-note/?${params.toString()}`
   );
 };
 
@@ -798,11 +789,6 @@ const InventoryServices = {
   getProductionEntryDataById,
   updateProductionEntryData,
   getAllMaterialTransferNoteData,
-  getAllPaginateMaterialTransferNoteData,
-  getAllPaginateMaterialTransferNoteDataWithSearch,
-  getAllSearchMaterialTransferNoteData,
-  getAllMaterialTransferNoteDataPaginate,
-  getMaterialTransferNotePaginateData,
   createMaterialTransferNoteData,
   getMaterialTransferNoteDataById,
   updateMaterialTransferNoteData,

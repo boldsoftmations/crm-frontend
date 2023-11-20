@@ -5,13 +5,12 @@ import {
   Grid,
   IconButton,
   Snackbar,
-  TextField,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import InventoryServices from "../../../services/InventoryService";
-
+import CustomTextField from "../../../Components/CustomTextField";
 import { useSelector } from "react-redux";
 
 export const MaterialTransferNoteCreate = (props) => {
@@ -109,7 +108,7 @@ export const MaterialTransferNoteCreate = (props) => {
               getOptionLabel={(option) => option}
               sx={{ minWidth: 300 }}
               renderInput={(params) => (
-                <TextField {...params} label="Seller Account" />
+                <CustomTextField {...params} label="Seller Account" />
               )}
             />
           </Grid>
@@ -124,12 +123,12 @@ export const MaterialTransferNoteCreate = (props) => {
               getOptionLabel={(option) => option.product__name}
               sx={{ minWidth: 300 }}
               renderInput={(params) => (
-                <TextField {...params} label="Product Name" />
+                <CustomTextField {...params} label="Product Name" />
               )}
             />
           </Grid>
           <Grid item xs={12} sm={3}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="unit"
               size="small"
@@ -139,7 +138,7 @@ export const MaterialTransferNoteCreate = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={3}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="quantity"
               size="small"
