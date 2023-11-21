@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import CustomTextField from "../../../Components/CustomTextField";
 export const MaterialTransferNoteUpdate = (props) => {
   const {
-    setOpenPopup,
+    setOpenUpdatePopup,
     getAllMaterialTransferNoteDetails,
     sellerOption,
     idForEdit,
@@ -63,7 +63,7 @@ export const MaterialTransferNoteUpdate = (props) => {
       };
       await InventoryServices.updateMaterialTransferNoteData(idForEdit, req);
 
-      setOpenPopup(false);
+      setOpenUpdatePopup(false);
       getAllMaterialTransferNoteDetails();
       setOpen(false);
     } catch (error) {

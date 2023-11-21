@@ -14,8 +14,11 @@ import CustomTextField from "../../../Components/CustomTextField";
 import { useSelector } from "react-redux";
 
 export const MaterialTransferNoteCreate = (props) => {
-  const { setOpenPopup, sellerOption, getAllMaterialTransferNoteDetails } =
-    props;
+  const {
+    setOpenCreatePopup,
+    sellerOption,
+    getAllMaterialTransferNoteDetails,
+  } = props;
   const [open, setOpen] = useState(false);
   const [productOption, setProductOption] = useState([]);
   const [error, setError] = useState(null);
@@ -52,7 +55,7 @@ export const MaterialTransferNoteCreate = (props) => {
         quantity: quantity,
       };
       await InventoryServices.createMaterialTransferNoteData(req);
-      setOpenPopup(false);
+      setOpenCreatePopup(false);
       getAllMaterialTransferNoteDetails();
       setOpen(false);
     } catch (error) {
