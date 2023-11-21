@@ -430,7 +430,7 @@ export const MaterialTransferNoteView = () => {
         setOpenPopup={setOpenUpdatePopup}
       >
         <MaterialTransferNoteUpdate
-          setOpenPopup={setOpenUpdatePopup}
+          setOpenUpdatePopup={setOpenUpdatePopup}
           sellerOption={sellerOption}
           getAllMaterialTransferNoteDetails={getAllMaterialTransferNoteDetails}
           idForEdit={idForEdit}
