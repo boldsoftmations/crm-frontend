@@ -66,9 +66,12 @@ export const UpdateContactDetails = (props) => {
     try {
       setState((prevState) => ({ ...prevState, open: true }));
       const { contact, alternate_contact, ...rest } = state.inputValue;
-      const contact1 = contact.length === 12 ? `+${contact}` : contact;
+
+      // Ensure contact and alternate_contact are not null/undefined before accessing length
+      const contact1 =
+        contact && contact.length === 12 ? `+${contact}` : contact;
       const contact2 =
-        alternate_contact.length === 12
+        alternate_contact && alternate_contact.length === 12
           ? `+${alternate_contact}`
           : alternate_contact;
 
