@@ -26,6 +26,7 @@ export const DailySaleReviewView = () => {
   const assignedOption = UsersData.sales_users || [];
   const [isLoading, setIsLoading] = useState(false);
   const [dailySalesReviewData, setDailySalesReviewData] = useState([]);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [openPopup, setOpenPopup] = useState(false);
   const [recordForEdit, setRecordForEdit] = useState(null);
@@ -93,7 +94,7 @@ export const DailySaleReviewView = () => {
 
   const Tableheaders = [
     "Sales Person",
-    "Email",
+    "Reviewd By",
     "Reporting Manager",
     "Date",
     "Action",
@@ -193,16 +194,16 @@ export const DailySaleReviewView = () => {
                 {dailySalesReviewData.map((data, index) => (
                   <StyledTableRow key={data.id || index}>
                     <StyledTableCell align="center">
-                      {data.sales_person_name || "-"}
+                      {data.sales_person}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {data.sales_person_email || "-"}
+                      {data.reviewed_by}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {data.reporting_manager || "-"}
+                      {data.reporting_manager}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {formatDate(data.date) || "-"}
+                      {data.date}
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       <Button onClick={() => openInPopup(data)}>View</Button>

@@ -14,224 +14,142 @@ import {
 } from "@mui/material";
 import { CustomChart } from "../../Components/CustomChart";
 import {
-  prepareTodayProductPiChartData,
-  prepareApprovePiChartData,
-  preparePendingOrdersChartData,
-  prepareForecastChartData,
-  prepareInvoiceGroupedBarChartData,
-  approvePiChartOptions,
-  forecastChartOptions,
-  pendingOrdersChartOptions,
-  todayProductPiChartOptions,
-  InvoiceChartOptions,
+  callPerformanceChartOptions,
+  chartOptions,
+  noOrderCustomerChartOptions,
+  prepareCallPerformanceChartData,
+  prepareFollowupSummaryChartData,
+  prepareNewCustomerSummaryChartData,
+  prepareNoOrderCustomerChartData,
+  preparePiSummaryChartData,
 } from "./chartDataPreparers";
-import { G } from "@react-pdf/renderer";
 
-function generateListItem(primaryText, value, theme) {
+const generateListItem = (label, value, maxValue) => {
+  const theme = useTheme();
+  const progress = (value / (maxValue || 10)) * 100; // Fallback to 10 if maxValue is undefined
+
   return (
-    <ListItem>
-      <ListItemText primary={primaryText} />
+    <ListItem key={label}>
+      <ListItemText primary={label} />
       <ListItemSecondaryAction>
         <LinearProgress
           variant="determinate"
-          value={100}
-          size={20}
-          color="primary"
+          value={progress}
+          style={{ width: "100%", marginRight: theme.spacing(2) }}
         />
-        <Typography variant="caption" style={{ marginLeft: theme.spacing(1) }}>
-          {value}
-        </Typography>
+        <Typography variant="caption">{`${value}/${maxValue}`}</Typography>
       </ListItemSecondaryAction>
     </ListItem>
   );
-}
+};
+
+const GridItemCard = ({ title, children, xs, sm, lg }) => (
+  <Grid item xs={xs} sm={sm} lg={lg}>
+    <Card raised>
+      <CardContent>
+        <Typography variant="h6" color="primary">
+          {title}
+        </Typography>
+        <Divider light />
+        {children}
+      </CardContent>
+    </Card>
+  </Grid>
+);
 
 export const DailySaleReviewUpdate = ({ recordForEdit }) => {
   const theme = useTheme();
 
-  // useMemo hooks for chart data preparation
-  const todayProductPiChartData = useMemo(
-    () => prepareTodayProductPiChartData(recordForEdit),
+  // Preparing chart data
+  const callPerformanceChartData = useMemo(
+    () => prepareCallPerformanceChartData(recordForEdit),
     [recordForEdit]
   );
-  const approvePiChartData = useMemo(
-    () => prepareApprovePiChartData(recordForEdit),
+  const noOrderCustomerChartData = useMemo(
+    () => prepareNoOrderCustomerChartData(recordForEdit),
     [recordForEdit]
   );
-  const pendingOrdersChartData = useMemo(
-    () => preparePendingOrdersChartData(recordForEdit),
-    [recordForEdit]
+  const piSummaryChartData = preparePiSummaryChartData(
+    recordForEdit.pi_summary
   );
-  const forecastChartData = useMemo(
-    () => prepareForecastChartData(recordForEdit),
-    [recordForEdit]
+  const followupSummaryChartData = prepareFollowupSummaryChartData(
+    recordForEdit.followup_summary
   );
-  const invoiceGroupedBarChartData = useMemo(
-    () => prepareInvoiceGroupedBarChartData(recordForEdit),
-    [recordForEdit]
+  const newCustomerSummaryChartData = prepareNewCustomerSummaryChartData(
+    recordForEdit.new_customer_summary
   );
+
+  // Preparing top customer data
+  const topCustomers = recordForEdit.top_customer;
+  const maxTopCustomerAmount = Math.max(...topCustomers.map((c) => c.amount));
+  // Assuming recordForEdit.existing_customer is an object with numeric values
+  const customerValues = Object.values(recordForEdit.existing_customer);
+  const maxCustomerValue = Math.max(...customerValues);
 
   return (
     <div style={{ padding: theme.spacing(3) }}>
-      <Grid container spacing={2} alignItems="flex-start">
-        <Grid item xs={12}>
-          <Typography variant="h4">
-            Daily Sales Review - {recordForEdit.date}
-          </Typography>
-        </Grid>
-        <Grid container spacing={2}>
-          {/* Call and Customer Overview */}
-          <Grid item xs={12} md={6} lg={4}>
-            <Card>
-              <CardContent style={{ height: "450px" }}>
-                <Typography variant="h6" color="primary">
-                  Call and Customer Overview
-                </Typography>
-                <Divider />
-                <List>
-                  {generateListItem(
-                    "Total Calls Answered",
-                    recordForEdit.total_answer_count,
-                    theme
-                  )}
-                  {generateListItem(
-                    "Assigned Customers",
-                    recordForEdit.assigned_customer,
-                    theme
-                  )}
-                  {generateListItem(
-                    "Dead Customers",
-                    recordForEdit.dead_customer,
-                    theme
-                  )}
-                  {generateListItem(
-                    "New Customers This Month",
-                    recordForEdit.new_customer,
-                    theme
-                  )}
-                  {generateListItem(
-                    "Today's New Customers",
-                    recordForEdit.today_new_customer,
-                    theme
-                  )}
-                  {generateListItem(
-                    "KYC Incomplete",
-                    recordForEdit.incomplete_kyc,
-                    theme
-                  )}
-                  {generateListItem(
-                    "Potential Incomplete",
-                    recordForEdit.incomplete_potential,
-                    theme
-                  )}
-                </List>
-              </CardContent>
-            </Card>
-          </Grid>
+      <Grid container spacing={3}>
+        <GridItemCard title="Customer Overview" xs={12} sm={6} lg={4}>
+          <List>
+            {Object.entries(recordForEdit.existing_customer).map(
+              ([key, value]) =>
+                generateListItem(
+                  key.replace(/_/g, " "),
+                  value,
+                  maxCustomerValue
+                ) // Assuming a default max value of 10
+            )}
+          </List>
+        </GridItemCard>
 
-          {/* Forecast vs Actual Sales  (in Rs.) */}
+        <GridItemCard title="Call Performance Overview" xs={12} lg={8}>
+          <CustomChart
+            chartType="ColumnChart"
+            data={callPerformanceChartData}
+            options={callPerformanceChartOptions}
+            heightStyle="100%"
+          />
+        </GridItemCard>
 
-          <Grid item xs={12} md={6} lg={8}>
-            <Card>
-              <CardContent style={{ height: "450px" }}>
-                <Typography variant="h6" color="primary">
-                  Forecast vs Actual Sales (in Rs.)
-                </Typography>
-                <Divider />
-                <CustomChart
-                  chartType="ComboChart"
-                  data={forecastChartData}
-                  options={forecastChartOptions}
-                  heightStyle="350px"
-                />
-              </CardContent>
-            </Card>
-          </Grid>
+        <GridItemCard title="No Order Customer Overview" xs={12} lg={4}>
+          <CustomChart
+            chartType="BarChart"
+            data={noOrderCustomerChartData}
+            options={noOrderCustomerChartOptions}
+            heightStyle="100%"
+          />
+        </GridItemCard>
 
-          {/* Invoice Quantity Overview */}
-          <Grid item xs={12} lg={6}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" color="primary">
-                  Invoice Quantity Overview
-                </Typography>
-                <Divider />
-                <CustomChart
-                  chartType="BarChart"
-                  data={invoiceGroupedBarChartData}
-                  options={InvoiceChartOptions}
-                />
-              </CardContent>
-            </Card>
-          </Grid>
+        <GridItemCard title="PI Summary" xs={12} sm={6} lg={4}>
+          <CustomChart
+            chartType="PieChart"
+            data={piSummaryChartData}
+            options={chartOptions}
+          />
+        </GridItemCard>
 
-          {/*Today's Product PI Financial Overview */}
-          <Grid item xs={12} lg={6}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" color="primary">
-                  Today's Product PI Financial Overview
-                </Typography>
-                <Divider />
-                <CustomChart
-                  chartType="ColumnChart"
-                  data={todayProductPiChartData}
-                  options={todayProductPiChartOptions}
-                />
-              </CardContent>
-            </Card>
-          </Grid>
+        <GridItemCard title="Follow-up Summary" xs={12} sm={6} lg={4}>
+          <CustomChart
+            chartType="LineChart"
+            data={followupSummaryChartData}
+            options={chartOptions}
+          />
+        </GridItemCard>
 
-          {/* Pending Orders */}
-          <Grid item xs={12} lg={6}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" color="primary">
-                  Pending Orders
-                </Typography>
-                <Divider />
-                <CustomChart
-                  chartType="BarChart"
-                  data={pendingOrdersChartData}
-                  options={pendingOrdersChartOptions}
-                />
-              </CardContent>
-            </Card>
-          </Grid>
-
-          {/*  Approved PI Financial Overview */}
-          <Grid item xs={12} lg={6}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" color="primary">
-                  Approved PI Financial Overview
-                </Typography>
-                <Divider />
-                <CustomChart
-                  chartType="ColumnChart"
-                  data={approvePiChartData}
-                  options={approvePiChartOptions}
-                />
-              </CardContent>
-            </Card>
-          </Grid>
-
-          {/* Reporting Manager and Sales Person */}
-          <Grid item xs={12}>
-            <Grid container justifyContent="space-between">
-              <Grid item xs={6}>
-                <Typography variant="subtitle1">
-                  Salesperson: {recordForEdit.sales_person_name}
-                </Typography>
-              </Grid>
-              <Grid item xs={6} style={{ textAlign: "right" }}>
-                <Typography variant="subtitle1">
-                  Reporting Manager: {recordForEdit.reporting_manager}
-                </Typography>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
+        <GridItemCard title="New Customer Summary" xs={12} sm={6} lg={4}>
+          <CustomChart
+            chartType="ColumnChart"
+            data={newCustomerSummaryChartData}
+            options={chartOptions}
+          />
+        </GridItemCard>
+        <GridItemCard title="Top Customers" xs={12} sm={6} lg={4}>
+          <List>
+            {topCustomers.map((c) =>
+              generateListItem(c.customer, c.amount, maxTopCustomerAmount)
+            )}
+          </List>
+        </GridItemCard>
       </Grid>
     </div>
   );
