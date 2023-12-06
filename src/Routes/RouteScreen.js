@@ -69,7 +69,10 @@ import { IndiaMartLeads } from "../Pages/Leads/IndiaMartLeads";
 import { InActiveCustomer } from "../Pages/Cutomers/CompanyDetails/InActiveCustomer";
 import { FaqAllTab } from "../Pages/Faq/FaqAllTab/FaqAllTab";
 import { DailySaleReviewView } from "../Pages/DailySaleReview/DailySaleReviewView";
-
+import { HrModelTabs } from "../Pages/HrModel/HrModelTabs";
+import { DesignationView } from "../Pages/HrModel/Designation/DesignationView";
+import { DepartmentView } from "../Pages/HrModel/Department/DepartmentView";
+import { SourceView } from "../Pages/HrModel/CandidateSource/SourceView";
 export const RouteScreen = () => {
   const tokenData = useSelector((state) => state.auth);
   const token = tokenData.user;
@@ -277,7 +280,15 @@ export const RouteScreen = () => {
             <Route path="/user/faq" element={<FaqAllTab />} />
             {/* Daily sale review */}
             <Route path="/user/sale-review" element={<DailySaleReviewView />} />
-            <Route path="/user/analytics" element={<Home />} />
+            <Route path="/" element={<Home />} />
+            <Route path="/user/hr-model"
+            element={<HrModelTabs />} />
+             <Route path="/user/hr-model/designation"
+            element={<DesignationView />} />
+             <Route path="/user/hr-model/department"
+            element={<DepartmentView />} />
+             <Route path="/user/hr-model/source"
+            element={<SourceView />} />
           </>
         )}
         <Route path="*" element={<Auths />} />
