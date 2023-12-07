@@ -57,10 +57,10 @@ export const MisReportView = () => {
   const transformData = (data) => {
     const jobData = [
       ["Category", "Count"],
-      ["Total Job Openings", data.jobopening_count],
-      ["Open Job Count", data.open_job_count],
-      ["Closed Job Count", data.close_job_count],
-      ["New Job Openings", data.new_jobopening_count],
+      ["Total Job Openings", data.jobopening],
+      ["Open Job Count", data.open_job],
+      ["Closed Job Count", data.close_job],
+      ["New Job Openings", data.new_jobopening],
     ];
     setJobOpeningData(jobData);
 
@@ -68,25 +68,25 @@ export const MisReportView = () => {
       ["Stage", "Value", { role: "style" }, { role: "annotation" }],
       [
         "Applicants Joined",
-        data.applicant_joined_count,
+        data.applicant_joined,
         "stroke-color: #4374E0; stroke-opacity: 0.6; stroke-width: 2; fill-color: #4374E0; fill-opacity: 0.2",
         "",
       ],
       [
         "Offered Candidates",
-        data.offered_candidates_count,
+        data.offered_candidates,
         "stroke-color: #4374E0; stroke-opacity: 0.6; stroke-width: 4; fill-color: #4374E0; fill-opacity: 0.4",
         "",
       ],
       [
         "Interviewed Candidates",
-        data.interviewed_candidates_count,
+        data.interviewed_candidates,
         "stroke-color: #4374E0; stroke-opacity: 0.6; stroke-width: 6; fill-color: #4374E0; fill-opacity: 0.6",
         "",
       ],
       [
         "Active Candidates",
-        data.active_candidates_count,
+        data.active_candidates,
         "stroke-color: #4374E0; stroke-opacity: 0.6; stroke-width: 8; fill-color: #4374E0; fill-opacity: 0.8",
         "",
       ],
@@ -107,7 +107,10 @@ export const MisReportView = () => {
 
     const avgHireData = [
       ["Label", "Value"],
-      ["Average Days to Hire", data.average_days_to_hire.avg_days_to_hire],
+      [
+        "Average Days to Hire",
+        data.average_days_to_hire.avg_days_to_hire / 84600,
+      ],
     ];
     setAvgDaysToHire(avgHireData);
 
@@ -159,9 +162,6 @@ export const MisReportView = () => {
 
   return (
     <Container>
-      <Typography variant="h4" gutterBottom>
-        MIS Report
-      </Typography>
       <Box marginBottom={2}>
         <Autocomplete
           value={selectedMonth}
