@@ -122,6 +122,18 @@ const getDailySaleReviewData = (
   return CustomAxios.get(`api/user/daily-sales-review/?${params.toString()}`);
 };
 
+const getDailySaleReviewById = (id) => {
+  return CustomAxios.get(`api/user/daily-sales-review/${id}`);
+};
+
+const createDailySaleReviewData = (data) => {
+  return CustomAxios.post("api/user/daily-sales-review/", data);
+};
+
+const updateDailySaleReviewData = (id, data) => {
+  return CustomAxios.patch(`api/user/daily-sales-review/${id}/`, data);
+};
+
 const UserProfileService = {
   getProfile,
   getAllUserProfileData,
@@ -138,6 +150,9 @@ const UserProfileService = {
   createProductObjectionData,
   updateProductObjectionData,
   getDailySaleReviewData,
+  getDailySaleReviewById,
+  createDailySaleReviewData,
+  updateDailySaleReviewData,
 };
 
 export default UserProfileService;
