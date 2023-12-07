@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Box, Typography, Grid, Button, Paper } from "@mui/material";
+import { Box, Grid, Button, Paper } from "@mui/material";
 import { Popup } from "../../../Components/Popup";
 import { JobOpeningCreate } from "./JobOpeningCreate";
 import { JobOpeningUpdate } from "./JobOpeningUpdate";
 import { CustomTable } from "../../../Components/CustomTable";
 import Hr from "./../../../services/Hr";
 import { ApplicantListCreate } from "../ApplicantList/ApplicantListCreate";
+import { useSelector } from "react-redux";
 
 export const JobOpeningView = () => {
   const [jobOpenings, setJobOpenings] = useState([]);
@@ -14,8 +15,10 @@ export const JobOpeningView = () => {
   const [editJobOpening, setEditJobOpening] = useState({});
   const [openEditPopup, setOpenEditPopup] = useState(false);
   const [recordForEdit, setRecordForEdit] = useState(false);
-  const [openUpdatePopup7, setOpenUpdatePopup7] = useState(false);
   const [openApplicantListPopup, setOpenApplicantListPopup] = useState(false);
+  const data = useSelector((state) => state.auth);
+  const users = data.profile;
+  const isSalesManager = users.groups.includes("Sales Manager");
 
   const openInPopup = (item) => {
     setRecordForEdit(item);
@@ -102,41 +105,40 @@ export const JobOpeningView = () => {
   return (
     <Grid item xs={12}>
       <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
-        <Box sx={{ p: 4 }}>
-          <Box display="flex" justifyContent="center" marginBottom="10px">
-            <h3
-              style={{
-                marginBottom: "1em",
-                fontSize: "24px",
-                color: "rgb(34, 34, 34)",
-                fontWeight: 800,
-                textAlign: "center",
-              }}
+        <Box flexGrow={1} display="flex" justifyContent="center">
+          <h3
+            style={{
+              marginBottom: "1em",
+              fontSize: "24px",
+              color: "rgb(34, 34, 34)",
+              fontWeight: 800,
+              textAlign: "center",
+            }}
+          >
+            Job Opening
+          </h3>
+        </Box>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={2}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleAddJobOpeningClick}
             >
-              Job Opening
-            </h3>
-          </Box>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={2}>
-              <Button
-                variant="contained"
-                color="primary"
-                fullWidth
-                onClick={handleAddJobOpeningClick}
-              >
-                Add
-              </Button>
-            </Grid>
+              Add
+            </Button>
           </Grid>
-          <Paper sx={{ p: 2, m: 3 }}>
-            <CustomTable
-              headers={TableHeader}
-              data={TableData}
-              openInPopup={openInPopup}
-              openInPopup7={openInPopup7}
-              onEdit={handleEditJobOpeningClick}
-            />
-          </Paper>
+        </Grid>
+        <Paper sx={{ p: 2, m: 3 }}>
+          <CustomTable
+            headers={TableHeader}
+            data={TableData}
+            openInPopup={openInPopup}
+            openInPopup7={!isSalesManager ? openInPopup7 : null}
+            onEdit={handleEditJobOpeningClick}
+          />
+        </Paper>
+        {!isSalesManager && (
           <Popup
             title="Add New Applicant"
             openPopup={openApplicantListPopup}
@@ -147,27 +149,27 @@ export const JobOpeningView = () => {
               onSuccess={handleSuccess}
             />
           </Popup>
+        )}
 
-          <Popup
-            title="Add New Job Opening"
-            openPopup={openCreatePopup}
-            setOpenPopup={setOpenCreatePopup}
-          >
-            <JobOpeningCreate addNewJobOpening={addNewJobOpening} />
-          </Popup>
-          <Popup
-            title="Edit Job Opening"
-            openPopup={openUpdatePopup}
-            setOpenPopup={setOpenUpdatePopup}
-          >
-            <JobOpeningUpdate
-              recordForEdit={recordForEdit}
-              updateJobOpening={updateJobOpening}
-              setOpenUpdatePopup={setOpenUpdatePopup}
-              fetchJobOpenings={fetchJobOpenings}
-            />
-          </Popup>
-        </Box>
+        <Popup
+          title="Add New Job Opening"
+          openPopup={openCreatePopup}
+          setOpenPopup={setOpenCreatePopup}
+        >
+          <JobOpeningCreate addNewJobOpening={addNewJobOpening} />
+        </Popup>
+        <Popup
+          title="Edit Job Opening"
+          openPopup={openUpdatePopup}
+          setOpenPopup={setOpenUpdatePopup}
+        >
+          <JobOpeningUpdate
+            recordForEdit={recordForEdit}
+            updateJobOpening={updateJobOpening}
+            setOpenUpdatePopup={setOpenUpdatePopup}
+            fetchJobOpenings={fetchJobOpenings}
+          />
+        </Popup>
       </Paper>
     </Grid>
   );

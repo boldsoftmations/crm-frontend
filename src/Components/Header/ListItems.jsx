@@ -2671,6 +2671,37 @@ export const ListItems = (props) => {
                 </ListItemIcon>
                 <ListItemText primary="Sales Review" />
               </ListItem> */}
+              {/* Hr Recruitment Model */}
+              <ListItem
+                button
+                onClick={() => setExpandHr(!expandHr)}
+                style={{ width: 300 }}
+              >
+                <ListItemIcon>
+                  <WorkIcon />
+                </ListItemIcon>
+                <ListItemText primary="Recruitment" />
+                {expandHr ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+              </ListItem>
+
+              <Collapse in={expandHr} timeout="auto" unmountOnExit>
+                <Divider />
+                <List component="div" disablePadding>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/user/hr-model"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Hr Model"
+                    />
+                  </ListItem>
+                </List>
+              </Collapse>
             </>
           )}
 
