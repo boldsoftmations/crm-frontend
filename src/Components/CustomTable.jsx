@@ -6,6 +6,7 @@ export const CustomTable = ({
   data,
   PriorityColor,
   openInPopup,
+  openInPopup7,
   hideViewForStatus = [],
   ButtonText,
   ButtonText1,
@@ -174,6 +175,22 @@ export const CustomTable = ({
                       onClick={() => openInPopup(row)}
                     >
                       View
+                    </div>
+                  )}
+                  {openInPopup7 && !hideViewForStatus.includes(row.status) && (
+                    <div
+                      style={{
+                        display: "inline-block",
+                        // padding: "6px 12px",
+                        // border: "1px solid #1976d2",
+                        // borderRadius: "4px",
+                        color: "#1976d2",
+                        cursor: "pointer",
+                        marginRight: "8px",
+                      }}
+                      onClick={() => openInPopup7(row)}
+                    >
+                      Add Applicant
                     </div>
                   )}
                   {openInPopup2 && (
