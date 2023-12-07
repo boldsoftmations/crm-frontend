@@ -1,11 +1,14 @@
-import React, { useState } from "react";
-import { TextField, Button, Grid } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { TextField, Button, Grid, Autocomplete } from "@mui/material";
 import Hr from "../../../services/Hr";
+import CustomAxios from "../../../services/api";
+import CustomTextField from "../../../Components/CustomTextField";
 
 export const InterviewStatusCreate = ({ row, closeDialog }) => {
   const [interviewDate, setInterviewDate] = useState("");
   const [interviewTime, setInterviewTime] = useState("");
   const [interviewerName, setInterviewerName] = useState("");
+  const [email, setEmail] = useState([]);
   console.log("row", row);
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,6 +27,27 @@ export const InterviewStatusCreate = ({ row, closeDialog }) => {
       console.error("Error scheduling interview:", error);
     }
   };
+
+  const handleInputChange = (event, newValue) => {
+    setInterviewerName(newValue);
+  };
+
+  useEffect(() => {
+    const fetchEmail = async () => {
+      try {
+        const response = await CustomAxios.get(
+          `/api/user/users/?is_active=True`
+        );
+        if (Array.isArray(response.data.users)) {
+          setEmail(response.data.users);
+        }
+      } catch (error) {
+        console.error("Error fetching Email:", error);
+      }
+    };
+
+    fetchEmail();
+  }, []);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -49,11 +73,16 @@ export const InterviewStatusCreate = ({ row, closeDialog }) => {
           />
         </Grid>
         <Grid item xs={12}>
-          <TextField
-            label="Interviewer Name"
-            fullWidth
-            value={interviewerName}
-            onChange={(e) => setInterviewerName(e.target.value)}
+          <Autocomplete
+            style={{ minWidth: 220 }}
+            size="small"
+            onChange={(event, newValue) => handleInputChange(event, newValue)}
+            name="email"
+            options={email.map((option) => option.email)}
+            getOptionLabel={(option) => `${option}`}
+            renderInput={(params) => (
+              <CustomTextField {...params} label="Interviewer Email" />
+            )}
           />
         </Grid>
         <Grid item xs={12}>
