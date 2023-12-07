@@ -82,60 +82,47 @@ export const ApplicantListView = () => {
   return (
     <Grid item xs={12}>
       <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
-        <Box sx={{ p: 4 }}>
-          <Box display="flex" justifyContent="center" marginBottom="10px">
-            <h3
-              style={{
-                marginBottom: "1em",
-                fontSize: "24px",
-                color: "rgb(34, 34, 34)",
-                fontWeight: 800,
-                textAlign: "center",
-              }}
-            >
-              Applicant List
-            </h3>
-          </Box>
-          {/* <Grid container spacing={2}>
-            <Grid item xs={12} sm={2}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleAddApplicantClick}
-              >
-                Add
-              </Button>
-            </Grid>
-          </Grid> */}
-          <Paper sx={{ p: 2, m: 3 }}>
-            <CustomTable
-              headers={TableHeader}
-              data={TableData}
-              openInPopup={openInPopup}
-            />
-          </Paper>
-          <Popup
-            title="Add New Applicant"
-            openPopup={openCreatePopup}
-            setOpenPopup={setOpenCreatePopup}
+        <Box flexGrow={1} display="flex" justifyContent="center">
+          <h3
+            style={{
+              marginBottom: "1em",
+              fontSize: "24px",
+              color: "rgb(34, 34, 34)",
+              fontWeight: 800,
+              textAlign: "center",
+            }}
           >
-            <ApplicantListCreate
-              addNewApplicant={addNewApplicant}
-              onApplicantAdded={handleApplicantAdded}
-            />
-          </Popup>
-          <Popup
-            title="Edit Applicant"
-            openPopup={openUpdatePopup}
-            setOpenPopup={setOpenUpdatePopup}
-          >
-            <ApplicantListUpdate
-              recordForEdit={recordForEdit}
-              updateApplicant={updateApplicant}
-              onApplicantUpdated={handleApplicantUpdated}
-            />
-          </Popup>
+            Applicant List
+          </h3>
         </Box>
+        <Paper sx={{ p: 2, m: 3 }}>
+          <CustomTable
+            headers={TableHeader}
+            data={TableData}
+            openInPopup={openInPopup}
+          />
+        </Paper>
+        <Popup
+          title="Add New Applicant"
+          openPopup={openCreatePopup}
+          setOpenPopup={setOpenCreatePopup}
+        >
+          <ApplicantListCreate
+            addNewApplicant={addNewApplicant}
+            onApplicantAdded={handleApplicantAdded}
+          />
+        </Popup>
+        <Popup
+          title="Edit Applicant"
+          openPopup={openUpdatePopup}
+          setOpenPopup={setOpenUpdatePopup}
+        >
+          <ApplicantListUpdate
+            recordForEdit={recordForEdit}
+            updateApplicant={updateApplicant}
+            onApplicantUpdated={handleApplicantUpdated}
+          />
+        </Popup>
       </Paper>
     </Grid>
   );
