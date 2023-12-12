@@ -56,12 +56,12 @@ export const HrModelTabs = () => {
               )}
               {activeTab === 2 && (
                 <div>
-                  <ShortListedCandidateView />
+                  <InterviewStatusView />
                 </div>
               )}
               {activeTab === 3 && (
                 <div>
-                  <InterviewStatusView />
+                  <ShortListedCandidateView />
                 </div>
               )}
               {activeTab === 4 && (
