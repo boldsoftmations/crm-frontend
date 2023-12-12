@@ -16,7 +16,7 @@ export const JobOpeningCreate = ({ addNewJobOpening }) => {
   });
   const [designations, setDesignations] = useState([]);
   const [department, setDepartment] = useState([]);
-
+  const [emails, setEmails] = useState([]);
   useEffect(() => {
     const fetchDesignations = async () => {
       try {
@@ -42,8 +42,21 @@ export const JobOpeningCreate = ({ addNewJobOpening }) => {
       }
     };
 
+    const fetchEmails = async () => {
+      try {
+        const response = await CustomAxios.get(
+          `/api/user/users/?is_active=True`
+        );
+        if (Array.isArray(response.data.users)) {
+          setEmails(response.data.users.map((user) => user.email));
+        }
+      } catch (error) {
+        console.error("Error fetching Emails:", error);
+      }
+    };
     fetchDesignations();
     fetchDepartments();
+    fetchEmails();
   }, []);
 
   const locations = [
@@ -54,24 +67,24 @@ export const JobOpeningCreate = ({ addNewJobOpening }) => {
   ];
 
   const salaryRange = [
-    "60,000 - 1,20,000.00",
-    "1,20,000.00 - 1,80,000.00",
-    "1,80,000.00 - 2,40,000.00",
-    "2,40,000.00 - 3,00,000.00",
-    "3,00,000.00 - 3,60,000.00",
-    "3,60,000.00 - 4,80,000.00",
-    "4,80,000.00 - 6,00,000.00",
-    "7,20,000.00 - 9,60,000.00",
-    "9,60,000.00 - 12,00,000.00",
-    "12,00,000.00 - 15,00,000.00",
-    "15,00,000.00 - 18,00,000.00",
-    "18,00,000.00 - 21,00,000.00",
-    "21,00,000.00 - 24,00,000.00",
-    "24,00,000.00 - Above",
+    "0.6 LPA - 1.2 LPA",
+    "1.2 LPA - 1.8 LPA",
+    "1.8 LPA - 2.4 LPA",
+    "2.4 LPA - 3.0 LPA",
+    "3.0 LPA - 3.6 LPA",
+    "3.6 LPA - 4.2 LPA",
+    "4.8 LPA - 6.0 LPA",
+    "7.2 LPA - 9.6 LPA",
+    "9.6 LPA - 12 LPA",
+    "12 LPA - 15 LPA",
+    "15 LPA - 18 LPA",
+    "18 LPA - 21 LPA",
+    "21 LPA - 24 LPA",
+    "24 LPA - Above",
   ];
 
   const handleInputChange = (event, newValue) => {
-    const value = newValue || event.target.value; // Use logical OR instead of nullish coalescing
+    const value = newValue || event.target.value;
     const name = event.target.name || event.target.id.split("-")[0];
     setNewJobOpening({ ...newJobOpening, [name]: value });
   };
@@ -86,20 +99,6 @@ export const JobOpeningCreate = ({ addNewJobOpening }) => {
         Add New Job Opening
       </Typography>
       <Grid container spacing={2}>
-        {/* <Grid item xs={12}>
-          <TextField
-            label="Date Of Closing"
-            name="closing_date"
-            fullWidth
-            type="date"
-            value={newJobOpening.closing_date}
-            onChange={handleInputChange}
-            InputLabelProps={{
-              shrink: true,
-            }}
-          />
-        </Grid> */}
-
         <Grid item xs={12}>
           <Autocomplete
             style={{ minWidth: 220 }}
@@ -167,7 +166,34 @@ export const JobOpeningCreate = ({ addNewJobOpening }) => {
             )}
           />
         </Grid>
-
+        {newJobOpening.position === "Replacement" && (
+          <Grid item xs={12}>
+            <Autocomplete
+              id="replacement_user"
+              options={emails}
+              fullWidth
+              renderInput={(params) => (
+                <TextField {...params} label="Replacement Email" />
+              )}
+              value={newJobOpening.replacement_user}
+              onChange={(event, newValue) => {
+                setNewJobOpening({
+                  ...newJobOpening,
+                  replacement_user: newValue,
+                });
+              }}
+            />
+          </Grid>
+        )}
+        <Grid item xs={12}>
+          <TextField
+            name="no_of_openings"
+            label="No Of Openings"
+            value={newJobOpening.no_of_openings || ""}
+            onChange={handleInputChange}
+            fullWidth
+          />
+        </Grid>
         <Grid item xs={12}>
           <Autocomplete
             id="salary_ranges"
