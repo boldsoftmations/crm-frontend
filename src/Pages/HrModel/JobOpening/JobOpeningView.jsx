@@ -15,6 +15,7 @@ export const JobOpeningView = () => {
   const [editJobOpening, setEditJobOpening] = useState({});
   const [openEditPopup, setOpenEditPopup] = useState(false);
   const [recordForEdit, setRecordForEdit] = useState(false);
+  const [openUpdatePopup7, setOpenUpdatePopup7] = useState(false);
   const [openApplicantListPopup, setOpenApplicantListPopup] = useState(false);
   const data = useSelector((state) => state.auth);
   const users = data.profile;
@@ -79,8 +80,9 @@ export const JobOpeningView = () => {
     // "Department",
     "Location",
     "Salary Range",
-    // "Date of Closing",
+    "Date of Closing",
     "Open Duration",
+    "No Of Positions",
     // "Position",
     "Action",
   ];
@@ -97,8 +99,9 @@ export const JobOpeningView = () => {
     // department: job.department,
     location: job.location,
     salary_ranges: job.salary_ranges,
-    // closing_date: job.closing_date,
+    closing_date: job.closing_date,
     days_open: job.days_open,
+    no_of_positions: job.no_of_openings,
     // position: job.position,
   }));
 
