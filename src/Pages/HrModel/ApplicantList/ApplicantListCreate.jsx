@@ -84,6 +84,22 @@ export const ApplicantListCreate = ({ jobOpeningId, onSuccess }) => {
 
   const spokenEnglishOptions = ["Bad", "Average", "Good"];
 
+  const salaryRange = [
+    "0.6 LPA - 1.2 LPA",
+    "1.2 LPA - 1.8 LPA",
+    "1.8 LPA - 2.4 LPA",
+    "2.4 LPA - 3.0 LPA",
+    "3.0 LPA - 3.6 LPA",
+    "3.6 LPA - 4.8 LPA",
+    "4.8 LPA - 6.0 LPA",
+    "7.2 LPA - 9.6 LPA",
+    "9.6 LPA - 12 LPA",
+    "12 LPA - 15 LPA",
+    "15 LPA - 18 LPA",
+    "18 LPA - 21 LPA",
+    "21 LPA - 24 LPA",
+    "24 LPA - Above",
+  ];
   return (
     <Container
       component="form"
@@ -164,21 +180,31 @@ export const ApplicantListCreate = ({ jobOpeningId, onSuccess }) => {
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField
-              label="Current Salary"
-              name="current_salary"
+            <Autocomplete
+              id="current_salary"
+              options={salaryRange}
               fullWidth
+              renderInput={(params) => (
+                <TextField {...params} label="Current Salary" />
+              )}
               value={formData.current_salary}
-              onChange={handleInputChange}
+              onChange={(event, newValue) => {
+                handleInputChange(event, newValue);
+              }}
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField
-              label="Expected Salary"
-              name="expected_salary"
+            <Autocomplete
+              id="expected_salary"
+              options={salaryRange}
               fullWidth
+              renderInput={(params) => (
+                <TextField {...params} label="Expected Salary" />
+              )}
               value={formData.expected_salary}
-              onChange={handleInputChange}
+              onChange={(event, newValue) => {
+                handleInputChange(event, newValue);
+              }}
             />
           </Grid>
 
