@@ -49,18 +49,17 @@ export const ApplicantListCreate = ({ jobOpeningId, onSuccess }) => {
     fetchSource();
   }, []);
 
-  const handleInputChange = (event, newValue) => {
-    let { name, value } = event.target || {};
-    if (name === "contact" && !value.startsWith("+91")) {
-      value = `+91${value}`;
-    }
-
-    if (newValue !== undefined) {
+  const handleInputChange = (event, newValue, name) => {
+    if (name) {
       setFormData((prevData) => ({
         ...prevData,
         [name]: newValue,
       }));
     } else {
+      let { name, value } = event.target;
+      if (name === "contact" && !value.startsWith("+91")) {
+        value = `+91${value}`;
+      }
       setFormData((prevData) => ({
         ...prevData,
         [name]: value,
@@ -71,17 +70,13 @@ export const ApplicantListCreate = ({ jobOpeningId, onSuccess }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await Hr.addApplicant({
-        ...formData,
-        // job: formData.jobOpeningId,
-      });
+      const response = await Hr.addApplicant(formData);
       console.log("Applicant created:", response.data);
       onSuccess();
     } catch (error) {
       console.error("Error creating applicant:", error);
     }
   };
-
   const spokenEnglishOptions = ["Bad", "Average", "Good"];
 
   const salaryRange = [
@@ -180,19 +175,15 @@ export const ApplicantListCreate = ({ jobOpeningId, onSuccess }) => {
             />
           </Grid>
           <Grid item xs={12}>
-            <Autocomplete
-              id="current_salary"
-              options={salaryRange}
+            <TextField
+              label="Current Salary"
+              name="current_salary"
               fullWidth
-              renderInput={(params) => (
-                <TextField {...params} label="Current Salary" />
-              )}
               value={formData.current_salary}
-              onChange={(event, newValue) => {
-                handleInputChange(event, newValue);
-              }}
+              onChange={handleInputChange}
             />
           </Grid>
+
           <Grid item xs={12}>
             <Autocomplete
               id="expected_salary"
@@ -203,7 +194,7 @@ export const ApplicantListCreate = ({ jobOpeningId, onSuccess }) => {
               )}
               value={formData.expected_salary}
               onChange={(event, newValue) => {
-                handleInputChange(event, newValue);
+                handleInputChange(event, newValue, "expected_salary");
               }}
             />
           </Grid>

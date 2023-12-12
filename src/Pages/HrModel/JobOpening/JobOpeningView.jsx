@@ -82,7 +82,7 @@ export const JobOpeningView = () => {
     "Salary Range",
     "Date of Closing",
     "Open Duration",
-    "No Of Positions",
+    "No Of Opening",
     // "Position",
     "Action",
   ];
@@ -92,7 +92,7 @@ export const JobOpeningView = () => {
     fetchJobOpenings();
   };
   const TableData = jobOpenings.map((job) => ({
-    id: job.id,
+    id: job.job_id,
     opening_date: job.opening_date,
     // created_by: job.created_by,
     designation: job.designation,
