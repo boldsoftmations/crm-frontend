@@ -78,7 +78,11 @@ export const UpdateAllCompanyDetails = (props) => {
           )}
           {activeTab === 6 && (
             <div>
-              <KycUpdate recordForEdit={recordForEdit} />
+              <KycUpdate
+                recordForEdit={recordForEdit}
+                setOpenPopup={setOpenPopup}
+                getIncompleteKycCustomerData={getAllCompanyDetails}
+              />
             </div>
           )}
           {activeTab === 7 && (
