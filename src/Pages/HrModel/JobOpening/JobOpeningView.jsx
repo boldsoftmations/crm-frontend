@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Grid, Button, Paper } from "@mui/material";
+import { Box, Grid, Button, Paper, Snackbar, Alert } from "@mui/material";
 import { Popup } from "../../../Components/Popup";
 import { JobOpeningCreate } from "./JobOpeningCreate";
 import { JobOpeningUpdate } from "./JobOpeningUpdate";
@@ -15,11 +15,11 @@ export const JobOpeningView = () => {
   const [editJobOpening, setEditJobOpening] = useState({});
   const [openEditPopup, setOpenEditPopup] = useState(false);
   const [recordForEdit, setRecordForEdit] = useState(false);
-  const [openUpdatePopup7, setOpenUpdatePopup7] = useState(false);
   const [openApplicantListPopup, setOpenApplicantListPopup] = useState(false);
   const data = useSelector((state) => state.auth);
   const users = data.profile;
   const isSalesManager = users.groups.includes("Sales Manager");
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   const openInPopup = (item) => {
     setRecordForEdit(item);
@@ -47,6 +47,7 @@ export const JobOpeningView = () => {
       await Hr.addJobOpening(newJob);
       fetchJobOpenings();
       setOpenCreatePopup(false);
+      setShowSuccessMessage(true);
     } catch (error) {
       console.error("Error adding job opening:", error);
     }
@@ -73,11 +74,10 @@ export const JobOpeningView = () => {
   };
 
   const TableHeader = [
-    "ID",
+    "Sr.No",
+    "Job Id",
     "Date of Opening",
-    // "Created By",
     "Designation",
-    // "Department",
     "Location",
     "Salary Range",
     "Date of Closing",
@@ -92,16 +92,15 @@ export const JobOpeningView = () => {
     fetchJobOpenings();
   };
   const TableData = jobOpenings.map((job) => ({
-    id: job.job_id,
+    id: job.id,
+    job: job.job_id,
     opening_date: job.opening_date,
-    // created_by: job.created_by,
     designation: job.designation,
-    // department: job.department,
     location: job.location,
     salary_ranges: job.salary_ranges,
     closing_date: job.closing_date,
     days_open: job.days_open,
-    no_of_positions: job.no_of_openings,
+    no_of_openings: job.no_of_openings,
     // position: job.position,
   }));
 
@@ -121,6 +120,20 @@ export const JobOpeningView = () => {
             Job Opening
           </h3>
         </Box>
+        <Snackbar
+          open={showSuccessMessage}
+          autoHideDuration={6000}
+          onClose={() => setShowSuccessMessage(false)}
+          anchorOrigin={{ vertical: "center", horizontal: "center" }}
+        >
+          <Alert
+            onClose={() => setShowSuccessMessage(false)}
+            severity="success"
+            sx={{ width: "100%" }}
+          >
+            Job opening created successfully!
+          </Alert>
+        </Snackbar>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={2}>
             <Button
@@ -148,7 +161,7 @@ export const JobOpeningView = () => {
             setOpenPopup={setOpenApplicantListPopup}
           >
             <ApplicantListCreate
-              jobOpeningId={recordForEdit.id}
+              jobOpeningId={recordForEdit.job}
               onSuccess={handleSuccess}
             />
           </Popup>
@@ -161,6 +174,7 @@ export const JobOpeningView = () => {
         >
           <JobOpeningCreate addNewJobOpening={addNewJobOpening} />
         </Popup>
+
         <Popup
           title="Edit Job Opening"
           openPopup={openUpdatePopup}
