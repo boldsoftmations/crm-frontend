@@ -528,7 +528,9 @@ const KycUpdate = ({
                 size="small"
                 label="Whatsapp URL"
                 value={inputValue.whatsapp_url || ""}
-                onChange={handleInputChange}
+                onChange={(e) =>
+                  handleInputChange("whatsapp_url", e.target.value)
+                }
               />
             </Grid>
           )}
