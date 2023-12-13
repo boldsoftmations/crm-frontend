@@ -1,16 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  FormControl,
-  FormLabel,
-  Radio,
-  RadioGroup,
-  Grid,
-  Chip,
-  Divider,
-  FormControlLabel,
-  Button,
-  Box,
-} from "@mui/material";
+import { Grid, Chip, Divider, Button, Box } from "@mui/material";
 import Autocomplete from "@mui/lab/Autocomplete";
 import Option from "../../../Options/Options";
 import { CustomLoader } from "../../../Components/CustomLoader";
@@ -28,7 +17,6 @@ const KycUpdate = ({
   const currentDate = new Date().toISOString().split("T")[0];
   const [inputValue, setInputValue] = useState([]);
   const [contactValue, setContactValue] = useState([]);
-  const [error, setError] = useState(null);
 
   // Fetch company details based on the active tab when the component mounts or the active tab changes
   useEffect(() => {
@@ -60,7 +48,6 @@ const KycUpdate = ({
         CustomerServices.getCompanyDataByIdWithType(recordForEdit, "contacts"),
         CustomerServices.getCompanyDataById(recordForEdit),
       ]);
-
       // Extract only the required fields for setInputValue
       const {
         website,
@@ -80,6 +67,7 @@ const KycUpdate = ({
         pincode,
         state,
         type_of_customer,
+        whatsapp_url,
       } = kycResponse.data;
       setInputValue({
         website,
@@ -99,8 +87,8 @@ const KycUpdate = ({
         pincode,
         state,
         type_of_customer,
+        whatsapp_url,
       });
-
       // Extract only the required fields for setContactData
       const filteredContacts = contactResponse.data.contacts.map((contact) => ({
         id: contact.id,
@@ -115,7 +103,6 @@ const KycUpdate = ({
         religion: contact.religion,
       }));
       setContactData(filteredContacts);
-      console.log("filteredContacts", filteredContacts);
       // Find the ID for the purchase decision maker
       const decisionMaker = filteredContacts.find(
         (item) => item.name === kycResponse.data.purchase_decision_maker
@@ -149,6 +136,7 @@ const KycUpdate = ({
       console.log("filterID", filterID);
       if (filterID) {
         // getPurchaseDecisionMakerDataByID(filterID.id);
+        console.log("filtered value", filterID);
         setContactValue(filterID);
       }
     } else {
