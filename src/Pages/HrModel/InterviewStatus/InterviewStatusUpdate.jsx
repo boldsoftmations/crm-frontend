@@ -23,15 +23,22 @@ export const InterviewStatusCreate = ({ row, closeDialog }) => {
     try {
       await Hr.addInterviewDate(newInterviewDetails);
       closeDialog();
+      alert("Interview Scheduled Successfully");
     } catch (error) {
+      alert("Error scheduling interview");
       console.error("Error scheduling interview:", error);
     }
   };
+
+  const timeOptions = ["11 AM to 1 PM", "1 PM to 3 PM", "3 PM TO 5 PM"];
 
   const handleInputChange = (event, newValue) => {
     setInterviewerName(newValue);
   };
 
+  const handleTimeChange = (event, newValue) => {
+    setInterviewTime(newValue);
+  };
   useEffect(() => {
     const fetchEmail = async () => {
       try {
@@ -63,13 +70,15 @@ export const InterviewStatusCreate = ({ row, closeDialog }) => {
           />
         </Grid>
         <Grid item xs={12}>
-          <TextField
-            label="Interview Time"
-            type="time"
-            fullWidth
+          <Autocomplete
+            style={{ minWidth: 220 }}
+            size="small"
             value={interviewTime}
-            onChange={(e) => setInterviewTime(e.target.value)}
-            InputLabelProps={{ shrink: true }}
+            onChange={handleTimeChange}
+            options={timeOptions}
+            renderInput={(params) => (
+              <CustomTextField {...params} label="Interview Time" />
+            )}
           />
         </Grid>
         <Grid item xs={12}>

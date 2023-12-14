@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Button, TextField, DialogActions, Autocomplete } from "@mui/material";
 import Hr from "../../../services/Hr";
+import CustomTextField from "../../../Components/CustomTextField";
 
-export const ShortListedCandidateUpdate = ({ row, closeDialog }) => {
+export const ShortListedCandidateUpdate = ({
+  row,
+  closeDialog,
+  fetchCandidates,
+}) => {
   const [interviewDate, setInterviewDate] = useState(row.interview_date || "");
   const [interviewTime, setInterviewTime] = useState(row.interview_time || "");
   const [rejectedReason, setRejectedReason] = useState(
@@ -22,6 +27,7 @@ export const ShortListedCandidateUpdate = ({ row, closeDialog }) => {
     setStage(row.stage || "");
   }, [row]);
   console.log("row", row);
+
   const handleUpdate = async () => {
     const updatedInterviewDetails = {
       date: interviewDate,
@@ -33,14 +39,23 @@ export const ShortListedCandidateUpdate = ({ row, closeDialog }) => {
 
     try {
       await Hr.updateInterviewDate(row.id, updatedInterviewDetails);
+
       closeDialog();
+      fetchCandidates();
     } catch (error) {
       console.error("Error updating interview details:", error);
     }
   };
 
+  const handleTimeChange = (event, newValue) => {
+    setInterviewTime(newValue);
+  };
+
   const disableFields =
-    stage === "Rejected" || stage === "On Hold" || stage === "Not Interested";
+    stage === "Rejected" ||
+    stage === "On Hold" ||
+    stage === "Not Interested" ||
+    stage === "Selected";
 
   const stageOptions = [
     "Selected",
@@ -51,6 +66,7 @@ export const ShortListedCandidateUpdate = ({ row, closeDialog }) => {
     "Postponed",
   ];
 
+  const timeOptions = ["11 AM to 1 PM", "1 PM to 3 PM", "3 PM TO 5 PM"];
   return (
     <>
       <Autocomplete
@@ -89,14 +105,16 @@ export const ShortListedCandidateUpdate = ({ row, closeDialog }) => {
         onChange={(e) => setInterviewDate(e.target.value)}
         disabled={disableFields}
       />
-      <TextField
-        margin="dense"
-        label="Interview Time"
-        type="time"
-        fullWidth
+      <Autocomplete
+        style={{ minWidth: 220 }}
+        size="small"
         value={interviewTime}
-        onChange={(e) => setInterviewTime(e.target.value)}
+        onChange={handleTimeChange}
+        options={timeOptions}
         disabled={disableFields}
+        renderInput={(params) => (
+          <CustomTextField {...params} label="Interview Time" />
+        )}
       />
       <TextField
         margin="dense"
