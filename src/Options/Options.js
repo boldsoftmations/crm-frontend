@@ -20,20 +20,20 @@ const LeadBusinessTypeData = [
 
 const CustomerBusinessTypeData = [
   {
-    value: "Proprietor",
+    value: "proprietor",
     label: "Proprietor",
   },
 
   {
-    value: "Private Limited",
+    value: "pvt_ltd",
     label: "Private Limited",
   },
   {
-    value: "Partnership",
+    value: "partnership",
     label: "Partnership",
   },
   {
-    value: "Limited",
+    value: "limited",
     label: "Limited",
   },
 ];

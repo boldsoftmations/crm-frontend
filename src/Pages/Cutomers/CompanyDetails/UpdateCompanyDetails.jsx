@@ -272,7 +272,7 @@ export const UpdateCompanyDetails = (props) => {
                 }
               >
                 {Option.CustomerBusinessTypeData.map((option, i) => (
-                  <MenuItem key={i} value={option.label}>
+                  <MenuItem key={i} value={option.value}>
                     {option.label}
                   </MenuItem>
                 ))}
