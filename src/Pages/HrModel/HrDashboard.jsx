@@ -92,7 +92,7 @@ export const HrDashboard = () => {
           <Grid item xs={12} sm={6} md={3}>
             <SummaryPanel
               title="Average Days to Hire"
-              value={averageDaysToHire}
+              value={averageDaysToHire.toFixed(2)}
             />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
