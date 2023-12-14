@@ -73,8 +73,10 @@ export const ApplicantListCreate = ({ jobOpeningId, onSuccess }) => {
       const response = await Hr.addApplicant(formData);
       console.log("Applicant created:", response.data);
       onSuccess();
+      alert("Successfully added an applicant");
     } catch (error) {
       console.error("Error creating applicant:", error);
+      alert("Error adding applicant");
     }
   };
   const spokenEnglishOptions = ["Bad", "Average", "Good"];

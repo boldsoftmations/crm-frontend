@@ -52,6 +52,7 @@ export const OfferStatusUpdate = ({ row, closeDialog, onUpdateComplete }) => {
       await Hr.updateOfferStatus(row.id, updatedOfferStatus);
       onUpdateComplete();
       closeDialog();
+      alert("Offer status updated successfully!");
     } catch (error) {
       console.error("Error updating offer status:", error);
     }
