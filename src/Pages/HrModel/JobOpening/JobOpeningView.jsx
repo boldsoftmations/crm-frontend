@@ -82,7 +82,7 @@ export const JobOpeningView = () => {
     "Salary Range",
     "Date of Closing",
     "Open Duration",
-    "No Of Opening",
+    "No Of Vacancies",
     // "Position",
     "Action",
   ];
