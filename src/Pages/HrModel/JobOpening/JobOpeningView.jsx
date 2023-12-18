@@ -7,6 +7,7 @@ import { CustomTable } from "../../../Components/CustomTable";
 import Hr from "./../../../services/Hr";
 import { ApplicantListCreate } from "../ApplicantList/ApplicantListCreate";
 import { useSelector } from "react-redux";
+import { CustomPagination } from "../../../Components/CustomPagination";
 
 export const JobOpeningView = () => {
   const [jobOpenings, setJobOpenings] = useState([]);
@@ -20,6 +21,12 @@ export const JobOpeningView = () => {
   const users = data.profile;
   const isSalesManager = users.groups.includes("Sales Manager");
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [pageCount, setPageCount] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
+
+  const handlePageClick = (event, value) => {
+    setCurrentPage(value);
+  };
 
   const openInPopup = (item) => {
     setRecordForEdit(item);
@@ -29,18 +36,21 @@ export const JobOpeningView = () => {
     handleAddApplicantClick(item);
   };
 
-  const fetchJobOpenings = async () => {
+  const fetchJobOpenings = async (page = 0) => {
     try {
-      const response = await Hr.getJobOpening();
-      setJobOpenings(response.data);
+      const response = await Hr.getJobOpening(page);
+      console.log(response.data);
+      setJobOpenings(response.data.results);
+      const total = response.data.count;
+      setPageCount(Math.ceil(total / 25));
     } catch (error) {
       console.error("Error fetching job openings:", error);
     }
   };
 
   useEffect(() => {
-    fetchJobOpenings();
-  }, []);
+    fetchJobOpenings(currentPage);
+  }, [currentPage]);
 
   const addNewJobOpening = async (newJob) => {
     try {
@@ -91,19 +101,20 @@ export const JobOpeningView = () => {
     setOpenApplicantListPopup(false);
     fetchJobOpenings();
   };
-  const TableData = jobOpenings.map((job) => ({
-    id: job.id,
-    job: job.job_id,
-    opening_date: job.opening_date,
-    designation: job.designation,
-    location: job.location,
-    salary_ranges: job.salary_ranges,
-    closing_date: job.closing_date,
-    days_open: job.days_open,
-    no_of_openings: job.no_of_openings,
-    // position: job.position,
-  }));
-
+  const TableData = Array.isArray(jobOpenings)
+    ? jobOpenings.map((job) => ({
+        id: job.id,
+        job: job.job_id,
+        opening_date: job.opening_date,
+        designation: job.designation,
+        location: job.location,
+        salary_ranges: job.salary_ranges,
+        closing_date: job.closing_date,
+        days_open: job.days_open,
+        no_of_openings: job.no_of_openings,
+        // position: job.position,
+      }))
+    : [];
   return (
     <Grid item xs={12}>
       <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
@@ -152,6 +163,10 @@ export const JobOpeningView = () => {
             openInPopup={openInPopup}
             openInPopup7={!isSalesManager ? openInPopup7 : null}
             onEdit={handleEditJobOpeningClick}
+          />
+          <CustomPagination
+            pageCount={pageCount}
+            handlePageClick={handlePageClick}
           />
         </Paper>
         {!isSalesManager && (

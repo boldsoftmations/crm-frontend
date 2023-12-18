@@ -10,24 +10,33 @@ import {
 import { CustomTable } from "../../../Components/CustomTable";
 import { InterviewStatusCreate } from "./InterviewStatusUpdate";
 import Hr from "../../../services/Hr";
+import { CustomPagination } from "../../../Components/CustomPagination";
 
 export const InterviewStatusView = () => {
   const [open, setOpen] = useState(false);
   const [interviews, setInterviews] = useState([]);
   const [selectedRow, setSelectedRow] = useState(null);
+  const [pageCount, setPageCount] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
 
-  const getInterviewData = async () => {
+  const handlePageClick = (event, value) => {
+    setCurrentPage(value);
+  };
+
+  const getInterviewData = async (page = 0) => {
     try {
-      const response = await Hr.getInterviewStatus();
-      setInterviews(response.data);
+      const response = await Hr.getInterviewStatus({ page });
+      setInterviews(response.data.results);
+      const total = response.data.count;
+      setPageCount(Math.ceil(total / 25));
     } catch (error) {
       console.error("Error fetching interviews:", error);
     }
   };
 
   useEffect(() => {
-    getInterviewData();
-  }, []);
+    getInterviewData(currentPage);
+  }, [currentPage]);
 
   const handleClickOpen = (row) => {
     setSelectedRow(row);
@@ -48,14 +57,16 @@ export const InterviewStatusView = () => {
     // "Interview Schedule",
     "Interview Schedule",
   ];
-  const TableData = interviews.map((interview) => ({
-    id: interview.id,
-    name: interview.name,
-    email: interview.email,
-    designation: interview.designation,
-    contact: interview.contact,
-    location: interview.location,
-  }));
+  const TableData = Array.isArray(interviews)
+    ? interviews.map((interview) => ({
+        id: interview.id,
+        name: interview.name,
+        email: interview.email,
+        designation: interview.designation,
+        contact: interview.contact,
+        location: interview.location,
+      }))
+    : [];
 
   return (
     <Grid item xs={12}>
@@ -77,6 +88,10 @@ export const InterviewStatusView = () => {
             headers={TableHeader}
             data={TableData}
             openInPopup={handleClickOpen}
+          />
+          <CustomPagination
+            pageCount={pageCount}
+            handlePageClick={handlePageClick}
           />
         </Paper>
         <Dialog

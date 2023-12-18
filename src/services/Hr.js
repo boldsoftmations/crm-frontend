@@ -59,8 +59,12 @@ const updateSource = (id, data) => {
 }
 
 //Job-Opening API
-const getJobOpening = () => {
-  return CustomAxios.get(`/api/hr/job-opening/`);
+const getJobOpening = (page) => {
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+  return CustomAxios.get(`/api/hr/job-opening/?${params.toString()}`);
 };
 
 const getJobOpeningById = (id) => {
@@ -76,9 +80,20 @@ const updateJobOpening = (id, updatedJobData) => {
 };
 
 // Applicant API
-const getApplicants = () => {
-  return CustomAxios.get(`/api/hr/applicant/`);
+const getApplicants = (page, searchValue) => {
+  const params = new URLSearchParams();
+
+  if (page) {
+    params.append("page", page);
+  }
+
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+
+  return CustomAxios.get(`api/hr/applicant/?${params.toString()}`);
 };
+
 
 const addApplicant = (newApplicantData) => {
   return CustomAxios.post(`/api/hr/applicant/`, newApplicantData);
@@ -112,7 +127,7 @@ const getOfferStatus = () => {
 }
 
 const updateOfferStatus = (id, updatedOfferStatus) => {
-  return CustomAxios.patch(`/api/hr/interview-details/${id}/`, updatedOfferStatus);
+  return CustomAxios.patch(`/api/hr/interview-details/${id}/?stage=Selected`, updatedOfferStatus);
 }
 
 //Mis Report API
@@ -125,6 +140,10 @@ const getMisReport = () => {
 
 const getRejectedCandidates = () => {  
   return CustomAxios.get(`/api/hr/interview-details/?stage=Rejected`);
+}
+
+const updateRejectedCandidates = (id, updatedRejectedCandidates) => {
+  return CustomAxios.patch(`/api/hr/interview-details/${id}/?stage=Rejected`, updatedRejectedCandidates);
 }
 
 const Hr = {
@@ -151,7 +170,8 @@ const Hr = {
   getOfferStatus,
   updateOfferStatus,
   getMisReport,
-  getRejectedCandidates
+  getRejectedCandidates,
+  updateRejectedCandidates
 };
 
 export default Hr;
