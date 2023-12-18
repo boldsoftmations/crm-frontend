@@ -1,10 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { Box, Paper, Grid } from "@mui/material";
+import {
+  Box,
+  Paper,
+  Grid,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+} from "@mui/material";
 import { CustomTable } from "../../../Components/CustomTable";
 import Hr from "./../../../services/Hr";
+import { RejectedCandidateUpdate } from "./RejectedCandidateUpdate";
 
 export const RejectedCandidate = () => {
   const [rejectedCandidates, setRejectedCandidates] = useState([]);
+  const [selectedRow, setSelectedRow] = useState(null);
+  const [open, setOpen] = useState(false);
 
   const fetchRejectedCandidates = async () => {
     try {
@@ -19,15 +29,26 @@ export const RejectedCandidate = () => {
     fetchRejectedCandidates();
   }, []);
 
+  const handleClickOpen = (row) => {
+    setSelectedRow(row);
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
   const TableHeader = [
+    "Id",
     "Candidate Name",
     "Contact",
     "Email",
     "Designation",
     "Rejection Reason",
+    "Action",
   ];
 
   const TableData = rejectedCandidates.map((candidate) => ({
+    id: candidate.id,
     name: candidate.name,
     contact: candidate.contact,
     email: candidate.applicant,
@@ -52,8 +73,28 @@ export const RejectedCandidate = () => {
           </h3>
 
           <Paper sx={{ p: 2, m: 3 }}>
-            <CustomTable headers={TableHeader} data={TableData} />
+            <CustomTable
+              headers={TableHeader}
+              data={TableData}
+              openInPopup={handleClickOpen}
+            />
           </Paper>
+          <Dialog
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="form-dialog-title"
+          >
+            <DialogTitle id="form-dialog-title">
+              Reschedule Interview
+            </DialogTitle>
+            <DialogContent>
+              <RejectedCandidateUpdate
+                row={selectedRow}
+                closeDialog={handleClose}
+                fetchRejectedCandidates={fetchRejectedCandidates}
+              />
+            </DialogContent>
+          </Dialog>
         </Box>
       </Paper>
     </Grid>
