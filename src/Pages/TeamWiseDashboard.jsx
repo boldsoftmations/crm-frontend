@@ -727,15 +727,12 @@ export const TeamWiseDashboard = () => {
       setOpen(true);
       const newcustomerResponse =
         await DashboardService.getConsNewCustomerDataByFilter(FilterData);
-      const Data = Object.keys(newcustomerResponse.data).flatMap((key) => {
-        return newcustomerResponse.data[key].map((item) => {
-          return {
-            combination: `${shortMonths[item.month - 1]}-${item.year}`,
-            count: item.count,
-          };
-        });
+      const Data = newcustomerResponse.data.map((item) => {
+        return {
+          combination: `${shortMonths[item.month - 1]}-${item.year}`,
+          count: item.count,
+        };
       });
-
       setNewCustomerData(Data);
       setOpen(false);
     } catch (error) {
