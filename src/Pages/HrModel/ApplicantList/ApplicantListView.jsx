@@ -50,17 +50,17 @@ export const ApplicantListView = () => {
     fetchApplicants(0, searchQuery);
   };
 
-  const handleResetClick = () => {
-    setSearchQuery("");
-    fetchApplicants(0, "");
-  };
-
   const filteredApplicants = applicants.filter((applicant) => {
+    const name = applicant.name ? applicant.name.toLowerCase() : "";
     const job = applicant.job ? applicant.job.toLowerCase() : "";
     const email = applicant.email ? applicant.email.toLowerCase() : "";
     const searchLower = searchQuery.toLowerCase();
 
-    return job.includes(searchLower) || email.includes(searchLower);
+    return (
+      job.includes(searchLower) ||
+      email.includes(searchLower) ||
+      name.includes(searchLower)
+    );
   });
 
   const addNewApplicant = async (newApplicant) => {

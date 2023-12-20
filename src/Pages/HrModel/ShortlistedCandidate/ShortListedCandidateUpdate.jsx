@@ -62,7 +62,7 @@ export const ShortListedCandidateUpdate = ({
     "Scheduled",
     "On Hold",
     "Rejected",
-    "Not Interested",
+    // "Not Interested",
     "Postponed",
   ];
 
@@ -85,7 +85,14 @@ export const ShortListedCandidateUpdate = ({
           onChange={(event, newValue) => {
             setRejectedReason(newValue);
           }}
-          options={["Salary", "Technical", "Experience", "Language", "Others"]}
+          options={[
+            "Salary",
+            "Technical",
+            "Experience",
+            "Language",
+            "Not Interested",
+            "Others",
+          ]}
           renderInput={(params) => (
             <TextField
               {...params}
