@@ -95,7 +95,7 @@ export const DailySaleReviewView = () => {
       const response = await UserProfileService.getDailySaleReviewById(item.id);
       console.log("response", response);
       if (response && response.data) {
-        setRecordForEdit(response.data.daily_sales_review);
+        setRecordForEdit(response.data);
       }
       setOpenPopup(true);
     } catch (error) {
