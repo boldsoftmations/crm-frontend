@@ -112,16 +112,16 @@ const DataEntry = ({ entries }) => (
 
 export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
   const {
-    pi_summary,
-    top_customer,
-    sales_summary,
     call_performance,
-    conversion_ratio,
-    followup_summary,
-    pending_payments,
     existing_customer,
-    no_order_customer,
+    followup_summary,
+    pi_summary,
+    sales_summary,
     new_customer_summary,
+    no_order_customer,
+    conversion_ratio,
+    pending_payments,
+    top_customer,
     top_forecast_customer,
     today_missed_lead_order,
     customer_estimated_order,
@@ -132,78 +132,12 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
   return (
     <Document>
       <Page style={styles.page}>
+        {/* Header Section */}
         <View style={styles.section}>
           <Text style={styles.heading}>Sales Review</Text>
         </View>
-        {/* Top Customer Section */}
-        <View style={styles.section}>
-          <Text style={styles.subheading}>Top Customer</Text>
-          {top_customer.map((customer, index) => (
-            <DataEntry
-              key={index}
-              entries={[
-                { key: `Customer ${index + 1}`, value: customer.customer },
-                { key: "Amount", value: customer.amount.toString() },
-                {
-                  key: "Billed this Month",
-                  value: customer.billedThisMonth ? "Yes" : "No",
-                },
-              ]}
-            />
-          ))}
-        </View>
-        <View style={styles.section}>
-          <Text style={styles.subheading}>Sales Summary</Text>
-          {sales_summary.map((summary, index) => (
-            <DataEntry
-              key={index}
-              entries={[
-                { key: "Description", value: summary.description },
-                {
-                  key: "Forecast Quantity",
-                  value: summary.forecast_quantity.toString(),
-                },
-                { key: "Unit", value: summary.unit },
-                {
-                  key: "Sales Quantity",
-                  value: summary.sales_quantity.toString(),
-                },
-                { key: "Daily Target", value: summary.daily_target.toString() },
-                {
-                  key: "Month Sales Invoice",
-                  value: summary.monthly_sales_invoice.toString(),
-                },
-                {
-                  key: "Today Sales Invoice",
-                  value: summary.today_sales_invoice.toString(),
-                },
-              ]}
-            />
-          ))}
-        </View>
-        {/* Pending Payment Section */}
-        <View style={styles.section}>
-          <Text style={styles.subheading}>Pending Payment</Text>
-          {pending_payments.map((summary, index) => (
-            <DataEntry
-              key={index}
-              entries={[
-                { key: "PI Number", value: summary.pi_number },
-                {
-                  key: "Customer",
-                  value: summary.customer ? summary.customer : "NA",
-                },
-                { key: "Date", value: summary.date },
-                {
-                  key: "Amount",
-                  value: summary.amount.toString(),
-                },
-                { key: "Status", value: summary.status },
-              ]}
-            />
-          ))}
-        </View>
-        {/* Call Performance  */}
+
+        {/* Call Performance Section  */}
         <View style={styles.section}>
           <Text style={styles.subheading}>Call Performance</Text>
           <View style={styles.keyValueContainer}>
@@ -270,7 +204,8 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
             />
           </View>
         </View>
-        {/* Existing Customer */}
+
+        {/* Existing Customer Section */}
         <View style={styles.section}>
           <Text style={styles.subheading}>Existing Customer</Text>
           <View style={styles.keyValueContainer}>
@@ -314,34 +249,8 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
             />
           </View>
         </View>
-        {/* PI Summary */}
-        <View style={styles.section}>
-          <Text style={styles.subheading}>Pi Summary</Text>
-          <View style={styles.keyValueContainer}>
-            <KeyValueText label="1) drop" value={pi_summary.drop} />
-            <KeyValueText label="2) raised" value={pi_summary.raised} />
-            <KeyValueText label="3) month_drop" value={pi_summary.month_drop} />
-          </View>
-        </View>
-        {/* Conversion Ratio */}
-        <View style={styles.section}>
-          <Text style={styles.subheading}>Conversion Ratio</Text>
-          <View style={styles.keyValueContainer}>
-            <KeyValueText
-              label="Lead Count"
-              value={conversion_ratio ? conversion_ratio.lead_count : 0}
-            />
-            <KeyValueText
-              label="New Customer"
-              value={conversion_ratio ? conversion_ratio.new_customer : 0}
-            />
-            <KeyValueText
-              label="Conversion Ratio"
-              value={conversion_ratio ? conversion_ratio.conversion_ratio : 0}
-            />
-          </View>
-        </View>
-        {/* followup summary */}
+
+        {/* followup summary Section */}
         <View style={styles.section}>
           <Text style={styles.subheading}>Follow-up Summary</Text>
           <View style={styles.keyValueContainer}>
@@ -366,7 +275,70 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
             />
           </View>
         </View>
-        {/* No Order Customer */}
+
+        {/* PI Summary Section */}
+        <View style={styles.section}>
+          <Text style={styles.subheading}>Pi Summary</Text>
+          <View style={styles.keyValueContainer}>
+            <KeyValueText label="1) drop" value={pi_summary.drop} />
+            <KeyValueText label="2) raised" value={pi_summary.raised} />
+            <KeyValueText label="3) month_drop" value={pi_summary.month_drop} />
+          </View>
+        </View>
+
+        {/* Sales Summary Section */}
+        <View style={styles.section}>
+          <Text style={styles.subheading}>Sales Summary</Text>
+          {sales_summary.map((summary, index) => (
+            <DataEntry
+              key={index}
+              entries={[
+                { key: "Description", value: summary.description },
+                {
+                  key: "Forecast Quantity",
+                  value: summary.forecast_quantity.toString(),
+                },
+                { key: "Unit", value: summary.unit },
+                {
+                  key: "Sales Quantity",
+                  value: summary.sales_quantity.toString(),
+                },
+                { key: "Daily Target", value: summary.daily_target.toString() },
+                {
+                  key: "Month Sales Invoice",
+                  value: summary.monthly_sales_invoice.toString(),
+                },
+                {
+                  key: "Today Sales Invoice",
+                  value: summary.today_sales_invoice.toString(),
+                },
+              ]}
+            />
+          ))}
+        </View>
+
+        {/* New Customer Summary Section */}
+        <View style={styles.section}>
+          <Text style={styles.subheading}>New Customer Summary</Text>
+          <View style={styles.keyValueContainer}>
+            <KeyValueText
+              label="1) Month"
+              value={new_customer_summary ? new_customer_summary.month : 0}
+            />
+            <KeyValueText
+              label="2) Last Month"
+              value={new_customer_summary ? new_customer_summary.last_month : 0}
+            />
+            <KeyValueText
+              label="3) Sales Invoice"
+              value={
+                new_customer_summary ? new_customer_summary.sales_invoice : 0
+              }
+            />
+          </View>
+        </View>
+
+        {/* No Order Customer Section */}
         <View style={styles.section}>
           <Text style={styles.subheading}>No Order Customer</Text>
           <View style={styles.keyValueContainer}>
@@ -395,26 +367,67 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
             />
           </View>
         </View>
-        {/* New Customer Summary */}
+
+        {/* Conversion Ratio Section */}
         <View style={styles.section}>
-          <Text style={styles.subheading}>New Customer Summary</Text>
+          <Text style={styles.subheading}>Conversion Ratio</Text>
           <View style={styles.keyValueContainer}>
             <KeyValueText
-              label="1) Month"
-              value={new_customer_summary ? new_customer_summary.month : 0}
+              label="Lead Count"
+              value={conversion_ratio ? conversion_ratio.lead_count : 0}
             />
             <KeyValueText
-              label="2) Last Month"
-              value={new_customer_summary ? new_customer_summary.last_month : 0}
+              label="New Customer"
+              value={conversion_ratio ? conversion_ratio.new_customer : 0}
             />
             <KeyValueText
-              label="3) Sales Invoice"
-              value={
-                new_customer_summary ? new_customer_summary.sales_invoice : 0
-              }
+              label="Conversion Ratio"
+              value={conversion_ratio ? conversion_ratio.conversion_ratio : 0}
             />
           </View>
         </View>
+
+        {/* Pending Payment Section */}
+        <View style={styles.section}>
+          <Text style={styles.subheading}>Pending Payment</Text>
+          {pending_payments.map((summary, index) => (
+            <DataEntry
+              key={index}
+              entries={[
+                { key: "PI Number", value: summary.pi_number },
+                {
+                  key: "Customer",
+                  value: summary.customer ? summary.customer : "NA",
+                },
+                { key: "Date", value: summary.date },
+                {
+                  key: "Amount",
+                  value: summary.amount.toString(),
+                },
+                { key: "Status", value: summary.status },
+              ]}
+            />
+          ))}
+        </View>
+
+        {/* Top Customer Section */}
+        <View style={styles.section}>
+          <Text style={styles.subheading}>Top Customer</Text>
+          {top_customer.map((customer, index) => (
+            <DataEntry
+              key={index}
+              entries={[
+                { key: `Customer ${index + 1}`, value: customer.customer },
+                { key: "Amount", value: customer.amount.toString() },
+                {
+                  key: "Billed this Month",
+                  value: customer.billedThisMonth ? "Yes" : "No",
+                },
+              ]}
+            />
+          ))}
+        </View>
+
         {/* Top Forecast Customer */}
         <View style={styles.section}>
           <Text style={styles.subheading}>Top Forecast Customer</Text>
@@ -432,6 +445,7 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
             />
           ))}
         </View>
+
         {/* Today Missed Lead Order */}
         <View style={styles.section}>
           <Text style={styles.subheading}>Today Missed Lead Order</Text>
@@ -454,6 +468,7 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
             />
           ))}
         </View>
+
         {/* Customer Estimated Order */}
         <View style={styles.section}>
           <Text style={styles.subheading}>Customer Estimated Order</Text>
@@ -475,6 +490,7 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
             />
           ))}
         </View>
+
         {/* Today Lead Estimate Order */}
         <View style={styles.section}>
           <Text style={styles.subheading}>Today Lead Estimate Order</Text>
@@ -497,6 +513,7 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
             />
           ))}
         </View>
+
         {/* Today Missed Customer Order */}
         <View style={styles.section}>
           <Text style={styles.subheading}>Today Missed Customer Order</Text>
@@ -519,6 +536,7 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
             />
           ))}
         </View>
+
         {/* Signature section */}
         <View style={styles.signatureSection}>
           <View style={styles.signatureBlock}>
