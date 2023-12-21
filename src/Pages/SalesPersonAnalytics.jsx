@@ -705,6 +705,100 @@ export const SalesPersonAnalytics = (props) => {
               </Card>
             </Grid>
           </Grid>
+          <Grid item xs={12} sm={12} sx={{ marginTop: "20px" }}>
+            <Button
+              variant={activeButton === "monthly" ? "contained" : "outlined"} // Set variant to 'contained' for the active button
+              sx={{ margin: "0 10px 10px 0" }}
+              color="primary"
+              onClick={() => handleButtonClick("monthly")}
+            >
+              Monthly Call Status
+            </Button>
+            <Button
+              variant={activeButton === "weekly" ? "contained" : "outlined"} // Set variant to 'contained' for the active button
+              sx={{ margin: "0 10px 10px 0" }}
+              color="primary"
+              onClick={() => handleButtonClick("weekly")}
+            >
+              Weekly Call Status
+            </Button>
+            <Button
+              variant={activeButton === "daily" ? "contained" : "outlined"} // Set variant to 'contained' for the active button
+              sx={{ margin: "0 10px 10px 0" }}
+              color="primary"
+              onClick={() => handleButtonClick("daily")}
+            >
+              Daily Call Status
+            </Button>
+            {activeButton === "monthly" && (
+              <CustomChart
+                chartType="ColumnChart"
+                data={[
+                  ["Month", "Existing Lead", "New Lead", "Customer"],
+                  ...monthlyStatus.map((item) => [
+                    item.combination,
+                    item.existing_lead,
+                    item.new_lead,
+                    item.customer,
+                  ]),
+                ]}
+                options={{
+                  title: "Monthly Call Status",
+                  width: "100%",
+                  height: "400px",
+                  isStacked: true,
+                  legend: { position: "top" },
+                }}
+                widthStyle={"100%"}
+                heightStyle={"300px"}
+              />
+            )}
+            {activeButton === "weekly" && (
+              <CustomChart
+                chartType="ColumnChart"
+                data={[
+                  ["Week", "Existing Lead", "New Lead", "Customer"],
+                  ...weeklyStatus.map((item) => [
+                    item.combination,
+                    item.existing_lead,
+                    item.new_lead,
+                    item.customer,
+                  ]),
+                ]}
+                options={{
+                  title: "Weekly Call Status",
+                  width: "100%",
+                  height: "400px",
+                  curveType: "function",
+                  legend: { position: "top" },
+                }}
+                widthStyle={"100%"}
+                heightStyle={"300px"}
+              />
+            )}
+            {activeButton === "daily" && (
+              <CustomChart
+                chartType="ColumnChart"
+                data={[
+                  ["Day", "Existing Lead", "New Lead", "Customer"],
+                  ...dailyStatus.map((item) => [
+                    item.combination,
+                    item.existing_lead,
+                    item.new_lead,
+                    item.customer,
+                  ]),
+                ]}
+                options={{
+                  title: "Daily Call Status",
+                  width: "100%",
+                  height: "400px",
+                  legend: { position: "top" },
+                }}
+                widthStyle={"100%"}
+                heightStyle={"300px"}
+              />
+            )}
+          </Grid>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6} sx={{ marginTop: "20px" }}>
               <Card>

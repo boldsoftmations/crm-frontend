@@ -42,14 +42,19 @@ const styles = StyleSheet.create({
   // Style for the container of the data entry
   dataEntryContainer: {
     flexDirection: "row",
-    flexWrap: "wrap", // ensures the content wraps if it's too long
+    flexWrap: "wrap", // Keep this if you still want wrapping for very long content
+    alignItems: "flex-start", // Align items to the start of the container
     marginBottom: 5,
   },
-  // Style for the text of each entry
+
+  // Use a monospace font for the invoice numbers
   dataEntryText: {
+    fontFamily: "Courier", // This is an example, use a monospace font available in your app
     fontSize: 12,
     marginBottom: 3,
+    marginRight: 5, // Add some right margin to each invoice number
   },
+
   entryContainer: {
     flexDirection: "row",
     marginBottom: 3,
@@ -79,13 +84,35 @@ const styles = StyleSheet.create({
   signatureBlock: {
     borderBottomWidth: 1,
     borderBottomColor: "#000",
-    flexGrow: 1,
-    marginRight: 10, // Add space between the signature blocks
+    marginRight: 10, // Space between the signature blocks
+    alignItems: "center", // Align items in the center horizontally
+    justifyContent: "center", // Align items in the center vertically
   },
   signatureText: {
     fontSize: 12,
-    padding: 5,
-    textAlign: "center",
+    marginTop: 5, // Space above the email text
+    marginBottom: 5, // Space below the email text
+    alignSelf: "center", // Center the text element within the block
+  },
+  emailText: {
+    alignSelf: "center", // This ensures the email is centered within the block
+  },
+  tableRow: {
+    flexDirection: "row",
+    marginBottom: 3,
+  },
+  tableCell: {
+    minWidth: 100, // adjust the width as necessary
+    maxWidth: 100, // adjust the width as necessary
+  },
+  tableCellKey: {
+    fontSize: 12,
+    fontWeight: "bold",
+  },
+  tableCellValue: {
+    fontSize: 12,
+    flexWrap: "wrap", // or change to 'nowrap' to prevent wrapping
+    marginRight: 2, // spacing between cells
   },
 });
 
@@ -103,7 +130,10 @@ const DataEntry = ({ entries }) => (
       <View key={index} style={styles.entryContainer}>
         <Text style={styles.textKey}>{entry.key}</Text>
         <Text style={styles.colonStyle}>:</Text>
-        <Text style={styles.textValue}>{` ${entry.value}`}</Text>
+        {/* Check if entry.value is an array before joining, if not render as is */}
+        <Text style={styles.textValue}>
+          {Array.isArray(entry.value) ? entry.value.join(", ") : entry.value}
+        </Text>
         {index < entries.length - 1 && <Text> </Text>}
       </View>
     ))}
@@ -306,11 +336,11 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
                 { key: "Daily Target", value: summary.daily_target.toString() },
                 {
                   key: "Month Sales Invoice",
-                  value: summary.monthly_sales_invoice.toString(),
+                  value: summary.monthly_sales_invoice.join(", "),
                 },
                 {
                   key: "Today Sales Invoice",
-                  value: summary.today_sales_invoice.toString(),
+                  value: summary.today_sales_invoice.join(", "),
                 },
               ]}
             />
@@ -540,14 +570,16 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
         {/* Signature section */}
         <View style={styles.signatureSection}>
           <View style={styles.signatureBlock}>
-            <Text style={styles.signatureText}>Sales Person:</Text>
-            <Text style={styles.signatureText}>
+            <Text style={styles.signatureText}>Sales Person</Text>
+            <Text style={[styles.signatureText, styles.emailText]}>
               {recordForEdit.sales_person}
             </Text>
           </View>
           <View style={styles.signatureBlock}>
-            <Text style={styles.signatureText}>Reviewer:</Text>
-            <Text style={styles.signatureText}>{recordForEdit.reviewer}</Text>
+            <Text style={styles.signatureText}>Reviewer</Text>
+            <Text style={[styles.signatureText, styles.emailText]}>
+              {recordForEdit.reviewer}
+            </Text>
           </View>
         </View>
       </Page>
