@@ -40,6 +40,7 @@ import { CreateLeadsProformaInvoice } from "../Invoice/ProformaInvoice/CreateLea
 import { Helmet } from "react-helmet";
 import CustomTextField from "../../Components/CustomTextField";
 import { LeadPotentialCreate } from "./LeadPotential/LeadPotentialCreate";
+import { LeadForecastCreate } from "./LeadForecast/LeadForecastCreate";
 
 export const NewLeads = () => {
   const [leads, setLeads] = useState([]);
@@ -57,6 +58,7 @@ export const NewLeads = () => {
   const [openModalPotential, setOpenModalPotential] = useState(false);
   const [pinnedRows, setPinnedRows] = useState([]);
   const [openModalPI, setOpenModalPI] = useState(false);
+  const [openModalForecast, setOpenModalForecast] = useState(false);
   const [leadsByID, setLeadsByID] = useState(null);
   const [referenceData, setReferenceData] = useState([]);
   const [descriptionMenuData, setDescriptionMenuData] = useState([]);
@@ -118,6 +120,10 @@ export const NewLeads = () => {
   const openInPopup4 = (item) => {
     setLeadsByID(item.lead_id);
     setOpenModalPI(true);
+  };
+  const openInPopup5 = (item) => {
+    setLeadsByID(item.lead_id);
+    setOpenModalForecast(true);
   };
 
   const getResetSearchData = () => {
@@ -602,7 +608,10 @@ export const NewLeads = () => {
                       <Button onClick={() => openInPopup3(row)}>
                         Potential
                       </Button>
-                      ,<Button onClick={() => openInPopup4(row)}>PI</Button>
+                      ,<Button onClick={() => openInPopup4(row)}>PI</Button>,
+                      <Button onClick={() => openInPopup5(row)}>
+                        Forecast
+                      </Button>
                     </StyledTableCell>
                   </StyledTableRow>
                 ))}
@@ -669,6 +678,17 @@ export const NewLeads = () => {
         <CreateLeadsProformaInvoice
           leadsByID={leadsByID}
           setOpenPopup={setOpenModalPI}
+        />
+      </Popup>
+      <Popup
+        // fullScreen={true}
+        title={"Create Lead Forecast"}
+        openPopup={openModalForecast}
+        setOpenPopup={setOpenModalForecast}
+      >
+        <LeadForecastCreate
+          leadsByID={leadsByID}
+          setOpenPopup={setOpenModalForecast}
         />
       </Popup>
     </>

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
   Box,
-  Typography,
   Grid,
   Button,
   TextField,
@@ -58,14 +57,15 @@ export const ApplicantListUpdate = ({ recordForEdit, onApplicantUpdated }) => {
       noValidate
       sx={{
         mt: 1,
+        padding: "20px",
+        backgroundColor: "#f5f5f5",
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+        borderRadius: "8px",
         height: "70vh",
         overflowY: "auto",
       }}
     >
       <Box>
-        <Typography variant="h6" gutterBottom>
-          Update Applicant
-        </Typography>
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <TextField
@@ -112,12 +112,18 @@ export const ApplicantListUpdate = ({ recordForEdit, onApplicantUpdated }) => {
               label="Shortlisted"
             />
           </Grid>
-          <Grid item xs={12}>
-            <Button variant="contained" color="primary" onClick={handleSubmit}>
-              Update Applicant
-            </Button>
-          </Grid>
         </Grid>
+
+        <Box display="flex" justifyContent="flex-end" mt={2}>
+          <Button
+            fullwidth
+            variant="contained"
+            color="primary"
+            onClick={handleSubmit}
+          >
+            Update Applicant
+          </Button>
+        </Box>
       </Box>
     </Container>
   );

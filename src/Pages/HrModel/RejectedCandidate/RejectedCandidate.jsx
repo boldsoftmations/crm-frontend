@@ -72,13 +72,12 @@ export const RejectedCandidate = () => {
             Rejected Candidate List
           </h3>
 
-          <Paper sx={{ p: 2, m: 3 }}>
-            <CustomTable
-              headers={TableHeader}
-              data={TableData}
-              openInPopup={handleClickOpen}
-            />
-          </Paper>
+          <CustomTable
+            headers={TableHeader}
+            data={TableData}
+            openInPopup={handleClickOpen}
+          />
+
           <Dialog
             open={open}
             onClose={handleClose}

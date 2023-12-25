@@ -7,15 +7,17 @@ import { CustomTable } from "../../../Components/CustomTable";
 import { CustomPagination } from "../../../Components/CustomPagination";
 import Hr from "./../../../services/Hr";
 import CustomTextField from "../../../Components/CustomTextField";
+import { CustomLoader } from "../../../Components/CustomLoader";
 
 export const ApplicantListView = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const [applicants, setApplicants] = useState([]);
   const [openCreatePopup, setOpenCreatePopup] = useState(false);
   const [openUpdatePopup, setOpenUpdatePopup] = useState(false);
   const [recordForEdit, setRecordForEdit] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [pageCount, setPageCount] = useState(1);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [pageCount, setPageCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const handlePageClick = (event, value) => {
     setCurrentPage(value);
@@ -65,21 +67,29 @@ export const ApplicantListView = () => {
 
   const addNewApplicant = async (newApplicant) => {
     try {
+      setIsLoading(true);
       await Hr.addApplicant(newApplicant);
       fetchApplicants();
       setOpenCreatePopup(false);
+      setIsLoading(false);
     } catch (error) {
       console.error("Error adding applicant:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const updateApplicant = async (id, updates) => {
     try {
+      setIsLoading(true);
       await Hr.updateApplicant(id, updates);
       fetchApplicants();
       setOpenUpdatePopup(false);
+      setIsLoading(false);
     } catch (error) {
       console.error("Error updating applicant:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -116,40 +126,67 @@ export const ApplicantListView = () => {
   }));
 
   return (
-    <Grid item xs={12}>
-      <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
-        <Grid item xs={12} sm={6}>
-          <CustomTextField
-            size="small"
-            label="Search"
-            variant="outlined"
-            value={searchQuery}
-            onChange={handleSearchChange}
-          />
+    <>
+      <CustomLoader open={isLoading} />
+      <Grid item xs={12}>
+        <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
+          <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
+            <Grid
+              container
+              spacing={2}
+              alignItems="center"
+              sx={{ marginRight: 5, marginLeft: 5 }}
+            >
+              <Grid item xs={12} sm={6}>
+                <CustomTextField
+                  size="small"
+                  label="Search"
+                  variant="outlined"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={12} sm={2}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => fetchApplicants(currentPage, searchQuery)}
+                  fullWidth
+                >
+                  Search
+                </Button>
+              </Grid>
+              <Grid item xs={12} sm={2}>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => {
+                    setSearchQuery("");
+                    setCurrentPage(1);
+                    fetchApplicants(1, "");
+                  }}
+                  fullWidth
+                >
+                  Reset
+                </Button>
+              </Grid>
+            </Grid>
+          </Box>
+          <Box display="flex" justifyContent="center" marginBottom="10px">
+            <h3
+              style={{
+                marginBottom: "1em",
+                fontSize: "24px",
+                color: "rgb(34, 34, 34)",
+                fontWeight: 800,
+                textAlign: "center",
+              }}
+            >
+              Applicant List
+            </h3>
+          </Box>
 
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleSearchClick}
-          >
-            Search
-          </Button>
-        </Grid>
-        <Box flexGrow={1} display="flex" justifyContent="center">
-          <h3
-            style={{
-              marginBottom: "1em",
-              fontSize: "24px",
-              color: "rgb(34, 34, 34)",
-              fontWeight: 800,
-              textAlign: "center",
-            }}
-          >
-            Applicant List
-          </h3>
-        </Box>
-
-        <Paper sx={{ p: 2, m: 3 }}>
           <CustomTable
             headers={TableHeader}
             data={TableData}
@@ -159,29 +196,29 @@ export const ApplicantListView = () => {
             pageCount={pageCount}
             handlePageClick={handlePageClick}
           />
+          <Popup
+            title="Add New Applicant"
+            openPopup={openCreatePopup}
+            setOpenPopup={setOpenCreatePopup}
+          >
+            <ApplicantListCreate
+              addNewApplicant={addNewApplicant}
+              onApplicantAdded={handleApplicantAdded}
+            />
+          </Popup>
+          <Popup
+            title="Edit Applicant"
+            openPopup={openUpdatePopup}
+            setOpenPopup={setOpenUpdatePopup}
+          >
+            <ApplicantListUpdate
+              recordForEdit={recordForEdit}
+              updateApplicant={updateApplicant}
+              onApplicantUpdated={handleApplicantUpdated}
+            />
+          </Popup>
         </Paper>
-        <Popup
-          title="Add New Applicant"
-          openPopup={openCreatePopup}
-          setOpenPopup={setOpenCreatePopup}
-        >
-          <ApplicantListCreate
-            addNewApplicant={addNewApplicant}
-            onApplicantAdded={handleApplicantAdded}
-          />
-        </Popup>
-        <Popup
-          title="Edit Applicant"
-          openPopup={openUpdatePopup}
-          setOpenPopup={setOpenUpdatePopup}
-        >
-          <ApplicantListUpdate
-            recordForEdit={recordForEdit}
-            updateApplicant={updateApplicant}
-            onApplicantUpdated={handleApplicantUpdated}
-          />
-        </Popup>
-      </Paper>
-    </Grid>
+      </Grid>
+    </>
   );
 };

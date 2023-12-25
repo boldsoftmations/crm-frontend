@@ -138,6 +138,7 @@ export const JobOpeningCreate = ({ addNewJobOpening }) => {
         <Grid item xs={12}>
           <Autocomplete
             id="location"
+            size="small"
             options={locations}
             fullWidth
             renderInput={(params) => <TextField {...params} label="Location" />}
@@ -149,6 +150,7 @@ export const JobOpeningCreate = ({ addNewJobOpening }) => {
         </Grid>
         <Grid item xs={12}>
           <Autocomplete
+            size="small"
             value={newJobOpening.position}
             onChange={(event, newValue) => {
               handleInputChange({
@@ -169,6 +171,7 @@ export const JobOpeningCreate = ({ addNewJobOpening }) => {
         {newJobOpening.position === "Replacement" && (
           <Grid item xs={12}>
             <Autocomplete
+              size="small"
               id="replacement_user"
               options={emails}
               fullWidth
@@ -187,6 +190,7 @@ export const JobOpeningCreate = ({ addNewJobOpening }) => {
         )}
         <Grid item xs={12}>
           <TextField
+            size="small"
             name="no_of_openings"
             label="No Of Vacancies"
             value={newJobOpening.no_of_openings || ""}
@@ -196,6 +200,7 @@ export const JobOpeningCreate = ({ addNewJobOpening }) => {
         </Grid>
         <Grid item xs={12}>
           <Autocomplete
+            size="small"
             id="salary_ranges"
             options={salaryRange}
             fullWidth
@@ -210,6 +215,7 @@ export const JobOpeningCreate = ({ addNewJobOpening }) => {
         </Grid>
         <Grid item xs={12}>
           <TextField
+            size="small"
             label="Notes"
             name="notes"
             fullWidth
@@ -220,7 +226,12 @@ export const JobOpeningCreate = ({ addNewJobOpening }) => {
           />
         </Grid>
         <Grid item xs={12}>
-          <Button variant="contained" color="primary" onClick={handleSubmit}>
+          <Button
+            fullWidth
+            variant="contained"
+            color="primary"
+            onClick={handleSubmit}
+          >
             Add Job Opening
           </Button>
         </Grid>

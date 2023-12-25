@@ -1,14 +1,30 @@
 import React, { useState, useEffect } from "react";
 import {
   Container,
-  Typography,
   Grid,
   Box,
-  Autocomplete,
   TextField,
+  Card,
+  CardContent,
+  Typography,
+  Divider,
 } from "@mui/material";
-import { Chart } from "react-google-charts";
 import CustomAxios from "../../../services/api";
+import { CustomChart } from "../../../Components/CustomChart";
+
+const GridItemCard = ({ title, children, xs, sm, lg }) => (
+  <Grid item xs={xs} sm={sm} lg={lg}>
+    <Card raised>
+      <CardContent>
+        <Typography variant="h6" color="primary">
+          {title}
+        </Typography>
+        <Divider light />
+        {children}
+      </CardContent>
+    </Card>
+  </Grid>
+);
 
 export const MisReportView = () => {
   const [jobOpeningData, setJobOpeningData] = useState([]);
@@ -179,162 +195,158 @@ export const MisReportView = () => {
           sx={{ width: 200, marginRight: "15rem" }}
         />
       </Box>
-      <Grid container spacing={3}>
+      <Grid container spacing={3} sx={{ marginBottom: "20px" }}>
         {/* Job Opening Data Chart */}
-        <Grid item xs={12} md={6}>
-          <Box boxShadow={3}>
-            <Chart
-              chartType="ColumnChart"
-              data={jobOpeningData}
-              options={{
-                title: "Job Opening Details",
-                hAxis: { title: "Category" },
-                vAxis: { title: "Count" },
-                legend: "none",
-              }}
-              width="100%"
-              height="400px"
-            />
-          </Box>
-        </Grid>
+        <GridItemCard title="Job Opening Overview" xs={12} sm={8} lg={6}>
+          <CustomChart
+            chartType="ColumnChart"
+            data={jobOpeningData}
+            options={{
+              hAxis: { title: "Category" },
+              vAxis: { title: "Count" },
+              legend: "none",
+            }}
+            widthStyle="100%"
+            heightStyle="300px"
+          />
+        </GridItemCard>
 
         {/* Recruitment Pipeline Data Chart */}
-        <Grid item xs={12} md={6}>
-          <Box boxShadow={3}>
-            <Chart
-              chartType="BarChart"
-              width="100%"
-              height="400px"
-              data={funnelChartData()}
-              options={{
-                title: "Recruitment Pipeline",
-                legend: { position: "none" },
-                hAxis: { minValue: 0 },
-                chartArea: { width: "50%", height: "80%" },
-                bar: { groupWidth: "95%" },
-                isStacked: true,
-                annotations: {
-                  textStyle: {
-                    fontSize: 14,
-                    bold: true,
-                    auraColor: "none",
-                  },
-                  alwaysOutside: true,
+        <GridItemCard
+          title="Recruitment Pipeline Overview"
+          xs={12}
+          sm={8}
+          lg={6}
+        >
+          <CustomChart
+            chartType="BarChart"
+            data={funnelChartData()}
+            options={{
+              legend: { position: "none" },
+              hAxis: { minValue: 0 },
+              chartArea: { width: "50%", height: "80%" },
+              bar: { groupWidth: "95%" },
+              isStacked: true,
+              annotations: {
+                textStyle: {
+                  fontSize: 14,
+                  bold: true,
+                  auraColor: "none",
                 },
-              }}
-            />
-          </Box>
-        </Grid>
+                alwaysOutside: true,
+              },
+            }}
+            widthStyle="100%"
+            heightStyle="300px"
+          />
+        </GridItemCard>
         {/* Application Sources Data Chart */}
-        <Grid item xs={12} md={6}>
-          <Box boxShadow={3}>
-            <Chart
-              chartType="PieChart"
-              data={applicationSourcesData}
-              options={{
-                title: "Application Sources",
-                hAxis: { title: "Total Applications" },
-                vAxis: { title: "Source" },
-                legend: "none",
-              }}
-              width="100%"
-              height="400px"
-            />
-          </Box>
-        </Grid>
+        <GridItemCard
+          title="Application Sources Overview"
+          xs={12}
+          sm={8}
+          lg={6}
+        >
+          <CustomChart
+            chartType="PieChart"
+            data={applicationSourcesData}
+            options={{
+              hAxis: { title: "Total Applications" },
+              vAxis: { title: "Source" },
+              chartArea: { width: "50%", height: "80%" },
+              legend: { position: "none" },
+            }}
+            widthStyle="100%"
+            heightStyle="300px"
+          />
+        </GridItemCard>
         {/* Placement Rate Chart */}
-        <Grid container justifyContent="center" item xs={12} md={6}>
-          <Box boxShadow={3}>
-            <Chart
-              chartType="Gauge"
-              data={placementRate}
-              options={{
-                title: "Placement Rate",
-                redFrom: 0,
-                redTo: 25,
-                yellowFrom: 25,
-                yellowTo: 50,
-                greenFrom: 50,
-                greenTo: 100,
-                minorTicks: 5,
-              }}
-              width="100%"
-              height="400px"
-            />
-          </Box>
-        </Grid>
+        <GridItemCard title="Placement Rate Overview" xs={12} sm={8} lg={6}>
+          <CustomChart
+            chartType="Gauge"
+            data={placementRate}
+            options={{
+              // title: "Placement Rate",
+              redFrom: 0,
+              redTo: 25,
+              yellowFrom: 25,
+              yellowTo: 50,
+              greenFrom: 50,
+              greenTo: 100,
+              minorTicks: 5,
+            }}
+            widthStyle="100%"
+            heightStyle="300px"
+          />
+        </GridItemCard>
 
         {/* CTC Chart */}
-        <Grid item xs={12} md={6}>
-          <Box boxShadow={3}>
-            <Chart
-              chartType="ColumnChart"
-              data={ctcChartData}
-              options={{
-                title: "CTC Comparison",
-                vAxis: { title: "Count" },
-                legend: "none",
-              }}
-              width="100%"
-              height="400px"
-            />
-          </Box>
-        </Grid>
+        <GridItemCard title="CTC Comparison Overview" xs={12} sm={8} lg={6}>
+          <CustomChart
+            chartType="ColumnChart"
+            data={ctcChartData}
+            options={{
+              // title: "CTC Comparison",
+              vAxis: { title: "Count" },
+              legend: "none",
+            }}
+            widthStyle="100%"
+            heightStyle="300px"
+          />
+        </GridItemCard>
         {/* Cost Analysis Chart */}
-        <Grid item xs={12} md={6}>
-          <Box boxShadow={3}>
-            <Chart
-              chartType="ColumnChart"
-              data={costAnalysisData}
-              options={{
-                title: "Cost Analysis",
-                vAxis: { title: "Amount" },
-                legend: "none",
-              }}
-              width="100%"
-              height="400px"
-            />
-          </Box>
-        </Grid>
+        <GridItemCard title="Cost Analysis Overview" xs={12} sm={8} lg={6}>
+          <CustomChart
+            chartType="ColumnChart"
+            data={costAnalysisData}
+            options={{
+              // title: "Cost Analysis",
+              vAxis: { title: "Amount" },
+              legend: "none",
+            }}
+            widthStyle="100%"
+            heightStyle="300px"
+          />
+        </GridItemCard>
 
-        <Grid item xs={12} md={6}>
-          <Box boxShadow={3}>
-            {rejectionReasonsData.length > 1 && (
-              <Chart
-                chartType="ColumnChart"
-                data={rejectionReasonsData}
-                options={{
-                  title: "Rejection Reasons",
-                  is3D: true,
-                }}
-                width="100%"
-                height="400px"
-              />
-            )}
-          </Box>
-        </Grid>
+        <GridItemCard title="Rejection Reasons Overview" xs={12} sm={8} lg={6}>
+          {rejectionReasonsData.length > 1 && (
+            <CustomChart
+              chartType="ColumnChart"
+              data={rejectionReasonsData}
+              options={{
+                // title: "Rejection Reasons",
+                is3D: true,
+              }}
+              widthStyle="100%"
+              heightStyle="300px"
+            />
+          )}
+        </GridItemCard>
 
         {/* Average Days to Hire Chart */}
-        <Grid item xs={12} md={6}>
-          <Box boxShadow={3}>
-            <Chart
-              chartType="LineChart"
-              data={avgDaysToHire}
-              options={{
-                title: "Average Days to Hire",
-                redFrom: 0,
-                redTo: 5,
-                yellowFrom: 5,
-                yellowTo: 10,
-                greenFrom: 10,
-                greenTo: 20,
-                minorTicks: 1,
-              }}
-              width="100%"
-              height="400px"
-            />
-          </Box>
-        </Grid>
+        <GridItemCard
+          title="Average Days to Hire Overview"
+          xs={12}
+          sm={8}
+          lg={6}
+        >
+          <CustomChart
+            chartType="LineChart"
+            data={avgDaysToHire}
+            options={{
+              redFrom: 0,
+              redTo: 5,
+              yellowFrom: 5,
+              yellowTo: 10,
+              greenFrom: 10,
+              greenTo: 20,
+              minorTicks: 1,
+            }}
+            widthStyle="100%"
+            heightStyle="300px"
+          />
+        </GridItemCard>
       </Grid>
     </Container>
   );

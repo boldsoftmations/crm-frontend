@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { TextField, Button, Grid, Autocomplete } from "@mui/material";
+import { TextField, Button, Grid, Autocomplete, Box } from "@mui/material";
 import Hr from "../../../services/Hr";
 import CustomAxios from "../../../services/api";
 import CustomTextField from "../../../Components/CustomTextField";
@@ -57,10 +57,11 @@ export const InterviewStatusCreate = ({ row, closeDialog }) => {
   }, []);
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} style={{ width: "100%", marginTop: "20px" }}>
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <TextField
+            size="small"
             label="Interview Date"
             type="date"
             fullWidth
@@ -94,12 +95,12 @@ export const InterviewStatusCreate = ({ row, closeDialog }) => {
             )}
           />
         </Grid>
-        <Grid item xs={12}>
-          <Button type="submit" variant="contained" color="primary">
-            Schedule Interview
-          </Button>
-        </Grid>
       </Grid>
+      <Box display="flex" justifyContent="flex-end" mt={2}>
+        <Button fullwidth type="submit" variant="contained" color="primary">
+          Schedule Interview
+        </Button>
+      </Box>
     </form>
   );
 };

@@ -21,7 +21,7 @@ export const RejectedCandidateUpdate = ({
   const [isLoading, setIsLoading] = useState(false);
   const [interviewDate, setInterviewDate] = useState(row.interview_date || "");
   const [interviewTime, setInterviewTime] = useState(row.interview_time || "");
-
+  const [status, setStatus] = useState(row.status || null);
   const [interviewerName, setInterviewerName] = useState(
     row.interviewer_name || ""
   );
@@ -43,6 +43,7 @@ export const RejectedCandidateUpdate = ({
       time: interviewTime,
       interviewer_name: interviewerName,
       stage: stage,
+      offer_status: status,
     };
 
     try {

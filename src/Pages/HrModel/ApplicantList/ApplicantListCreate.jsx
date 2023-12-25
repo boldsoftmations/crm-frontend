@@ -109,12 +109,10 @@ export const ApplicantListCreate = ({ jobOpeningId, onSuccess }) => {
       }}
     >
       <Box>
-        <Typography variant="h6" gutterBottom>
-          Create Applicant
-        </Typography>
         <Grid container spacing={2}>
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={6}>
             <TextField
+              size="small"
               label="Name of Candidate"
               name="name"
               fullWidth
@@ -122,8 +120,9 @@ export const ApplicantListCreate = ({ jobOpeningId, onSuccess }) => {
               onChange={handleInputChange}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={6}>
             <TextField
+              size="small"
               label="Phone Number"
               name="contact"
               fullWidth
@@ -131,8 +130,9 @@ export const ApplicantListCreate = ({ jobOpeningId, onSuccess }) => {
               onChange={handleInputChange}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={6}>
             <TextField
+              size="small"
               label="Email Address"
               name="email"
               fullWidth
@@ -140,8 +140,9 @@ export const ApplicantListCreate = ({ jobOpeningId, onSuccess }) => {
               onChange={handleInputChange}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={6}>
             <TextField
+              size="small"
               label="Highest Education Qualification"
               name="qualification"
               fullWidth
@@ -149,7 +150,7 @@ export const ApplicantListCreate = ({ jobOpeningId, onSuccess }) => {
               onChange={handleInputChange}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={6}>
             <Autocomplete
               style={{ minWidth: 220 }}
               size="small"
@@ -167,8 +168,9 @@ export const ApplicantListCreate = ({ jobOpeningId, onSuccess }) => {
               )}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={6}>
             <TextField
+              size="small"
               fullWidth
               label="Current Location"
               name="current_location"
@@ -176,8 +178,9 @@ export const ApplicantListCreate = ({ jobOpeningId, onSuccess }) => {
               onChange={handleInputChange}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={6}>
             <TextField
+              size="small"
               label="Current Salary"
               name="current_salary"
               fullWidth
@@ -186,8 +189,9 @@ export const ApplicantListCreate = ({ jobOpeningId, onSuccess }) => {
             />
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={6}>
             <Autocomplete
+              size="small"
               id="expected_salary"
               options={salaryRange}
               fullWidth
@@ -201,8 +205,9 @@ export const ApplicantListCreate = ({ jobOpeningId, onSuccess }) => {
             />
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={6}>
             <Autocomplete
+              size="small"
               id="interested"
               options={["Yes", "No", "CallBackLater"]}
               fullWidth
@@ -222,8 +227,9 @@ export const ApplicantListCreate = ({ jobOpeningId, onSuccess }) => {
             />
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={6}>
             <Autocomplete
+              size="small"
               id="spoken_english"
               options={spokenEnglishOptions}
               fullWidth
@@ -239,7 +245,7 @@ export const ApplicantListCreate = ({ jobOpeningId, onSuccess }) => {
               }}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={6}>
             <FormControlLabel
               control={
                 <Switch
@@ -256,13 +262,12 @@ export const ApplicantListCreate = ({ jobOpeningId, onSuccess }) => {
               label="Shortlisted"
             />
           </Grid>
-
-          <Grid item xs={12}>
-            <Button variant="contained" color="primary" onClick={handleSubmit}>
-              Create Applicant
-            </Button>
-          </Grid>
         </Grid>
+        <Box display="flex" justifyContent="flex-end" mt={2}>
+          <Button fullWidth type="submit" variant="contained" color="primary">
+            Add Applicant
+          </Button>
+        </Box>
       </Box>
     </Container>
   );

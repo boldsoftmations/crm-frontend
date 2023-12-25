@@ -11,6 +11,7 @@ import { CustomTable } from "../../../Components/CustomTable";
 import { InterviewStatusCreate } from "./InterviewStatusUpdate";
 import Hr from "../../../services/Hr";
 import { CustomPagination } from "../../../Components/CustomPagination";
+import { CustomLoader } from "../../../Components/CustomLoader";
 
 export const InterviewStatusView = () => {
   const [open, setOpen] = useState(false);
@@ -18,6 +19,7 @@ export const InterviewStatusView = () => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [pageCount, setPageCount] = useState(1);
   const [currentPage, setCurrentPage] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handlePageClick = (event, value) => {
     setCurrentPage(value);
@@ -25,12 +27,16 @@ export const InterviewStatusView = () => {
 
   const getInterviewData = async (page = 0) => {
     try {
+      setIsLoading(true);
       const response = await Hr.getInterviewStatus({ page });
       setInterviews(response.data.results);
       const total = response.data.count;
       setPageCount(Math.ceil(total / 25));
+      setIsLoading(false);
     } catch (error) {
       console.error("Error fetching interviews:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -69,21 +75,23 @@ export const InterviewStatusView = () => {
     : [];
 
   return (
-    <Grid item xs={12}>
-      <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
-        <Box flexGrow={1} display="flex" justifyContent="center">
-          <h3
-            style={{
-              marginBottom: "1em",
-              fontSize: "24px",
-              color: "rgb(34, 34, 34)",
-              fontWeight: 800,
-            }}
-          >
-            Shortlisted Candidate
-          </h3>
-        </Box>
-        <Paper sx={{ p: 2, m: 3 }}>
+    <>
+      <CustomLoader open={isLoading} />
+      <Grid item xs={12}>
+        <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
+          <Box flexGrow={1} display="flex" justifyContent="center">
+            <h3
+              style={{
+                marginBottom: "1em",
+                fontSize: "24px",
+                color: "rgb(34, 34, 34)",
+                fontWeight: 800,
+              }}
+            >
+              Shortlisted Candidate
+            </h3>
+          </Box>
+
           <CustomTable
             headers={TableHeader}
             data={TableData}
@@ -93,23 +101,24 @@ export const InterviewStatusView = () => {
             pageCount={pageCount}
             handlePageClick={handlePageClick}
           />
+
+          <Dialog
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="form-dialog-title"
+          >
+            <DialogTitle id="form-dialog-title">
+              Interview Status Update
+            </DialogTitle>
+            <DialogContent>
+              <InterviewStatusCreate
+                row={selectedRow}
+                closeDialog={handleClose}
+              />
+            </DialogContent>
+          </Dialog>
         </Paper>
-        <Dialog
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="form-dialog-title"
-        >
-          <DialogTitle id="form-dialog-title">
-            Interview Status Update
-          </DialogTitle>
-          <DialogContent>
-            <InterviewStatusCreate
-              row={selectedRow}
-              closeDialog={handleClose}
-            />
-          </DialogContent>
-        </Dialog>
-      </Paper>
-    </Grid>
+      </Grid>
+    </>
   );
 };

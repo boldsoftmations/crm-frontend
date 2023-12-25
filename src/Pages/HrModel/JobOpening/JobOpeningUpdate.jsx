@@ -73,6 +73,7 @@ export const JobOpeningUpdate = ({
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <TextField
+            size="small"
             label="Date Of Closing"
             name="closing_date"
             fullWidth
@@ -86,6 +87,7 @@ export const JobOpeningUpdate = ({
         </Grid>
         <Grid item xs={12}>
           <TextField
+            size="small"
             name="no_of_openings"
             label="No Of Vacancies"
             value={values.no_of_openings || ""}
@@ -95,6 +97,7 @@ export const JobOpeningUpdate = ({
         </Grid>
         <Grid item xs={12}>
           <Autocomplete
+            size="small"
             id="salary_ranges"
             options={salaryRange}
             fullWidth
@@ -116,6 +119,7 @@ export const JobOpeningUpdate = ({
         </Grid>
         <Grid item xs={12}>
           <Autocomplete
+            size="small"
             value={values.position}
             onChange={(event, newValue) => {
               handleInputChange({
@@ -136,6 +140,7 @@ export const JobOpeningUpdate = ({
         {values.position === "Replacement" && (
           <Grid item xs={12}>
             <Autocomplete
+              size="small"
               id="replacement_user"
               options={emails}
               fullWidth
@@ -154,7 +159,7 @@ export const JobOpeningUpdate = ({
         )}
         <Grid item xs={12}>
           <Box display="flex" justifyContent="flex-end" mt={2}>
-            <Button type="submit" variant="contained" color="primary">
+            <Button fullWidth type="submit" variant="contained" color="primary">
               Update Job Opening
             </Button>
           </Box>
