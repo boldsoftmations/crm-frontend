@@ -1,5 +1,12 @@
-import { Autocomplete, Box, Button, Grid } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import {
+  Alert,
+  Autocomplete,
+  Box,
+  Button,
+  Grid,
+  Snackbar,
+} from "@mui/material";
+import React, { useEffect, useState, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { Popup } from "../../../Components/Popup";
@@ -18,6 +25,9 @@ export const ForecastCreate = (props) => {
   const data = useSelector((state) => state.auth);
   const users = data.profile;
   const Company_Name = data.companyName;
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [errorMessages, setErrorMessages] = useState([]);
+  const [currentErrorIndex, setCurrentErrorIndex] = useState(0);
 
   useEffect(() => {
     getProduct();
@@ -34,6 +44,30 @@ export const ForecastCreate = (props) => {
       console.error("error potential", err);
       setOpen(false);
     }
+  };
+
+  const extractErrorMessages = (error) => {
+    let messages = [];
+
+    // Check if the error is from Axios and has a response with data
+    if (error.response && error.response.data) {
+      // Handle custom backend error structure
+      if (error.response.data.errors) {
+        for (const [key, value] of Object.entries(error.response.data.errors)) {
+          value.forEach((msg) => {
+            messages.push(`${key}: ${msg}`);
+          });
+        }
+      } else if (error.response.data.message) {
+        // Handle single message error
+        messages.push(error.response.data.message);
+      }
+    } else {
+      // Handle other types of errors (e.g., network error)
+      messages.push(error.message || "An unknown error occurred");
+    }
+
+    return messages;
   };
 
   const createForecastDetails = async (e) => {
@@ -54,14 +88,37 @@ export const ForecastCreate = (props) => {
       // setOpenModal(true);
     } catch (error) {
       console.log("createing company detail error", error);
+      const newErrors = extractErrorMessages(error.response.data);
+      setErrorMessages(newErrors);
+      setCurrentErrorIndex(0); // Reset the error index when new errors arrive
+      setOpenSnackbar((prevOpen) => !prevOpen);
+    } finally {
       setOpen(false);
     }
   };
 
+  const handleCloseSnackbar = useCallback(() => {
+    if (currentErrorIndex < errorMessages.length - 1) {
+      setCurrentErrorIndex((prevIndex) => prevIndex + 1);
+    } else {
+      setOpenSnackbar(false);
+      setCurrentErrorIndex(0); // Reset for any future errors
+    }
+  }, [currentErrorIndex, errorMessages.length]);
+
   return (
     <div>
       <CustomLoader open={open} />
-
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity="error">
+          {errorMessages[currentErrorIndex]}
+        </Alert>
+      </Snackbar>
       <Box
         component="form"
         noValidate

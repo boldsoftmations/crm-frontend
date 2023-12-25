@@ -174,16 +174,27 @@ export const CreateCustomerProformaInvoice = (props) => {
     setInputValue({ ...inputValue, [name]: value });
   };
 
-  const extractErrorMessages = (data) => {
+  const extractErrorMessages = (error) => {
     let messages = [];
-    if (data.errors) {
-      for (const [key, value] of Object.entries(data.errors)) {
-        // Assuming each key has an array of messages, concatenate them.
-        value.forEach((msg) => {
-          messages.push(`${key}: ${msg}`);
-        });
+
+    // Check if the error is from Axios and has a response with data
+    if (error.response && error.response.data) {
+      // Handle custom backend error structure
+      if (error.response.data.errors) {
+        for (const [key, value] of Object.entries(error.response.data.errors)) {
+          value.forEach((msg) => {
+            messages.push(`${key}: ${msg}`);
+          });
+        }
+      } else if (error.response.data.message) {
+        // Handle single message error
+        messages.push(error.response.data.message);
       }
+    } else {
+      // Handle other types of errors (e.g., network error)
+      messages.push(error.message || "An unknown error occurred");
     }
+
     return messages;
   };
 
