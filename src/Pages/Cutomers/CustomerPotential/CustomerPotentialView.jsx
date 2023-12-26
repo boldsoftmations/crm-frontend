@@ -15,15 +15,25 @@ export const CustomerPotentialView = ({ recordForEdit }) => {
   const [idForEdit, setIdForEdit] = useState(null);
 
   const formatDate = (dateString) => {
+    if (!dateString) return "";
+
+    const [day, month, year] = dateString.split("-");
+
+    // Construct a date string that is understood by the Date constructor
+    const formattedDateString = `${month}/${day}/${year}`;
+
+    // Create a date object using the formatted date string
+    const date = new Date(formattedDateString);
+
+    // Options for toLocaleDateString() to only include date parts
     const options = {
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
     };
-    return new Date(dateString).toLocaleDateString("en-GB", options);
+
+    // Return the formatted date string
+    return date.toLocaleDateString("en-GB", options);
   };
 
   useEffect(() => {
@@ -60,6 +70,8 @@ export const CustomerPotentialView = ({ recordForEdit }) => {
     "Description",
     "Product",
     "Current Buying Quantity(Monthly)",
+    "Update Date",
+    "Updated By",
     "Remark",
     "Action",
   ];
@@ -68,11 +80,13 @@ export const CustomerPotentialView = ({ recordForEdit }) => {
     potential &&
     potential.map((value) => ({
       id: value.id,
-      date: formatDate(value.created_date || ""), // Format the date here
+      created_date: formatDate(value.created_date || ""), // Format the date here
       created_by: value.created_by,
       description: value.description,
       product: value.product,
       current_buying_quantity: value.current_buying_quantity,
+      updated_date: formatDate(value.updated_date || ""), // Format the date here
+      updated_by: value.updated_by,
       remark: value.is_remark,
     }));
   return (
