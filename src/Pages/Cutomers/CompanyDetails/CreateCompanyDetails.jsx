@@ -114,9 +114,9 @@ export const CreateCompanyDetails = (props) => {
         website: inputValue.website,
         estd_year: inputValue.estd_year,
         approx_annual_turnover: inputValue.approx_annual_turnover,
-        purchase_decision_maker: inputValue.purchase_decision_maker || "",
-        industrial_list: inputValue.industrial_list || "",
-        distribution_type: inputValue.distribution_type || "",
+        purchase_decision_maker: inputValue.purchase_decision_maker || null,
+        industrial_list: inputValue.industrial_list || null,
+        distribution_type: inputValue.distribution_type || null,
         category: inputValue.category || [],
         main_distribution: inputValue.main_distribution || [],
       };
