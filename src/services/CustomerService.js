@@ -30,7 +30,7 @@ const getIncompleteKycCustomerData = ({
   assignToFilter,
   searchValue,
 }) => {
-  let url = `/api/customer/list-company/??is_verified=false&`;
+  let url = `/api/customer/list-company/?is_verified=false&`;
   if (page) url += `page=${page}&`;
   if (assignToFilter) url += `assigned_to__email=${assignToFilter}&`;
   if (searchValue) url += `search=${searchValue}&`;
