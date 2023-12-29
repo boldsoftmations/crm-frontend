@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-  Autocomplete,
   Box,
   Chip,
   FormControl,
@@ -31,6 +30,7 @@ import CustomTextField from "../../Components/CustomTextField";
 import CustomerServices from "../../services/CustomerService";
 import ProductService from "../../services/ProductService";
 import { LeadPotentialView } from "./LeadPotential/LeadPotentialView";
+import CustomAutocomplete from "../../Components/CustomAutocomplete";
 
 export const UpdateLeads = (props) => {
   // Destructure props
@@ -453,7 +453,7 @@ export const UpdateLeads = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={3}>
-            <Autocomplete
+            <CustomAutocomplete
               fullWidth
               size="small"
               id="grouped-demo"
@@ -475,7 +475,7 @@ export const UpdateLeads = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <Autocomplete
+            <CustomAutocomplete
               size="small"
               value={leads.description || []}
               onChange={(event, newValue) => {
@@ -596,8 +596,8 @@ export const UpdateLeads = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={3}>
-            <Autocomplete
-              style={{
+            <CustomAutocomplete
+              sx={{
                 minWidth: 220,
               }}
               size="small"
@@ -606,9 +606,7 @@ export const UpdateLeads = (props) => {
               value={leads.state || ""}
               options={Option.StateOption.map((option) => option.label)}
               getOptionLabel={(option) => option}
-              renderInput={(params) => (
-                <CustomTextField {...params} label="State" />
-              )}
+              label="State"
             />
           </Grid>
           <Grid item xs={12} sm={3}>
@@ -700,8 +698,8 @@ export const UpdateLeads = (props) => {
           </Grid>
 
           <Grid item xs={12} sm={3}>
-            <Autocomplete
-              style={{
+            <CustomAutocomplete
+              sx={{
                 minWidth: 220,
               }}
               size="small"
@@ -712,9 +710,7 @@ export const UpdateLeads = (props) => {
               value={checked ? leads.state || "" : leads.shipping_state || ""}
               options={Option.StateOption.map((option) => option.value)}
               getOptionLabel={(option) => option}
-              renderInput={(params) => (
-                <CustomTextField {...params} label="Shipping State" />
-              )}
+              label="Shipping State"
             />
           </Grid>
           {/* kyc Details */}
@@ -804,8 +800,8 @@ export const UpdateLeads = (props) => {
           </Grid>
           {leads.type_of_customer === "Industrial Customer" && (
             <Grid item xs={12} sm={3}>
-              <Autocomplete
-                style={{
+              <CustomAutocomplete
+                sx={{
                   minWidth: 220,
                 }}
                 size="small"
@@ -815,16 +811,14 @@ export const UpdateLeads = (props) => {
                 value={leads.industrial_list || ""}
                 options={Option.IndustriesList.map((option) => option.label)}
                 getOptionLabel={(option) => option}
-                renderInput={(params) => (
-                  <CustomTextField {...params} label="Industrial List" />
-                )}
+                label="Industrial List"
               />
             </Grid>
           )}
           {leads.type_of_customer === "Distribution Customer" && (
             <Grid item xs={12} sm={3}>
-              <Autocomplete
-                style={{
+              <CustomAutocomplete
+                sx={{
                   minWidth: 220,
                 }}
                 size="small"
@@ -836,15 +830,13 @@ export const UpdateLeads = (props) => {
                   (option) => option.label
                 )}
                 getOptionLabel={(option) => option}
-                renderInput={(params) => (
-                  <CustomTextField {...params} label="Distribution Type" />
-                )}
+                label="Distribution Type"
               />
             </Grid>
           )}
           {leads.type_of_customer === "Distribution Customer" && (
             <Grid item xs={12} sm={3}>
-              <Autocomplete
+              <CustomAutocomplete
                 size="small"
                 value={leads.category || []}
                 onChange={(event, newValue) => {
@@ -876,7 +868,7 @@ export const UpdateLeads = (props) => {
           )}
           {leads.type_of_customer === "Distribution Customer" && (
             <Grid item xs={12} sm={3}>
-              <Autocomplete
+              <CustomAutocomplete
                 size="small"
                 value={leads.main_distribution || []}
                 onChange={(event, newValue) => {

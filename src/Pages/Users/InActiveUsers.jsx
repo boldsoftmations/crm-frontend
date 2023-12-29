@@ -4,17 +4,16 @@ import { CustomTable } from "../../Components/CustomTable";
 import { CustomSearch } from "../../Components/CustomSearch";
 import { CustomLoader } from "../../Components/CustomLoader";
 import {
-  Autocomplete,
   Box,
   Button,
   Checkbox,
   Chip,
   FormControlLabel,
   Grid,
-  TextField,
 } from "@mui/material";
 import { Popup } from "../../Components/Popup";
-
+import CustomTextField from "../../Components/CustomTextField";
+import CustomAutocomplete from "../../Components/CustomAutocomplete";
 export const InActiveUsers = () => {
   const [open, setOpen] = useState(false);
   const [inActiveUsersData, setInActiveUsersData] = useState([]);
@@ -149,7 +148,8 @@ export const InActiveUsers = () => {
     "LastName",
     "Email",
     "Contact",
-    "Groups",
+    "Designation",
+    "Reporting To",
     "Action",
   ];
 
@@ -161,6 +161,7 @@ export const InActiveUsers = () => {
       email: row.email,
       contact: row.contact,
       groups: row.groups.map((row) => row).join(","),
+      name: row.name,
     };
   });
 
@@ -220,7 +221,7 @@ export const InActiveUsers = () => {
         >
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
-              <TextField
+              <CustomTextField
                 fullWidth
                 size="small"
                 label="First Name"
@@ -232,7 +233,7 @@ export const InActiveUsers = () => {
               />
             </Grid>
             <Grid item xs={12} sm={6}>
-              <TextField
+              <CustomTextField
                 fullWidth
                 size="small"
                 label="Last Name"
@@ -244,7 +245,7 @@ export const InActiveUsers = () => {
               />
             </Grid>
             <Grid item xs={12} sm={6}>
-              <TextField
+              <CustomTextField
                 fullWidth
                 size="small"
                 label="Contact"
@@ -254,7 +255,7 @@ export const InActiveUsers = () => {
               />
             </Grid>
             <Grid item xs={12} sm={6}>
-              <TextField
+              <CustomTextField
                 fullWidth
                 size="small"
                 label="Email"
@@ -264,7 +265,7 @@ export const InActiveUsers = () => {
             </Grid>
 
             <Grid item xs={12}>
-              <Autocomplete
+              <CustomAutocomplete
                 size="small"
                 value={inActiveUsersByIDData.groups}
                 onChange={(event, newValue) => {
@@ -285,13 +286,17 @@ export const InActiveUsers = () => {
                   ))
                 }
                 renderInput={(params) => (
-                  <TextField {...params} label="Groups" placeholder="Groups" />
+                  <CustomTextField
+                    {...params}
+                    label="Groups"
+                    placeholder="Groups"
+                  />
                 )}
               />
             </Grid>
             {showRefUserList && (
               <Grid item xs={12}>
-                <Autocomplete
+                <CustomAutocomplete
                   id="grouped-demo"
                   size="small"
                   value={inActiveUsersByIDData.ref_user}
@@ -313,7 +318,7 @@ export const InActiveUsers = () => {
                   getOptionLabel={(option) => option.email}
                   sx={{ width: 300 }}
                   renderInput={(params) => (
-                    <TextField {...params} label="Team Reference" />
+                    <CustomTextField {...params} label="Team Reference" />
                   )}
                 />
               </Grid>

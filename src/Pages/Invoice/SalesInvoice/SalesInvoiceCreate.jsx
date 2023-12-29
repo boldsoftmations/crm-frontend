@@ -1,4 +1,4 @@
-import { Autocomplete, Box, Button, Grid, Snackbar } from "@mui/material";
+import { Box, Button, Grid, Snackbar } from "@mui/material";
 import { Alert, AlertTitle } from "@mui/material";
 import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
@@ -7,6 +7,7 @@ import Chip from "@mui/material/Chip";
 import InvoiceServices from "../../../services/InvoiceService";
 import { CustomLoader } from "./../../../Components/CustomLoader";
 import CustomTextField from "../../../Components/CustomTextField";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -234,7 +235,7 @@ export const SalesInvoiceCreate = (props) => {
           </Grid>
           {customerorderBookOption && customerorderBookOption.length > 0 && (
             <Grid item xs={12} sm={3}>
-              <Autocomplete
+              <CustomAutocomplete
                 name="pi_number"
                 multiple
                 size="small"
@@ -247,9 +248,7 @@ export const SalesInvoiceCreate = (props) => {
                   `${option.proforma_invoice} - ${option.company}`
                 }
                 sx={{ minWidth: 300 }}
-                renderInput={(params) => (
-                  <CustomTextField {...params} label="PI Number" />
-                )}
+                label="PI Number"
               />
             </Grid>
           )}

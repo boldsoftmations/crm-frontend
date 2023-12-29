@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, Grid, Button, TextField } from "@mui/material";
-import Autocomplete from "@mui/material/Autocomplete";
+import { Box, Grid, Button, TextField } from "@mui/material";
 import CustomAxios from "../../../services/api";
-import CustomTextField from "../../../Components/CustomTextField";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 export const JobOpeningCreate = ({ addNewJobOpening }) => {
   const [newJobOpening, setNewJobOpening] = useState({
@@ -100,7 +99,7 @@ export const JobOpeningCreate = ({ addNewJobOpening }) => {
       </Typography> */}
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <Autocomplete
+          <CustomAutocomplete
             style={{ minWidth: 220 }}
             size="small"
             onChange={(event, value) => {
@@ -109,16 +108,14 @@ export const JobOpeningCreate = ({ addNewJobOpening }) => {
             name="designation"
             options={designations.map((option) => option.designation)}
             getOptionLabel={(option) => option || ""}
-            renderInput={(params) => (
-              <CustomTextField {...params} label="Designation" />
-            )}
+            label="Designation"
             value={newJobOpening.designation}
           />
         </Grid>
 
         <Grid item xs={12}>
           {Array.isArray(department) && (
-            <Autocomplete
+            <CustomAutocomplete
               style={{ minWidth: 220 }}
               size="small"
               onChange={(event, value) => {
@@ -127,21 +124,19 @@ export const JobOpeningCreate = ({ addNewJobOpening }) => {
               name="department"
               options={department.map((option) => option.department)}
               getOptionLabel={(option) => option || ""}
-              renderInput={(params) => (
-                <CustomTextField {...params} label="Department" />
-              )}
+              label="Department"
               value={newJobOpening.department}
             />
           )}
         </Grid>
 
         <Grid item xs={12}>
-          <Autocomplete
+          <CustomAutocomplete
             id="location"
             size="small"
             options={locations}
             fullWidth
-            renderInput={(params) => <TextField {...params} label="Location" />}
+            label="Location"
             value={newJobOpening.location}
             onChange={(event, newValue) => {
               handleInputChange(event, newValue);
@@ -149,7 +144,7 @@ export const JobOpeningCreate = ({ addNewJobOpening }) => {
           />
         </Grid>
         <Grid item xs={12}>
-          <Autocomplete
+          <CustomAutocomplete
             size="small"
             value={newJobOpening.position}
             onChange={(event, newValue) => {
@@ -158,36 +153,26 @@ export const JobOpeningCreate = ({ addNewJobOpening }) => {
               });
             }}
             options={["New", "Replacement", "Backup"]}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                name="position"
-                label="Position"
-                fullWidth
-              />
-            )}
+            label="Position"
           />
         </Grid>
         {newJobOpening.position === "Replacement" && (
-          <Grid item xs={12}>
-            <Autocomplete
-              size="small"
-              id="replacement_user"
-              options={emails}
-              fullWidth
-              renderInput={(params) => (
-                <TextField {...params} label="Replacement Email" />
-              )}
-              value={newJobOpening.replacement_user}
-              onChange={(event, newValue) => {
-                setNewJobOpening({
-                  ...newJobOpening,
-                  replacement_user: newValue,
-                });
-              }}
-            />
-          </Grid>
+          <CustomAutocomplete
+            size="small"
+            id="replacement_user"
+            options={emails}
+            fullWidth
+            label="Replacement Email"
+            value={newJobOpening.replacement_user}
+            onChange={(event, newValue) => {
+              setNewJobOpening({
+                ...newJobOpening,
+                replacement_user: newValue,
+              });
+            }}
+          />
         )}
+
         <Grid item xs={12}>
           <TextField
             size="small"
@@ -199,14 +184,12 @@ export const JobOpeningCreate = ({ addNewJobOpening }) => {
           />
         </Grid>
         <Grid item xs={12}>
-          <Autocomplete
+          <CustomAutocomplete
             size="small"
             id="salary_ranges"
             options={salaryRange}
             fullWidth
-            renderInput={(params) => (
-              <TextField {...params} label="Salary Range" />
-            )}
+            label="Salary Range"
             value={newJobOpening.salary_ranges}
             onChange={(event, newValue) => {
               handleInputChange(event, newValue);

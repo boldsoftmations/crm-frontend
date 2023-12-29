@@ -664,6 +664,7 @@ export const Home = () => {
     }
   };
   const handleAutocompleteChange = (value) => {
+    console.log("value", value);
     // Check if value is not null before accessing its properties
     if (value) {
       setFilterValue(value.email);

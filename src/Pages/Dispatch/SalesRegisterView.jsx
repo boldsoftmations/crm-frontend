@@ -15,7 +15,6 @@ import {
   Collapse,
   Typography,
   Grid,
-  TextField,
 } from "@mui/material";
 import FileSaver from "file-saver";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
@@ -27,6 +26,8 @@ import { CustomSearch } from "./../../Components/CustomSearch";
 import moment from "moment";
 import { ErrorMessage } from "../../Components/ErrorMessage/ErrorMessage";
 import { CSVLink } from "react-csv";
+import CustomTextField from "../../Components/CustomTextField";
+
 export const SalesRegisterView = () => {
   const errRef = useRef();
   const [open, setOpen] = useState(false);
@@ -202,7 +203,7 @@ export const SalesRegisterView = () => {
           <Box display="flex">
             <Box flexGrow={2}>
               <Box flexGrow={2}>
-                <TextField
+                <CustomTextField
                   label="Start Date"
                   variant="outlined"
                   size="small"
@@ -219,7 +220,7 @@ export const SalesRegisterView = () => {
                   }
                   onChange={handleStartDateChange}
                 />
-                <TextField
+                <CustomTextField
                   label="End Date"
                   variant="outlined"
                   size="small"

@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
 import {
   Box,
-  Typography,
   Grid,
   Button,
   TextField,
-  Autocomplete,
   Container,
   FormControlLabel,
   Switch,
@@ -13,6 +11,7 @@ import {
 import Hr from "../../../services/Hr";
 import CustomAxios from "../../../services/api";
 import CustomTextField from "../../../Components/CustomTextField";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 export const ApplicantListCreate = ({ jobOpeningId, onSuccess }) => {
   console.log("jobOpeningId:", jobOpeningId);
@@ -151,21 +150,19 @@ export const ApplicantListCreate = ({ jobOpeningId, onSuccess }) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <Autocomplete
-              style={{ minWidth: 220 }}
+            <CustomAutocomplete
               size="small"
+              style={{ minWidth: 220 }}
               onChange={(event, newValue) =>
                 handleInputChange(
                   { target: { name: "source", value: newValue } },
                   newValue
                 )
               }
-              name="source"
               options={source.map((option) => option.name)}
               getOptionLabel={(option) => `${option}`}
-              renderInput={(params) => (
-                <CustomTextField {...params} label="Candidate Source" />
-              )}
+              label="Candidate Source"
+              value={formData.source}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -190,11 +187,10 @@ export const ApplicantListCreate = ({ jobOpeningId, onSuccess }) => {
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <Autocomplete
+            <CustomAutocomplete
               size="small"
               id="expected_salary"
               options={salaryRange}
-              fullWidth
               renderInput={(params) => (
                 <TextField {...params} label="Expected Salary" />
               )}
@@ -202,15 +198,15 @@ export const ApplicantListCreate = ({ jobOpeningId, onSuccess }) => {
               onChange={(event, newValue) => {
                 handleInputChange(event, newValue, "expected_salary");
               }}
+              label="Expected Salary"
             />
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <Autocomplete
+            <CustomAutocomplete
               size="small"
               id="interested"
               options={["Yes", "No", "CallBackLater"]}
-              fullWidth
               renderInput={(params) => (
                 <TextField {...params} label="Interested" />
               )}
@@ -224,15 +220,15 @@ export const ApplicantListCreate = ({ jobOpeningId, onSuccess }) => {
                   });
                 }
               }}
+              label="Interested"
             />
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <Autocomplete
+            <CustomAutocomplete
               size="small"
               id="spoken_english"
               options={spokenEnglishOptions}
-              fullWidth
               renderInput={(params) => (
                 <TextField {...params} label="Spoken English" />
               )}
@@ -243,6 +239,7 @@ export const ApplicantListCreate = ({ jobOpeningId, onSuccess }) => {
                   spoken_english: newValue,
                 }));
               }}
+              label="Spoken English"
             />
           </Grid>
           <Grid item xs={12} sm={6}>

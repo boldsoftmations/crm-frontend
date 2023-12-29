@@ -1,5 +1,4 @@
 import {
-  Autocomplete,
   Box,
   Button,
   Chip,
@@ -7,14 +6,14 @@ import {
   Grid,
   IconButton,
   Snackbar,
-  TextField,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import React, { useEffect, useState } from "react";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import InventoryServices from "../../../services/InventoryService";
 import { styled } from "@mui/material/styles";
-
+import CustomTextField from "../../../Components/CustomTextField";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
   ...theme.typography.body2,
@@ -206,7 +205,7 @@ export const GRNUpdate = (props) => {
           </Grid> */}
           {vendorOption && vendorOption.length > 0 && (
             <Grid item xs={12} sm={4}>
-              <Autocomplete
+              <CustomAutocomplete
                 name="vendor"
                 size="small"
                 disablePortal
@@ -217,15 +216,13 @@ export const GRNUpdate = (props) => {
                   `${option.vendor} ${option.packing_list_no}`
                 }
                 sx={{ minWidth: 100 }}
-                renderInput={(params) => (
-                  <TextField {...params} label="Update Packing List" />
-                )}
+                label="Update Packing List"
               />
             </Grid>
           )}
 
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               name="packing_list_no"
@@ -243,7 +240,7 @@ export const GRNUpdate = (props) => {
           </Grid>
 
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               name="vendor"
@@ -269,7 +266,7 @@ export const GRNUpdate = (props) => {
             return (
               <>
                 <Grid key={index} item xs={12} sm={4}>
-                  <TextField
+                  <CustomTextField
                     fullWidth
                     name="products"
                     size="small"
@@ -280,7 +277,7 @@ export const GRNUpdate = (props) => {
                   />
                 </Grid>
                 <Grid item xs={12} sm={2}>
-                  <TextField
+                  <CustomTextField
                     fullWidth
                     size="small"
                     label="Unit"
@@ -289,7 +286,7 @@ export const GRNUpdate = (props) => {
                   />
                 </Grid>
                 <Grid item xs={12} sm={2}>
-                  <TextField
+                  <CustomTextField
                     fullWidth
                     name="order_quantity"
                     size="small"
@@ -300,7 +297,7 @@ export const GRNUpdate = (props) => {
                   />
                 </Grid>
                 <Grid item xs={12} sm={2}>
-                  <TextField
+                  <CustomTextField
                     fullWidth
                     name="qa_rejected"
                     size="small"
@@ -311,7 +308,7 @@ export const GRNUpdate = (props) => {
                   />
                 </Grid>
                 <Grid item xs={12} sm={2}>
-                  <TextField
+                  <CustomTextField
                     fullWidth
                     name="qa_accepted"
                     size="small"

@@ -1,5 +1,4 @@
 import {
-  Autocomplete,
   Box,
   Button,
   Checkbox,
@@ -17,6 +16,7 @@ import InvoiceServices from "../../../services/InvoiceService";
 import LeadServices from "../../../services/LeadService";
 import ProductService from "../../../services/ProductService";
 import CustomTextField from "../../../Components/CustomTextField";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 export const UpdateLeadsProformaInvoice = (props) => {
   const { idForEdit, getAllLeadsPIDetails, setOpenPopup } = props;
@@ -292,7 +292,7 @@ export const UpdateLeadsProformaInvoice = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={2}>
-            <Autocomplete
+            <CustomAutocomplete
               name="seller_account"
               size="small"
               disablePortal
@@ -302,18 +302,12 @@ export const UpdateLeadsProformaInvoice = (props) => {
               // value={selectedSellerData}s
               getOptionLabel={(option) => option.unit}
               sx={{ minWidth: 200 }}
-              renderInput={(params) => (
-                <CustomTextField
-                  {...params}
-                  label="Update Seller Account"
-                  required
-                  sx={tfStyle}
-                />
-              )}
+              label="Update Seller Account"
+              style={tfStyle}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <Autocomplete
+            <CustomAutocomplete
               name="payment_terms"
               size="small"
               disablePortal
@@ -323,18 +317,12 @@ export const UpdateLeadsProformaInvoice = (props) => {
               options={paymentTermsOptions.map((option) => option.label)}
               getOptionLabel={(option) => option}
               sx={{ minWidth: 300 }}
-              renderInput={(params) => (
-                <CustomTextField
-                  {...params}
-                  label="Payment Terms"
-                  required
-                  sx={tfStyle}
-                />
-              )}
+              label="Payment Terms"
+              style={tfStyle}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <Autocomplete
+            <CustomAutocomplete
               name="delivery_terms"
               size="small"
               disablePortal
@@ -344,13 +332,8 @@ export const UpdateLeadsProformaInvoice = (props) => {
               options={deliveryTermsOptions.map((option) => option.label)}
               getOptionLabel={(option) => option}
               sx={{ minWidth: 300 }}
-              renderInput={(params) => (
-                <CustomTextField
-                  {...params}
-                  label="Delivery Terms"
-                  sx={tfStyle}
-                />
-              )}
+              label="Delivery Terms"
+              style={tfStyle}
             />
           </Grid>
           <Grid item xs={12}>
@@ -590,7 +573,7 @@ export const UpdateLeadsProformaInvoice = (props) => {
             return (
               <>
                 <Grid item xs={12} sm={4}>
-                  <Autocomplete
+                  <CustomAutocomplete
                     name="product"
                     size="small"
                     disablePortal
@@ -602,13 +585,8 @@ export const UpdateLeadsProformaInvoice = (props) => {
                     options={productOption.map((option) => option.product)}
                     getOptionLabel={(option) => option}
                     sx={{ minWidth: 300 }}
-                    renderInput={(params) => (
-                      <CustomTextField
-                        {...params}
-                        label="Product Name"
-                        sx={tfStyle}
-                      />
-                    )}
+                    label="Product Name"
+                    style={tfStyle}
                   />
                 </Grid>
                 <Grid item xs={12} sm={3}>

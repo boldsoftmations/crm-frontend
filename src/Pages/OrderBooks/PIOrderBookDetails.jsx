@@ -10,7 +10,6 @@ import {
   Select,
   IconButton,
   MenuItem,
-  Autocomplete,
 } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
 import { CSVLink } from "react-csv";
@@ -27,6 +26,7 @@ import {
 import { CustomTable } from "../../Components/CustomTable";
 import CustomTextField from "../../Components/CustomTextField";
 import { CustomSearchWithButton } from "../../Components/CustomSearchWithButton";
+import CustomAutocomplete from "../../Components/CustomAutocomplete";
 
 export const PIOrderBookDetails = () => {
   const [orderBookData, setOrderBookData] = useState([]);
@@ -333,45 +333,40 @@ export const PIOrderBookDetails = () => {
         <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
           <Box display="flex" marginBottom="10px">
-            <Autocomplete
+            <CustomAutocomplete
               size="small"
               sx={{ width: 300 }}
               value={selectedOption} // Pass the entire option object here
               onChange={handleMainFilterChange}
               options={filterOption}
               getOptionLabel={(option) => option.label}
-              renderInput={(params) => (
-                <CustomTextField {...params} label="Filter By" />
-              )}
+              label="Filter By"
             />
             {filterQuery ===
               "orderbook__proforma_invoice__seller_account__state" && (
-              <Autocomplete
+              <CustomAutocomplete
                 size="small"
                 sx={{ width: 300, marginLeft: "10px" }}
                 value={filterSelectedQuery}
                 onChange={handleStateFilterChange}
                 options={StateOption.map((option) => option)}
                 getOptionLabel={(option) => option}
-                renderInput={(params) => (
-                  <CustomTextField {...params} label="Filter By State" />
-                )}
+                label="Filter By State"
               />
             )}
 
             {filterQuery.includes(
               "orderbook__proforma_invoice__raised_by__email"
             ) && (
-              <Autocomplete
+              <CustomAutocomplete
                 size="small"
                 sx={{ width: 300, marginLeft: "10px" }}
                 value={filterSelectedQuery}
                 onChange={handleSalesPersonFilterChange}
                 options={assigned.map((option) => option.email)}
                 getOptionLabel={(option) => option}
-                renderInput={(params) => (
-                  <CustomTextField {...params} label="Filter By Sales Person" />
-                )}
+                label="Filter By Sales Person" 
+                
               />
             )}
 

@@ -3,16 +3,10 @@ import React, { useEffect, useRef, useState } from "react";
 import ProductService from "../../../services/ProductService";
 
 import { useSelector } from "react-redux";
-import {
-  Backdrop,
-  Box,
-  CircularProgress,
-  Grid,
-  TextField,
-  Button,
-  Autocomplete,
-} from "@mui/material";
-
+import { Box, Grid, Button } from "@mui/material";
+import CustomTextField from "../../../Components/CustomTextField";
+import { CustomLoader } from "../../../Components/CustomLoader";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 export const UpdateRawMaterials = (props) => {
   const { recordForEdit, setOpenPopup, getrawMaterials } = props;
 
@@ -134,17 +128,7 @@ export const UpdateRawMaterials = (props) => {
 
   return (
     <>
-      <div>
-        <Backdrop
-          sx={{
-            color: "#fff",
-            zIndex: (theme) => theme.zIndex.drawer + 1,
-          }}
-          open={open}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </div>
+      <CustomLoader open={open} />
 
       <Box component="form" noValidate onSubmit={(e) => updateRawMaterial(e)}>
         <Grid container spacing={2}>
@@ -166,7 +150,7 @@ export const UpdateRawMaterials = (props) => {
             {errMsg}
           </p>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               label="Raw Material"
@@ -175,7 +159,7 @@ export const UpdateRawMaterials = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="name"
               size="small"
@@ -185,7 +169,7 @@ export const UpdateRawMaterials = (props) => {
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="size"
               size="small"
@@ -197,8 +181,8 @@ export const UpdateRawMaterials = (props) => {
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <Autocomplete
-              style={{
+            <CustomAutocomplete
+              sx={{
                 minWidth: 220,
               }}
               size="small"
@@ -206,15 +190,13 @@ export const UpdateRawMaterials = (props) => {
               onChange={(e, value) => setUnit(value)}
               options={unitData.map((option) => option.name)}
               getOptionLabel={(option) => `${option}`}
-              renderInput={(params) => (
-                <TextField {...params} name={"unit"} label={"Unit"} />
-              )}
+              label={"Unit"}
             />
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <Autocomplete
-              style={{
+            <CustomAutocomplete
+              sx={{
                 minWidth: 220,
               }}
               size="small"
@@ -222,15 +204,13 @@ export const UpdateRawMaterials = (props) => {
               onChange={(event, value) => setColor(value)}
               options={colorData.map((option) => option.name)}
               getOptionLabel={(option) => `${option}`}
-              renderInput={(params) => (
-                <TextField {...params} name={"color"} label={"Colour"} />
-              )}
+              label={"Colour"}
             />
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <Autocomplete
-              style={{
+            <CustomAutocomplete
+              sx={{
                 minWidth: 220,
               }}
               size="small"
@@ -238,15 +218,13 @@ export const UpdateRawMaterials = (props) => {
               onChange={(event, value) => setBrand(value)}
               options={brandData.map((option) => option.name)}
               getOptionLabel={(option) => `${option}`}
-              renderInput={(params) => (
-                <TextField {...params} name={"brand"} label={"Brand"} />
-              )}
+              label="Brand"
             />
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <Autocomplete
-              style={{
+            <CustomAutocomplete
+              sx={{
                 minWidth: 220,
               }}
               size="small"
@@ -254,17 +232,11 @@ export const UpdateRawMaterials = (props) => {
               onChange={(event, value) => setProductCode(value)}
               options={productCodeData.map((option) => option.code)}
               getOptionLabel={(option) => `${option}`}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  name={"productCode"}
-                  label={"Product Code"}
-                />
-              )}
+              label={"Product Code"}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               label="Description"
@@ -273,7 +245,7 @@ export const UpdateRawMaterials = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="hsn_code"
               size="small"
@@ -284,7 +256,7 @@ export const UpdateRawMaterials = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               name="gst"
               type={"number"}
               size="small"
@@ -295,7 +267,7 @@ export const UpdateRawMaterials = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               size="small"
               label="CGST"
               variant="outlined"
@@ -303,7 +275,7 @@ export const UpdateRawMaterials = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               size="small"
               label="SGST"
               variant="outlined"

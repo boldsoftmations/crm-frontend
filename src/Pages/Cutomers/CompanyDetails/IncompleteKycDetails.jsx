@@ -14,9 +14,9 @@ import ProductService from "../../../services/ProductService";
 import { CSVLink } from "react-csv";
 import { Button } from "@mui/material";
 import { Helmet } from "react-helmet";
-import { Autocomplete, Box } from "@mui/material";
+import { Box } from "@mui/material";
 import KycUpdate from "../KycDetails/KycUpdate";
-import CustomTextField from "../../../Components/CustomTextField";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 export const IncompleteKycDetails = () => {
   const dispatch = useDispatch();
@@ -341,16 +341,14 @@ export const IncompleteKycDetails = () => {
       >
         <Box display="flex" alignItems="center">
           {!userData.groups.includes("Sales Executive") && (
-            <Autocomplete
+            <CustomAutocomplete
               size="small"
               sx={{ width: 300 }}
               onChange={(event, value) => handleFilterChange(value)}
               value={filterSelectedQuery}
               options={assigned.map((option) => option.email)}
               getOptionLabel={(option) => option}
-              renderInput={(params) => (
-                <CustomTextField {...params} label="Filter By Sales Person" />
-              )}
+              label="Filter By Sales Person"
             />
           )}
           <CustomSearchWithButton

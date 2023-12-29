@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import { Button, Box, Paper, Grid, Autocomplete } from "@mui/material";
+import { Button, Box, Paper, Grid } from "@mui/material";
 import {
   Table,
   TableBody,
@@ -19,6 +19,7 @@ import { useSelector } from "react-redux";
 import { Popup } from "../../Components/Popup";
 import { AnticipatedDateUpdate } from "./AnticipatedDateUpdate";
 import CustomTextField from "../../Components/CustomTextField";
+import CustomAutocomplete from "../../Components/CustomAutocomplete";
 
 export const CurrentMonthForecastView = () => {
   const [open, setOpen] = useState(false);
@@ -244,19 +245,14 @@ export const CurrentMonthForecastView = () => {
             >
               {!UserData.groups.includes("Sales Executive") && (
                 <Grid item xs={12} sm={3}>
-                  <Autocomplete
+                  <CustomAutocomplete
                     size="small"
                     sx={{ minWidth: 150 }}
                     onChange={(event, value) => handleFilterChange(value)}
                     value={salesPersonByFilter}
                     options={assignedOption.map((option) => option.email)}
                     getOptionLabel={(option) => option}
-                    renderInput={(params) => (
-                      <CustomTextField
-                        {...params}
-                        label="Filter By Sales Person"
-                      />
-                    )}
+                    label="Filter By Sales Person"
                   />
                 </Grid>
               )}

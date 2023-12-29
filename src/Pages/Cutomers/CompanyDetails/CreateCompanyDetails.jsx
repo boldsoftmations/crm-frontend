@@ -11,7 +11,6 @@ import {
   Radio,
   RadioGroup,
   Select,
-  Autocomplete,
   Chip,
   Divider,
 } from "@mui/material";
@@ -26,6 +25,7 @@ import Option from "../../../Options/Options";
 import CustomTextField from "../../../Components/CustomTextField";
 import { useDispatch } from "react-redux";
 import { getCompanyID, getCompanyName } from "../../../Redux/Action/Action";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 export const CreateCompanyDetails = (props) => {
   const { getAllCompanyDetails } = props;
@@ -272,7 +272,7 @@ export const CreateCompanyDetails = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <Autocomplete
+            <CustomAutocomplete
               size="small"
               value={inputValue.assigned_to || []}
               onChange={(event, newValue) => {
@@ -292,13 +292,8 @@ export const CreateCompanyDetails = (props) => {
                   />
                 ))
               }
-              renderInput={(params) => (
-                <CustomTextField
-                  {...params}
-                  label="Assign To"
-                  placeholder="Assign To"
-                />
-              )}
+              label="Assign To"
+              placeholder="Assign To"
             />
           </Grid>
           <Grid item xs={12}>
@@ -399,47 +394,37 @@ export const CreateCompanyDetails = (props) => {
           </Grid>
           {inputValue.type_of_customer === "Industrial Customer" && (
             <Grid item xs={12} sm={3}>
-              <Autocomplete
-                style={{
-                  minWidth: 220,
-                }}
+              <CustomAutocomplete
+                sx={{ minWidth: 220 }}
                 size="small"
-                onChange={(event, value) =>
-                  handleSelectChange("industrial_list", value)
-                }
+                onChange={(event, value) => {
+                  handleSelectChange("industrial_list", value);
+                }}
                 value={inputValue.industrial_list || ""}
                 options={Option.IndustriesList.map((option) => option.label)}
-                getOptionLabel={(option) => option}
-                renderInput={(params) => (
-                  <CustomTextField {...params} label="Industrial List" />
-                )}
+                label="Industrial List"
               />
             </Grid>
           )}
           {inputValue.type_of_customer === "Distribution Customer" && (
             <Grid item xs={12} sm={3}>
-              <Autocomplete
-                style={{
-                  minWidth: 220,
-                }}
+              <CustomAutocomplete
+                sx={{ minWidth: 220 }}
                 size="small"
-                onChange={(event, value) =>
-                  handleSelectChange("distribution_type", value)
-                }
+                onChange={(event, value) => {
+                  handleSelectChange("distribution_type", value);
+                }}
                 value={inputValue.distribution_type || ""}
                 options={Option.DistributionTypeOption.map(
                   (option) => option.label
                 )}
-                getOptionLabel={(option) => option}
-                renderInput={(params) => (
-                  <CustomTextField {...params} label="Distribution Type" />
-                )}
+                label="Distribution Type"
               />
             </Grid>
           )}
           {inputValue.type_of_customer === "Distribution Customer" && (
             <Grid item xs={12} sm={3}>
-              <Autocomplete
+              <CustomAutocomplete
                 size="small"
                 value={inputValue.category || []}
                 onChange={(event, newValue) => {
@@ -459,19 +444,14 @@ export const CreateCompanyDetails = (props) => {
                     />
                   ))
                 }
-                renderInput={(params) => (
-                  <CustomTextField
-                    {...params}
-                    label="Category"
-                    placeholder="Category"
-                  />
-                )}
+                label="Category"
+                placeholder="Category"
               />
             </Grid>
           )}
           {inputValue.type_of_customer === "Distribution Customer" && (
             <Grid item xs={12} sm={3}>
-              <Autocomplete
+              <CustomAutocomplete
                 size="small"
                 value={inputValue.main_distribution || []}
                 onChange={(event, newValue) => {
@@ -491,13 +471,8 @@ export const CreateCompanyDetails = (props) => {
                     />
                   ))
                 }
-                renderInput={(params) => (
-                  <CustomTextField
-                    {...params}
-                    label="Main Distribution"
-                    placeholder="Main Distribution"
-                  />
-                )}
+                label="Main Distribution"
+                placeholder="Main Distribution"
               />
             </Grid>
           )}

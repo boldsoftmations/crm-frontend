@@ -1,10 +1,11 @@
-import { Autocomplete, Box, Grid } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { CustomButton } from "../../Components/CustomButton";
 import { CustomLoader } from "../../Components/CustomLoader";
 import ProductForecastService from "../../services/ProductForecastService";
 import LeadServices from "../../services/LeadService";
 import CustomTextField from "../../Components/CustomTextField";
+import CustomAutocomplete from "../../Components/CustomAutocomplete";
 
 export const ProductForecastAssignTo = (props) => {
   const { getAllCompanyDetailsByID, setOpenPopup2, forecastDataByID } = props;
@@ -83,7 +84,7 @@ export const ProductForecastAssignTo = (props) => {
             />
           </Grid>
           <Grid item xs={12}>
-            <Autocomplete
+            <CustomAutocomplete
               fullWidth
               size="small"
               id="grouped-demo"
@@ -91,9 +92,7 @@ export const ProductForecastAssignTo = (props) => {
               options={assigned.map((option) => option.email)}
               getOptionLabel={(option) => option}
               // sx={{ minWidth: 300 }}
-              renderInput={(params) => (
-                <CustomTextField {...params} label="Assign To" />
-              )}
+              label="Assign To"
             />
           </Grid>
         </Grid>

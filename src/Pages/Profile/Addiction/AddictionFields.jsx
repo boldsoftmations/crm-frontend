@@ -1,6 +1,7 @@
 import React from "react";
-import { Autocomplete, Grid } from "@mui/material";
+import {  Grid } from "@mui/material";
 import CustomTextField from "../../../Components/CustomTextField";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 const YesNoOptions = ["Yes", "No"];
 
@@ -22,7 +23,7 @@ export const AddictionFields = ({ formData, setFormData }) => {
   return (
     <>
       <Grid item xs={12} sm={4}>
-        <Autocomplete
+        <CustomAutocomplete
           options={YesNoOptions}
           fullWidth
           size="small"
@@ -35,13 +36,11 @@ export const AddictionFields = ({ formData, setFormData }) => {
               },
             });
           }}
-          renderInput={(params) => (
-            <CustomTextField {...params} label="Tobacco" />
-          )}
+          label="Tobacco"
         />
       </Grid>
       <Grid item xs={12} sm={4}>
-        <Autocomplete
+        <CustomAutocomplete
           options={YesNoOptions}
           fullWidth
           size="small"
@@ -54,13 +53,11 @@ export const AddictionFields = ({ formData, setFormData }) => {
               },
             });
           }}
-          renderInput={(params) => (
-            <CustomTextField {...params} label="Cigarettes" />
-          )}
+          label="Cigarettes"
         />
       </Grid>
       <Grid item xs={12} sm={4}>
-        <Autocomplete
+        <CustomAutocomplete
           options={YesNoOptions}
           fullWidth
           size="small"
@@ -73,9 +70,7 @@ export const AddictionFields = ({ formData, setFormData }) => {
               },
             });
           }}
-          renderInput={(params) => (
-            <CustomTextField {...params} label="Alcohol" />
-          )}
+          label="Alcohol"
         />
       </Grid>
     </>

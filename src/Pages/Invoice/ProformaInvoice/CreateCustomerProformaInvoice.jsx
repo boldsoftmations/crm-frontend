@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import {
   Alert,
-  Autocomplete,
   Box,
   Button,
   Checkbox,
@@ -27,6 +26,7 @@ import { CustomLoader } from "../../../Components/CustomLoader";
 import { Popup } from "../../../Components/Popup";
 import { UpdateCompanyDetails } from "../../Cutomers/CompanyDetails/UpdateCompanyDetails";
 import CustomTextField from "../../../Components/CustomTextField";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -309,7 +309,7 @@ export const CreateCustomerProformaInvoice = (props) => {
       >
         <Grid container spacing={2}>
           <Grid item xs={12} sm={4}>
-            <Autocomplete
+            <CustomAutocomplete
               name="seller_account"
               size="small"
               disablePortal
@@ -318,17 +318,13 @@ export const CreateCustomerProformaInvoice = (props) => {
               options={sellerData.map((option) => option)}
               getOptionLabel={(option) => option.unit}
               sx={{ minWidth: 300 }}
-              renderInput={(params) => (
-                <CustomTextField
-                  {...params}
-                  label="Seller Account"
-                  sx={tfStyle}
-                />
-              )}
+              label="Seller Account"
+              // value={selectedSellerData}
+              style={tfStyle}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <Autocomplete
+            <CustomAutocomplete
               name="payment_terms"
               size="small"
               disablePortal
@@ -337,17 +333,13 @@ export const CreateCustomerProformaInvoice = (props) => {
               options={paymentTermsOptions.map((option) => option.label)}
               getOptionLabel={(option) => option}
               sx={{ minWidth: 300 }}
-              renderInput={(params) => (
-                <CustomTextField
-                  {...params}
-                  label="Payment Terms"
-                  sx={tfStyle}
-                />
-              )}
+              label="Payment Terms"
+              value={paymentTermData}
+              style={tfStyle}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <Autocomplete
+            <CustomAutocomplete
               name="delivery_terms"
               size="small"
               disablePortal
@@ -356,13 +348,9 @@ export const CreateCustomerProformaInvoice = (props) => {
               options={deliveryTermsOptions.map((option) => option.label)}
               getOptionLabel={(option) => option}
               sx={{ minWidth: 300 }}
-              renderInput={(params) => (
-                <CustomTextField
-                  {...params}
-                  label="Delivery Terms"
-                  sx={tfStyle}
-                />
-              )}
+              label="Delivery Terms"
+              value={deliveryTermData}
+              style={tfStyle}
             />
           </Grid>
           <Grid item xs={12}>
@@ -664,7 +652,7 @@ export const CreateCustomerProformaInvoice = (props) => {
             return (
               <>
                 <Grid key={index} item xs={12} sm={4}>
-                  <Autocomplete
+                  <CustomAutocomplete
                     name="product"
                     size="small"
                     disablePortal
@@ -675,13 +663,8 @@ export const CreateCustomerProformaInvoice = (props) => {
                     options={product.map((option) => option.product)}
                     getOptionLabel={(option) => option}
                     sx={{ minWidth: 300 }}
-                    renderInput={(params) => (
-                      <CustomTextField
-                        {...params}
-                        label="Product Name"
-                        sx={tfStyle}
-                      />
-                    )}
+                    label="Product Name"
+                    style={tfStyle}
                   />
                 </Grid>
                 <Grid item xs={12} sm={3}>

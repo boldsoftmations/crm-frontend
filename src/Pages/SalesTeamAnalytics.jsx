@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-  Autocomplete,
   Grid,
   Button,
   Box,
@@ -20,6 +19,7 @@ import { CustomChart } from "../Components/CustomChart";
 import { Popup } from "../Components/Popup";
 import { useSelector } from "react-redux";
 import CustomTextField from "../Components/CustomTextField";
+import CustomAutocomplete from "../Components/CustomAutocomplete";
 
 export const SalesTeamAnalytics = (props) => {
   const {
@@ -289,19 +289,14 @@ export const SalesTeamAnalytics = (props) => {
             <Paper sx={{ width: "100%", padding: "20px" }}>
               <Grid container alignItems="center" spacing={1}>
                 <Grid item xs={9} sm={9} md={9} lg={9}>
-                  <Autocomplete
+                  <CustomAutocomplete
                     size="small"
-                    onChange={(event, value) => handleAutocompleteChange(value)}
                     value={selectedOption}
+                    onChange={(event, value) => handleAutocompleteChange(value)}
                     options={displayOptions}
                     groupBy={(option) => option.primaryGroup || ""}
                     getOptionLabel={(option) => option.email}
-                    renderInput={(params) => (
-                      <CustomTextField
-                        {...params}
-                        label="Filter By Sales Person"
-                      />
-                    )}
+                    label="Filter By Sales Person"
                   />
                 </Grid>
               </Grid>
@@ -677,21 +672,16 @@ export const SalesTeamAnalytics = (props) => {
                   Daily Sales Invoice Quantity
                 </Typography>
                 <Divider />
-                <Autocomplete
+
+                <CustomAutocomplete
                   sx={{ marginTop: "10px" }}
                   size="small"
                   value={selectedDIQData}
-                  onChange={(event, value) => handleDataForInvoice(value)}
+                  onChange={handleDataForInvoice}
                   options={descriptionOptionsForInvoice}
                   getOptionLabel={(option) => option}
-                  renderInput={(params) => (
-                    <CustomTextField
-                      {...params}
-                      label="Filter By Description"
-                    />
-                  )}
+                  label="Filter By Description"
                 />
-
                 <CustomChart
                   chartType="LineChart"
                   data={[
@@ -720,19 +710,15 @@ export const SalesTeamAnalytics = (props) => {
                   Daily Sales OrderBook Quantity
                 </Typography>
                 <Divider />
-                <Autocomplete
+
+                <CustomAutocomplete
                   sx={{ marginTop: "10px" }}
                   size="small"
                   value={selectedDOBQData}
-                  onChange={(event, value) => handleDataForOrderBook(value)}
+                  onChange={handleDataForOrderBook}
                   options={descriptionOptionsForOrderBook}
                   getOptionLabel={(option) => option}
-                  renderInput={(params) => (
-                    <CustomTextField
-                      {...params}
-                      label="Filter By Description"
-                    />
-                  )}
+                  label="Filter By Description"
                 />
                 <CustomChart
                   chartType="LineChart"

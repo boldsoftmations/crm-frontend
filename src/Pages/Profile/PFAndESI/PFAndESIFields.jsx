@@ -1,6 +1,7 @@
 import React from "react";
-import { Grid, Autocomplete } from "@mui/material";
+import { Grid } from "@mui/material";
 import CustomTextField from "../../../Components/CustomTextField";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 export const PFAndESIFields = ({ formData, setFormData }) => {
   const YesorNoOptions = ["Yes", "No"];
@@ -27,7 +28,7 @@ export const PFAndESIFields = ({ formData, setFormData }) => {
   return (
     <>
       <Grid item xs={12} sm={4}>
-        <Autocomplete
+        <CustomAutocomplete
           options={YesorNoOptions}
           fullWidth
           size="small"
@@ -35,9 +36,7 @@ export const PFAndESIFields = ({ formData, setFormData }) => {
           onChange={(event, newValue) =>
             handleChange("pf_esi_details.has_pf_esi_account", newValue || "")
           }
-          renderInput={(params) => (
-            <CustomTextField label="Do you have PF & ESI Account" {...params} />
-          )}
+          label="Do you have PF & ESI Account"
         />
       </Grid>
       {formData.pf_esi_details.has_pf_esi_account === "Yes" && (

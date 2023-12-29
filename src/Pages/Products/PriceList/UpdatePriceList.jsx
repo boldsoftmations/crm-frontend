@@ -1,16 +1,10 @@
 import React, { useRef, useState } from "react";
-import {
-  Autocomplete,
-  Box,
-  Button,
-  FormControlLabel,
-  Grid,
-  Switch,
-  TextField,
-} from "@mui/material";
+import { Box, Button, FormControlLabel, Grid, Switch } from "@mui/material";
 import ProductService from "../../../services/ProductService";
 import "../../CommonStyle.css";
 import { CustomLoader } from "../../../Components/CustomLoader";
+import CustomTextField from "../../../Components/CustomTextField";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 export const UpdatePriceList = (props) => {
   const { recordForEdit, setOpenPopup, getPriceList, product } = props;
@@ -94,8 +88,8 @@ export const UpdatePriceList = (props) => {
           </p>
 
           <Grid item xs={12}>
-            <Autocomplete
-              style={{
+            <CustomAutocomplete
+              sx={{
                 minWidth: 180,
               }}
               size="small"
@@ -104,13 +98,11 @@ export const UpdatePriceList = (props) => {
               name="productName"
               options={product.map((option) => option.name)}
               getOptionLabel={(option) => option}
-              renderInput={(params) => (
-                <TextField {...params} label="Product Name" />
-              )}
+              label="Product Name"
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="slab1"
               size="small"
@@ -125,7 +117,7 @@ export const UpdatePriceList = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="slab1_price"
               size="small"
@@ -136,7 +128,7 @@ export const UpdatePriceList = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="slab2"
               size="small"
@@ -153,7 +145,7 @@ export const UpdatePriceList = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="slab2_price"
               size="small"
@@ -164,7 +156,7 @@ export const UpdatePriceList = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="slab3_price"
               size="small"
@@ -175,7 +167,7 @@ export const UpdatePriceList = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               type="date"
               name="validity"

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import UserProfileService from "../../../services/UserProfileService";
-import { Autocomplete, Box, Button, Grid } from "@mui/material";
+import { Box, Button, Grid } from "@mui/material";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import ProductService from "../../../services/ProductService";
 import CustomTextField from "../../../Components/CustomTextField";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 export const ProductObjectionsUpdate = ({
   getProductObjectionDetails,
@@ -61,8 +62,8 @@ export const ProductObjectionsUpdate = ({
       >
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <Autocomplete
-              style={{ minWidth: 180 }}
+            <CustomAutocomplete
+              sx={{ minWidth: 180 }}
               size="small"
               onChange={(event, newValue) => {
                 handleFormChange({
@@ -75,9 +76,7 @@ export const ProductObjectionsUpdate = ({
               value={productObjection.description}
               options={descriptionMenuData.map((option) => option.name)}
               getOptionLabel={(option) => `${option ? option : "No Options"}`}
-              renderInput={(params) => (
-                <CustomTextField {...params} label="Description" />
-              )}
+              label="Description"
             />
           </Grid>
           <Grid item xs={12}>

@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
-  Autocomplete,
   Paper,
   Box,
   Grid,
@@ -24,6 +23,7 @@ import { ProductForecastAssignTo } from "./ProductForecastAssignTo";
 import { Helmet } from "react-helmet";
 import { useSelector } from "react-redux";
 import CustomTextField from "../../Components/CustomTextField";
+import CustomAutocomplete from "../../Components/CustomAutocomplete";
 
 export const CustomerHavingForecastView = () => {
   const [open, setOpen] = useState(false);
@@ -283,19 +283,14 @@ export const CustomerHavingForecastView = () => {
             >
               {!UserData.groups.includes("Sales Executive") && (
                 <Grid item xs={12} sm={3}>
-                  <Autocomplete
+                  <CustomAutocomplete
                     size="small"
                     sx={{ minWidth: 150 }}
                     onChange={(event, value) => handleFilterChange(value)}
                     value={salesPersonByFilter}
                     options={assignedOption.map((option) => option.email)}
                     getOptionLabel={(option) => option}
-                    renderInput={(params) => (
-                      <CustomTextField
-                        {...params}
-                        label="Filter By Sales Person"
-                      />
-                    )}
+                    label="Filter By Sales Person"
                   />
                 </Grid>
               )}

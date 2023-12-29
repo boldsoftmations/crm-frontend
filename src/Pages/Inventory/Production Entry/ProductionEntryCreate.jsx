@@ -1,5 +1,4 @@
 import {
-  Autocomplete,
   Box,
   Button,
   Checkbox,
@@ -9,7 +8,6 @@ import {
   Grid,
   IconButton,
   Snackbar,
-  TextField,
 } from "@mui/material";
 import React, { useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
@@ -17,7 +15,8 @@ import { CustomLoader } from "../../../Components/CustomLoader";
 import InventoryServices from "../../../services/InventoryService";
 import { useSelector } from "react-redux";
 import { styled } from "@mui/material/styles";
-
+import CustomTextField from "../../../Components/CustomTextField";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
   ...theme.typography.body2,
@@ -172,7 +171,7 @@ export const ProductionEntryCreate = (props) => {
         />
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
-            <Autocomplete
+            <CustomAutocomplete
               name="seller_account"
               size="small"
               disablePortal
@@ -183,13 +182,11 @@ export const ProductionEntryCreate = (props) => {
               }
               getOptionLabel={(option) => option}
               sx={{ minWidth: 300 }}
-              renderInput={(params) => (
-                <TextField {...params} label="Seller Account" />
-              )}
+              label="Seller Account"
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <Autocomplete
+            <CustomAutocomplete
               name="product"
               size="small"
               disablePortal
@@ -202,13 +199,11 @@ export const ProductionEntryCreate = (props) => {
               }
               getOptionLabel={(option) => option}
               sx={{ minWidth: 300 }}
-              renderInput={(params) => (
-                <TextField {...params} label="Product Name" />
-              )}
+              label="Product Name"
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <Autocomplete
+            <CustomAutocomplete
               name="bom"
               size="small"
               disablePortal
@@ -217,9 +212,7 @@ export const ProductionEntryCreate = (props) => {
               options={selectedProduct}
               getOptionLabel={(option) => option.bom_id}
               sx={{ minWidth: 300 }}
-              renderInput={(params) => (
-                <TextField {...params} label="Bill of Material" />
-              )}
+              label="Bill of Material"
             />
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -235,7 +228,7 @@ export const ProductionEntryCreate = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="quantity"
               size="small"
@@ -256,7 +249,7 @@ export const ProductionEntryCreate = (props) => {
             return (
               <>
                 <Grid key={index} item xs={12} sm={4}>
-                  <TextField
+                  <CustomTextField
                     fullWidth
                     size="small"
                     label="Product"
@@ -265,7 +258,7 @@ export const ProductionEntryCreate = (props) => {
                   />
                 </Grid>
                 <Grid key={index} item xs={12} sm={2}>
-                  <TextField
+                  <CustomTextField
                     fullWidth
                     size="small"
                     label="Unit"
@@ -275,7 +268,7 @@ export const ProductionEntryCreate = (props) => {
                 </Grid>
                 {checked === false ? (
                   <Grid item xs={12} sm={3}>
-                    <TextField
+                    <CustomTextField
                       fullWidth
                       name="quantity"
                       size="small"
@@ -297,7 +290,7 @@ export const ProductionEntryCreate = (props) => {
                   </Grid>
                 ) : (
                   <Grid item xs={12} sm={3}>
-                    <TextField
+                    <CustomTextField
                       fullWidth
                       name="quantity"
                       size="small"
@@ -318,7 +311,7 @@ export const ProductionEntryCreate = (props) => {
                 )}
                 {checked && (
                   <Grid item xs={12} sm={3}>
-                    <TextField
+                    <CustomTextField
                       fullWidth
                       name="expected_quantity"
                       size="small"

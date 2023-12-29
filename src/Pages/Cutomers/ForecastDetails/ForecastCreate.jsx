@@ -1,11 +1,4 @@
-import {
-  Alert,
-  Autocomplete,
-  Box,
-  Button,
-  Grid,
-  Snackbar,
-} from "@mui/material";
+import { Alert, Box, Button, Grid, Snackbar } from "@mui/material";
 import React, { useEffect, useState, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { CustomLoader } from "../../../Components/CustomLoader";
@@ -14,6 +7,7 @@ import CustomerServices from "../../../services/CustomerService";
 import ProductService from "../../../services/ProductService";
 import { ForecastProductCreate } from "./ForecastProductCreate";
 import CustomTextField from "../../../Components/CustomTextField";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 export const ForecastCreate = (props) => {
   const { setOpenPopup, getAllCompanyDetailsByID } = props;
@@ -156,7 +150,7 @@ export const ForecastCreate = (props) => {
             />
           </Grid>
           <Grid item xs={12}>
-            <Autocomplete
+            <CustomAutocomplete
               name="product"
               size="small"
               disablePortal
@@ -165,9 +159,7 @@ export const ForecastCreate = (props) => {
               options={productOption.map((option) => option.product)}
               getOptionLabel={(option) => option}
               sx={{ minWidth: 300 }}
-              renderInput={(params) => (
-                <CustomTextField {...params} label="Product Name" />
-              )}
+              label="Product Name"
             />
           </Grid>
         </Grid>

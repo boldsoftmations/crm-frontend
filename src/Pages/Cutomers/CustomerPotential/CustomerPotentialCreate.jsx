@@ -1,23 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Autocomplete, Box, Button, Grid } from "@mui/material";
+import { Box, Button, Grid } from "@mui/material";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomTextField from "../../../Components/CustomTextField";
 import ProductService from "../../../services/ProductService";
 import CustomerServices from "../../../services/CustomerService";
-
-const ProductAutocomplete = ({ products, onChange, potential }) => (
-  <Autocomplete
-    style={{ minWidth: 180 }}
-    size="small"
-    onChange={onChange}
-    value={potential.product}
-    options={products.map((option) => option.name)}
-    getOptionLabel={(option) => `${option ? option : "No Options"}`}
-    renderInput={(params) => (
-      <CustomTextField {...params} label="Product Name" />
-    )}
-  />
-);
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 export const CustomerPotentialCreate = ({
   recordForEdit,
@@ -27,7 +14,7 @@ export const CustomerPotentialCreate = ({
   const [open, setOpen] = useState(false);
   const [potential, setPotential] = useState({});
   const [product, setProduct] = useState([]);
-
+  console.log("potential", potential);
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -49,7 +36,7 @@ export const CustomerPotentialCreate = ({
     setPotential({ ...potential, [name]: value });
   };
 
-  const handleAutocompleteChange = (_, value) => {
+  const handleAutocompleteChange = (event, value) => {
     setPotential({ ...potential, product: value });
   };
 
@@ -77,10 +64,14 @@ export const CustomerPotentialCreate = ({
       <Box component="form" noValidate onSubmit={handleSubmit}>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
-            <ProductAutocomplete
-              products={product}
-              potential={potential}
+            <CustomAutocomplete
+              sx={{ minWidth: 180 }}
+              size="small"
               onChange={handleAutocompleteChange}
+              value={potential.product}
+              options={product.map((option) => option.name)}
+              getOptionLabel={(option) => `${option ? option : "No Options"}`}
+              label="Product"
             />
           </Grid>
           <Grid item xs={12} sm={6}>

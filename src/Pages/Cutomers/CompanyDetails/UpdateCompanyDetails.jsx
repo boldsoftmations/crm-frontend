@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
 import {
-  Autocomplete,
   Box,
   Button,
   FormControl,
@@ -27,6 +26,7 @@ import { CustomLoader } from "../../../Components/CustomLoader";
 import { ViewCustomerFollowUp } from "../../FollowUp/ViewCustomerFollowUp";
 import Option from "../../../Options/Options";
 import CustomTextField from "../../../Components/CustomTextField";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 export const UpdateCompanyDetails = (props) => {
   const { setOpenPopup, getAllCompanyDetails, recordForEdit } = props;
@@ -354,7 +354,7 @@ export const UpdateCompanyDetails = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <Autocomplete
+            <CustomAutocomplete
               size="small"
               value={inputValue.assigned_to || []}
               onChange={(event, newValue) => {
@@ -374,27 +374,21 @@ export const UpdateCompanyDetails = (props) => {
                   />
                 ))
               }
-              renderInput={(params) => (
-                <CustomTextField
-                  {...params}
-                  label="Assign To"
-                  placeholder="Assign To"
-                />
-              )}
+              label="Assign To"
+              placeholder="Assign To"
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <Autocomplete
+            <CustomAutocomplete
               size="small"
               id="controllable-states-demo"
               value={inputValue.status || ""}
               onChange={(event, newValue) => {
                 handleSelectChange("status", newValue);
               }}
-              options={Option.CustomerStatusData}
-              renderInput={(params) => (
-                <CustomTextField {...params} label="Status" />
-              )}
+              options={Option.CustomerStatusData.map((option) => option)} // Assuming CustomerStatusData is an array
+              getOptionLabel={(option) => option} // If CustomerStatusData is not an array of strings, adjust accordingly
+              label="Status"
             />
           </Grid>
           <Grid item xs={12}>

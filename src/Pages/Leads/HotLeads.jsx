@@ -9,7 +9,6 @@ import {
   Select,
   MenuItem,
   IconButton,
-  Autocomplete,
 } from "@mui/material";
 import PushPinIcon from "@mui/icons-material/PushPin";
 import PushPinOutlinedIcon from "@mui/icons-material/PushPinOutlined";
@@ -41,6 +40,7 @@ import CustomTextField from "../../Components/CustomTextField";
 import { CreateLeads } from "./CreateLeads";
 import { LeadPotentialCreate } from "./LeadPotential/LeadPotentialCreate";
 import { LeadForecastCreate } from "./LeadForecast/LeadForecastCreate";
+import CustomAutocomplete from "../../Components/CustomAutocomplete";
 
 export const HotLeads = () => {
   const [leads, setLeads] = useState([]);
@@ -149,13 +149,13 @@ export const HotLeads = () => {
     }
   };
   const renderAutocomplete = (label, options, onChange) => (
-    <Autocomplete
+    <CustomAutocomplete
       sx={{ minWidth: "200px", marginLeft: "1em" }}
       size="small"
       onChange={(event, value) => onChange(value)}
       options={options}
       getOptionLabel={(option) => option}
-      renderInput={(params) => <CustomTextField {...params} label={label} />}
+      label={label}
     />
   );
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Box, TextField, Button, Grid, Autocomplete } from "@mui/material";
+import { Box, TextField, Button, Grid } from "@mui/material";
 import CustomAxios from "../../../services/api";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 export const JobOpeningUpdate = ({
   recordForEdit,
@@ -96,18 +97,12 @@ export const JobOpeningUpdate = ({
           />
         </Grid>
         <Grid item xs={12}>
-          <Autocomplete
+          <CustomAutocomplete
             size="small"
             id="salary_ranges"
             options={salaryRange}
             fullWidth
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Salary Range"
-                name="salary_ranges"
-              />
-            )}
+            label="Salary Range"
             value={values.salary_ranges || ""}
             onChange={(event, newValue) => {
               setValues({
@@ -118,7 +113,7 @@ export const JobOpeningUpdate = ({
           />
         </Grid>
         <Grid item xs={12}>
-          <Autocomplete
+          <CustomAutocomplete
             size="small"
             value={values.position}
             onChange={(event, newValue) => {
@@ -127,36 +122,26 @@ export const JobOpeningUpdate = ({
               });
             }}
             options={["New", "Replacement", "Backup"]}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                name="position"
-                label="Position"
-                fullWidth
-              />
-            )}
+            label="Position"
           />
         </Grid>
         {values.position === "Replacement" && (
-          <Grid item xs={12}>
-            <Autocomplete
-              size="small"
-              id="replacement_user"
-              options={emails}
-              fullWidth
-              renderInput={(params) => (
-                <TextField {...params} label="Replacement Email" />
-              )}
-              value={values.replacement_user}
-              onChange={(event, newValue) => {
-                setValues({
-                  ...values,
-                  replacement_user: newValue,
-                });
-              }}
-            />
-          </Grid>
+          <CustomAutocomplete
+            size="small"
+            id="replacement_user"
+            options={emails}
+            fullWidth
+            label="Replacement Email"
+            value={values.replacement_user}
+            onChange={(event, newValue) => {
+              setValues({
+                ...values,
+                replacement_user: newValue,
+              });
+            }}
+          />
         )}
+
         <Grid item xs={12}>
           <Box display="flex" justifyContent="flex-end" mt={2}>
             <Button fullWidth type="submit" variant="contained" color="primary">

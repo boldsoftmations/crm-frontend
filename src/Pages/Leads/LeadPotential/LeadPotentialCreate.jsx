@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Autocomplete, Box, Button, Grid } from "@mui/material";
+import { Box, Button, Grid } from "@mui/material";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomTextField from "../../../Components/CustomTextField";
 import ProductService from "../../../services/ProductService";
 import LeadServices from "../../../services/LeadService";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 export const LeadPotentialCreate = (props) => {
   const { leadsByID, getLeadByID, setOpenModal } = props;
@@ -216,28 +217,24 @@ export const LeadPotentialCreate = (props) => {
         >
           <Grid container spacing={2}>
             <Grid item xs={24} sm={4}>
-              <Autocomplete
-                style={{
+              <CustomAutocomplete
+                sx={{
                   minWidth: 180,
                 }}
                 size="small"
                 onChange={(e, value) => handleAutocompleteChange(value)}
                 options={product.map((option) => option.name)}
                 getOptionLabel={(option) => `${option ? option : "No Options"}`}
-                renderInput={(params) => (
-                  <CustomTextField {...params} label="Product Name" />
-                )}
+                label="Product Name"
               />
             </Grid>
             <Grid item xs={24} sm={4}>
-              <Autocomplete
+              <CustomAutocomplete
                 size="small"
                 options={MainDistribution}
                 getOptionLabel={(option) => option.label}
                 onChange={handleBrandChange}
-                renderInput={(params) => (
-                  <CustomTextField {...params} label="Current Brand" />
-                )}
+                label="Current Brand"
               />
             </Grid>
             <Grid item xs={24} sm={4}>

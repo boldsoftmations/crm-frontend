@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Grid, Paper, Box, Autocomplete } from "@mui/material";
+import { Grid, Paper, Box } from "@mui/material";
 import moment from "moment";
 import { Popup } from "../../Components/Popup";
 import { UpdateLeads } from "../Leads/UpdateLeads";
@@ -10,7 +10,7 @@ import { FollowupDone } from "./FollowupDone";
 import LeadServices from "../../services/LeadService";
 import { Helmet } from "react-helmet";
 import { useSelector } from "react-redux";
-import CustomTextField from "../../Components/CustomTextField";
+import CustomAutocomplete from "../../Components/CustomAutocomplete";
 
 export const UpcomingFollowup = ({ product }) => {
   const [upcomingFollowUp, setUpcomingFollowUp] = useState([]);
@@ -150,16 +150,14 @@ export const UpcomingFollowup = ({ product }) => {
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
           {!userData.groups.includes("Sales Executive") && (
             <Box display="flex" marginBottom="10px">
-              <Autocomplete
+              <CustomAutocomplete
                 size="small"
                 sx={{ width: 300 }}
                 onChange={(event, value) => handleFilterChange(value)}
                 value={filterSelectedQuery}
                 options={assigned.map((option) => option.email)}
                 getOptionLabel={(option) => option}
-                renderInput={(params) => (
-                  <CustomTextField {...params} label="Filter By Sales Person" />
-                )}
+                label="Filter By Sales Person"
               />
             </Box>
           )}

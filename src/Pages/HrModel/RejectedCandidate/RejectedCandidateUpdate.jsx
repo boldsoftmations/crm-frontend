@@ -1,15 +1,10 @@
 import React, { useEffect, useState } from "react";
-import {
-  Button,
-  TextField,
-  DialogActions,
-  Autocomplete,
-  Grid,
-} from "@mui/material";
+import { Button, TextField, DialogActions, Grid } from "@mui/material";
 import Hr from "../../../services/Hr";
 import CustomTextField from "../../../Components/CustomTextField";
 import CustomAxios from "../../../services/api";
 import { CustomLoader } from "../../../Components/CustomLoader";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 export const RejectedCandidateUpdate = ({
   row,
@@ -90,15 +85,15 @@ export const RejectedCandidateUpdate = ({
       <CustomLoader open={isLoading} />
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <Autocomplete
+          <CustomAutocomplete
             value={stage}
             onChange={(event, newValue) => {
               setStage(newValue);
             }}
             options={stageOptions}
-            renderInput={(params) => (
-              <TextField {...params} label="Stage" margin="dense" fullWidth />
-            )}
+            label="Stage"
+            margin="dense"
+            fullWidth
           />
         </Grid>
         <Grid item xs={12}>
@@ -112,28 +107,24 @@ export const RejectedCandidateUpdate = ({
           />
         </Grid>
         <Grid item xs={12}>
-          <Autocomplete
+          <CustomAutocomplete
             style={{ minWidth: 220 }}
             size="small"
             value={interviewTime}
             onChange={handleTimeChange}
             options={timeOptions}
-            renderInput={(params) => (
-              <CustomTextField {...params} label="Interview Time" />
-            )}
+            label="Interview Time"
           />
         </Grid>
         <Grid item xs={12}>
-          <Autocomplete
+          <CustomAutocomplete
             style={{ minWidth: 220 }}
             size="small"
             onChange={(event, newValue) => handleInputChange(event, newValue)}
             name="email"
             options={email.map((option) => option.email)}
             getOptionLabel={(option) => `${option}`}
-            renderInput={(params) => (
-              <CustomTextField {...params} label="Interviewer Email" />
-            )}
+            label="Interviewer Email"
           />
         </Grid>
         <DialogActions>

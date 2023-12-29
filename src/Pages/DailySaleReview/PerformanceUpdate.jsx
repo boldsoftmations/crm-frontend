@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Autocomplete, Box, Grid } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 import { CustomButton } from "../../Components/CustomButton";
 import { CustomLoader } from "../../Components/CustomLoader";
 import CustomTextField from "../../Components/CustomTextField";
 import UserProfileService from "../../services/UserProfileService";
+import CustomAutocomplete from "../../Components/CustomAutocomplete";
 
 export const PerformanceUpdate = ({
   recordForEdit,
@@ -37,7 +38,11 @@ export const PerformanceUpdate = ({
     }
   };
 
-  const performanceOptions = ["OT", "UP", "OP"]; // Replace with actual options
+  const performanceOptions = [
+    "On Track",
+    "Under Performing",
+    "Over Performing",
+  ];
 
   return (
     <>
@@ -46,16 +51,14 @@ export const PerformanceUpdate = ({
       <Box component="form" noValidate onSubmit={updatePerformance}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <Autocomplete
-              size="small"
+            <CustomAutocomplete
+              size={"small"}
               sx={{ width: 300, marginRight: "10px" }}
               onChange={(event, value) => setPerformance(value)}
               value={performance}
               options={performanceOptions.map((option) => option)}
               getOptionLabel={(option) => option}
-              renderInput={(params) => (
-                <CustomTextField {...params} label="Performance" />
-              )}
+              label="Performance"
             />
           </Grid>
         </Grid>

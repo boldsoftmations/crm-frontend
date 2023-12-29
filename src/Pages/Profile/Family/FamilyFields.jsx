@@ -1,6 +1,7 @@
 import React from "react";
-import { Grid, Autocomplete, Button } from "@mui/material";
+import { Grid, Button } from "@mui/material";
 import CustomTextField from "../../../Components/CustomTextField";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 export const FamilyFields = ({ formData, setFormData }) => {
   // Handle the change in family details
@@ -68,7 +69,7 @@ export const FamilyFields = ({ formData, setFormData }) => {
             />
           </Grid>
           <Grid item xs={12} sm={3}>
-            <Autocomplete
+            <CustomAutocomplete
               options={relationshipOptions}
               fullWidth
               size="small"
@@ -84,14 +85,12 @@ export const FamilyFields = ({ formData, setFormData }) => {
                   index
                 );
               }}
-              renderInput={(params) => (
-                <CustomTextField label="Contact Relationship" {...params} />
-              )}
+              label="Contact Relationship"
             />
           </Grid>
 
           <Grid item xs={12} sm={2}>
-            <Autocomplete
+            <CustomAutocomplete
               fullWidth
               size="small"
               options={bloodGroupOptions}
@@ -103,13 +102,7 @@ export const FamilyFields = ({ formData, setFormData }) => {
                   index
                 );
               }}
-              renderInput={(params) => (
-                <CustomTextField
-                  {...params}
-                  label="Blood Group"
-                  name="blood_group"
-                />
-              )}
+              label="Blood Group"
             />
           </Grid>
           <Grid item xs={12} sm={2}>

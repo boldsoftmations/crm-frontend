@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Autocomplete, Box, Grid } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 import LeadServices from "../../services/LeadService";
 import { CustomLoader } from "../../Components/CustomLoader";
 import { CustomButton } from "../../Components/CustomButton";
 import CustomTextField from "../../Components/CustomTextField";
+import CustomAutocomplete from "../../Components/CustomAutocomplete";
 
 export const BulkLeadAssign = (props) => {
   const { setOpenPopup } = props;
@@ -11,6 +12,8 @@ export const BulkLeadAssign = (props) => {
   const [assignFrom, setAssignFrom] = useState("");
   const [assignTo, setAssignTo] = useState("");
   const [assigned, setAssigned] = useState([]);
+  const [touchedAssignFrom, setTouchedAssignFrom] = useState(false);
+  const [touchedAssignTo, setTouchedAssignTo] = useState(false);
 
   useEffect(() => {
     getAssignedData();
@@ -58,6 +61,15 @@ export const BulkLeadAssign = (props) => {
     }
   };
 
+  const getErrorMessage = (fieldValue, otherFieldValue, fieldTouched) => {
+    if (!fieldValue && fieldTouched) {
+      return "Field cannot be empty";
+    } else if (fieldValue === otherFieldValue) {
+      return "Assign From will not be the same as Assign To";
+    }
+    return "";
+  };
+
   return (
     <>
       <CustomLoader open={open} />
@@ -65,47 +77,62 @@ export const BulkLeadAssign = (props) => {
       <Box component="form" noValidate onSubmit={AssignBulkLead}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <Autocomplete
+            <CustomAutocomplete
               fullWidth
               size="small"
               id="grouped-demo"
-              onChange={(event, value) => setAssignFrom(value)}
+              value={assignFrom} // Ensure you are managing state for assignFrom
+              onChange={(event, value) => {
+                setAssignFrom(value);
+                if (!touchedAssignFrom) setTouchedAssignFrom(true);
+              }}
               options={assigned.map((option) => option.email)}
               getOptionLabel={(option) => option}
-              // sx={{ minWidth: 300 }}
+              label="Assign From"
               renderInput={(params) => (
                 <CustomTextField
                   {...params}
                   label="Assign From"
-                  error={assignFrom === assignTo}
-                  helperText={
-                    assignFrom === assignTo
-                      ? "Assign From will not same as Assign To"
-                      : ""
+                  error={
+                    touchedAssignFrom &&
+                    (assignFrom === assignTo || !assignFrom)
                   }
+                  helperText={getErrorMessage(
+                    assignFrom,
+                    assignTo,
+                    touchedAssignFrom
+                  )}
+                  onBlur={() => setTouchedAssignFrom(true)}
                 />
               )}
             />
           </Grid>
           <Grid item xs={12}>
-            <Autocomplete
+            <CustomAutocomplete
               fullWidth
               size="small"
               id="grouped-demo"
-              onChange={(event, value) => setAssignTo(value)}
+              value={assignTo} // Ensure you have a state variable for assignTo
+              onChange={(event, value) => {
+                setAssignTo(value);
+                if (!touchedAssignTo) setTouchedAssignTo(true);
+              }}
               options={assigned.map((option) => option.email)}
               getOptionLabel={(option) => option}
-              // sx={{ minWidth: 300 }}
+              label="Assign To"
               renderInput={(params) => (
                 <CustomTextField
                   {...params}
                   label="Assign To"
-                  error={assignFrom === assignTo}
-                  helperText={
-                    assignFrom === assignTo
-                      ? "Assign From will not same as Assign To"
-                      : ""
+                  error={
+                    touchedAssignTo && (assignFrom === assignTo || !assignTo)
                   }
+                  helperText={getErrorMessage(
+                    assignTo,
+                    assignFrom,
+                    touchedAssignTo
+                  )}
+                  onBlur={() => setTouchedAssignTo(true)}
                 />
               )}
             />

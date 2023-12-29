@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import { Box, Paper, Grid, Button, Autocomplete } from "@mui/material";
+import { Box, Paper, Grid, Button } from "@mui/material";
 import { CSVLink } from "react-csv";
 import { CustomPagination } from "../../Components/CustomPagination";
 import { CustomLoader } from "../../Components/CustomLoader";
@@ -11,6 +11,7 @@ import ProductService from "../../services/ProductService";
 import { Helmet } from "react-helmet";
 import { useSelector } from "react-redux";
 import CustomTextField from "../../Components/CustomTextField";
+import CustomAutocomplete from "../../Components/CustomAutocomplete";
 
 export const DeadCustomerView = () => {
   const [open, setOpen] = useState(false);
@@ -214,19 +215,14 @@ export const DeadCustomerView = () => {
               sx={{ marginRight: 5, marginLeft: 5 }}
             >
               <Grid item xs={12} sm={3}>
-                <Autocomplete
+                <CustomAutocomplete
                   size="small"
                   sx={{ minWidth: 150 }}
                   onChange={(event, value) => handleFilterChange(value)}
                   value={salesPersonByFilter}
                   options={assignedOption.map((option) => option.email)}
                   getOptionLabel={(option) => option}
-                  renderInput={(params) => (
-                    <CustomTextField
-                      {...params}
-                      label="Filter By Sales Person"
-                    />
-                  )}
+                  label="Filter By Sales Person"
                 />
               </Grid>
               <Grid item xs={12} sm={3}>

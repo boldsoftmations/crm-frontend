@@ -7,6 +7,7 @@ import { DescriptionWiseForecastView } from "./DescriptionWiseForecastView";
 import { useSelector } from "react-redux";
 import { CustomerNotHavingForecastView } from "./CustomerNotHavingForecastView";
 import { CustomerHavingForecastView } from "./CustomerHavingForecastView";
+import { LeadForecastView } from "../Leads/LeadForecast/LeadForecastView";
 
 export const ProductForecastViewAll = () => {
   const data = useSelector((state) => state.auth);
@@ -36,6 +37,7 @@ export const ProductForecastViewAll = () => {
     { label: "Dead Customer", visible: isAdmin, index: 3 },
     { label: "Product Wise Forecast", visible: isPurchase, index: 4 },
     { label: "Description Wise Forecast", visible: isPurchase, index: 5 },
+    { label: "Lead Forecast", visible: isAdmin, index: 6 },
   ];
 
   const visibleTabs = tabs.filter((tab) => tab.visible);
@@ -47,6 +49,7 @@ export const ProductForecastViewAll = () => {
     3: <DeadCustomerView />,
     4: <ProductWiseForecastView />,
     5: <DescriptionWiseForecastView />,
+    6: <LeadForecastView />,
   };
 
   return (

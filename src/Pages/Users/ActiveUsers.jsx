@@ -4,17 +4,16 @@ import { CustomTable } from "../../Components/CustomTable";
 import { CustomSearch } from "../../Components/CustomSearch";
 import { CustomLoader } from "../../Components/CustomLoader";
 import {
-  Autocomplete,
   Box,
   Button,
   Checkbox,
   Chip,
   FormControlLabel,
   Grid,
-  TextField,
 } from "@mui/material";
 import { Popup } from "../../Components/Popup";
-
+import CustomTextField from "../../Components/CustomTextField";
+import CustomAutocomplete from "../../Components/CustomAutocomplete";
 export const ActiveUsers = () => {
   const [open, setOpen] = useState(false);
   const [activeUsersData, setActiveUsersData] = useState([]);
@@ -277,7 +276,7 @@ export const ActiveUsers = () => {
         >
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
-              <TextField
+              <CustomTextField
                 fullWidth
                 size="small"
                 label="First Name"
@@ -289,7 +288,7 @@ export const ActiveUsers = () => {
               />
             </Grid>
             <Grid item xs={12}>
-              <TextField
+              <CustomTextField
                 fullWidth
                 size="small"
                 label="Last Name"
@@ -301,7 +300,7 @@ export const ActiveUsers = () => {
               />
             </Grid>
             <Grid item xs={12} sm={6}>
-              <TextField
+              <CustomTextField
                 fullWidth
                 size="small"
                 label="Contact"
@@ -311,7 +310,7 @@ export const ActiveUsers = () => {
               />
             </Grid>
             <Grid item xs={12} sm={6}>
-              <TextField
+              <CustomTextField
                 fullWidth
                 size="small"
                 label="Email"
@@ -321,7 +320,7 @@ export const ActiveUsers = () => {
             </Grid>
 
             <Grid item xs={12}>
-              <Autocomplete
+              <CustomAutocomplete
                 size="small"
                 value={activeUsersByIDData.groups}
                 onChange={(event, newValue) => {
@@ -342,13 +341,17 @@ export const ActiveUsers = () => {
                   ))
                 }
                 renderInput={(params) => (
-                  <TextField {...params} label="Groups" placeholder="Groups" />
+                  <CustomTextField
+                    {...params}
+                    label="Groups"
+                    placeholder="Groups"
+                  />
                 )}
               />
             </Grid>
             {selectedRefUser && (
               <Grid item xs={12} sm={6}>
-                <TextField
+                <CustomTextField
                   fullWidth
                   size="small"
                   label="Reporting Groups"
@@ -359,7 +362,7 @@ export const ActiveUsers = () => {
             )}
             {showRefUserList && (
               <Grid item xs={12} sm={6}>
-                <Autocomplete
+                <CustomAutocomplete
                   id="grouped-demo"
                   size="small"
                   value={selectedRefUser}
@@ -370,7 +373,7 @@ export const ActiveUsers = () => {
                   groupBy={(option) => option.primaryGroup || null}
                   getOptionLabel={(option) => option.email}
                   renderInput={(params) => (
-                    <TextField {...params} label="Reports" />
+                    <CustomTextField {...params} label="Reports" />
                   )}
                 />
               </Grid>

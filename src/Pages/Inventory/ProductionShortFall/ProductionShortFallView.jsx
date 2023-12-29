@@ -3,7 +3,6 @@ import {
   Box,
   Grid,
   Paper,
-  TextField,
   InputAdornment,
   IconButton,
   Button,
@@ -14,7 +13,7 @@ import { CustomLoader } from "../../../Components/CustomLoader";
 import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 import InventoryServices from "../../../services/InventoryService";
 import { CustomTable } from "../../../Components/CustomTable";
-
+import CustomTextField from "../../../Components/CustomTextField";
 export const ProductionShortFallView = () => {
   const [open, setOpen] = useState(false);
   const errRef = useRef();
@@ -116,7 +115,7 @@ export const ProductionShortFallView = () => {
           <Box display="flex">
             <Box flexGrow={0.9}>
               {" "}
-              <TextField
+              <CustomTextField
                 label="Search By Product"
                 variant="outlined"
                 size="small"

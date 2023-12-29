@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Grid, Button, Autocomplete, Chip } from "@mui/material";
+import { Grid, Button, Chip } from "@mui/material";
 import { Popup } from "./../../../Components/Popup";
 import CustomerServices from "../../../services/CustomerService";
 import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
@@ -9,6 +9,7 @@ import { CustomTable } from "./../../../Components/CustomTable";
 import { CustomPagination } from "../../../Components/CustomPagination";
 import LeadServices from "../../../services/LeadService";
 import CustomTextField from "../../../Components/CustomTextField";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 export const UnassignedCustomer = () => {
   const [openPopup, setOpenPopup] = useState(false);
@@ -330,7 +331,7 @@ export const UnassignedCustomer = () => {
       >
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <Autocomplete
+            <CustomAutocomplete
               size="small"
               value={assign}
               onChange={(event, newValue) => {
@@ -350,13 +351,8 @@ export const UnassignedCustomer = () => {
                   />
                 ))
               }
-              renderInput={(params) => (
-                <CustomTextField
-                  {...params}
-                  label="Assign To"
-                  placeholder="Assign To"
-                />
-              )}
+              label="Assign To"
+              placeholder="Assign To"
             />
           </Grid>
           <Grid item xs={12}>

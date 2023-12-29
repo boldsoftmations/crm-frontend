@@ -3,10 +3,10 @@ import {
   DialogActions,
   Button,
   TextField,
-  Autocomplete,
   Grid,
 } from "@mui/material";
 import Hr from "../../../services/Hr";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 export const OfferStatusUpdate = ({ row, closeDialog, onUpdateComplete }) => {
   const [status, setStatus] = useState(row ? row.status : "");
@@ -61,25 +61,21 @@ export const OfferStatusUpdate = ({ row, closeDialog, onUpdateComplete }) => {
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
-        <Autocomplete
+        <CustomAutocomplete
           value={status}
           onChange={handleStatusChange}
           options={offerStatusOptions}
-          renderInput={(params) => (
-            <TextField {...params} label="Offer Status" />
-          )}
+          label="Offer Status"
           fullWidth
         />
       </Grid>
       {status === "Rejected" && (
         <Grid item xs={12}>
-          <Autocomplete
+          <CustomAutocomplete
             value={rejectionReason}
             onChange={handleRejectionReasonChange}
             options={rejectionReasonOptions}
-            renderInput={(params) => (
-              <TextField {...params} label="Rejection Reason" />
-            )}
+            label="Rejection Reason"
             fullWidth
           />
         </Grid>

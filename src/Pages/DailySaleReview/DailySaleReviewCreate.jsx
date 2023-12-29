@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { Autocomplete, Box, Grid } from "@mui/material";
-import CustomTextField from "../../Components/CustomTextField";
+import { Box, Grid } from "@mui/material";
 import { CustomButton } from "../../Components/CustomButton";
 import { CustomLoader } from "../../Components/CustomLoader";
 import UserProfileService from "../../services/UserProfileService";
+import CustomAutocomplete from "../../Components/CustomAutocomplete";
 
 export const DailySaleReviewCreate = ({
   setOpenPopup,
@@ -45,16 +45,14 @@ export const DailySaleReviewCreate = ({
       <Box component="form" noValidate onSubmit={createDailySalesReview}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <Autocomplete
+            <CustomAutocomplete
               sx={{ width: "100%" }}
               size="small"
               onChange={handleAutocompleteChange}
               value={salesPerson}
               options={assigned.map((option) => option.email)}
               getOptionLabel={(option) => option || ""} // Updated to handle null/undefined values
-              renderInput={(params) => (
-                <CustomTextField {...params} label="Filter By Sales Person" />
-              )}
+              label="Filter By Sales Person"
             />
           </Grid>
         </Grid>

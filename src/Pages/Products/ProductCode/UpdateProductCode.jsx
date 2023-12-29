@@ -1,4 +1,4 @@
-import { Autocomplete, Box, Button, Grid, TextField } from "@mui/material";
+import { Box, Button, Grid } from "@mui/material";
 
 import { useRef, useState } from "react";
 // import { useSelector } from "react-redux";
@@ -8,6 +8,8 @@ import ProductService from "../../../services/ProductService";
 
 import "../../CommonStyle.css";
 import { CustomLoader } from "../../../Components/CustomLoader";
+import CustomTextField from "../../../Components/CustomTextField";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 export const UpdateProductCode = (props) => {
   const { recordForEdit, setOpenPopup, getproductCodes } = props;
@@ -128,7 +130,7 @@ export const UpdateProductCode = (props) => {
             {errMsg}
           </p>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="code"
               size="small"
@@ -139,9 +141,9 @@ export const UpdateProductCode = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <Autocomplete
+            <CustomAutocomplete
               disablePortal
-              style={{
+              sx={{
                 minWidth: 225,
               }}
               size="small"
@@ -150,14 +152,7 @@ export const UpdateProductCode = (props) => {
               onChange={(event, value) => setSelectedDescription(value)}
               options={description.map((option) => option.name)}
               getOptionLabel={(option) => `${option}`}
-              renderInput={(params) => (
-                <TextField
-                  size="small"
-                  name="description"
-                  {...params}
-                  label="Description"
-                />
-              )}
+              label="Description"
             />
           </Grid>
         </Grid>

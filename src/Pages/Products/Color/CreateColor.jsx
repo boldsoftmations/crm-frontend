@@ -1,11 +1,4 @@
-import {
-  Backdrop,
-  Box,
-  Button,
-  CircularProgress,
-  Grid,
-  TextField,
-} from "@mui/material";
+import { Box, Button, Grid } from "@mui/material";
 
 import { useState } from "react";
 import React, { useRef } from "react";
@@ -13,6 +6,8 @@ import React, { useRef } from "react";
 import ProductService from "../../../services/ProductService";
 
 import "../../CommonStyle.css";
+import { CustomLoader } from "../../../Components/CustomLoader";
+import CustomTextField from "../../../Components/CustomTextField";
 
 export const CreateColor = (props) => {
   const { setOpenPopup, getColours } = props;
@@ -55,14 +50,7 @@ export const CreateColor = (props) => {
 
   return (
     <>
-      <div>
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={open}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </div>
+      <CustomLoader open={open} />
       <Box component="form" noValidate onSubmit={(e) => createColours(e)}>
         <Grid container spacing={2}>
           <p
@@ -84,7 +72,7 @@ export const CreateColor = (props) => {
           </p>
 
           <Grid item xs={12}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="colour"
               size="small"

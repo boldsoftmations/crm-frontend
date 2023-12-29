@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Box, Grid, Paper, TextField, Button } from "@mui/material";
+import { Box, Grid, Paper, Button } from "@mui/material";
 import { CSVLink } from "react-csv";
 import moment from "moment";
 import InventoryServices from "../../../services/InventoryService";
 import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 import { CustomTable } from "../../../Components/CustomTable";
 import { CustomLoader } from "../../../Components/CustomLoader";
+import CustomTextField from "../../../Components/CustomTextField";
 const currentDate = new Date();
 const currentYear = currentDate.getFullYear();
 const currentMonth = currentDate.getMonth() + 1;
@@ -327,7 +328,7 @@ export const WeeklyProductionReport = () => {
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
           <Box display="flex">
             <Box flexGrow={0.9}>
-              <TextField
+              <CustomTextField
                 label="Search"
                 type="month"
                 variant="outlined"

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Button, TextField, DialogActions, Autocomplete } from "@mui/material";
+import { Button, TextField, DialogActions } from "@mui/material";
 import Hr from "../../../services/Hr";
-import CustomTextField from "../../../Components/CustomTextField";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 export const ShortListedCandidateUpdate = ({
   row,
@@ -69,18 +69,17 @@ export const ShortListedCandidateUpdate = ({
   const timeOptions = ["11 AM to 1 PM", "1 PM to 3 PM", "3 PM TO 5 PM"];
   return (
     <>
-      <Autocomplete
+      <CustomAutocomplete
         value={stage}
         onChange={(event, newValue) => {
           setStage(newValue);
         }}
         options={stageOptions}
-        renderInput={(params) => (
-          <TextField {...params} label="Stage" margin="dense" fullWidth />
-        )}
+        label="Stage"
+        fullWidth
       />
       {stage === "Rejected" && (
-        <Autocomplete
+        <CustomAutocomplete
           value={rejectedReason}
           onChange={(event, newValue) => {
             setRejectedReason(newValue);
@@ -93,14 +92,8 @@ export const ShortListedCandidateUpdate = ({
             "Not Interested",
             "Others",
           ]}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Rejected Reason"
-              margin="dense"
-              fullWidth
-            />
-          )}
+          label="Rejected Reason"
+          fullWidth
         />
       )}
       <TextField
@@ -112,16 +105,14 @@ export const ShortListedCandidateUpdate = ({
         onChange={(e) => setInterviewDate(e.target.value)}
         disabled={disableFields}
       />
-      <Autocomplete
+      <CustomAutocomplete
         style={{ minWidth: 220 }}
         size="small"
         value={interviewTime}
         onChange={handleTimeChange}
         options={timeOptions}
         disabled={disableFields}
-        renderInput={(params) => (
-          <CustomTextField {...params} label="Interview Time" />
-        )}
+        label="Interview Time"
       />
       <TextField
         margin="dense"

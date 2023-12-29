@@ -1,6 +1,7 @@
-import React, { useState } from "react";
-import { Button, Grid, Autocomplete } from "@mui/material";
+import React from "react";
+import { Button, Grid } from "@mui/material";
 import CustomTextField from "../../../Components/CustomTextField";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 export const EmergencyContactFields = ({ formData, setFormData }) => {
   const relationshipOptions = [
@@ -64,7 +65,7 @@ export const EmergencyContactFields = ({ formData, setFormData }) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <Autocomplete
+            <CustomAutocomplete
               options={relationshipOptions}
               fullWidth
               size="small"
@@ -80,12 +81,7 @@ export const EmergencyContactFields = ({ formData, setFormData }) => {
                   index
                 );
               }}
-              renderInput={(params) => (
-                <CustomTextField
-                  label="Emergency Contact Relationship"
-                  {...params}
-                />
-              )}
+              label="Emergency Contact Relationship"
             />
           </Grid>
           <Grid item xs={12} sm={3}>

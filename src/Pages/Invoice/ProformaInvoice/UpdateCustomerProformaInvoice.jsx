@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  Autocomplete,
   Box,
   Button,
   Checkbox,
@@ -22,6 +21,7 @@ import CustomerServices from "../../../services/CustomerService";
 import InvoiceServices from "../../../services/InvoiceService";
 import ProductService from "../../../services/ProductService";
 import CustomTextField from "../../../Components/CustomTextField";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 export const UpdateCustomerProformaInvoice = (props) => {
   const { idForEdit, getProformaInvoiceData, setOpenPopup } = props;
@@ -313,65 +313,48 @@ export const UpdateCustomerProformaInvoice = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={2}>
-            <Autocomplete
+            <CustomAutocomplete
               name="seller_account"
               size="small"
               disablePortal
               id="combo-box-demo"
               onChange={(event, value) => setSelectedSellerData(value)}
               options={sellerData}
-              // value={selectedSellerData}s
               getOptionLabel={(option) => option.unit}
               sx={{ minWidth: 200 }}
-              renderInput={(params) => (
-                <CustomTextField
-                  {...params}
-                  label="Update Seller Account"
-                  required
-                  sx={tfStyle}
-                />
-              )}
+              label="Update Seller Account"
+              value={selectedSellerData}
+              style={tfStyle}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <Autocomplete
+            <CustomAutocomplete
               name="payment_terms"
               size="small"
               disablePortal
               id="combo-box-demo"
               onChange={(event, value) => setPaymentTermData(value)}
-              value={paymentTermData ? paymentTermData : ""}
               options={paymentTermsOptions.map((option) => option.label)}
               getOptionLabel={(option) => option}
               sx={{ minWidth: 300 }}
-              renderInput={(params) => (
-                <CustomTextField
-                  {...params}
-                  label="Payment Terms"
-                  required
-                  sx={tfStyle}
-                />
-              )}
+              label="Payment Terms"
+              value={paymentTermData}
+              style={tfStyle}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <Autocomplete
+            <CustomAutocomplete
               name="delivery_terms"
               size="small"
               disablePortal
               id="combo-box-demo"
               onChange={(event, value) => setDeliveryTermData(value)}
-              value={deliveryTermData ? deliveryTermData : ""}
               options={deliveryTermsOptions.map((option) => option.label)}
               getOptionLabel={(option) => option}
               sx={{ minWidth: 300 }}
-              renderInput={(params) => (
-                <CustomTextField
-                  {...params}
-                  label="Delivery Terms"
-                  sx={tfStyle}
-                />
-              )}
+              label="Delivery Terms"
+              value={deliveryTermData}
+              style={tfStyle}
             />
           </Grid>
           <Grid item xs={12}>
@@ -703,7 +686,7 @@ export const UpdateCustomerProformaInvoice = (props) => {
             return (
               <>
                 <Grid item xs={12} sm={4}>
-                  <Autocomplete
+                  <CustomAutocomplete
                     name="product"
                     size="small"
                     disablePortal
@@ -711,17 +694,12 @@ export const UpdateCustomerProformaInvoice = (props) => {
                     onChange={(event, value) =>
                       handleAutocompleteChange(index, event, value)
                     }
-                    value={input.product ? input.product : ""}
                     options={productOption.map((option) => option.product)}
                     getOptionLabel={(option) => option}
                     sx={{ minWidth: 300 }}
-                    renderInput={(params) => (
-                      <CustomTextField
-                        {...params}
-                        label="Product Name"
-                        sx={tfStyle}
-                      />
-                    )}
+                    label="Product Name"
+                    value={input.product}
+                    style={tfStyle}
                   />
                 </Grid>
                 <Grid item xs={12} sm={3}>

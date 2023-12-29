@@ -3,15 +3,8 @@ import {
   Grid,
   Paper,
   Box,
-  FormControl,
-  InputLabel,
-  Select,
-  IconButton,
-  MenuItem,
   Button,
-  Autocomplete,
 } from "@mui/material";
-import ClearIcon from "@mui/icons-material/Clear";
 import LeadServices from "../../services/LeadService";
 import moment from "moment";
 import { Popup } from "../../Components/Popup";
@@ -22,6 +15,7 @@ import { CustomPagination } from "../../Components/CustomPagination";
 import CustomTextField from "../../Components/CustomTextField";
 import { UpdateCompanyDetails } from "../Cutomers/CompanyDetails/UpdateCompanyDetails";
 import { useSelector } from "react-redux";
+import CustomAutocomplete from "../../Components/CustomAutocomplete";
 
 export const AllFollowup = () => {
   const [open, setOpen] = useState(false);
@@ -295,38 +289,34 @@ export const AllFollowup = () => {
       <Grid item xs={12}>
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
           <Box display="flex" marginBottom="10px">
-            <Autocomplete
+            <CustomAutocomplete
               size="small"
               sx={{ width: 300 }}
               value={selectedDate}
               onChange={(event, value) => handleChange(value)}
               options={DateOptions.map((option) => option.value)}
               getOptionLabel={(option) => option}
-              renderInput={(params) => (
-                <CustomTextField {...params} label="Date" />
-              )}
+              label="Date"
             />
-            <Autocomplete
+
+            <CustomAutocomplete
               size="small"
               sx={{ width: 300 }}
               onChange={(event, value) => FilterBySalesPerson(value)}
               value={filterBySalesperson}
               options={assigned.map((option) => option.email)}
               getOptionLabel={(option) => option}
-              renderInput={(params) => (
-                <CustomTextField {...params} label="Filter By Sales Person" />
-              )}
+              label="Filter By Sales Person"
             />
-            <Autocomplete
+
+            <CustomAutocomplete
               size="small"
               sx={{ width: 300 }}
               onChange={(event, value) => FilterByActivity(value)}
               value={filterByActivity}
               options={ActivityOption.map((option) => option.label)}
               getOptionLabel={(option) => option}
-              renderInput={(params) => (
-                <CustomTextField {...params} label="Filter By Activity" />
-              )}
+              label="Filter By Activity"
             />
           </Box>
           <Box display="flex" alignItems="center" justifyContent="center">

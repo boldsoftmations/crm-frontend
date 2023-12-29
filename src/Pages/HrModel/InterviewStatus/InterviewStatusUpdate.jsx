@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { TextField, Button, Grid, Autocomplete, Box } from "@mui/material";
+import { TextField, Button, Grid, Box } from "@mui/material";
 import Hr from "../../../services/Hr";
 import CustomAxios from "../../../services/api";
 import CustomTextField from "../../../Components/CustomTextField";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 export const InterviewStatusCreate = ({ row, closeDialog }) => {
   const [interviewDate, setInterviewDate] = useState("");
@@ -71,28 +72,24 @@ export const InterviewStatusCreate = ({ row, closeDialog }) => {
           />
         </Grid>
         <Grid item xs={12}>
-          <Autocomplete
-            style={{ minWidth: 220 }}
+          <CustomAutocomplete
+            sx={{ minWidth: 220 }}
             size="small"
             value={interviewTime}
             onChange={handleTimeChange}
             options={timeOptions}
-            renderInput={(params) => (
-              <CustomTextField {...params} label="Interview Time" />
-            )}
+            label="Interview Time"
           />
         </Grid>
         <Grid item xs={12}>
-          <Autocomplete
-            style={{ minWidth: 220 }}
+          <CustomAutocomplete
+            sx={{ minWidth: 220 }}
             size="small"
             onChange={(event, newValue) => handleInputChange(event, newValue)}
             name="email"
             options={email.map((option) => option.email)}
             getOptionLabel={(option) => `${option}`}
-            renderInput={(params) => (
-              <CustomTextField {...params} label="Interviewer Email" />
-            )}
+            label="Interviewer Email"
           />
         </Grid>
       </Grid>

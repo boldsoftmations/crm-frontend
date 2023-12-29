@@ -1,6 +1,7 @@
 import React from "react";
-import { Grid, Autocomplete } from "@mui/material";
+import { Grid } from "@mui/material";
 import CustomTextField from "../../../Components/CustomTextField";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 const YesNoOptions = ["Yes", "No"];
 const YesNoNAOptions = [...YesNoOptions, "Not Applicable"];
@@ -54,7 +55,7 @@ const fieldsConfig = [
 ];
 
 const AutoCompleteField = ({ label, name, value, options, handleChange }) => (
-  <Autocomplete
+  <CustomAutocomplete
     options={options || []}
     fullWidth
     size="small"

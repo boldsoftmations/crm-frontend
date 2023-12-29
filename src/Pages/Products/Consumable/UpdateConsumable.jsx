@@ -1,12 +1,4 @@
-import {
-  Autocomplete,
-  Backdrop,
-  Box,
-  Button,
-  CircularProgress,
-  Grid,
-  TextField,
-} from "@mui/material";
+import { Autocomplete, Box, Button, Grid } from "@mui/material";
 import { useRef, useState } from "react";
 import React, { useEffect } from "react";
 
@@ -14,6 +6,9 @@ import ProductService from "../../../services/ProductService";
 
 import "../../CommonStyle.css";
 import { useSelector } from "react-redux";
+import { CustomLoader } from "../../../Components/CustomLoader";
+import CustomTextField from "../../../Components/CustomTextField";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 export const UpdateConsumable = (props) => {
   const { recordForEdit, setOpenPopup, getconsumables } = props;
@@ -153,17 +148,7 @@ export const UpdateConsumable = (props) => {
 
   return (
     <>
-      <div>
-        <Backdrop
-          sx={{
-            color: "#fff",
-            zIndex: (theme) => theme.zIndex.drawer + 1,
-          }}
-          open={open}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </div>
+      <CustomLoader open={open} />
 
       <Box component="form" noValidate onSubmit={(e) => updatesconsumable(e)}>
         <Grid container spacing={2}>
@@ -185,7 +170,7 @@ export const UpdateConsumable = (props) => {
             {errMsg}
           </p>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               label="Name"
@@ -195,7 +180,7 @@ export const UpdateConsumable = (props) => {
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="name"
               size="small"
@@ -205,7 +190,7 @@ export const UpdateConsumable = (props) => {
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="size"
               size="small"
@@ -217,8 +202,8 @@ export const UpdateConsumable = (props) => {
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <Autocomplete
-              style={{
+            <CustomAutocomplete
+              sx={{
                 minWidth: 220,
               }}
               size="small"
@@ -226,15 +211,13 @@ export const UpdateConsumable = (props) => {
               onChange={(e, value) => setUnit(value)}
               options={unitData.map((option) => option.name)}
               getOptionLabel={(option) => `${option}`}
-              renderInput={(params) => (
-                <TextField {...params} name={"unit"} label={"Unit"} />
-              )}
+              label={"Unit"}
             />
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <Autocomplete
-              style={{
+            <CustomAutocomplete
+              sx={{
                 minWidth: 220,
               }}
               size="small"
@@ -242,20 +225,13 @@ export const UpdateConsumable = (props) => {
               onChange={(event, value) => setSelectedDescription(value)}
               options={description.map((option) => option.name)}
               getOptionLabel={(option) => `${option}`}
-              renderInput={(params) => (
-                <TextField
-                  size="small"
-                  {...params}
-                  name={"description"}
-                  label="Description"
-                />
-              )}
+              label="Description"
             />
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <Autocomplete
-              style={{
+            <CustomAutocomplete
+              sx={{
                 minWidth: 220,
               }}
               size="small"
@@ -263,13 +239,11 @@ export const UpdateConsumable = (props) => {
               onChange={(event, value) => setBrand(value)}
               options={brandData.map((option) => option.name)}
               getOptionLabel={(option) => `${option}`}
-              renderInput={(params) => (
-                <TextField {...params} name={"brand"} label="Brand" />
-              )}
+              label="Brand"
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="additional_description"
               size="small"
@@ -284,7 +258,7 @@ export const UpdateConsumable = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="hsn_code"
               size="small"
@@ -295,7 +269,7 @@ export const UpdateConsumable = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="gst"
               type={"number"}
@@ -307,7 +281,7 @@ export const UpdateConsumable = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               label="CGST"
@@ -316,7 +290,7 @@ export const UpdateConsumable = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               label="SGST"

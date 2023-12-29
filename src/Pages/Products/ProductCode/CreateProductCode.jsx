@@ -1,17 +1,12 @@
-import {
-  Autocomplete,
-  Backdrop,
-  Box,
-  Button,
-  CircularProgress,
-  Grid,
-  TextField,
-} from "@mui/material";
+import { Box, Button, Grid } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 
 import ProductService from "../../../services/ProductService";
 
 import "../../CommonStyle.css";
+import { CustomLoader } from "../../../Components/CustomLoader";
+import CustomTextField from "../../../Components/CustomTextField";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 export const CreateProductCode = (props) => {
   const { setOpenPopup, getproductCodes } = props;
@@ -80,14 +75,7 @@ export const CreateProductCode = (props) => {
 
   return (
     <>
-      <div>
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={open}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </div>
+      <CustomLoader open={open} />
 
       <Box component="form" noValidate onSubmit={(e) => createProductCode(e)}>
         <Grid container spacing={2}>
@@ -110,7 +98,7 @@ export const CreateProductCode = (props) => {
           </p>
 
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               name="code"
               fullWidth
               size="small"
@@ -121,8 +109,8 @@ export const CreateProductCode = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <Autocomplete
-              style={{
+            <CustomAutocomplete
+              sx={{
                 minWidth: 220,
               }}
               size="small"
@@ -130,9 +118,7 @@ export const CreateProductCode = (props) => {
               name="description"
               options={allDescription.map((option) => option.name)}
               getOptionLabel={(option) => `${option}`}
-              renderInput={(params) => (
-                <TextField {...params} label="Description" />
-              )}
+              label="Description"
             />
           </Grid>
         </Grid>

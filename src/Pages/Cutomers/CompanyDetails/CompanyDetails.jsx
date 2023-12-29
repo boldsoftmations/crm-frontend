@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import {
-  Autocomplete,
   Box,
   Button,
   Grid,
@@ -31,6 +30,7 @@ import { CSVLink } from "react-csv";
 import { Helmet } from "react-helmet";
 import CustomTextField from "../../../Components/CustomTextField";
 import { CustomerPotentialCreate } from "../CustomerPotential/CustomerPotentialCreate";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 export const CompanyDetails = () => {
   const dispatch = useDispatch();
@@ -319,7 +319,7 @@ export const CompanyDetails = () => {
           <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
             <Grid container spacing={2} alignItems="center">
               <Grid item xs={12} sm={3}>
-                <Autocomplete
+                <CustomAutocomplete
                   disabled={!isStatusFilterEnabled} // Disable based on user group
                   size="small"
                   sx={{ minWidth: 300 }}
@@ -335,14 +335,12 @@ export const CompanyDetails = () => {
                       searchQuery
                     );
                   }}
-                  renderInput={(params) => (
-                    <CustomTextField {...params} label="Filter By Status" />
-                  )}
+                  label="Filter By Status" // Passed directly to CustomAutocomplete
                 />
               </Grid>
               {!userData.groups.includes("Sales Executive") && (
                 <Grid item xs={12} sm={3}>
-                  <Autocomplete
+                  <CustomAutocomplete
                     size="small"
                     sx={{ minWidth: 300 }}
                     value={filterSelectedQuery}
@@ -357,12 +355,7 @@ export const CompanyDetails = () => {
                     }}
                     options={assigned.map((option) => option.email)}
                     getOptionLabel={(option) => option}
-                    renderInput={(params) => (
-                      <CustomTextField
-                        {...params}
-                        label="Filter By Sales Person"
-                      />
-                    )}
+                    label="Filter By Sales Person" // Passed directly to CustomAutocomplete
                   />
                 </Grid>
               )}
@@ -696,11 +689,11 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.common.black,
     color: theme.palette.common.white,
-    padding: 1, // adjust padding as needed
+    padding: 0, // Remove padding from header cells
   },
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
-    padding: 1, // adjust padding as needed
+    padding: 0, // Remove padding from body cells
   },
 }));
 
@@ -708,10 +701,8 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   "&:nth-of-type(odd)": {
     backgroundColor: theme.palette.action.hover,
   },
+  // hide last border
   "&:last-child td, &:last-child th": {
     border: 0,
-  },
-  "& > td, & > th": {
-    padding: 0, // adjust padding as needed
   },
 }));

@@ -1,6 +1,5 @@
 import React, { useState, useRef } from "react";
 import {
-  Autocomplete,
   Box,
   Button,
   FormControl,
@@ -9,7 +8,6 @@ import {
   Grid,
   Radio,
   RadioGroup,
-  TextField,
 } from "@mui/material";
 import axios from "axios";
 import { Popup } from "../../../Components/Popup";
@@ -17,6 +15,8 @@ import { CustomLoader } from "../../../Components/CustomLoader";
 import InventoryServices from "../../../services/InventoryService";
 import { CreateAllVendorDetails } from "./CreateAllVendorDetails";
 import { country } from "./../Country";
+import CustomTextField from "../../../Components/CustomTextField";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 export const CreateVendorDetails = (props) => {
   const { getAllVendorDetails } = props;
@@ -204,7 +204,7 @@ export const CreateVendorDetails = (props) => {
             </>
           </Grid>
           <Grid item xs={12} sm={4}>
-            <Autocomplete
+            <CustomAutocomplete
               size="small"
               id="grouped-demo"
               options={typeData === "International" ? country : []}
@@ -217,18 +217,11 @@ export const CreateVendorDetails = (props) => {
                   : null
               }
               onChange={(event, value) => handleInputChange(event, value)}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label={"Enter Country Name"}
-                  variant="outlined"
-                  name="country" // set the name attribute to "country"
-                />
-              )}
+              label={"Enter Country Name"}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="name"
               size="small"
@@ -240,7 +233,7 @@ export const CreateVendorDetails = (props) => {
           </Grid>
           {typeData === "Domestic" ? (
             <Grid item xs={12} sm={4}>
-              <TextField
+              <CustomTextField
                 fullWidth
                 name="pincode"
                 size="small"
@@ -254,7 +247,7 @@ export const CreateVendorDetails = (props) => {
             </Grid>
           ) : null}
           <Grid item xs={12} sm={3}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               name="state"
@@ -271,7 +264,7 @@ export const CreateVendorDetails = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={3}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="city"
               size="small"
@@ -289,7 +282,7 @@ export const CreateVendorDetails = (props) => {
           </Grid>
 
           <Grid item xs={12} sm={3}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               name="website_url"
@@ -300,7 +293,7 @@ export const CreateVendorDetails = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={3}>
-            <TextField
+            <CustomTextField
               fullWidth
               type="date"
               name="estd_date"
@@ -313,7 +306,7 @@ export const CreateVendorDetails = (props) => {
           </Grid>
           {typeData === "Domestic" ? (
             <Grid item xs={12} sm={4}>
-              <TextField
+              <CustomTextField
                 fullWidth
                 size="small"
                 name="gst_number"
@@ -330,7 +323,7 @@ export const CreateVendorDetails = (props) => {
           ) : null}
           {typeData === "Domestic" ? (
             <Grid item xs={12} sm={4}>
-              <TextField
+              <CustomTextField
                 fullWidth
                 required
                 size="small"
@@ -348,7 +341,7 @@ export const CreateVendorDetails = (props) => {
           ) : null}
 
           <Grid item xs={12} sm={4}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="total_sale"
               size="small"
@@ -361,7 +354,7 @@ export const CreateVendorDetails = (props) => {
           </Grid>
 
           <Grid item xs={12}>
-            <TextField
+            <CustomTextField
               multiline
               fullWidth
               name="address"

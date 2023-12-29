@@ -1,16 +1,10 @@
-import {
-  Backdrop,
-  Box,
-  Button,
-  CircularProgress,
-  Grid,
-  TextField,
-} from "@mui/material";
+import { Box, Button, Grid } from "@mui/material";
 import { useRef, useState } from "react";
 import React, { useEffect } from "react";
-
 import "../../CommonStyle.css";
 import ProductService from "../../../services/ProductService";
+import { CustomLoader } from "../../../Components/CustomLoader";
+import CustomTextField from "../../../Components/CustomTextField";
 
 export const UpdateBasicUnit = (props) => {
   const { recordForEdit, setOpenPopup, getBasicUnit } = props;
@@ -77,17 +71,7 @@ export const UpdateBasicUnit = (props) => {
 
   return (
     <>
-      <div>
-        <Backdrop
-          sx={{
-            color: "#fff",
-            zIndex: (theme) => theme.zIndex.drawer + 1,
-          }}
-          open={open}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </div>
+      <CustomLoader open={open} />
       <Box component="form" noValidate onSubmit={(e) => updatesBrand(e)}>
         <Grid container spacing={2}>
           <p
@@ -109,7 +93,7 @@ export const UpdateBasicUnit = (props) => {
           </p>
 
           <Grid item xs={12}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               label="Id"
@@ -118,7 +102,7 @@ export const UpdateBasicUnit = (props) => {
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="name"
               size="small"
@@ -129,7 +113,7 @@ export const UpdateBasicUnit = (props) => {
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="short_name"
               size="small"

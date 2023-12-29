@@ -1,10 +1,11 @@
 import React from "react";
-import { Box, Grid, TextField } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 import { useState } from "react";
 import { CustomButton } from "./../../Components/CustomButton";
 import InvoiceServices from "../../services/InvoiceService";
 import { CustomLoader } from "./../../Components/CustomLoader";
 import { useSelector } from "react-redux";
+import CustomTextField from "../../Components/CustomTextField";
 
 export const UpdateDispatch = (props) => {
   const [open, setOpen] = useState(false);
@@ -127,7 +128,7 @@ export const UpdateDispatch = (props) => {
       <Box component="form" noValidate onSubmit={(e) => createLeadsData(e)}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               label="Sales Invoice"
@@ -136,7 +137,7 @@ export const UpdateDispatch = (props) => {
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               label="Customer"
@@ -145,7 +146,7 @@ export const UpdateDispatch = (props) => {
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="transporter"
               size="small"
@@ -160,7 +161,7 @@ export const UpdateDispatch = (props) => {
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="lr_number"
               size="small"
@@ -173,7 +174,7 @@ export const UpdateDispatch = (props) => {
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField
+            <CustomTextField
               fullWidth
               type={"date"}
               name="lr_date"

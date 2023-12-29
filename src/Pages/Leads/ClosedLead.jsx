@@ -8,7 +8,6 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Autocomplete,
 } from "@mui/material";
 import LeadServices from "../../services/LeadService";
 import "../CommonStyle.css";
@@ -26,6 +25,7 @@ import { CustomSearchWithButton } from "../../Components/CustomSearchWithButton"
 import { LeadActivityCreate } from "../FollowUp/LeadActivityCreate";
 import CustomTextField from "../../Components/CustomTextField";
 import { LeadPotentialCreate } from "./LeadPotential/LeadPotentialCreate";
+import CustomAutocomplete from "../../Components/CustomAutocomplete";
 
 export const ClosedLead = () => {
   const dispatch = useDispatch();
@@ -93,13 +93,13 @@ export const ClosedLead = () => {
     }
   };
   const renderAutocomplete = (label, options, onChange) => (
-    <Autocomplete
+    <CustomAutocomplete
       sx={{ minWidth: "200px", marginLeft: "1em" }}
       size="small"
       onChange={(event, value) => onChange(value)}
       options={options}
       getOptionLabel={(option) => option}
-      renderInput={(params) => <CustomTextField {...params} label={label} />}
+      label={label}
     />
   );
 

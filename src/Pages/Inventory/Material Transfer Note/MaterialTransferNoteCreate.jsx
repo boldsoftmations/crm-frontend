@@ -1,17 +1,11 @@
-import {
-  Autocomplete,
-  Box,
-  Button,
-  Grid,
-  IconButton,
-  Snackbar,
-} from "@mui/material";
+import { Box, Button, Grid, IconButton, Snackbar } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import InventoryServices from "../../../services/InventoryService";
 import CustomTextField from "../../../Components/CustomTextField";
 import { useSelector } from "react-redux";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 export const MaterialTransferNoteCreate = (props) => {
   const {
@@ -99,7 +93,7 @@ export const MaterialTransferNoteCreate = (props) => {
         />
         <Grid container spacing={2}>
           <Grid item xs={12} sm={3}>
-            <Autocomplete
+            <CustomAutocomplete
               name="seller_account"
               size="small"
               disablePortal
@@ -110,13 +104,11 @@ export const MaterialTransferNoteCreate = (props) => {
               }
               getOptionLabel={(option) => option}
               sx={{ minWidth: 300 }}
-              renderInput={(params) => (
-                <CustomTextField {...params} label="Seller Account" />
-              )}
+              label="Seller Account"
             />
           </Grid>
           <Grid item xs={12} sm={3}>
-            <Autocomplete
+            <CustomAutocomplete
               name="product"
               size="small"
               disablePortal
@@ -125,9 +117,7 @@ export const MaterialTransferNoteCreate = (props) => {
               options={productOption}
               getOptionLabel={(option) => option.product__name}
               sx={{ minWidth: 300 }}
-              renderInput={(params) => (
-                <CustomTextField {...params} label="Product Name" />
-              )}
+              label="Product Name"
             />
           </Grid>
           <Grid item xs={12} sm={3}>

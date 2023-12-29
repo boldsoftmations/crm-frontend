@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Grid, Chip, Divider, Button, Box } from "@mui/material";
-import Autocomplete from "@mui/lab/Autocomplete";
 import Option from "../../../Options/Options";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomerServices from "../../../services/CustomerService";
 import CustomTextField from "../../../Components/CustomTextField";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 const KycUpdate = ({
   recordForEdit,
@@ -270,7 +270,7 @@ const KycUpdate = ({
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <Autocomplete
+            <CustomAutocomplete
               fullWidth
               size="small"
               options={[
@@ -287,24 +287,16 @@ const KycUpdate = ({
                 "Above 100cr",
               ]}
               getOptionLabel={(option) => option}
-              renderInput={(params) => (
-                <CustomTextField
-                  {...params}
-                  label="Approx Annual Turnover"
-                  variant="outlined"
-                />
-              )}
               value={inputValue.approx_annual_turnover || ""}
               onChange={(event, value) =>
                 handleInputChange("approx_annual_turnover", value)
               }
+              label="Approx Annual Turnover"
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <Autocomplete
-              style={{
-                minWidth: 220,
-              }}
+            <CustomAutocomplete
+              style={{ minWidth: 220 }}
               size="small"
               onChange={(event, value) =>
                 handleSelectChange("purchase_decision_maker", value)
@@ -312,16 +304,12 @@ const KycUpdate = ({
               value={inputValue.purchase_decision_maker || ""}
               options={contactData.map((option) => option.name)}
               getOptionLabel={(option) => option}
-              renderInput={(params) => (
-                <CustomTextField {...params} label="Purchase Decision Maker" />
-              )}
+              label="Purchase Decision Maker"
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <Autocomplete
-              style={{
-                minWidth: 220,
-              }}
+            <CustomAutocomplete
+              sx={{ minWidth: 220 }}
               size="small"
               onChange={(event, value) =>
                 handleContactsChange("religion", value)
@@ -329,9 +317,7 @@ const KycUpdate = ({
               value={contactValue.religion || ""}
               options={Option.religionsInIndia.map((option) => option)}
               getOptionLabel={(option) => option}
-              renderInput={(params) => (
-                <CustomTextField {...params} label="Religion" />
-              )}
+              label="Religion"
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -354,10 +340,8 @@ const KycUpdate = ({
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <Autocomplete
-              style={{
-                minWidth: 220,
-              }}
+            <CustomAutocomplete
+              sx={{ minWidth: 220 }}
               size="small"
               onChange={(event, value) =>
                 handleContactsChange("marital_status", value)
@@ -365,9 +349,7 @@ const KycUpdate = ({
               value={contactValue.marital_status || ""}
               options={Option.Marital_Status_Options.map((options) => options)}
               getOptionLabel={(option) => option}
-              renderInput={(params) => (
-                <CustomTextField {...params} label="Marital Status" />
-              )}
+              label="Marital Status"
             />
           </Grid>
           {contactValue.marital_status === "Married" && (
@@ -392,10 +374,8 @@ const KycUpdate = ({
           )}
           {inputValue.type_of_customer === "Industrial Customer" && (
             <Grid item xs={12} sm={6}>
-              <Autocomplete
-                style={{
-                  minWidth: 220,
-                }}
+              <CustomAutocomplete
+                sx={{ minWidth: 220 }}
                 size="small"
                 onChange={(event, value) =>
                   handleSelectChange("industrial_list", value)
@@ -403,18 +383,14 @@ const KycUpdate = ({
                 value={inputValue.industrial_list || ""}
                 options={Option.IndustriesList.map((option) => option.label)}
                 getOptionLabel={(option) => option}
-                renderInput={(params) => (
-                  <CustomTextField {...params} label="Industrial List" />
-                )}
+                label="Industrial List"
               />
             </Grid>
           )}
           {inputValue.type_of_customer === "Distribution Customer" && (
             <Grid item xs={12} sm={6}>
-              <Autocomplete
-                style={{
-                  minWidth: 220,
-                }}
+              <CustomAutocomplete
+                sx={{ minWidth: 220 }}
                 size="small"
                 onChange={(event, value) =>
                   handleSelectChange("distribution_type", value)
@@ -424,9 +400,7 @@ const KycUpdate = ({
                   (option) => option.label
                 )}
                 getOptionLabel={(option) => option}
-                renderInput={(params) => (
-                  <CustomTextField {...params} label="Distribution Type" />
-                )}
+                label="Distribution Type"
               />
             </Grid>
           )}
@@ -448,7 +422,7 @@ const KycUpdate = ({
           )}
           {inputValue.type_of_customer === "Distribution Customer" && (
             <Grid item xs={12} sm={6}>
-              <Autocomplete
+              <CustomAutocomplete
                 size="small"
                 value={inputValue.category || []}
                 onChange={(event, newValue) => {
@@ -468,19 +442,14 @@ const KycUpdate = ({
                     />
                   ))
                 }
-                renderInput={(params) => (
-                  <CustomTextField
-                    {...params}
-                    label="Category"
-                    placeholder="Category"
-                  />
-                )}
+                label="Category"
+                placeholder="Category"
               />
             </Grid>
           )}
           {inputValue.type_of_customer === "Distribution Customer" && (
             <Grid item xs={12} sm={3}>
-              <Autocomplete
+              <CustomAutocomplete
                 size="small"
                 value={inputValue.main_distribution || []}
                 onChange={(event, newValue) => {
@@ -500,13 +469,8 @@ const KycUpdate = ({
                     />
                   ))
                 }
-                renderInput={(params) => (
-                  <CustomTextField
-                    {...params}
-                    label="Main Distribution"
-                    placeholder="Main Distribution"
-                  />
-                )}
+                label="Main Distribution"
+                placeholder="Main Distribution"
               />
             </Grid>
           )}

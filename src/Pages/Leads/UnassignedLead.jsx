@@ -5,7 +5,6 @@ import {
   Paper,
   Box,
   IconButton,
-  Autocomplete,
   Select,
   FormControl,
   InputLabel,
@@ -30,6 +29,7 @@ import { CustomLoader } from "../../Components/CustomLoader";
 import { CustomPagination } from "../../Components/CustomPagination";
 import Option from "../../Options/Options";
 import CustomTextField from "../../Components/CustomTextField";
+import CustomAutocomplete from "../../Components/CustomAutocomplete";
 
 export const UnassignedLead = () => {
   const [leads, setLeads] = useState([]);
@@ -473,8 +473,8 @@ export const UnassignedLead = () => {
       >
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <Autocomplete
-              style={{
+            <CustomAutocomplete
+              sx={{
                 minWidth: 220,
               }}
               size="small"
@@ -482,13 +482,7 @@ export const UnassignedLead = () => {
               onChange={(e, value) => setAssign(value)}
               options={assigned.map((option) => option.email)}
               getOptionLabel={(option) => `${option}`}
-              renderInput={(params) => (
-                <CustomTextField
-                  {...params}
-                  name={"assign"}
-                  label={"Assign To"}
-                />
-              )}
+              label={"Assign To"}
             />
           </Grid>
           <Grid item xs={12}>

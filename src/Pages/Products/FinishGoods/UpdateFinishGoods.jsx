@@ -2,16 +2,11 @@ import React, { useEffect, useRef, useState } from "react";
 
 import ProductService from "../../../services/ProductService";
 
-import {
-  Backdrop,
-  Box,
-  CircularProgress,
-  Grid,
-  TextField,
-  Button,
-  Autocomplete,
-} from "@mui/material";
+import { Box, Grid, Button } from "@mui/material";
 import { useSelector } from "react-redux";
+import { CustomLoader } from "../../../Components/CustomLoader";
+import CustomTextField from "../../../Components/CustomTextField";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 export const UpdateFinishGoods = (props) => {
   const { recordForEdit, setOpenPopup, getFinishGoods } = props;
   const [finishGoods, setFinishGoods] = useState([]);
@@ -27,14 +22,13 @@ export const UpdateFinishGoods = (props) => {
   const [errMsg, setErrMsg] = useState("");
 
   const [open, setOpen] = useState(false);
-  const user = useSelector((state) => state.auth)
+  const user = useSelector((state) => state.auth);
   const brandData = user.brandAllData;
   const colorData = user.colourAllData;
   const packingUnitData = user.packingunitAllData;
   const productCodeData = user.productCodeAllData;
   const allBasicUnit = user.basicunitAllData;
   const unitData = user.unitAllData;
-
 
   const productCodeValue = productCode.productcode
     ? productCode.productcode
@@ -174,17 +168,7 @@ export const UpdateFinishGoods = (props) => {
 
   return (
     <>
-      <div>
-        <Backdrop
-          sx={{
-            color: "#fff",
-            zIndex: (theme) => theme.zIndex.drawer + 1,
-          }}
-          open={open}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </div>
+      <CustomLoader open={open} />
 
       <Box component="form" noValidate onSubmit={(e) => updateFinishGood(e)}>
         <Grid container spacing={2}>
@@ -206,7 +190,7 @@ export const UpdateFinishGoods = (props) => {
             {errMsg}
           </p>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               label="Name"
@@ -215,7 +199,7 @@ export const UpdateFinishGoods = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="Name"
               size="small"
@@ -226,8 +210,8 @@ export const UpdateFinishGoods = (props) => {
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <Autocomplete
-              style={{
+            <CustomAutocomplete
+              sx={{
                 minWidth: 220,
               }}
               size="small"
@@ -235,20 +219,13 @@ export const UpdateFinishGoods = (props) => {
               onChange={(event, value) => setBasicUnit(value)}
               options={allBasicUnit.map((option) => option.name)}
               getOptionLabel={(option) => `${option}`}
-              renderInput={(params) => (
-                <TextField
-                  fullWidth
-                  name={"basicUnit"}
-                  {...params}
-                  label="Basic Unit"
-                />
-              )}
+              label="Basic Unit"
             />
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <Autocomplete
-              style={{
+            <CustomAutocomplete
+              sx={{
                 minWidth: 220,
               }}
               size="small"
@@ -256,15 +233,13 @@ export const UpdateFinishGoods = (props) => {
               onChange={(e, value) => setUnit(value)}
               options={unitData.map((option) => option.name)}
               getOptionLabel={(option) => `${option}`}
-              renderInput={(params) => (
-                <TextField {...params} name={"unit"} label={"Unit"} />
-              )}
+              label={"Unit"}
             />
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <Autocomplete
-              style={{
+            <CustomAutocomplete
+              sx={{
                 minWidth: 220,
               }}
               size="small"
@@ -272,17 +247,11 @@ export const UpdateFinishGoods = (props) => {
               onChange={(e, value) => setPackingUnit(value)}
               options={packingUnitData.map((option) => option.name)}
               getOptionLabel={(option) => `${option}`}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  name={"packingUnit"}
-                  label={" Packing Unit"}
-                />
-              )}
+              label={" Packing Unit"}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="unit_quantity"
               size="small"
@@ -293,7 +262,7 @@ export const UpdateFinishGoods = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="packing_unit_quantity"
               size="small"
@@ -309,8 +278,8 @@ export const UpdateFinishGoods = (props) => {
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <Autocomplete
-              style={{
+            <CustomAutocomplete
+              sx={{
                 minWidth: 220,
               }}
               size="small"
@@ -318,15 +287,13 @@ export const UpdateFinishGoods = (props) => {
               onChange={(event, value) => setColor(value)}
               options={colorData.map((option) => option.name)}
               getOptionLabel={(option) => `${option}`}
-              renderInput={(params) => (
-                <TextField {...params} name={"color"} label={"Colour"} />
-              )}
+              label={"Colour"}
             />
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <Autocomplete
-              style={{
+            <CustomAutocomplete
+              sx={{
                 minWidth: 220,
               }}
               size="small"
@@ -334,15 +301,13 @@ export const UpdateFinishGoods = (props) => {
               onChange={(event, value) => setBrand(value)}
               options={brandData.map((option) => option.name)}
               getOptionLabel={(option) => `${option}`}
-              renderInput={(params) => (
-                <TextField {...params} name={"brand"} label="Brand" />
-              )}
+              label="Brand"
             />
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <Autocomplete
-              style={{
+            <CustomAutocomplete
+              sx={{
                 minWidth: 220,
               }}
               size="small"
@@ -350,17 +315,11 @@ export const UpdateFinishGoods = (props) => {
               onChange={(event, value) => setProductCode(value)}
               options={productCodeData.map((option) => option.code)}
               getOptionLabel={(option) => `${option}`}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  name={"productCode"}
-                  label="Product Code"
-                />
-              )}
+              label="Product Code"
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               label="Description"
@@ -369,7 +328,7 @@ export const UpdateFinishGoods = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="size"
               size="small"
@@ -380,7 +339,7 @@ export const UpdateFinishGoods = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="hsn_code"
               size="small"
@@ -391,7 +350,7 @@ export const UpdateFinishGoods = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="gst"
               type={"number"}
@@ -403,7 +362,7 @@ export const UpdateFinishGoods = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               label="CGST"
@@ -412,7 +371,7 @@ export const UpdateFinishGoods = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               size="small"
               label="SGST"

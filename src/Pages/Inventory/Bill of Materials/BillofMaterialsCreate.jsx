@@ -1,5 +1,4 @@
 import {
-  Autocomplete,
   Box,
   Button,
   Chip,
@@ -7,7 +6,6 @@ import {
   Grid,
   IconButton,
   Snackbar,
-  TextField,
 } from "@mui/material";
 import React, { useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
@@ -15,7 +13,8 @@ import { CustomLoader } from "../../../Components/CustomLoader";
 import InventoryServices from "../../../services/InventoryService";
 import { useSelector } from "react-redux";
 import { styled } from "@mui/material/styles";
-
+import CustomTextField from "../../../Components/CustomTextField";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
   ...theme.typography.body2,
@@ -133,7 +132,7 @@ export const BillofMaterialsCreate = (props) => {
         />
         <Grid container spacing={2}>
           <Grid item xs={12} sm={4}>
-            <Autocomplete
+            <CustomAutocomplete
               name="product"
               size="small"
               disablePortal
@@ -146,9 +145,7 @@ export const BillofMaterialsCreate = (props) => {
               }
               getOptionLabel={(option) => option}
               sx={{ minWidth: 300 }}
-              renderInput={(params) => (
-                <TextField {...params} label="Product Name" />
-              )}
+              label="Product Name"
             />
           </Grid>
           <Grid item xs={12}>
@@ -163,7 +160,7 @@ export const BillofMaterialsCreate = (props) => {
             return (
               <>
                 <Grid key={index} item xs={12} sm={3}>
-                  <Autocomplete
+                  <CustomAutocomplete
                     name="product"
                     size="small"
                     disablePortal
@@ -181,13 +178,11 @@ export const BillofMaterialsCreate = (props) => {
                     }
                     getOptionLabel={(option) => option}
                     sx={{ minWidth: 300 }}
-                    renderInput={(params) => (
-                      <TextField {...params} label="Product Name" />
-                    )}
+                    label="Product Name"
                   />
                 </Grid>
                 <Grid item xs={12} sm={3}>
-                  <TextField
+                  <CustomTextField
                     fullWidth
                     name="quantity"
                     size="small"
@@ -198,7 +193,7 @@ export const BillofMaterialsCreate = (props) => {
                   />
                 </Grid>
                 <Grid item xs={12} sm={3}>
-                  <TextField
+                  <CustomTextField
                     fullWidth
                     name="unit"
                     size="small"

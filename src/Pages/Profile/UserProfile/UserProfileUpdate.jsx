@@ -29,6 +29,7 @@ export const UserProfileUpdate = ({
   getAllUserProfileData,
 }) => {
   const [open, setOpen] = useState(false);
+  const [profilePic, setProfilePic] = useState(null);
   const [formData, setFormData] = useState({
     personal: {
       first_name: null,
@@ -156,6 +157,14 @@ export const UserProfileUpdate = ({
     ],
   });
 
+  const handleProfilePicChange = (e) => {
+    const file = e.target.files[0];
+    if (file && file.size <= 100 * 1024) {
+      setProfilePic(file);
+    } else {
+      alert("Please select an image of size less than 100KB");
+    }
+  };
   useEffect(() => {
     if (IDForEdit) {
       getUserProfileData(IDForEdit);
@@ -204,6 +213,26 @@ export const UserProfileUpdate = ({
     <Container>
       <CustomLoader open={open} />
       <Box component="form" noValidate onSubmit={UpdateUserProfile}>
+        <Grid item xs={12} sx={{ marginTop: "20px", marginBottom: "20px" }}>
+          <Root>
+            <Divider>
+              <Chip label="Upload Profile Picture" />
+            </Divider>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleProfilePicChange}
+            />
+            {profilePic && (
+              <img
+                src={URL.createObjectURL(profilePic)}
+                alt="Profile"
+                width="100"
+              />
+            )}{" "}
+            {/* Display the selected image */}
+          </Root>
+        </Grid>
         <Grid container spacing={2}>
           {/* Personal Details */}
           <Grid item xs={12} sx={{ marginTop: "20px", marginBottom: "20px" }}>

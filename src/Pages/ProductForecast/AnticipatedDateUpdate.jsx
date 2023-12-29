@@ -7,7 +7,7 @@ import { CustomLoader } from "../../Components/CustomLoader";
 export const AnticipatedDateUpdate = ({
   idForEdit,
   setOpenPopup,
-  getAllCurrentMonthForecastDetails,
+  getAllProductionForecastDetails,
 }) => {
   const [open, setOpen] = useState(false);
   // Initialize anticipatedDate with the correct structure
@@ -44,7 +44,7 @@ export const AnticipatedDateUpdate = ({
 
       if (response) {
         setOpenPopup(false);
-        getAllCurrentMonthForecastDetails();
+        getAllProductionForecastDetails();
       }
       setOpen(false);
     } catch (error) {

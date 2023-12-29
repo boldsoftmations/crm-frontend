@@ -1,15 +1,10 @@
-import {
-  Backdrop,
-  Box,
-  Button,
-  CircularProgress,
-  Grid,
-  TextField,
-} from "@mui/material";
+import { Box, Button, Grid } from "@mui/material";
 import { useRef, useState } from "react";
 import React from "react";
 import "../../CommonStyle.css";
 import ProductService from "../../../services/ProductService";
+import { CustomLoader } from "../../../Components/CustomLoader";
+import CustomTextField from "../../../Components/CustomTextField";
 
 export const CreateUnit = (props) => {
   const { setOpenPopup, getUnits } = props;
@@ -58,14 +53,7 @@ export const CreateUnit = (props) => {
 
   return (
     <>
-      <div>
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={open}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </div>
+      <CustomLoader open={open} />
       <Box component="form" noValidate onSubmit={(e) => createunit(e)}>
         <Grid container spacing={2}>
           <p
@@ -87,7 +75,7 @@ export const CreateUnit = (props) => {
           </p>
 
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="name"
               size="small"
@@ -98,7 +86,7 @@ export const CreateUnit = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="shortName"
               size="small"

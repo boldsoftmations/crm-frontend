@@ -11,8 +11,9 @@ import { TaskUpdate } from "./TaskUpdate";
 import { TaskCreate } from "./TaskCreate";
 import { TaskActivityCreate } from "./TaskActivityCreate";
 import { useSelector } from "react-redux";
-import { Autocomplete, Box, Button } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import CustomTextField from "../../Components/CustomTextField";
+import CustomAutocomplete from "../../Components/CustomAutocomplete";
 
 export const TaskView = () => {
   const [openPopup, setOpenPopup] = useState(false);
@@ -226,16 +227,14 @@ export const TaskView = () => {
         >
           <Box display="flex" marginBottom="10px">
             {!UsersData.groups.includes("Sales Executive") && (
-              <Autocomplete
+              <CustomAutocomplete
                 size="small"
                 sx={{ width: 300 }}
                 onChange={(event, value) => handleFilterChange(value)}
                 value={filterSelectedQuery}
                 options={assignedOption.map((option) => option.email)}
                 getOptionLabel={(option) => option}
-                renderInput={(params) => (
-                  <CustomTextField {...params} label="Filter By Sales Person" />
-                )}
+                label="Filter By Sales Person"
               />
             )}
             <CustomSearchWithButton

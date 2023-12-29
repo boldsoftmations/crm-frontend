@@ -36,6 +36,8 @@ const Root = styled("div")(({ theme }) => ({
 export const UserProfileCreate = ({ setOpenPopup, getUsers }) => {
   const [open, setOpen] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [profilePic, setProfilePic] = useState(null);
+
   const [errorMessages, setErrorMessages] = useState([]);
   const [currentErrorIndex, setCurrentErrorIndex] = useState(0);
   const auth = useSelector((state) => state.auth);
@@ -168,6 +170,16 @@ export const UserProfileCreate = ({ setOpenPopup, getUsers }) => {
     ],
   });
 
+  const handleProfilePicChange = (e) => {
+    const file = e.target.files[0];
+    if (file && file.size <= 100 * 1024) {
+      // Check if file size is less than or equal to 100KB
+      setProfilePic(file);
+    } else {
+      alert("Please select an image of size less than 100KB");
+    }
+  };
+
   const handleCloseSnackbar = useCallback(() => {
     if (currentErrorIndex < errorMessages.length - 1) {
       setCurrentErrorIndex((prevIndex) => prevIndex + 1);
@@ -216,6 +228,26 @@ export const UserProfileCreate = ({ setOpenPopup, getUsers }) => {
       </Snackbar>
 
       <Box component="form" noValidate onSubmit={CreateUserProfile}>
+        <Grid item xs={12} sx={{ marginTop: "20px", marginBottom: "20px" }}>
+          <Root>
+            <Divider>
+              <Chip label="Upload Profile Picture" />
+            </Divider>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleProfilePicChange}
+            />
+            {profilePic && (
+              <img
+                src={URL.createObjectURL(profilePic)}
+                alt="Profile"
+                width="100"
+              />
+            )}{" "}
+            {/* Display the selected image */}
+          </Root>
+        </Grid>
         <Grid container spacing={2}>
           {/* Personal Details */}
           <Grid item xs={12} sx={{ marginTop: "20px", marginBottom: "20px" }}>

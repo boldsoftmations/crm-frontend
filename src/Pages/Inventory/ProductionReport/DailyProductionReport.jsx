@@ -5,9 +5,10 @@ import { CustomSearchWithButton } from "../../../Components/CustomSearchWithButt
 import { CSVLink } from "react-csv";
 import { CustomTable } from "../../../Components/CustomTable";
 import { CustomPagination } from "../../../Components/CustomPagination";
-import { Box, Button, Grid, Paper, TextField } from "@mui/material";
+import { Box, Button, Grid, Paper } from "@mui/material";
 import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 import { CustomLoader } from "../../../Components/CustomLoader";
+import CustomTextField from "../../../Components/CustomTextField";
 
 export const DailyProductionReport = () => {
   const errRef = useRef();
@@ -271,7 +272,7 @@ export const DailyProductionReport = () => {
           <Box display="flex">
             <Box flexGrow={2}>
               <Box flexGrow={2}>
-                <TextField
+                <CustomTextField
                   label="Start Date"
                   variant="outlined"
                   size="small"
@@ -283,7 +284,7 @@ export const DailyProductionReport = () => {
                   onChange={handleStartDateChange}
                 />
 
-                <TextField
+                <CustomTextField
                   label="End Date"
                   variant="outlined"
                   size="small"

@@ -4,12 +4,12 @@ import {
   Button,
   TextField,
   Grid,
-  Autocomplete,
   Alert,
 } from "@mui/material";
 import CustomTextField from "../../../Components/CustomTextField";
 import ProductService from "../../../services/ProductService";
 import LeadServices from "../../../services/LeadService";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 export const LeadForecastCreate = (
   props,
@@ -96,7 +96,7 @@ export const LeadForecastCreate = (
     <form>
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <Autocomplete
+          <CustomAutocomplete
             name="product"
             size="small"
             disablePortal
@@ -108,13 +108,11 @@ export const LeadForecastCreate = (
             options={productOption.map((option) => option.product)}
             getOptionLabel={(option) => option}
             sx={{ minWidth: 300 }}
-            renderInput={(params) => (
-              <CustomTextField {...params} label="Product Name" />
-            )}
+            label="Product Name"
           />
         </Grid>
         <Grid item xs={12}>
-          <Autocomplete
+          <CustomAutocomplete
             name="month"
             size="small"
             disablePortal
@@ -125,7 +123,7 @@ export const LeadForecastCreate = (
             }
             options={monthOptions}
             sx={{ minWidth: 300 }}
-            renderInput={(params) => <TextField {...params} label="Month" />}
+            label="Month"
           />
         </Grid>
         <Grid item xs={12}>

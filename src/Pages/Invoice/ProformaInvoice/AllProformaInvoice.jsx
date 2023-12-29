@@ -9,8 +9,6 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  IconButton,
-  Autocomplete,
 } from "@mui/material";
 import InvoiceServices from "../../../services/InvoiceService";
 import { Popup } from "../../../Components/Popup";
@@ -23,6 +21,7 @@ import { CustomPagination } from "../../../Components/CustomPagination";
 import { AllProformaInvoiceView } from "./AllProformaInvoiceView";
 import CustomTextField from "../../../Components/CustomTextField";
 import { CustomSearchWithButton } from "../../../Components/CustomSearchWithButton";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 export const AllProformaInvoice = () => {
   const dispatch = useDispatch();
@@ -306,19 +305,13 @@ export const AllProformaInvoice = () => {
         <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
           <Box display="flex" marginBottom="10px">
-            <Autocomplete
+            <CustomAutocomplete
               sx={{ width: 300, marginRight: "10px" }}
               size="small"
               options={["yearly", "monthly", "weekly", "today"]}
               defaultValue="today"
               onChange={(event, value) => handleSelectChange(value)}
-              renderInput={(params) => (
-                <CustomTextField
-                  {...params}
-                  label="Sort By"
-                  variant="outlined"
-                />
-              )}
+              label="Sort By"
             />
             <FormControl fullWidth size="small" sx={{ maxWidth: "200px" }}>
               <InputLabel id="demo-simple-select-label">Fliter By</InputLabel>

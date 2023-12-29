@@ -1,14 +1,11 @@
 import {
-  Backdrop,
   Box,
   Button,
-  CircularProgress,
   FormControl,
   Grid,
   InputLabel,
   MenuItem,
   Select,
-  TextField,
 } from "@mui/material";
 
 import { useRef, useState } from "react";
@@ -17,6 +14,8 @@ import React from "react";
 import ProductService from "../../../services/ProductService";
 
 import "../../CommonStyle.css";
+import { CustomLoader } from "../../../Components/CustomLoader";
+import CustomTextField from "../../../Components/CustomTextField";
 
 // const consume = [
 //   {
@@ -76,14 +75,7 @@ export const CreateDescription = (props) => {
 
   return (
     <>
-      <div>
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={open}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </div>
+      <CustomLoader open={open} />
       <Box component="form" noValidate onSubmit={(e) => createdescription(e)}>
         <Grid container spacing={2}>
           <p
@@ -105,7 +97,7 @@ export const CreateDescription = (props) => {
           </p>
 
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CustomTextField
               fullWidth
               name="name"
               size="small"

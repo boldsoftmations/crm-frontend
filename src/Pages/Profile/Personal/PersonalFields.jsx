@@ -1,6 +1,7 @@
 import React from "react";
-import { Grid, Autocomplete } from "@mui/material";
+import { Grid } from "@mui/material";
 import CustomTextField from "../../../Components/CustomTextField";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 const fieldData = [
   { type: "text", label: "First Name", name: "first_name" },
@@ -92,7 +93,7 @@ export const PersonalFields = ({ formData, setFormData }) => {
           case "autocomplete":
             return (
               <Grid item xs={12} sm={4} key={index}>
-                <Autocomplete
+                <CustomAutocomplete
                   options={field.options}
                   fullWidth
                   size="small"
