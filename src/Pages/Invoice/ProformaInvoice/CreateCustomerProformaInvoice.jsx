@@ -177,21 +177,17 @@ export const CreateCustomerProformaInvoice = (props) => {
   const extractErrorMessages = (error) => {
     let messages = [];
 
-    // Check if the error is from Axios and has a response with data
     if (error.response && error.response.data) {
-      // Handle custom backend error structure
-      if (error.response.data.errors) {
+      if (error.response.data.non_field_errors) {
+        messages = [...error.response.data.non_field_errors];
+      } else if (error.response.data.errors) {
         for (const [key, value] of Object.entries(error.response.data.errors)) {
-          value.forEach((msg) => {
-            messages.push(`${key}: ${msg}`);
-          });
+          messages.push(`${key}: ${value.join(", ")}`);
         }
       } else if (error.response.data.message) {
-        // Handle single message error
         messages.push(error.response.data.message);
       }
     } else {
-      // Handle other types of errors (e.g., network error)
       messages.push(error.message || "An unknown error occurred");
     }
 
@@ -264,7 +260,7 @@ export const CreateCustomerProformaInvoice = (props) => {
       setOpen(false);
     } catch (error) {
       console.log("creating Customer PI error", error);
-      const newErrors = extractErrorMessages(error.response.data);
+      const newErrors = extractErrorMessages(error); // Pass the entire error object
       setErrorMessages(newErrors);
       setCurrentErrorIndex(0); // Reset the error index when new errors arrive
       setOpenSnackbar((prevOpen) => !prevOpen);
@@ -296,10 +292,13 @@ export const CreateCustomerProformaInvoice = (props) => {
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
-        <Alert onClose={handleCloseSnackbar} severity="error">
-          {errorMessages[currentErrorIndex]}
-        </Alert>
+        {errorMessages.map((message, index) => (
+          <Alert key={index} onClose={handleCloseSnackbar} severity="error">
+            {message}
+          </Alert>
+        ))}
       </Snackbar>
+
       <CustomLoader open={open} />
       <Box
         component="form"

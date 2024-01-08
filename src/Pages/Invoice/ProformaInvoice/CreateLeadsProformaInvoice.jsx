@@ -163,16 +163,23 @@ export const CreateLeadsProformaInvoice = (props) => {
     }
   };
 
-  const extractErrorMessages = (data) => {
+  const extractErrorMessages = (error) => {
     let messages = [];
-    if (data.errors) {
-      for (const [key, value] of Object.entries(data.errors)) {
-        // Assuming each key has an array of messages, concatenate them.
-        value.forEach((msg) => {
-          messages.push(`${key}: ${msg}`);
-        });
+
+    if (error.response && error.response.data) {
+      if (error.response.data.non_field_errors) {
+        messages = [...error.response.data.non_field_errors];
+      } else if (error.response.data.errors) {
+        for (const [key, value] of Object.entries(error.response.data.errors)) {
+          messages.push(`${key}: ${value.join(", ")}`);
+        }
+      } else if (error.response.data.message) {
+        messages.push(error.response.data.message);
       }
+    } else {
+      messages.push(error.message || "An unknown error occurred");
     }
+
     return messages;
   };
 
@@ -250,7 +257,7 @@ export const CreateLeadsProformaInvoice = (props) => {
       setOpen(false);
     } catch (error) {
       console.log("creating Lead PI error", error);
-      const newErrors = extractErrorMessages(error.response.data);
+      const newErrors = extractErrorMessages(error); // Pass the entire error object
       setErrorMessages(newErrors);
       setCurrentErrorIndex(0); // Reset the error index when new errors arrive
       setOpenSnackbar((prevOpen) => !prevOpen);
@@ -276,9 +283,11 @@ export const CreateLeadsProformaInvoice = (props) => {
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
-        <Alert onClose={handleCloseSnackbar} severity="error">
-          {errorMessages[currentErrorIndex]}
-        </Alert>
+        {errorMessages.map((message, index) => (
+          <Alert key={index} onClose={handleCloseSnackbar} severity="error">
+            {message}
+          </Alert>
+        ))}
       </Snackbar>
       <CustomLoader open={open} />
 
