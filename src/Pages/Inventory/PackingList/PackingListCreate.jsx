@@ -39,6 +39,7 @@ export const PackingListCreate = ({ selectedRow, setOpenPopup }) => {
       packing_list_no: details.packing_list_no,
       invoice_date: details.invoice_date,
       products: selectedRow.products.map((product, index) => ({
+        id: product.id,
         product: product.product,
         unit: product.unit,
         quantity:
@@ -154,6 +155,16 @@ export const PackingListCreate = ({ selectedRow, setOpenPopup }) => {
           </Grid>
           {details.products.map((product, index) => (
             <React.Fragment key={product.id || index}>
+              <Grid item xs={12} sm={2}>
+                <CustomTextField
+                  fullWidth
+                  size="small"
+                  label="Id"
+                  variant="outlined"
+                  value={product.id || ""}
+                  disabled
+                />
+              </Grid>
               <Grid item xs={12} sm={4}>
                 <CustomTextField
                   fullWidth
