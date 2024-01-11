@@ -190,19 +190,28 @@ export const PurchaseOrderCreate = ({
   // Update the getCurrentPurchaseOrderNo function
   const getCurrentPurchaseOrderNo = () => {
     const type = recordForEdit && recordForEdit.type;
-    let baseNo;
-    if (type === "Domestic") {
-      baseNo = 200;
-    } else if (type === "International") {
-      baseNo = 46;
-    } else {
-      baseNo = 0;
+    let poPrefix = "GIPL/23-24/PO"; // Default prefix for Domestic
+    let baseNo = 209; // Set baseNo to 209 for Domestic
+    let startingNo = 210; // The starting number for Domestic
+
+    if (type === "International") {
+      baseNo = 48;
+      poPrefix = "GIPL/23-24/IMP/PO"; // Update prefix for International
+      startingNo = 49; // Assume you also have a starting number for International
     }
+
     const lastNoKey = `lastPurchaseOrderNo_${type}`;
-    const lastNo = parseInt(localStorage.getItem(lastNoKey), 10) || baseNo;
+    let lastNo = parseInt(localStorage.getItem(lastNoKey), 10);
+
+    // If lastNo is not set or less than the baseNo, initialize it with startingNo - 1
+    if (!lastNo || lastNo < baseNo) {
+      lastNo = startingNo - 1;
+      localStorage.setItem(lastNoKey, lastNo.toString());
+    }
+
     setInputValues((prevValues) => ({
       ...prevValues,
-      po_no: `GIPL/23-24/PO - ${lastNo + 1}`,
+      po_no: `${poPrefix} - ${lastNo + 1}`,
     }));
   };
 

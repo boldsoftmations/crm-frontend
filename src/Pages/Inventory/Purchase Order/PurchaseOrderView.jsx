@@ -303,6 +303,7 @@ export const PurchaseOrderView = () => {
                   <StyledTableCell align="center">
                     Purchase Order
                   </StyledTableCell>
+                  <StyledTableCell align="center">Vendor Type</StyledTableCell>
                   <StyledTableCell align="center">Vendor</StyledTableCell>
 
                   <StyledTableCell align="center">
@@ -403,6 +404,7 @@ function Row(props) {
         </StyledTableCell>
         <StyledTableCell align="center">{row.po_date}</StyledTableCell>
         <StyledTableCell align="center">{row.po_no}</StyledTableCell>
+        <StyledTableCell align="center">{row.vendor_type}</StyledTableCell>
         <StyledTableCell align="center">{row.vendor}</StyledTableCell>
         <StyledTableCell align="center">{row.seller_account}</StyledTableCell>
         <StyledTableCell align="center">{row.seller_state}</StyledTableCell>
