@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import InventoryServices from "../../../services/InventoryService";
 import { styled } from "@mui/material/styles";
@@ -6,6 +6,9 @@ import logo from "../../../Images/LOGOS3.png";
 import ISO from "../../../Images/ISOLogo.ico";
 import AllLogo from "../../../Images/allLogo.jpg";
 import MSME from "../../../Images/MSME.jpeg";
+import { useReactToPrint } from "react-to-print";
+import PrintIcon from "@mui/icons-material/Print";
+import { Button } from "@mui/material";
 
 export const PurchaseInvoice = (props) => {
   const { idForEdit } = props;
@@ -13,6 +16,8 @@ export const PurchaseInvoice = (props) => {
   const [purchaseInvoiceDataByID, setPurchaseInvoiceDataByID] = useState([]);
   const [open, setOpen] = useState(false);
   const [productData, setProductData] = useState([]);
+  const componentRef = useRef();
+
   useEffect(() => {
     if (idForEdit) getAllPackingListDetailsByID();
   }, [idForEdit]);
@@ -42,14 +47,35 @@ export const PurchaseInvoice = (props) => {
   }
   const AMOUNT_IN_WORDS = arr.join(" ");
 
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+    documentTitle: `PI Number ${purchaseInvoiceDataByID.invoice_no} ${purchaseInvoiceDataByID}`,
+  });
+
   return (
     <>
       <CustomLoader open={open} />
-
+      <div
+        className="container-fluid mb-4"
+        style={{ border: "1px Solid #000000" }}
+      >
+        <div className="row p-4">
+          <div className="col-xs-6 ">
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={handlePrint}
+              startIcon={<PrintIcon />}
+            >
+              Print
+            </Button>
+          </div>
+        </div>
+      </div>
       <div
         className="container-fluid m-0 p-0"
         style={{ border: "1px Solid #000000" }}
-        // ref={componentRef}
+        ref={componentRef}
       >
         <div className="row">
           {/* <!-- BEGIN INVOICE --> */}
@@ -99,7 +125,7 @@ export const PurchaseInvoice = (props) => {
                       style={{ borderBottom: "1px Solid #000000" }}
                     >
                       <p className="text-center fs-6 fw-bold p-0 m-0">
-                        Invoice
+                        Purchase Invoice
                       </p>
                     </div>
                   </div>
@@ -166,10 +192,19 @@ export const PurchaseInvoice = (props) => {
                     >
                       <div>
                         <strong style={{ ...typographyStyling }}>
-                          Purchase Voucher. :{" "}
+                          Invoice No & Date. :{" "}
                         </strong>
-                        {purchaseInvoiceDataByID.invoice_no}
+                        {purchaseInvoiceDataByID.invoice_no} &{" "}
+                        {purchaseInvoiceDataByID.invoice_date}
                       </div>
+                      <div>
+                        <strong style={{ ...typographyStyling }}>
+                          Purchase Order No & Date :
+                        </strong>
+                        {purchaseInvoiceDataByID.purchase_order_no} &{" "}
+                        {purchaseInvoiceDataByID.purchase_orde_date}
+                      </div>
+
                       <div>
                         <strong style={{ ...typographyStyling }}>
                           Date :{" "}

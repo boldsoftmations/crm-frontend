@@ -7,13 +7,12 @@ import {
   IconButton,
   Snackbar,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import InventoryServices from "../../../services/InventoryService";
 import CustomTextField from "../../../Components/CustomTextField";
 import { styled } from "@mui/material/styles";
-import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
   ...theme.typography.body2,
@@ -22,151 +21,116 @@ const Root = styled("div")(({ theme }) => ({
   },
 }));
 
-export const GRNCreate = (props) => {
-  const {
-    setOpenPopup,
-    getAllGRNDetails,
-    vendorOption,
-    getPackingListNoDetails,
-  } = props;
+export const GRNCreate = ({ setOpenPopup, idForEdit, getAllVendorDetails }) => {
   const [open, setOpen] = useState(false);
-  const [vendor, setVendor] = useState(null);
-  const [grnDataByID, setGRNDataByID] = useState([]);
   const [error, setError] = useState(null);
-  const [products, setProducts] = useState([
-    {
-      products: "",
-      order_quantity: "",
+  const [products, setProducts] = useState(
+    idForEdit.products.map(({ product, unit, quantity }) => ({
+      products: product,
+      unit,
+      order_quantity: quantity,
       qa_rejected: "",
       qa_accepted: "",
-    },
-  ]);
+    }))
+  );
+  const calculateQA = (orderQty, rejectedQty) => {
+    return !isNaN(orderQty) && !isNaN(rejectedQty)
+      ? parseInt(orderQty, 10) - parseInt(rejectedQty, 10)
+      : "";
+  };
 
   const handleFormChange = (index, event) => {
     const { name, value } = event.target;
-    const list = [...products];
-    list[index][name] = value;
+    const updatedProducts = products.map((item, idx) =>
+      idx === index
+        ? {
+            ...item,
+            [name]: value,
+            qa_accepted:
+              name === "qa_rejected"
+                ? calculateQA(item.order_quantity, value)
+                : item.qa_accepted,
+          }
+        : item
+    );
 
-    // If qa_rejected and quantity values exist, update the qa_accepted value
-    if (list[index].qa_rejected !== "" && list[index].order_quantity !== "") {
-      list[index].qa_accepted =
-        parseInt(list[index].order_quantity) -
-        parseInt(list[index].qa_rejected);
-    }
-
-    setProducts(list);
+    setProducts(updatedProducts);
   };
 
-  useEffect(() => {
-    if (vendor !== null && vendor !== undefined && vendor.id) {
-      getGRNDetailsByID();
-    }
-  }, [vendor]);
+  const createGrnDetails = async (e) => {
+    e.preventDefault();
+    setOpen(true);
 
-  const getGRNDetailsByID = async () => {
     try {
-      setOpen(true);
-      const response = await InventoryServices.getPackingListDataById(
-        vendor.id
-      );
-      setGRNDataByID(response.data);
-      var arr = response.data.products.map((fruit) => ({
-        products: fruit.product,
-        order_quantity: fruit.quantity,
-        unit: fruit.unit,
-      }));
-      setProducts(arr);
-      setOpen(false);
+      const response = await InventoryServices.createGRNData({
+        packing_list: idForEdit.id,
+        products,
+      });
+      if (response) {
+        getAllVendorDetails();
+        setOpenPopup(false);
+      }
     } catch (err) {
-      setOpen(false);
-      console.log("company data by id error", err);
-    }
-  };
-
-  const createPackingListDetails = async (e) => {
-    try {
-      e.preventDefault();
-      setOpen(true);
-      const req = {
-        packing_list: grnDataByID.id, //Normal text field
-        products: products,
-      };
-      await InventoryServices.createGRNData(req);
-      setOpenPopup(false);
-      getAllGRNDetails();
-      getPackingListNoDetails();
-      setOpen(false);
-    } catch (error) {
-      console.log("createing Packing list error", error);
-      setError(
-        error.response.data.errors
-          ? error.response.data.errors.packing_list
-            ? "Packing List" + error.response.data.errors.packing_list
-            : error.response.data.errors.seller_account
-            ? "Seller Account" + error.response.data.errors.seller_account
-            : ""
-          : ""
-      );
+      setError("Error occurred while creating GRN.");
+      console.error("Creating Packing list error", err);
+    } finally {
       setOpen(false);
     }
-  };
-
-  const handleCloseSnackbar = () => {
-    setError(null);
   };
 
   return (
     <div>
       <CustomLoader open={open} />
 
-      <Box
-        component="form"
-        noValidate
-        onSubmit={(e) => createPackingListDetails(e)}
-      >
+      <Box component="form" noValidate onSubmit={(e) => createGrnDetails(e)}>
         <Snackbar
           open={Boolean(error)}
-          onClose={handleCloseSnackbar}
+          onClose={() => setError(null)}
           message={error}
           anchorOrigin={{ vertical: "top", horizontal: "center" }}
           action={
-            <IconButton
-              aria-label="close"
-              color="inherit"
-              sx={{ p: 0.5 }}
-              onClick={handleCloseSnackbar}
-            >
-              <CloseIcon />
-            </IconButton>
+            <React.Fragment>
+              <IconButton
+                size="small"
+                aria-label="close"
+                color="inherit"
+                onClick={() => setError(null)}
+              >
+                <CloseIcon fontSize="small" />
+              </IconButton>
+            </React.Fragment>
           }
         />
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={6}>
-            <CustomAutocomplete
-              name="vendor"
-              size="small"
-              disablePortal
-              id="combo-box-demo"
-              onChange={(event, value) => setVendor(value)}
-              options={vendorOption ? vendorOption.map((option) => option) : []}
-              getOptionLabel={(option) =>
-                `${option.vendor} ${option.packing_list_no}`
-              }
-              sx={{ minWidth: 300 }}
-              label="Vendor"
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={4}>
             <CustomTextField
               fullWidth
               size="small"
-              name="packing_list"
-              label="Packing List"
+              label="Vendor"
               variant="outlined"
-              value={grnDataByID.id ? grnDataByID.id : ""}
+              value={idForEdit.vendor || ""}
             />
           </Grid>
 
+          <Grid item xs={12} sm={4}>
+            <CustomTextField
+              fullWidth
+              size="small"
+              label="Packing List ID"
+              variant="outlined"
+              value={idForEdit.id || ""}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={4}>
+            <CustomTextField
+              fullWidth
+              size="small"
+              label="Invoice No"
+              variant="outlined"
+              value={idForEdit.packing_list_no || ""}
+            />
+          </Grid>
           <Grid item xs={12}>
             <Root>
               <Divider>
@@ -180,12 +144,10 @@ export const GRNCreate = (props) => {
                 <Grid key={index} item xs={12} sm={4}>
                   <CustomTextField
                     fullWidth
-                    name="products"
                     size="small"
                     label="Products"
                     variant="outlined"
-                    value={input.products ? input.products : ""}
-                    onChange={(event) => handleFormChange(index, event)}
+                    value={input.products || ""}
                   />
                 </Grid>
                 <Grid item xs={12} sm={2}>
@@ -194,7 +156,7 @@ export const GRNCreate = (props) => {
                     size="small"
                     label="Unit"
                     variant="outlined"
-                    value={input.unit ? input.unit : ""}
+                    value={input.unit || ""}
                   />
                 </Grid>
                 <Grid item xs={12} sm={2}>
@@ -204,7 +166,7 @@ export const GRNCreate = (props) => {
                     size="small"
                     label="Quantity"
                     variant="outlined"
-                    value={input.order_quantity ? input.order_quantity : ""}
+                    value={input.order_quantity || ""}
                     onChange={(event) => handleFormChange(index, event)}
                   />
                 </Grid>

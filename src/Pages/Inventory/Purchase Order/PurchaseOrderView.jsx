@@ -1,3 +1,4 @@
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Box,
   Grid,
@@ -22,31 +23,100 @@ import {
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
 import ClearIcon from "@mui/icons-material/Clear";
-import React, { useCallback, useEffect, useState } from "react";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { Popup } from "../../../Components/Popup";
 import InventoryServices from "../../../services/InventoryService";
-import { PackingListUpdate } from "./PackingListUpdate";
+import { PurchaseOrderUpdate } from "./PurchaseOrderUpdate";
 import InvoiceServices from "../../../services/InvoiceService";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { getSellerAccountData } from "../../../Redux/Action/Action";
 import CustomTextField from "../../../Components/CustomTextField";
-import { GRNCreate } from "../GRN/GRNCreate";
+import { PackingListCreate } from "../PackingList/PackingListCreate";
+import { PurchaseOrderPDF } from "./PurchaseOrderPDF";
+import jsPDF from "jspdf";
+import { pdf } from "@react-pdf/renderer";
+import { PackingListMergeCreate } from "../PackingList/PackingListMergeCreate";
 
-export const PackingListView = (getAllVendorDetails) => {
-  const dispatch = useDispatch();
-  const userData = useSelector((state) => state.auth.profile);
-  const [openPopup, setOpenPopup] = useState(false);
-  const [openPopupCreateGrn, setOpenPopupCreateGrn] = useState(false);
+export const PurchaseOrderView = () => {
+  const [openPopupUpdate, setOpenPopupUpdate] = useState(false);
   const [open, setOpen] = useState(false);
-  const [packingListData, setPackingListData] = useState([]);
-  const [pageCount, setPageCount] = useState(1);
+  const [purchaseOrderData, setPurchaseOrderData] = useState([]);
+  const [pageCount, setPageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [acceptedFilter, setAcceptedFilter] = useState(false);
-  const [idForEdit, setIDForEdit] = useState("");
+  const [selectedRow, setSelectedRow] = useState(null);
+  const [contactNameOption, setContactNameOption] = useState("");
+  const [openCreatePLPopup, setOpenCreatePLPopup] = useState(false);
+  const [openMergePLPopup, setOpenMergePLPopup] = useState(false);
+  const dispatch = useDispatch();
+
+  const handleDownload = async (data) => {
+    try {
+      setOpen(true);
+
+      // create a new jsPDF instance
+      const pdfDoc = new jsPDF();
+
+      // generate the PDF document
+      const pdfData = await pdf(
+        <PurchaseOrderPDF
+          purchaseOrderData={data}
+          // AMOUNT_IN_WORDS={AMOUNT_IN_WORDS}
+        />,
+        pdfDoc,
+        {
+          // set options here if needed
+        }
+      ).toBlob();
+
+      // create a temporary link element to trigger the download
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(pdfData);
+      link.download = `PO Number ${data.po_no}.pdf`;
+      document.body.appendChild(link);
+
+      // trigger the download
+      link.click();
+
+      // clean up the temporary link element
+      document.body.removeChild(link);
+
+      setOpen(false);
+    } catch (error) {
+      console.log("error exporting pdf", error);
+    } finally {
+      setOpen(false);
+    }
+  };
+
+  const handleEdit = async (item) => {
+    try {
+      setOpen(true);
+      setSelectedRow(item);
+      setOpenPopupUpdate(true);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setOpen(false);
+    }
+  };
+
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const handlePageClick = (event, value) => {
+    setCurrentPage(value);
+  };
+
+  const handleFilterChange = (event) => {
+    const { value } = event.target;
+    setAcceptedFilter(value);
+    getAllPurchaseOrderDetails(currentPage, value, searchQuery);
+  };
 
   useEffect(() => {
     getAllSellerAccountsDetails();
@@ -66,19 +136,19 @@ export const PackingListView = (getAllVendorDetails) => {
   };
 
   useEffect(() => {
-    getAllPackingListDetails(currentPage);
-  }, [currentPage, getAllPackingListDetails]);
+    getAllPurchaseOrderDetails(currentPage);
+  }, [currentPage, getAllPurchaseOrderDetails]);
 
-  const getAllPackingListDetails = useCallback(
+  const getAllPurchaseOrderDetails = useCallback(
     async (page, filter = acceptedFilter, search = searchQuery) => {
       try {
         setOpen(true);
-        const response = await InventoryServices.getAllPackingListData(
+        const response = await InventoryServices.getAllPurchaseOrderData(
           page,
           filter,
           search
         );
-        setPackingListData(response.data.results);
+        setPurchaseOrderData(response.data.results);
         setPageCount(Math.ceil(response.data.count / 25));
         setOpen(false);
       } catch (error) {
@@ -86,31 +156,12 @@ export const PackingListView = (getAllVendorDetails) => {
         console.error("error", error);
       }
     },
-    [acceptedFilter, searchQuery] // Depend on acceptedFilter directly
+    [acceptedFilter, searchQuery]
   );
 
-  const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
-  };
-
-  const handlePageClick = (event, value) => {
-    setCurrentPage(value);
-  };
-
-  const handleFilterChange = (event) => {
-    const { value } = event.target;
-    setAcceptedFilter(value);
-    getAllPackingListDetails(currentPage, value, searchQuery);
-  };
-
-  const openInPopup = (item) => {
-    setIDForEdit(item);
-    setOpenPopup(true);
-  };
-
-  const handleCreateGrn = (item) => {
-    setIDForEdit(item);
-    setOpenPopupCreateGrn(true);
+  const handleOpenCreatePLPopup = (row) => {
+    setOpenCreatePLPopup(true);
+    setSelectedRow(row);
   };
 
   return (
@@ -144,8 +195,8 @@ export const PackingListView = (getAllVendorDetails) => {
                     <IconButton
                       size="small"
                       onClick={() => {
-                        setAcceptedFilter(false);
-                        getAllPackingListDetails(1, false, searchQuery);
+                        setAcceptedFilter("");
+                        getAllPurchaseOrderDetails(1, false, searchQuery);
                       }}
                       sx={{
                         position: "absolute",
@@ -174,7 +225,7 @@ export const PackingListView = (getAllVendorDetails) => {
                   variant="contained"
                   color="primary"
                   onClick={() =>
-                    getAllPackingListDetails(
+                    getAllPurchaseOrderDetails(
                       currentPage,
                       acceptedFilter,
                       searchQuery
@@ -190,31 +241,38 @@ export const PackingListView = (getAllVendorDetails) => {
                   color="secondary"
                   onClick={() => {
                     setSearchQuery("");
-                    getAllPackingListDetails(1, acceptedFilter, "");
+                    getAllPurchaseOrderDetails(1, acceptedFilter, "");
                   }}
                 >
                   Reset
+                </Button>
+              </Grid>
+              <Grid item xs={12} sm={2}>
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={() => {
+                    setOpenMergePLPopup(true);
+                  }}
+                >
+                  Merge PL
                 </Button>
               </Grid>
             </Grid>
           </Box>
           <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
             <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} sm={6}></Grid>
-
-              <Grid item xs={12} sm={3}>
+              <Grid item xs={12} sx={{ textAlign: "center" }}>
                 <h3
                   style={{
-                    textAlign: "left",
                     fontSize: "24px",
                     color: "rgb(34, 34, 34)",
                     fontWeight: 800,
                   }}
                 >
-                  Pending GRN
+                  Purchase Order Book
                 </h3>
               </Grid>
-              <Grid item xs={12} sm={3}></Grid>
             </Grid>
           </Box>
           <TableContainer
@@ -239,27 +297,38 @@ export const PackingListView = (getAllVendorDetails) => {
               <TableHead>
                 <StyledTableRow>
                   <StyledTableCell align="center"></StyledTableCell>
-                  <StyledTableCell align="center">INVOICE DATE</StyledTableCell>
-                  <StyledTableCell align="center">INVOICE NO</StyledTableCell>
                   <StyledTableCell align="center">
-                    PURCHASE ORDER
+                    Purchase Order Date
                   </StyledTableCell>
-                  <StyledTableCell align="center">VENDOR</StyledTableCell>
-                  <StyledTableCell align="center">BUYER STATE</StyledTableCell>
+                  <StyledTableCell align="center">
+                    Purchase Order
+                  </StyledTableCell>
+                  <StyledTableCell align="center">Vendor</StyledTableCell>
+
+                  <StyledTableCell align="center">
+                    Buyer Account
+                  </StyledTableCell>
+                  <StyledTableCell align="center">Buyer State</StyledTableCell>
+                  <StyledTableCell align="center">
+                    Schedule Date
+                  </StyledTableCell>
                   <StyledTableCell align="center">Action</StyledTableCell>
                 </StyledTableRow>
               </TableHead>
               <TableBody>
-                {packingListData.map((row, i) => (
-                  <Row
-                    key={i}
-                    row={row}
-                    openInPopup={openInPopup}
-                    handleCreateGrn={handleCreateGrn}
-                    userData={userData}
-                  />
-                ))}
-              </TableBody>{" "}
+                {Array.isArray(purchaseOrderData) &&
+                  purchaseOrderData.map((row, i) => (
+                    <Row
+                      key={i}
+                      row={row}
+                      handleEdit={handleEdit}
+                      handleOpenCreatePLPopup={() =>
+                        handleOpenCreatePLPopup(row)
+                      }
+                      handleDownload={handleDownload}
+                    />
+                  ))}
+              </TableBody>
             </Table>
           </TableContainer>
           <TableFooter
@@ -275,36 +344,47 @@ export const PackingListView = (getAllVendorDetails) => {
           </TableFooter>
         </Paper>
       </Grid>
-
       <Popup
         fullScreen={true}
-        title={"PackingList Update"}
-        openPopup={openPopup}
-        setOpenPopup={setOpenPopup}
+        title={"Purchase Order Update"}
+        openPopup={openPopupUpdate}
+        setOpenPopup={setOpenPopupUpdate}
       >
-        <PackingListUpdate
-          setOpenPopup={setOpenPopup}
-          getAllPackingListDetails={getAllPackingListDetails}
-          idForEdit={idForEdit}
+        <PurchaseOrderUpdate
+          setOpenPopup={setOpenPopupUpdate}
+          getAllPurchaseOrderDetails={getAllPurchaseOrderDetails}
+          selectedRow={selectedRow}
+          contactNameOption={contactNameOption}
         />
       </Popup>
       <Popup
         fullScreen={true}
-        title={"GRN Create"}
-        openPopup={openPopupCreateGrn}
-        setOpenPopup={setOpenPopupCreateGrn}
+        title="Create Packing List"
+        openPopup={openCreatePLPopup}
+        setOpenPopup={setOpenCreatePLPopup}
       >
-        <GRNCreate
-          setOpenPopup={setOpenPopupCreateGrn}
-          idForEdit={idForEdit}
-          getAllVendorDetails={getAllVendorDetails}
+        <PackingListCreate
+          setOpenPopup={setOpenCreatePLPopup}
+          selectedRow={selectedRow}
+        />
+      </Popup>
+      <Popup
+        fullScreen={true}
+        title="Merge Packing List"
+        openPopup={openMergePLPopup}
+        setOpenPopup={setOpenMergePLPopup}
+      >
+        <PackingListMergeCreate
+          setOpenPopup={setOpenMergePLPopup}
+          purchaseOrderData={purchaseOrderData}
         />
       </Popup>
     </>
   );
 };
 
-function Row({ row, openInPopup, handleCreateGrn, userData }) {
+function Row(props) {
+  const { row, handleEdit, handleOpenCreatePLPopup, handleDownload } = props;
   const [open, setOpen] = useState(false);
 
   return (
@@ -321,36 +401,24 @@ function Row({ row, openInPopup, handleCreateGrn, userData }) {
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </StyledTableCell>
-        <StyledTableCell align="center">{row.invoice_date}</StyledTableCell>
-        <StyledTableCell align="center">{row.packing_list_no}</StyledTableCell>
-        <StyledTableCell align="center">
-          {row.purchase_order.join(", ")}
-        </StyledTableCell>
-
+        <StyledTableCell align="center">{row.po_date}</StyledTableCell>
+        <StyledTableCell align="center">{row.po_no}</StyledTableCell>
         <StyledTableCell align="center">{row.vendor}</StyledTableCell>
         <StyledTableCell align="center">{row.seller_account}</StyledTableCell>
+        <StyledTableCell align="center">{row.seller_state}</StyledTableCell>
+        <StyledTableCell align="center">{row.schedule_date}</StyledTableCell>
 
         <StyledTableCell align="center">
-          {/* {
-            // Show Edit button only if the user is NOT in any of the specified groups
-            !userData.groups.includes("Stores Delhi") &&
-              !userData.groups.includes("Production Delhi") &&
-              !userData.groups.includes("Stores") && (
-                <Button onClick={() => openInPopup(row)}>Edit</Button>
-              )
-          } */}
-          {
-            // Show Create GRN button if the user is in any of the specified groups
-            (userData.groups.includes("Stores Delhi") ||
-              userData.groups.includes("Production Delhi") ||
-              userData.groups.includes("Stores") ||
-              userData.groups.includes("Director")) && (
-              <Button onClick={() => handleCreateGrn(row)}>Create GRN</Button>
-            )
-          }
+          <Button onClick={() => handleEdit(row)}>Edit</Button>
+          <Button color="success" onClick={handleOpenCreatePLPopup}>
+            Create PL
+          </Button>
+          <Button color="secondary" onClick={() => handleDownload(row)}>
+            Download
+          </Button>
         </StyledTableCell>
       </StyledTableRow>
-      <StyledTableRow>
+      <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
@@ -364,36 +432,45 @@ function Row({ row, openInPopup, handleCreateGrn, userData }) {
                     <TableCell align="center">PRODUCT</TableCell>
                     <TableCell align="center">UNIT</TableCell>
                     <TableCell align="center">QUANTITY</TableCell>
+                    <TableCell align="center"> PENDING QUANTITY</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {row.products.map((historyRow, i) => (
-                    <StyledTableRow key={i}>
-                      <StyledTableCell align="center">{i + 1}</StyledTableCell>
-                      <StyledTableCell align="center">
-                        {historyRow.product}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {historyRow.unit}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {historyRow.quantity}
-                      </StyledTableCell>
-                    </StyledTableRow>
-                  ))}
+                  {Array.isArray(row.products) &&
+                    row.products.map((historyRow, i) => (
+                      <StyledTableRow key={i}>
+                        <StyledTableCell align="center">
+                          {i + 1}
+                        </StyledTableCell>
+                        <StyledTableCell align="center">
+                          {historyRow.product}
+                        </StyledTableCell>
+                        <StyledTableCell align="center">
+                          {historyRow.unit}
+                        </StyledTableCell>
+                        <StyledTableCell align="center">
+                          {historyRow.quantity}
+                        </StyledTableCell>
+                        <StyledTableCell align="center">
+                          {row.close_short === true
+                            ? 0
+                            : historyRow.pending_quantity}
+                        </StyledTableCell>
+                      </StyledTableRow>
+                    ))}
                 </TableBody>
               </Table>
             </Box>
           </Collapse>
         </TableCell>
-      </StyledTableRow>
+      </TableRow>
     </>
   );
 }
 
 const AcceptedOption = [
-  { label: "Accepted", value: "true" },
-  { label: "Not Accepted", value: "false" },
+  { label: "Closed", value: "true" },
+  { label: "Not Closed", value: "false" },
 ];
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({

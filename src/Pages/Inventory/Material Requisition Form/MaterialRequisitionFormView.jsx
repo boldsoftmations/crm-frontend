@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Box,
   Grid,
@@ -20,14 +20,11 @@ import {
   Snackbar,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
-import DownloadIcon from "@mui/icons-material/Download";
 import jsPDF from "jspdf";
 import CloseIcon from "@mui/icons-material/Close";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { CustomLoader } from "../../../Components/CustomLoader";
-import { CustomSearch } from "../../../Components/CustomSearch";
-import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 import { Popup } from "../../../Components/Popup";
 import InventoryServices from "../../../services/InventoryService";
 import { MaterialRequisitionFormCreate } from "./MaterialRequisitionFormCreate";
@@ -45,32 +42,28 @@ import {
 } from "@react-pdf/renderer";
 import moment from "moment";
 import InvoiceServices from "../../../services/InvoiceService";
+import CustomTextField from "../../../Components/CustomTextField";
 
 export const MaterialRequisitionFormView = () => {
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [openPopup3, setOpenPopup3] = useState(false);
   const [open, setOpen] = useState(false);
-  const errRef = useRef();
-  const [errMsg, setErrMsg] = useState("");
   const [materialRequisitionData, setMaterialRequisitionData] = useState([]);
   const [materialRequisitionDataByID, setMaterialRequisitionDataByID] =
     useState(null);
-  const [pageCount, setpageCount] = useState(0);
+  const [pageCount, setPageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
-  const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [idForEdit, setIDForEdit] = useState("");
   const [storesInventoryData, setStoresInventoryData] = useState([]);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [sellerOption, setSellerOption] = useState(null);
   const users = useSelector((state) => state.auth.profile);
-  const handleInputChange = (event) => {
-    setFilterSelectedQuery(event.target.value);
-    getSearchData(event.target.value);
-  };
 
   useEffect(() => {
     getAllSellerAccountsDetails();
+    getAllStoresInventoryDetails();
   }, []);
 
   const getAllSellerAccountsDetails = async () => {
@@ -88,10 +81,6 @@ export const MaterialRequisitionFormView = () => {
     }
   };
 
-  useEffect(() => {
-    getAllStoresInventoryDetails();
-  }, []);
-
   const getAllStoresInventoryDetails = async () => {
     try {
       setOpen(true);
@@ -105,92 +94,37 @@ export const MaterialRequisitionFormView = () => {
   };
 
   useEffect(() => {
-    getAllMaterialRequisitionFormDetails();
-  }, []);
+    getAllMaterialRequisitionFormDetails(currentPage);
+  }, [currentPage, getAllMaterialRequisitionFormDetails]);
 
-  const getAllMaterialRequisitionFormDetails = async () => {
-    try {
-      setOpen(true);
-      const response = currentPage
-        ? await InventoryServices.getMaterialRequisitionFormPaginateData(
-            currentPage
-          )
-        : await InventoryServices.getAllMaterialRequisitionFormData();
-      setMaterialRequisitionData(response.data.results);
-      const total = response.data.count;
-      setpageCount(Math.ceil(total / 25));
-    } catch (err) {
-      if (!err.response) {
-        setErrMsg(
-          "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
-        );
-      } else if (err.response.status === 400) {
-        setErrMsg(
-          err.response.data.errors.name ||
-            err.response.data.errors.non_field_errors
-        );
-      } else if (err.response.status === 401) {
-        setErrMsg(err.response.data.errors.code);
-      } else if (err.response.status === 404 || !err.response.data) {
-        setErrMsg("Data not found or request was null/empty");
-      } else {
-        setErrMsg("Server Error");
-      }
-    } finally {
-      setOpen(false);
-    }
-  };
-
-  const getSearchData = async (value) => {
-    try {
-      setOpen(true);
-      const filterSearch = value;
-      if (filterSearch !== "") {
+  const getAllMaterialRequisitionFormDetails = useCallback(
+    async (page, search = searchQuery) => {
+      try {
+        setOpen(true);
         const response =
-          await InventoryServices.getAllSearchMaterialRequisitionFormData(
-            filterSearch
+          await InventoryServices.getAllMaterialRequisitionFormData(
+            page,
+            search
           );
         setMaterialRequisitionData(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      } else {
-        await getAllMaterialRequisitionFormDetails();
-        setFilterSelectedQuery("");
+        setPageCount(Math.ceil(response.data.count / 25));
+        setOpen(false);
+      } catch (error) {
+        setOpen(false);
+        console.error("error", error);
       }
-    } catch (error) {
-      console.log("error Search leads", error);
-    } finally {
-      setOpen(false);
-    }
+    },
+    [searchQuery]
+  );
+
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
   };
 
-  const handlePageClick = async (event, value) => {
-    try {
-      const page = value;
-      setCurrentPage(page);
-      setOpen(true);
-
-      const response = filterSelectedQuery
-        ? await InventoryServices.getAllMaterialRequisitionFormDataPaginate(
-            page,
-            filterSelectedQuery
-          )
-        : await InventoryServices.getMaterialRequisitionFormPaginateData(page);
-
-      if (response) {
-        setMaterialRequisitionData(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      } else {
-        await getAllMaterialRequisitionFormDetails();
-        setFilterSelectedQuery("");
-      }
-    } catch (error) {
-      console.log("error", error);
-    } finally {
-      setOpen(false);
-    }
+  const handlePageClick = (event, value) => {
+    setCurrentPage(value);
   };
+
   // Stores Accept Api
   const updateMaterialRequisitionFormDetails = async (data) => {
     try {
@@ -213,11 +147,6 @@ export const MaterialRequisitionFormView = () => {
       console.log("error Store Accepting", error);
       setOpen(false);
     }
-  };
-
-  const getResetData = async () => {
-    setFilterSelectedQuery("");
-    await getAllMaterialRequisitionFormDetails();
   };
 
   const openInPopup = (item) => {
@@ -270,46 +199,69 @@ export const MaterialRequisitionFormView = () => {
       <CustomLoader open={open} />
 
       <Grid item xs={12}>
-        <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
-          <Box display="flex">
-            <Box flexGrow={0.9}>
-              <CustomSearch
-                filterSelectedQuery={filterSelectedQuery}
-                handleInputChange={handleInputChange}
-                getResetData={getResetData}
-              />
-            </Box>
-            <Box flexGrow={2}>
-              <h3
-                style={{
-                  textAlign: "left",
-                  marginBottom: "1em",
-                  fontSize: "24px",
-                  color: "rgb(34, 34, 34)",
-                  fontWeight: 800,
-                }}
-              >
-                Material Requisition Details
-              </h3>
-            </Box>
-            <Box flexGrow={0.5} align="right">
-              {users.groups.includes("Production") ||
-              users.groups.includes("Production Delhi") ? (
+          <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={12} sm={3}>
+                <CustomTextField
+                  size="small"
+                  label="Search"
+                  variant="outlined"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={12} sm={1}>
                 <Button
-                  onClick={() => setOpenPopup2(true)}
                   variant="contained"
-                  color="success"
-                  // startIcon={<AddIcon />}
+                  color="primary"
+                  onClick={() =>
+                    getAllMaterialRequisitionFormDetails(
+                      currentPage,
+                      searchQuery
+                    )
+                  } // Call `handleSearch` when the button is clicked
                 >
-                  Add
+                  Search
                 </Button>
-              ) : null}
-            </Box>
+              </Grid>
+              <Grid item xs={12} sm={1}>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => {
+                    setSearchQuery("");
+                    getAllMaterialRequisitionFormDetails(1, "");
+                  }}
+                >
+                  Reset
+                </Button>
+              </Grid>
+            </Grid>
+          </Box>
+          <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={12} sm={5}></Grid>
+
+              <Grid item xs={12} sm={3}>
+                <h3
+                  style={{
+                    textAlign: "left",
+                    fontSize: "24px",
+                    color: "rgb(34, 34, 34)",
+                    fontWeight: 800,
+                  }}
+                >
+                  Material Requisition Form
+                </h3>
+              </Grid>
+              <Grid item xs={12} sm={3}></Grid>
+            </Grid>
           </Box>
           <TableContainer
             sx={{
-              maxHeight: 440,
+              maxHeight: 360,
               "&::-webkit-scrollbar": {
                 width: 15,
               },
@@ -506,8 +458,8 @@ function Row(props) {
   return (
     <>
       {/* <CustomLoader open={open} /> */}
-      <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
-        <TableCell>
+      <StyledTableRow sx={{ "& > *": { borderBottom: "unset" } }}>
+        <StyledTableCell>
           <IconButton
             aria-label="expand row"
             size="small"
@@ -516,26 +468,26 @@ function Row(props) {
           >
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
-        </TableCell>
-        <TableCell align="center">{row.id}</TableCell>
-        <TableCell align="center">{row.user}</TableCell>
-        <TableCell align="center">{row.seller_account}</TableCell>
-        <TableCell align="center">{row.created_on}</TableCell>
-        <TableCell align="center">
+        </StyledTableCell>
+        <StyledTableCell align="center">{row.id}</StyledTableCell>
+        <StyledTableCell align="center">{row.user}</StyledTableCell>
+        <StyledTableCell align="center">{row.seller_account}</StyledTableCell>
+        <StyledTableCell align="center">{row.created_on}</StyledTableCell>
+        <StyledTableCell align="center">
           <Switch
             checked={row.accepted}
             inputProps={{ "aria-label": "controlled" }}
           />
-        </TableCell>
+        </StyledTableCell>
 
-        <TableCell align="center">
+        <StyledTableCell align="center">
           {(users.groups.includes("Accounts") ||
             users.groups.includes("Production") ||
             users.groups.includes("Production Delhi")) &&
             row.accepted === false && (
               <Button
                 onClick={() => openInPopup(row.id)}
-                variant="contained"
+                // variant="contained"
                 color="success"
               >
                 Edit
@@ -547,8 +499,8 @@ function Row(props) {
               handlePrint(row);
               setMaterialRequisitionDataByID(row);
             }}
-            variant="contained"
-            endIcon={<DownloadIcon />}
+            // variant="contained"
+            // endIcon={<DownloadIcon />}
           >
             Download
           </Button>
@@ -561,14 +513,14 @@ function Row(props) {
                   setOpenPopup3(true);
                   setMaterialRequisitionDataByID(row);
                 }}
-                variant="contained"
+                // variant="contained"
                 color="success"
               >
                 View
               </Button>
             )}
-        </TableCell>
-      </TableRow>
+        </StyledTableCell>
+      </StyledTableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
@@ -586,13 +538,17 @@ function Row(props) {
                 </TableHead>
                 <TableBody>
                   {row.products_data.map((historyRow, i) => (
-                    <TableRow key={i}>
-                      <TableCell align="center">{historyRow.product}</TableCell>
-                      <TableCell align="center">{historyRow.unit}</TableCell>
-                      <TableCell align="center">
+                    <StyledTableRow key={i}>
+                      <StyledTableCell align="center">
+                        {historyRow.product}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {historyRow.unit}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
                         {historyRow.quantity}
-                      </TableCell>
-                    </TableRow>
+                      </StyledTableCell>
+                    </StyledTableRow>
                   ))}
                 </TableBody>
               </Table>
@@ -764,9 +720,11 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.common.black,
     color: theme.palette.common.white,
+    padding: 0, // Remove padding from header cells
   },
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
+    padding: 0, // Remove padding from body cells
   },
 }));
 

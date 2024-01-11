@@ -1,21 +1,19 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { CSVLink } from "react-csv";
 import { CustomLoader } from "../../../Components/CustomLoader";
-import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 import InventoryServices from "../../../services/InventoryService";
 import { CustomPagination } from "../../../Components/CustomPagination";
 import { CustomTable } from "../../../Components/CustomTable";
 import { CustomSearchWithButton } from "../../../Components/CustomSearchWithButton";
-import { Button } from "@mui/material";
+import { Box, Button, Grid, Paper } from "@mui/material";
+import CustomTextField from "../../../Components/CustomTextField";
 
 export const ProductionInventoryGAndLView = () => {
   const [open, setOpen] = useState(false);
-  const errRef = useRef();
-  const [errMsg, setErrMsg] = useState("");
   const [productionInventoryData, setProductionInventoryData] = useState([]);
-  const [pageCount, setpageCount] = useState(0);
+  const [pageCount, setPageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
-  const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [exportData, setExportData] = useState([]);
   const csvLinkRef = useRef(null);
 
@@ -46,11 +44,11 @@ export const ProductionInventoryGAndLView = () => {
     try {
       setOpen(true);
       let response;
-      if (filterSelectedQuery) {
+      if (searchQuery) {
         response =
           await InventoryServices.getProductionGAndLInventoryPaginateData(
             "all",
-            filterSelectedQuery
+            searchQuery
           );
       } else {
         response =
@@ -79,106 +77,36 @@ export const ProductionInventoryGAndLView = () => {
     }
   };
 
-  const handleInputChange = () => {
-    setFilterSelectedQuery(filterSelectedQuery);
-    getSearchData(filterSelectedQuery);
-  };
-
   useEffect(() => {
-    getAllProductionInventoryDetails();
-  }, []);
+    getAllProductionInventoryGAndLDetails(currentPage);
+  }, [currentPage, getAllProductionInventoryGAndLDetails]);
 
-  const getAllProductionInventoryDetails = async () => {
-    try {
-      setOpen(true);
-      const response = currentPage
-        ? await InventoryServices.getProductionGAndLInventoryPaginateData(
-            currentPage
-          )
-        : await InventoryServices.getAllProductionGAndLInventoryData();
-
-      setProductionInventoryData(response.data.results);
-      const total = response.data.count;
-      setpageCount(Math.ceil(total / 25));
-    } catch (err) {
-      handleErrorResponse(err);
-    } finally {
-      setOpen(false);
-    }
-  };
-
-  const handleErrorResponse = (err) => {
-    if (!err.response) {
-      setErrMsg(
-        "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
-      );
-    } else if (err.response.status === 400) {
-      setErrMsg(
-        err.response.data.errors.name ||
-          err.response.data.errors.non_field_errors
-      );
-    } else if (err.response.status === 401) {
-      setErrMsg(err.response.data.errors.code);
-    } else if (err.response.status === 404 || !err.response.data) {
-      setErrMsg("Data not found or request was null/empty");
-    } else {
-      setErrMsg("Server Error");
-    }
-  };
-
-  const getSearchData = async (value) => {
-    try {
-      setOpen(true);
-      const filterSearch = value;
-      if (filterSearch !== "") {
+  const getAllProductionInventoryGAndLDetails = useCallback(
+    async (page, search = searchQuery) => {
+      try {
+        setOpen(true);
         const response =
-          await InventoryServices.getAllSearchProductionGAndLInventoryData(
-            filterSearch
+          await InventoryServices.getAllProductionGAndLInventoryData(
+            page,
+            search
           );
         setProductionInventoryData(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      } else {
-        await getAllProductionInventoryDetails();
-        setFilterSelectedQuery("");
+        setPageCount(Math.ceil(response.data.count / 25));
+        setOpen(false);
+      } catch (error) {
+        setOpen(false);
+        console.error("error", error);
       }
-    } catch (error) {
-      console.log("error Search leads", error);
-    } finally {
-      setOpen(false);
-    }
+    },
+    [searchQuery]
+  );
+
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
   };
 
-  const handlePageClick = async (event, value) => {
-    try {
-      const page = value;
-      setCurrentPage(page);
-      setOpen(true);
-
-      const response = filterSelectedQuery
-        ? await InventoryServices.getProductionGAndLInventoryPaginateData(
-            page,
-            filterSelectedQuery
-          )
-        : await InventoryServices.getProductionGAndLInventoryPaginateData(page);
-      if (response) {
-        setProductionInventoryData(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      } else {
-        await getAllProductionInventoryDetails();
-        setFilterSelectedQuery("");
-      }
-    } catch (error) {
-      console.log("error", error);
-    } finally {
-      setOpen(false);
-    }
-  };
-
-  const getResetData = () => {
-    setFilterSelectedQuery("");
-    getAllProductionInventoryDetails();
+  const handlePageClick = (event, value) => {
+    setCurrentPage(value);
   };
 
   const Tableheaders = [
@@ -207,63 +135,86 @@ export const ProductionInventoryGAndLView = () => {
     <>
       <CustomLoader open={open} />
 
-      <div>
-        <ErrorMessage errRef={errRef} errMsg={errMsg} />
-
-        <div
-          style={{
-            padding: "16px",
-            margin: "16px",
-            boxShadow: "0px 3px 6px #00000029",
-            borderRadius: "4px",
-            display: "flex",
-            flexDirection: "column",
-            backgroundColor: "rgb(255, 255, 255)", // set background color to default Paper color
-          }}
-        >
-          <div style={{ display: "flex" }}>
-            <div style={{ flexGrow: 0.9 }}>
-              <CustomSearchWithButton
-                filterSelectedQuery={filterSelectedQuery}
-                setFilterSelectedQuery={setFilterSelectedQuery}
-                handleInputChange={handleInputChange}
-                getResetData={getResetData}
-              />
-            </div>
-            <div style={{ flexGrow: 2 }}>
-              <h3
-                style={{
-                  textAlign: "left",
-                  marginBottom: "1em",
-                  fontSize: "24px",
-                  color: "rgb(34, 34, 34)",
-                  fontWeight: 800,
-                }}
-              >
-                Production Inventory G&L
-              </h3>
-            </div>
-            <div style={{ flexGrow: 0.5 }} align="right">
-              <Button variant="contained" onClick={handleDownload}>
-                Download CSV
-              </Button>
-              {exportData.length > 0 && (
-                <CSVLink
-                  data={exportData}
-                  headers={headers}
-                  ref={csvLinkRef}
-                  filename="Production Gain And Loss.csv"
-                  target="_blank"
-                  style={{
-                    textDecoration: "none",
-                    outline: "none",
-                    height: "5vh",
-                  }}
+      <Grid item xs={12}>
+        <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
+          <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={12} sm={3}>
+                <CustomTextField
+                  size="small"
+                  label="Search"
+                  variant="outlined"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  fullWidth
                 />
-              )}
-            </div>
-          </div>
+              </Grid>
+              <Grid item xs={12} sm={1}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() =>
+                    getAllProductionInventoryGAndLDetails(
+                      currentPage,
+                      searchQuery
+                    )
+                  } // Call `handleSearch` when the button is clicked
+                >
+                  Search
+                </Button>
+              </Grid>
+              <Grid item xs={12} sm={1}>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => {
+                    setSearchQuery("");
+                    getAllProductionInventoryGAndLDetails(1, "");
+                  }}
+                >
+                  Reset
+                </Button>
+              </Grid>
+              <Grid item xs={12} sm={5}>
+                <Button variant="contained" onClick={handleDownload}>
+                  Download CSV
+                </Button>
+                {exportData.length > 0 && (
+                  <CSVLink
+                    data={exportData}
+                    headers={headers}
+                    ref={csvLinkRef}
+                    filename="Production Gain And Loss.csv"
+                    target="_blank"
+                    style={{
+                      textDecoration: "none",
+                      outline: "none",
+                      height: "5vh",
+                    }}
+                  />
+                )}
+              </Grid>
+            </Grid>
+          </Box>
+          <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={12} sm={5}></Grid>
 
+              <Grid item xs={12} sm={3}>
+                <h3
+                  style={{
+                    textAlign: "left",
+                    fontSize: "24px",
+                    color: "rgb(34, 34, 34)",
+                    fontWeight: 800,
+                  }}
+                >
+                  Production Gain And Loss
+                </h3>
+              </Grid>
+              <Grid item xs={12} sm={3}></Grid>
+            </Grid>
+          </Box>
           <CustomTable
             headers={Tableheaders}
             data={Tabledata}
@@ -276,8 +227,8 @@ export const ProductionInventoryGAndLView = () => {
             pageCount={pageCount}
             handlePageClick={handlePageClick}
           />
-        </div>
-      </div>
+        </Paper>
+      </Grid>
     </>
   );
 };

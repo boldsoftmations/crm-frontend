@@ -21,27 +21,23 @@ const Root = styled("div")(({ theme }) => ({
     marginTop: theme.spacing(2),
   },
 }));
-export const GRNUpdate = (props) => {
-  const {
-    setOpenPopup,
-    getAllGRNDetails,
-    idForEdit,
-    vendorOption,
-    getPackingListNoDetails,
-  } = props;
-  const [grnDataByID, setGRNDataByID] = useState([]);
+export const GRNUpdate = ({ setOpenPopup, getAllGRNDetails, idForEdit }) => {
+  console.log("idForEdit", idForEdit);
   const [open, setOpen] = useState(false);
-  const [vendor, setVendor] = useState("");
-
   const [error, setError] = useState(null);
-  const [products, setProducts] = useState([
-    {
-      products: "",
-      order_quantity: "",
-      qa_rejected: "",
-      qa_accepted: "",
-    },
-  ]);
+
+  const [products, setProducts] = useState(
+    idForEdit.products.map(
+      ({ products, unit, order_quantity, qa_rejected, qa_accepted }) => ({
+        products: products,
+        unit,
+        order_quantity: order_quantity,
+        qa_rejected: qa_rejected,
+        qa_accepted: qa_accepted,
+      })
+    )
+  );
+
   const handleFormChange = (index, event) => {
     const { name, value } = event.target;
     const list = [...products];
@@ -57,87 +53,19 @@ export const GRNUpdate = (props) => {
     setProducts(list);
   };
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setGRNDataByID({ ...grnDataByID, [name]: value });
-  };
-
-  useEffect(() => {
-    if (idForEdit) getAllPackingListDetailsByID();
-  }, [idForEdit]);
-
-  const getAllPackingListDetailsByID = async () => {
-    try {
-      setOpen(true);
-      const response = await InventoryServices.getGRNDataById(idForEdit);
-
-      setGRNDataByID(response.data);
-      var arr = response.data.products.map((fruit) => ({
-        products: fruit.products,
-        unit: fruit.unit,
-        order_quantity: fruit.order_quantity,
-        qa_rejected: fruit.qa_rejected,
-        qa_accepted: fruit.qa_accepted,
-      }));
-      setProducts(arr);
-
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("company data by id error", err);
-    }
-  };
-
-  useEffect(() => {
-    if (vendor !== null && vendor !== undefined && vendor.id) {
-      getGRNDetailsByID();
-    }
-  }, [vendor]);
-
-  const getGRNDetailsByID = async () => {
-    try {
-      setOpen(true);
-      const response = await InventoryServices.getPackingListDataById(
-        vendor.id
-      );
-
-      setGRNDataByID(response.data);
-      var arr = response.data.products.map((fruit) => ({
-        products: fruit.product,
-        unit: fruit.unit,
-        order_quantity: fruit.quantity,
-      }));
-      setProducts(arr);
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("company data by id error", err);
-    }
-  };
-
   const updateLeadProformaInvoiceDetails = async (e) => {
     try {
       e.preventDefault();
       setOpen(true);
       const req = {
-        packing_list: vendor.id
-          ? vendor.id
-          : grnDataByID.packing_list
-          ? grnDataByID.packing_list
-          : "", //Normal text field
-        vendor: vendor.vendor
-          ? vendor.vendor
-          : grnDataByID.vendor
-          ? grnDataByID.vendor
-          : "",
-
+        packing_list: idForEdit.packing_list,
+        vendor: idForEdit.vendor,
         products: products,
       };
-      await InventoryServices.updateGRNData(idForEdit, req);
+      await InventoryServices.updateGRNData(idForEdit.grn_no, req);
 
       setOpenPopup(false);
       getAllGRNDetails();
-      getPackingListNoDetails();
       setOpen(false);
     } catch (error) {
       setError(
@@ -183,59 +111,13 @@ export const GRNUpdate = (props) => {
           }
         />
         <Grid container spacing={2}>
-          {/* <Grid item xs={12} sm={4}>
-            <TextField
-              sx={{ minWidth: "8rem" }}
-              name="vendor_name"
-              size="small"
-              label="search By vendor_name"
-              variant="outlined"
-              onChange={handleInputChange}
-              value={
-                grnDataByID.vendor_name
-                  ? grnDataByID.vendor_name
-                  : grnDataByID.vendor
-                  ? grnDataByID.vendor
-                  : ""
-              }
-            />
-            <Button onClick={fetchVendorOptions} variant="contained">
-              Submit
-            </Button>
-          </Grid> */}
-          {vendorOption && vendorOption.length > 0 && (
-            <Grid item xs={12} sm={4}>
-              <CustomAutocomplete
-                name="vendor"
-                size="small"
-                disablePortal
-                id="combo-box-demo"
-                onChange={(event, value) => setVendor(value)}
-                options={vendorOption.map((option) => option)}
-                getOptionLabel={(option) =>
-                  `${option.vendor} ${option.packing_list_no}`
-                }
-                sx={{ minWidth: 100 }}
-                label="Update Packing List"
-              />
-            </Grid>
-          )}
-
           <Grid item xs={12} sm={4}>
             <CustomTextField
               fullWidth
               size="small"
-              name="packing_list_no"
-              label="Packing List No."
+              label="Vendor"
               variant="outlined"
-              value={
-                vendor && vendor.packing_list_no
-                  ? vendor.packing_list_no
-                  : grnDataByID && grnDataByID.packing_list_no
-                  ? grnDataByID.packing_list_no
-                  : ""
-              }
-              onChange={handleInputChange}
+              value={idForEdit.vendor || ""}
             />
           </Grid>
 
@@ -243,16 +125,19 @@ export const GRNUpdate = (props) => {
             <CustomTextField
               fullWidth
               size="small"
-              name="vendor"
-              label="Vendor"
+              label="Packing List ID"
               variant="outlined"
-              value={
-                vendor && vendor.vendor
-                  ? vendor.vendor
-                  : grnDataByID && grnDataByID.vendor
-                  ? grnDataByID.vendor
-                  : ""
-              }
+              value={idForEdit.packing_list || ""}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={4}>
+            <CustomTextField
+              fullWidth
+              size="small"
+              label="Packing List No"
+              variant="outlined"
+              value={idForEdit.packing_list_no || ""}
             />
           </Grid>
           <Grid item xs={12}>
@@ -272,7 +157,7 @@ export const GRNUpdate = (props) => {
                     size="small"
                     label="Products"
                     variant="outlined"
-                    value={input.products ? input.products : ""}
+                    value={input.products || ""}
                     onChange={(event) => handleFormChange(index, event)}
                   />
                 </Grid>
@@ -282,7 +167,7 @@ export const GRNUpdate = (props) => {
                     size="small"
                     label="Unit"
                     variant="outlined"
-                    value={input.unit ? input.unit : ""}
+                    value={input.unit || ""}
                   />
                 </Grid>
                 <Grid item xs={12} sm={2}>
@@ -292,7 +177,7 @@ export const GRNUpdate = (props) => {
                     size="small"
                     label="Quantity"
                     variant="outlined"
-                    value={input.order_quantity ? input.order_quantity : ""}
+                    value={input.order_quantity || ""}
                     onChange={(event) => handleFormChange(index, event)}
                   />
                 </Grid>
@@ -303,7 +188,7 @@ export const GRNUpdate = (props) => {
                     size="small"
                     label="QA Rejected"
                     variant="outlined"
-                    value={input.qa_rejected ? input.qa_rejected : ""}
+                    value={input.qa_rejected || ""}
                     onChange={(event) => handleFormChange(index, event)}
                   />
                 </Grid>

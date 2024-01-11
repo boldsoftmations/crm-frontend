@@ -1,8 +1,7 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Box, Grid, Paper, Button } from "@mui/material";
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import { Box, Grid, Paper, Button, Typography } from "@mui/material";
 import { Popup } from "../../../Components/Popup";
 import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
-import { CustomSearch } from "../../../Components/CustomSearch";
 import { useDispatch } from "react-redux";
 import { getSellerAccountData } from "../../../Redux/Action/Action";
 import InvoiceServices from "../../../services/InvoiceService";
@@ -12,40 +11,37 @@ import { UpdateAllVendorDetails } from "./UpdateAllVendorDetails";
 import InventoryServices from "../../../services/InventoryService";
 import { CustomTable } from "../../../Components/CustomTable";
 import { CustomPagination } from "../../../Components/CustomPagination";
+import { PurchaseOrderCreate } from "../Purchase Order/PurchaseOrderCreate";
+import CustomTextField from "../../../Components/CustomTextField";
 
 export const VendorView = () => {
   const dispatch = useDispatch();
-  const [openPopup, setOpenPopup] = useState(false);
-  const [openPopup2, setOpenPopup2] = useState(false);
+  const [openPopupUpdate, setOpenPopupUpdate] = useState(false);
+  const [openPopupCreate, setOpenPopupCreate] = useState(false);
+  const [openPopupPurchaseOrder, setOpenPopupPurchaseOrder] = useState(false);
   const [open, setOpen] = useState(false);
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
   const [vendorData, setVendorData] = useState([]);
   const [recordForEdit, setRecordForEdit] = useState();
-  const [pageCount, setpageCount] = useState(0);
+  const [pageCount, setPageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
-  const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const handleInputChange = (event) => {
-    const inputValue = event.target.value;
-    setFilterSelectedQuery(inputValue);
-    getSearchData(inputValue);
-  };
-
-  const getResetData = async () => {
-    setFilterSelectedQuery("");
-    await getAllVendorDetails();
-  };
-
-  const openInPopup = (item) => {
+  const openInPopupUpdate = (item) => {
     const matchedVendor = vendorData.find((lead) => lead.id === item.id);
     setRecordForEdit(matchedVendor);
-    setOpenPopup(true);
+    setOpenPopupUpdate(true);
+  };
+
+  const openInPopupPurchaseOrder = (item) => {
+    const matchedVendor = vendorData.find((lead) => lead.id === item.id);
+    setRecordForEdit(matchedVendor);
+    setOpenPopupPurchaseOrder(true);
   };
 
   useEffect(() => {
     getAllSellerAccountsDetails();
-    getAllVendorDetails();
   }, []);
 
   const getAllSellerAccountsDetails = async () => {
@@ -61,90 +57,38 @@ export const VendorView = () => {
     }
   };
 
-  const getAllVendorDetails = async () => {
-    try {
-      setOpen(true);
-      const response = currentPage
-        ? await InventoryServices.getVendorPaginateData(currentPage)
-        : await InventoryServices.getAllVendorData();
-      setVendorData(response.data.results);
-      const total = response.data.count;
-      setpageCount(Math.ceil(total / 25));
-    } catch (err) {
-      if (!err.response) {
-        setErrMsg(
-          "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
-        );
-      } else if (err.response.status === 400) {
-        setErrMsg(
-          err.response.data.errors.name ||
-            err.response.data.errors.non_field_errors
-        );
-      } else if (err.response.status === 401) {
-        setErrMsg(err.response.data.errors.code);
-      } else if (err.response.status === 404 || !err.response.data) {
-        setErrMsg("Data not found or request was null/empty");
-      } else {
-        setErrMsg("Server Error");
+  useEffect(() => {
+    getAllVendorDetails(currentPage);
+  }, [currentPage, getAllVendorDetails]);
+
+  const getAllVendorDetails = useCallback(
+    async (page, search = searchQuery) => {
+      try {
+        setOpen(true);
+        const response = await InventoryServices.getAllVendorData(page, search);
+        setVendorData(response.data.results);
+        setPageCount(Math.ceil(response.data.count / 25));
+        setOpen(false);
+      } catch (error) {
+        setOpen(false);
+        console.error("error", error);
       }
-    } finally {
-      setOpen(false);
-    }
+    },
+    [searchQuery]
+  );
+
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
   };
 
-  const getSearchData = async (value) => {
-    try {
-      setOpen(true);
-      const filterSearch = value;
-      if (filterSearch !== "") {
-        const response = await InventoryServices.getAllSearchVendorData(
-          filterSearch
-        );
-        setVendorData(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      } else {
-        await getAllVendorDetails();
-        setFilterSelectedQuery("");
-      }
-    } catch (error) {
-      console.log("error Search leads", error);
-    } finally {
-      setOpen(false);
-    }
-  };
-
-  const handlePageClick = async (event, value) => {
-    try {
-      const page = value;
-      setCurrentPage(page);
-      setOpen(true);
-
-      const response = filterSelectedQuery
-        ? await InventoryServices.getAllVendorDataPaginate(
-            page,
-            filterSelectedQuery
-          )
-        : await InventoryServices.getVendorPaginateData(page);
-
-      if (response) {
-        setVendorData(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      } else {
-        await getAllVendorDetails();
-        setFilterSelectedQuery("");
-      }
-    } catch (error) {
-      console.log("error", error);
-    } finally {
-      setOpen(false);
-    }
+  const handlePageClick = (event, value) => {
+    setCurrentPage(value);
   };
 
   const Tabledata = vendorData.map((row) => ({
     id: row.id,
     name: row.name,
+    type: row.type,
     pan_number: row.pan_number,
     gst_number: row.gst_number,
     city: row.city,
@@ -154,6 +98,7 @@ export const VendorView = () => {
   const Tableheaders = [
     "ID",
     "Vendor",
+    "Type",
     "Pan No.",
     "Gst No.",
     "City",
@@ -167,46 +112,78 @@ export const VendorView = () => {
       <Grid item xs={12}>
         <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
-          <Box display="flex">
-            <Box flexGrow={0.9}>
-              <CustomSearch
-                filterSelectedQuery={filterSelectedQuery}
-                handleInputChange={handleInputChange}
-                getResetData={getResetData}
-                HelperText={"Search By Vendor"}
-              />
-            </Box>
-            <Box flexGrow={2}>
-              <h3
-                style={{
-                  textAlign: "left",
-                  marginBottom: "1em",
-                  fontSize: "24px",
-                  color: "rgb(34, 34, 34)",
-                  fontWeight: 800,
-                }}
-              >
-                Vendor Details
-              </h3>
-            </Box>
-            <Box flexGrow={0.5} align="right">
-              <Button
-                onClick={() => setOpenPopup2(true)}
-                variant="contained"
-                color="success"
-                // startIcon={<AddIcon />}
-              >
-                Add
-              </Button>
-            </Box>
+          <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={12} sm={3}>
+                <CustomTextField
+                  size="small"
+                  label="Search"
+                  variant="outlined"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={12} sm={1}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => getAllVendorDetails(currentPage, searchQuery)} // Call `handleSearch` when the button is clicked
+                >
+                  Search
+                </Button>
+              </Grid>
+              <Grid item xs={12} sm={1}>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => {
+                    setSearchQuery("");
+                    getAllVendorDetails(1, "");
+                  }}
+                >
+                  Reset
+                </Button>
+              </Grid>
+            </Grid>
+          </Box>
+          <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={12} sm={6}></Grid>
+
+              <Grid item xs={12} sm={3}>
+                {/* Customer Header */}
+                <h3
+                  style={{
+                    textAlign: "left",
+                    fontSize: "24px",
+                    color: "rgb(34, 34, 34)",
+                    fontWeight: 800,
+                  }}
+                >
+                  Vendor
+                </h3>
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <Button
+                  onClick={() => setOpenPopupCreate(true)}
+                  variant="contained"
+                  color="success"
+                  // startIcon={<AddIcon />}
+                >
+                  Add
+                </Button>
+              </Grid>
+            </Grid>
           </Box>
           <CustomTable
             headers={Tableheaders}
             data={Tabledata}
-            openInPopup={openInPopup}
-            openInPopup2={null}
+            openInPopup={openInPopupUpdate}
+            openInPopup2={openInPopupPurchaseOrder}
             openInPopup3={null}
             openInPopup4={null}
+            ButtonText={"Create PO"}
           />
           <CustomPagination
             pageCount={pageCount}
@@ -217,24 +194,36 @@ export const VendorView = () => {
       <Popup
         fullScreen={true}
         title={"Create Vendor Details"}
-        openPopup={openPopup2}
-        setOpenPopup={setOpenPopup2}
+        openPopup={openPopupCreate}
+        setOpenPopup={setOpenPopupCreate}
       >
         <CreateVendorDetails
-          setOpenPopup={setOpenPopup2}
+          setOpenPopup={setOpenPopupCreate}
           getAllVendorDetails={getAllVendorDetails}
         />
       </Popup>
       <Popup
         fullScreen={true}
         title={"Update Vendor Details"}
-        openPopup={openPopup}
-        setOpenPopup={setOpenPopup}
+        openPopup={openPopupUpdate}
+        setOpenPopup={setOpenPopupUpdate}
       >
         <UpdateAllVendorDetails
-          setOpenPopup={setOpenPopup}
+          setOpenPopup={setOpenPopupUpdate}
           getAllVendorDetails={getAllVendorDetails}
           recordForEdit={recordForEdit}
+        />
+      </Popup>
+      <Popup
+        fullScreen={true}
+        title={"Purchase Order"}
+        openPopup={openPopupPurchaseOrder}
+        setOpenPopup={setOpenPopupPurchaseOrder}
+      >
+        <PurchaseOrderCreate
+          setOpenPopup={setOpenPopupPurchaseOrder}
+          recordForEdit={recordForEdit}
+          getAllVendorDetails={getAllVendorDetails}
         />
       </Popup>
     </>

@@ -1,25 +1,22 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { CustomLoader } from "../../../Components/CustomLoader";
-import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 import InventoryServices from "../../../services/InventoryService";
 import { CustomPagination } from "../../../Components/CustomPagination";
-import { CustomSearchWithButton } from "./../../../Components/CustomSearchWithButton";
 import { CustomTable } from "../../../Components/CustomTable";
 import { CSVLink } from "react-csv";
 import { Popup } from "../../../Components/Popup";
 import { StoresInventoryCreate } from "./StoresInventoryCreate";
-import { Button } from "@mui/material";
+import { Box, Button, Grid, Paper } from "@mui/material";
 import { useSelector } from "react-redux";
+import CustomTextField from "../../../Components/CustomTextField";
 
 export const StoresInventoryView = () => {
   const [open, setOpen] = useState(false);
   const [openPopup, setOpenPopup] = useState(false);
-  const errRef = useRef();
-  const [errMsg, setErrMsg] = useState("");
   const [storesInventoryData, setStoresInventoryData] = useState([]);
-  const [pageCount, setpageCount] = useState(0);
+  const [pageCount, setPageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
-  const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [exportData, setExportData] = useState([]);
   const csvLinkRef = useRef(null);
   const data = useSelector((state) => state.auth);
@@ -53,15 +50,13 @@ export const StoresInventoryView = () => {
     try {
       setOpen(true);
       let response;
-      if (filterSelectedQuery) {
-        response = await InventoryServices.getAllStoresInventoryDataPaginate(
+      if (searchQuery) {
+        response = await InventoryServices.getAllStoresInventoryDetails(
           "all",
-          filterSelectedQuery
+          searchQuery
         );
       } else {
-        response = await InventoryServices.getStoresInventoryPaginateData(
-          "all"
-        );
+        response = await InventoryServices.getAllStoresInventoryDetails("all");
       }
       const data = response.data.map((row) => {
         return {
@@ -85,98 +80,39 @@ export const StoresInventoryView = () => {
     }
   };
 
-  const handleInputChange = () => {
-    setFilterSelectedQuery(filterSelectedQuery);
-    getSearchData(filterSelectedQuery);
-  };
-
   useEffect(() => {
     getAllStoresInventoryDetails();
   }, []);
 
-  const getAllStoresInventoryDetails = async () => {
-    try {
-      setOpen(true);
-      const response = currentPage
-        ? await InventoryServices.getStoresInventoryPaginateData(currentPage)
-        : await InventoryServices.getAllStoresInventoryData();
-      setStoresInventoryData(response.data.results);
-      const total = response.data.count;
-      setpageCount(Math.ceil(total / 25));
-    } catch (err) {
-      if (!err.response) {
-        setErrMsg(
-          "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
+  useEffect(() => {
+    getAllStoresInventoryDetails(currentPage);
+  }, [currentPage, getAllStoresInventoryDetails]);
+
+  const getAllStoresInventoryDetails = useCallback(
+    async (page, search = searchQuery) => {
+      try {
+        setOpen(true);
+        const response = await InventoryServices.getAllStoresInventoryDetails(
+          page,
+          search
         );
-      } else if (err.response.status === 400) {
-        setErrMsg(
-          err.response.data.errors.name ||
-            err.response.data.errors.non_field_errors
-        );
-      } else if (err.response.status === 401) {
-        setErrMsg(err.response.data.errors.code);
-      } else if (err.response.status === 404 || !err.response.data) {
-        setErrMsg("Data not found or request was null/empty");
-      } else {
-        setErrMsg("Server Error");
-      }
-    } finally {
-      setOpen(false);
-    }
-  };
-
-  const getSearchData = async (value) => {
-    try {
-      setOpen(true);
-      const filterSearch = value;
-      if (filterSearch !== "") {
-        const response =
-          await InventoryServices.getAllSearchStoresInventoryData(filterSearch);
         setStoresInventoryData(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      } else {
-        await getAllStoresInventoryDetails();
-        setFilterSelectedQuery("");
+        setPageCount(Math.ceil(response.data.count / 25));
+        setOpen(false);
+      } catch (error) {
+        setOpen(false);
+        console.error("error", error);
       }
-    } catch (error) {
-      console.log("error Search leads", error);
-    } finally {
-      setOpen(false);
-    }
+    },
+    [searchQuery]
+  );
+
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
   };
 
-  const handlePageClick = async (event, value) => {
-    try {
-      const page = value;
-      setCurrentPage(page);
-      setOpen(true);
-
-      const response = filterSelectedQuery
-        ? await InventoryServices.getAllStoresInventoryDataPaginate(
-            page,
-            filterSelectedQuery
-          )
-        : await InventoryServices.getStoresInventoryPaginateData(page);
-
-      if (response) {
-        setStoresInventoryData(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      } else {
-        await getAllStoresInventoryDetails();
-        setFilterSelectedQuery("");
-      }
-    } catch (error) {
-      console.log("error", error);
-    } finally {
-      setOpen(false);
-    }
-  };
-
-  const getResetData = () => {
-    setFilterSelectedQuery("");
-    getAllStoresInventoryDetails();
+  const handlePageClick = (event, value) => {
+    setCurrentPage(value);
   };
 
   const Tableheaders = [
@@ -206,47 +142,51 @@ export const StoresInventoryView = () => {
   return (
     <>
       <CustomLoader open={open} />
-
-      <div>
-        <ErrorMessage errRef={errRef} errMsg={errMsg} />
-
-        <div
-          style={{
-            padding: "16px",
-            margin: "16px",
-            boxShadow: "0px 3px 6px #00000029",
-            borderRadius: "4px",
-            display: "flex",
-            flexDirection: "column",
-            backgroundColor: "rgb(255, 255, 255)", // set background color to default Paper color
-          }}
-        >
-          <div style={{ display: "flex" }}>
-            <div style={{ flexGrow: 0.9 }}>
-              <CustomSearchWithButton
-                filterSelectedQuery={filterSelectedQuery}
-                setFilterSelectedQuery={setFilterSelectedQuery}
-                handleInputChange={handleInputChange}
-                getResetData={getResetData}
+      <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
+        <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
+          <Grid container spacing={2} alignItems="center">
+            <Grid item xs={12} sm={3}>
+              <CustomTextField
+                size="small"
+                label="Search"
+                variant="outlined"
+                value={searchQuery}
+                onChange={handleSearchChange}
+                fullWidth
               />
-            </div>
-            <div style={{ flexGrow: 2 }}>
-              <h3
-                style={{
-                  textAlign: "left",
-                  marginBottom: "1em",
-                  fontSize: "24px",
-                  color: "rgb(34, 34, 34)",
-                  fontWeight: 800,
+            </Grid>
+            <Grid item xs={12} sm={1}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() =>
+                  getAllStoresInventoryDetails(currentPage, searchQuery)
+                } // Call `handleSearch` when the button is clicked
+              >
+                Search
+              </Button>
+            </Grid>
+            <Grid item xs={12} sm={1}>
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={() => {
+                  setSearchQuery("");
+                  getAllStoresInventoryDetails(1, "");
                 }}
               >
-                Stores Inventory
-              </h3>
-            </div>
-            <div style={{ flexGrow: 0.5 }} align="right">
+                Reset
+              </Button>
+            </Grid>
+          </Grid>
+        </Box>
+        <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
+          <Grid container spacing={2} alignItems="center">
+            <Grid item xs={12} sm={5}>
               <Button onClick={handleDownload} variant="contained">
                 Download CSV
               </Button>
+
               {exportData.length > 0 && (
                 <CSVLink
                   data={[...exportData]}
@@ -261,6 +201,21 @@ export const StoresInventoryView = () => {
                   }}
                 />
               )}
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <h3
+                style={{
+                  textAlign: "left",
+                  fontSize: "24px",
+                  color: "rgb(34, 34, 34)",
+                  fontWeight: 800,
+                }}
+              >
+                Stores Inventory
+              </h3>
+            </Grid>
+            <Grid item xs={12} sm={1}>
               {userData.groups.includes("Accounts") && (
                 <Button
                   onClick={() => setOpenPopup(true)}
@@ -270,33 +225,34 @@ export const StoresInventoryView = () => {
                   Add
                 </Button>
               )}
-            </div>
-          </div>
-          <CustomTable
-            headers={Tableheaders}
-            data={Tabledata}
-            openInPopup={null}
-            openInPopup2={null}
-          />
+            </Grid>
+          </Grid>
+        </Box>
 
-          <CustomPagination
-            currentPage={currentPage}
-            pageCount={pageCount}
-            handlePageClick={handlePageClick}
-          />
-        </div>
-      </div>
-      <Popup
-        maxWidth="xl"
-        title={"Create Stores Inventory"}
-        openPopup={openPopup}
-        setOpenPopup={setOpenPopup}
-      >
-        <StoresInventoryCreate
-          setOpenPopup={setOpenPopup}
-          getAllStoresInventoryDetails={getAllStoresInventoryDetails}
+        <CustomTable
+          headers={Tableheaders}
+          data={Tabledata}
+          openInPopup={null}
+          openInPopup2={null}
         />
-      </Popup>
+
+        <CustomPagination
+          currentPage={currentPage}
+          pageCount={pageCount}
+          handlePageClick={handlePageClick}
+        />
+        <Popup
+          maxWidth="xl"
+          title={"Create Stores Inventory"}
+          openPopup={openPopup}
+          setOpenPopup={setOpenPopup}
+        >
+          <StoresInventoryCreate
+            setOpenPopup={setOpenPopup}
+            getAllStoresInventoryDetails={getAllStoresInventoryDetails}
+          />
+        </Popup>
+      </Paper>
     </>
   );
 };

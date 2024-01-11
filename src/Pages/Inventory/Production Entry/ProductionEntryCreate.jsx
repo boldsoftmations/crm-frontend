@@ -64,9 +64,9 @@ export const ProductionEntryCreate = (props) => {
   const fetchProductOptions = async (value) => {
     try {
       setOpen(true);
-      const response = await InventoryServices.getFilterhBillofMaterialsData(
-        value,
-        "true"
+      const response = await InventoryServices.getAllBillofMaterialsData(
+        "true",
+        value
       );
       setSelectedProduct(response.data.results);
       setOpen(false);

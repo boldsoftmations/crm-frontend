@@ -1,3 +1,4 @@
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Box,
   Grid,
@@ -24,11 +25,9 @@ import {
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
 import CloseIcon from "@mui/icons-material/Close";
-import React, { useEffect, useRef, useState } from "react";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { CustomLoader } from "../../../Components/CustomLoader";
-import { CustomSearch } from "../../../Components/CustomSearch";
 import { Popup } from "../../../Components/Popup";
 import InventoryServices from "../../../services/InventoryService";
 import { BillofMaterialsCreate } from "./BillofMaterialsCreate";
@@ -40,38 +39,16 @@ import {
   getFinishGoodProduct,
   getRawMaterialProduct,
 } from "../../../Redux/Action/Action";
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
+import CustomTextField from "../../../Components/CustomTextField";
 
 export const BillofMaterialsView = () => {
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [open, setOpen] = useState(false);
-  const errRef = useRef();
-
   const [billofMaterials, setBillofMaterials] = useState([]);
-  const [pageCount, setpageCount] = useState(0);
+  const [pageCount, setPageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
-  const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
-  const [filterType, setFilterType] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [idForEdit, setIDForEdit] = useState("");
   const dispatch = useDispatch();
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -80,6 +57,8 @@ export const BillofMaterialsView = () => {
 
   useEffect(() => {
     getFinishGoods();
+    getrawMaterials();
+    getconsumables();
   }, []);
 
   const getFinishGoods = async () => {
@@ -98,10 +77,6 @@ export const BillofMaterialsView = () => {
     }
   };
 
-  useEffect(() => {
-    getrawMaterials();
-  }, []);
-
   const getrawMaterials = async () => {
     try {
       setOpen(true);
@@ -118,10 +93,6 @@ export const BillofMaterialsView = () => {
       console.log("err", err);
     }
   };
-
-  useEffect(() => {
-    getconsumables();
-  }, []);
 
   const getconsumables = async () => {
     try {
@@ -141,97 +112,41 @@ export const BillofMaterialsView = () => {
   };
 
   useEffect(() => {
-    getAllBillofMaterialsDetails();
-  }, []);
+    getAllBillofMaterialsDetails(currentPage);
+  }, [currentPage, getAllBillofMaterialsDetails]);
 
-  const handleInputChange = (event) => {
-    setFilterSelectedQuery(event.target.value);
-    getSearchData(event.target.value, filterApproved);
-  };
-
-  const handleApprovedFilterChange = (event) => {
-    setFilterApproved(event.target.value);
-    getSearchData(filterSelectedQuery, event.target.value);
-  };
-
-  const getAllBillofMaterialsDetails = async () => {
-    try {
-      setOpen(true);
-      let response;
-      response = currentPage
-        ? await InventoryServices.getBillofMaterialsPaginateData(currentPage)
-        : await InventoryServices.getAllBillofMaterialsData();
-
-      setBillofMaterials(response.data.results);
-      const total = response.data.count;
-      setpageCount(Math.ceil(total / 25));
-    } catch (err) {
-      // handle error
-    } finally {
-      setOpen(false);
-    }
-  };
-
-  const getSearchData = async (value, filterApproved) => {
-    try {
-      setOpen(true);
-      if (filterApproved === null) {
-        const response =
-          await InventoryServices.getAllSearchBillofMaterialsData(value);
-        setBillofMaterials(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      } else {
-        const response =
-          await InventoryServices.getAllFilterBillofMaterialsData(
-            filterApproved
-          );
-        setBillofMaterials(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      }
-    } catch (error) {
-      // handle error
-    } finally {
-      setOpen(false);
-    }
-  };
-
-  const handlePageClick = async (event, value) => {
-    try {
-      const page = value;
-      setCurrentPage(page);
-      setOpen(true);
-
-      let response;
-      if (filterSelectedQuery) {
-        response = await InventoryServices.getAllBillofMaterialsDataPaginate(
+  const getAllBillofMaterialsDetails = useCallback(
+    async (page, filter = filterApproved, search = searchQuery) => {
+      try {
+        setOpen(true);
+        const response = await InventoryServices.getAllBillofMaterialsData(
           page,
-          filterSelectedQuery
+          filter,
+          search
         );
-      } else if (filterApproved === null) {
-        response = await InventoryServices.getBillofMaterialsPaginateData(page);
-      } else {
-        response =
-          await InventoryServices.getBillofMaterialsPaginateDataByApproval(
-            page,
-            filterApproved
-          );
-      }
-
-      if (response) {
         setBillofMaterials(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      } else {
-        await getAllBillofMaterialsDetails();
-        setFilterSelectedQuery("");
+        setPageCount(Math.ceil(response.data.count / 25));
+        setOpen(false);
+      } catch (error) {
+        setOpen(false);
+        console.error("error", error);
       }
-    } catch (error) {
-      // handle error
-    } finally {
-      setOpen(false);
-    }
+    },
+    [filterApproved, searchQuery]
+  );
+
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const handlePageClick = (event, value) => {
+    setCurrentPage(value);
+  };
+
+  const handleFilterChange = (event) => {
+    const { value } = event.target;
+    setFilterApproved(value);
+    getAllBillofMaterialsDetails(currentPage, value, searchQuery);
   };
 
   const updateBillofMaterialsDetails = async (data) => {
@@ -254,12 +169,6 @@ export const BillofMaterialsView = () => {
     }
   };
 
-  const getResetData = async () => {
-    setFilterSelectedQuery("");
-    setFilterType(null);
-    await getAllBillofMaterialsDetails();
-  };
-
   const openInPopup = (item) => {
     setIDForEdit(item);
     setOpenPopup(true);
@@ -275,87 +184,104 @@ export const BillofMaterialsView = () => {
 
       <Grid item xs={12}>
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
-          <Box display="flex">
-            <Box flexGrow={2}>
-              <FormControl fullWidth size="small" style={{ maxWidth: 200 }}>
-                <InputLabel id="demo-select-small">Filter By</InputLabel>
-                <Select
-                  labelId="demo-select-small"
-                  id="demo-select-small"
-                  value={filterType}
-                  label="Filter By"
-                  onChange={(event) => setFilterType(event.target.value)}
-                >
-                  <MenuItem value={"search"}>Search </MenuItem>
-                  <MenuItem value={"approved"}>Approved</MenuItem>
-                </Select>
-              </FormControl>
-              {filterType === "search" && (
-                <CustomSearch
-                  filterSelectedQuery={filterSelectedQuery}
-                  handleInputChange={handleInputChange}
-                  getResetData={getResetData}
-                />
-              )}
-              {filterType === "approved" && (
-                <FormControl
-                  fullWidth
-                  size="small"
-                  style={{ maxWidth: 200, marginLeft: "1em" }}
-                >
-                  <InputLabel id="demo-select-small">
+          <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={12} sm={3}>
+                <FormControl sx={{ minWidth: "100px" }} fullWidth size="small">
+                  <InputLabel id="demo-simple-select-label">
                     Filter By Approved
                   </InputLabel>
                   <Select
-                    labelId="demo-select-small"
-                    id="demo-select-small"
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    name="status"
+                    label="Filter By Accepted"
                     value={filterApproved}
-                    label="Filter By Approved"
-                    onChange={(event) => handleApprovedFilterChange(event)}
-                    endAdornment={
-                      filterApproved !== null && (
-                        <IconButton
-                          onClick={() => {
-                            setFilterApproved(null);
-                            getAllBillofMaterialsDetails();
-                            setFilterType("");
-                          }}
-                        >
-                          <CloseIcon />
-                        </IconButton>
-                      )
-                    }
+                    onChange={handleFilterChange}
                   >
-                    <MenuItem value={true}>True </MenuItem>
-                    <MenuItem value={false}>False</MenuItem>
+                    {ApprovedOption.map((option, i) => (
+                      <MenuItem key={i} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
                   </Select>
+                  {filterApproved && (
+                    <IconButton
+                      size="small"
+                      onClick={() => {
+                        setFilterApproved("");
+                        getAllBillofMaterialsDetails(1, false, searchQuery);
+                      }}
+                      sx={{
+                        position: "absolute",
+                        right: 8,
+                        top: "50%",
+                        transform: "translateY(-50%)",
+                      }}
+                    >
+                      <CloseIcon />
+                    </IconButton>
+                  )}
                 </FormControl>
-              )}
-            </Box>
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <CustomTextField
+                  size="small"
+                  label="Search"
+                  variant="outlined"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={12} sm={1}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() =>
+                    getAllBillofMaterialsDetails(
+                      currentPage,
+                      filterApproved,
+                      searchQuery
+                    )
+                  } // Call `handleSearch` when the button is clicked
+                >
+                  Search
+                </Button>
+              </Grid>
+              <Grid item xs={12} sm={1}>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => {
+                    setSearchQuery("");
+                    getAllBillofMaterialsDetails(1, filterApproved, "");
+                  }}
+                >
+                  Reset
+                </Button>
+              </Grid>
+            </Grid>
+          </Box>
+          <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={12} sm={6}></Grid>
 
-            <Box flexGrow={1}>
-              <h3
-                style={{
-                  textAlign: "left",
-                  marginBottom: "1em",
-                  fontSize: "24px",
-                  color: "rgb(34, 34, 34)",
-                  fontWeight: 800,
-                }}
-              >
-                Bill of Materials Details
-              </h3>
-            </Box>
-            <Box flexGrow={0.5} align="right">
-              <Button
-                onClick={() => setOpenPopup2(true)}
-                variant="contained"
-                color="success"
-                // startIcon={<AddIcon />}
-              >
-                Add
-              </Button>
-            </Box>
+              <Grid item xs={12} sm={3}>
+                {/* Customer Header */}
+                <h3
+                  style={{
+                    textAlign: "left",
+                    fontSize: "24px",
+                    color: "rgb(34, 34, 34)",
+                    fontWeight: 800,
+                  }}
+                >
+                  Bill of Materials
+                </h3>
+              </Grid>
+              <Grid item xs={12} sm={3}></Grid>
+            </Grid>
           </Box>
           <TableContainer
             sx={{
@@ -463,8 +389,8 @@ function Row(props) {
   return (
     <>
       {/* <CustomLoader open={open} /> */}
-      <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
-        <TableCell align="center">
+      <StyledTableRow sx={{ "& > *": { borderBottom: "unset" } }}>
+        <StyledTableCell align="center">
           <IconButton
             aria-label="expand row"
             size="small"
@@ -473,35 +399,32 @@ function Row(props) {
           >
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
-        </TableCell>
+        </StyledTableCell>
 
-        <TableCell align="center">{row.bom_id}</TableCell>
-        <TableCell align="center">{row.product}</TableCell>
-        <TableCell align="center">{row.quantity}</TableCell>
-        <TableCell align="center">{row.created_on}</TableCell>
+        <StyledTableCell align="center">{row.bom_id}</StyledTableCell>
+        <StyledTableCell align="center">{row.product}</StyledTableCell>
+        <StyledTableCell align="center">{row.quantity}</StyledTableCell>
+        <StyledTableCell align="center">{row.created_on}</StyledTableCell>
         <StyledTableCell align="center">
           <Switch
             checked={row.approved}
             inputProps={{ "aria-label": "controlled" }}
           />
         </StyledTableCell>
-        <TableCell align="center">
+        <StyledTableCell align="center">
           {users.groups.includes("Accounts") && row.approved === false ? (
             <Button
               onClick={() => updateBillofMaterialsDetails(row)}
-              variant="contained"
               color="success"
             >
               Accept
             </Button>
           ) : null}
           {users.groups.includes("Production") && row.approved === false ? (
-            <Button onClick={() => openInPopup(row.id)} variant="contained">
-              Edit
-            </Button>
+            <Button onClick={() => openInPopup(row.id)}>Edit</Button>
           ) : null}
-        </TableCell>
-      </TableRow>
+        </StyledTableCell>
+      </StyledTableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
@@ -520,14 +443,18 @@ function Row(props) {
                 </TableHead>
                 <TableBody>
                   {row.products_data.map((historyRow, i) => (
-                    <TableRow key={i}>
-                      <TableCell align="center">{i + 1}</TableCell>
-                      <TableCell align="center">{historyRow.product}</TableCell>
-                      <TableCell align="center">{historyRow.unit}</TableCell>
-                      <TableCell align="center">
+                    <StyledTableRow key={i}>
+                      <StyledTableCell align="center">{i + 1}</StyledTableCell>
+                      <StyledTableCell align="center">
+                        {historyRow.product}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {historyRow.unit}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
                         {historyRow.quantity}
-                      </TableCell>
-                    </TableRow>
+                      </StyledTableCell>
+                    </StyledTableRow>
                   ))}
                 </TableBody>
               </Table>
@@ -538,3 +465,30 @@ function Row(props) {
     </>
   );
 }
+
+const ApprovedOption = [
+  { label: "approved", value: "true" },
+  { label: "Not approved", value: "false" },
+];
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+    padding: 0, // Remove padding from header cells
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+    padding: 0, // Remove padding from body cells
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  "&:nth-of-type(odd)": {
+    backgroundColor: theme.palette.action.hover,
+  },
+  // hide last border
+  "&:last-child td, &:last-child th": {
+    border: 0,
+  },
+}));

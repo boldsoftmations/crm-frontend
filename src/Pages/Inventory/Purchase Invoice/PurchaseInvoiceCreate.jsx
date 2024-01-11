@@ -4,7 +4,7 @@ import CustomTextField from "../../../Components/CustomTextField";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import InventoryServices from "../../../services/InventoryService";
 import { styled } from "@mui/material/styles";
-import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
   ...theme.typography.body2,
@@ -13,30 +13,35 @@ const Root = styled("div")(({ theme }) => ({
   },
 }));
 
-export const PurchaseInvoiceCreate = (props) => {
-  const {
-    setOpenPopup,
-    getAllPurchaseInvoiceDetails,
-    vendorOption,
-    getGRNDetails,
-  } = props;
+export const PurchaseInvoiceCreate = ({
+  setOpenPopup,
+  recordForEdit,
+  getAllVendorDetails,
+}) => {
   const [open, setOpen] = useState(false);
-  const [purchaseInvoiceDataByID, setPurchaseInvoiceDataByID] = useState([]);
-  const [products, setProducts] = useState([
-    {
-      product: "",
-      quantity: "",
-      rate: "",
-      amount: "",
-    },
-  ]);
+  const [products, setProducts] = useState(
+    recordForEdit.products.map((product) => {
+      // Log the rate of each product
+      console.log("rate", product.rate);
+
+      // Return the new product object
+      return {
+        product: product.products,
+        quantity: product.qa_accepted,
+        unit: product.unit,
+        order_date: product.order_date,
+        po_no: product.po_no,
+        amount: "",
+        rate: "",
+      };
+    })
+  );
+  console.log("products", products);
 
   const handleFormChange = (index, event) => {
     const { name, value } = event.target;
     const list = [...products];
     list[index][name] = value;
-
-    // If quantity and rate values exist, update the amount value
     if (list[index].quantity !== "" && list[index].rate !== "") {
       list[index].amount = (list[index].quantity * list[index].rate).toFixed(2);
     }
@@ -44,37 +49,19 @@ export const PurchaseInvoiceCreate = (props) => {
     setProducts(list);
   };
 
-  const getPurchaseInvoiceDetailsByID = async (value) => {
-    try {
-      setOpen(true);
-      const response = await InventoryServices.getGRNDataById(value);
-      setPurchaseInvoiceDataByID(response.data);
-      var arr = response.data.products.map((fruit) => ({
-        product: fruit.products,
-        unit: fruit.unit,
-        quantity: fruit.qa_accepted,
-        rate: fruit.rate,
-      }));
-      setProducts(arr);
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("company data by id error", err);
-    }
-  };
-
   const createPackingListDetails = async (e) => {
     try {
       e.preventDefault();
       setOpen(true);
       const req = {
-        grn: purchaseInvoiceDataByID.grn_no, //Normal text field
+        grn: recordForEdit.grn_no,
         products_data: products,
       };
+      console.log("createing Packing list", req);
       await InventoryServices.createPurchaseInvoiceData(req);
+      console.log("createing Packing list");
+      getAllVendorDetails();
       setOpenPopup(false);
-      getAllPurchaseInvoiceDetails();
-      getGRNDetails();
       setOpen(false);
     } catch (error) {
       console.log("createing Packing list error", error);
@@ -92,36 +79,24 @@ export const PurchaseInvoiceCreate = (props) => {
         onSubmit={(e) => createPackingListDetails(e)}
       >
         <Grid container spacing={2}>
-          {vendorOption && vendorOption.length > 0 && (
-            <Grid item xs={12} sm={4}>
-              <CustomAutocomplete
-                size="small"
-                disablePortal
-                id="combo-box-demo"
-                onChange={(event, value) => {
-                  if (value && value.grn_id) {
-                    getPurchaseInvoiceDetailsByID(value.grn_no);
-                  }
-                }}
-                options={vendorOption.map((option) => option)}
-                getOptionLabel={(option) => option.grn_no}
-                sx={{ minWidth: 300 }}
-                label="GRN No"
-              />
-            </Grid>
-          )}
-
           <Grid item xs={12} sm={4}>
             <CustomTextField
               fullWidth
               size="small"
               label="Vendor"
               variant="outlined"
-              value={
-                purchaseInvoiceDataByID.vendor
-                  ? purchaseInvoiceDataByID.vendor
-                  : ""
-              }
+              value={recordForEdit.vendor || ""}
+              disabled
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <CustomTextField
+              fullWidth
+              size="small"
+              label="Grn No"
+              variant="outlined"
+              value={recordForEdit.grn_no || ""}
+              disabled
             />
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -130,11 +105,28 @@ export const PurchaseInvoiceCreate = (props) => {
               size="small"
               label="Invoice No"
               variant="outlined"
-              value={
-                purchaseInvoiceDataByID.packing_list_no
-                  ? purchaseInvoiceDataByID.packing_list_no
-                  : ""
-              }
+              value={recordForEdit.packing_list_no || ""}
+              disabled
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <CustomTextField
+              fullWidth
+              size="small"
+              label="Invoice Date"
+              variant="outlined"
+              value={recordForEdit.created_on || ""}
+              disabled
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <CustomTextField
+              fullWidth
+              size="small"
+              label="Purchase Order No"
+              variant="outlined"
+              value={recordForEdit.po_no || ""}
+              disabled
             />
           </Grid>
           <Grid item xs={12}>
@@ -150,12 +142,11 @@ export const PurchaseInvoiceCreate = (props) => {
                 <Grid key={index} item xs={12} sm={4}>
                   <CustomTextField
                     fullWidth
-                    name="product"
                     size="small"
                     label="Product"
                     variant="outlined"
-                    value={input.product ? input.product : ""}
-                    onChange={(event) => handleFormChange(index, event)}
+                    value={input.product || ""}
+                    disabled
                   />
                 </Grid>
                 <Grid key={index} item xs={12} sm={2}>
@@ -164,18 +155,18 @@ export const PurchaseInvoiceCreate = (props) => {
                     size="small"
                     label="Unit"
                     variant="outlined"
-                    value={input.unit ? input.unit : ""}
+                    value={input.unit || ""}
+                    disabled
                   />
                 </Grid>
                 <Grid item xs={12} sm={2}>
                   <CustomTextField
                     fullWidth
-                    name="quantity"
                     size="small"
                     label="Quantity"
                     variant="outlined"
-                    value={input.quantity ? input.quantity : ""}
-                    onChange={(event) => handleFormChange(index, event)}
+                    value={input.quantity || ""}
+                    disabled
                   />
                 </Grid>
                 <Grid item xs={12} sm={2}>

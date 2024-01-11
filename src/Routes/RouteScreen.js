@@ -73,6 +73,11 @@ import { HrModelTabs } from "../Pages/HrModel/HrModelTabs";
 import { DesignationView } from "../Pages/HrModel/Designation/DesignationView";
 import { DepartmentView } from "../Pages/HrModel/Department/DepartmentView";
 import { SourceView } from "../Pages/HrModel/CandidateSource/SourceView";
+import { DailySalesHistory } from "../Pages/DailySaleReview/DailySalesHistory";
+import { LeadForecastView } from "../Pages/Leads/LeadForecast/LeadForecastView";
+import { CurrencyView } from "../Pages/Inventory/Currency/CurrencyView";
+import { PurchaseOrderView } from "../Pages/Inventory/Purchase Order/PurchaseOrderView";
+import { GRNRegisterView } from "../Pages/Inventory/GRNRegister/GRNRegisterView";
 export const RouteScreen = () => {
   const tokenData = useSelector((state) => state.auth);
   const token = tokenData.user;
@@ -113,6 +118,7 @@ export const RouteScreen = () => {
             <Route path="/leads/open-lead" element={<OpenLead />} />
             <Route path="/leads/closed-lead" element={<ClosedLead />} />
             <Route path="/leads/duplicate-lead" element={<DuplicateLead />} />
+            <Route path="/leads/forecast-list" element={<LeadForecastView />} />
             <Route
               path="/leads/view-unassigned-lead"
               element={<UnassignedLead />}
@@ -207,10 +213,18 @@ export const RouteScreen = () => {
             {/* inventory Routes */}
             <Route path="/inventory/view-vendor" element={<VendorView />} />
             <Route
-              path="/inventory/view-packing_list"
+              path="/inventory/view-purchase-order"
+              element={<PurchaseOrderView />}
+            />
+            <Route
+              path="/inventory/view-packing-list"
               element={<PackingListView />}
             />
             <Route path="/inventory/view-grn" element={<GRNView />} />
+            <Route
+              path="/inventory/view-grn-register"
+              element={<GRNRegisterView />}
+            />
             <Route
               path="/inventory/view-purchase-invoice"
               element={<PurchaseInvoiceView />}
@@ -263,6 +277,7 @@ export const RouteScreen = () => {
               path="/inventory/view-weekly-production"
               element={<WeeklyProductionReport />}
             />
+            <Route path="/inventory/view-currency" element={<CurrencyView />} />
             {/* ProductForecast Route */}
             <Route
               path="/forecast/view-product-forecast"
@@ -280,15 +295,18 @@ export const RouteScreen = () => {
             <Route path="/user/faq" element={<FaqAllTab />} />
             {/* Daily sale review */}
             <Route path="/user/sale-review" element={<DailySaleReviewView />} />
+            <Route path="/user/sales-history" element={<DailySalesHistory />} />
             <Route path="/" element={<Home />} />
-            <Route path="/user/hr-model"
-            element={<HrModelTabs />} />
-             <Route path="/user/hr-model/designation"
-            element={<DesignationView />} />
-             <Route path="/user/hr-model/department"
-            element={<DepartmentView />} />
-             <Route path="/user/hr-model/source"
-            element={<SourceView />} />
+            <Route path="/user/hr-model" element={<HrModelTabs />} />
+            <Route
+              path="/user/hr-model/designation"
+              element={<DesignationView />}
+            />
+            <Route
+              path="/user/hr-model/department"
+              element={<DepartmentView />}
+            />
+            <Route path="/user/hr-model/source" element={<SourceView />} />
           </>
         )}
         <Route path="*" element={<Auths />} />

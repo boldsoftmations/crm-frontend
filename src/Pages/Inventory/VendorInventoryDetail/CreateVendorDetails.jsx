@@ -156,9 +156,9 @@ export const CreateVendorDetails = (props) => {
       const response = await InventoryServices.createVendorData(req);
       setIdForEdit(response.data.vendor_id);
       // setOpenPopup(false);
+      getAllVendorDetails();
       setOpen(false);
       setOpenPopup2(true);
-      // getAllVendorDetails();
     } catch (error) {
       console.log("createing company detail error", error);
 

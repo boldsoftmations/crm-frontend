@@ -17,165 +17,63 @@ import {
   IconButton,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { CustomLoader } from "../../../Components/CustomLoader";
-import { CustomSearch } from "../../../Components/CustomSearch";
-import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 import { Popup } from "../../../Components/Popup";
 import InventoryServices from "../../../services/InventoryService";
-import { PurchaseInvoiceCreate } from "./PurchaseInvoiceCreate";
 import { PurchaseInvoice } from "./PurchaseInvoice";
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
+import CustomTextField from "../../../Components/CustomTextField";
 
 export const PurchaseInvoiceView = () => {
-  const [openPopup, setOpenPopup] = useState(false);
-  const [openPopup2, setOpenPopup2] = useState(false);
+  const [openPopupView, setOpenPopupView] = useState(false);
   const [open, setOpen] = useState(false);
-  const errRef = useRef();
-  const [errMsg, setErrMsg] = useState("");
   const [purchaseInvoiceData, setPurchaseInvoiceData] = useState([]);
   const [recordForEdit, setRecordForEdit] = useState(null);
-  const [pageCount, setpageCount] = useState(0);
+  const [pageCount, setPageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
-  const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
-  const [vendorOption, setVendorOption] = useState([]);
-  const handleInputChange = (event) => {
-    setFilterSelectedQuery(event.target.value);
-    getSearchData(event.target.value);
-  };
+  const [searchQuery, setSearchQuery] = useState("");
+  const currentYearMonth = `${new Date().getFullYear()}-${(
+    new Date().getMonth() + 1
+  )
+    .toString()
+    .padStart(2, "0")}`;
+  const [selectedYearMonth, setSelectedYearMonth] = useState(currentYearMonth);
 
   useEffect(() => {
-    getGRNDetails();
-  }, []);
+    getAllPurchaseInvoiceDetails(currentPage);
+  }, [currentPage, selectedYearMonth, getAllPurchaseInvoiceDetails]);
 
-  const getGRNDetails = async () => {
-    try {
-      setOpen(true);
-      const response = await InventoryServices.getAllSearchWithFilterGRNData(
-        "all",
-        false
-      );
-      setVendorOption(response.data);
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("err all vendor", err);
-    }
-  };
-
-  useEffect(() => {
-    getAllPurchaseInvoiceDetails();
-  }, []);
-
-  const getAllPurchaseInvoiceDetails = async () => {
-    try {
-      setOpen(true);
-      const response = currentPage
-        ? await InventoryServices.getPurchaseInvoicePaginateData(currentPage)
-        : await InventoryServices.getAllPurchaseInvoiceData();
-      setPurchaseInvoiceData(response.data.results);
-      const total = response.data.count;
-      setpageCount(Math.ceil(total / 25));
-    } catch (err) {
-      if (!err.response) {
-        setErrMsg(
-          "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
+  const getAllPurchaseInvoiceDetails = useCallback(
+    async (page, filter = selectedYearMonth, search = searchQuery) => {
+      try {
+        setOpen(true);
+        const response = await InventoryServices.getAllPurchaseInvoiceData(
+          page,
+          search
         );
-      } else if (err.response.status === 400) {
-        setErrMsg(
-          err.response.data.errors.name ||
-            err.response.data.errors.non_field_errors
-        );
-      } else if (err.response.status === 401) {
-        setErrMsg(err.response.data.errors.code);
-      } else if (err.response.status === 404 || !err.response.data) {
-        setErrMsg("Data not found or request was null/empty");
-      } else {
-        setErrMsg("Server Error");
-      }
-    } finally {
-      setOpen(false);
-    }
-  };
-
-  const getSearchData = async (value) => {
-    try {
-      setOpen(true);
-      const filterSearch = value;
-      if (filterSearch !== "") {
-        const response =
-          await InventoryServices.getAllSearchPurchaseInvoiceData(filterSearch);
         setPurchaseInvoiceData(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      } else {
-        await getAllPurchaseInvoiceDetails();
-        setFilterSelectedQuery("");
+        setPageCount(Math.ceil(response.data.count / 25));
+        setOpen(false);
+      } catch (error) {
+        setOpen(false);
+        console.error("error", error);
       }
-    } catch (error) {
-      console.log("error Search leads", error);
-    } finally {
-      setOpen(false);
-    }
+    },
+    [selectedYearMonth, searchQuery] // Depend on acceptedFilter directly
+  );
+
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
   };
 
-  const handlePageClick = async (event, value) => {
-    try {
-      const page = value;
-      setCurrentPage(page);
-      setOpen(true);
-
-      const response = filterSelectedQuery
-        ? await InventoryServices.getAllPurchaseInvoiceDataPaginate(
-            page,
-            filterSelectedQuery
-          )
-        : await InventoryServices.getPurchaseInvoicePaginateData(page);
-
-      if (response) {
-        setPurchaseInvoiceData(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      } else {
-        await getAllPurchaseInvoiceDetails();
-        setFilterSelectedQuery("");
-      }
-    } catch (error) {
-      console.log("error", error);
-    } finally {
-      setOpen(false);
-    }
+  const handlePageClick = (event, value) => {
+    setCurrentPage(value);
   };
-
-  const getResetData = async () => {
-    setFilterSelectedQuery("");
-    await getAllPurchaseInvoiceDetails();
-  };
-
   const openInPopup = (item) => {
     setRecordForEdit(item);
-    setOpenPopup(true);
+    setOpenPopupView(true);
   };
 
   return (
@@ -183,44 +81,77 @@ export const PurchaseInvoiceView = () => {
       <CustomLoader open={open} />
 
       <Grid item xs={12}>
-        <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
-          <Box display="flex">
-            <Box flexGrow={0.9}>
-              <CustomSearch
-                filterSelectedQuery={filterSelectedQuery}
-                handleInputChange={handleInputChange}
-                getResetData={getResetData}
-                HelperText={"Search By Invoice"}
-              />
-            </Box>
-            <Box flexGrow={2}>
-              <h3
-                style={{
-                  textAlign: "left",
-                  marginBottom: "1em",
-                  fontSize: "24px",
-                  color: "rgb(34, 34, 34)",
-                  fontWeight: 800,
-                }}
-              >
-                Purchase Invoice Details
-              </h3>
-            </Box>
-            <Box flexGrow={0.5} align="right">
-              <Button
-                onClick={() => setOpenPopup2(true)}
-                variant="contained"
-                color="success"
-                // startIcon={<AddIcon />}
-              >
-                Add
-              </Button>
-            </Box>
+          <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={12} sm={3}>
+                <CustomTextField
+                  fullWidth
+                  size="small"
+                  type="month"
+                  label="Filter By Month and Year"
+                  value={selectedYearMonth}
+                  onChange={(e) => setSelectedYearMonth(e.target.value)}
+                  // sx={{ width: 200, marginRight: "15rem" }}
+                />
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <CustomTextField
+                  size="small"
+                  label="Search"
+                  variant="outlined"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={12} sm={1}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() =>
+                    getAllPurchaseInvoiceDetails(currentPage, searchQuery)
+                  } // Call `handleSearch` when the button is clicked
+                >
+                  Search
+                </Button>
+              </Grid>
+              <Grid item xs={12} sm={1}>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => {
+                    setSearchQuery("");
+                    getAllPurchaseInvoiceDetails(1, "");
+                  }}
+                >
+                  Reset
+                </Button>
+              </Grid>
+            </Grid>
+          </Box>
+          <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={12} sm={6}></Grid>
+
+              <Grid item xs={12} sm={3}>
+                <h3
+                  style={{
+                    textAlign: "left",
+                    fontSize: "24px",
+                    color: "rgb(34, 34, 34)",
+                    fontWeight: 800,
+                  }}
+                >
+                  Purchase Register
+                </h3>
+              </Grid>
+              <Grid item xs={12} sm={3}></Grid>
+            </Grid>
           </Box>
           <TableContainer
             sx={{
-              maxHeight: 440,
+              maxHeight: 360,
               "&::-webkit-scrollbar": {
                 width: 15,
               },
@@ -238,18 +169,18 @@ export const PurchaseInvoiceView = () => {
               aria-label="sticky table"
             >
               <TableHead>
-                <TableRow>
+                <StyledTableRow>
                   <StyledTableCell align="center"></StyledTableCell>
-                  <StyledTableCell align="center">INVOICE</StyledTableCell>
-                  <StyledTableCell align="center">GRN</StyledTableCell>
-                  <StyledTableCell align="center">VENDOR</StyledTableCell>
+                  <StyledTableCell align="center">GRN NO</StyledTableCell>
+                  <StyledTableCell align="center">GRN Date</StyledTableCell>
                   <StyledTableCell align="center">
-                    PURCHASE VOUCHER
+                    SALES ORDER NO
                   </StyledTableCell>
+                  <StyledTableCell align="center">VENDOR</StyledTableCell>
+                  <StyledTableCell align="center">INVOICE NO </StyledTableCell>
                   <StyledTableCell align="center">ORDER DATE</StyledTableCell>
-
                   <StyledTableCell align="center">Action</StyledTableCell>
-                </TableRow>
+                </StyledTableRow>
               </TableHead>
               <TableBody>
                 {purchaseInvoiceData.map((row, i) => (
@@ -276,27 +207,15 @@ export const PurchaseInvoiceView = () => {
           </TableFooter>
         </Paper>
       </Grid>
-      <Popup
-        fullScreen={true}
-        title={"Create Purchase Invoice Details"}
-        openPopup={openPopup2}
-        setOpenPopup={setOpenPopup2}
-      >
-        <PurchaseInvoiceCreate
-          getAllPurchaseInvoiceDetails={getAllPurchaseInvoiceDetails}
-          setOpenPopup={setOpenPopup2}
-          vendorOption={vendorOption}
-          getGRNDetails={getGRNDetails}
-        />
-      </Popup>
+
       <Popup
         fullScreen={true}
         title={"Update Purchase Invoice Details"}
-        openPopup={openPopup}
-        setOpenPopup={setOpenPopup}
+        openPopup={openPopupView}
+        setOpenPopup={setOpenPopupView}
       >
         <PurchaseInvoice
-          setOpenPopup={setOpenPopup}
+          setOpenPopup={setOpenPopupView}
           getAllPurchaseInvoiceDetails={getAllPurchaseInvoiceDetails}
           idForEdit={recordForEdit}
         />
@@ -312,8 +231,8 @@ function Row(props) {
   return (
     <>
       {/* <CustomLoader open={open} /> */}
-      <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
-        <TableCell>
+      <StyledTableRow sx={{ "& > *": { borderBottom: "unset" } }}>
+        <StyledTableCell>
           <IconButton
             aria-label="expand row"
             size="small"
@@ -322,24 +241,24 @@ function Row(props) {
           >
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
-        </TableCell>
-        <TableCell align="center">{row.invoice_no}</TableCell>
-        <TableCell align="center">{row.grn}</TableCell>
-        <TableCell align="center">{row.supplier_name}</TableCell>
-        <TableCell align="center">{row.packing_list_no}</TableCell>
-        <TableCell align="center">{row.order_date}</TableCell>
-        <TableCell align="center">
+        </StyledTableCell>
+        <StyledTableCell align="center">{row.invoice_no}</StyledTableCell>
+        <StyledTableCell align="center">{row.grn_date}</StyledTableCell>
+        <StyledTableCell align="center">{row.po_no}</StyledTableCell>
+        <StyledTableCell align="center">{row.supplier_name}</StyledTableCell>
+        <StyledTableCell align="center">{row.packing_list_no}</StyledTableCell>
+        <StyledTableCell align="center">{row.order_date}</StyledTableCell>
+        <StyledTableCell align="center">
           <Button
             onClick={() => {
               openInPopup(row.id);
             }}
-            variant="contained"
             color="success"
           >
             View
           </Button>
-        </TableCell>
-      </TableRow>
+        </StyledTableCell>
+      </StyledTableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
@@ -361,23 +280,27 @@ function Row(props) {
                 </TableHead>
                 <TableBody>
                   {row.products_data.map((ProductsData, i) => (
-                    <TableRow key={i}>
-                      <TableCell align="center">{i + 1}</TableCell>
-                      <TableCell align="center">
+                    <StyledTableRow key={i}>
+                      <StyledTableCell align="center">{i + 1}</StyledTableCell>
+                      <StyledTableCell align="center">
                         {ProductsData.product}
-                      </TableCell>
-                      <TableCell align="center">
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
                         {ProductsData.description}
-                      </TableCell>
-                      <TableCell align="center">{ProductsData.unit}</TableCell>
-                      <TableCell align="center">
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {ProductsData.unit}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
                         {ProductsData.quantity}
-                      </TableCell>
-                      <TableCell align="center">{ProductsData.rate}</TableCell>
-                      <TableCell align="center">
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {ProductsData.rate}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
                         {ProductsData.amount}
-                      </TableCell>
-                    </TableRow>
+                      </StyledTableCell>
+                    </StyledTableRow>
                   ))}
                 </TableBody>
               </Table>
@@ -388,3 +311,25 @@ function Row(props) {
     </>
   );
 }
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+    padding: 0, // Remove padding from header cells
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+    padding: 0, // Remove padding from body cells
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  "&:nth-of-type(odd)": {
+    backgroundColor: theme.palette.action.hover,
+  },
+  // hide last border
+  "&:last-child td, &:last-child th": {
+    border: 0,
+  },
+}));

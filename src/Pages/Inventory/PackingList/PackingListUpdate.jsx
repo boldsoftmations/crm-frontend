@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -7,15 +8,12 @@ import {
   IconButton,
   Snackbar,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { CustomLoader } from "../../../Components/CustomLoader";
-import InventoryServices from "../../../services/InventoryService";
-import ProductService from "../../../services/ProductService";
-import { styled } from "@mui/material/styles";
-import { useSelector } from "react-redux";
 import CloseIcon from "@mui/icons-material/Close";
 import CustomTextField from "../../../Components/CustomTextField";
-import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import InventoryServices from "../../../services/InventoryService";
+import { styled } from "@mui/material/styles";
+import { CustomLoader } from "./../../../Components/CustomLoader";
+
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
   ...theme.typography.body2,
@@ -24,157 +22,61 @@ const Root = styled("div")(({ theme }) => ({
   },
 }));
 
-export const PackingListUpdate = (props) => {
-  const { setOpenPopup, getAllPackingListDetails, idForEdit } = props;
-  const [PackingListDataByID, setPackingListDataByID] = useState([]);
+export const PackingListUpdate = ({
+  setOpenPopup,
+  getAllPackingListDetails,
+  idForEdit,
+}) => {
+  console.log("idForEdit", idForEdit);
   const [open, setOpen] = useState(false);
-  const [vendorOption, setVendorOption] = useState([]);
-  const [productOption, setProductOption] = useState([]);
-  const [selectedSellerData, setSelectedSellerData] = useState(null);
-  const [vendor, setVendor] = useState("");
-  const data = useSelector((state) => state.auth);
-  const sellerData = data.sellerAccount;
-  const today = new Date().toISOString().slice(0, 10); // Get current date in YYYY-MM-DD format
   const [error, setError] = useState(null);
-  const [products, setProducts] = useState([
-    {
-      product: "",
-      quantity: "",
-      unit: "",
-    },
-  ]);
-
-  const handleAutocompleteChange = (index, event, value) => {
-    let data = [...products];
-    const productObj = productOption.find((item) => item.name === value);
-    console.log("productObj", productObj);
-    data[index]["product"] = value;
-    data[index]["unit"] = productObj ? productObj.unit : "";
-    setProducts(data);
-  };
-
-  const handleFormChange = (index, event) => {
-    const selectedValue = event.target.value
-      ? event.target.value
-      : event.target.textContent;
-    const data = [...products];
-    data[index][event.target.name ? event.target.name : "product"] =
-      selectedValue;
-
-    // Check if the selected value already exists in the array of selected values
-    const isValueDuplicate = data.some(
-      (item, i) => item.product === selectedValue && i !== index
-    );
-
-    if (isValueDuplicate) {
-      // If the selected value already exists, show an error message or handle it as desired
-      setError(`Selected ${selectedValue} already exists!`);
-    } else {
-      // If the selected value is unique, update the products array as usual
-      setProducts(data);
-    }
-  };
-
-  const addFields = () => {
-    let newfield = {
-      product: "",
-      quantity: "",
-      unit: "",
-    };
-    setProducts([...products, newfield]);
-  };
-
-  const removeFields = (index) => {
-    let data = [...products];
-    data.splice(index, 1);
-    setProducts(data);
-  };
-
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setPackingListDataByID({ ...PackingListDataByID, [name]: value });
-  };
+  const [packingListDetails, setPackingListDetails] = useState(idForEdit);
+  const [products, setProducts] = useState([]);
+  const today = new Date().toISOString().slice(0, 10);
 
   useEffect(() => {
-    getProduct();
-  }, []);
-
-  const getProduct = async () => {
-    try {
-      setOpen(true);
-      const res = await ProductService.getAllProduct();
-      setProductOption(res.data);
-      setOpen(false);
-    } catch (err) {
-      console.error("error potential", err);
-      setOpen(false);
-    }
-  };
-
-  const fetchVendorOptions = async (e) => {
-    try {
-      e.preventDefault();
-      setOpen(true);
-
-      const response = await InventoryServices.getAllSearchVendorData(
-        PackingListDataByID.vendor_name
-      );
-      setVendorOption(response.data.results);
-
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("err all vendor", err);
-    }
-  };
-
-  useEffect(() => {
-    if (idForEdit) getAllPackingListDetailsByID();
-  }, [idForEdit]);
-
-  const getAllPackingListDetailsByID = async () => {
-    try {
-      setOpen(true);
-      const response = await InventoryServices.getPackingListDataById(
-        idForEdit
-      );
-
-      setPackingListDataByID(response.data);
-      setSelectedSellerData(response.data.seller_account);
-      var arr = response.data.products.map((fruit) => ({
-        product: fruit.product,
-        quantity: fruit.quantity,
-        unit: fruit.unit,
+    // Initialize products state with packingListDetails data
+    if (packingListDetails && packingListDetails.products) {
+      const initialProducts = packingListDetails.products.map((p) => ({
+        ...p,
+        quantity: p.quantity || 0,
       }));
-      setProducts(arr);
-
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("company data by id error", err);
+      setProducts(initialProducts);
     }
+  }, [packingListDetails]);
+
+  const handleQuantityChange = (index, newQuantity) => {
+    const updatedProducts = products.map((product, idx) =>
+      idx === index ? { ...product, quantity: newQuantity } : product
+    );
+    setProducts(updatedProducts);
   };
 
-  const updateLeadProformaInvoiceDetails = async (e) => {
+  const handleInput = (e) => {
+    const { name, value } = e.target;
+    const updatedRow = { ...packingListDetails, [name]: value };
+    setPackingListDetails(updatedRow);
+  };
+
+  const updatePackingListDetails = async (e) => {
+    e.preventDefault();
     try {
-      e.preventDefault();
       setOpen(true);
       const req = {
-        packing_list_no: PackingListDataByID.packing_list_no, //Normal text field
-        invoice_date: PackingListDataByID.invoice_date
-          ? PackingListDataByID.invoice_date
-          : today,
-        vendor: vendor.name ? vendor.name : PackingListDataByID.vendor,
-        seller_account: selectedSellerData ? selectedSellerData : "",
-        products: products,
-      };
-      await InventoryServices.updatePackingListData(idForEdit, req);
+        purchase_order: packingListDetails.purchase_order || null,
 
+        packing_list_no: packingListDetails.packing_list_no || null,
+        invoice_date: packingListDetails.invoice_date,
+        seller_account: packingListDetails.seller_account || null,
+        products: products || [], // Send updated products
+      };
+      await InventoryServices.updatePackingListData(packingListDetails.id, req);
       setOpenPopup(false);
       getAllPackingListDetails();
-      setOpen(false);
-    } catch (err) {
-      console.log("err", err);
+    } catch (error) {
+      console.error("Creating Packing list error", error);
+      setError(error.message || "An error occurred");
+    } finally {
       setOpen(false);
     }
   };
@@ -182,16 +84,10 @@ export const PackingListUpdate = (props) => {
   const handleCloseSnackbar = () => {
     setError(null);
   };
-
   return (
     <div>
       <CustomLoader open={open} />
-
-      <Box
-        component="form"
-        noValidate
-        onSubmit={(e) => updateLeadProformaInvoiceDetails(e)}
-      >
+      <Box component="form" noValidate onSubmit={updatePackingListDetails}>
         <Snackbar
           open={Boolean(error)}
           onClose={handleCloseSnackbar}
@@ -213,89 +109,49 @@ export const PackingListUpdate = (props) => {
             <CustomTextField
               fullWidth
               size="small"
-              name="vendor"
-              label="Vendor"
+              name="seller_account"
+              label="Buyer Account"
               variant="outlined"
-              value={
-                PackingListDataByID.vendor ? PackingListDataByID.vendor : ""
-              }
-              onChange={handleInputChange}
+              value={packingListDetails.seller_account || ""}
+              disabled
             />
           </Grid>
           <Grid item xs={12} sm={3}>
             <CustomTextField
-              sx={{ minWidth: "8rem" }}
-              name="vendor_name"
+              fullWidth
               size="small"
-              label="search By vendor_name"
+              label="Purchase Order Number"
               variant="outlined"
-              onChange={handleInputChange}
-              value={PackingListDataByID.vendor_name}
+              value={packingListDetails.purchase_order || ""}
+              disabled
             />
-            <Button onClick={(e) => fetchVendorOptions(e)} variant="contained">
-              Submit
-            </Button>
           </Grid>
-          {vendorOption && vendorOption.length > 0 && (
-            <Grid item xs={12} sm={3}>
-              <CustomAutocomplete
-                name="vendor"
-                size="small"
-                disablePortal
-                id="combo-box-demo"
-                onChange={(event, value) => setVendor(value)}
-                options={vendorOption}
-                getOptionLabel={(option) => option.name}
-                sx={{ minWidth: 100 }}
-                label="Update Vendor"
-              />
-            </Grid>
-          )}
 
           <Grid item xs={12} sm={3}>
             <CustomTextField
               fullWidth
+              disabled
               size="small"
               name="packing_list_no"
-              label="Invoice No."
+              label="Invoice No"
               variant="outlined"
-              value={
-                PackingListDataByID.packing_list_no
-                  ? PackingListDataByID.packing_list_no
-                  : ""
-              }
-              onChange={handleInputChange}
-            />
-          </Grid>
-          <Grid item xs={12} sm={3}>
-            <CustomAutocomplete
-              name="seller_account"
-              size="small"
-              disablePortal
-              id="combo-box-demo"
-              value={selectedSellerData ? selectedSellerData : ""}
-              onChange={(event, value) => setSelectedSellerData(value)}
-              options={sellerData.map((option) => option.unit)}
-              getOptionLabel={(option) => option}
-              sx={{ minWidth: 300 }}
-              label="Seller Account"
+              value={packingListDetails.packing_list_no || ""}
+              // onChange={handleInput}
             />
           </Grid>
           <Grid item xs={12} sm={3}>
             <CustomTextField
               fullWidth
-              type="date"
-              name="invoice_date"
+              disabled
+              // type="date"
               size="small"
+              name="invoice_date"
               label="Invoice Date"
               variant="outlined"
-              value={
-                PackingListDataByID.invoice_date
-                  ? PackingListDataByID.invoice_date
-                  : today
-              }
-              onChange={handleInputChange}
-              inputProps={{ max: today }}
+              InputLabelProps={{ shrink: true }}
+              value={packingListDetails.invoice_date}
+              // InputProps={{ inputProps: { max: today } }}
+              // onChange={handleInput}
             />
           </Grid>
           <Grid item xs={12}>
@@ -305,71 +161,42 @@ export const PackingListUpdate = (props) => {
               </Divider>
             </Root>
           </Grid>
-          {products.map((input, index) => {
-            return (
-              <>
-                <Grid key={index} item xs={12} sm={4}>
-                  <CustomAutocomplete
-                    name="product"
-                    size="small"
-                    disablePortal
-                    id="combo-box-demo"
-                    value={input.product ? input.product : ""}
-                    onChange={(event, value) =>
-                      handleAutocompleteChange(index, event, value)
-                    }
-                    options={productOption.map((option) => option.name)}
-                    getOptionLabel={(option) => option}
-                    sx={{ minWidth: 300 }}
-                    label="Product Name"
-                  />
-                </Grid>
-                <Grid item xs={12} sm={3}>
-                  <CustomTextField
-                    fullWidth
-                    name="unit"
-                    size="small"
-                    label="Unit"
-                    variant="outlined"
-                    value={input.unit ? input.unit : ""}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={3}>
-                  <CustomTextField
-                    fullWidth
-                    name="quantity"
-                    size="small"
-                    label="Quantity"
-                    variant="outlined"
-                    value={input.quantity ? input.quantity : ""}
-                    onChange={(event) => handleFormChange(index, event)}
-                  />
-                </Grid>
-
-                <Grid item xs={12} sm={2} alignContent="right">
-                  {index !== 0 && (
-                    <Button
-                      disabled={index === 0}
-                      onClick={() => removeFields(index)}
-                      variant="contained"
-                    >
-                      Remove
-                    </Button>
-                  )}
-                </Grid>
-              </>
-            );
-          })}
-
-          <Grid item xs={12} sm={2} alignContent="right">
-            <Button
-              onClick={addFields}
-              variant="contained"
-              sx={{ marginRight: "1em" }}
-            >
-              Add More...
-            </Button>
-          </Grid>
+          {products.map((product, index) => (
+            <React.Fragment key={product.id || index}>
+              <Grid item xs={12} sm={4}>
+                <CustomTextField
+                  fullWidth
+                  size="small"
+                  label="Product"
+                  variant="outlined"
+                  value={product.product || ""}
+                  disabled
+                />
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <CustomTextField
+                  fullWidth
+                  size="small"
+                  label="Unit"
+                  variant="outlined"
+                  value={product.unit || ""}
+                  disabled
+                />
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <CustomTextField
+                  fullWidth
+                  size="small"
+                  name="quantity"
+                  label="Quantity"
+                  variant="outlined"
+                  type="number"
+                  value={product.quantity || ""}
+                  onChange={(e) => handleQuantityChange(index, e.target.value)}
+                />
+              </Grid>
+            </React.Fragment>
+          ))}
         </Grid>
         <Button
           type="submit"

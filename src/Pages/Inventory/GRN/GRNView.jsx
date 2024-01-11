@@ -1,3 +1,4 @@
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Box,
   Grid,
@@ -17,212 +18,128 @@ import {
   IconButton,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
-import React, { useEffect, useRef, useState } from "react";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { CustomLoader } from "../../../Components/CustomLoader";
-import { CustomSearch } from "../../../Components/CustomSearch";
-import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 import { Popup } from "../../../Components/Popup";
 import InventoryServices from "../../../services/InventoryService";
 import { GRNUpdate } from "./GRNUpdate";
-import { GRNCreate } from "./GRNCreate";
+import { useSelector } from "react-redux";
+import { PurchaseInvoiceCreate } from "../Purchase Invoice/PurchaseInvoiceCreate";
+import CustomTextField from "../../../Components/CustomTextField";
 
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
-
-export const GRNView = () => {
-  const [openPopup, setOpenPopup] = useState(false);
-  const [openPopup2, setOpenPopup2] = useState(false);
+export const GRNView = (getAllVendorDetails) => {
+  const [openPopupUpdate, setOpenPopupUpdate] = useState(false);
+  const [openPopupCreatePI, setOpenPopupCreatePI] = useState(false);
   const [open, setOpen] = useState(false);
-  const errRef = useRef();
-  const [errMsg, setErrMsg] = useState("");
   const [grnData, setGRNData] = useState([]);
-  const [pageCount, setpageCount] = useState(0);
+  const [pageCount, setPageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
-  const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [idForEdit, setIDForEdit] = useState();
-  const [vendorOption, setVendorOption] = useState([]);
-  const handleInputChange = (event) => {
-    setFilterSelectedQuery(event.target.value);
-    getSearchData(event.target.value);
-  };
+  const [recordForEdit, setRecordForEdit] = useState();
+  const userData = useSelector((state) => state.auth.profile);
 
   useEffect(() => {
-    getPackingListNoDetails();
-  }, []);
+    getAllGRNDetails(currentPage);
+  }, [currentPage, getAllGRNDetails]);
 
-  const getPackingListNoDetails = async () => {
-    try {
-      setOpen(true);
-      const response =
-        await InventoryServices.getAllSearchWithFilterPackingListData(
-          "all",
-          false
-        );
-      setVendorOption(response.data);
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("err all vendor", err);
-    }
-  };
-
-  useEffect(() => {
-    getAllGRNDetails();
-  }, []);
-
-  const getAllGRNDetails = async () => {
-    try {
-      setOpen(true);
-      const response = currentPage
-        ? await InventoryServices.getGRNPaginateData(currentPage)
-        : await InventoryServices.getAllGRNData();
-      setGRNData(response.data.results);
-      const total = response.data.count;
-      setpageCount(Math.ceil(total / 25));
-    } catch (err) {
-      if (!err.response) {
-        setErrMsg(
-          "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
-        );
-      } else if (err.response.status === 400) {
-        setErrMsg(
-          err.response.data.errors.name ||
-            err.response.data.errors.non_field_errors
-        );
-      } else if (err.response.status === 401) {
-        setErrMsg(err.response.data.errors.code);
-      } else if (err.response.status === 404 || !err.response.data) {
-        setErrMsg("Data not found or request was null/empty");
-      } else {
-        setErrMsg("Server Error");
-      }
-    } finally {
-      setOpen(false);
-    }
-  };
-
-  const getSearchData = async (value) => {
-    try {
-      setOpen(true);
-      const filterSearch = value;
-      if (filterSearch !== "") {
-        const response = await InventoryServices.getAllSearchGRNData(
-          filterSearch
-        );
+  const getAllGRNDetails = useCallback(
+    async (page, search = searchQuery) => {
+      try {
+        setOpen(true);
+        const response = await InventoryServices.getAllGRNData(page, search);
         setGRNData(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      } else {
-        await getAllGRNDetails();
-        setFilterSelectedQuery("");
+        setPageCount(Math.ceil(response.data.count / 25));
+        setOpen(false);
+      } catch (error) {
+        setOpen(false);
+        console.error("error", error);
       }
-    } catch (error) {
-      console.log("error Search leads", error);
-    } finally {
-      setOpen(false);
-    }
+    },
+    [searchQuery] // Depend on acceptedFilter directly
+  );
+
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
   };
 
-  const handlePageClick = async (event, value) => {
-    try {
-      const page = value;
-      setCurrentPage(page);
-      setOpen(true);
-
-      const response = filterSelectedQuery
-        ? await InventoryServices.getAllGRNDataPaginate(
-            page,
-            filterSelectedQuery
-          )
-        : await InventoryServices.getGRNPaginateData(page);
-
-      if (response) {
-        setGRNData(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      } else {
-        await getAllGRNDetails();
-        setFilterSelectedQuery("");
-      }
-    } catch (error) {
-      console.log("error", error);
-    } finally {
-      setOpen(false);
-    }
-  };
-
-  const getResetData = async () => {
-    setFilterSelectedQuery("");
-    await getAllGRNDetails();
+  const handlePageClick = (event, value) => {
+    setCurrentPage(value);
   };
 
   const openInPopup = (item) => {
     setIDForEdit(item);
-    setOpenPopup(true);
+    setOpenPopupUpdate(true);
   };
 
+  const handlePurchaseInvoice = (item) => {
+    setRecordForEdit(item);
+    setOpenPopupCreatePI(true);
+  };
   return (
     <>
       <CustomLoader open={open} />
 
       <Grid item xs={12}>
-        <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
-          <Box display="flex">
-            <Box flexGrow={0.9}>
-              <CustomSearch
-                filterSelectedQuery={filterSelectedQuery}
-                handleInputChange={handleInputChange}
-                getResetData={getResetData}
-                HelperText={"Search By Vendor & PackingList"}
-              />
-            </Box>
-            <Box flexGrow={2}>
-              <h3
-                style={{
-                  textAlign: "left",
-                  marginBottom: "1em",
-                  fontSize: "24px",
-                  color: "rgb(34, 34, 34)",
-                  fontWeight: 800,
-                }}
-              >
-                GRN Details
-              </h3>
-            </Box>
-            <Box flexGrow={0.5} align="right">
-              <Button
-                onClick={() => setOpenPopup2(true)}
-                variant="contained"
-                color="success"
-                // startIcon={<AddIcon />}
-              >
-                Add
-              </Button>
-            </Box>
+          <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={12} sm={3}>
+                <CustomTextField
+                  size="small"
+                  label="Search"
+                  variant="outlined"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={12} sm={1}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => getAllGRNDetails(currentPage, searchQuery)} // Call `handleSearch` when the button is clicked
+                >
+                  Search
+                </Button>
+              </Grid>
+              <Grid item xs={12} sm={1}>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => {
+                    setSearchQuery("");
+                    getAllGRNDetails(1, "");
+                  }}
+                >
+                  Reset
+                </Button>
+              </Grid>
+            </Grid>
+          </Box>
+          <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={12} sm={6}></Grid>
+
+              <Grid item xs={12} sm={3}>
+                <h3
+                  style={{
+                    textAlign: "left",
+                    fontSize: "24px",
+                    color: "rgb(34, 34, 34)",
+                    fontWeight: 800,
+                  }}
+                >
+                  Purchase Invoice
+                </h3>
+              </Grid>
+              <Grid item xs={12} sm={3}></Grid>
+            </Grid>
           </Box>
           <TableContainer
             sx={{
-              maxHeight: 440,
+              maxHeight: 360,
               "&::-webkit-scrollbar": {
                 width: 15,
               },
@@ -242,20 +159,23 @@ export const GRNView = () => {
               <TableHead>
                 <StyledTableRow>
                   <StyledTableCell align="center"></StyledTableCell>
+                  <StyledTableCell align="center">GRN DATE</StyledTableCell>
+                  <StyledTableCell align="center">GRN NO</StyledTableCell>
+                  <StyledTableCell align="center">INVOICE NO</StyledTableCell>
                   <StyledTableCell align="center">VENDOR</StyledTableCell>
-                  <StyledTableCell align="center">
-                    PACKINGLIST NO.
-                  </StyledTableCell>
-                  <StyledTableCell align="center">DATE</StyledTableCell>
-
                   <StyledTableCell align="center">PACKING LIST</StyledTableCell>
-
                   <StyledTableCell align="center">Action</StyledTableCell>
                 </StyledTableRow>
               </TableHead>
               <TableBody>
                 {grnData.map((row, i) => (
-                  <Row key={i} row={row} openInPopup={openInPopup} />
+                  <Row
+                    key={i}
+                    row={row}
+                    openInPopup={openInPopup}
+                    handlePurchaseInvoice={handlePurchaseInvoice}
+                    userData={userData}
+                  />
                 ))}
               </TableBody>{" "}
             </Table>
@@ -275,29 +195,26 @@ export const GRNView = () => {
       </Grid>
       <Popup
         fullScreen={true}
-        title={"Create GRN Details"}
-        openPopup={openPopup2}
-        setOpenPopup={setOpenPopup2}
+        title={"Update GRN Details"}
+        openPopup={openPopupUpdate}
+        setOpenPopup={setOpenPopupUpdate}
       >
-        <GRNCreate
+        <GRNUpdate
+          setOpenPopup={setOpenPopupUpdate}
           getAllGRNDetails={getAllGRNDetails}
-          setOpenPopup={setOpenPopup2}
-          vendorOption={vendorOption}
-          getPackingListNoDetails={getPackingListNoDetails}
+          idForEdit={idForEdit}
         />
       </Popup>
       <Popup
         fullScreen={true}
-        title={"Update GRN Details"}
-        openPopup={openPopup}
-        setOpenPopup={setOpenPopup}
+        title={"Purchase Invoice Create"}
+        openPopup={openPopupCreatePI}
+        setOpenPopup={setOpenPopupCreatePI}
       >
-        <GRNUpdate
-          setOpenPopup={setOpenPopup}
-          getAllGRNDetails={getAllGRNDetails}
-          idForEdit={idForEdit}
-          vendorOption={vendorOption}
-          getPackingListNoDetails={getPackingListNoDetails}
+        <PurchaseInvoiceCreate
+          setOpenPopup={setOpenPopupCreatePI}
+          recordForEdit={recordForEdit}
+          getAllVendorDetails={getAllVendorDetails}
         />
       </Popup>
     </>
@@ -305,14 +222,14 @@ export const GRNView = () => {
 };
 
 function Row(props) {
-  const { row, openInPopup } = props;
+  const { row, openInPopup, userData, handlePurchaseInvoice } = props;
   const [open, setOpen] = useState(false);
 
   return (
     <>
       {/* <CustomLoader open={open} /> */}
-      <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
-        <TableCell>
+      <StyledTableRow sx={{ "& > *": { borderBottom: "unset" } }}>
+        <StyledTableCell>
           <IconButton
             aria-label="expand row"
             size="small"
@@ -321,22 +238,23 @@ function Row(props) {
           >
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
-        </TableCell>
-        <TableCell align="center">{row.vendor}</TableCell>
-        <TableCell align="center">{row.packing_list_no}</TableCell>
-        <TableCell align="center">{row.created_on}</TableCell>
-
-        <TableCell align="center">{row.packing_list}</TableCell>
-        <TableCell align="center">
-          <Button
-            onClick={() => openInPopup(row.grn_no)}
-            variant="contained"
-            color="success"
-          >
-            Edit
-          </Button>
-        </TableCell>
-      </TableRow>
+        </StyledTableCell>
+        <StyledTableCell align="center">{row.created_on}</StyledTableCell>
+        <StyledTableCell align="center">{row.grn_no}</StyledTableCell>
+        <StyledTableCell align="center">{row.packing_list_no}</StyledTableCell>
+        <StyledTableCell align="center">{row.vendor}</StyledTableCell>
+        <StyledTableCell align="center">{row.packing_list}</StyledTableCell>
+        <StyledTableCell align="center">
+          {/* <Button onClick={() => openInPopup(row.grn_no)}>Edit</Button> */}
+          {(userData.groups.includes("Accounts Executive") ||
+            userData.groups.includes("Director") ||
+            userData.groups.includes("Accounts")) && (
+            <Button onClick={() => handlePurchaseInvoice(row)}>
+              Create PI
+            </Button>
+          )}
+        </StyledTableCell>
+      </StyledTableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
@@ -357,24 +275,26 @@ function Row(props) {
                 </TableHead>
                 <TableBody>
                   {row.products.map((ProductsData, i) => (
-                    <TableRow key={i}>
-                      <TableCell align="center">
+                    <StyledTableRow key={i}>
+                      <StyledTableCell align="center">
                         {ProductsData.products}
-                      </TableCell>
-                      <TableCell align="center">{ProductsData.unit}</TableCell>
-                      <TableCell align="center">
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {ProductsData.unit}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
                         {ProductsData.description}
-                      </TableCell>
-                      <TableCell align="center">
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
                         {ProductsData.order_quantity}
-                      </TableCell>
-                      <TableCell align="center">
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
                         {ProductsData.qa_rejected}
-                      </TableCell>
-                      <TableCell align="center">
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
                         {ProductsData.qa_accepted}
-                      </TableCell>
-                    </TableRow>
+                      </StyledTableCell>
+                    </StyledTableRow>
                   ))}
                 </TableBody>
               </Table>
@@ -385,3 +305,25 @@ function Row(props) {
     </>
   );
 }
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+    padding: 0, // Remove padding from header cells
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+    padding: 0, // Remove padding from body cells
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  "&:nth-of-type(odd)": {
+    backgroundColor: theme.palette.action.hover,
+  },
+  // hide last border
+  "&:last-child td, &:last-child th": {
+    border: 0,
+  },
+}));

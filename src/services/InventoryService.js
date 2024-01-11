@@ -1,31 +1,19 @@
 import CustomAxios from "./api";
 
-const getAllVendorData = () => {
-  return CustomAxios.get(`/api/inventory/list-vendor/`);
-};
+const getAllVendorData = (page, searchValue) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
 
-const getAllPaginateVendorData = (all) => {
-  return CustomAxios.get(`/api/inventory/list-vendor/?page=${all}`);
-};
+  if (page) {
+    params.append("page", page);
+  }
 
-const getAllPaginateVendorDataWithSearch = (all, search) => {
-  return CustomAxios.get(
-    `/api/inventory/list-vendor/?page=${all}&search=${search}`
-  );
-};
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
 
-const getAllSearchVendorData = (search) => {
-  return CustomAxios.get(`/api/inventory/list-vendor/?search=${search}`);
-};
-
-const getAllVendorDataPaginate = (currentPage, search) => {
-  return CustomAxios.get(
-    `/api/inventory/list-vendor/?page=${currentPage}&search=${search}`
-  );
-};
-
-const getVendorPaginateData = (currentPage) => {
-  return CustomAxios.get(`/api/inventory/list-vendor/?page=${currentPage}`);
+  // Sending a GET request with query parameters
+  return CustomAxios.get(`api/inventory/list-vendor/?${params.toString()}`);
 };
 
 const createVendorData = (data) => {
@@ -80,41 +68,61 @@ const updatetWareHouseInventoryData = (id, data) => {
   return CustomAxios.patch(`/api/inventory/list-warehouse/${id}`, data);
 };
 
+// Purchase Order Form List Api
+const getAllPurchaseOrderData = (page, acceptedToFilter, searchValue) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
+
+  if (page) {
+    params.append("page", page);
+  }
+
+  if (acceptedToFilter !== undefined) {
+    params.append("close_short", acceptedToFilter);
+  }
+
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+
+  // Sending a GET request with query parameters
+  return CustomAxios.get(`/api/inventory/purchase-order/?${params.toString()}`);
+};
+
+const createPurchaseOrderData = (data) => {
+  return CustomAxios.post("/api/inventory/purchase-order/", data);
+};
+
+const getPurchaseOrderDataById = (id) => {
+  return CustomAxios.get(`/api/inventory/purchase-order/${id}`);
+};
+
+const updatePurchaseOrderData = (id, data) => {
+  return CustomAxios.patch(`/api/inventory/purchase-order/${id}/`, data);
+};
+
 // Packing List Api
+const getAllPackingListData = (page, acceptedToFilter, searchValue) => {
+  console.log(page, acceptedToFilter, searchValue);
+  // Constructing the query parameters
+  const params = new URLSearchParams();
 
-const getAllPackingListData = () => {
-  return CustomAxios.get(`/api/inventory/list-packing-list/`);
-};
+  if (page) {
+    params.append("page", page);
+  }
 
-const getAllPaginatePackingListData = (all) => {
-  return CustomAxios.get(`/api/inventory/list-packing-list/?page=${all}`);
-};
+  if (acceptedToFilter !== undefined) {
+    // Append 'acceptedToFilter' regardless of it being true or false
+    params.append("accepted", acceptedToFilter);
+  }
 
-const getAllPaginatePackingListDataWithSearch = (all, search) => {
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+
+  // Sending a GET request with query parameters
   return CustomAxios.get(
-    `/api/inventory/list-packing-list/?page=${all}&search=${search}`
-  );
-};
-
-const getAllSearchPackingListData = (search) => {
-  return CustomAxios.get(`/api/inventory/list-packing-list/?search=${search}`);
-};
-
-const getAllSearchWithFilterPackingListData = (all, type) => {
-  return CustomAxios.get(
-    `/api/inventory/list-packing-list/?page=${all}&accept=${type}`
-  );
-};
-
-const getAllPackingListDataPaginate = (currentPage, search) => {
-  return CustomAxios.get(
-    `/api/inventory/list-packing-list/?page=${currentPage}&search=${search}`
-  );
-};
-
-const getPackingListPaginateData = (currentPage) => {
-  return CustomAxios.get(
-    `/api/inventory/list-packing-list/?page=${currentPage}`
+    `/api/inventory/list-packing-list/?${params.toString()}`
   );
 };
 
@@ -127,43 +135,24 @@ const getPackingListDataById = (id) => {
 };
 
 const updatePackingListData = (id, data) => {
-  return CustomAxios.patch(`/api/inventory/list-packing-list/${id}`, data);
+  return CustomAxios.patch(`/api/inventory/list-packing-list/${id}/`, data);
 };
 
 // grn List Api
+const getAllGRNData = (page, searchValue) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
 
-const getAllGRNData = () => {
-  return CustomAxios.get(`/api/inventory/list-grn/`);
-};
+  if (page) {
+    params.append("page", page);
+  }
 
-const getAllPaginateGRNData = (all) => {
-  return CustomAxios.get(`/api/inventory/list-grn/?page=${all}`);
-};
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
 
-const getAllPaginateGRNDataWithSearch = (all, search) => {
-  return CustomAxios.get(
-    `/api/inventory/list-grn/?page=${all}&search=${search}`
-  );
-};
-
-const getAllSearchGRNData = (search) => {
-  return CustomAxios.get(`/api/inventory/list-grn/?search=${search}`);
-};
-
-const getAllSearchWithFilterGRNData = (all, type) => {
-  return CustomAxios.get(
-    `/api/inventory/list-grn/?page=${all}&accepted=${type}`
-  );
-};
-
-const getAllGRNDataPaginate = (currentPage, search) => {
-  return CustomAxios.get(
-    `/api/inventory/list-grn/?page=${currentPage}&search=${search}`
-  );
-};
-
-const getGRNPaginateData = (currentPage) => {
-  return CustomAxios.get(`/api/inventory/list-grn/?page=${currentPage}`);
+  // Sending a GET request with query parameters
+  return CustomAxios.get(`api/inventory/list-grn/?${params.toString()}`);
 };
 
 const createGRNData = (data) => {
@@ -178,37 +167,45 @@ const updateGRNData = (id, data) => {
   return CustomAxios.patch(`/api/inventory/list-grn/${id}`, data);
 };
 
+// GRN Register
+const getAllGRNRegisterDetails = (yearMonthFilter, page) => {
+  const params = new URLSearchParams();
+
+  if (yearMonthFilter) {
+    params.append("year_month", yearMonthFilter);
+  }
+
+  if (page) {
+    params.append("page", page);
+  }
+
+  // if (searchValue) {
+  //   params.append("search", searchValue);
+  // }
+
+  return CustomAxios.get(`api/inventory/grn-register/?${params.toString()}`);
+};
+
 // Purchase Invoice List Api
+const getAllPurchaseInvoiceData = (page, yearMonthFilter, searchValue) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
 
-const getAllPurchaseInvoiceData = () => {
-  return CustomAxios.get(`/api/inventory/list-purchase-invoice/`);
-};
+  if (page) {
+    params.append("page", page);
+  }
 
-const getAllPaginatePurchaseInvoiceData = (all) => {
-  return CustomAxios.get(`/api/inventory/list-purchase-invoice/?page=${all}`);
-};
+  if (yearMonthFilter) {
+    params.append("year_month", yearMonthFilter);
+  }
 
-const getAllPaginatePurchaseInvoiceDataWithSearch = (all, search) => {
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+
+  // Sending a GET request with query parameters
   return CustomAxios.get(
-    `/api/inventory/list-purchase-invoice/?page=${all}&search=${search}`
-  );
-};
-
-const getAllSearchPurchaseInvoiceData = (search) => {
-  return CustomAxios.get(
-    `/api/inventory/list-purchase-invoice/?search=${search}`
-  );
-};
-
-const getAllPurchaseInvoiceDataPaginate = (currentPage, search) => {
-  return CustomAxios.get(
-    `/api/inventory/list-purchase-invoice/?page=${currentPage}&search=${search}`
-  );
-};
-
-const getPurchaseInvoicePaginateData = (currentPage) => {
-  return CustomAxios.get(
-    `/api/inventory/list-purchase-invoice/?page=${currentPage}`
+    `api/inventory/list-purchase-invoice/?${params.toString()}`
   );
 };
 
@@ -225,41 +222,24 @@ const updatePurchaseInvoiceData = (id, data) => {
 };
 
 // Stores Inventory List Api
+const getAllStoresInventoryDetails = (page, searchValue) => {
+  const params = new URLSearchParams();
 
-const getAllStoresInventoryData = () => {
-  return CustomAxios.get(`/api/inventory/list-stores-inventory/`);
+  if (page) {
+    params.append("page", page);
+  }
+
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+
+  return CustomAxios.get(
+    `api/inventory/list-stores-inventory/?${params.toString()}`
+  );
 };
 
 const createStoresInventoryData = (data) => {
   return CustomAxios.post("/api/inventory/list-stores-inventory/", data);
-};
-
-const getAllPaginateStoresInventoryData = (all) => {
-  return CustomAxios.get(`/api/inventory/list-stores-inventory/?page=${all}`);
-};
-
-const getAllPaginateStoresInventoryDataWithSearch = (all, search) => {
-  return CustomAxios.get(
-    `/api/inventory/list-stores-inventory/?page=${all}&search=${search}`
-  );
-};
-
-const getAllSearchStoresInventoryData = (search) => {
-  return CustomAxios.get(
-    `/api/inventory/list-stores-inventory/?search=${search}`
-  );
-};
-
-const getAllStoresInventoryDataPaginate = (currentPage, search) => {
-  return CustomAxios.get(
-    `/api/inventory/list-stores-inventory/?page=${currentPage}&search=${search}`
-  );
-};
-
-const getStoresInventoryPaginateData = (currentPage) => {
-  return CustomAxios.get(
-    `/api/inventory/list-stores-inventory/?page=${currentPage}`
-  );
 };
 
 const getAllConsStoresInventoryData = () => {
@@ -297,37 +277,21 @@ const getConsStoresInventoryPaginateData = (currentPage) => {
 };
 // Material Requisition Form List Api
 
-const getAllMaterialRequisitionFormData = () => {
-  return CustomAxios.get(`/api/inventory/list-material-requisition-form/`);
-};
+const getAllMaterialRequisitionFormData = (page, searchValue) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
 
-const getAllPaginateMaterialRequisitionFormData = (all) => {
-  return CustomAxios.get(
-    `/api/inventory/list-material-requisition-form/?page=${all}`
-  );
-};
+  if (page) {
+    params.append("page", page);
+  }
 
-const getAllPaginateMaterialRequisitionFormDataWithSearch = (all, search) => {
-  return CustomAxios.get(
-    `/api/inventory/list-material-requisition-form/?page=${all}&search=${search}`
-  );
-};
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
 
-const getAllSearchMaterialRequisitionFormData = (search) => {
+  // Sending a GET request with query parameters
   return CustomAxios.get(
-    `/api/inventory/list-material-requisition-form/?search=${search}`
-  );
-};
-
-const getAllMaterialRequisitionFormDataPaginate = (currentPage, search) => {
-  return CustomAxios.get(
-    `/api/inventory/list-material-requisition-form/?page=${currentPage}&search=${search}`
-  );
-};
-
-const getMaterialRequisitionFormPaginateData = (currentPage) => {
-  return CustomAxios.get(
-    `/api/inventory/list-material-requisition-form/?page=${currentPage}`
+    `api/inventory/list-material-requisition-form/?${params.toString()}`
   );
 };
 
@@ -351,45 +315,25 @@ const updateMaterialRequisitionFormData = (id, data) => {
 
 // Bill of Materials List Api
 
-const getAllBillofMaterialsData = () => {
-  return CustomAxios.get(`/api/inventory/list-bill-of-materials/`);
-};
+const getAllBillofMaterialsData = (page, approvedToFilter, searchValue) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
 
-const getAllPaginateBillofMaterialsData = (all) => {
-  return CustomAxios.get(`/api/inventory/list-bill-of-materials/?page=${all}`);
-};
+  if (page) {
+    params.append("page", page);
+  }
 
-const getAllPaginateBillofMaterialsDataWithSearch = (all, search) => {
-  return CustomAxios.get(
-    `/api/inventory/list-bill-of-materials/?page=${all}&search=${search}`
-  );
-};
+  if (approvedToFilter !== undefined) {
+    params.append("approved", approvedToFilter);
+  }
 
-const getAllSearchBillofMaterialsData = (search) => {
-  return CustomAxios.get(
-    `/api/inventory/list-bill-of-materials/?search=${search}`
-  );
-};
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
 
-const getAllFilterBillofMaterialsData = (val) => {
+  // Sending a GET request with query parameters
   return CustomAxios.get(
-    `/api/inventory/list-bill-of-materials/?approved=${val}`
-  );
-};
-const getFilterhBillofMaterialsData = (search, filter) => {
-  return CustomAxios.get(
-    `/api/inventory/list-bill-of-materials/?search=${search}&approved=${filter}`
-  );
-};
-const getAllBillofMaterialsDataPaginate = (currentPage, search) => {
-  return CustomAxios.get(
-    `/api/inventory/list-bill-of-materials/?page=${currentPage}&search=${search}`
-  );
-};
-
-const getBillofMaterialsPaginateData = (currentPage) => {
-  return CustomAxios.get(
-    `/api/inventory/list-bill-of-materials/?page=${currentPage}`
+    `api/inventory/list-bill-of-materials/?${params.toString()}`
   );
 };
 
@@ -407,35 +351,21 @@ const updateBillofMaterialsData = (id, data) => {
 
 // Production Entry List Api
 
-const getAllProductionEntryData = () => {
-  return CustomAxios.get(`/api/inventory/list-production-entry/`);
-};
+const getAllProductionEntryData = (page, searchValue) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
 
-const getAllPaginateProductionEntryData = (all) => {
-  return CustomAxios.get(`/api/inventory/list-production-entry/?page=${all}`);
-};
+  if (page) {
+    params.append("page", page);
+  }
 
-const getAllPaginateProductionEntryDataWithSearch = (all, search) => {
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+
+  // Sending a GET request with query parameters
   return CustomAxios.get(
-    `/api/inventory/list-production-entry/?page=${all}&search=${search}`
-  );
-};
-
-const getAllSearchProductionEntryData = (search) => {
-  return CustomAxios.get(
-    `/api/inventory/list-production-entry/?search=${search}`
-  );
-};
-
-const getAllProductionEntryDataPaginate = (currentPage, search) => {
-  return CustomAxios.get(
-    `/api/inventory/list-production-entry/?page=${currentPage}&search=${search}`
-  );
-};
-
-const getProductionEntryPaginateData = (currentPage) => {
-  return CustomAxios.get(
-    `/api/inventory/list-production-entry/?page=${currentPage}`
+    `api/inventory/list-production-entry/?${params.toString()}`
   );
 };
 
@@ -564,41 +494,25 @@ const getProductionInventoryPaginateData = (currentPage) => {
 };
 
 // Production Inventory G&L List Api
+const getAllProductionGAndLInventoryData = (page, searchValue) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
 
-const getAllProductionGAndLInventoryData = () => {
-  return CustomAxios.get(`/api/inventory/list-production-gnl/`);
-};
+  if (page) {
+    params.append("page", page);
+  }
 
-const getAllPaginateProductionGAndLInventoryData = (all) => {
-  return CustomAxios.get(`/api/inventory/list-production-gnl/?page=${all}`);
-};
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
 
-const getAllPaginateProductionGAndLInventoryDataWithSearch = (all, search) => {
+  // Sending a GET request with query parameters
   return CustomAxios.get(
-    `/api/inventory/list-production-gnl/?page=${all}&search=${search}`
-  );
-};
-
-const getAllSearchProductionGAndLInventoryData = (search) => {
-  return CustomAxios.get(
-    `/api/inventory/list-production-gnl/?search=${search}`
-  );
-};
-
-const getAllProductionGAndLInventoryDataPaginate = (currentPage, search) => {
-  return CustomAxios.get(
-    `/api/inventory/list-production-gnl/?page=${currentPage}&search=${search}`
-  );
-};
-
-const getProductionGAndLInventoryPaginateData = (currentPage) => {
-  return CustomAxios.get(
-    `/api/inventory/list-production-gnl/?page=${currentPage}`
+    `api/inventory/list-production-gnl/?${params.toString()}`
   );
 };
 
 // Production ShortFall List Api
-
 const getAllProductionShortFallData = () => {
   return CustomAxios.get(`/api/inventory/list-production-shortfall/`);
 };
@@ -697,13 +611,26 @@ const getWeeklyProductionReportFilterData = (month, year) => {
     `/api/inventory/list-weekly-product-quantity/?month=${month}&year=${year}`
   );
 };
+
+// Currency List Api
+const getCurrencyData = () => {
+  return CustomAxios.get(`/api/inventory/currency`);
+};
+
+const createCurrencyData = (data) => {
+  return CustomAxios.post("/api/inventory/currency/", data);
+};
+
+const getCurrencyDataById = (id) => {
+  return CustomAxios.get(`/api/inventory/currency/${id}`);
+};
+
+const updateCurrencyData = (id, data) => {
+  return CustomAxios.patch(`/api/inventory/currency/${id}/`, data);
+};
+
 const InventoryServices = {
   getAllVendorData,
-  getAllPaginateVendorData,
-  getAllPaginateVendorDataWithSearch,
-  getAllSearchVendorData,
-  getAllVendorDataPaginate,
-  getVendorPaginateData,
   createVendorData,
   getVendorDataById,
   updateVendorData,
@@ -717,42 +644,24 @@ const InventoryServices = {
   createWareHouseInventoryData,
   updatetWareHouseInventoryData,
   getWareHouseInventoryDataById,
+  getAllPurchaseOrderData,
+  createPurchaseOrderData,
+  getPurchaseOrderDataById,
+  updatePurchaseOrderData,
   getAllPackingListData,
-  getAllPaginatePackingListData,
-  getAllPaginatePackingListDataWithSearch,
-  getAllSearchPackingListData,
-  getAllSearchWithFilterPackingListData,
-  getAllPackingListDataPaginate,
-  getPackingListPaginateData,
   createPackingListData,
   getPackingListDataById,
   updatePackingListData,
   getAllGRNData,
-  getAllPaginateGRNData,
-  getAllPaginateGRNDataWithSearch,
-  getAllSearchGRNData,
-  getAllSearchWithFilterGRNData,
-  getAllGRNDataPaginate,
-  getGRNPaginateData,
   createGRNData,
   getGRNDataById,
   updateGRNData,
+  getAllGRNRegisterDetails,
   getAllPurchaseInvoiceData,
-  getAllPaginatePurchaseInvoiceData,
-  getAllPaginatePurchaseInvoiceDataWithSearch,
-  getAllSearchPurchaseInvoiceData,
-  getAllPurchaseInvoiceDataPaginate,
-  getPurchaseInvoicePaginateData,
   createPurchaseInvoiceData,
   getPurchaseInvoiceDataById,
   updatePurchaseInvoiceData,
-  getAllStoresInventoryData,
   createStoresInventoryData,
-  getAllPaginateStoresInventoryData,
-  getAllPaginateStoresInventoryDataWithSearch,
-  getAllSearchStoresInventoryData,
-  getAllStoresInventoryDataPaginate,
-  getStoresInventoryPaginateData,
   getAllConsStoresInventoryData,
   getAllPaginateConsStoresInventoryData,
   getAllPaginateConsStoresInventoryDataWithSearch,
@@ -760,31 +669,14 @@ const InventoryServices = {
   getAllConsStoresInventoryDataPaginate,
   getConsStoresInventoryPaginateData,
   getAllMaterialRequisitionFormData,
-  getAllPaginateMaterialRequisitionFormData,
-  getAllPaginateMaterialRequisitionFormDataWithSearch,
-  getAllSearchMaterialRequisitionFormData,
-  getAllMaterialRequisitionFormDataPaginate,
-  getMaterialRequisitionFormPaginateData,
   createMaterialRequisitionFormData,
   getMaterialRequisitionFormDataById,
   updateMaterialRequisitionFormData,
   getAllBillofMaterialsData,
-  getAllPaginateBillofMaterialsData,
-  getAllPaginateBillofMaterialsDataWithSearch,
-  getAllSearchBillofMaterialsData,
-  getAllFilterBillofMaterialsData,
-  getFilterhBillofMaterialsData,
-  getAllBillofMaterialsDataPaginate,
-  getBillofMaterialsPaginateData,
   createBillofMaterialsData,
   getBillofMaterialsDataById,
   updateBillofMaterialsData,
   getAllProductionEntryData,
-  getAllPaginateProductionEntryData,
-  getAllPaginateProductionEntryDataWithSearch,
-  getAllSearchProductionEntryData,
-  getAllProductionEntryDataPaginate,
-  getProductionEntryPaginateData,
   createProductionEntryData,
   getProductionEntryDataById,
   updateProductionEntryData,
@@ -805,11 +697,6 @@ const InventoryServices = {
   getAllConsProductionInventoryDataPaginate,
   getConsProductionInventoryPaginateData,
   getAllProductionGAndLInventoryData,
-  getAllPaginateProductionGAndLInventoryData,
-  getAllPaginateProductionGAndLInventoryDataWithSearch,
-  getAllSearchProductionGAndLInventoryData,
-  getAllProductionGAndLInventoryDataPaginate,
-  getProductionGAndLInventoryPaginateData,
   getAllProductionShortFallData,
   getAllPaginateProductionShortFallData,
   getAllPaginateProductionShortFallDataWithSearch,
@@ -825,6 +712,11 @@ const InventoryServices = {
   getAllWeeklyProductionReportDataPaginate,
   getWeeklyProductionReportPaginateData,
   getWeeklyProductionReportFilterData,
+  getCurrencyData,
+  createCurrencyData,
+  getCurrencyDataById,
+  updateCurrencyData,
+  getAllStoresInventoryDetails,
 };
 
 export default InventoryServices;
