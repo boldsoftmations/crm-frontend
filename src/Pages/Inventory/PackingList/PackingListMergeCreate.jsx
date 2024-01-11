@@ -75,6 +75,7 @@ export const PackingListMergeCreate = ({
       const selectedProducts = processedNewValue.flatMap((po) =>
         po.value && po.value.products
           ? po.value.products.map((product) => ({
+              id: product.id,
               product: product.product,
               unit: product.unit,
               quantity: product.quantity,
@@ -223,6 +224,16 @@ export const PackingListMergeCreate = ({
           </Grid>
           {details.products.map((product, index) => (
             <React.Fragment key={product.id || `product-${index}`}>
+              <Grid item xs={12} sm={2}>
+                <CustomTextField
+                  fullWidth
+                  size="small"
+                  label="Id"
+                  variant="outlined"
+                  value={product.id || ""}
+                  disabled
+                />
+              </Grid>
               <Grid item xs={12} sm={4}>
                 <CustomTextField
                   fullWidth
