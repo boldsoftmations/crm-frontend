@@ -73,7 +73,6 @@ import { HrModelTabs } from "../Pages/HrModel/HrModelTabs";
 import { DesignationView } from "../Pages/HrModel/Designation/DesignationView";
 import { DepartmentView } from "../Pages/HrModel/Department/DepartmentView";
 import { SourceView } from "../Pages/HrModel/CandidateSource/SourceView";
-import { DailySalesHistory } from "../Pages/DailySaleReview/DailySalesHistory";
 import { LeadForecastView } from "../Pages/Leads/LeadForecast/LeadForecastView";
 import { CurrencyView } from "../Pages/Inventory/Currency/CurrencyView";
 import { PurchaseOrderView } from "../Pages/Inventory/Purchase Order/PurchaseOrderView";
@@ -295,7 +294,6 @@ export const RouteScreen = () => {
             <Route path="/user/faq" element={<FaqAllTab />} />
             {/* Daily sale review */}
             <Route path="/user/sale-review" element={<DailySaleReviewView />} />
-            <Route path="/user/sales-history" element={<DailySalesHistory />} />
             <Route path="/" element={<Home />} />
             <Route path="/user/hr-model" element={<HrModelTabs />} />
             <Route
