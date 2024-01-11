@@ -40,7 +40,6 @@ export const PurchaseOrderCreate = ({
   const today = new Date().toISOString().slice(0, 10);
   const [inputValues, setInputValues] = useState({
     created_by: userData.email,
-    po_no: "",
     po_date: today,
     schedule_date: today,
     vendor: recordForEdit.name,
@@ -184,47 +183,7 @@ export const PurchaseOrderCreate = ({
   useEffect(() => {
     getProduct();
     getCurrencyDetails();
-    getCurrentPurchaseOrderNo();
   }, [recordForEdit]);
-
-  // Update the getCurrentPurchaseOrderNo function
-  const getCurrentPurchaseOrderNo = () => {
-    const type = recordForEdit && recordForEdit.type;
-    let poPrefix = "GIPL/23-24/PO"; // Default prefix for Domestic
-    let baseNo = 209; // Set baseNo to 209 for Domestic
-    let startingNo = 210; // The starting number for Domestic
-
-    if (type === "International") {
-      baseNo = 48;
-      poPrefix = "GIPL/23-24/IMP/PO"; // Update prefix for International
-      startingNo = 49; // Assume you also have a starting number for International
-    }
-
-    const lastNoKey = `lastPurchaseOrderNo_${type}`;
-    let lastNo = parseInt(localStorage.getItem(lastNoKey), 10);
-
-    // If lastNo is not set or less than the baseNo, initialize it with startingNo - 1
-    if (!lastNo || lastNo < baseNo) {
-      lastNo = startingNo - 1;
-      localStorage.setItem(lastNoKey, lastNo.toString());
-    }
-
-    setInputValues((prevValues) => ({
-      ...prevValues,
-      po_no: `${poPrefix} - ${lastNo + 1}`,
-    }));
-  };
-
-  // Function to increment the purchase order number
-  const incrementPurchaseOrderNo = () => {
-    const type = recordForEdit && recordForEdit.type;
-    const currentNo = parseInt(
-      inputValues.purchase_order_no.split(" - ")[1],
-      10
-    );
-    const lastNoKey = `lastPurchaseOrderNo_${type}`;
-    localStorage.setItem(lastNoKey, currentNo.toString());
-  };
 
   const getCurrencyDetails = async () => {
     setLoading(true);
@@ -283,7 +242,6 @@ export const PurchaseOrderCreate = ({
         delivery_terms: inputValues.delivery_terms,
         schedule_date: inputValues.schedule_date,
         currency: inputValues.currency,
-        po_no: inputValues.po_no,
         po_date: inputValues.po_date,
         seller_account: inputValues.seller_account || null,
         products: inputValues.products || [],
@@ -293,7 +251,6 @@ export const PurchaseOrderCreate = ({
       if (response) {
         getAllVendorDetails();
         setOpenPopup(false);
-        incrementPurchaseOrderNo();
       }
       setLoading(false);
     } catch (error) {
@@ -408,18 +365,7 @@ export const PurchaseOrderCreate = ({
               label="Delivery Terms"
             />
           </Grid>
-          <Grid item xs={12} sm={3}>
-            <CustomTextField
-              fullWidth
-              disabled
-              size="small"
-              name="po_no"
-              label="Purchase Order No."
-              variant="outlined"
-              value={inputValues.po_no}
-              onChange={handleInputChange}
-            />
-          </Grid>
+
           <Grid item xs={12} sm={3}>
             <CustomTextField
               fullWidth
