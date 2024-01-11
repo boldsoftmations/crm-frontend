@@ -409,6 +409,8 @@ function Row(props) {
                     <TableCell align="center">DISPATCH ID</TableCell>
                     <TableCell align="center">PRODUCT</TableCell>
                     <TableCell align="center">QUANTITY</TableCell>
+                    <TableCell align="center">RATE</TableCell>
+                    <TableCell align="center">AMOUNT</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -421,6 +423,8 @@ function Row(props) {
                       <TableCell align="center">
                         {historyRow.quantity}
                       </TableCell>
+                      <TableCell align="center">{historyRow.rate}</TableCell>
+                      <TableCell align="center">{historyRow.amount}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
