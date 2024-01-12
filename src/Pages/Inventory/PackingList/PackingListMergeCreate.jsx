@@ -26,8 +26,8 @@ const Root = styled("div")(({ theme }) => ({
 export const PackingListMergeCreate = ({
   purchaseOrderData = [],
   setOpenPopup,
+  getAllPurchaseOrderDetails,
 }) => {
-  console.log("purchaseOrderData", purchaseOrderData);
   const { sellerData } = useSelector((state) => ({
     sellerData: state.auth.sellerAccount,
     userData: state.auth.profile,
@@ -123,12 +123,10 @@ export const PackingListMergeCreate = ({
         ...details,
         purchase_order: selectedPoNos, // This is already an array
       };
-      const response = await InventoryServices.createPackingListData(
-        dataToSend
-      );
-      if (response) {
-        setOpenPopup(false);
-      }
+      await InventoryServices.createPackingListData(dataToSend);
+
+      setOpenPopup(false);
+      getAllPurchaseOrderDetails();
     } catch (error) {
       console.error("Creating Packing list error", error);
       setError(error.message || "An error occurred");

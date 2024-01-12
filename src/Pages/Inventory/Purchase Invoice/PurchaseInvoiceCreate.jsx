@@ -16,7 +16,7 @@ const Root = styled("div")(({ theme }) => ({
 export const PurchaseInvoiceCreate = ({
   setOpenPopup,
   recordForEdit,
-  getAllVendorDetails,
+  getAllGRNDetails,
 }) => {
   const [open, setOpen] = useState(false);
   const [products, setProducts] = useState(
@@ -57,10 +57,9 @@ export const PurchaseInvoiceCreate = ({
         grn: recordForEdit.grn_no,
         products_data: products,
       };
-      console.log("createing Packing list", req);
       await InventoryServices.createPurchaseInvoiceData(req);
       console.log("createing Packing list");
-      getAllVendorDetails();
+      getAllGRNDetails();
       setOpenPopup(false);
       setOpen(false);
     } catch (error) {

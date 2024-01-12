@@ -367,6 +367,7 @@ export const PurchaseOrderView = () => {
         <PackingListCreate
           setOpenPopup={setOpenCreatePLPopup}
           selectedRow={selectedRow}
+          getAllPurchaseOrderDetails={getAllPurchaseOrderDetails}
         />
       </Popup>
       <Popup
@@ -378,6 +379,7 @@ export const PurchaseOrderView = () => {
         <PackingListMergeCreate
           setOpenPopup={setOpenMergePLPopup}
           purchaseOrderData={purchaseOrderData}
+          getAllPurchaseOrderDetails={getAllPurchaseOrderDetails}
         />
       </Popup>
     </>

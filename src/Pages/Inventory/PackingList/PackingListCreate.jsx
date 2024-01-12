@@ -13,7 +13,11 @@ const Root = styled("div")(({ theme }) => ({
   },
 }));
 
-export const PackingListCreate = ({ selectedRow, setOpenPopup }) => {
+export const PackingListCreate = ({
+  selectedRow,
+  setOpenPopup,
+  getAllPurchaseOrderDetails,
+}) => {
   console.log("selectedRow", selectedRow);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -71,12 +75,10 @@ export const PackingListCreate = ({ selectedRow, setOpenPopup }) => {
         ...details,
         purchase_order: details.purchase_order, // This is already an array
       };
-      const response = await InventoryServices.createPackingListData(
-        dataToSend
-      );
-      if (response) {
-        setOpenPopup(false);
-      }
+      await InventoryServices.createPackingListData(dataToSend);
+
+      setOpenPopup(false);
+      getAllPurchaseOrderDetails();
     } catch (error) {
       console.error("Creating Packing list error", error);
       setError(error.message || "An error occurred");

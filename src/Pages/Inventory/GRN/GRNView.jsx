@@ -28,7 +28,7 @@ import { useSelector } from "react-redux";
 import { PurchaseInvoiceCreate } from "../Purchase Invoice/PurchaseInvoiceCreate";
 import CustomTextField from "../../../Components/CustomTextField";
 
-export const GRNView = (getAllVendorDetails) => {
+export const GRNView = () => {
   const [openPopupUpdate, setOpenPopupUpdate] = useState(false);
   const [openPopupCreatePI, setOpenPopupCreatePI] = useState(false);
   const [open, setOpen] = useState(false);
@@ -214,7 +214,7 @@ export const GRNView = (getAllVendorDetails) => {
         <PurchaseInvoiceCreate
           setOpenPopup={setOpenPopupCreatePI}
           recordForEdit={recordForEdit}
-          getAllVendorDetails={getAllVendorDetails}
+          getAllGRNDetails={getAllGRNDetails}
         />
       </Popup>
     </>

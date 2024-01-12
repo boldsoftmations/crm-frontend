@@ -21,7 +21,11 @@ const Root = styled("div")(({ theme }) => ({
   },
 }));
 
-export const GRNCreate = ({ setOpenPopup, idForEdit, getAllVendorDetails }) => {
+export const GRNCreate = ({
+  setOpenPopup,
+  idForEdit,
+  getAllPackingListDetails,
+}) => {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState(null);
   const [products, setProducts] = useState(
@@ -66,10 +70,9 @@ export const GRNCreate = ({ setOpenPopup, idForEdit, getAllVendorDetails }) => {
         packing_list: idForEdit.id,
         products,
       });
-      if (response) {
-        getAllVendorDetails();
-        setOpenPopup(false);
-      }
+
+      getAllPackingListDetails();
+      setOpenPopup(false);
     } catch (err) {
       setError("Error occurred while creating GRN.");
       console.error("Creating Packing list error", err);
