@@ -174,23 +174,16 @@ export const CreateCustomerProformaInvoice = (props) => {
     setInputValue({ ...inputValue, [name]: value });
   };
 
-  const extractErrorMessages = (error) => {
+  const extractErrorMessages = (data) => {
     let messages = [];
-
-    if (error.response && error.response.data) {
-      if (error.response.data.non_field_errors) {
-        messages = [...error.response.data.non_field_errors];
-      } else if (error.response.data.errors) {
-        for (const [key, value] of Object.entries(error.response.data.errors)) {
-          messages.push(`${key}: ${value.join(", ")}`);
-        }
-      } else if (error.response.data.message) {
-        messages.push(error.response.data.message);
+    if (data.errors) {
+      for (const [key, value] of Object.entries(data.errors)) {
+        // Assuming each key has an array of messages, concatenate them.
+        value.forEach((msg) => {
+          messages.push(`${key}: ${msg}`);
+        });
       }
-    } else {
-      messages.push(error.message || "An unknown error occurred");
     }
-
     return messages;
   };
 
@@ -260,7 +253,7 @@ export const CreateCustomerProformaInvoice = (props) => {
       setOpen(false);
     } catch (error) {
       console.log("creating Customer PI error", error);
-      const newErrors = extractErrorMessages(error); // Pass the entire error object
+      const newErrors = extractErrorMessages(error.response.data);
       setErrorMessages(newErrors);
       setCurrentErrorIndex(0); // Reset the error index when new errors arrive
       setOpenSnackbar((prevOpen) => !prevOpen);
@@ -290,13 +283,11 @@ export const CreateCustomerProformaInvoice = (props) => {
         open={openSnackbar}
         autoHideDuration={6000}
         onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
       >
-        {errorMessages.map((message, index) => (
-          <Alert key={index} onClose={handleCloseSnackbar} severity="error">
-            {message}
-          </Alert>
-        ))}
+        <Alert onClose={handleCloseSnackbar} severity="error">
+          {errorMessages[currentErrorIndex]}
+        </Alert>
       </Snackbar>
 
       <CustomLoader open={open} />
