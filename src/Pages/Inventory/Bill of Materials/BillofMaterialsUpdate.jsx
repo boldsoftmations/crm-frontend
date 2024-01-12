@@ -183,13 +183,13 @@ export const BillofMaterialsUpdate = (props) => {
           {products.map((input, index) => {
             return (
               <>
-                <Grid key={index} item xs={12} sm={3}>
+                <Grid key={index} item xs={12} sm={4}>
                   <CustomAutocomplete
                     name="product"
                     size="small"
                     disablePortal
                     id="combo-box-demo"
-                    value={input.product ? input.product : ""}
+                    value={input.product || ""}
                     onChange={(event, value) =>
                       handleAutocompleteChange(index, event, value)
                     }
@@ -208,25 +208,26 @@ export const BillofMaterialsUpdate = (props) => {
                 <Grid item xs={12} sm={3}>
                   <CustomTextField
                     fullWidth
-                    name="quantity"
+                    name="unit"
                     size="small"
-                    label="Quantity"
+                    label="Unit"
                     variant="outlined"
-                    value={input.quantity ? input.quantity : ""}
-                    onChange={(event) => handleFormChange(index, event)}
+                    value={input.unit || ""}
                   />
                 </Grid>
                 <Grid item xs={12} sm={3}>
                   <CustomTextField
                     fullWidth
-                    name="unit"
+                    name="quantity"
                     size="small"
-                    label="Unit"
+                    label="Quantity"
                     variant="outlined"
-                    value={input.unit ? input.unit : ""}
+                    value={input.quantity || ""}
+                    onChange={(event) => handleFormChange(index, event)}
                   />
                 </Grid>
-                <Grid item xs={12} sm={3} alignContent="right">
+
+                <Grid item xs={12} sm={1} alignContent="right">
                   {index !== 0 && (
                     <Button
                       disabled={index === 0}

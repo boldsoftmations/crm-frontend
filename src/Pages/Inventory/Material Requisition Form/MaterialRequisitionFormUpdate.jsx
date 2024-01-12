@@ -199,13 +199,13 @@ export const MaterialRequisitionFormUpdate = (props) => {
           {products.map((input, index) => {
             return (
               <>
-                <Grid key={index} item xs={12} sm={3}>
+                <Grid key={index} item xs={12} sm={4}>
                   <CustomAutocomplete
                     name="product"
                     size="small"
                     disablePortal
                     id="combo-box-demo"
-                    value={input.product ? input.product : ""}
+                    value={input.product || ""}
                     onChange={(event, value) =>
                       handleAutocompleteChange(index, event, value)
                     }
@@ -224,7 +224,7 @@ export const MaterialRequisitionFormUpdate = (props) => {
                     size="small"
                     label="Unit"
                     variant="outlined"
-                    value={input.unit ? input.unit : ""}
+                    value={input.unit || ""}
                   />
                 </Grid>
                 <Grid item xs={12} sm={3}>
@@ -234,12 +234,12 @@ export const MaterialRequisitionFormUpdate = (props) => {
                     size="small"
                     label="Quantity"
                     variant="outlined"
-                    value={input.quantity ? input.quantity : ""}
+                    value={input.quantity || ""}
                     onChange={(event) => handleFormChange(index, event)}
                   />
                 </Grid>
 
-                <Grid item xs={12} sm={3} alignContent="right">
+                <Grid item xs={12} sm={1} alignContent="right">
                   <Button
                     onClick={addFields}
                     variant="contained"

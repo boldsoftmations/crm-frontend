@@ -280,7 +280,16 @@ export const BillofMaterialsView = () => {
                   Bill of Materials
                 </h3>
               </Grid>
-              <Grid item xs={12} sm={3}></Grid>
+              <Grid item xs={12} sm={3}>
+                <Button
+                  onClick={() => setOpenPopup2(true)}
+                  variant="contained"
+                  color="success"
+                  // startIcon={<AddIcon />}
+                >
+                  Add
+                </Button>
+              </Grid>
             </Grid>
           </Box>
           <TableContainer

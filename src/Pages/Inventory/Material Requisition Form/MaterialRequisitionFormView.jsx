@@ -256,7 +256,19 @@ export const MaterialRequisitionFormView = () => {
                   Material Requisition Form
                 </h3>
               </Grid>
-              <Grid item xs={12} sm={3}></Grid>
+              <Grid item xs={12} sm={3}>
+                {(users.groups.includes("Production") ||
+                  users.groups.includes("Production Delhi")) && (
+                  <Button
+                    onClick={() => setOpenPopup2(true)}
+                    variant="contained"
+                    color="success"
+                    // startIcon={<AddIcon />}
+                  >
+                    Add
+                  </Button>
+                )}
+              </Grid>
             </Grid>
           </Box>
           <TableContainer
