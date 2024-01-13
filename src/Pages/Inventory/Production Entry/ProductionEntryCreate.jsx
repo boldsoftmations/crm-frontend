@@ -65,10 +65,11 @@ export const ProductionEntryCreate = (props) => {
     try {
       setOpen(true);
       const response = await InventoryServices.getAllBillofMaterialsData(
+        "all",
         "true",
         value
       );
-      setSelectedProduct(response.data.results);
+      setSelectedProduct(response.data);
       setOpen(false);
     } catch (err) {
       setOpen(false);
