@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     height: 30,
   },
   title: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "bold",
     // textAlign: "center",
     flex: 1,
@@ -246,6 +246,15 @@ export const GRNPDFDownload = ({ grnRegisterPDFData }) => {
             </View>
           </View>
         </View>
+        <Text
+          style={{
+            marginTop: "10px",
+            fontSize: 12,
+            textAlign: "right",
+          }}
+        >
+          GIPL/STR/R/03
+        </Text>
       </Page>
     </Document>
   );
