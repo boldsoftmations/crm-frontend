@@ -90,6 +90,19 @@ export const GRNRegisterView = () => {
     }
   };
 
+  const fetchGRNData = async (data) => {
+    try {
+      setOpen(true);
+
+      const response = await InventoryServices.getGRNDataById(data.grn_no);
+      handlePrint(response.data);
+    } catch (error) {
+      console.error("Error fetching GRN data", error);
+    } finally {
+      setOpen(false);
+    }
+  };
+
   const handlePrint = async (data) => {
     try {
       setOpen(true);
@@ -109,7 +122,7 @@ export const GRNRegisterView = () => {
       // create a temporary link element to trigger the download
       const link = document.createElement("a");
       link.href = URL.createObjectURL(pdfData);
-      link.download = `${data.vendor}- ${data.invoice_no}.pdf`;
+      link.download = `${data.vendor} - ${data.grn_no}.pdf`;
       document.body.appendChild(link);
 
       // trigger the download
@@ -132,14 +145,14 @@ export const GRNRegisterView = () => {
 
   useEffect(() => {
     getAllGRNRegisterDetails(currentPage);
-  }, [currentPage, selectedYearMonth, getAllGRNRegisterDetails]);
+  }, [currentPage, getAllGRNRegisterDetails]);
 
   const getAllGRNRegisterDetails = useCallback(
-    async (page) => {
+    async (page, filter = selectedYearMonth) => {
       try {
         setOpen(true);
         const response = await InventoryServices.getAllGRNRegisterDetails(
-          selectedYearMonth,
+          filter,
           page
         );
         setGRNRegisterData(response.data.results);
@@ -164,6 +177,7 @@ export const GRNRegisterView = () => {
   };
 
   const Tableheaders = [
+    "Grn ID",
     "Date",
     "Vendor",
     "Invoce No",
@@ -187,7 +201,11 @@ export const GRNRegisterView = () => {
                 type="month"
                 label="Filter By Month and Year"
                 value={selectedYearMonth}
-                onChange={(e) => setSelectedYearMonth(e.target.value)}
+                onChange={(e) => {
+                  setCurrentPage(0);
+                  setSelectedYearMonth(e.target.value);
+                  getAllGRNRegisterDetails(0, e.target.value);
+                }}
                 fullWidth
               />
             </Grid>
@@ -253,6 +271,7 @@ export const GRNRegisterView = () => {
             <TableBody>
               {grnRegisterData.map((row, index) => (
                 <StyledTableRow key={index}>
+                  <StyledTableCell align="center">{row.grn_no}</StyledTableCell>
                   <StyledTableCell align="center">
                     {row.invoice_date}
                   </StyledTableCell>
@@ -278,7 +297,7 @@ export const GRNRegisterView = () => {
                   <StyledTableCell align="center">
                     <Button
                       onClick={() => {
-                        handlePrint(row);
+                        fetchGRNData(row);
                       }}
                     >
                       Download
