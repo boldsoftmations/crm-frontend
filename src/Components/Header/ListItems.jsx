@@ -733,19 +733,7 @@ export const ListItems = (props) => {
                   primary="Purchase Order Book"
                 />
               </ListItem>
-              {/* <ListItem
-                button
-                component={RouterLink}
-                to="/inventory/view-packing-list"
-                style={{ width: 300 }}
-              >
-                <ListItemText
-                  component={Button}
-                  onClick={() => setOpen(false)}
-                  inset
-                  primary="Pending GRN"
-                />
-              </ListItem> */}
+
               <ListItem
                 button
                 component={RouterLink}
@@ -926,6 +914,19 @@ export const ListItems = (props) => {
                   primary="Pending GRN"
                 />
               </ListItem>
+              {/* <ListItem
+                button
+                component={RouterLink}
+                to="/inventory/view-safety-stock"
+                style={{ width: 300 }}
+              >
+                <ListItemText
+                  component={Button}
+                  onClick={() => setOpen(false)}
+                  inset
+                  primary="Safety Stock Level"
+                />
+              </ListItem> */}
               <ListItem
                 button
                 component={RouterLink}
@@ -1411,11 +1412,24 @@ export const ListItems = (props) => {
                       primary="PI Wise Order Book"
                     />
                   </ListItem>
+                  {/* <ListItem
+                    button
+                    component={RouterLink}
+                    to="/inventory/view-safety-stock"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Safety Stock Level"
+                    />
+                  </ListItem> */}
                 </List>
               </Collapse>
 
               {/* Tasks */}
-              <ListItem
+              {/* <ListItem
                 button
                 component={RouterLink}
                 to="/task/view-task"
@@ -1426,7 +1440,7 @@ export const ListItems = (props) => {
                   <AssignmentTurnedInIcon />
                 </ListItemIcon>
                 <ListItemText primary="Task" />
-              </ListItem>
+              </ListItem> */}
             </>
           )}
 
@@ -1907,6 +1921,19 @@ export const ListItems = (props) => {
                       primary="GRN Register"
                     />
                   </ListItem>
+                  {/* <ListItem
+                    button
+                    component={RouterLink}
+                    to="/inventory/view-safety-stock"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Safety Stock Level"
+                    />
+                  </ListItem> */}
                   <ListItem
                     button
                     component={RouterLink}
@@ -1984,51 +2011,6 @@ export const ListItems = (props) => {
           {/* stores */}
           {userData.groups.includes("Stores") && (
             <>
-              {/* Purchase */}
-              <ListItem
-                button
-                onClick={() => setExpandPurchase(!expandPurchase)}
-                style={{ width: 300 }}
-              >
-                <ListItemIcon>
-                  <ShoppingCartIcon />
-                </ListItemIcon>
-                <ListItemText primary="Purchase" />
-                {expandPurchase ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-              </ListItem>
-              <Collapse in={expandPurchase} timeout="auto" unmountOnExit>
-                <Divider />
-                <List component="div" disablePadding>
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/inventory/view-packing-list"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Pending GRN"
-                    />
-                  </ListItem>
-
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/inventory/view-grn"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Purchase Invoice"
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
-
               {/* Production */}
               <ListItem
                 button
@@ -2104,6 +2086,19 @@ export const ListItems = (props) => {
                   <ListItem
                     button
                     component={RouterLink}
+                    to="/inventory/view-packing-list"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Pending GRN"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
                     to="/inventory/view-grn-register"
                     style={{ width: 300 }}
                   >
@@ -2112,6 +2107,19 @@ export const ListItems = (props) => {
                       onClick={() => setOpen(false)}
                       inset
                       primary="GRN Register"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/inventory/view-safety-stock"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Safety Stock Level"
                     />
                   </ListItem>
                   <ListItem
@@ -2566,6 +2574,19 @@ export const ListItems = (props) => {
                       onClick={() => setOpen(false)}
                       inset
                       primary="Production Inventory (Cons)"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/inventory/view-stores-inventory"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Stores Inventory"
                     />
                   </ListItem>
                 </List>
@@ -5248,33 +5269,6 @@ export const ListItems = (props) => {
               <Collapse in={expandPurchase} timeout="auto" unmountOnExit>
                 <Divider />
                 <List component="div" disablePadding>
-                  {/* <ListItem
-                    button
-                    component={RouterLink}
-                    to="/inventory/view-purchase-order"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="Purchase Order Book"
-                    />
-                  </ListItem> */}
-
-                  <ListItem
-                    button
-                    component={RouterLink}
-                    to="/inventory/view-grn-register"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="GRN Register"
-                    />
-                  </ListItem>
                   <ListItem
                     button
                     component={RouterLink}
@@ -6064,19 +6058,6 @@ export const ListItems = (props) => {
                   <ListItem
                     button
                     component={RouterLink}
-                    to="/inventory/view-grn-register"
-                    style={{ width: 300 }}
-                  >
-                    <ListItemText
-                      component={Button}
-                      onClick={() => setOpen(false)}
-                      inset
-                      primary="GRN Register"
-                    />
-                  </ListItem>
-                  <ListItem
-                    button
-                    component={RouterLink}
                     to="/inventory/view-grn"
                     style={{ width: 300 }}
                   >
@@ -6212,6 +6193,19 @@ export const ListItems = (props) => {
                       onClick={() => setOpen(false)}
                       inset
                       primary="Pending GRN"
+                    />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/inventory/view-grn-register"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="GRN Register"
                     />
                   </ListItem>
                   <ListItem
