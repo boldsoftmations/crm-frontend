@@ -216,16 +216,16 @@ export const StoresInventoryView = () => {
               </h3>
             </Grid>
             <Grid item xs={12} sm={1}>
-              {userData.groups.includes("Accounts") ||
-                ("Prodction" && (
-                  <Button
-                    onClick={() => setOpenPopup(true)}
-                    variant="contained"
-                    color="success"
-                  >
-                    Add
-                  </Button>
-                ))}
+              {(userData.groups.includes("Accounts") ||
+                userData.groups.includes("Prodction")) && (
+                <Button
+                  onClick={() => setOpenPopup(true)}
+                  variant="contained"
+                  color="success"
+                >
+                  Add
+                </Button>
+              )}
             </Grid>
           </Grid>
         </Box>
