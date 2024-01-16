@@ -52,6 +52,8 @@ export const SalesInvoiceCreate = (props) => {
     setTotalAmount(updatedTotalAmount);
   };
 
+  const currentDate = new Date().toISOString().split("T")[0];
+
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setInputValue({ ...inputValue, [name]: value });
@@ -451,9 +453,10 @@ export const SalesInvoiceCreate = (props) => {
               value={
                 inputValue.generation_date
                   ? inputValue.generation_date
-                  : new Date().toISOString().split("T")[0] // Set current date if not provided
+                  : currentDate
               }
               onChange={handleInputChange}
+              inputProps={{ max: currentDate }}
             />
           </Grid>
           <Grid item xs={12}>
