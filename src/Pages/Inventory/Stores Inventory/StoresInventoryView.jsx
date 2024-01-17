@@ -217,7 +217,7 @@ export const StoresInventoryView = () => {
             </Grid>
             <Grid item xs={12} sm={1}>
               {(userData.groups.includes("Accounts") ||
-                userData.groups.includes("Prodction")) && (
+                userData.groups.includes("Production")) && (
                 <Button
                   onClick={() => setOpenPopup(true)}
                   variant="contained"
