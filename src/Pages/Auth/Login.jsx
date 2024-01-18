@@ -25,7 +25,6 @@ import {
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useDispatch } from "react-redux";
-import axios from "axios";
 import { setUserData } from "./../../services/TokenService";
 import { CustomButton } from "../../Components/CustomButton";
 import { ErrorMessage } from "./../../Components/ErrorMessage/ErrorMessage";
@@ -91,7 +90,7 @@ export const Login = () => {
         email: user.email,
         password: user.password,
       };
-      const response = await axios.post(LOGIN_URL, req);
+      const response = await UserProfileService.login(req);
       if (response.data.token.access) {
         setUserData(response.data.token);
         dispatch(loginsucces(response.data));
@@ -224,6 +223,3 @@ export const Login = () => {
     </ThemeProvider>
   );
 };
-
-const LOGIN_URL = `${process.env.REACT_APP_DEPLOY_BACKEND_URL}/api/user/login/`;
-// const LOGIN_URL = `${process.env.REACT_APP_TESTING_BACKEND_URL}/api/user/login/`;

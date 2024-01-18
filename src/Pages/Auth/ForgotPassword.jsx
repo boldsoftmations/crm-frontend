@@ -8,18 +8,14 @@ import {
   Box,
   Grid,
   Button,
-  TextField,
-  Backdrop,
-  CircularProgress,
-  Modal,
-  Typography,
 } from "@mui/material";
 import LockResetIcon from "@mui/icons-material/LockReset";
-import axios from "axios";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import { Link } from "react-router-dom";
-const RESET_URL = `${process.env.REACT_APP_DEPLOY_BACKEND_URL}/api/user/send-reset-password-email/`;
-// const RESET_URL = `${process.env.REACT_APP_TESTING_BACKEND_URL}/api/user/send-reset-password-email/`;
+import CustomTextField from "../../Components/CustomTextField";
+import { CustomLoader } from "../../Components/CustomLoader";
+import { Popup } from "../../Components/Popup";
+import UserProfileService from "../../services/UserProfileService";
 
 const style = {
   position: "absolute",
@@ -49,7 +45,7 @@ export const ForgotPassword = () => {
         const req = {
           email: email,
         };
-        const response = await axios.post(RESET_URL, req);
+        const response = await UserProfileService.sendResetPasswordEmail(req);
         setMessage(response.data.message);
         setModalOpen(true);
         setEmail("");
@@ -63,51 +59,36 @@ export const ForgotPassword = () => {
 
   return (
     <ThemeProvider className="main" theme={theme}>
-      <div>
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={open}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </div>
-      <Modal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
+      <CustomLoader open={open} />
+      <Popup
+        openPopup={modalOpen}
+        setOpenPopup={setModalOpen}
+        title="Verify Your Email"
+        maxWidth="md"
       >
-        <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Verify Your Email
-          </Typography>
-          <Typography
-            id="modal-modal-description"
-            sx={{ mb: 2, mt: 2, color: "#3980F4" }}
-          >
-            {message}
-          </Typography>
-        </Box>
-      </Modal>
+        {message}
+      </Popup>
       <Container className="Auth-form-container" component="main" maxWidth="xs">
-       
         <Box
           className="Auth-form"
-          sx={{
-            // display: "flex",
-            // flexDirection: "column",
-            // alignItems: "center",
-          }}
+          sx={
+            {
+              // display: "flex",
+              // flexDirection: "column",
+              // alignItems: "center",
+            }
+          }
         >
-          <Box sx={{ ml: 8 }} display={'flex'} justifyContent="flex-start">
-          <Link to={"/"}>
-          <KeyboardBackspaceIcon />Back To Login
-          </Link>
+          <Box sx={{ ml: 8 }} display={"flex"} justifyContent="flex-start">
+            <Link to={"/"}>
+              <KeyboardBackspaceIcon />
+              Back To Login
+            </Link>
           </Box>
-          <Box display={'flex'} justifyContent="center">
-          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-            <LockResetIcon />
-          </Avatar>
+          <Box display={"flex"} justifyContent="center">
+            <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+              <LockResetIcon />
+            </Avatar>
           </Box>
           <h3 className="Auth-form-title">Forgot Password</h3>
 
@@ -120,7 +101,7 @@ export const ForgotPassword = () => {
           >
             <Grid container spacing={2}>
               <Grid item xs={12}>
-                <TextField
+                <CustomTextField
                   fullWidth
                   size="small"
                   label="Email"
@@ -145,4 +126,3 @@ export const ForgotPassword = () => {
     </ThemeProvider>
   );
 };
-

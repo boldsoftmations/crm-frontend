@@ -8,17 +8,15 @@ import {
   Box,
   Grid,
   Button,
-  TextField,
-  Backdrop,
-  CircularProgress,
   Modal,
   Typography,
 } from "@mui/material";
 import LockResetIcon from "@mui/icons-material/LockReset";
-import axios from "axios";
 import { Link, useParams } from "react-router-dom";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-const RESET_URL = `${process.env.REACT_APP_DEPLOY_BACKEND_URL}/api/user/reset-password`;
+import CustomTextField from "../../Components/CustomTextField";
+import { CustomLoader } from "../../Components/CustomLoader";
+import UserProfileService from "../../services/UserProfileService";
 
 const style = {
   position: "absolute",
@@ -53,7 +51,7 @@ export const ChangePassword = () => {
         password: password,
         password2: password2,
       };
-      const response = await axios.post(`${RESET_URL}/${id}/${token}/`, req);
+      const response = await UserProfileService.ChangePassword(id, token, req);
       setMessage(response.data.message);
       setModalOpen(true);
 
@@ -66,14 +64,7 @@ export const ChangePassword = () => {
 
   return (
     <ThemeProvider className="main" theme={theme}>
-      <div>
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={open}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </div>
+      <CustomLoader open={open} />
       <Modal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
@@ -120,7 +111,7 @@ export const ChangePassword = () => {
           >
             <Grid container spacing={2}>
               <Grid item xs={12}>
-                <TextField
+                <CustomTextField
                   fullWidth
                   size="small"
                   label="Password"
@@ -132,7 +123,7 @@ export const ChangePassword = () => {
                 />
               </Grid>
               <Grid item xs={12}>
-                <TextField
+                <CustomTextField
                   fullWidth
                   size="small"
                   label="Confirm Password"
