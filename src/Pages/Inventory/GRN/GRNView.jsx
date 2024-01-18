@@ -16,6 +16,10 @@ import {
   Collapse,
   Typography,
   IconButton,
+  InputLabel,
+  FormControl,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
@@ -27,6 +31,7 @@ import { GRNUpdate } from "./GRNUpdate";
 import { useSelector } from "react-redux";
 import { PurchaseInvoiceCreate } from "../Purchase Invoice/PurchaseInvoiceCreate";
 import CustomTextField from "../../../Components/CustomTextField";
+import ClearIcon from "@mui/icons-material/Clear";
 
 export const GRNView = () => {
   const [openPopupUpdate, setOpenPopupUpdate] = useState(false);
@@ -38,6 +43,7 @@ export const GRNView = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [idForEdit, setIDForEdit] = useState();
   const [recordForEdit, setRecordForEdit] = useState();
+  const [acceptedFilter, setAcceptedFilter] = useState(false);
   const userData = useSelector((state) => state.auth.profile);
 
   useEffect(() => {
@@ -45,10 +51,14 @@ export const GRNView = () => {
   }, [currentPage, getAllGRNDetails]);
 
   const getAllGRNDetails = useCallback(
-    async (page, search = searchQuery) => {
+    async (page, filter = acceptedFilter, search = searchQuery) => {
       try {
         setOpen(true);
-        const response = await InventoryServices.getAllGRNData(page, search);
+        const response = await InventoryServices.getAllGRNData(
+          page,
+          filter,
+          search
+        );
         setGRNData(response.data.results);
         setPageCount(Math.ceil(response.data.count / 25));
         setOpen(false);
@@ -57,7 +67,7 @@ export const GRNView = () => {
         console.error("error", error);
       }
     },
-    [searchQuery] // Depend on acceptedFilter directly
+    [acceptedFilter, searchQuery]
   );
 
   const handleSearchChange = (event) => {
@@ -66,6 +76,7 @@ export const GRNView = () => {
 
   const handlePageClick = (event, value) => {
     setCurrentPage(value);
+    getAllGRNDetails(value);
   };
 
   const openInPopup = (item) => {
@@ -77,6 +88,14 @@ export const GRNView = () => {
     setRecordForEdit(item);
     setOpenPopupCreatePI(true);
   };
+
+  const handleFilterChange = (event) => {
+    const { value } = event.target;
+    setAcceptedFilter(value);
+    setCurrentPage(0);
+    getAllGRNDetails(0, value, searchQuery);
+  };
+
   return (
     <>
       <CustomLoader open={open} />
@@ -85,6 +104,44 @@ export const GRNView = () => {
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
           <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
             <Grid container spacing={2} alignItems="center">
+              <Grid item xs={12} sm={3}>
+                <FormControl sx={{ minWidth: "100px" }} fullWidth size="small">
+                  <InputLabel id="demo-simple-select-label">
+                    Filter By Accepted
+                  </InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    name="status"
+                    label="Filter By Accepted"
+                    value={acceptedFilter}
+                    onChange={handleFilterChange}
+                  >
+                    {AcceptedOption.map((option, i) => (
+                      <MenuItem key={i} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {acceptedFilter && (
+                    <IconButton
+                      size="small"
+                      onClick={() => {
+                        setAcceptedFilter(false);
+                        getAllGRNDetails(1, false, searchQuery);
+                      }}
+                      sx={{
+                        position: "absolute",
+                        right: 8,
+                        top: "50%",
+                        transform: "translateY(-50%)",
+                      }}
+                    >
+                      <ClearIcon />
+                    </IconButton>
+                  )}
+                </FormControl>
+              </Grid>
               <Grid item xs={12} sm={3}>
                 <CustomTextField
                   size="small"
@@ -99,7 +156,10 @@ export const GRNView = () => {
                 <Button
                   variant="contained"
                   color="primary"
-                  onClick={() => getAllGRNDetails(currentPage, searchQuery)} // Call `handleSearch` when the button is clicked
+                  onClick={() => {
+                    setCurrentPage(0);
+                    getAllGRNDetails(0, acceptedFilter, searchQuery);
+                  }}
                 >
                   Search
                 </Button>
@@ -110,7 +170,7 @@ export const GRNView = () => {
                   color="secondary"
                   onClick={() => {
                     setSearchQuery("");
-                    getAllGRNDetails(1, "");
+                    getAllGRNDetails(0, acceptedFilter, "");
                   }}
                 >
                   Reset
@@ -305,6 +365,11 @@ function Row(props) {
     </>
   );
 }
+
+const AcceptedOption = [
+  { label: "Accepted", value: "true" },
+  { label: "Not Accepted", value: "false" },
+];
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {

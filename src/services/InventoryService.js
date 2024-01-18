@@ -139,12 +139,16 @@ const updatePackingListData = (id, data) => {
 };
 
 // grn List Api
-const getAllGRNData = (page, searchValue) => {
+const getAllGRNData = (page, acceptedToFilter, searchValue) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
 
   if (page) {
     params.append("page", page);
+  }
+
+  if (acceptedToFilter !== undefined) {
+    params.append("accepted", acceptedToFilter);
   }
 
   if (searchValue) {
@@ -187,16 +191,16 @@ const getAllGRNRegisterDetails = (yearMonthFilter, page) => {
 };
 
 // Purchase Invoice List Api
-const getAllPurchaseInvoiceData = (page, yearMonthFilter, searchValue) => {
+const getAllPurchaseInvoiceData = (yearMonthFilter, page, searchValue) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
 
-  if (page) {
-    params.append("page", page);
-  }
-
   if (yearMonthFilter) {
     params.append("year_month", yearMonthFilter);
+  }
+
+  if (page) {
+    params.append("page", page);
   }
 
   if (searchValue) {
@@ -629,6 +633,19 @@ const updateCurrencyData = (id, data) => {
   return CustomAxios.patch(`/api/inventory/currency/${id}/`, data);
 };
 
+//Safety Stock API
+
+const getAllSafetyStockData = () => {
+  return CustomAxios.get(`/api/inventory/safety-stock/`);
+};
+
+const createSafetyStockData = (data) => {
+  return CustomAxios.post(`/api/inventory/safety-stock/`, data);
+};
+
+const updateSafetyStockData = (id, data) => {
+  return CustomAxios.patch(`/api/inventory/safety-stock/${id}/`, data);
+};
 const InventoryServices = {
   getAllVendorData,
   createVendorData,
@@ -717,6 +734,9 @@ const InventoryServices = {
   getCurrencyDataById,
   updateCurrencyData,
   getAllStoresInventoryDetails,
+  getAllSafetyStockData,
+  createSafetyStockData,
+  updateSafetyStockData,
 };
 
 export default InventoryServices;
