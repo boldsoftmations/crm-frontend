@@ -1,9 +1,38 @@
 import CustomAxios from "./api";
 
-const getAllLeads = (stage, lead_id) => {
-  return CustomAxios.get(
-    `/api/lead/list-lead/?funnel=${stage}&ordering=${lead_id}`
-  );
+const getAllLeads = (
+  page,
+  funnelVlue,
+  orderingValue,
+  filter,
+  filterValue,
+  searchValue
+) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
+
+  if (page) {
+    params.append("page", page);
+  }
+
+  if (funnelVlue) {
+    params.append("funnel", funnelVlue);
+  }
+
+  if (orderingValue) {
+    params.append("ordering", orderingValue);
+  }
+
+  if (filter && filterValue) {
+    params.append(filter, filterValue);
+  }
+
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+
+  // Sending a GET request with query parameters
+  return CustomAxios.get(`api/lead/list-lead/?${params.toString()}`);
 };
 
 const getAllSearchWithFilteredLeads = (
@@ -224,6 +253,16 @@ const getIndiaMartLeads = (data) => {
   return CustomAxios.get(`/api/lead/indiamart-leads-list/?year_month=${data}`);
 };
 
+const getLeadForecast = (data) => {
+  return CustomAxios.get(`/api/forecast/lead-forecast/`, data);
+};
+const createLeadForecast = (data) => {
+  return CustomAxios.post("/api/forecast/lead-forecast/", data);
+};
+const updateLeadForecast = (id, data) => {
+  return CustomAxios.patch(`/api/forecast/lead-forecast/${id}/`, data);
+};
+
 const LeadServices = {
   getAllLeads,
   getAllAssignedUser,
@@ -259,6 +298,9 @@ const LeadServices = {
   AssignMultipleLeads,
   getAllFollowup,
   getIndiaMartLeads,
+  createLeadForecast,
+  getLeadForecast,
+  updateLeadForecast,
 };
 
 export default LeadServices;
