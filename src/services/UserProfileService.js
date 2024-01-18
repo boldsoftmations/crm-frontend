@@ -1,5 +1,24 @@
 import CustomAxios from "./api";
 
+const login = (data) => {
+  return CustomAxios.post("api/user/login/", data);
+};
+
+const register = (data) => {
+  return CustomAxios.post("api/user/register/", data);
+};
+
+const sendResetPasswordEmail = (data) => {
+  return CustomAxios.post("api/user/send-reset-password-email/", data);
+};
+
+const ChangePassword = (id, token, newPasswordDetails) => {
+  return CustomAxios.post(
+    `api/user/reset-password/${id}/${token}/`,
+    newPasswordDetails
+  );
+};
+
 const getProfile = () => {
   return CustomAxios.get(`/api/user/profile/`);
 };
@@ -135,7 +154,11 @@ const updateDailySaleReviewData = (id, data) => {
 };
 
 const UserProfileService = {
+  login,
   getProfile,
+  register,
+  sendResetPasswordEmail,
+  ChangePassword,
   getAllUserProfileData,
   createUserProfileData,
   updateUserProfileData,

@@ -7,18 +7,18 @@ import {
   Box,
   Grid,
   Button,
-  TextField,
   Paper,
   Avatar,
   Modal,
   Typography,
 } from "@mui/material";
 import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
-import axios from "axios";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { CustomButton } from "./../../Components/CustomButton";
 import { CustomLoader } from "../../Components/CustomLoader";
+import CustomTextField from "../../Components/CustomTextField";
+import UserProfileService from "../../services/UserProfileService";
 
 export const SignUp = (props) => {
   const { handleToggle } = props;
@@ -72,7 +72,7 @@ export const SignUp = (props) => {
         };
         setOpen(true);
 
-        const res = await axios.post(SIGNUP_URL, req);
+        const res = await UserProfileService.register(req);
         console.log("res :>> ", res);
         setMessage(res.data.message);
         setModalOpen(true);
@@ -131,7 +131,7 @@ export const SignUp = (props) => {
           >
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
-                <TextField
+                <CustomTextField
                   required
                   name="first_name"
                   size="small"
@@ -149,7 +149,7 @@ export const SignUp = (props) => {
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <TextField
+                <CustomTextField
                   required
                   name="last_name"
                   size="small"
@@ -166,7 +166,7 @@ export const SignUp = (props) => {
                 />
               </Grid>
               <Grid item xs={12}>
-                <TextField
+                <CustomTextField
                   required
                   name="email"
                   fullWidth
@@ -180,7 +180,7 @@ export const SignUp = (props) => {
                 />
               </Grid>
               <Grid item xs={12}>
-                <TextField
+                <CustomTextField
                   required
                   name="contact"
                   fullWidth
@@ -198,7 +198,7 @@ export const SignUp = (props) => {
               </Grid>
 
               <Grid item xs={12} sm={6}>
-                <TextField
+                <CustomTextField
                   required
                   name="password"
                   size="small"
@@ -214,7 +214,7 @@ export const SignUp = (props) => {
                 />
               </Grid>
               <Grid rowSpacing={0.5} item xs={12} sm={6}>
-                <TextField
+                <CustomTextField
                   required
                   name="password2"
                   size="small"
@@ -276,5 +276,3 @@ const style = {
 
 const phoneRegExp =
   /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
-const SIGNUP_URL = `${process.env.REACT_APP_DEPLOY_BACKEND_URL}/api/user/register/`;
-// const SIGNUP_URL = `${process.env.REACT_APP_TESTING_BACKEND_URL}/api/user/register/`;
