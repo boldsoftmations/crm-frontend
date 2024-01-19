@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Grid,
   Button,
@@ -9,6 +9,8 @@ import {
   Select,
   MenuItem,
   IconButton,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import PushPinIcon from "@mui/icons-material/PushPin";
 import PushPinOutlinedIcon from "@mui/icons-material/PushPinOutlined";
@@ -27,12 +29,10 @@ import "../CommonStyle.css";
 import { UpdateLeads } from "./UpdateLeads";
 import { Popup } from "../../Components/Popup";
 import ProductService from "../../services/ProductService";
-import { ErrorMessage } from "../../Components/ErrorMessage/ErrorMessage";
 import { CustomPagination } from "../../Components/CustomPagination";
 import { CustomLoader } from "../../Components/CustomLoader";
 import { BulkLeadAssign } from "./BulkLeadAssign";
 import { useSelector } from "react-redux";
-import { CustomSearchWithButton } from "../../Components/CustomSearchWithButton";
 import { LeadActivityCreate } from "../FollowUp/LeadActivityCreate";
 import { CreateLeadsProformaInvoice } from "../Invoice/ProformaInvoice/CreateLeadsProformaInvoice";
 import { Helmet } from "react-helmet";
@@ -48,9 +48,7 @@ export const HotLeads = () => {
   const [filterQuery, setFilterQuery] = useState("");
   const [filterSelectedQuery, setFilterSelectedQuery] = useState(null);
   const [searchQuery, setSearchQuery] = useState(null);
-  const errRef = useRef();
-  const [errMsg, setErrMsg] = useState("");
-  const [pageCount, setpageCount] = useState(0);
+  const [pageCount, setPageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
@@ -63,6 +61,9 @@ export const HotLeads = () => {
   const [referenceData, setReferenceData] = useState([]);
   const [descriptionMenuData, setDescriptionMenuData] = useState([]);
   const [openModal, setOpenModal] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [errorMessages, setErrorMessages] = useState([]);
+  const [currentErrorIndex, setCurrentErrorIndex] = useState(0);
   const tokenData = useSelector((state) => state.auth);
   const users = tokenData.profile;
   const [isPrinting, setIsPrinting] = useState(false);
@@ -96,11 +97,6 @@ export const HotLeads = () => {
     };
   }, []);
 
-  const handleInputChange = () => {
-    setSearchQuery(searchQuery);
-    getSearchData(filterQuery, filterSelectedQuery, searchQuery);
-  };
-
   const openInPopup = (item) => {
     setLeadsByID(item.lead_id);
     setOpenPopup(true);
@@ -126,10 +122,6 @@ export const HotLeads = () => {
     setOpenModalForecast(true);
   };
 
-  const getResetSearchData = () => {
-    setSearchQuery("");
-    getSearchData(filterQuery, filterSelectedQuery, null); // Pass an empty string as the second parameter
-  };
   const FetchData = async (value) => {
     try {
       setOpen(true);
@@ -150,7 +142,8 @@ export const HotLeads = () => {
   };
   const renderAutocomplete = (label, options, onChange) => (
     <CustomAutocomplete
-      sx={{ minWidth: "200px", marginLeft: "1em" }}
+      fullWidth
+      sx={{ marginLeft: "1em", marginRight: "2em" }}
       size="small"
       onChange={(event, value) => onChange(value)}
       options={options}
@@ -191,178 +184,60 @@ export const HotLeads = () => {
     }
   };
 
+  const extractErrorMessages = (data) => {
+    let messages = [];
+    if (data.errors) {
+      for (const [key, value] of Object.entries(data.errors)) {
+        value.forEach((msg) => {
+          messages.push(`${key}: ${msg}`);
+        });
+      }
+    }
+    return messages;
+  };
+
   useEffect(() => {
-    getleads();
-  }, []);
+    getleads(currentPage);
+  }, [currentPage, getleads]);
 
-  const getleads = async () => {
-    try {
-      setOpen(true);
-
-      const filterValue = filterSelectedQuery || null;
-      const searchValue = searchQuery || null;
-      const isFiltered =
-        filterQuery !== "" && filterValue !== null && searchValue !== null;
-
-      let response;
-      if (isFiltered) {
-        response = await LeadServices.getAllSearchWithFilteredLeads(
+  const getleads = useCallback(
+    async (
+      page,
+      filter = filterQuery,
+      filterValue = filterSelectedQuery,
+      search = searchQuery
+    ) => {
+      try {
+        setOpen(true);
+        const response = await LeadServices.getAllLeads(
+          page,
           "hot",
           "-lead_id",
-          filterQuery,
+          filter,
           filterValue,
-          searchValue
+          search
         );
-      } else if (currentPage) {
-        response = await LeadServices.getFilterPaginateLeads(
-          currentPage,
-          "hot",
-          "-lead_id",
-          filterQuery,
-          filterValue,
-          searchValue
-        );
-      } else {
-        response = await LeadServices.getAllLeads("hot", "-lead_id");
-      }
-
-      if (response) {
         setLeads(response.data.results);
-        setpageCount(Math.ceil(response.data.count / 25));
+        setPageCount(Math.ceil(response.data.count / 25));
+        setOpen(false);
+      } catch (error) {
+        console.log("Hot leads get api", error);
+        const newErrors = extractErrorMessages(error.response.data);
+        setErrorMessages(newErrors);
+        setOpenSnackbar(true);
+      } finally {
+        setOpen(false);
       }
+    },
+    [filterSelectedQuery, searchQuery]
+  );
 
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-
-      if (!err.response) {
-        setErrMsg(
-          "Sorry, You Are Not Allowed to Access This Page. Please contact the admin."
-        );
-      } else if (err.response.status === 400) {
-        setErrMsg(
-          err.response.data.errors.name ||
-            err.response.data.errors.non_field_errors
-        );
-      } else if (err.response.status === 401) {
-        setErrMsg(err.response.data.errors.code);
-      } else {
-        setErrMsg("Server Error");
-      }
-
-      errRef.current.focus();
-    }
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
   };
 
-  const getSearchData = async (
-    filterQuery,
-    filterSelectedQuery,
-    searchQuery
-  ) => {
-    try {
-      setOpen(true);
-
-      let response;
-      if (filterQuery && filterSelectedQuery !== null) {
-        if (searchQuery !== null) {
-          response = await LeadServices.getAllSearchWithFilteredLeads(
-            "hot",
-            "-lead_id",
-            filterQuery,
-            filterSelectedQuery,
-            searchQuery
-          );
-        } else {
-          response = await LeadServices.getFilteredLeads(
-            "hot",
-            "-lead_id",
-            filterQuery,
-            filterSelectedQuery
-          );
-        }
-      } else if (searchQuery) {
-        response = await LeadServices.getSearchLeads(
-          "hot",
-          "-lead_id",
-          searchQuery
-        );
-      } else {
-        setFilterQuery("");
-        setFilterSelectedQuery(null);
-        setSearchQuery(null);
-        await getleads();
-      }
-
-      if (response) {
-        setLeads(response.data.results);
-        setpageCount(Math.ceil(response.data.count / 25));
-      }
-
-      setOpen(false);
-    } catch (error) {
-      console.log("error Search leads", error);
-      setOpen(false);
-    }
-  };
-
-  const handlePageClick = async (event, value) => {
-    try {
-      const page = value;
-      setCurrentPage(page);
-      setOpen(true);
-      const filterValue = filterSelectedQuery ? filterSelectedQuery : null;
-      const searchValue = searchQuery ? searchQuery : null;
-      if (filterQuery && filterValue !== null && searchValue !== null) {
-        const response = await LeadServices.getFilterWithSearchPaginateLeads(
-          page,
-          "hot",
-          "-lead_id",
-          filterQuery,
-          filterValue,
-          searchValue
-        );
-
-        setLeads(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      } else if (filterQuery && filterValue) {
-        const response = await LeadServices.getFilterPaginateLeads(
-          page,
-          "hot",
-          "-lead_id",
-          filterQuery,
-          filterValue
-        );
-
-        setLeads(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      } else if (searchValue) {
-        const response = await LeadServices.getSearchPaginateLeads(
-          page,
-          "hot",
-          "-lead_id",
-          searchValue
-        );
-        setLeads(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      } else {
-        const response = await LeadServices.getAllPaginateLeads(
-          page,
-          "hot",
-          "-lead_id"
-        );
-        setLeads(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      }
-
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
+  const handlePageClick = (event, value) => {
+    setCurrentPage(value);
   };
 
   const PriorityColor = leads.map((row) => {
@@ -397,8 +272,28 @@ export const HotLeads = () => {
     "ACTION",
   ];
 
+  const handleCloseSnackbar = useCallback(() => {
+    if (currentErrorIndex < errorMessages.length - 1) {
+      setCurrentErrorIndex((prevIndex) => prevIndex + 1);
+    } else {
+      setOpenSnackbar(false);
+      setCurrentErrorIndex(0); // Reset for any future errors
+    }
+  }, [currentErrorIndex, errorMessages.length]);
+
   return (
     <>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity="error">
+          {errorMessages.join(", ")}{" "}
+          {/* Display all errors as a comma-separated string */}
+        </Alert>
+      </Snackbar>
       <Helmet>
         <style>
           {`
@@ -420,90 +315,154 @@ export const HotLeads = () => {
         <BulkLeadAssign setOpenPopup={setOpenModal} />
       </Popup>
       <Grid item xs={12}>
-        <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
           <Box display="flex" marginBottom="10px">
-            <FormControl fullWidth sx={{ maxWidth: "200px" }} size="small">
-              <InputLabel id="demo-simple-select-label">Fliter By</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                name="values"
-                label="Fliter By"
-                value={filterQuery}
-                onChange={(event) => FetchData(event.target.value)}
-              >
-                {FilterOptions.map((option, i) => (
-                  <MenuItem key={i} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            {filterQuery &&
-              renderAutocomplete(
-                filterQuery === "assigned_to__email"
-                  ? "Assigned To"
-                  : filterQuery === "references__source"
-                  ? "Reference"
-                  : filterQuery === "stage"
-                  ? "Stage"
-                  : filterQuery === "description__name"
-                  ? "Description"
-                  : "",
-                filterQuery === "assigned_to__email"
-                  ? assigned.map((option) => option.email)
-                  : filterQuery === "references__source"
-                  ? referenceData.map((option) => option.source)
-                  : filterQuery === "stage"
-                  ? StageOptions.map((option) => option.value)
-                  : filterQuery === "description__name"
-                  ? descriptionMenuData.map((option) => option.name)
-                  : [],
-                (value) => {
-                  setFilterSelectedQuery(value);
-                  getSearchData(filterQuery, value, searchQuery); // Pass filterQuery and filterSelectedQuery as parameters
-                }
+            <Grid
+              container
+              spacing={2}
+              alignItems="center"
+              justifyContent="flex-start"
+              marginBottom="10px"
+            >
+              {/* Filter By Select */}
+              <Grid item xs={12} sm={6} md={4} lg={3}>
+                <FormControl fullWidth size="small">
+                  <InputLabel id="demo-simple-select-label">
+                    Fliter By
+                  </InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    name="values"
+                    label="Fliter By"
+                    value={filterQuery}
+                    onChange={(event) => FetchData(event.target.value)}
+                  >
+                    {FilterOptions.map((option, i) => (
+                      <MenuItem key={i} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              {filterQuery && (
+                <Grid item xs={12} sm={6} md={4} lg={3}>
+                  {filterQuery &&
+                    renderAutocomplete(
+                      filterQuery === "assigned_to__email"
+                        ? "Assigned To"
+                        : filterQuery === "references__source"
+                        ? "Reference"
+                        : filterQuery === "stage"
+                        ? "Stage"
+                        : filterQuery === "description__name"
+                        ? "Description"
+                        : "",
+                      filterQuery === "assigned_to__email"
+                        ? assigned.map((option) => option.email)
+                        : filterQuery === "references__source"
+                        ? referenceData.map((option) => option.source)
+                        : filterQuery === "stage"
+                        ? StageOptions.map((option) => option.value)
+                        : filterQuery === "description__name"
+                        ? descriptionMenuData.map((option) => option.name)
+                        : [],
+                      (value) => {
+                        setFilterSelectedQuery(value);
+                        setCurrentPage(0);
+                        getleads(0, filterQuery, value, searchQuery); // Pass filterQuery and filterSelectedQuery as parameters
+                      }
+                    )}
+                </Grid>
               )}
 
-            <CustomSearchWithButton
-              filterSelectedQuery={searchQuery}
-              setFilterSelectedQuery={setSearchQuery}
-              handleInputChange={handleInputChange}
-              getResetData={getResetSearchData}
-            />
-
-            {(users.groups.toString() === "Sales Manager" ||
-              users.groups.toString() === "Sales Deputy Manager" ||
-              users.groups.toString() === "Sales Assistant Deputy Manager") && (
-              <Button
-                onClick={() => setOpenModal(true)}
-                variant="contained"
-                sx={{ marginLeft: "1em", marginRight: "1em" }}
-              >
-                Assign Bulk Lead
-              </Button>
-            )}
-            <Button
-              onClick={() => setOpenPopup2(true)}
-              variant="contained"
-              color="success"
-            >
-              Add
-            </Button>
+              <Grid item xs={12} sm={6} md={4} lg={3}>
+                <CustomTextField
+                  size="small"
+                  label="Search"
+                  variant="outlined"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={12} sm={6} md={4} lg={3}>
+                <Button
+                  sx={{ marginLeft: "1em", marginRight: "1em" }}
+                  variant="contained"
+                  color="primary"
+                  onClick={() => {
+                    setCurrentPage(0);
+                    getleads(0, filterQuery, filterSelectedQuery, searchQuery);
+                  }}
+                >
+                  Search
+                </Button>
+                <Button
+                  sx={{ marginRight: "1em" }}
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => {
+                    setSearchQuery("");
+                    getleads(1, filterQuery, filterSelectedQuery, "");
+                  }}
+                >
+                  Reset
+                </Button>
+              </Grid>
+            </Grid>
           </Box>
-          <Box display="flex" alignItems="center" justifyContent="center">
-            <h3
-              style={{
-                marginBottom: "1em",
-                fontSize: "24px",
-                color: "rgb(34, 34, 34)",
-                fontWeight: 800,
-              }}
+          <Box display="flex" marginBottom="10px">
+            <Grid
+              container
+              alignItems="center"
+              justifyContent="center"
+              spacing={2}
             >
-              Hot Leads
-            </h3>
+              {/* Invisible Spacer - Only shows if 'Assign Bulk Lead' is not there */}
+              {users.groups.includes("Sales Manager") ||
+              users.groups.includes("Sales Deputy Manager") ||
+              users.groups.includes("Sales Assistant Deputy Manager") ? null : (
+                <Grid item lg={3}></Grid>
+              )}
+
+              {/* Assign Bulk Lead Button - Conditionally Rendered on the Left */}
+              {(users.groups.includes("Sales Manager") ||
+                users.groups.includes("Sales Deputy Manager") ||
+                users.groups.includes("Sales Assistant Deputy Manager")) && (
+                <Grid item xs={4}>
+                  <Button
+                    onClick={() => setOpenModal(true)}
+                    variant="contained"
+                  >
+                    Assign Bulk Lead
+                  </Button>
+                </Grid>
+              )}
+              <Grid item xs={4} style={{ textAlign: "center" }}>
+                <h3
+                  style={{
+                    fontSize: "24px",
+                    color: "rgb(34, 34, 34)",
+                    fontWeight: 800,
+                  }}
+                >
+                  Hot Leads
+                </h3>
+              </Grid>
+
+              {/* Add Button - Right */}
+              <Grid item xs={4} style={{ textAlign: "right" }}>
+                <Button
+                  onClick={() => setOpenPopup2(true)}
+                  variant="contained"
+                  color="success"
+                >
+                  Add
+                </Button>
+              </Grid>
+            </Grid>
           </Box>
           <TableContainer
             sx={{

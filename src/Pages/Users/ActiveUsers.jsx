@@ -185,18 +185,11 @@ export const ActiveUsers = () => {
   };
 
   // Filter the productionInventoryData based on the search query
-  const filteredData = activeUsersData.filter(
-    (row) =>
-      row.first_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      row.last_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      row.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (typeof row.contact === "string" &&
-        row.contact.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      row.groups.some((group) =>
-        group.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+  const filteredData = activeUsersData.filter((user) =>
+    Object.values(user || {}).some((value) =>
+      String(value).toLowerCase().includes(searchQuery.toLowerCase())
+    )
   );
-
   const Tableheaders = [
     "EMP ID",
     "FirstName",
