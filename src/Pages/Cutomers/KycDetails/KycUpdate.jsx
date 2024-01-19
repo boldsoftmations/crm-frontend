@@ -68,7 +68,7 @@ const KycUpdate = ({
         pincode,
         state,
         type_of_customer,
-        whatsapp_url,
+        whatsapp_group,
       } = kycResponse.data;
       setInputValue({
         website,
@@ -89,7 +89,7 @@ const KycUpdate = ({
         pincode,
         state,
         type_of_customer,
-        whatsapp_url,
+        whatsapp_group,
       });
       // Extract only the required fields for setContactData
       const filteredContacts = contactResponse.data.contacts.map((contact) => ({
@@ -200,7 +200,7 @@ const KycUpdate = ({
         customer_serve_count: inputValue.customer_serve_count || null,
         category: inputValue.category || [],
         main_distribution: inputValue.main_distribution || [],
-        whatsapp_url: inputValue.whatsapp_url || null,
+        whatsapp_group: inputValue.whatsapp_group || null,
       };
       await CustomerServices.updateCompanyData(recordForEdit, req);
       UpdateContactDetails();
@@ -474,16 +474,17 @@ const KycUpdate = ({
               />
             </Grid>
           )}
+
           {inputValue.type_of_customer === "Distribution Customer" && (
             <Grid item xs={12} sm={6}>
               <CustomTextField
                 fullWidth
-                name="whatsapp_url"
+                name="whatsapp_group"
                 size="small"
-                label="Whatsapp URL"
-                value={inputValue.whatsapp_url || ""}
+                label="Whatsapp Group"
+                value={inputValue.whatsapp_group || ""}
                 onChange={(e) =>
-                  handleInputChange("whatsapp_url", e.target.value)
+                  handleInputChange("whatsapp_group", e.target.value)
                 }
               />
             </Grid>
