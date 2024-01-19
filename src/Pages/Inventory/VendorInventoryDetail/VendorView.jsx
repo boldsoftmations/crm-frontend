@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Box, Grid, Paper, Button, Typography } from "@mui/material";
 import { Popup } from "../../../Components/Popup";
 import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getSellerAccountData } from "../../../Redux/Action/Action";
 import InvoiceServices from "../../../services/InvoiceService";
 import { CustomLoader } from "../../../Components/CustomLoader";
@@ -27,6 +27,7 @@ export const VendorView = () => {
   const [pageCount, setPageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
+  const userData = useSelector((state) => state.auth.profile);
 
   const openInPopupUpdate = (item) => {
     const matchedVendor = vendorData.find((lead) => lead.id === item.id);
@@ -165,25 +166,35 @@ export const VendorView = () => {
                 </h3>
               </Grid>
               <Grid item xs={12} sm={3}>
-                <Button
-                  onClick={() => setOpenPopupCreate(true)}
-                  variant="contained"
-                  color="success"
-                  // startIcon={<AddIcon />}
-                >
-                  Add
-                </Button>
+                {(userData.groups.includes("Accounts") ||
+                  userData.groups.includes("Director") ||
+                  userData.groups.includes("Accounts Executive")) && (
+                  <Button
+                    onClick={() => setOpenPopupCreate(true)}
+                    variant="contained"
+                    color="success"
+                    // startIcon={<AddIcon />}
+                  >
+                    Add
+                  </Button>
+                )}
               </Grid>
             </Grid>
           </Box>
           <CustomTable
             headers={Tableheaders}
             data={Tabledata}
-            openInPopup={openInPopupUpdate}
+            openInPopup={
+              !userData.groups.includes("Purchase") ? openInPopupUpdate : null
+            }
             openInPopup2={openInPopupPurchaseOrder}
             openInPopup3={null}
             openInPopup4={null}
-            ButtonText={"Create PO"}
+            ButtonText={
+              (!userData.groups.includes("Accounts Executive") ||
+                !userData.groups.includes("Accounts")) &&
+              "Create PO"
+            }
           />
           <CustomPagination
             pageCount={pageCount}
