@@ -43,13 +43,14 @@ export const PurchaseInvoiceView = () => {
 
   useEffect(() => {
     getAllPurchaseInvoiceDetails(currentPage);
-  }, [currentPage, selectedYearMonth, getAllPurchaseInvoiceDetails]);
+  }, [currentPage, getAllPurchaseInvoiceDetails]);
 
   const getAllPurchaseInvoiceDetails = useCallback(
     async (page, filter = selectedYearMonth, search = searchQuery) => {
       try {
         setOpen(true);
         const response = await InventoryServices.getAllPurchaseInvoiceData(
+          filter,
           page,
           search
         );
@@ -91,7 +92,15 @@ export const PurchaseInvoiceView = () => {
                   type="month"
                   label="Filter By Month and Year"
                   value={selectedYearMonth}
-                  onChange={(e) => setSelectedYearMonth(e.target.value)}
+                  onChange={(e) => {
+                    setCurrentPage(0);
+                    setSelectedYearMonth(e.target.value);
+                    getAllPurchaseInvoiceDetails(
+                      0,
+                      e.target.value,
+                      searchQuery
+                    );
+                  }}
                   // sx={{ width: 200, marginRight: "15rem" }}
                 />
               </Grid>
@@ -109,9 +118,14 @@ export const PurchaseInvoiceView = () => {
                 <Button
                   variant="contained"
                   color="primary"
-                  onClick={() =>
-                    getAllPurchaseInvoiceDetails(currentPage, searchQuery)
-                  } // Call `handleSearch` when the button is clicked
+                  onClick={() => {
+                    setCurrentPage(0);
+                    getAllPurchaseInvoiceDetails(
+                      0,
+                      selectedYearMonth,
+                      searchQuery
+                    );
+                  }} // Call `handleSearch` when the button is clicked
                 >
                   Search
                 </Button>
@@ -122,7 +136,8 @@ export const PurchaseInvoiceView = () => {
                   color="secondary"
                   onClick={() => {
                     setSearchQuery("");
-                    getAllPurchaseInvoiceDetails(1, "");
+                    setCurrentPage(0);
+                    getAllPurchaseInvoiceDetails(0, selectedYearMonth, "");
                   }}
                 >
                   Reset
