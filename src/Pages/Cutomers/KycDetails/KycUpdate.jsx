@@ -17,6 +17,7 @@ const KycUpdate = ({
   const currentDate = new Date().toISOString().split("T")[0];
   const [inputValue, setInputValue] = useState([]);
   const [contactValue, setContactValue] = useState([]);
+  const [errorMessage, setErrorMessage] = useState("");
 
   // Fetch company details based on the active tab when the component mounts or the active tab changes
   useEffect(() => {
@@ -206,6 +207,15 @@ const KycUpdate = ({
       UpdateContactDetails();
       setOpenPopup(false);
       getIncompleteKycCustomerData();
+    } catch (error) {
+      if (error.response && error.response.data && error.response.data.errors) {
+        const errors = error.response.data.errors;
+        if (errors["non_field_errors"]) {
+          setErrorMessage(errors["non_field_errors"].join(" "));
+        } else {
+          setErrorMessage(errors["whatsapp_group"].join(" "));
+        }
+      }
     } finally {
       setOpen(false);
     }
@@ -234,11 +244,16 @@ const KycUpdate = ({
     }
   };
 
+  const resetErrorMessage = () => {
+    setErrorMessage("");
+  };
+
   return (
     <>
       <CustomLoader open={open} />
 
       {/* Form for KYC Details */}
+      {errorMessage && <Box color="error.main">{errorMessage}</Box>}
       <Box component="form" noValidate onSubmit={UpdateCompanyDetails}>
         <Grid container spacing={2}>
           {/* KYC Details */}
@@ -483,9 +498,12 @@ const KycUpdate = ({
                 size="small"
                 label="Whatsapp Group"
                 value={inputValue.whatsapp_group || ""}
-                onChange={(e) =>
-                  handleInputChange("whatsapp_group", e.target.value)
-                }
+                onChange={(e) => {
+                  handleInputChange("whatsapp_group", e.target.value);
+                  resetErrorMessage();
+                }}
+                error={!!errorMessage}
+                helperText={errorMessage}
               />
             </Grid>
           )}
