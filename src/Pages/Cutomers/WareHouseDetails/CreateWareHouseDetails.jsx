@@ -24,14 +24,22 @@ export const CreateWareHouseDetails = (props) => {
     try {
       setOpen(true);
       const PINCODE = inputValue.pincode;
+
+      // Replace with Geonames API endpoint
       const response = await axios.get(
-        `https://api.postalpincode.in/pincode/${PINCODE}`
+        `http://api.geonames.org/postalCodeLookupJSON?postalcode=${PINCODE}&username=your_username`
       );
 
-      setPinCodeData(response.data[0].PostOffice[0]);
+      // Adjust according to Geonames API response structure
+      if (response.data && response.data.postalcodes.length > 0) {
+        setPinCodeData(response.data.postalcodes[0]);
+      } else {
+        console.log("No data found for this pincode");
+      }
+
       setOpen(false);
     } catch (error) {
-      console.log("Creating Bank error ", error);
+      console.log("Error validating pincode", error);
       setOpen(false);
     }
   };
@@ -45,8 +53,8 @@ export const CreateWareHouseDetails = (props) => {
         contact: selectedcontact.id,
         address: inputValue.address,
         pincode: inputValue.pincode,
-        state: pinCodeData.State,
-        city: pinCodeData.District,
+        state: inputValue.state,
+        city: inputValue.city,
       };
       await CustomerServices.createWareHouseData(req);
       setOpenPopup(false);
@@ -94,9 +102,9 @@ export const CreateWareHouseDetails = (props) => {
               value={inputValue.address}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={6}>
             <CustomTextField
-              sx={{ minWidth: "400px" }}
+              fullWidth
               onChange={handleInputChange}
               size="small"
               name="pincode"
@@ -104,13 +112,13 @@ export const CreateWareHouseDetails = (props) => {
               variant="outlined"
               value={inputValue.pincode}
             />
-            <Button
+            {/* <Button
               onClick={() => validatePinCode()}
               variant="contained"
               sx={{ marginLeft: "1rem" }}
             >
               Validate
-            </Button>
+            </Button> */}
           </Grid>
 
           <Grid item xs={12} sm={6}>
@@ -120,7 +128,8 @@ export const CreateWareHouseDetails = (props) => {
               name="state"
               label="State"
               variant="outlined"
-              value={pinCodeData.State ? pinCodeData.State : ""}
+              value={inputValue.state || ""}
+              onChange={handleInputChange}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -130,7 +139,8 @@ export const CreateWareHouseDetails = (props) => {
               name="city"
               label="City"
               variant="outlined"
-              value={pinCodeData.District ? pinCodeData.District : ""}
+              value={inputValue.city || ""}
+              onChange={handleInputChange}
             />
           </Grid>
         </Grid>

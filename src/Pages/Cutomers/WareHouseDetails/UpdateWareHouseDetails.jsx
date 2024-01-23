@@ -60,8 +60,8 @@ export const UpdateWareHouseDetails = (props) => {
         contact: selectedcontact.id ? selectedcontact.id : inputValue.contact,
         address: inputValue.address,
         pincode: inputValue.pincode,
-        state: pinCodeData.State ? pinCodeData.State : inputValue.state,
-        city: pinCodeData.District ? pinCodeData.District : inputValue.city,
+        state: inputValue.state || "",
+        city: inputValue.city || "",
       };
       await CustomerServices.updatetWareHouseData(IDForEdit, req);
       setOpenPopup(false);
@@ -122,23 +122,23 @@ export const UpdateWareHouseDetails = (props) => {
               value={inputValue.address ? inputValue.address : ""}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={6}>
             <CustomTextField
-              sx={{ minWidth: "400px" }}
+              fullWidth
               onChange={handleInputChange}
               size="small"
               name="pincode"
               label="Pin Code"
               variant="outlined"
-              value={inputValue.pincode ? inputValue.pincode : ""}
+              value={inputValue.pincode || ""}
             />
-            <Button
+            {/* <Button
               onClick={() => validatePinCode()}
               variant="contained"
               sx={{ marginLeft: "1rem" }}
             >
               Validate
-            </Button>
+            </Button> */}
           </Grid>
           <Grid item xs={12} sm={6}>
             <CustomTextField
@@ -147,10 +147,8 @@ export const UpdateWareHouseDetails = (props) => {
               name="state"
               label="State"
               variant="outlined"
-              value={pinCodeData.State ? pinCodeData.State : inputValue.state}
-              InputLabelProps={{
-                shrink: true,
-              }}
+              value={inputValue.state || ""}
+              onChange={handleInputChange}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -160,12 +158,8 @@ export const UpdateWareHouseDetails = (props) => {
               name="city"
               label="City"
               variant="outlined"
-              value={
-                pinCodeData.District ? pinCodeData.District : inputValue.city
-              }
-              InputLabelProps={{
-                shrink: true,
-              }}
+              value={inputValue.city || ""}
+              onChange={handleInputChange}
             />
           </Grid>
         </Grid>
