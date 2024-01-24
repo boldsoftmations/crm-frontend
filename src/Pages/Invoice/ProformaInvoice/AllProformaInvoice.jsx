@@ -68,19 +68,40 @@ export const AllProformaInvoice = () => {
     let newStartDate = new Date();
     let newEndDate = new Date();
 
-    if (value === "yearly") {
-      newStartDate = new Date(today.getFullYear(), 0, 1); // Set start date to the first day of the current year
-    } else if (value === "monthly") {
-      newStartDate = new Date(today.getFullYear(), today.getMonth(), 1); // Set start date to the first day of the current month
-    } else if (value === "weekly") {
-      const firstDayOfWeek = today.getDate() - today.getDay(); // Get the first day of the week
-      newStartDate = new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        firstDayOfWeek
-      ); // Set start date to the first day of the current week
-    } else if (value === "today") {
-      newStartDate = new Date(); // Set start date to today
+    switch (value) {
+      case "yearly":
+        newStartDate = new Date(today.getFullYear(), 0, 1);
+        newEndDate = new Date(today.getFullYear(), 11, 31);
+        break;
+      case "monthly":
+        newStartDate = new Date(today.getFullYear(), today.getMonth(), 1);
+        newEndDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        break;
+      case "weekly":
+        const firstDayOfWeek = today.getDate() - today.getDay();
+        newStartDate = new Date(
+          today.getFullYear(),
+          today.getMonth(),
+          firstDayOfWeek
+        );
+        newEndDate = new Date(
+          today.getFullYear(),
+          today.getMonth(),
+          firstDayOfWeek + 6
+        );
+        break;
+      case "today":
+        newStartDate = new Date();
+        newEndDate = new Date();
+        break;
+      case "last year":
+        newStartDate = new Date(today.getFullYear() - 1, 0, 1);
+        newEndDate = new Date(today.getFullYear() - 1, 11, 31);
+        break;
+      default:
+        newStartDate = new Date();
+        newEndDate = new Date();
+        break;
     }
 
     setStartDate(newStartDate);
@@ -308,7 +329,7 @@ export const AllProformaInvoice = () => {
             <CustomAutocomplete
               sx={{ width: 300, marginRight: "10px" }}
               size="small"
-              options={["yearly", "monthly", "weekly", "today"]}
+              options={["yearly", "monthly", "weekly", "today", "last year"]}
               defaultValue="today"
               onChange={(event, value) => handleSelectChange(value)}
               label="Sort By"
