@@ -43,11 +43,11 @@ export const AllProformaInvoice = () => {
   const users = data.profile;
   const assigned = users.sales_users || [];
   const [endDate, setEndDate] = useState(new Date()); // set endDate as one week ahead of startDate
-  const [startDate, setStartDate] = useState(
-    new Date(endDate.getTime() - 7 * 24 * 60 * 60 * 1000)
-  ); // set default value as current date
-  const minDate = new Date().toISOString().split("T")[0];
-  const maxDate = new Date("2030-12-31").toISOString().split("T")[0];
+  const getFirstDayOfMonth = (date) => {
+    return new Date(date.getFullYear(), date.getMonth(), 1);
+  };
+  const [startDate, setStartDate] = useState(getFirstDayOfMonth(new Date()));
+  const [selectedTimeRange, setSelectedTimeRange] = useState("monthly");
 
   const FilterOptions = [
     { label: "Status", value: "status" },
@@ -57,17 +57,11 @@ export const AllProformaInvoice = () => {
       : []),
   ];
 
-  const handleStartDateChange = (event) => {
-    const date = new Date(event.target.value);
-    setStartDate(date);
-    setEndDate(new Date(date.getTime() + 7 * 24 * 60 * 60 * 1000));
-  };
-
   const handleSelectChange = (value) => {
     const today = new Date();
     let newStartDate = new Date();
     let newEndDate = new Date();
-
+    setSelectedTimeRange(value);
     switch (value) {
       case "yearly":
         newStartDate = new Date(today.getFullYear(), 0, 1);
@@ -330,7 +324,7 @@ export const AllProformaInvoice = () => {
               sx={{ width: 300, marginRight: "10px" }}
               size="small"
               options={["yearly", "monthly", "weekly", "today", "last year"]}
-              defaultValue="today"
+              value={selectedTimeRange}
               onChange={(event, value) => handleSelectChange(value)}
               label="Sort By"
             />
