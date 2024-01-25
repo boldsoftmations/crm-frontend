@@ -159,7 +159,7 @@ export const BillofMaterialsView = () => {
       await InventoryServices.updateBillofMaterialsData(data.id, req);
 
       setOpenPopup(false);
-      getAllBillofMaterialsDetails();
+      getAllBillofMaterialsDetails(currentPage, filterApproved, searchQuery);
       setOpen(false);
       // Show success snackbar
       setOpenSnackbar(true);
