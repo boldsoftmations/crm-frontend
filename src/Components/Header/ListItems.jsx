@@ -33,6 +33,7 @@ import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import FactoryIcon from "@mui/icons-material/Factory";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import BusinessIcon from "@mui/icons-material/Business";
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 
 export const ListItems = (props) => {
   const { setOpen } = props;
@@ -1122,6 +1123,31 @@ export const ListItems = (props) => {
             </ListItemIcon>
             <ListItemText primary="Sales Review" />
           </ListItem>
+          {/* Whatsapp Group */}
+          <ListItem
+            button
+            component={RouterLink}
+            to="/user/whatsapp-group"
+            style={{ width: 300 }}
+            onClick={() => setOpen(false)}
+          >
+            <ListItemIcon>
+              <WhatsAppIcon />
+            </ListItemIcon>
+            <ListItemText primary="Whatsapp Group" />
+          </ListItem>
+          <ListItem
+            button
+            component={RouterLink}
+            to="/user/whatsapp"
+            style={{ width: 300 }}
+            onClick={() => setOpen(false)}
+          >
+            <ListItemIcon>
+              <WhatsAppIcon />
+            </ListItemIcon>
+            <ListItemText primary="Whatsapp" />
+          </ListItem>
           {/* <ListItem
             button
             component={RouterLink}
@@ -1797,6 +1823,20 @@ export const ListItems = (props) => {
                   <HelpOutlineIcon />
                 </ListItemIcon>
                 <ListItemText primary="Script" />
+              </ListItem>
+
+              {/* Whatsapp */}
+              <ListItem
+                button
+                component={RouterLink}
+                to="/user/whatsapp"
+                style={{ width: 300 }}
+                onClick={() => setOpen(false)}
+              >
+                <ListItemIcon>
+                  <WhatsAppIcon />
+                </ListItemIcon>
+                <ListItemText primary="Whatsapp" />
               </ListItem>
             </>
           )}
