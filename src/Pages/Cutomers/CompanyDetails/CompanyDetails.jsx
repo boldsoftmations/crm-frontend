@@ -21,7 +21,6 @@ import { getSellerAccountData } from "../../../Redux/Action/Action";
 import InvoiceServices from "../../../services/InvoiceService";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { BulkCustomerAssign } from "./BulkCustomerAssign";
-import { CustomTable } from "./../../../Components/CustomTable";
 import { CustomPagination } from "../../../Components/CustomPagination";
 import { CustomerActivityCreate } from "../../FollowUp/CustomerActivityCreate";
 import ProductService from "../../../services/ProductService";
@@ -399,7 +398,7 @@ export const CompanyDetails = () => {
           </Box>
           <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
             <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={3}>
                 {/* Bulk Assign Button */}
                 {userData.is_staff === true && (
                   <Button
@@ -420,7 +419,7 @@ export const CompanyDetails = () => {
                 )}
               </Grid>
 
-              <Grid item xs={12} sm={3}>
+              <Grid item xs={12} sm={6}>
                 {/* Customer Header */}
                 <h3
                   style={{
