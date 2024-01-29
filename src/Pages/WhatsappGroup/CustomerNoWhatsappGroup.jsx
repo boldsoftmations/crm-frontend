@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { CustomTable } from "../../Components/CustomTable";
-import { Box, Grid, Paper } from "@mui/material";
+import { Box, Button, Grid, Paper } from "@mui/material";
 import CustomerServices from "../../services/CustomerService";
 import { CustomPagination } from "../../Components/CustomPagination";
 import { CustomLoader } from "../../Components/CustomLoader";
 import KycUpdate from "../../Pages/Cutomers/KycDetails/KycUpdate";
 import { Popup } from "../../Components/Popup";
+import CustomTextField from "../../Components/CustomTextField";
 
 export const CustomerNoWhatsappGroup = () => {
   const [open, setOpen] = useState(false);
@@ -17,27 +18,37 @@ export const CustomerNoWhatsappGroup = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [openPopupKycUpdate, setOpenPopupKycUpdate] = useState(false);
   const [selectedCustomerData, setSelectedCustomerData] = useState({});
-  useEffect(() => {
-    getAllCustomerNotHavingWhatsappGroup();
-  }, [currentPage]);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const getAllCustomerNotHavingWhatsappGroup = async () => {
-    try {
-      setOpen(true);
-      const res = await CustomerServices.getCustomerNotHavingWhatsappGroup(
-        currentPage
-      );
-      setCustomerNotHavingWhatsappGroupData(res.data.results);
-      setPageCount(Math.ceil(res.data.count / 25));
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setOpen(false);
-    }
-  };
+  useEffect(() => {
+    getAllCustomerNotHavingWhatsappGroup(currentPage);
+  }, [currentPage, getAllCustomerNotHavingWhatsappGroup]);
+
+  const getAllCustomerNotHavingWhatsappGroup = useCallback(
+    async (page = currentPage, searchValue = searchQuery) => {
+      try {
+        setOpen(true);
+        const res = await CustomerServices.getCustomerNotHavingWhatsappGroup(
+          page,
+          searchValue
+        );
+        setCustomerNotHavingWhatsappGroupData(res.data.results);
+        setPageCount(Math.ceil(res.data.count / 25));
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setOpen(false);
+      }
+    },
+    [searchQuery]
+  );
 
   const handlePageClick = (event, value) => {
     setCurrentPage(value);
+  };
+
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
   };
 
   const Tabledata = Array.isArray(customerNotHavingWhatsappGroupData)
@@ -75,7 +86,43 @@ export const CustomerNoWhatsappGroup = () => {
           <Box display="flex" marginBottom="10px">
             <Grid container spacing={2}>
               <Grid item xs={12} sm={3}>
-                {" "}
+                <CustomTextField
+                  size="small"
+                  label="Search"
+                  variant="outlined"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={12} sm={1}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => {
+                    setCurrentPage(0);
+                    getAllCustomerNotHavingWhatsappGroup(0, searchQuery);
+                  }}
+                >
+                  Search
+                </Button>
+              </Grid>
+              <Grid item xs={12} sm={1}>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => {
+                    setSearchQuery("");
+                    setCurrentPage(1);
+                    getAllCustomerNotHavingWhatsappGroup(
+                      1,
+
+                      ""
+                    );
+                  }}
+                >
+                  Reset
+                </Button>
               </Grid>
               <Grid item xs={12} sm={6} alignItems={"center"}>
                 <h3

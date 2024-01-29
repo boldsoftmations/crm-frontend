@@ -226,8 +226,24 @@ const getAllWhatsappGroupData = (page = 1) => {
   return CustomAxios.get(`/api/customer/whatsapp-group-list/?page=${page}`);
 };
 
-const getCustomerNotHavingWhatsappGroup = (page = 1) => {
-  return CustomAxios.get(`/api/customer/whatsapp-group-list/?is_whatsapp=false&page=${page}`);
+const getCustomerNotHavingWhatsappGroup = (page, searchValue) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
+
+  params.append("is_whatsapp", false);
+
+  if (page) {
+    params.append("page", page);
+  }
+
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+
+  // Sending a GET request with query parameters
+  return CustomAxios.get(
+    `api/customer/whatsapp-group-list/?${params.toString()}`
+  );
 };
 
 const createWhatsappData = (data) => {
@@ -244,16 +260,18 @@ const createWhatsappPdfData = (data) => {
 
 const getWhatsappImageData = (page = 1) => {
   return CustomAxios.get(`/api/customer/whatsapp-image/?page=${page}`);
-}
-
+};
 
 const resendWhatsappMessage = (data) => {
-  return CustomAxios.post(`/api/customer/whatsapp-image/unsent_message/`,data);
-}
+  return CustomAxios.post(`/api/customer/whatsapp-image/unsent_message/`, data);
+};
 
 const bulkResendMessage = (data) => {
-  return CustomAxios.post(`/api/customer/whatsapp-image/unsent_bulk_message/`,data);
-}
+  return CustomAxios.post(
+    `/api/customer/whatsapp-image/unsent_bulk_message/`,
+    data
+  );
+};
 
 const CustomerServices = {
   getAllCustomerData,
@@ -306,7 +324,7 @@ const CustomerServices = {
   createWhatsappPdfData,
   getWhatsappImageData,
   resendWhatsappMessage,
-  bulkResendMessage
+  bulkResendMessage,
 };
 
 export default CustomerServices;
