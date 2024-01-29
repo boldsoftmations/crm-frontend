@@ -265,6 +265,7 @@ const KycUpdate = ({
           <Grid item xs={12} sm={6}>
             <CustomTextField
               fullWidth
+              multiline
               size="small"
               label="Company"
               variant="outlined"
