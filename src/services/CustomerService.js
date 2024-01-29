@@ -222,8 +222,28 @@ const updateCompetitors = (id, data) => {
 };
 
 // Whatsapp routes
-const getAllWhatsappGroupData = () => {
-  return CustomAxios.get(`/api/customer/whatsapp-group-list`);
+const getAllWhatsappGroupData = (page = 1) => {
+  return CustomAxios.get(`/api/customer/whatsapp-group-list/?page=${page}`);
+};
+
+const getCustomerNotHavingWhatsappGroup = (page, searchValue) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
+
+  params.append("is_whatsapp", false);
+
+  if (page) {
+    params.append("page", page);
+  }
+
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+
+  // Sending a GET request with query parameters
+  return CustomAxios.get(
+    `api/customer/whatsapp-group-list/?${params.toString()}`
+  );
 };
 
 const createWhatsappData = (data) => {
@@ -238,17 +258,20 @@ const createWhatsappPdfData = (data) => {
   return CustomAxios.post("/api/customer/whatsapp-group-list/send-pdf/", data);
 };
 
-const getWhatsappImageData = () => {
-  return CustomAxios.get(`/api/customer/whatsapp-image/`);
-}
+const getWhatsappImageData = (page = 1) => {
+  return CustomAxios.get(`/api/customer/whatsapp-image/?page=${page}`);
+};
 
 const resendWhatsappMessage = (data) => {
-  return CustomAxios.post(`/api/customer/whatsapp-image/unsent_message/`,data);
-}
+  return CustomAxios.post(`/api/customer/whatsapp-image/unsent_message/`, data);
+};
 
 const bulkResendMessage = (data) => {
-  return CustomAxios.post(`/api/customer/whatsapp-image/unsent_bulk_message/`,data);
-}
+  return CustomAxios.post(
+    `/api/customer/whatsapp-image/unsent_bulk_message/`,
+    data
+  );
+};
 
 const CustomerServices = {
   getAllCustomerData,
@@ -295,12 +318,13 @@ const CustomerServices = {
   getAllSearchCompetitors,
   updateCompetitors,
   getAllWhatsappGroupData,
+  getCustomerNotHavingWhatsappGroup,
   createWhatsappData,
   createWhatsappImageData,
   createWhatsappPdfData,
   getWhatsappImageData,
   resendWhatsappMessage,
-  bulkResendMessage
+  bulkResendMessage,
 };
 
 export default CustomerServices;

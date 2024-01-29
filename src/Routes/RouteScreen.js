@@ -77,6 +77,9 @@ import { LeadForecastView } from "../Pages/Leads/LeadForecast/LeadForecastView";
 import { CurrencyView } from "../Pages/Inventory/Currency/CurrencyView";
 import { PurchaseOrderView } from "../Pages/Inventory/Purchase Order/PurchaseOrderView";
 import { GRNRegisterView } from "../Pages/Inventory/GRNRegister/GRNRegisterView";
+import { WhatsappGroupView } from "../Pages/WhatsappGroup/WhatsappGroupView";
+import { WhatsappGroup } from "../Pages/WhatsappGroup/WhatsappGroup";
+import { CustomerNoWhatsappGroup } from "../Pages/WhatsappGroup/CustomerNoWhatsappGroup";
 export const RouteScreen = () => {
   const tokenData = useSelector((state) => state.auth);
   const token = tokenData.user;
@@ -276,7 +279,7 @@ export const RouteScreen = () => {
               path="/inventory/view-weekly-production"
               element={<WeeklyProductionReport />}
             />
-            <Route path="/inventory/view-currency" element={<CurrencyView />} />
+            <Route path="/inventory/view-currency" element={<CurrencyView />} />  
             {/* ProductForecast Route */}
             <Route
               path="/forecast/view-product-forecast"
@@ -304,7 +307,10 @@ export const RouteScreen = () => {
               path="/user/hr-model/department"
               element={<DepartmentView />}
             />
-            <Route path="/user/hr-model/source" element={<SourceView />} />
+          <Route path="/user/hr-model/source" element={<SourceView />} />
+            <Route path="/user/whatsapp-group" element={<WhatsappGroupView />} />
+            <Route path="/user/no-whatsapp-group" element={<CustomerNoWhatsappGroup />} />
+            <Route path="/user/whatsapp" element={<WhatsappGroup/>} />
           </>
         )}
         <Route path="*" element={<Auths />} />
