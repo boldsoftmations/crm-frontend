@@ -226,6 +226,10 @@ const getAllWhatsappGroupData = (page = 1) => {
   return CustomAxios.get(`/api/customer/whatsapp-group-list/?page=${page}`);
 };
 
+const getCustomerNotHavingWhatsappGroup = (page = 1) => {
+  return CustomAxios.get(`/api/customer/whatsapp-group-list/?is_whatsapp=false&page=${page}`);
+};
+
 const createWhatsappData = (data) => {
   return CustomAxios.post("/api/customer/whatsapp-group-list/", data);
 };
@@ -296,6 +300,7 @@ const CustomerServices = {
   getAllSearchCompetitors,
   updateCompetitors,
   getAllWhatsappGroupData,
+  getCustomerNotHavingWhatsappGroup,
   createWhatsappData,
   createWhatsappImageData,
   createWhatsappPdfData,

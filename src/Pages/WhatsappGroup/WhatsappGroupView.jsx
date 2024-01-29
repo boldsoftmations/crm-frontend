@@ -2,20 +2,14 @@ import React, { useEffect, useState } from "react";
 import { CustomTable } from "../../Components/CustomTable";
 import { Box, Grid, Paper } from "@mui/material";
 import CustomerServices from "../../services/CustomerService";
-import { useSelector } from "react-redux";
-import { WhatsappGroupCreate } from "./WhatsappGroupCreate";
-import { Popup } from "../../Components/Popup";
 import { CustomPagination } from "../../Components/CustomPagination";
 import { CustomLoader } from "../../Components/CustomLoader";
 
 export const WhatsappGroupView = () => {
   const [open, setOpen] = useState(false);
   const [whatsappGroupData, setWhatsappGroupData] = useState([]);
-  const [openPopupWhatsapp, setOpenPopupWhatsapp] = useState(false);
   const [pageCount, setPageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const data = useSelector((state) => state.auth);
-  const userData = data.profile;
 
   useEffect(() => {
     getAllWhatsappGroup();
@@ -46,7 +40,7 @@ export const WhatsappGroupView = () => {
       }))
     : [];
 
-  const Tableheaders = ["Comapny ", "Group Name", "Group Id"];
+  const Tableheaders = ["Company ", "Group Name", "Group Id"];
 
   return (
     <>
@@ -78,16 +72,6 @@ export const WhatsappGroupView = () => {
             pageCount={pageCount}
             handlePageClick={handlePageClick}
           />
-          <Popup
-            title={"Send Message or File"}
-            openPopup={openPopupWhatsapp}
-            setOpenPopup={setOpenPopupWhatsapp}
-          >
-            <WhatsappGroupCreate
-              // getsetWhatsappGroupDetails={getsetWhatsappGroupDetails}
-              setOpenPopup={setOpenPopupWhatsapp}
-            />
-          </Popup>
         </Paper>
       </Grid>
     </>

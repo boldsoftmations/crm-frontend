@@ -1156,6 +1156,19 @@ export const ListItems = (props) => {
               <ListItem
                 button
                 component={RouterLink}
+                to="/user/no-whatsapp-group"
+                style={{ width: 300 }}
+              >
+                <ListItemText
+                  component={Button}
+                  onClick={() => setOpen(false)}
+                  inset
+                  primary="Customer Not Having Group"
+                />
+              </ListItem>
+              <ListItem
+                button
+                component={RouterLink}
                 to="/user/whatsapp"
                 style={{ width: 300 }}
               >
@@ -1861,6 +1874,19 @@ export const ListItems = (props) => {
               <Collapse in={expandWhatsapp} timeout="auto" unmountOnExit>
                 <Divider />
                 <List component="div" disablePadding>
+                  <ListItem
+                    button
+                    component={RouterLink}
+                    to="/user/no-whatsapp-group"
+                    style={{ width: 300 }}
+                  >
+                    <ListItemText
+                      component={Button}
+                      onClick={() => setOpen(false)}
+                      inset
+                      primary="Customer Not Having Group"
+                    />
+                  </ListItem>
                   <ListItem
                     button
                     component={RouterLink}
