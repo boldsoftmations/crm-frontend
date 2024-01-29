@@ -222,8 +222,8 @@ const updateCompetitors = (id, data) => {
 };
 
 // Whatsapp routes
-const getAllWhatsappGroupData = () => {
-  return CustomAxios.get(`/api/customer/whatsapp-group-list`);
+const getAllWhatsappGroupData = (page = 1) => {
+  return CustomAxios.get(`/api/customer/whatsapp-group-list/?page=${page}`);
 };
 
 const createWhatsappData = (data) => {
@@ -238,9 +238,10 @@ const createWhatsappPdfData = (data) => {
   return CustomAxios.post("/api/customer/whatsapp-group-list/send-pdf/", data);
 };
 
-const getWhatsappImageData = () => {
-  return CustomAxios.get(`/api/customer/whatsapp-image/`);
+const getWhatsappImageData = (page = 1) => {
+  return CustomAxios.get(`/api/customer/whatsapp-image/?page=${page}`);
 }
+
 
 const resendWhatsappMessage = (data) => {
   return CustomAxios.post(`/api/customer/whatsapp-image/unsent_message/`,data);

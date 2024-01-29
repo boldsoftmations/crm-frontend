@@ -30,15 +30,14 @@ export const WhatsappGroup = () => {
 
   useEffect(() => {
     getAllWhatsappGroup();
-  }, []);
+  }, [currentPage]);
 
   const getAllWhatsappGroup = async () => {
     try {
       setOpen(true);
-      const res = await CustomerServices.getWhatsappImageData();
+      const res = await CustomerServices.getWhatsappImageData(currentPage);
       setWhatsappGroupData(res.data.results);
-      const total = res.data.count;
-      setPageCount(Math.ceil(total / 25));
+      setPageCount(Math.ceil(res.data.count / 25));
     } catch (err) {
       console.error(err);
     } finally {
@@ -170,7 +169,6 @@ export const WhatsappGroup = () => {
             ))}
         <Box sx={{ marginBottom: 4 }}>
           <CustomPagination
-            currentPage={currentPage}
             pageCount={pageCount}
             handlePageClick={handlePageClick}
           />
