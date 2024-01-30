@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { CustomTable } from "../../Components/CustomTable";
 import { Box, Button, Grid, Paper } from "@mui/material";
 import CustomerServices from "../../services/CustomerService";
@@ -72,20 +72,11 @@ export const CustomerNotInGroup = () => {
               assigned_to
             </div>
           ),
-          sales_persons:
-            member_details && "sales_persons" in member_details
-              ? member_details.sales_persons
-              : undefined,
         })
       )
     : [];
 
-  const Tableheaders = [
-    "Company ",
-    "Group",
-    "Assigned Sales Person",
-    "Sales Person In Group",
-  ];
+  const Tableheaders = ["Company ", "Group", "Assigned Sales Person"];
 
   return (
     <>
