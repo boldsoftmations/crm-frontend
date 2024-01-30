@@ -246,11 +246,13 @@ const getCustomerNotHavingWhatsappGroup = (page, searchValue) => {
   );
 };
 
-const getCustomerNotInGroupData = (page, searchValue) => {
+const getCustomerNotInGroupData = (isSalesFilter, page, searchValue) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
 
-
+  if (isSalesFilter) {
+    params.append("is_sales_person", isSalesFilter);
+  }
   if (page) {
     params.append("page", page);
   }
@@ -261,7 +263,7 @@ const getCustomerNotInGroupData = (page, searchValue) => {
 
   // Sending a GET request with query parameters
   return CustomAxios.get(
-    `api/customer/whatsapp-group-list/?${params.toString()}`
+    `api/customer/whatsapp-customer/?${params.toString()}`
   );
 };
 

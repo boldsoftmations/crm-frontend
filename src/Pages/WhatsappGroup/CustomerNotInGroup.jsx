@@ -12,15 +12,17 @@ export const CustomerNotInGroup = () => {
   const [pageCount, setPageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+  const [inputValue, setInputValue] = useState("");
 
   useEffect(() => {
     getAllCustomerNotInGroupData();
-  }, [currentPage]);
+  }, [currentPage, searchQuery]);
 
-  const getAllCustomerNotInGroupData = async (searchQuery) => {
+  const getAllCustomerNotInGroupData = async () => {
     try {
       setOpen(true);
       const res = await CustomerServices.getCustomerNotInGroupData(
+        null,
         currentPage,
         searchQuery
       );
@@ -38,7 +40,7 @@ export const CustomerNotInGroup = () => {
   };
 
   const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
+    setInputValue(event.target.value);
   };
 
   const Tabledata = Array.isArray(whatsappGroupData)
@@ -70,19 +72,19 @@ export const CustomerNotInGroup = () => {
               assigned_to
             </div>
           ),
-          // customer_in_group:
-          //   member_details && "is_customer" in member_details
-          //     ? member_details.is_customer
-          //     : undefined,
-          // Using optional chaining for safety
+          sales_persons:
+            member_details && "sales_persons" in member_details
+              ? member_details.sales_persons
+              : undefined,
         })
       )
     : [];
+
   const Tableheaders = [
     "Company ",
     "Group",
     "Assigned Sales Person",
-    // "Customer In Group",
+    "Sales Person In Group",
   ];
 
   return (
@@ -97,7 +99,7 @@ export const CustomerNotInGroup = () => {
                   size="small"
                   label="Search"
                   variant="outlined"
-                  value={searchQuery}
+                  value={inputValue}
                   onChange={handleSearchChange}
                   fullWidth
                 />
@@ -107,8 +109,8 @@ export const CustomerNotInGroup = () => {
                   variant="contained"
                   color="primary"
                   onClick={() => {
-                    setCurrentPage(0);
-                    getAllCustomerNotInGroupData(searchQuery);
+                    setSearchQuery(inputValue);
+                    setCurrentPage(1);
                   }}
                 >
                   Search
@@ -119,12 +121,9 @@ export const CustomerNotInGroup = () => {
                   variant="contained"
                   color="secondary"
                   onClick={() => {
+                    setInputValue("");
                     setSearchQuery("");
-                    getAllCustomerNotInGroupData(
-                      1,
-
-                      ""
-                    );
+                    setCurrentPage(1);
                   }}
                 >
                   Reset
