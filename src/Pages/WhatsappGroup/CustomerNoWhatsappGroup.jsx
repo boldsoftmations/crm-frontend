@@ -34,6 +34,9 @@ export const CustomerNoWhatsappGroup = () => {
         );
         setCustomerNotHavingWhatsappGroupData(res.data.results);
         setPageCount(Math.ceil(res.data.count / 25));
+        if (currentPage > Math.ceil(res.data.count / 25)) {
+          setCurrentPage(1);
+        }
       } catch (err) {
         console.error(err);
       } finally {
@@ -100,8 +103,8 @@ export const CustomerNoWhatsappGroup = () => {
                   variant="contained"
                   color="primary"
                   onClick={() => {
-                    setCurrentPage(0);
-                    getAllCustomerNotHavingWhatsappGroup(0, searchQuery);
+                    setCurrentPage(1);
+                    getAllCustomerNotHavingWhatsappGroup(1, searchQuery);
                   }}
                 >
                   Search
@@ -114,11 +117,7 @@ export const CustomerNoWhatsappGroup = () => {
                   onClick={() => {
                     setSearchQuery("");
                     setCurrentPage(1);
-                    getAllCustomerNotHavingWhatsappGroup(
-                      1,
-
-                      ""
-                    );
+                    getAllCustomerNotHavingWhatsappGroup(1, "");
                   }}
                 >
                   Reset
