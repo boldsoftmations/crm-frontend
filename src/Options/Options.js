@@ -433,7 +433,7 @@ const religionsInIndia = [
   "Others",
 ];
 
-const CustomerStatusData = ["Active", "Closed", "Blacklisted"];
+const CustomerStatusData = ["Active", "Closed", "Blacklist"];
 
 const Option = {
   LeadBusinessTypeData,
