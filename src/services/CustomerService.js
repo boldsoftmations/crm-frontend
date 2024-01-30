@@ -246,6 +246,25 @@ const getCustomerNotHavingWhatsappGroup = (page, searchValue) => {
   );
 };
 
+const getCustomerNotInGroupData = (page, searchValue) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
+
+
+  if (page) {
+    params.append("page", page);
+  }
+
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+
+  // Sending a GET request with query parameters
+  return CustomAxios.get(
+    `api/customer/whatsapp-group-list/?${params.toString()}`
+  );
+};
+
 const createWhatsappData = (data) => {
   return CustomAxios.post("/api/customer/whatsapp-group-list/", data);
 };
@@ -319,6 +338,7 @@ const CustomerServices = {
   updateCompetitors,
   getAllWhatsappGroupData,
   getCustomerNotHavingWhatsappGroup,
+  getCustomerNotInGroupData,
   createWhatsappData,
   createWhatsappImageData,
   createWhatsappPdfData,
