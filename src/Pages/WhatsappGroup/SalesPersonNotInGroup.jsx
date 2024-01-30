@@ -12,15 +12,17 @@ export const SalesPersonNotInGroup = () => {
   const [pageCount, setPageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+  const [inputValue, setInputValue] = useState("");
 
   useEffect(() => {
-    getAllCustomerNotInGroupData();
-  }, [currentPage]);
+    getAllCustomerNotInGroupData(currentPage);
+  }, [currentPage, searchQuery]);
 
-  const getAllCustomerNotInGroupData = async (searchQuery) => {
+  const getAllCustomerNotInGroupData = async () => {
     try {
       setOpen(true);
       const res = await CustomerServices.getCustomerNotInGroupData(
+        "false",
         currentPage,
         searchQuery
       );
@@ -38,43 +40,54 @@ export const SalesPersonNotInGroup = () => {
   };
 
   const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
+    setInputValue(event.target.value);
   };
 
   const Tabledata = Array.isArray(whatsappGroupData)
-    ? whatsappGroupData.map((row) => ({
-        company: row.name,
-        whatsapp_group: row.whatsapp_group,
-        sales_person_not_in_group: Array.isArray(
-          row.member_details.not_user
-        ) ? (
-          row.member_details.not_user.map((assigned, id) => (
+    ? whatsappGroupData
+        .filter(
+          (item) =>
+            item.member_details && item.member_details.is_sales_person === "No"
+        )
+        .map((row) => ({
+          company: row.name,
+          whatsapp_group: row.whatsapp_group,
+          sales_person_not_in_group: Array.isArray(
+            row.member_details.not_user
+          ) ? (
+            row.member_details.not_user.map((assigned, id) => (
+              <div
+                key={id}
+                style={{
+                  border: "1px solid #4caf50",
+                  borderRadius: "20px",
+                  color: "#4caf50",
+                }}
+              >
+                {assigned}
+              </div>
+            ))
+          ) : (
             <div
-              key={id}
               style={{
                 border: "1px solid #4caf50",
                 borderRadius: "20px",
                 color: "#4caf50",
               }}
             >
-              {assigned}
+              row.member_details.not_user
             </div>
-          ))
-        ) : (
-          <div
-            style={{
-              border: "1px solid #4caf50",
-              borderRadius: "20px",
-              color: "#4caf50",
-            }}
-          >
-            row.member_details.not_user
-          </div>
-        ),
-      }))
+          ),
+          sales_persons: row.member_details.sales_persons,
+        }))
     : [];
 
-  const Tableheaders = ["Company ", "Group ", "Sales Person Not In Group"];
+  const Tableheaders = [
+    "Company ",
+    "Group ",
+    "Sales Person Not In Group",
+    "Sales Person In Group",
+  ];
 
   return (
     <>
@@ -88,7 +101,7 @@ export const SalesPersonNotInGroup = () => {
                   size="small"
                   label="Search"
                   variant="outlined"
-                  value={searchQuery}
+                  value={inputValue}
                   onChange={handleSearchChange}
                   fullWidth
                 />
@@ -98,8 +111,8 @@ export const SalesPersonNotInGroup = () => {
                   variant="contained"
                   color="primary"
                   onClick={() => {
-                    setCurrentPage(0);
-                    getAllCustomerNotInGroupData(searchQuery);
+                    setSearchQuery(inputValue);
+                    setCurrentPage(1);
                   }}
                 >
                   Search
@@ -110,12 +123,9 @@ export const SalesPersonNotInGroup = () => {
                   variant="contained"
                   color="secondary"
                   onClick={() => {
+                    setInputValue("");
                     setSearchQuery("");
-                    getAllCustomerNotInGroupData(
-                      1,
-
-                      ""
-                    );
+                    setCurrentPage(1);
                   }}
                 >
                   Reset
