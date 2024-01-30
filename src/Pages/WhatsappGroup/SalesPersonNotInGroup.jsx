@@ -22,7 +22,7 @@ export const SalesPersonNotInGroup = () => {
     try {
       setOpen(true);
       const res = await CustomerServices.getCustomerNotInGroupData(
-        false,
+        "false",
         currentPage,
         searchQuery
       );
