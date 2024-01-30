@@ -77,7 +77,7 @@ import { LeadForecastView } from "../Pages/Leads/LeadForecast/LeadForecastView";
 import { CurrencyView } from "../Pages/Inventory/Currency/CurrencyView";
 import { PurchaseOrderView } from "../Pages/Inventory/Purchase Order/PurchaseOrderView";
 import { GRNRegisterView } from "../Pages/Inventory/GRNRegister/GRNRegisterView";
-// import { SafetyStockView } from "../Pages/Inventory/SafetyStockLevel/SafetyStockView";
+// import { SafetyStockVi/ew } from "../Pages/Inventory/SafetyStockLevel/SafetyStockView";
 import { WhatsappGroupView } from "../Pages/WhatsappGroup/WhatsappGroupView";
 import { WhatsappGroup } from "../Pages/WhatsappGroup/WhatsappGroup";
 import { CustomerNoWhatsappGroup } from "../Pages/WhatsappGroup/CustomerNoWhatsappGroup";

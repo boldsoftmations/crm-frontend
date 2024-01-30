@@ -2265,7 +2265,7 @@ export const ListItems = (props) => {
                       primary="GRN Register"
                     />
                   </ListItem>
-                  <ListItem
+                  {/* <ListItem
                     button
                     component={RouterLink}
                     to="/inventory/view-safety-stock"
@@ -2277,7 +2277,7 @@ export const ListItems = (props) => {
                       inset
                       primary="Safety Stock Level"
                     />
-                  </ListItem>
+                  </ListItem> */}
                   <ListItem
                     button
                     component={RouterLink}

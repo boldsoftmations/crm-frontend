@@ -44,50 +44,39 @@ export const SalesPersonNotInGroup = () => {
   };
 
   const Tabledata = Array.isArray(whatsappGroupData)
-    ? whatsappGroupData
-        .filter(
-          (item) =>
-            item.member_details && item.member_details.is_sales_person === "No"
-        )
-        .map((row) => ({
-          company: row.name,
-          whatsapp_group: row.whatsapp_group,
-          sales_person_not_in_group: Array.isArray(
-            row.member_details.not_user
-          ) ? (
-            row.member_details.not_user.map((assigned, id) => (
-              <div
-                key={id}
-                style={{
-                  border: "1px solid #4caf50",
-                  borderRadius: "20px",
-                  color: "#4caf50",
-                }}
-              >
-                {assigned}
-              </div>
-            ))
-          ) : (
+    ? whatsappGroupData.map((row) => ({
+        company: row.name,
+        whatsapp_group: row.whatsapp_group,
+        sales_person_not_in_group: Array.isArray(
+          row.member_details.not_user
+        ) ? (
+          row.member_details.not_user.map((assigned, id) => (
             <div
+              key={id}
               style={{
                 border: "1px solid #4caf50",
                 borderRadius: "20px",
                 color: "#4caf50",
               }}
             >
-              row.member_details.not_user
+              {assigned}
             </div>
-          ),
-          sales_persons: row.member_details.sales_persons,
-        }))
+          ))
+        ) : (
+          <div
+            style={{
+              border: "1px solid #4caf50",
+              borderRadius: "20px",
+              color: "#4caf50",
+            }}
+          >
+            row.member_details.not_user
+          </div>
+        ),
+      }))
     : [];
 
-  const Tableheaders = [
-    "Company ",
-    "Group ",
-    "Sales Person Not In Group",
-    "Sales Person In Group",
-  ];
+  const Tableheaders = ["Company ", "Group ", "Sales Person Not In Group"];
 
   return (
     <>
