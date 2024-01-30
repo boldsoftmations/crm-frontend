@@ -305,25 +305,28 @@ export const RouteScreen = () => {
             {/* Daily sale review */}
             <Route path="/user/sale-review" element={<DailySaleReviewView />} />
             <Route path="/" element={<Home />} />
-            <Route path="/user/hr-model" element={<HrModelTabs />} />
+            <Route path="/hr-model" element={<HrModelTabs />} />
             <Route
-              path="/user/hr-model/designation"
+              path="/hr-model/designation"
               element={<DesignationView />}
             />
             <Route
-              path="/user/hr-model/department"
+              path="/hr-model/department"
               element={<DepartmentView />}
             />
-      
+            <Route
+              path="/hr-model/department"
+              element={<DepartmentView />}
+            />
               <Route
-              path="/user/hr-model/source"
+              path="/hr-model/source"
               element={<SourceView />}
             />
-            <Route path="/user/whatsapp-group" element={<WhatsappGroupView />} />
-            <Route path="/user/not-in-whatsapp-group" element={<CustomerNotInGroup />} />
-            <Route path="/user/no-sales-person-group" element={<SalesPersonNotInGroup />} />
-            <Route path="/user/no-whatsapp-group" element={<CustomerNoWhatsappGroup />} />
-            <Route path="/user/whatsapp" element={<WhatsappGroup/>} />
+            <Route path="/customers/whatsapp-group" element={<WhatsappGroupView />} />
+            <Route path="/customers/not-in-whatsapp-group" element={<CustomerNotInGroup />} />
+            <Route path="/customers/no-sales-person-group" element={<SalesPersonNotInGroup />} />
+            <Route path="/customers/no-whatsapp-group" element={<CustomerNoWhatsappGroup />} />
+            <Route path="/customers/whatsapp" element={<WhatsappGroup/>} />
           </>
         )}
         <Route path="*" element={<Auths />} />
