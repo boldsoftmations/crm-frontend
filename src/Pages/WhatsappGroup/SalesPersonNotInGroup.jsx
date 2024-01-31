@@ -21,8 +21,7 @@ export const SalesPersonNotInGroup = () => {
   const getAllCustomerNotInGroupData = async () => {
     try {
       setOpen(true);
-      const res = await CustomerServices.getCustomerNotInGroupData(
-        "false",
+      const res = await CustomerServices.getSalesPersonNotInGroupData(
         currentPage,
         searchQuery
       );
