@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { CustomTable } from "../../Components/CustomTable";
 import { Box, Button, Grid, Paper } from "@mui/material";
 import CustomerServices from "../../services/CustomerService";
@@ -22,7 +22,6 @@ export const CustomerNotInGroup = () => {
     try {
       setOpen(true);
       const res = await CustomerServices.getCustomerNotInGroupData(
-        null,
         currentPage,
         searchQuery
       );

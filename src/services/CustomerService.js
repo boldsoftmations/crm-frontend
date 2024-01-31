@@ -246,13 +246,10 @@ const getCustomerNotHavingWhatsappGroup = (page, searchValue) => {
   );
 };
 
-const getCustomerNotInGroupData = (isSalesFilter, page, searchValue) => {
+const getCustomerNotInGroupData = (page, searchValue) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
 
-  if (isSalesFilter) {
-    params.append("is_sales_person", isSalesFilter);
-  }
   if (page) {
     params.append("page", page);
   }
@@ -264,6 +261,23 @@ const getCustomerNotInGroupData = (isSalesFilter, page, searchValue) => {
   // Sending a GET request with query parameters
   return CustomAxios.get(
     `api/customer/whatsapp-customer/?${params.toString()}`
+  );
+};
+
+const getSalesPersonNotInGroupData = ( page, searchValue) => {
+
+  const params = new URLSearchParams();
+
+  if (page) {
+    params.append("page", page);
+  }
+
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+
+  return CustomAxios.get(
+    `api/customer/sales-person/?${params.toString()}`
   );
 };
 
@@ -341,6 +355,7 @@ const CustomerServices = {
   getAllWhatsappGroupData,
   getCustomerNotHavingWhatsappGroup,
   getCustomerNotInGroupData,
+  getSalesPersonNotInGroupData,
   createWhatsappData,
   createWhatsappImageData,
   createWhatsappPdfData,
