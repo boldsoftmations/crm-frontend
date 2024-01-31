@@ -56,29 +56,17 @@ export const CustomerNoWhatsappGroup = () => {
 
   const Tabledata = Array.isArray(customerNotHavingWhatsappGroupData)
     ? customerNotHavingWhatsappGroupData.map((row) => ({
+        id: row.id,
         name: row.name,
         whatsapp_group: row.whatsapp_group,
       }))
     : [];
 
-  const Tableheaders = ["Company ", "Group Name", "Action"];
+  const Tableheaders = ["ID", "Company", "Group Name", "Action"];
 
   const handleKycUpdate = async (data) => {
-    try {
-      setOpen(true);
-      const response = await CustomerServices.getAllCustomerData(
-        "Active",
-        "all",
-        null,
-        data.name
-      );
-      setSelectedCustomerData(response.data[0].id);
-      setOpenPopupKycUpdate(true);
-    } catch (error) {
-      console.error("error while getting customer data", error);
-    } finally {
-      setOpen(false);
-    }
+    setSelectedCustomerData(data.id);
+    setOpenPopupKycUpdate(true);
   };
 
   return (
