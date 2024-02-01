@@ -10,6 +10,7 @@ const KycUpdate = ({
   recordForEdit,
   setOpenPopup,
   getIncompleteKycCustomerData,
+  onDataUpdated,
 }) => {
   const [contactData, setContactData] = useState([]);
   const [allCompetitors, setAllCompetitors] = useState([]);
@@ -205,8 +206,11 @@ const KycUpdate = ({
       };
       await CustomerServices.updateCompanyData(recordForEdit, req);
       UpdateContactDetails();
+      if (onDataUpdated) {
+        onDataUpdated();
+      }
       setOpenPopup(false);
-      // getIncompleteKycCustomerData();
+      getIncompleteKycCustomerData();
     } catch (error) {
       if (error.response && error.response.data && error.response.data.errors) {
         const errors = error.response.data.errors;

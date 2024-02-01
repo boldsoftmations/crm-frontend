@@ -54,6 +54,10 @@ export const CustomerNoWhatsappGroup = () => {
     setSearchQuery(event.target.value);
   };
 
+  const refreshData = async () => {
+    await getAllCustomerNotHavingWhatsappGroup(currentPage, searchQuery);
+  };
+
   const Tabledata = Array.isArray(customerNotHavingWhatsappGroupData)
     ? customerNotHavingWhatsappGroupData.map((row) => ({
         id: row.id,
@@ -142,10 +146,9 @@ export const CustomerNoWhatsappGroup = () => {
           >
             <KycUpdate
               setOpenPopup={setOpenPopupKycUpdate}
-              getIncompleteKycCustomerData={
-                getAllCustomerNotHavingWhatsappGroup
-              }
+              getIncompleteKycCustomerData={refreshData}
               recordForEdit={selectedCustomerData}
+              onDataUpdated={refreshData}
             />
           </Popup>
         </Paper>
