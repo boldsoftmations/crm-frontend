@@ -206,7 +206,7 @@ const KycUpdate = ({
       await CustomerServices.updateCompanyData(recordForEdit, req);
       UpdateContactDetails();
       setOpenPopup(false);
-      getIncompleteKycCustomerData();
+      // getIncompleteKycCustomerData();
     } catch (error) {
       if (error.response && error.response.data && error.response.data.errors) {
         const errors = error.response.data.errors;
