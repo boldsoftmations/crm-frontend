@@ -222,8 +222,17 @@ const updateCompetitors = (id, data) => {
 };
 
 // Whatsapp routes
-const getAllWhatsappGroupData = (page = 1) => {
-  return CustomAxios.get(`/api/customer/whatsapp-group-list/?page=${page}`);
+const getAllWhatsappGroupData = (page = 1, searchValue) => {
+  const params = new URLSearchParams();
+  if (!searchValue && page) {
+    params.append("page", page);
+  }
+
+
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+  return CustomAxios.get(`/api/customer/whatsapp-group-list/?${params.toString()}`);
 };
 
 const getCustomerNotHavingWhatsappGroup = (page, searchValue) => {
@@ -293,6 +302,12 @@ const createWhatsappPdfData = (data) => {
   return CustomAxios.post("/api/customer/whatsapp-group-list/send-pdf/", data);
 };
 
+const deleteWhatsappData = (id) => {
+  console.log(id);
+  return CustomAxios.patch(`/api/customer/whatsapp-group-list/${id.whatsapp_group_id}/`);
+  
+}
+
 const getWhatsappImageData = (page = 1) => {
   return CustomAxios.get(`/api/customer/whatsapp-image/?page=${page}`);
 };
@@ -359,6 +374,7 @@ const CustomerServices = {
   createWhatsappData,
   createWhatsappImageData,
   createWhatsappPdfData,
+  deleteWhatsappData,
   getWhatsappImageData,
   resendWhatsappMessage,
   bulkResendMessage,
