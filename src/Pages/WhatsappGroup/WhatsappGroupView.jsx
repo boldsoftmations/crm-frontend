@@ -5,6 +5,8 @@ import CustomerServices from "../../services/CustomerService";
 import { CustomPagination } from "../../Components/CustomPagination";
 import { CustomLoader } from "../../Components/CustomLoader";
 import CustomTextField from "../../Components/CustomTextField";
+import { WhatsappGroupDelete } from "./WhatsappGroupDelete";
+import { Popup } from "../../Components/Popup";
 
 export const WhatsappGroupView = () => {
   const [open, setOpen] = useState(false);
@@ -14,6 +16,8 @@ export const WhatsappGroupView = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [deletePopupOpen, setDeletePopupOpen] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
 
   useEffect(() => {
     getAllWhatsappGroup();
@@ -37,6 +41,24 @@ export const WhatsappGroupView = () => {
     setOpen(false);
   };
 
+  const handleDelete = async (data) => {
+    setSelectedRow(data);
+    setDeletePopupOpen(true);
+  };
+
+  const onDeleteSuccess = async (deletedId) => {
+    setWhatsappGroupData((prevData) =>
+      prevData.filter((row) => row.whatsapp_group_id !== deletedId)
+    );
+    setSnackbarMessage("Group deleted successfully");
+    setSnackbarOpen(true);
+  };
+
+  const closeDeletePopup = () => {
+    setDeletePopupOpen(false);
+    getAllWhatsappGroup();
+  };
+
   const handlePageClick = (event, value) => {
     setCurrentPage(value);
   };
@@ -45,31 +67,22 @@ export const WhatsappGroupView = () => {
     setSearchQuery(event.target.value);
   };
 
-  const handleDelete = async (id) => {
-    try {
-      await CustomerServices.deleteWhatsappData(id);
-      setWhatsappGroupData((prevData) =>
-        prevData.filter((row) => row.whatsapp_group_id !== id)
-      );
-      setSnackbarMessage("Group deleted successfully");
-      setSnackbarOpen(true);
-    } catch (error) {
-      console.error("Error deleting group:", error);
-      alert("Error deleting group");
-    } finally {
-      getAllWhatsappGroup(currentPage, searchQuery);
-    }
-  };
-
   const Tabledata = Array.isArray(whatsappGroupData)
     ? whatsappGroupData.map((row) => ({
-        whatsapp_group_id: row.id,
+        id: row.id,
         name: row.name,
         whatsapp_group: row.whatsapp_group,
+        whatsapp_group_id: row.whatsapp_group_id,
       }))
     : [];
 
-  const Tableheaders = ["Group Id", "Company ", "Group Name", "Action"];
+  const Tableheaders = [
+    "Group Id",
+    "Company ",
+    "Group Name",
+    "Group ID",
+    "Action",
+  ];
 
   return (
     <>
@@ -138,6 +151,17 @@ export const WhatsappGroupView = () => {
             pageCount={pageCount}
             handlePageClick={handlePageClick}
           />
+          <Popup
+            title={"Whatsapp Group Delete"}
+            openPopup={deletePopupOpen}
+            setOpenPopup={setDeletePopupOpen}
+          >
+            <WhatsappGroupDelete
+              selectedData={selectedRow}
+              onClose={closeDeletePopup}
+              onDeleteSuccess={onDeleteSuccess}
+            />
+          </Popup>
           <Snackbar
             open={snackbarOpen}
             autoHideDuration={3000}

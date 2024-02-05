@@ -228,11 +228,12 @@ const getAllWhatsappGroupData = (page = 1, searchValue) => {
     params.append("page", page);
   }
 
-
   if (searchValue) {
     params.append("search", searchValue);
   }
-  return CustomAxios.get(`/api/customer/whatsapp-group-list/?${params.toString()}`);
+  return CustomAxios.get(
+    `/api/customer/whatsapp-group-list/?${params.toString()}`
+  );
 };
 
 const getCustomerNotHavingWhatsappGroup = (page, searchValue) => {
@@ -273,8 +274,7 @@ const getCustomerNotInGroupData = (page, searchValue) => {
   );
 };
 
-const getSalesPersonNotInGroupData = ( page, searchValue) => {
-
+const getSalesPersonNotInGroupData = (page, searchValue) => {
   const params = new URLSearchParams();
 
   if (page) {
@@ -285,9 +285,7 @@ const getSalesPersonNotInGroupData = ( page, searchValue) => {
     params.append("search", searchValue);
   }
 
-  return CustomAxios.get(
-    `api/customer/sales-person/?${params.toString()}`
-  );
+  return CustomAxios.get(`api/customer/sales-person/?${params.toString()}`);
 };
 
 const createWhatsappData = (data) => {
@@ -302,11 +300,9 @@ const createWhatsappPdfData = (data) => {
   return CustomAxios.post("/api/customer/whatsapp-group-list/send-pdf/", data);
 };
 
-const deleteWhatsappData = (id) => {
-  console.log(id);
-  return CustomAxios.patch(`/api/customer/whatsapp-group-list/${id.whatsapp_group_id}/`);
-  
-}
+const deleteWhatsappData = (ID) => {
+  return CustomAxios.patch(`/api/customer/whatsapp-group-list/${ID}/`);
+};
 
 const getWhatsappImageData = (page = 1) => {
   return CustomAxios.get(`/api/customer/whatsapp-image/?page=${page}`);

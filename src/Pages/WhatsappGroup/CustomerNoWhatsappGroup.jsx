@@ -62,11 +62,10 @@ export const CustomerNoWhatsappGroup = () => {
     ? customerNotHavingWhatsappGroupData.map((row) => ({
         id: row.id,
         name: row.name,
-        whatsapp_group: row.whatsapp_group,
       }))
     : [];
 
-  const Tableheaders = ["ID", "Company", "Group Name", "Action"];
+  const Tableheaders = ["ID", "Company", "Action"];
 
   const handleKycUpdate = async (data) => {
     setSelectedCustomerData(data.id);
