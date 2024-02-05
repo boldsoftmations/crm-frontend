@@ -23,7 +23,8 @@ export const BankInventoryDetails = (props) => {
   const Tabledata = bankData.map((row) => ({
     id: row.id,
     bank_name: row.bank_name,
-    current_account_no: row.current_account_no,
+    account_no:
+      vendorData.type === "Domestic" ? row.current_account_no : row.int_ca_no,
     ifsc_code: row.ifsc_code,
     branch: row.branch,
   }));
@@ -70,7 +71,10 @@ export const BankInventoryDetails = (props) => {
         </Box>
         <CustomTable
           headers={Tableheaders}
-          data={Tabledata}
+          data={Tabledata.map((row) => ({
+            ...row,
+            account_no: row.account_no,
+          }))}
           openInPopup={openInPopup}
           openInPopup2={null}
           openInPopup3={null}

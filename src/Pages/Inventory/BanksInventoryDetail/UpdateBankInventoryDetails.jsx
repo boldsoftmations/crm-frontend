@@ -45,9 +45,16 @@ export const UpdateBankInventoryDetails = (props) => {
     try {
       e.preventDefault();
       setOpen(true);
+      const accountNumberKey =
+        vendorData.type === "International"
+          ? "int_ca_no"
+          : "current_account_no";
+
       const req = {
         vendor: data ? data.vendorName : "",
-        current_account_no: inputValue.current_account_no,
+        // Use the determined account number key
+        [accountNumberKey]:
+          inputValue[accountNumberKey] || inputValue.current_account_no,
         ifsc_code: inputValue.ifsc_code ? inputValue.ifsc_code : "",
         bank_name:
           vendorData.type === "Domestic"
@@ -86,12 +93,11 @@ export const UpdateBankInventoryDetails = (props) => {
               : inputValue.branch
             : inputValue.branch,
       };
-      await InventoryServices.updateBankInventoryData(idForEdit, req);
+      await InventoryServices.updateBankInventoryData(idForEdit.id, req);
       setOpenPopup(false);
       getAllVendorDetailsByID();
       setOpen(false);
     } catch (error) {
-      console.log("createing company detail error", error);
       setOpen(false);
     }
   };
@@ -132,11 +138,19 @@ export const UpdateBankInventoryDetails = (props) => {
             <CustomTextField
               fullWidth
               size="small"
-              name="current_account_no"
+              name={
+                vendorData.type === "International"
+                  ? "int_ca_no"
+                  : "current_account_no"
+              }
               label="Account No"
               variant="outlined"
               value={
-                inputValue.current_account_no
+                vendorData.type === "International"
+                  ? inputValue.int_ca_no
+                    ? inputValue.int_ca_no
+                    : ""
+                  : inputValue.current_account_no
                   ? inputValue.current_account_no
                   : ""
               }
