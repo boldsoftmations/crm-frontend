@@ -76,13 +76,7 @@ export const WhatsappGroupView = () => {
       }))
     : [];
 
-  const Tableheaders = [
-    "Group Id",
-    "Company ",
-    "Group Name",
-    "Group ID",
-    "Action",
-  ];
+  const Tableheaders = ["Id", "Company ", "Group Name", "Group ID", "Action"];
 
   return (
     <>
