@@ -54,15 +54,18 @@ export const CustomerNoWhatsappGroup = () => {
     setSearchQuery(event.target.value);
   };
 
+  const refreshData = async () => {
+    await getAllCustomerNotHavingWhatsappGroup(currentPage, searchQuery);
+  };
+
   const Tabledata = Array.isArray(customerNotHavingWhatsappGroupData)
     ? customerNotHavingWhatsappGroupData.map((row) => ({
         id: row.id,
         name: row.name,
-        whatsapp_group: row.whatsapp_group,
       }))
     : [];
 
-  const Tableheaders = ["ID", "Company", "Group Name", "Action"];
+  const Tableheaders = ["ID", "Company", "Action"];
 
   const handleKycUpdate = async (data) => {
     setSelectedCustomerData(data.id);
@@ -142,10 +145,9 @@ export const CustomerNoWhatsappGroup = () => {
           >
             <KycUpdate
               setOpenPopup={setOpenPopupKycUpdate}
-              getIncompleteKycCustomerData={
-                getAllCustomerNotHavingWhatsappGroup
-              }
+              getIncompleteKycCustomerData={refreshData}
               recordForEdit={selectedCustomerData}
+              onDataUpdated={refreshData}
             />
           </Popup>
         </Paper>

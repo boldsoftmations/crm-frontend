@@ -6,6 +6,7 @@ export const CustomTable = ({
   data,
   PriorityColor,
   openInPopup,
+  openDeletePopup,
   openInPopup7,
   hideViewForStatus = [],
   ButtonText,
@@ -177,6 +178,23 @@ export const CustomTable = ({
                       View
                     </div>
                   )}
+                  {openDeletePopup &&
+                    !hideViewForStatus.includes(row.status) && (
+                      <div
+                        style={{
+                          display: "inline-block",
+                          // padding: "6px 12px",
+                          // border: "1px solid #1976d2",
+                          // borderRadius: "4px",
+                          color: "#1976d2",
+                          cursor: "pointer",
+                          marginRight: "8px",
+                        }}
+                        onClick={() => openDeletePopup(row)}
+                      >
+                        Delete
+                      </div>
+                    )}
                   {openInPopup7 && !hideViewForStatus.includes(row.status) && (
                     <div
                       style={{
