@@ -36,19 +36,25 @@ export const SalesInvoiceCreate = (props) => {
       user: "",
     },
   ]);
+  const calculateTotalAmount = (products) => {
+    return products
+      .filter((product) => product.pending_quantity > 0)
+      .reduce((acc, current) => {
+        const quantity = Number(current.quantity) || 0;
+        const rate = Number(current.rate) || 0;
+        return acc + quantity * rate;
+      }, 0);
+  };
+
   const [totalAmount, setTotalAmount] = useState(0);
   const handleFormChange = (index, event) => {
     let data = [...products];
-    data[index][event.target.name] = event.target.value;
+    data[index][event.target.name] = parseFloat(event.target.value) || 0;
+
     setProducts(data);
 
-    // Calculate the updated total amount
-    let updatedTotalAmount = 0;
-    for (let i = 0; i < data.length; i++) {
-      updatedTotalAmount += data[i].quantity * data[i].rate;
-    }
-
-    // Update the total amount in the state or wherever it is stored
+    // Use the calculateTotalAmount function to update the total amount
+    const updatedTotalAmount = calculateTotalAmount(data);
     setTotalAmount(updatedTotalAmount);
   };
 
@@ -74,8 +80,18 @@ export const SalesInvoiceCreate = (props) => {
         "customer",
         inputValue.company
       );
-      setCustomerOrderBookOption(response.data);
-      console.log("response.data.results by company", response.data.results);
+      console.log("response.data ", response.data);
+
+      // Filter data where any product's pending_quantity is greater than 0
+      const filteredData = response.data.filter(
+        (order) =>
+          order.products &&
+          order.products.some((product) => product.pending_quantity > 0)
+      );
+
+      setCustomerOrderBookOption(filteredData);
+      console.log("Filtered orders with pending quantity > 0: ", filteredData);
+
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -87,7 +103,7 @@ export const SalesInvoiceCreate = (props) => {
   const getCustomerWiseOrderBook = async (value) => {
     try {
       setOpen(true); // Show loading spinner
-
+      console.log("value", value);
       const data = value;
 
       // Initialize arrays
@@ -466,11 +482,21 @@ export const SalesInvoiceCreate = (props) => {
               </Divider>
             </Root>
           </Grid>
-          {products && products.length > 0
-            ? products.map((input, index) => {
+          {products &&
+            products.length > 0 &&
+            products
+              .filter((product) => product.pending_quantity > 0)
+              .map((input, index) => {
+                const amount =
+                  Number.isFinite(input.quantity) && Number.isFinite(input.rate)
+                    ? (input.quantity * input.rate).toFixed(2)
+                    : "0.00";
+
                 return (
-                  <>
-                    <Grid key={index} item xs={12} sm={3}>
+                  <React.Fragment key={index}>
+                    {" "}
+                    {/* Use React.Fragment with a key for each item */}
+                    <Grid item xs={12} sm={3}>
                       <CustomTextField
                         fullWidth
                         name="product"
@@ -502,12 +528,11 @@ export const SalesInvoiceCreate = (props) => {
                         error={input.pending_quantity < input.quantity}
                         helperText={
                           input.pending_quantity < input.quantity
-                            ? "qunatity will less than pending quantity"
+                            ? "Quantity must be less than or equal to pending quantity"
                             : ""
                         }
                       />
                     </Grid>
-
                     <Grid item xs={12} sm={2}>
                       <CustomTextField
                         fullWidth
@@ -521,15 +546,16 @@ export const SalesInvoiceCreate = (props) => {
                     <Grid item xs={12} sm={2}>
                       <CustomTextField
                         fullWidth
-                        // type={"number"}
                         name="amount"
                         size="small"
                         label="Amount"
                         variant="outlined"
-                        value={(input.quantity * input.rate).toFixed(2)}
+                        value={amount}
+                        InputProps={{
+                          readOnly: true, // This field is a calculated value, so it should be read-only
+                        }}
                       />
                     </Grid>
-
                     <Grid item xs={12} sm={1}>
                       <Button
                         onClick={() => removeFields(index)}
@@ -538,10 +564,10 @@ export const SalesInvoiceCreate = (props) => {
                         Remove
                       </Button>
                     </Grid>
-                  </>
+                  </React.Fragment>
                 );
-              })
-            : null}
+              })}
+
           {/* Display the total amount */}
           <Grid item xs={12} sm={2}>
             <CustomTextField
@@ -550,7 +576,10 @@ export const SalesInvoiceCreate = (props) => {
               size="small"
               label="Total Amount"
               variant="outlined"
-              value={totalAmount.toFixed(2)}
+              value={isNaN(totalAmount) ? "" : totalAmount.toFixed(2)}
+              InputProps={{
+                readOnly: true,
+              }}
             />
           </Grid>
         </Grid>
