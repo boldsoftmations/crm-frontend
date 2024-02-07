@@ -71,12 +71,20 @@ export const WhatsappGroupView = () => {
     ? whatsappGroupData.map((row) => ({
         id: row.id,
         name: row.name,
+        ref_customer: row.ref_customer,
         whatsapp_group: row.whatsapp_group,
         whatsapp_group_id: row.whatsapp_group_id,
       }))
     : [];
 
-  const Tableheaders = ["Id", "Company ", "Group Name", "Group ID", "Action"];
+  const Tableheaders = [
+    "Id",
+    "Company ",
+    "Reference Company",
+    "Group Name",
+    "Group ID",
+    "Action",
+  ];
 
   return (
     <>
@@ -130,7 +138,7 @@ export const WhatsappGroupView = () => {
                     fontWeight: 800,
                   }}
                 >
-                  Customer Whatsapp Group
+                  Whatsapp Group Information
                 </h3>
               </Grid>
             </Grid>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Grid, Chip, Divider, Button, Box } from "@mui/material";
+import { Grid, Chip, Divider, Button, Box, Autocomplete } from "@mui/material";
 import Option from "../../../Options/Options";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomerServices from "../../../services/CustomerService";
@@ -19,7 +19,8 @@ const KycUpdate = ({
   const [inputValue, setInputValue] = useState([]);
   const [contactValue, setContactValue] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
-
+  const [groupCompanies, setGroupCompanies] = useState([]);
+  const [loading, setLoading] = useState(false);
   // Fetch company details based on the active tab when the component mounts or the active tab changes
   useEffect(() => {
     if (recordForEdit) {
@@ -39,6 +40,33 @@ const KycUpdate = ({
       setAllCompetitors(response.data);
     } finally {
       setOpen(false);
+    }
+  };
+
+  //fetch group companies
+  useEffect(() => {
+    setLoading(true);
+    fetchGroupCompanies()
+      .then((data) => {
+        setGroupCompanies(data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch group companies", error);
+        setLoading(false);
+      });
+  }, []);
+
+  const fetchGroupCompanies = async () => {
+    try {
+      const response = await CustomerServices.getAllGroupCompanies();
+      const names = response.data.map((company) => ({
+        ref_customer: company.name,
+      }));
+      return names;
+    } catch (error) {
+      console.error("Failed to fetch group companies", error);
+      return [];
     }
   };
 
@@ -203,6 +231,9 @@ const KycUpdate = ({
         category: inputValue.category || [],
         main_distribution: inputValue.main_distribution || [],
         whatsapp_group: inputValue.whatsapp_group || null,
+        ref_customer: inputValue.ref_customer
+          ? inputValue.ref_customer.ref_customer
+          : null,
       };
       await CustomerServices.updateCompanyData(recordForEdit, req);
       UpdateContactDetails();
@@ -210,7 +241,7 @@ const KycUpdate = ({
         onDataUpdated();
       }
       setOpenPopup(false);
-      getIncompleteKycCustomerData();
+      // getIncompleteKycCustomerData();
     } catch (error) {
       if (error.response && error.response.data && error.response.data.errors) {
         const errors = error.response.data.errors;
@@ -518,6 +549,26 @@ const KycUpdate = ({
                 }}
                 error={!!errorMessage}
                 helperText={errorMessage}
+              />
+            </Grid>
+          )}
+          {inputValue.type_of_customer === "Distribution Customer" && (
+            <Grid item xs={12} sm={6}>
+              <CustomAutocomplete
+                fullWidth
+                name="ref_customer"
+                size="small"
+                label="Group Company"
+                options={groupCompanies}
+                value={inputValue.ref_customer || ""}
+                onChange={(event, newValue) => {
+                  handleInputChange("ref_customer", newValue || "");
+                  resetErrorMessage();
+                }}
+                error={!!errorMessage}
+                helperText={errorMessage}
+                loading={loading}
+                getOptionLabel={(option) => (option ? option.ref_customer : "")}
               />
             </Grid>
           )}
