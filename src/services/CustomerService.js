@@ -221,6 +221,10 @@ const updateCompetitors = (id, data) => {
   return CustomAxios.patch(`/api/customer/list-main-distribution/${id}`, data);
 };
 
+const getAllGroupCompanies = () => {
+  return CustomAxios.get("/api/customer/list-group-company/");
+}
+
 // Whatsapp routes
 const getAllWhatsappGroupData = (page = 1, searchValue) => {
   const params = new URLSearchParams();
@@ -363,6 +367,7 @@ const CustomerServices = {
   createCompetitorAPI,
   getAllSearchCompetitors,
   updateCompetitors,
+  getAllGroupCompanies,
   getAllWhatsappGroupData,
   getCustomerNotHavingWhatsappGroup,
   getCustomerNotInGroupData,

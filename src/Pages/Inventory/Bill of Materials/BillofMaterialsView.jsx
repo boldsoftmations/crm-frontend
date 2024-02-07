@@ -240,7 +240,7 @@ export const BillofMaterialsView = () => {
                   color="primary"
                   onClick={() =>
                     getAllBillofMaterialsDetails(
-                      currentPage,
+                      // currentPage,
                       filterApproved,
                       searchQuery
                     )
