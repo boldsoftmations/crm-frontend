@@ -80,7 +80,7 @@ export const WhatsappGroupView = () => {
   const Tableheaders = [
     "Id",
     "Company ",
-    "Reference Company",
+    "Group Company",
     "Group Name",
     "Group ID",
     "Action",
