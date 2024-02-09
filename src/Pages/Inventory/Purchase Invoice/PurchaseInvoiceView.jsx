@@ -257,7 +257,7 @@ function Row(props) {
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </StyledTableCell>
-        <StyledTableCell align="center">{row.invoice_no}</StyledTableCell>
+        <StyledTableCell align="center">{row.grn}</StyledTableCell>
         <StyledTableCell align="center">{row.grn_date}</StyledTableCell>
         <StyledTableCell align="center">{row.po_no}</StyledTableCell>
         <StyledTableCell align="center">{row.supplier_name}</StyledTableCell>
