@@ -717,6 +717,8 @@ const paymentTermsOptions = [
     label: "30% Advance, Balance Before Dispatch",
     value: "30%_advance_balance_before_dispatch",
   },
+  { label: "7 days along with PDC", value: "7_days_with_pdc" },
+  { label: "10 days along with PDC", value: "10_days_with_pdc" },
   { label: "15 days along with PDC", value: "15_days_with_pdc" },
   { label: "30 days along with PDC", value: "30_days_with_pdc" },
   { label: "45 days along with PDC", value: "45_days_with_pdc" },
