@@ -90,6 +90,8 @@ export const ShortListedCandidateUpdate = ({
             "Experience",
             "Language",
             "Not Interested",
+            "Travelling Issue",
+            "Got other Opportunity",
             "Others",
           ]}
           label="Rejected Reason"

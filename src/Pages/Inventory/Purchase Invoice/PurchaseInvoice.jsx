@@ -192,24 +192,24 @@ export const PurchaseInvoice = (props) => {
                     >
                       <div>
                         <strong style={{ ...typographyStyling }}>
-                          Invoice No & Date. :{" "}
+                          Voucher No & Date. :{" "}
+                        </strong>
+                        {purchaseInvoiceDataByID.id} &{" "}
+                        {purchaseInvoiceDataByID.invoice_date}
+                      </div>
+                      <div>
+                        <strong style={{ ...typographyStyling }}>
+                          Grn No & Date. :{" "}
                         </strong>
                         {purchaseInvoiceDataByID.invoice_no} &{" "}
-                        {purchaseInvoiceDataByID.invoice_date}
+                        {purchaseInvoiceDataByID.grn_date}
                       </div>
                       <div>
                         <strong style={{ ...typographyStyling }}>
                           Purchase Order No & Date :
                         </strong>
-                        {purchaseInvoiceDataByID.purchase_order_no} &{" "}
-                        {purchaseInvoiceDataByID.purchase_orde_date}
-                      </div>
-
-                      <div>
-                        <strong style={{ ...typographyStyling }}>
-                          Date :{" "}
-                        </strong>
-                        {purchaseInvoiceDataByID.invoice_date}
+                        {purchaseInvoiceDataByID.po_no} &{" "}
+                        {purchaseInvoiceDataByID.po_date}
                       </div>
                       <div>
                         <strong style={{ ...typographyStyling }}>
