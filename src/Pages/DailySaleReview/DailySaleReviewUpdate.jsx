@@ -314,14 +314,6 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
               count={reviewData.followup_summary.overdue_task}
             />
           </GridItemCard>
-          {/* Pending Payments */}
-          <GridItemCard title="Pending Payments" xs={12}>
-            {reviewData &&
-              reviewData.pending_payments &&
-              reviewData.pending_payments.map((payment, index) => (
-                <PendingPaymentsCard key={index} payment={payment} />
-              ))}
-          </GridItemCard>
           <GridItemCard title="New Customer Summary" xs={12} sm={6} lg={4}>
             <OverviewItemCard
               label=" New Customer Last Month"
@@ -336,6 +328,15 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
               count={reviewData.new_customer_summary.sales_invoice}
             />
           </GridItemCard>
+          {/* Pending Payments */}
+          <GridItemCard title="Pending Payments" xs={12}>
+            {reviewData &&
+              reviewData.pending_payments &&
+              reviewData.pending_payments.map((payment, index) => (
+                <PendingPaymentsCard key={index} payment={payment} />
+              ))}
+          </GridItemCard>
+
           <GridItemCard title="Call to Conversion Ratio" xs={12} sm={6} lg={4}>
             <OverviewItemCard
               label="Lead Count"
@@ -482,7 +483,7 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
               </Table>
             </TableContainer>
           </GridItemCard>
-          <GridItemCard title="Today Lead Estimate Order" xs={12} sm={6} lg={4}>
+          <GridItemCard title="Today Lead Estimate Order" xs={12} sm={8} lg={6}>
             <TableContainer>
               <Table aria-label="Lead Estimate Order">
                 <TableHead>
@@ -512,7 +513,7 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
               </Table>
             </TableContainer>
           </GridItemCard>
-          <GridItemCard title="Sales Summary" xs={12} sm={10} lg={8}>
+          <GridItemCard title="Sales Summary" xs={12}>
             <TableContainer>
               <Table aria-label="Sales Summary Table">
                 <TableHead>
