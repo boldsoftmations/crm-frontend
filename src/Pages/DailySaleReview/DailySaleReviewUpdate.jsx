@@ -7,6 +7,7 @@ import {
   Chip,
   Divider,
   Grid,
+  LinearProgress,
   List,
   ListItem,
   ListItemSecondaryAction,
@@ -24,17 +25,34 @@ import jsPDF from "jspdf";
 import { DailySalesReviewPDF } from "./DailySalesReviewPDF";
 import { pdf } from "@react-pdf/renderer";
 
+// Utility function to capitalize the first letter of each word
+const capitalizeWords = (str) =>
+  str
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+
 const generateListItem = (label, value, maxValue) => {
+  // Capitalize each word in the label
+  const capitalizedLabel = capitalizeWords(label);
+
+  // Calculate the percentage
+  const percentage = (value / maxValue) * 100;
+
   return (
     <ListItem key={label}>
-      <ListItemText primary={label} />
+      <ListItemText
+        primary={capitalizedLabel}
+        secondary={<LinearProgress variant="determinate" value={percentage} />}
+      />
       <ListItemSecondaryAction>
-        <Typography variant="caption">{value}</Typography>
+        <Typography variant="caption">{`${value} (${percentage.toFixed(
+          2
+        )}%)`}</Typography>
       </ListItemSecondaryAction>
     </ListItem>
   );
 };
-
 const GridItemCard = ({ title, children, xs, sm, lg }) => (
   <Grid item xs={xs} sm={sm} lg={lg}>
     <Card raised>
@@ -50,6 +68,20 @@ const GridItemCard = ({ title, children, xs, sm, lg }) => (
 );
 
 const CallPerformanceTable = ({ callPerformanceData }) => {
+  // Calculate totals
+  const totals = Object.values(callPerformanceData).reduce(
+    (acc, values) => {
+      acc.today += values.today;
+      acc.last_7_days += values.last_7_days;
+      acc.month += values.month;
+      return acc;
+    },
+    { today: 0, last_7_days: 0, month: 0 }
+  );
+
+  // Placeholder for additional month info - replace with actual calculation if needed
+  const additionalMonthInfo = "Placeholder Info";
+
   return (
     <TableContainer>
       <Table>
@@ -58,26 +90,54 @@ const CallPerformanceTable = ({ callPerformanceData }) => {
             <TableCell>Category</TableCell>
             <TableCell align="right">Today</TableCell>
             <TableCell align="right">Last 7 Days</TableCell>
-            <TableCell align="right">Month</TableCell>
+            <TableCell align="right">This Month</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {Object.entries(callPerformanceData).map(([key, values]) => (
             <TableRow key={key}>
               <TableCell component="th" scope="row">
-                {key.replace(/_/g, " ")}
+                {capitalizeWords(key.replace(/_/g, " "))}
               </TableCell>
               <TableCell align="right">{values.today}</TableCell>
               <TableCell align="right">{values.last_7_days}</TableCell>
               <TableCell align="right">{values.month}</TableCell>
             </TableRow>
           ))}
+          {/* Add a row for totals, with additional month info directly in the same cell */}
+          <TableRow>
+            <TableCell component="th" scope="row">
+              Total
+            </TableCell>
+            <TableCell align="right">{totals.today}</TableCell>
+            <TableCell align="right">{totals.last_7_days}</TableCell>
+            <TableCell align="right">{totals.month}</TableCell>
+          </TableRow>
         </TableBody>
       </Table>
     </TableContainer>
   );
 };
 
+const NoOrderCustomerOverviewCard = ({ timeRange, count }) => (
+  <>
+    <CardContent
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+      }}
+    >
+      <Typography variant="subtitle1">
+        {capitalizeWords(timeRange.replace(/_/g, " "))}
+      </Typography>
+      <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
+        Count: {count}
+      </Typography>
+    </CardContent>
+    <Divider variant="middle" />
+  </>
+);
 const PendingPaymentsCard = ({ payment }) => {
   const theme = useTheme();
 
@@ -104,7 +164,9 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
   console.log("recordForEdit", JSON.stringify(recordForEdit, null, 2));
   const { daily_sales_review: reviewData = {} } = recordForEdit || {};
   console.log("reviewData", JSON.stringify(reviewData, null, 2));
-
+  const assignedCustomerTotal = reviewData.existing_customer.assigned_customer;
+  const entries = Object.entries(reviewData.no_order_customer);
+  const totalCount = entries.reduce((acc, [, count]) => acc + count, 0);
   const generatePDF = async () => {
     try {
       // create a new jsPDF instance
@@ -147,7 +209,11 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
               {reviewData && reviewData.existing_customer ? (
                 Object.entries(reviewData.existing_customer).map(
                   ([key, value]) =>
-                    generateListItem(key.replace(/_/g, " "), value) // Assuming a default max value of 10
+                    generateListItem(
+                      key.replace(/_/g, " "),
+                      value,
+                      assignedCustomerTotal
+                    ) // Assuming a default max value of 10
                 )
               ) : (
                 <Typography>No Customer Data Available</Typography>
@@ -167,21 +233,24 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
             sm={6}
             lg={4}
           >
-            {Object.entries(reviewData.no_order_customer).map(
-              ([timeRange, count]) => (
-                <Box key={timeRange} mb={2}>
-                  <Typography variant="subtitle2" color="textSecondary">
-                    {timeRange.replace(/_/g, " ")}
-                  </Typography>
-                  {/* <LinearProgress
-                variant="determinate"
-                value={(count / maxCount) * 100}
-                style={{ height: 10, borderRadius: 5, marginBottom: 4 }}
-              /> */}
-                  <Typography variant="caption">{`Count: ${count}`}</Typography>
-                </Box>
-              )
+            {entries.length > 0 ? (
+              entries.map(([timeRange, count]) => (
+                <NoOrderCustomerOverviewCard
+                  key={timeRange}
+                  timeRange={timeRange}
+                  count={count}
+                />
+              ))
+            ) : (
+              <Typography variant="subtitle1">
+                No Customer Data Available
+              </Typography>
             )}
+            <Box mt={2} sx={{ textAlign: "center" }}>
+              <Typography variant="subtitle1" color="textPrimary">
+                Total Count: {totalCount}
+              </Typography>
+            </Box>
           </GridItemCard>
 
           <GridItemCard title="PI Summary" xs={12} sm={6} lg={4}>
