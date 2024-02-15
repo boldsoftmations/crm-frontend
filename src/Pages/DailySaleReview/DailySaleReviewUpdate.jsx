@@ -155,7 +155,7 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
             </List>
           </GridItemCard>
 
-          <GridItemCard title="Call Performance Overview" xs={12} sm={6} lg={4}>
+          <GridItemCard title="Call Summary Overview" xs={12} sm={6} lg={4}>
             <CallPerformanceTable
               callPerformanceData={reviewData.call_performance}
             />
@@ -211,6 +211,25 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
             <List>
               <ListItem>
                 <ListItemText
+                  primary="New Follow-up Created Today"
+                  secondary={reviewData.followup_summary.today}
+                />
+              </ListItem>
+
+              <ListItem>
+                <ListItemText
+                  primary="Hot Lead Created Today"
+                  secondary={reviewData.followup_summary.today_hot_lead}
+                />
+              </ListItem>
+              <ListItem>
+                <ListItemText
+                  primary="Follow-up Missed Today"
+                  secondary={reviewData.followup_summary.today_missed_followup}
+                />
+              </ListItem>
+              <ListItem>
+                <ListItemText
                   primary="Overdue Follow-up"
                   secondary={reviewData.followup_summary.overdue_followup}
                 />
@@ -219,12 +238,6 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
                 <ListItemText
                   primary="Overdue Task"
                   secondary={reviewData.followup_summary.overdue_task}
-                />
-              </ListItem>
-              <ListItem>
-                <ListItemText
-                  primary="Today"
-                  secondary={reviewData.followup_summary.today}
                 />
               </ListItem>
             </List>
@@ -255,6 +268,28 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
                 <ListItemText
                   primary="Sales Invoice"
                   secondary={reviewData.new_customer_summary.sales_invoice}
+                />
+              </ListItem>
+            </List>
+          </GridItemCard>
+          <GridItemCard title="Customer Conversion Ratio" xs={12} sm={6} lg={4}>
+            <List>
+              <ListItem>
+                <ListItemText
+                  primary="Lead Count"
+                  secondary={reviewData.conversion_ratio.lead_count}
+                />
+              </ListItem>
+              <ListItem>
+                <ListItemText
+                  primary="New Customer"
+                  secondary={reviewData.conversion_ratio.new_customer}
+                />
+              </ListItem>
+              <ListItem>
+                <ListItemText
+                  primary="Conversion Ratio"
+                  secondary={reviewData.conversion_ratio.conversion_ratiof}
                 />
               </ListItem>
             </List>
