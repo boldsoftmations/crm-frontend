@@ -421,6 +421,39 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
               </Table>
             </TableContainer>
           </GridItemCard>
+          <GridItemCard
+            title="Today Estimate Customer Order"
+            xs={12}
+            sm={8}
+            lg={6}
+          >
+            <TableContainer>
+              <Table aria-label="Estimate Customer Order">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Customer</TableCell>
+                    <TableCell>Estimated Date</TableCell>
+                    <TableCell>Description</TableCell>
+                    <TableCell>Product</TableCell>
+                    <TableCell>Quantity</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {reviewData &&
+                    reviewData.customer_estimated_order &&
+                    reviewData.customer_estimated_order.map((order, index) => (
+                      <TableRow key={index}>
+                        <TableCell>{order.customer}</TableCell>
+                        <TableCell>{order.estimated_date}</TableCell>
+                        <TableCell>{order.description}</TableCell>
+                        <TableCell>{order.product}</TableCell>
+                        <TableCell>{order.quantity}</TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </GridItemCard>
           <GridItemCard title="Today Missed Lead Order" xs={12} sm={8} lg={6}>
             <TableContainer>
               <Table aria-label="Missed Customer Orders">
@@ -450,27 +483,34 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
             </TableContainer>
           </GridItemCard>
           <GridItemCard title="Today Lead Estimate Order" xs={12} sm={6} lg={4}>
-            {reviewData &&
-              reviewData.today_lead_estimate_order &&
-              reviewData.today_lead_estimate_order.map((order, index) => (
-                <Grid item xs={12} sm={6} md={4} key={index}>
-                  <Card raised>
-                    <CardContent>
-                      <Typography variant="h6" component="h2">
-                        {order.leadcompany || "No Company"}
-                      </Typography>
-                      <Chip
-                        label={order.lead_stage || "No Stage"}
-                        color="primary"
-                      />
-                      <Typography color="textSecondary">
-                        Anticipated Date:{" "}
-                        {order.anticipated_date || "Not Provided"}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))}
+            <TableContainer>
+              <Table aria-label="Lead Estimate Order">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Stage</TableCell>
+                    <TableCell>Customer</TableCell>
+                    <TableCell>Anticipated Date</TableCell>
+                    <TableCell>Description</TableCell>
+                    <TableCell>Product</TableCell>
+                    <TableCell>Quantity</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {reviewData &&
+                    reviewData.today_lead_estimate_order &&
+                    reviewData.today_lead_estimate_order.map((order, index) => (
+                      <TableRow key={index}>
+                        <TableCell>{order.stage}</TableCell>
+                        <TableCell>{order.customer}</TableCell>
+                        <TableCell>{order.anticipated_date}</TableCell>
+                        <TableCell>{order.description}</TableCell>
+                        <TableCell>{order.product}</TableCell>
+                        <TableCell>{order.quantity}</TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
           </GridItemCard>
           <GridItemCard title="Sales Summary" xs={12} sm={10} lg={8}>
             <TableContainer>
