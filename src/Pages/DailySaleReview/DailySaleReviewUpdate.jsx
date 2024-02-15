@@ -257,20 +257,20 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
             <List>
               <ListItem>
                 <ListItemText
-                  primary="Drop"
+                  primary="Raised Today"
+                  secondary={reviewData.pi_summary.raised}
+                />
+              </ListItem>
+              <ListItem>
+                <ListItemText
+                  primary="PI Dropped Today"
                   secondary={reviewData.pi_summary.drop}
                 />
               </ListItem>
               <ListItem>
                 <ListItemText
-                  primary="Month Drop"
+                  primary="PI Drop This Month"
                   secondary={reviewData.pi_summary.month_drop}
-                />
-              </ListItem>
-              <ListItem>
-                <ListItemText
-                  primary="Raised"
-                  secondary={reviewData.pi_summary.raised}
                 />
               </ListItem>
             </List>
@@ -323,25 +323,25 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
             <List>
               <ListItem>
                 <ListItemText
-                  primary="Last Month"
+                  primary=" New Customer Last Month"
                   secondary={reviewData.new_customer_summary.last_month}
                 />
               </ListItem>
               <ListItem>
                 <ListItemText
-                  primary="Month"
+                  primary="New Customer This Month"
                   secondary={reviewData.new_customer_summary.month}
                 />
               </ListItem>
               <ListItem>
                 <ListItemText
-                  primary="Sales Invoice"
+                  primary="New Customer Billed Today"
                   secondary={reviewData.new_customer_summary.sales_invoice}
                 />
               </ListItem>
             </List>
           </GridItemCard>
-          <GridItemCard title="Customer Conversion Ratio" xs={12} sm={6} lg={4}>
+          <GridItemCard title="Call to Conversion Ratio" xs={12} sm={6} lg={4}>
             <List>
               <ListItem>
                 <ListItemText
