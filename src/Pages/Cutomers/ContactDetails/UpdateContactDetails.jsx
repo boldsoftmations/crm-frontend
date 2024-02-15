@@ -18,10 +18,10 @@ export const UpdateContactDetails = (props) => {
   const { setOpenPopup, getAllCompanyDetailsByID, IDForEdit } = props;
   const [state, setState] = useState({
     open: false,
-    designation: "",
     inputValue: {
       name: "",
       contact: "",
+      designation: "",
       alternate_contact: "",
       email: "",
       alternate_email: "",
@@ -52,7 +52,6 @@ export const UpdateContactDetails = (props) => {
       setState((prevState) => ({
         ...prevState,
         inputValue: response.data,
-        designation: response.data.designation,
         open: false,
       }));
     } catch (err) {
@@ -66,7 +65,6 @@ export const UpdateContactDetails = (props) => {
     try {
       setState((prevState) => ({ ...prevState, open: true }));
       const { contact, alternate_contact, ...rest } = state.inputValue;
-
       // Ensure contact and alternate_contact are not null/undefined before accessing length
       const contact1 =
         contact && contact.length === 12 ? `+${contact}` : contact;
@@ -132,12 +130,15 @@ export const UpdateContactDetails = (props) => {
               <Select
                 labelId="demo-select-small"
                 id="demo-select-small"
-                value={state.designation}
+                value={state.inputValue.designation}
                 label="Designation"
                 onChange={(event) =>
                   setState((prevState) => ({
                     ...prevState,
-                    designation: event.target.value,
+                    inputValue: {
+                      ...prevState.inputValue,
+                      designation: event.target.value,
+                    },
                   }))
                 }
               >
@@ -212,13 +213,15 @@ export const UpdateContactDetails = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            {state.designation === "Director" ||
-            state.designation === "Owner" ||
-            state.designation === "Partner" ? (
+            {state.inputValue.designation === "Director" ||
+            state.inputValue.designation === "Owner" ||
+            state.inputValue.designation === "Partner" ? (
               <CustomTextField
                 fullWidth
                 disabled={
-                  !["Director", "Owner", "Partner"].includes(state.designation)
+                  !["Director", "Owner", "Partner"].includes(
+                    state.inputValue.designation
+                  )
                 }
                 onChange={handleInputChange}
                 size="small"
@@ -233,13 +236,15 @@ export const UpdateContactDetails = (props) => {
             ) : null}
           </Grid>
           <Grid item xs={12} sm={6}>
-            {state.designation === "Director" ||
-            state.designation === "Owner" ||
-            state.designation === "Partner" ? (
+            {state.inputValue.designation === "Director" ||
+            state.inputValue.designation === "Owner" ||
+            state.inputValue.designation === "Partner" ? (
               <CustomTextField
                 fullWidth
                 disabled={
-                  !["Director", "Owner", "Partner"].includes(state.designation)
+                  !["Director", "Owner", "Partner"].includes(
+                    state.inputValue.designation
+                  )
                 }
                 onChange={handleInputChange}
                 size="small"
