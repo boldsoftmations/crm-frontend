@@ -356,7 +356,7 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
             />
             <OverviewItemCard
               label="Conversion Ratio"
-              count={reviewData.conversion_ratio.conversion_ratiof}
+              count={reviewData.conversion_ratio.conversion_ratio}
             />
           </GridItemCard>
           <GridItemCard title="Top Customers" xs={12} sm={6} lg={4}>
