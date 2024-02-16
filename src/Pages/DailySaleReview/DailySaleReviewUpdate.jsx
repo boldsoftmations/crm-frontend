@@ -89,7 +89,7 @@ const CallPerformanceTable = ({ callPerformanceData }) => {
           <TableRow>
             <TableCell>Category</TableCell>
             <TableCell align="right">Today</TableCell>
-            <TableCell align="right">Last 7 Days</TableCell>
+            <TableCell align="right">Last 7 Days Avg</TableCell>
             <TableCell align="right">This Month</TableCell>
           </TableRow>
         </TableHead>
@@ -337,7 +337,7 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
               ))}
           </GridItemCard>
 
-          <GridItemCard title="Call to Conversion Ratio" xs={12} sm={6} lg={4}>
+          <GridItemCard title="Lead to Customer Ratio" xs={12} sm={6} lg={4}>
             <OverviewItemCard
               label="Lead Count"
               count={reviewData.conversion_ratio.lead_count}
