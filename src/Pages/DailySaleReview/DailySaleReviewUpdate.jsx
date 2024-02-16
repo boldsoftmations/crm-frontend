@@ -361,7 +361,8 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
           </GridItemCard>
           <GridItemCard title="Top Customers" xs={12} sm={6} lg={4}>
             <List>
-              {reviewData.length && reviewData.top_customer ? (
+              {Array.isArray(reviewData.top_customer) &&
+              reviewData.top_customer.length > 0 ? (
                 reviewData.top_customer.map((customer, index) => (
                   <TopCustomerItemCard
                     key={index}
@@ -378,7 +379,8 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
 
           <GridItemCard title="Top Forecast Customers" xs={12} sm={6} lg={4}>
             <List>
-              {reviewData.length && reviewData.top_forecast_customer ? (
+              {Array.isArray(reviewData.top_forecast_customer) &&
+              reviewData.top_forecast_customer.length > 0 ? (
                 reviewData.top_forecast_customer.map(
                   (forecastCustomer, index) => (
                     <TopCustomerItemCard
