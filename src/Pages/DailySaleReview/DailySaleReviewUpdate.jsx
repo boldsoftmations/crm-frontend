@@ -306,6 +306,14 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
               count={reviewData.followup_summary.today_missed_followup}
             />
             <OverviewItemCard
+              label="Today's Missed Follow-up "
+              count={reviewData.followup_summary.today_missed_forecast}
+            />
+            <OverviewItemCard
+              label="Today's Closed Hot Lead"
+              count={reviewData.followup_summary.today_closed_hot_lead}
+            />
+            <OverviewItemCard
               label="Overdue Follow-up"
               count={reviewData.followup_summary.overdue_followup}
             />
@@ -550,6 +558,45 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
                 </TableBody>
               </Table>
             </TableContainer>
+          </GridItemCard>
+          <GridItemCard title="Monthly Sales Chart" xs={12}>
+            <TableContainer>
+              <Table aria-label="Monthly Sales Overview">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Month</TableCell>
+                    <TableCell>Year</TableCell>
+                    <TableCell>Total Sales</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {reviewData &&
+                    reviewData.month_on_month_sales &&
+                    reviewData.month_on_month_sales.map((item, index) => (
+                      <TableRow key={index}>
+                        <TableCell>{item.month}</TableCell>
+                        <TableCell>{item.year}</TableCell>
+                        <TableCell>{item.total_sales}</TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </GridItemCard>
+
+          <GridItemCard title="Whatsapp Summary" xs={6}>
+            <OverviewItemCard
+              label="Customer Not in WhatsApp Group"
+              count={reviewData.whatsapp_summary.not_customer}
+            />
+            <OverviewItemCard
+              label="Customer Not Having WhatsApp Group"
+              count={reviewData.whatsapp_summary.not_group}
+            />
+            <OverviewItemCard
+              label="Sales Person Not in Group"
+              count={reviewData.whatsapp_summary.not_sale_person}
+            />
           </GridItemCard>
         </Grid>
 
