@@ -79,9 +79,6 @@ const CallPerformanceTable = ({ callPerformanceData }) => {
     { today: 0, last_7_days: 0, month: 0 }
   );
 
-  // Placeholder for additional month info - replace with actual calculation if needed
-  const additionalMonthInfo = "Placeholder Info";
-
   return (
     <TableContainer>
       <Table>
@@ -161,24 +158,6 @@ const TopCustomerItemCard = ({ primary, amount, isBilledThisMonth }) => (
     <Divider variant="middle" />
   </>
 );
-
-const PendingPaymentsCard = ({ payment }) => {
-  const theme = useTheme();
-
-  return (
-    <Card style={{ margin: theme.spacing(1) }}>
-      <CardContent>
-        <Typography variant="h6">{payment.customer || "N/A"}</Typography>
-        <Typography color="textSecondary">Amount: {payment.amount}</Typography>
-        <Typography color="textSecondary">Date: {payment.date}</Typography>
-        <Typography color="textSecondary">
-          PI Number: {payment.pi_number}
-        </Typography>
-        <Typography color="textSecondary">Status: {payment.status}</Typography>
-      </CardContent>
-    </Card>
-  );
-};
 
 export const DailySaleReviewUpdate = ({ recordForEdit }) => {
   const theme = useTheme();
@@ -339,72 +318,86 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
           </GridItemCard>
           {/* Pending Payments */}
           <GridItemCard title="Pending Payments" xs={12}>
-            <div style={{ maxHeight: "400px", overflow: "auto" }}>
-              {reviewData &&
-                reviewData.pending_payments &&
-                reviewData.pending_payments.map((payment, index) => (
-                  <PendingPaymentsCard key={index} payment={payment} />
-                ))}
-            </div>
+            <TableContainer style={{ maxHeight: "400px", overflow: "auto" }}>
+              <Table aria-label="Pending Payment Overview">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Date</TableCell>
+                    <TableCell>Amount</TableCell>
+                    <TableCell>Status</TableCell>
+                    <TableCell>Customer</TableCell>
+                    <TableCell>PI Number</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {reviewData &&
+                    reviewData.pending_payments &&
+                    reviewData.pending_payments.map((order, index) => (
+                      <TableRow key={index}>
+                        <TableCell>{order.date}</TableCell>
+                        <TableCell>{order.amount}</TableCell>
+                        <TableCell>{order.status}</TableCell>
+                        <TableCell>{order.customer}</TableCell>
+                        <TableCell>{order.pi_number}</TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
           </GridItemCard>
-
-          <GridItemCard title="Lead to Customer Ratio" xs={12} sm={6} lg={4}>
-            <OverviewItemCard
-              label="Lead Count"
-              count={reviewData.conversion_ratio.lead_count}
-            />
-            <OverviewItemCard
-              label="New Customer"
-              count={reviewData.conversion_ratio.new_customer}
-            />
-            <OverviewItemCard
-              label="Conversion Ratio"
-              count={reviewData.conversion_ratio.conversion_ratio}
-            />
+          <GridItemCard title="Top Customer" xs={12}>
+            <TableContainer style={{ maxHeight: "400px", overflow: "auto" }}>
+              <Table aria-label="Top Customer Overview">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Customer</TableCell>
+                    <TableCell>Amount</TableCell>
+                    <TableCell>Billed This Month</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {reviewData &&
+                    reviewData.top_customer &&
+                    reviewData.top_customer.map((order, index) => (
+                      <TableRow key={index}>
+                        <TableCell>{order.customer}</TableCell>
+                        <TableCell>{order.amount}</TableCell>
+                        <TableCell>{order.is_billed_this_month}</TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
           </GridItemCard>
-          <GridItemCard title="Top Customers" xs={12} sm={6} lg={4}>
-            <List style={{ maxHeight: "300px", overflow: "auto" }}>
-              {Array.isArray(reviewData.top_customer) &&
-              reviewData.top_customer.length > 0 ? (
-                reviewData.top_customer.map((customer, index) => (
-                  <TopCustomerItemCard
-                    key={index}
-                    primary={`Customer: ${customer.customer}`}
-                    amount={customer.amount}
-                    isBilledThisMonth={customer.is_billed_this_month}
-                  />
-                ))
-              ) : (
-                <Typography>No Top Customer Data Available</Typography>
-              )}
-            </List>
+          <GridItemCard title="Top Forecast Customer" xs={12}>
+            <TableContainer style={{ maxHeight: "400px", overflow: "auto" }}>
+              <Table aria-label="Top Forecast Customer Overview">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Customer</TableCell>
+                    <TableCell>Amount</TableCell>
+                    <TableCell>Billed This Month</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {reviewData &&
+                    reviewData.top_forecast_customer &&
+                    reviewData.top_forecast_customer.map((order, index) => (
+                      <TableRow key={index}>
+                        <TableCell>{order.customer}</TableCell>
+                        <TableCell>{order.amount}</TableCell>
+                        <TableCell>{order.is_billed_this_month}</TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
           </GridItemCard>
-
-          <GridItemCard title="Top Forecast Customers" xs={12} sm={6} lg={4}>
-            <List style={{ maxHeight: "300px", overflow: "auto" }}>
-              {Array.isArray(reviewData.top_forecast_customer) &&
-              reviewData.top_forecast_customer.length > 0 ? (
-                reviewData.top_forecast_customer.map(
-                  (forecastCustomer, index) => (
-                    <TopCustomerItemCard
-                      key={index}
-                      primary={`Customer: ${forecastCustomer.customer}`}
-                      amount={forecastCustomer.amount}
-                      isBilledThisMonth={forecastCustomer.is_billed_this_month}
-                    />
-                  )
-                )
-              ) : (
-                <Typography>No Top Forecast Customer Data Available</Typography>
-              )}
-            </List>
-          </GridItemCard>
-
           <GridItemCard
             title="Today Missed Customer Order"
             xs={12}
-            sm={8}
-            lg={6}
+            // sm={8}
+            // lg={6}
           >
             <TableContainer style={{ maxHeight: "400px", overflow: "auto" }}>
               <Table aria-label="Missed Customer Orders">
@@ -438,8 +431,8 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
           <GridItemCard
             title="Today Estimate Customer Order"
             xs={12}
-            sm={8}
-            lg={6}
+            // sm={8}
+            // lg={6}
           >
             <TableContainer style={{ maxHeight: "400px", overflow: "auto" }}>
               <Table aria-label="Estimate Customer Order">
@@ -468,7 +461,7 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
               </Table>
             </TableContainer>
           </GridItemCard>
-          <GridItemCard title="Today Missed Lead Order" xs={12} sm={8} lg={6}>
+          <GridItemCard title="Today Missed Lead Order" xs={12}>
             <TableContainer style={{ maxHeight: "400px", overflow: "auto" }}>
               <Table aria-label="Missed Customer Orders">
                 <TableHead>
@@ -496,7 +489,7 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
               </Table>
             </TableContainer>
           </GridItemCard>
-          <GridItemCard title="Today Lead Estimate Order" xs={12} sm={8} lg={6}>
+          <GridItemCard title="Today Lead Estimate Order" xs={12}>
             <TableContainer style={{ maxHeight: "400px", overflow: "auto" }}>
               <Table aria-label="Lead Estimate Order">
                 <TableHead>
@@ -588,7 +581,20 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
               </Table>
             </TableContainer>
           </GridItemCard>
-
+          <GridItemCard title="Lead to Customer Ratio" xs={6}>
+            <OverviewItemCard
+              label="Lead Count"
+              count={reviewData.conversion_ratio.lead_count}
+            />
+            <OverviewItemCard
+              label="New Customer"
+              count={reviewData.conversion_ratio.new_customer}
+            />
+            <OverviewItemCard
+              label="Conversion Ratio"
+              count={reviewData.conversion_ratio.conversion_ratio}
+            />
+          </GridItemCard>
           <GridItemCard title="Whatsapp Summary" xs={6}>
             <OverviewItemCard
               label="Customer Not in WhatsApp Group"
