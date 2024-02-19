@@ -39,9 +39,7 @@ export const DailySaleReviewView = () => {
     .toString()
     .padStart(2, "0")}`;
   const [selectedYearMonth, setSelectedYearMonth] = useState(currentYearMonth);
-  const [salesPersonByFilter, setSalesPersonByFilter] = useState(
-    UsersData.groups.includes("Director") ? assignedOption[0].email : null
-  );
+  const [salesPersonByFilter, setSalesPersonByFilter] = useState(null);
 
   const formatDate = (dateString) => {
     return dateString
