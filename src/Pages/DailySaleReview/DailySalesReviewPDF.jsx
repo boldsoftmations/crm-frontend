@@ -164,6 +164,7 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
     today_missed_customer_order,
     month_on_month_sales,
     whatsapp_summary,
+    customer_billed_today,
   } = reviewData;
 
   const newLeadsTotal =
@@ -860,7 +861,7 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
             </View>
             <View style={styles.keyValue}>
               <Text style={styles.text}>
-                2) Amount : {reviewData.customer_billed_today.amount}
+                2) Amount : {customer_billed_today.amount}
               </Text>
             </View>
           </View>
