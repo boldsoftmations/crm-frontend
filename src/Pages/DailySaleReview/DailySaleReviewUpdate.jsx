@@ -345,7 +345,7 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
               </Table>
             </TableContainer>
           </GridItemCard>
-          <GridItemCard title="Top Customer" xs={12}>
+          <GridItemCard title="Top Customer" xs={6}>
             <TableContainer style={{ maxHeight: "400px", overflow: "auto" }}>
               <Table aria-label="Top Customer Overview">
                 <TableHead>
@@ -369,7 +369,7 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
               </Table>
             </TableContainer>
           </GridItemCard>
-          <GridItemCard title="Top Forecast Customer" xs={12}>
+          <GridItemCard title="Top Forecast Customer" xs={6}>
             <TableContainer style={{ maxHeight: "400px", overflow: "auto" }}>
               <Table aria-label="Top Forecast Customer Overview">
                 <TableHead>
@@ -395,7 +395,7 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
           </GridItemCard>
           <GridItemCard
             title="Today Missed Customer Order"
-            xs={12}
+            xs={6}
             // sm={8}
             // lg={6}
           >
@@ -430,7 +430,7 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
           </GridItemCard>
           <GridItemCard
             title="Today Estimate Customer Order"
-            xs={12}
+            xs={6}
             // sm={8}
             // lg={6}
           >
@@ -461,7 +461,7 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
               </Table>
             </TableContainer>
           </GridItemCard>
-          <GridItemCard title="Today Missed Lead Order" xs={12}>
+          <GridItemCard title="Today Missed Lead Order" xs={6}>
             <TableContainer style={{ maxHeight: "400px", overflow: "auto" }}>
               <Table aria-label="Missed Customer Orders">
                 <TableHead>
@@ -489,7 +489,7 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
               </Table>
             </TableContainer>
           </GridItemCard>
-          <GridItemCard title="Today Lead Estimate Order" xs={12}>
+          <GridItemCard title="Today Lead Estimate Order" xs={6}>
             <TableContainer style={{ maxHeight: "400px", overflow: "auto" }}>
               <Table aria-label="Lead Estimate Order">
                 <TableHead>

@@ -183,9 +183,8 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
     <Document>
       <Page style={styles.page}>
         {/* Header Section */}
-        <View style={styles.section}>
-          <Text style={styles.heading}>Sales Review</Text>
-        </View>
+
+        <Text style={styles.heading}>Sales Review</Text>
 
         {/* Cusomer Section */}
         <View style={styles.card}>
@@ -479,7 +478,7 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
           </View>
         </View>
 
-        {/* Pending PI Section */}
+        {/* Pending Payment Section */}
         <View style={styles.card}>
           <Text style={styles.subheading}>Pending Payment</Text>
           {/* Header Row */}
