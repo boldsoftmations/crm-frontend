@@ -6,6 +6,13 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     padding: 20,
   },
+  card: {
+    margin: 10,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "#000",
+    borderRadius: 5,
+  },
   section: {
     marginBottom: 10,
     borderBottomWidth: 1, // Add a border at the bottom
@@ -31,12 +38,20 @@ const styles = StyleSheet.create({
   },
   keyValueContainer: {
     flexDirection: "row",
-    justifyContent: "flex-start",
-    marginRight: 20,
-  },
-  keyValueText: {
-    fontSize: 12,
+    flexWrap: "wrap", // Allow items to wrap as needed
+    justifyContent: "space-between", // Distribute space evenly between the items
+    alignItems: "flex-start", // Align items at the start of the container
     marginBottom: 5,
+  },
+  keyValue: {
+    // Adjust width to fit 3 items per row within the container
+    width: "33%", // Adjust the width so three items fit in a row
+    marginBottom: 5,
+    paddingRight: 5, // Add some padding to prevent text from touching the border of the next column
+  },
+  text: {
+    fontSize: 10, // Adjust font size for better fit in the new layout
+    marginBottom: 2, // Reduce margin to fit more content
   },
 
   // Style for the container of the data entry
@@ -61,14 +76,13 @@ const styles = StyleSheet.create({
   },
   // Style for the key label text
   textKey: {
-    color: "#666666", // Lighter text color for keys
-    fontWeight: "bold", // if you want the keys to be bold
-    fontSize: 12,
+    color: "#666666",
+    fontWeight: "bold",
+    fontSize: 10, // Adjusted for consistency with the new layout
   },
-  // Style for the value text
   textValue: {
-    color: "#000000", // Darker text color for values
-    fontSize: 12,
+    color: "#000000",
+    fontSize: 10, // Adjusted for consistency
   },
   // Separate style for the colon to manually add space
   colonStyle: {
@@ -99,11 +113,26 @@ const styles = StyleSheet.create({
   },
   tableRow: {
     flexDirection: "row",
-    marginBottom: 3,
+    alignItems: "center",
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+    paddingVertical: 2, // Adjust as needed
   },
   tableCell: {
-    minWidth: 100, // adjust the width as necessary
-    maxWidth: 100, // adjust the width as necessary
+    flex: 1,
+    textAlign: "center", // Center-align the text in each cell
+    fontSize: 10, // Adjust font size as needed for readability
+    borderRightWidth: 1,
+    borderRightColor: "#ccc",
+    paddingHorizontal: 2, // Add some padding to prevent text from touching the borders
+  },
+  // Style for the last cell in a row to avoid the right border
+  lastTableCell: {
+    borderRightWidth: 0, // Remove the right border for the last cell
+  },
+  tableHeader: {
+    fontWeight: "bold", // Make header text bold
+    paddingBottom: 4, // Add padding below the header for space
   },
   tableCellKey: {
     fontSize: 12,
@@ -115,30 +144,6 @@ const styles = StyleSheet.create({
     marginRight: 2, // spacing between cells
   },
 });
-
-const KeyValueText = ({ label, value }) => (
-  <View style={styles.keyValueContainer}>
-    <Text style={styles.keyValueText}>
-      {label}: {value}
-    </Text>
-  </View>
-);
-
-const DataEntry = ({ entries }) => (
-  <View style={styles.dataEntryContainer}>
-    {entries.map((entry, index) => (
-      <View key={index} style={styles.entryContainer}>
-        <Text style={styles.textKey}>{entry.key}</Text>
-        <Text style={styles.colonStyle}>:</Text>
-        {/* Check if entry.value is an array before joining, if not render as is */}
-        <Text style={styles.textValue}>
-          {Array.isArray(entry.value) ? entry.value.join(", ") : entry.value}
-        </Text>
-        {index < entries.length - 1 && <Text> </Text>}
-      </View>
-    ))}
-  </View>
-);
 
 export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
   const {
@@ -157,7 +162,22 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
     customer_estimated_order,
     today_lead_estimate_order,
     today_missed_customer_order,
+    month_on_month_sales,
+    whatsapp_summary,
   } = reviewData;
+
+  const newLeadsTotal =
+    (call_performance.new_leads.month || 0) +
+    (call_performance.new_leads.today || 0) +
+    (call_performance.new_leads.last_7_days || 0);
+  const existingLeadsTotal =
+    (call_performance.existing_leads.month || 0) +
+    (call_performance.existing_leads.today || 0) +
+    (call_performance.existing_leads.last_7_days || 0);
+  const existingCustomerTotal =
+    (call_performance.existing_customer.month || 0) +
+    (call_performance.existing_customer.today || 0) +
+    (call_performance.existing_customer.last_7_days || 0);
 
   return (
     <Document>
@@ -167,404 +187,667 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
           <Text style={styles.heading}>Sales Review</Text>
         </View>
 
-        {/* Call Performance Section  */}
-        <View style={styles.section}>
-          <Text style={styles.subheading}>Call Performance</Text>
-          <View style={styles.keyValueContainer}>
-            <KeyValueText label="New Leads          " />
-            <KeyValueText
-              label="1) Month "
-              value={call_performance ? call_performance.new_leads.month : 0}
-            />
-            <KeyValueText
-              label="2) Today "
-              value={call_performance ? call_performance.new_leads.today : 0}
-            />
-            <KeyValueText
-              label="3) Last 7 Days "
-              value={
-                call_performance ? call_performance.new_leads.last_7_days : 0
-              }
-            />
-          </View>
-          <View style={styles.keyValueContainer}>
-            <KeyValueText label="Existing Leads     " />
-            <KeyValueText
-              label="1) Month "
-              value={
-                call_performance ? call_performance.existing_leads.month : 0
-              }
-            />
-            <KeyValueText
-              label="2) Today "
-              value={
-                call_performance ? call_performance.existing_leads.today : 0
-              }
-            />
-            <KeyValueText
-              label="3) Last 7 Days "
-              value={
-                call_performance
-                  ? call_performance.existing_leads.last_7_days
-                  : 0
-              }
-            />
-          </View>
-          <View style={styles.keyValueContainer}>
-            <KeyValueText label="Existing Customer " />
-            <KeyValueText
-              label="1) Month "
-              value={
-                call_performance ? call_performance.existing_customer.month : 0
-              }
-            />
-            <KeyValueText
-              label="2) Today "
-              value={
-                call_performance ? call_performance.existing_customer.today : 0
-              }
-            />
-            <KeyValueText
-              label="3) Last 7 Days "
-              value={
-                call_performance
-                  ? call_performance.existing_customer.last_7_days
-                  : 0
-              }
-            />
-          </View>
-        </View>
-
-        {/* Existing Customer Section */}
-        <View style={styles.section}>
+        {/* Cusomer Section */}
+        <View style={styles.card}>
           <Text style={styles.subheading}>Existing Customer</Text>
           <View style={styles.keyValueContainer}>
-            <KeyValueText
-              label="1) Pending Kyc"
-              value={existing_customer ? existing_customer.pending_kyc : 0}
-            />
-            <KeyValueText
-              label="2) Dead Customer"
-              value={existing_customer ? existing_customer.dead_customer : 0}
-            />
-            <KeyValueText
-              label="3) Billed Customer"
-              value={existing_customer ? existing_customer.billed_customer : 0}
-            />
-            <KeyValueText
-              label="4) Assigned Customer"
-              value={
-                existing_customer ? existing_customer.assigned_customer : 0
-              }
-            />
-          </View>
-          <View style={styles.keyValueContainer}>
-            <KeyValueText
-              label="5) Pending Potential"
-              value={
-                existing_customer ? existing_customer.pending_potential : 0
-              }
-            />
-            <KeyValueText
-              label="6) Connected Customer"
-              value={
-                existing_customer ? existing_customer.connected_customer : 0
-              }
-            />
-            <KeyValueText
-              label="7) Not Billed Customer"
-              value={
-                existing_customer ? existing_customer.not_billed_customer : 0
-              }
-            />
+            <View style={styles.keyValue}>
+              <Text style={styles.text}>
+                1) Pending Kyc:{" "}
+                {existing_customer ? existing_customer.pending_kyc : 0}
+              </Text>
+            </View>
+            <View style={styles.keyValue}>
+              <Text style={styles.text}>
+                2) Dead Customer:{" "}
+                {existing_customer ? existing_customer.dead_customer : 0}
+              </Text>
+            </View>
+            <View style={styles.keyValue}>
+              <Text style={styles.text}>
+                3) Billed Customer:{" "}
+                {existing_customer ? existing_customer.billed_customer : 0}
+              </Text>
+            </View>
+            <View style={styles.keyValue}>
+              <Text style={styles.text}>
+                4) Assigned Customer:{" "}
+                {existing_customer ? existing_customer.assigned_customer : 0}
+              </Text>
+            </View>
+            <View style={styles.keyValue}>
+              <Text style={styles.text}>
+                5) Pending Potential:{" "}
+                {existing_customer ? existing_customer.pending_potential : 0}
+              </Text>
+            </View>
+            <View style={styles.keyValue}>
+              <Text style={styles.text}>
+                6) Connected Customer:{" "}
+                {existing_customer ? existing_customer.connected_customer : 0}
+              </Text>
+            </View>
+            <View style={styles.keyValue}>
+              <Text style={styles.text}>
+                7) Not Billed Customer:{" "}
+                {existing_customer ? existing_customer.not_billed_customer : 0}
+              </Text>
+            </View>
           </View>
         </View>
 
         {/* followup summary Section */}
-        <View style={styles.section}>
+        <View style={styles.card}>
           <Text style={styles.subheading}>Follow-up Summary</Text>
+
           <View style={styles.keyValueContainer}>
-            <KeyValueText label="Today" value={followup_summary.today} />
-            <KeyValueText
-              label="Overdue Task"
-              value={followup_summary.overdue_task}
-            />
-            <KeyValueText
-              label="Today Hot Lead"
-              value={followup_summary.today_hot_lead}
-            />
-          </View>
-          <View style={styles.keyValueContainer}>
-            <KeyValueText
-              label="Overdue Follow-up"
-              value={followup_summary.overdue_followup}
-            />
-            <KeyValueText
-              label="Today Missed Follow-up"
-              value={followup_summary.today_missed_followup}
-            />
+            <View style={styles.keyValue}>
+              <Text style={styles.text}>
+                New Follow-up Created Today: {followup_summary.today}
+              </Text>
+            </View>
+            <View style={styles.keyValue}>
+              <Text style={styles.text}>
+                Hot Lead Created Today: {followup_summary.today_hot_lead}
+              </Text>
+            </View>
+            <View style={styles.keyValue}>
+              <Text style={styles.text}>
+                Follow-up Missed Today: {followup_summary.today_missed_followup}
+              </Text>
+            </View>
+
+            <View style={styles.keyValue}>
+              <Text style={styles.text}>
+                Today's Missed Follow-up:{" "}
+                {followup_summary.today_missed_forecast}
+              </Text>
+            </View>
+            {/* Adding the specific text for "Pending KYC" */}
+            <View style={styles.keyValue}>
+              <Text style={styles.text}>
+                Today's Closed Hot Lead:
+                {existing_customer
+                  ? existing_customer.today_closed_hot_lead
+                  : 0}
+              </Text>
+            </View>
+            <View style={styles.keyValue}>
+              <Text style={styles.text}>
+                Overdue Follow-up: {followup_summary.overdue_followup}
+              </Text>
+            </View>
+            <View style={styles.keyValue}>
+              <Text style={styles.text}>
+                Overdue Task:
+                {existing_customer ? existing_customer.overdue_task : 0}
+              </Text>
+            </View>
           </View>
         </View>
 
-        {/* PI Summary Section */}
-        <View style={styles.section}>
-          <Text style={styles.subheading}>Pi Summary</Text>
-          <View style={styles.keyValueContainer}>
-            <KeyValueText label="1) drop" value={pi_summary.drop} />
-            <KeyValueText label="2) raised" value={pi_summary.raised} />
-            <KeyValueText label="3) month_drop" value={pi_summary.month_drop} />
+        {/* Call Summary Section  */}
+        <View style={styles.card}>
+          <Text style={styles.subheading}>Call Summary</Text>
+
+          {/* Header Row */}
+          <View style={styles.tableRow}>
+            <View style={styles.tableCell}>
+              <Text style={styles.text}>Category</Text>
+            </View>
+            <View style={styles.tableCell}>
+              <Text style={styles.text}>New Leads</Text>
+            </View>
+            <View style={styles.tableCell}>
+              <Text style={styles.text}>Existing Leads</Text>
+            </View>
+            <View style={[styles.tableCell, styles.lastTableCell]}>
+              <Text style={styles.text}>Existing Customer</Text>
+            </View>
           </View>
-        </View>
 
-        {/* Sales Summary Section */}
-        <View style={styles.section}>
-          <Text style={styles.subheading}>Sales Summary</Text>
-          {sales_summary.map((summary, index) => (
-            <DataEntry
-              key={index}
-              entries={[
-                { key: "Description", value: summary.description },
-                {
-                  key: "Forecast Quantity",
-                  value: summary.forecast_quantity.toString(),
-                },
-                { key: "Unit", value: summary.unit },
-                {
-                  key: "Sales Quantity",
-                  value: summary.sales_quantity.toString(),
-                },
-                { key: "Daily Target", value: summary.daily_target.toString() },
-                {
-                  key: "Month Sales Invoice",
-                  value: summary.monthly_sales_invoice.join(", "),
-                },
-                {
-                  key: "Today Sales Invoice",
-                  value: summary.today_sales_invoice.join(", "),
-                },
-              ]}
-            />
-          ))}
-        </View>
+          {/* Month Row */}
+          <View style={styles.tableRow}>
+            <View style={styles.tableCell}>
+              <Text style={styles.text}>Month:</Text>
+            </View>
+            <View style={styles.tableCell}>
+              <Text style={styles.text}>
+                {call_performance ? call_performance.new_leads.month : "0"}
+              </Text>
+            </View>
+            <View style={styles.tableCell}>
+              <Text style={styles.text}>
+                {call_performance ? call_performance.existing_leads.month : "0"}
+              </Text>
+            </View>
+            <View style={[styles.tableCell, styles.lastTableCell]}>
+              <Text style={styles.text}>
+                {call_performance
+                  ? call_performance.existing_customer.month
+                  : "0"}
+              </Text>
+            </View>
+          </View>
 
-        {/* New Customer Summary Section */}
-        <View style={styles.section}>
-          <Text style={styles.subheading}>New Customer Summary</Text>
-          <View style={styles.keyValueContainer}>
-            <KeyValueText
-              label="1) Month"
-              value={new_customer_summary ? new_customer_summary.month : 0}
-            />
-            <KeyValueText
-              label="2) Last Month"
-              value={new_customer_summary ? new_customer_summary.last_month : 0}
-            />
-            <KeyValueText
-              label="3) Sales Invoice"
-              value={
-                new_customer_summary ? new_customer_summary.sales_invoice : 0
-              }
-            />
+          {/* Today Row */}
+          <View style={styles.tableRow}>
+            <View style={styles.tableCell}>
+              <Text style={styles.text}>Today:</Text>
+            </View>
+            <View style={styles.tableCell}>
+              <Text style={styles.text}>
+                {call_performance ? call_performance.new_leads.today : "0"}
+              </Text>
+            </View>
+            <View style={styles.tableCell}>
+              <Text style={styles.text}>
+                {call_performance ? call_performance.existing_leads.today : "0"}
+              </Text>
+            </View>
+            <View style={[styles.tableCell, styles.lastTableCell]}>
+              <Text style={styles.text}>
+                {call_performance
+                  ? call_performance.existing_customer.today
+                  : "0"}
+              </Text>
+            </View>
+          </View>
+
+          {/* Last 7 Days Row */}
+          <View style={styles.tableRow}>
+            <View style={styles.tableCell}>
+              <Text style={styles.text}>Last 7 Days:</Text>
+            </View>
+            <View style={styles.tableCell}>
+              <Text style={styles.text}>
+                {call_performance
+                  ? call_performance.new_leads.last_7_days
+                  : "0"}
+              </Text>
+            </View>
+            <View style={styles.tableCell}>
+              <Text style={styles.text}>
+                {call_performance
+                  ? call_performance.existing_leads.last_7_days
+                  : "0"}
+              </Text>
+            </View>
+            <View style={[styles.tableCell, styles.lastTableCell]}>
+              <Text style={styles.text}>
+                {call_performance
+                  ? call_performance.existing_customer.last_7_days
+                  : "0"}
+              </Text>
+            </View>
+          </View>
+
+          {/* Total Row - Assuming you calculate these totals elsewhere */}
+          <View style={styles.tableRow}>
+            <View style={styles.tableCell}>
+              <Text style={styles.text}>Total:</Text>
+            </View>
+            <View style={styles.tableCell}>
+              <Text style={styles.text}>{newLeadsTotal}</Text>
+            </View>
+            <View style={styles.tableCell}>
+              <Text style={styles.text}>{existingLeadsTotal}</Text>
+            </View>
+            <View style={[styles.tableCell, styles.lastTableCell]}>
+              <Text style={styles.text}>{existingCustomerTotal}</Text>
+            </View>
           </View>
         </View>
 
         {/* No Order Customer Section */}
-        <View style={styles.section}>
+        <View style={styles.card}>
           <Text style={styles.subheading}>No Order Customer</Text>
           <View style={styles.keyValueContainer}>
-            <KeyValueText
-              label="0-30 days"
-              value={no_order_customer["0-30_days"]}
-            />
-            <KeyValueText
-              label="30-59 days"
-              value={no_order_customer["30-59_days"]}
-            />
-            <KeyValueText
-              label="60-89 days"
-              value={no_order_customer["60-89_days"]}
-            />
-          </View>
-
-          <View style={styles.keyValueContainer}>
-            <KeyValueText
-              label="90-119 days"
-              value={no_order_customer["90-119_days"]}
-            />
-            <KeyValueText
-              label="Over 120 days"
-              value={no_order_customer["over_120_days"]}
-            />
-          </View>
-        </View>
-
-        {/* Conversion Ratio Section */}
-        <View style={styles.section}>
-          <Text style={styles.subheading}>Conversion Ratio</Text>
-          <View style={styles.keyValueContainer}>
-            <KeyValueText
-              label="Lead Count"
-              value={conversion_ratio ? conversion_ratio.lead_count : 0}
-            />
-            <KeyValueText
-              label="New Customer"
-              value={conversion_ratio ? conversion_ratio.new_customer : 0}
-            />
-            <KeyValueText
-              label="Conversion Ratio"
-              value={conversion_ratio ? conversion_ratio.conversion_ratio : 0}
-            />
+            <View style={styles.keyValue}>
+              <Text style={styles.text}>
+                0-30 days: {no_order_customer["0-30_days"]}
+              </Text>
+            </View>
+            <View style={styles.keyValue}>
+              <Text style={styles.text}>
+                30-59 days: {no_order_customer["30-59_days"]}
+              </Text>
+            </View>
+            <View style={styles.keyValue}>
+              <Text style={styles.text}>
+                60-89 days: {no_order_customer["60-89_days"]}
+              </Text>
+            </View>
+            <View style={styles.keyValue}>
+              <Text style={styles.text}>
+                90-119 days: {no_order_customer["90-119_days"]}
+              </Text>
+            </View>
+            <View style={styles.keyValue}>
+              <Text style={styles.text}>
+                Over 120 days: {no_order_customer["over_120_days"]}
+              </Text>
+            </View>
           </View>
         </View>
 
-        {/* Pending Payment Section */}
-        <View style={styles.section}>
+        {/* PI Summary Section */}
+        <View style={styles.card}>
+          <Text style={styles.subheading}>Pi Summary</Text>
+
+          <View style={styles.keyValueContainer}>
+            <View style={styles.keyValue}>
+              <Text style={styles.text}>
+                1) Drop: {pi_summary ? pi_summary.drop : 0}
+              </Text>
+            </View>
+            <View style={styles.keyValue}>
+              <Text style={styles.text}>
+                2) Raised: {pi_summary ? pi_summary.raised : 0}
+              </Text>
+            </View>
+            <View style={styles.keyValue}>
+              <Text style={styles.text}>
+                3) Month Drop: {pi_summary ? pi_summary.month_drop : 0}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* New Customer Summary Section */}
+        <View style={styles.card}>
+          <Text style={styles.subheading}>New Customer Summary</Text>
+          <View style={styles.keyValueContainer}>
+            <View style={styles.keyValue}>
+              <Text style={styles.text}>
+                1) Month:{" "}
+                {new_customer_summary ? new_customer_summary.month : 0}
+              </Text>
+            </View>
+            <View style={styles.keyValue}>
+              <Text style={styles.text}>
+                2) Last Month:{" "}
+                {new_customer_summary ? new_customer_summary.last_month : 0}
+              </Text>
+            </View>
+            <View style={styles.keyValue}>
+              <Text style={styles.text}>
+                3) Sales Invoice:{" "}
+                {new_customer_summary ? new_customer_summary.sales_invoice : 0}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Pending PI Section */}
+        <View style={styles.card}>
           <Text style={styles.subheading}>Pending Payment</Text>
-          {pending_payments.map((summary, index) => (
-            <DataEntry
-              key={index}
-              entries={[
-                { key: "PI Number", value: summary.pi_number },
-                {
-                  key: "Customer",
-                  value: summary.customer ? summary.customer : "NA",
-                },
-                { key: "Date", value: summary.date },
-                {
-                  key: "Amount",
-                  value: summary.amount.toString(),
-                },
-                { key: "Status", value: summary.status },
+          {/* Header Row */}
+          <View style={styles.tableRow}>
+            <Text style={[styles.tableCell, styles.tableHeader]}>
+              PI Number
+            </Text>
+            <Text style={[styles.tableCell, styles.tableHeader]}>Customer</Text>
+            <Text style={[styles.tableCell, styles.tableHeader]}>Date</Text>
+            <Text style={[styles.tableCell, styles.tableHeader]}>Amount</Text>
+            <Text
+              style={[
+                styles.tableCell,
+                styles.lastTableCell,
+                styles.tableHeader,
               ]}
-            />
+            >
+              Status
+            </Text>
+          </View>
+          {/* Data Rows for Pending Payments */}
+          {pending_payments.map((summary, index) => (
+            <View key={index} style={styles.tableRow}>
+              <Text style={styles.tableCell}>{summary.pi_number}</Text>
+              <Text style={styles.tableCell}>
+                {summary.customer ? summary.customer : "NA"}
+              </Text>
+              <Text style={styles.tableCell}>{summary.date}</Text>
+              <Text style={styles.tableCell}>{summary.amount.toString()}</Text>
+              <Text style={[styles.tableCell, styles.lastTableCell]}>
+                {summary.status}
+              </Text>
+            </View>
           ))}
         </View>
 
+        {/* lead to customer conversion Ratio Section */}
+        <View style={styles.card}>
+          <Text style={styles.subheading}>Lead to Customer Ratio</Text>
+          <View style={styles.keyValueContainer}>
+            <View style={styles.keyValue}>
+              <Text style={styles.text}>
+                Lead Count: {conversion_ratio ? conversion_ratio.lead_count : 0}
+              </Text>
+            </View>
+            <View style={styles.keyValue}>
+              <Text style={styles.text}>
+                New Customer:{" "}
+                {conversion_ratio ? conversion_ratio.new_customer : 0}
+              </Text>
+            </View>
+            <View style={styles.keyValue}>
+              <Text style={styles.text}>
+                Conversion Ratio:{" "}
+                {conversion_ratio ? conversion_ratio.conversion_ratio : 0}
+              </Text>
+            </View>
+          </View>
+        </View>
+
         {/* Top Customer Section */}
-        <View style={styles.section}>
+        <View style={styles.card}>
           <Text style={styles.subheading}>Top Customer</Text>
-          {top_customer.map((customer, index) => (
-            <DataEntry
-              key={index}
-              entries={[
-                { key: `Customer ${index + 1}`, value: customer.customer },
-                { key: "Amount", value: customer.amount.toString() },
-                {
-                  key: "Billed this Month",
-                  value: customer.billedThisMonth ? "Yes" : "No",
-                },
+
+          {/* Header Row */}
+          <View style={styles.tableRow}>
+            <Text style={[styles.tableCell, styles.tableHeader]}>Customer</Text>
+            <Text style={[styles.tableCell, styles.tableHeader]}>Amount</Text>
+            <Text
+              style={[
+                styles.tableCell,
+                styles.lastTableCell,
+                styles.tableHeader,
               ]}
-            />
+            >
+              Billed This Month
+            </Text>
+          </View>
+
+          {/* Data Rows for Top Customer */}
+          {top_customer.map((customer, index) => (
+            <View key={index} style={styles.tableRow}>
+              <Text style={styles.tableCell}>{customer.customer}</Text>
+              <Text style={styles.tableCell}>{customer.amount.toString()}</Text>
+              <Text style={[styles.tableCell, styles.lastTableCell]}>
+                {customer.billedThisMonth ? "Yes" : "No"}
+              </Text>
+            </View>
           ))}
         </View>
 
         {/* Top Forecast Customer */}
-        <View style={styles.section}>
+        <View style={styles.card}>
           <Text style={styles.subheading}>Top Forecast Customer</Text>
+
+          {/* Header Row */}
+          <View style={styles.tableRow}>
+            <Text style={[styles.tableCell, styles.tableHeader]}>Customer</Text>
+            <Text style={[styles.tableCell, styles.tableHeader]}>Amount</Text>
+            <Text
+              style={[
+                styles.tableCell,
+                styles.lastTableCell,
+                styles.tableHeader,
+              ]}
+            >
+              Billed This Month
+            </Text>
+          </View>
+
+          {/* Data Rows for Top Forecast Customer */}
           {top_forecast_customer.map((customer, index) => (
-            <DataEntry
-              key={index}
-              entries={[
-                { key: `Customer ${index + 1}`, value: customer.customer },
-                { key: "Amount", value: customer.amount.toString() },
-                {
-                  key: "Billed this Month",
-                  value: customer.billedThisMonth ? "Yes" : "No",
-                },
-              ]}
-            />
-          ))}
-        </View>
-
-        {/* Today Missed Lead Order */}
-        <View style={styles.section}>
-          <Text style={styles.subheading}>Today Missed Lead Order</Text>
-          {today_missed_lead_order.map((order, index) => (
-            <DataEntry
-              key={index}
-              entries={[
-                { key: "Product", value: order.product },
-                {
-                  key: "Customer",
-                  value: order.customer ? order.customer : "NA",
-                },
-                { key: "Forecast", value: order.forecast },
-                {
-                  key: "Description",
-                  value: order.description,
-                },
-                { key: "Estimated Date", value: order.estimated_date },
-              ]}
-            />
-          ))}
-        </View>
-
-        {/* Customer Estimated Order */}
-        <View style={styles.section}>
-          <Text style={styles.subheading}>Customer Estimated Order</Text>
-          {customer_estimated_order.map((order, index) => (
-            <DataEntry
-              key={index}
-              entries={[
-                {
-                  key: "Customer",
-                  value: order.customer ? order.customer : "NA",
-                },
-                { key: "Quantity", value: order.quantity },
-                {
-                  key: "Description",
-                  value: order.description,
-                },
-                { key: "Estimated Date", value: order.estimated_date },
-              ]}
-            />
-          ))}
-        </View>
-
-        {/* Today Lead Estimate Order */}
-        <View style={styles.section}>
-          <Text style={styles.subheading}>Today Lead Estimate Order</Text>
-          {today_lead_estimate_order.map((order, index) => (
-            <DataEntry
-              key={index}
-              entries={[
-                { key: "Product", value: order.product },
-                {
-                  key: "Customer",
-                  value: order.customer ? order.customer : "NA",
-                },
-                { key: "Forecast", value: order.forecast },
-                {
-                  key: "Description",
-                  value: order.description,
-                },
-                { key: "Estimated Date", value: order.estimated_date },
-              ]}
-            />
+            <View key={index} style={styles.tableRow}>
+              <Text style={styles.tableCell}>{customer.customer}</Text>
+              <Text style={styles.tableCell}>{customer.amount.toString()}</Text>
+              <Text style={[styles.tableCell, styles.lastTableCell]}>
+                {customer.billedThisMonth ? "Yes" : "No"}
+              </Text>
+            </View>
           ))}
         </View>
 
         {/* Today Missed Customer Order */}
-        <View style={styles.section}>
+        <View style={styles.card}>
           <Text style={styles.subheading}>Today Missed Customer Order</Text>
-          {today_missed_customer_order.map((order, index) => (
-            <DataEntry
-              key={index}
-              entries={[
-                { key: "Product", value: order.product },
-                {
-                  key: "Customer",
-                  value: order.customer ? order.customer : "NA",
-                },
-                { key: "Forecast", value: order.forecast },
-                {
-                  key: "Description",
-                  value: order.description,
-                },
-                { key: "Estimated Date", value: order.estimated_date },
+          <View style={styles.tableRow}>
+            <Text style={[styles.tableCell, styles.tableHeader]}>Product</Text>
+            <Text style={[styles.tableCell, styles.tableHeader]}>Customer</Text>
+            <Text style={[styles.tableCell, styles.tableHeader]}>Forecast</Text>
+            <Text style={[styles.tableCell, styles.tableHeader]}>
+              Description
+            </Text>
+            <Text
+              style={[
+                styles.tableCell,
+                styles.lastTableCell,
+                styles.tableHeader,
               ]}
-            />
+            >
+              Estimated Date
+            </Text>
+          </View>
+          {today_missed_customer_order.map((order, index) => (
+            <View key={index} style={styles.tableRow}>
+              <Text style={styles.tableCell}>{order.product}</Text>
+              <Text style={styles.tableCell}>
+                {order.customer ? order.customer : "NA"}
+              </Text>
+              <Text style={styles.tableCell}>{order.forecast}</Text>
+              <Text style={styles.tableCell}>{order.description}</Text>
+              <Text style={[styles.tableCell, styles.lastTableCell]}>
+                {order.estimated_date}
+              </Text>
+            </View>
           ))}
+        </View>
+
+        {/*Today Customer Estimated Order */}
+        <View style={styles.card}>
+          <Text style={styles.subheading}>Today Customer Estimated Order</Text>
+          <View style={styles.tableRow}>
+            <Text style={[styles.tableCell, styles.tableHeader]}>Customer</Text>
+            <Text style={[styles.tableCell, styles.tableHeader]}>Quantity</Text>
+            <Text style={[styles.tableCell, styles.tableHeader]}>
+              Description
+            </Text>
+            <Text
+              style={[
+                styles.tableCell,
+                styles.lastTableCell,
+                styles.tableHeader,
+              ]}
+            >
+              Estimated Date
+            </Text>
+          </View>
+          {customer_estimated_order.map((order, index) => (
+            <View key={index} style={styles.tableRow}>
+              <Text style={styles.tableCell}>
+                {order.customer ? order.customer : "NA"}
+              </Text>
+              <Text style={styles.tableCell}>{order.quantity}</Text>
+              <Text style={styles.tableCell}>{order.description}</Text>
+              <Text style={[styles.tableCell, styles.lastTableCell]}>
+                {order.estimated_date}
+              </Text>
+            </View>
+          ))}
+        </View>
+
+        {/* Today Missed Lead Order */}
+        <View style={styles.card}>
+          <Text style={styles.subheading}>Today Missed Lead Order</Text>
+          <View style={styles.tableRow}>
+            <Text style={[styles.tableCell, styles.tableHeader]}>Product</Text>
+            <Text style={[styles.tableCell, styles.tableHeader]}>Customer</Text>
+            <Text style={[styles.tableCell, styles.tableHeader]}>Forecast</Text>
+            <Text style={[styles.tableCell, styles.tableHeader]}>
+              Description
+            </Text>
+            <Text
+              style={[
+                styles.tableCell,
+                styles.lastTableCell,
+                styles.tableHeader,
+              ]}
+            >
+              Estimated Date
+            </Text>
+          </View>
+          {today_missed_lead_order.map((order, index) => (
+            <View key={index} style={styles.tableRow}>
+              <Text style={styles.tableCell}>{order.product}</Text>
+              <Text style={styles.tableCell}>
+                {order.customer ? order.customer : "NA"}
+              </Text>
+              <Text style={styles.tableCell}>{order.forecast}</Text>
+              <Text style={styles.tableCell}>{order.description}</Text>
+              <Text style={[styles.tableCell, styles.lastTableCell]}>
+                {order.estimated_date}
+              </Text>
+            </View>
+          ))}
+        </View>
+
+        {/* Today Lead Estimate Order */}
+        <View style={styles.card}>
+          <Text style={styles.subheading}>Today Lead Estimate Order</Text>
+          <View style={styles.tableRow}>
+            <Text style={[styles.tableCell, styles.tableHeader]}>Product</Text>
+            <Text style={[styles.tableCell, styles.tableHeader]}>Customer</Text>
+            <Text style={[styles.tableCell, styles.tableHeader]}>Forecast</Text>
+            <Text style={[styles.tableCell, styles.tableHeader]}>
+              Description
+            </Text>
+            <Text
+              style={[
+                styles.tableCell,
+                styles.lastTableCell,
+                styles.tableHeader,
+              ]}
+            >
+              Estimated Date
+            </Text>
+          </View>
+          {today_lead_estimate_order.map((order, index) => (
+            <View key={index} style={styles.tableRow}>
+              <Text style={styles.tableCell}>{order.product}</Text>
+              <Text style={styles.tableCell}>
+                {order.customer ? order.customer : "NA"}
+              </Text>
+              <Text style={styles.tableCell}>{order.forecast}</Text>
+              <Text style={styles.tableCell}>{order.description}</Text>
+              <Text style={[styles.tableCell, styles.lastTableCell]}>
+                {order.estimated_date}
+              </Text>
+            </View>
+          ))}
+        </View>
+
+        {/* Sales Summary Section */}
+        <View style={styles.card}>
+          <Text style={styles.subheading}>Sales Summary</Text>
+          {/* Header Row */}
+          <View style={styles.tableRow}>
+            <Text style={[styles.tableCell, styles.tableHeader]}>
+              Description
+            </Text>
+            <Text style={[styles.tableCell, styles.tableHeader]}>
+              Forecast Quantity
+            </Text>
+            <Text style={[styles.tableCell, styles.tableHeader]}>Unit</Text>
+            <Text style={[styles.tableCell, styles.tableHeader]}>
+              Sales Quantity
+            </Text>
+            <Text style={[styles.tableCell, styles.tableHeader]}>
+              Daily Target
+            </Text>
+            <Text style={[styles.tableCell, styles.tableHeader]}>Today PI</Text>
+            <Text style={[styles.tableCell, styles.tableHeader]}>
+              Today Sales Invoice
+            </Text>
+            <Text
+              style={[
+                styles.tableCell,
+                styles.lastTableCell,
+                styles.tableHeader,
+              ]}
+            >
+              Monthly Sales Invoice
+            </Text>
+          </View>
+          {/* Data Rows for Sales Summary */}
+          {sales_summary.map((summary, index) => (
+            <View key={index} style={styles.tableRow}>
+              <Text style={styles.tableCell}>{summary.description}</Text>
+              <Text style={styles.tableCell}>
+                {summary.forecast_quantity.toString()}
+              </Text>
+              <Text style={styles.tableCell}>{summary.unit}</Text>
+              <Text style={styles.tableCell}>
+                {summary.sales_quantity.toString()}
+              </Text>
+              <Text style={styles.tableCell}>
+                {summary.daily_target.toString()}
+              </Text>
+              <Text style={styles.tableCell}>
+                {summary.today_sales_invoice.join(", ")}
+              </Text>
+              <Text style={[styles.tableCell, styles.lastTableCell]}>
+                {summary.monthly_sales_invoice.join(", ")}
+              </Text>
+            </View>
+          ))}
+        </View>
+
+        {/* Monthly sales section */}
+        <View style={styles.card}>
+          <Text style={styles.subheading}>Monthly Sales</Text>
+          <View style={styles.tableRow}>
+            <Text style={[styles.tableCell, styles.tableHeader]}>Month</Text>
+            <Text style={[styles.tableCell, styles.tableHeader]}>Year</Text>
+
+            <Text
+              style={[
+                styles.tableCell,
+                styles.lastTableCell,
+                styles.tableHeader,
+              ]}
+            >
+              Total Sales
+            </Text>
+          </View>
+          {month_on_month_sales.map((order, index) => (
+            <View key={index} style={styles.tableRow}>
+              <Text style={styles.tableCell}>{order.month}</Text>
+
+              <Text style={styles.tableCell}>{order.year}</Text>
+              <Text style={[styles.tableCell, styles.lastTableCell]}>
+                {order.total_sales}
+              </Text>
+            </View>
+          ))}
+        </View>
+
+        {/* Whatsapp Summary Section */}
+        <View style={styles.card}>
+          <Text style={styles.subheading}>Whatsapp Summary</Text>
+          <View style={styles.keyValueContainer}>
+            <View style={styles.keyValue}>
+              <Text style={styles.text}>
+                1) Customer Not in Group:
+                {whatsapp_summary ? whatsapp_summary.not_customer : 0}
+              </Text>
+            </View>
+            <View style={styles.keyValue}>
+              <Text style={styles.text}>
+                2) Customer Not Having Group:
+                {whatsapp_summary ? whatsapp_summary.not_group : 0}
+              </Text>
+            </View>
+            <View style={styles.keyValue}>
+              <Text style={styles.text}>
+                3) Sales Person Not in Group:
+                {whatsapp_summary ? whatsapp_summary.not_sale_person : 0}
+              </Text>
+            </View>
+          </View>
         </View>
 
         {/* Signature section */}

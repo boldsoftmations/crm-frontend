@@ -259,7 +259,7 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
               count={reviewData.followup_summary.today_missed_followup}
             />
             <OverviewItemCard
-              label="Today's Missed Follow-up "
+              label="Today's Missed Follow-up"
               count={reviewData.followup_summary.today_missed_forecast}
             />
             <OverviewItemCard
