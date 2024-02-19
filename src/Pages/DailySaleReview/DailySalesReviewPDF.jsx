@@ -356,7 +356,7 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
           {/* Last 7 Days Row */}
           <View style={styles.tableRow}>
             <View style={styles.tableCell}>
-              <Text style={styles.text}>Last 7 Days:</Text>
+              <Text style={styles.text}>Last 7 Days Avg:</Text>
             </View>
             <View style={styles.tableCell}>
               <Text style={styles.text}>
