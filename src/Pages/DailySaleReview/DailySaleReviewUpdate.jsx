@@ -245,6 +245,37 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
             </List>
           </GridItemCard>
 
+          <GridItemCard title="Follow-up Summary" xs={12} sm={6} lg={4}>
+            <OverviewItemCard
+              label="New Follow-up Created Today"
+              count={reviewData.followup_summary.today}
+            />
+            <OverviewItemCard
+              label="Hot Lead Created Today"
+              count={reviewData.followup_summary.today_hot_lead}
+            />
+            <OverviewItemCard
+              label="Follow-up Missed Today"
+              count={reviewData.followup_summary.today_missed_followup}
+            />
+            <OverviewItemCard
+              label="Today's Missed Follow-up "
+              count={reviewData.followup_summary.today_missed_forecast}
+            />
+            <OverviewItemCard
+              label="Today's Closed Hot Lead"
+              count={reviewData.followup_summary.today_closed_hot_lead}
+            />
+            <OverviewItemCard
+              label="Overdue Follow-up"
+              count={reviewData.followup_summary.overdue_followup}
+            />
+            <OverviewItemCard
+              label="Overdue Task"
+              count={reviewData.followup_summary.overdue_task}
+            />
+          </GridItemCard>
+
           <GridItemCard title="Call Summary Overview" xs={12} sm={6} lg={4}>
             <CallPerformanceTable
               callPerformanceData={reviewData.call_performance}
@@ -292,36 +323,6 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
             />
           </GridItemCard>
 
-          <GridItemCard title="Follow-up Summary" xs={12} sm={6} lg={4}>
-            <OverviewItemCard
-              label="New Follow-up Created Today"
-              count={reviewData.followup_summary.today}
-            />
-            <OverviewItemCard
-              label="Hot Lead Created Today"
-              count={reviewData.followup_summary.today_hot_lead}
-            />
-            <OverviewItemCard
-              label="Follow-up Missed Today"
-              count={reviewData.followup_summary.today_missed_followup}
-            />
-            <OverviewItemCard
-              label="Today's Missed Follow-up "
-              count={reviewData.followup_summary.today_missed_forecast}
-            />
-            <OverviewItemCard
-              label="Today's Closed Hot Lead"
-              count={reviewData.followup_summary.today_closed_hot_lead}
-            />
-            <OverviewItemCard
-              label="Overdue Follow-up"
-              count={reviewData.followup_summary.overdue_followup}
-            />
-            <OverviewItemCard
-              label="Overdue Task"
-              count={reviewData.followup_summary.overdue_task}
-            />
-          </GridItemCard>
           <GridItemCard title="New Customer Summary" xs={12} sm={6} lg={4}>
             <OverviewItemCard
               label=" New Customer Last Month"
@@ -338,11 +339,13 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
           </GridItemCard>
           {/* Pending Payments */}
           <GridItemCard title="Pending Payments" xs={12}>
-            {reviewData &&
-              reviewData.pending_payments &&
-              reviewData.pending_payments.map((payment, index) => (
-                <PendingPaymentsCard key={index} payment={payment} />
-              ))}
+            <div style={{ maxHeight: "400px", overflow: "auto" }}>
+              {reviewData &&
+                reviewData.pending_payments &&
+                reviewData.pending_payments.map((payment, index) => (
+                  <PendingPaymentsCard key={index} payment={payment} />
+                ))}
+            </div>
           </GridItemCard>
 
           <GridItemCard title="Lead to Customer Ratio" xs={12} sm={6} lg={4}>
@@ -360,7 +363,7 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
             />
           </GridItemCard>
           <GridItemCard title="Top Customers" xs={12} sm={6} lg={4}>
-            <List>
+            <List style={{ maxHeight: "300px", overflow: "auto" }}>
               {Array.isArray(reviewData.top_customer) &&
               reviewData.top_customer.length > 0 ? (
                 reviewData.top_customer.map((customer, index) => (
@@ -378,7 +381,7 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
           </GridItemCard>
 
           <GridItemCard title="Top Forecast Customers" xs={12} sm={6} lg={4}>
-            <List>
+            <List style={{ maxHeight: "300px", overflow: "auto" }}>
               {Array.isArray(reviewData.top_forecast_customer) &&
               reviewData.top_forecast_customer.length > 0 ? (
                 reviewData.top_forecast_customer.map(
@@ -403,7 +406,7 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
             sm={8}
             lg={6}
           >
-            <TableContainer>
+            <TableContainer style={{ maxHeight: "400px", overflow: "auto" }}>
               <Table aria-label="Missed Customer Orders">
                 <TableHead>
                   <TableRow>
@@ -438,7 +441,7 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
             sm={8}
             lg={6}
           >
-            <TableContainer>
+            <TableContainer style={{ maxHeight: "400px", overflow: "auto" }}>
               <Table aria-label="Estimate Customer Order">
                 <TableHead>
                   <TableRow>
@@ -466,7 +469,7 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
             </TableContainer>
           </GridItemCard>
           <GridItemCard title="Today Missed Lead Order" xs={12} sm={8} lg={6}>
-            <TableContainer>
+            <TableContainer style={{ maxHeight: "400px", overflow: "auto" }}>
               <Table aria-label="Missed Customer Orders">
                 <TableHead>
                   <TableRow>
@@ -494,7 +497,7 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
             </TableContainer>
           </GridItemCard>
           <GridItemCard title="Today Lead Estimate Order" xs={12} sm={8} lg={6}>
-            <TableContainer>
+            <TableContainer style={{ maxHeight: "400px", overflow: "auto" }}>
               <Table aria-label="Lead Estimate Order">
                 <TableHead>
                   <TableRow>
@@ -524,7 +527,7 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
             </TableContainer>
           </GridItemCard>
           <GridItemCard title="Sales Summary" xs={12}>
-            <TableContainer>
+            <TableContainer style={{ maxHeight: "400px", overflow: "auto" }}>
               <Table aria-label="Sales Summary Table">
                 <TableHead>
                   <TableRow>
@@ -562,7 +565,7 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
             </TableContainer>
           </GridItemCard>
           <GridItemCard title="Monthly Sales Chart" xs={12}>
-            <TableContainer>
+            <TableContainer style={{ maxHeight: "400px", overflow: "auto" }}>
               <Table aria-label="Monthly Sales Overview">
                 <TableHead>
                   <TableRow>
