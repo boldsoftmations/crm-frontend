@@ -581,7 +581,7 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
               </Table>
             </TableContainer>
           </GridItemCard>
-          <GridItemCard title="Lead to Customer Ratio" xs={6}>
+          <GridItemCard title="Lead to Customer Ratio" xs={4}>
             <OverviewItemCard
               label="Lead Count"
               count={reviewData.conversion_ratio.lead_count}
@@ -595,7 +595,7 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
               count={reviewData.conversion_ratio.conversion_ratio}
             />
           </GridItemCard>
-          <GridItemCard title="Whatsapp Summary" xs={6}>
+          <GridItemCard title="Whatsapp Summary" xs={4}>
             <OverviewItemCard
               label="Customer Not in WhatsApp Group"
               count={reviewData.whatsapp_summary.not_customer}
@@ -609,8 +609,18 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
               count={reviewData.whatsapp_summary.not_sale_person}
             />
           </GridItemCard>
-        </Grid>
 
+          <GridItemCard title="Customer Billing Today" xs={4}>
+            <OverviewItemCard
+              label="Customer"
+              count={reviewData.customer_billed_today.order_book__company__name}
+            />
+            <OverviewItemCard
+              label="Amount"
+              count={reviewData.customer_billed_today.amount}
+            />
+          </GridItemCard>
+        </Grid>
         {/* Signature section with underlines */}
         <Box
           display="flex"

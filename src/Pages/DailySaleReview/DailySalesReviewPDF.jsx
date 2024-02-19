@@ -849,6 +849,23 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
           </View>
         </View>
 
+        {/* customer billed today */}
+        <View style={styles.card}>
+          <Text style={styles.subheading}>Customer Billing Today</Text>
+          <View style={styles.keyValueContainer}>
+            <View style={styles.keyValue}>
+              <Text style={styles.text}>
+                1) Customer : {customer_billed_today.order_book__company__name}
+              </Text>
+            </View>
+            <View style={styles.keyValue}>
+              <Text style={styles.text}>
+                2) Amount : {reviewData.customer_billed_today.amount}
+              </Text>
+            </View>
+          </View>
+        </View>
+
         {/* Signature section */}
         <View style={styles.signatureSection}>
           <View style={styles.signatureBlock}>
