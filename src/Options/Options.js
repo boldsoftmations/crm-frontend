@@ -185,6 +185,16 @@ const StateOption = [
     value: "New Delhi",
     label: "New Delhi",
   },
+  {
+    id: 29,
+    value: "Jammu & Kashmir",
+    label: "Jammu & Kashmir",
+  },
+  {
+    id: 30,
+    value: "Ladakh",
+    label: "Ladakh",
+  },
 ];
 
 const DistributionTypeOption = [
