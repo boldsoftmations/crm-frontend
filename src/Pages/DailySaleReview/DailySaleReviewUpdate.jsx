@@ -559,8 +559,6 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
                     <TableCell>Sales Quantity</TableCell>
                     <TableCell>Daily Target</TableCell>
                     <TableCell>Today PI</TableCell>
-                    <TableCell>Today Sales Invoice</TableCell>
-                    <TableCell>Monthly Sales Invoice</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -573,13 +571,10 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
                         <TableCell>{item.sales_quantity}</TableCell>
                         <TableCell>{item.daily_target}</TableCell>
                         <TableCell>
-                          {item.today_pi ? item.today_pi.join(", ") : "N/A"}
-                        </TableCell>
-                        <TableCell>
-                          {item.today_sales_invoice.join(", ")}
-                        </TableCell>
-                        <TableCell>
-                          {item.monthly_sales_invoice.join(", ")}
+                          {Array.isArray(item.today_pi) &&
+                          item.today_pi.length > 0
+                            ? item.today_pi.join(", ")
+                            : "N/A"}
                         </TableCell>
                       </TableRow>
                     ))

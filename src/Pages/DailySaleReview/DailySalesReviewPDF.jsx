@@ -758,10 +758,6 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
             <Text style={[styles.tableCell, styles.tableHeader]}>
               Daily Target
             </Text>
-            <Text style={[styles.tableCell, styles.tableHeader]}>Today PI</Text>
-            <Text style={[styles.tableCell, styles.tableHeader]}>
-              Today Sales Invoice
-            </Text>
             <Text
               style={[
                 styles.tableCell,
@@ -769,7 +765,7 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
                 styles.tableHeader,
               ]}
             >
-              Monthly Sales Invoice
+              Today PI
             </Text>
           </View>
           {/* Data Rows for Sales Summary */}
@@ -786,11 +782,10 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
               <Text style={styles.tableCell}>
                 {summary.daily_target.toString()}
               </Text>
-              <Text style={styles.tableCell}>
-                {summary.today_sales_invoice.join(", ")}
-              </Text>
               <Text style={[styles.tableCell, styles.lastTableCell]}>
-                {summary.monthly_sales_invoice.join(", ")}
+                {Array.isArray(summary.today_pi) && summary.today_pi.length > 0
+                  ? summary.today_pi.join(", ")
+                  : "N/A"}
               </Text>
             </View>
           ))}
