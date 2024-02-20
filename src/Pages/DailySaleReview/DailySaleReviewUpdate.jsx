@@ -167,8 +167,28 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
   console.log("recordForEdit", JSON.stringify(recordForEdit, null, 2));
   const { daily_sales_review: reviewData = {} } = recordForEdit || {};
   console.log("reviewData", JSON.stringify(reviewData, null, 2));
-  const assignedCustomerTotal = reviewData.existing_customer.assigned_customer;
-  const entries = Object.entries(reviewData.no_order_customer);
+  const {
+    call_performance,
+    existing_customer,
+    followup_summary,
+    pi_summary,
+    sales_summary,
+    new_customer_summary,
+    no_order_customer,
+    conversion_ratio,
+    pending_payments,
+    top_customer,
+    top_forecast_customer,
+    today_missed_lead_order,
+    customer_estimated_order,
+    today_lead_estimate_order,
+    today_missed_customer_order,
+    month_on_month_sales,
+    whatsapp_summary,
+    customer_billed_today,
+  } = reviewData;
+  const assignedCustomerTotal = existing_customer.assigned_customer;
+  const entries = Object.entries(no_order_customer);
   const totalCount = entries.reduce((acc, [, count]) => acc + count, 0);
   const generatePDF = async () => {
     try {
@@ -209,8 +229,8 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
         <Grid container spacing={3}>
           <GridItemCard title="Customer Overview" xs={12} sm={6} lg={4}>
             <List>
-              {reviewData && reviewData.existing_customer ? (
-                Object.entries(reviewData.existing_customer).map(
+              {existing_customer ? (
+                Object.entries(existing_customer).map(
                   ([key, value]) =>
                     generateListItem(
                       key.replace(/_/g, " "),
@@ -227,38 +247,36 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
           <GridItemCard title="Follow-up Summary" xs={12} sm={6} lg={4}>
             <OverviewItemCard
               label="New Follow-up Created Today"
-              count={reviewData.followup_summary.today}
+              count={followup_summary.today}
             />
             <OverviewItemCard
               label="Hot Lead Created Today"
-              count={reviewData.followup_summary.today_hot_lead}
+              count={followup_summary.today_hot_lead}
             />
             <OverviewItemCard
               label="Follow-up Missed Today"
-              count={reviewData.followup_summary.today_missed_followup}
+              count={followup_summary.today_missed_followup}
             />
             <OverviewItemCard
               label="Today's Missed Follow-up"
-              count={reviewData.followup_summary.today_missed_forecast}
+              count={followup_summary.today_missed_forecast}
             />
             <OverviewItemCard
               label="Today's Closed Hot Lead"
-              count={reviewData.followup_summary.today_closed_hot_lead}
+              count={followup_summary.today_closed_hot_lead}
             />
             <OverviewItemCard
               label="Overdue Follow-up"
-              count={reviewData.followup_summary.overdue_followup}
+              count={followup_summary.overdue_followup}
             />
             <OverviewItemCard
               label="Overdue Task"
-              count={reviewData.followup_summary.overdue_task}
+              count={followup_summary.overdue_task}
             />
           </GridItemCard>
 
           <GridItemCard title="Call Summary Overview" xs={12} sm={6} lg={4}>
-            <CallPerformanceTable
-              callPerformanceData={reviewData.call_performance}
-            />
+            <CallPerformanceTable callPerformanceData={call_performance} />
           </GridItemCard>
 
           <GridItemCard
@@ -288,32 +306,29 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
           </GridItemCard>
 
           <GridItemCard title="PI Summary" xs={12} sm={6} lg={4}>
-            <OverviewItemCard
-              label="Raised Today"
-              count={reviewData.pi_summary.raised}
-            />
+            <OverviewItemCard label="Raised Today" count={pi_summary.raised} />
             <OverviewItemCard
               label="PI Dropped Today"
-              count={reviewData.pi_summary.drop}
+              count={pi_summary.drop}
             />
             <OverviewItemCard
               label="PI Drop This Month"
-              count={reviewData.pi_summary.month_drop}
+              count={pi_summary.month_drop}
             />
           </GridItemCard>
 
           <GridItemCard title="New Customer Summary" xs={12} sm={6} lg={4}>
             <OverviewItemCard
               label=" New Customer Last Month"
-              count={reviewData.new_customer_summary.last_month}
+              count={new_customer_summary.last_month}
             />
             <OverviewItemCard
               label="New Customer This Month"
-              count={reviewData.new_customer_summary.month}
+              count={new_customer_summary.month}
             />
             <OverviewItemCard
               label="New Customer Billed Today"
-              count={reviewData.new_customer_summary.sales_invoice}
+              count={new_customer_summary.sales_invoice}
             />
           </GridItemCard>
           {/* Pending Payments */}
@@ -331,11 +346,16 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
                 </TableHead>
                 <TableBody>
                   {reviewData &&
-                    reviewData.pending_payments &&
-                    reviewData.pending_payments.map((order, index) => (
+                    pending_payments &&
+                    pending_payments.map((order, index) => (
                       <TableRow key={index}>
                         <TableCell>{order.date}</TableCell>
-                        <TableCell>{order.amount}</TableCell>
+                        <TableCell>
+                          {order.amount.toLocaleString("en-US", {
+                            style: "decimal",
+                            minimumFractionDigits: 2,
+                          })}
+                        </TableCell>
                         <TableCell>{order.status}</TableCell>
                         <TableCell>{order.customer}</TableCell>
                         <TableCell>{order.pi_number}</TableCell>
@@ -357,11 +377,16 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
                 </TableHead>
                 <TableBody>
                   {reviewData &&
-                    reviewData.top_customer &&
-                    reviewData.top_customer.map((order, index) => (
+                    top_customer &&
+                    top_customer.map((order, index) => (
                       <TableRow key={index}>
                         <TableCell>{order.customer}</TableCell>
-                        <TableCell>{order.amount}</TableCell>
+                        <TableCell>
+                          {order.amount.toLocaleString("en-US", {
+                            style: "decimal",
+                            minimumFractionDigits: 2,
+                          })}
+                        </TableCell>
                         <TableCell>{order.is_billed_this_month}</TableCell>
                       </TableRow>
                     ))}
@@ -381,11 +406,16 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
                 </TableHead>
                 <TableBody>
                   {reviewData &&
-                    reviewData.top_forecast_customer &&
-                    reviewData.top_forecast_customer.map((order, index) => (
+                    top_forecast_customer &&
+                    top_forecast_customer.map((order, index) => (
                       <TableRow key={index}>
                         <TableCell>{order.customer}</TableCell>
-                        <TableCell>{order.amount}</TableCell>
+                        <TableCell>
+                          {order.amount.toLocaleString("en-US", {
+                            style: "decimal",
+                            minimumFractionDigits: 2,
+                          })}
+                        </TableCell>
                         <TableCell>{order.is_billed_this_month}</TableCell>
                       </TableRow>
                     ))}
@@ -412,18 +442,16 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
                 </TableHead>
                 <TableBody>
                   {reviewData &&
-                    reviewData.today_missed_customer_order &&
-                    reviewData.today_missed_customer_order.map(
-                      (order, index) => (
-                        <TableRow key={index}>
-                          <TableCell>{order.forecast}</TableCell>
-                          <TableCell>{order.estimated_date}</TableCell>
-                          <TableCell>{order.customer}</TableCell>
-                          <TableCell>{order.description}</TableCell>
-                          <TableCell>{order.product}</TableCell>
-                        </TableRow>
-                      )
-                    )}
+                    today_missed_customer_order &&
+                    today_missed_customer_order.map((order, index) => (
+                      <TableRow key={index}>
+                        <TableCell>{order.forecast}</TableCell>
+                        <TableCell>{order.estimated_date}</TableCell>
+                        <TableCell>{order.customer}</TableCell>
+                        <TableCell>{order.description}</TableCell>
+                        <TableCell>{order.product}</TableCell>
+                      </TableRow>
+                    ))}
                 </TableBody>
               </Table>
             </TableContainer>
@@ -447,8 +475,8 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
                 </TableHead>
                 <TableBody>
                   {reviewData &&
-                    reviewData.customer_estimated_order &&
-                    reviewData.customer_estimated_order.map((order, index) => (
+                    customer_estimated_order &&
+                    customer_estimated_order.map((order, index) => (
                       <TableRow key={index}>
                         <TableCell>{order.customer}</TableCell>
                         <TableCell>{order.estimated_date}</TableCell>
@@ -475,8 +503,8 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
                 </TableHead>
                 <TableBody>
                   {reviewData &&
-                    reviewData.today_missed_lead_order &&
-                    reviewData.today_missed_lead_order.map((order, index) => (
+                    today_missed_lead_order &&
+                    today_missed_lead_order.map((order, index) => (
                       <TableRow key={index}>
                         <TableCell>{order.quantity}</TableCell>
                         <TableCell>{order.anticipated_date}</TableCell>
@@ -504,8 +532,8 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
                 </TableHead>
                 <TableBody>
                   {reviewData &&
-                    reviewData.today_lead_estimate_order &&
-                    reviewData.today_lead_estimate_order.map((order, index) => (
+                    today_lead_estimate_order &&
+                    today_lead_estimate_order.map((order, index) => (
                       <TableRow key={index}>
                         <TableCell>{order.stage}</TableCell>
                         <TableCell>{order.customer}</TableCell>
@@ -535,16 +563,17 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {reviewData &&
-                    reviewData.sales_summary &&
-                    reviewData.sales_summary.map((item, index) => (
+                  {sales_summary ? (
+                    sales_summary.map((item, index) => (
                       <TableRow key={index}>
                         <TableCell>{item.description}</TableCell>
                         <TableCell>{item.forecast_quantity}</TableCell>
                         <TableCell>{item.unit}</TableCell>
                         <TableCell>{item.sales_quantity}</TableCell>
                         <TableCell>{item.daily_target}</TableCell>
-                        <TableCell>{item.today_pi.join(", ")}</TableCell>
+                        <TableCell>
+                          {item.today_pi ? item.today_pi.join(", ") : "N/A"}
+                        </TableCell>
                         <TableCell>
                           {item.today_sales_invoice.join(", ")}
                         </TableCell>
@@ -552,7 +581,10 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
                           {item.monthly_sales_invoice.join(", ")}
                         </TableCell>
                       </TableRow>
-                    ))}
+                    ))
+                  ) : (
+                    <Typography>No Sales Summary Data Available</Typography>
+                  )}
                 </TableBody>
               </Table>
             </TableContainer>
@@ -569,12 +601,19 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
                 </TableHead>
                 <TableBody>
                   {reviewData &&
-                    reviewData.month_on_month_sales &&
-                    reviewData.month_on_month_sales.map((item, index) => (
+                    month_on_month_sales &&
+                    month_on_month_sales.map((item, index) => (
                       <TableRow key={index}>
                         <TableCell>{item.month}</TableCell>
                         <TableCell>{item.year}</TableCell>
-                        <TableCell>{item.total_sales}</TableCell>
+                        <TableCell>
+                          {item.total_sales
+                            ? item.total_sales.toLocaleString("en-US", {
+                                style: "decimal",
+                                minimumFractionDigits: 2,
+                              })
+                            : "N/A"}
+                        </TableCell>
                       </TableRow>
                     ))}
                 </TableBody>
@@ -584,40 +623,52 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
           <GridItemCard title="Lead to Customer Ratio" xs={4}>
             <OverviewItemCard
               label="Lead Count"
-              count={reviewData.conversion_ratio.lead_count}
+              count={conversion_ratio.lead_count}
             />
             <OverviewItemCard
               label="New Customer"
-              count={reviewData.conversion_ratio.new_customer}
+              count={conversion_ratio.new_customer}
             />
             <OverviewItemCard
               label="Conversion Ratio"
-              count={reviewData.conversion_ratio.conversion_ratio}
+              count={conversion_ratio.conversion_ratio}
             />
           </GridItemCard>
           <GridItemCard title="Whatsapp Summary" xs={4}>
             <OverviewItemCard
               label="Customer Not in WhatsApp Group"
-              count={reviewData.whatsapp_summary.not_customer}
+              count={whatsapp_summary.not_customer}
             />
             <OverviewItemCard
               label="Customer Not Having WhatsApp Group"
-              count={reviewData.whatsapp_summary.not_group}
+              count={whatsapp_summary.not_group}
             />
             <OverviewItemCard
               label="Sales Person Not in Group"
-              count={reviewData.whatsapp_summary.not_sale_person}
+              count={whatsapp_summary.not_sale_person}
             />
           </GridItemCard>
 
           <GridItemCard title="Customer Billing Today" xs={4}>
             <OverviewItemCard
               label="Customer"
-              count={reviewData.customer_billed_today.order_book__company__name}
+              count={
+                customer_billed_today &&
+                customer_billed_today.order_book__company
+                  ? customer_billed_today.order_book__company__name
+                  : "N/A"
+              }
             />
             <OverviewItemCard
               label="Amount"
-              count={reviewData.customer_billed_today.amount}
+              count={
+                customer_billed_today && customer_billed_today.amount
+                  ? customer_billed_today.amount.toLocaleString("en-US", {
+                      style: "decimal",
+                      minimumFractionDigits: 2,
+                    })
+                  : "N/A" // Or any other fallback value you prefer
+              }
             />
           </GridItemCard>
         </Grid>

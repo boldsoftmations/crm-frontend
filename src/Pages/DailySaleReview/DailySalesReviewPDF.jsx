@@ -167,17 +167,17 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
     customer_billed_today,
   } = reviewData;
 
-  const newLeadsTotal =
+  const monthTotal =
     (call_performance.new_leads.month || 0) +
-    (call_performance.new_leads.today || 0) +
-    (call_performance.new_leads.last_7_days || 0);
-  const existingLeadsTotal =
     (call_performance.existing_leads.month || 0) +
+    (call_performance.existing_customer.month || 0);
+  const todayTotal =
+    (call_performance.new_leads.today || 0) +
     (call_performance.existing_leads.today || 0) +
-    (call_performance.existing_leads.last_7_days || 0);
-  const existingCustomerTotal =
-    (call_performance.existing_customer.month || 0) +
-    (call_performance.existing_customer.today || 0) +
+    (call_performance.existing_customer.today || 0);
+  const last7DaysTotal =
+    (call_performance.new_leads.last_7_days || 0) +
+    (call_performance.existing_leads.last_7_days || 0) +
     (call_performance.existing_customer.last_7_days || 0);
 
   return (
@@ -296,44 +296,20 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
               <Text style={styles.text}>Category</Text>
             </View>
             <View style={styles.tableCell}>
-              <Text style={styles.text}>New Leads</Text>
+              <Text style={styles.text}>Today</Text>
             </View>
             <View style={styles.tableCell}>
-              <Text style={styles.text}>Existing Leads</Text>
+              <Text style={styles.text}>Last 7 Days Avg</Text>
             </View>
             <View style={[styles.tableCell, styles.lastTableCell]}>
-              <Text style={styles.text}>Existing Customer</Text>
+              <Text style={styles.text}>This Month</Text>
             </View>
           </View>
 
           {/* Month Row */}
           <View style={styles.tableRow}>
             <View style={styles.tableCell}>
-              <Text style={styles.text}>Month:</Text>
-            </View>
-            <View style={styles.tableCell}>
-              <Text style={styles.text}>
-                {call_performance ? call_performance.new_leads.month : "0"}
-              </Text>
-            </View>
-            <View style={styles.tableCell}>
-              <Text style={styles.text}>
-                {call_performance ? call_performance.existing_leads.month : "0"}
-              </Text>
-            </View>
-            <View style={[styles.tableCell, styles.lastTableCell]}>
-              <Text style={styles.text}>
-                {call_performance
-                  ? call_performance.existing_customer.month
-                  : "0"}
-              </Text>
-            </View>
-          </View>
-
-          {/* Today Row */}
-          <View style={styles.tableRow}>
-            <View style={styles.tableCell}>
-              <Text style={styles.text}>Today:</Text>
+              <Text style={styles.text}>New Leads:</Text>
             </View>
             <View style={styles.tableCell}>
               <Text style={styles.text}>
@@ -342,28 +318,26 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
             </View>
             <View style={styles.tableCell}>
               <Text style={styles.text}>
-                {call_performance ? call_performance.existing_leads.today : "0"}
+                {call_performance
+                  ? call_performance.new_leads.last_7_days
+                  : "0"}
               </Text>
             </View>
             <View style={[styles.tableCell, styles.lastTableCell]}>
               <Text style={styles.text}>
-                {call_performance
-                  ? call_performance.existing_customer.today
-                  : "0"}
+                {call_performance ? call_performance.new_leads.month : "0"}
               </Text>
             </View>
           </View>
 
-          {/* Last 7 Days Row */}
+          {/* Today Row */}
           <View style={styles.tableRow}>
             <View style={styles.tableCell}>
-              <Text style={styles.text}>Last 7 Days Avg:</Text>
+              <Text style={styles.text}>Existing Leads:</Text>
             </View>
             <View style={styles.tableCell}>
               <Text style={styles.text}>
-                {call_performance
-                  ? call_performance.new_leads.last_7_days
-                  : "0"}
+                {call_performance ? call_performance.existing_leads.today : "0"}
               </Text>
             </View>
             <View style={styles.tableCell}>
@@ -375,8 +349,34 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
             </View>
             <View style={[styles.tableCell, styles.lastTableCell]}>
               <Text style={styles.text}>
+                {call_performance ? call_performance.existing_leads.month : "0"}
+              </Text>
+            </View>
+          </View>
+
+          {/* Last 7 Days Row */}
+          <View style={styles.tableRow}>
+            <View style={styles.tableCell}>
+              <Text style={styles.text}>Existing Customer:</Text>
+            </View>
+            <View style={styles.tableCell}>
+              <Text style={styles.text}>
+                {call_performance
+                  ? call_performance.existing_customer.today
+                  : "0"}
+              </Text>
+            </View>
+            <View style={styles.tableCell}>
+              <Text style={styles.text}>
                 {call_performance
                   ? call_performance.existing_customer.last_7_days
+                  : "0"}
+              </Text>
+            </View>
+            <View style={[styles.tableCell, styles.lastTableCell]}>
+              <Text style={styles.text}>
+                {call_performance
+                  ? call_performance.existing_customer.month
                   : "0"}
               </Text>
             </View>
@@ -388,13 +388,13 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
               <Text style={styles.text}>Total:</Text>
             </View>
             <View style={styles.tableCell}>
-              <Text style={styles.text}>{newLeadsTotal}</Text>
+              <Text style={styles.text}>{todayTotal}</Text>
             </View>
             <View style={styles.tableCell}>
-              <Text style={styles.text}>{existingLeadsTotal}</Text>
+              <Text style={styles.text}>{last7DaysTotal}</Text>
             </View>
             <View style={[styles.tableCell, styles.lastTableCell]}>
-              <Text style={styles.text}>{existingCustomerTotal}</Text>
+              <Text style={styles.text}>{monthTotal}</Text>
             </View>
           </View>
         </View>
@@ -508,7 +508,12 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
                 {summary.customer ? summary.customer : "NA"}
               </Text>
               <Text style={styles.tableCell}>{summary.date}</Text>
-              <Text style={styles.tableCell}>{summary.amount.toString()}</Text>
+              <Text style={styles.tableCell}>
+                {summary.amount.toLocaleString("en-US", {
+                  style: "decimal",
+                  minimumFractionDigits: 2,
+                })}
+              </Text>
               <Text style={[styles.tableCell, styles.lastTableCell]}>
                 {summary.status}
               </Text>
@@ -563,7 +568,12 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
           {top_customer.map((customer, index) => (
             <View key={index} style={styles.tableRow}>
               <Text style={styles.tableCell}>{customer.customer}</Text>
-              <Text style={styles.tableCell}>{customer.amount.toString()}</Text>
+              <Text style={styles.tableCell}>
+                {customer.amount.toLocaleString("en-US", {
+                  style: "decimal",
+                  minimumFractionDigits: 2,
+                })}
+              </Text>
               <Text style={[styles.tableCell, styles.lastTableCell]}>
                 {customer.billedThisMonth ? "Yes" : "No"}
               </Text>
@@ -594,7 +604,12 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
           {top_forecast_customer.map((customer, index) => (
             <View key={index} style={styles.tableRow}>
               <Text style={styles.tableCell}>{customer.customer}</Text>
-              <Text style={styles.tableCell}>{customer.amount.toString()}</Text>
+              <Text style={styles.tableCell}>
+                {customer.amount.toLocaleString("en-US", {
+                  style: "decimal",
+                  minimumFractionDigits: 2,
+                })}
+              </Text>
               <Text style={[styles.tableCell, styles.lastTableCell]}>
                 {customer.billedThisMonth ? "Yes" : "No"}
               </Text>
@@ -819,7 +834,10 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
 
               <Text style={styles.tableCell}>{order.year}</Text>
               <Text style={[styles.tableCell, styles.lastTableCell]}>
-                {order.total_sales}
+                {order.total_sales.toLocaleString("en-US", {
+                  style: "decimal",
+                  minimumFractionDigits: 2,
+                })}
               </Text>
             </View>
           ))}
@@ -856,12 +874,22 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
           <View style={styles.keyValueContainer}>
             <View style={styles.keyValue}>
               <Text style={styles.text}>
-                1) Customer : {customer_billed_today.order_book__company__name}
+                1) Customer :{" "}
+                {customer_billed_today &&
+                customer_billed_today.order_book__company__name
+                  ? customer_billed_today.order_book__company__name
+                  : "N/A"}
               </Text>
             </View>
             <View style={styles.keyValue}>
               <Text style={styles.text}>
-                2) Amount : {customer_billed_today.amount}
+                2) Amount :{" "}
+                {customer_billed_today && customer_billed_today.amount
+                  ? customer_billed_today.amount.toLocaleString("en-US", {
+                      style: "decimal",
+                      minimumFractionDigits: 2,
+                    })
+                  : "N/A"}
               </Text>
             </View>
           </View>

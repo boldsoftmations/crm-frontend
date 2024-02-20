@@ -130,7 +130,7 @@ const getDailySaleReviewData = (
   }
 
   if (salesPersonByFilter) {
-    params.append("email", salesPersonByFilter);
+    params.append("sales_person__email", salesPersonByFilter);
   }
 
   if (searchQuery) {
