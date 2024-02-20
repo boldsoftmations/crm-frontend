@@ -74,8 +74,7 @@ export const MyDocument = (props) => {
                 </View>
                 <View style={{ ...cellStyle, ...borderRightStyle }}>
                   <Text style={{ ...innerTextStyle }}>
-                    {invoiceData.pi_number} &{" "}
-                    {moment(invoiceData.generation_date).format("DD-MM-YYYY")}
+                    {invoiceData.pi_number} & {invoiceData.generation_date}
                   </Text>
                 </View>
                 <View style={{ ...cellStyle, ...borderRightStyle }}>
