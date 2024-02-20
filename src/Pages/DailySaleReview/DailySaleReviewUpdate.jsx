@@ -186,6 +186,7 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
     month_on_month_sales,
     whatsapp_summary,
     customer_billed_today,
+    pipeline_summary,
   } = reviewData;
   const assignedCustomerTotal = existing_customer.assigned_customer;
   const entries = Object.entries(no_order_customer);
@@ -670,6 +671,41 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
                   : "N/A" // Or any other fallback value you prefer
               }
             />
+          </GridItemCard>
+          <GridItemCard title="Pipeline Summary" xs={12}>
+            <CardContent>
+              <Typography variant="h6" color="primary" gutterBottom>
+                Hot Lead Performance
+              </Typography>
+              {pipeline_summary &&
+                pipeline_summary.hot_lead_performance &&
+                Object.entries(pipeline_summary.hot_lead_performance).map(
+                  ([key, value]) => (
+                    <Typography variant="body2" key={key} sx={{ mb: 1 }}>
+                      {`${key
+                        .replace(/_/g, " ")
+                        .replace(/^\w/, (c) => c.toUpperCase())}: ${value}`}
+                    </Typography>
+                  )
+                )}
+
+              <Divider sx={{ my: 2 }} />
+
+              <Typography variant="h6" color="primary" gutterBottom>
+                Lead Pipeline
+              </Typography>
+              {pipeline_summary &&
+                pipeline_summary.lead_pipeline &&
+                Object.entries(pipeline_summary.lead_pipeline).map(
+                  ([key, value]) => (
+                    <Typography variant="body2" key={key} sx={{ mb: 1 }}>
+                      {`${key
+                        .replace(/_/g, " ")
+                        .replace(/^\w/, (c) => c.toUpperCase())}: ${value}`}
+                    </Typography>
+                  )
+                )}
+            </CardContent>
           </GridItemCard>
         </Grid>
         {/* Signature section with underlines */}

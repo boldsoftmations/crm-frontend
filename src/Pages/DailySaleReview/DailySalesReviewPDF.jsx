@@ -165,6 +165,7 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
     month_on_month_sales,
     whatsapp_summary,
     customer_billed_today,
+    pipeline_summary,
   } = reviewData;
 
   const monthTotal =
@@ -184,9 +185,7 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
     <Document>
       <Page style={styles.page}>
         {/* Header Section */}
-
         <Text style={styles.heading}>Sales Review</Text>
-
         {/* Cusomer Section */}
         <View style={styles.card}>
           <Text style={styles.subheading}>Existing Customer</Text>
@@ -235,7 +234,6 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
             </View>
           </View>
         </View>
-
         {/* followup summary Section */}
         <View style={styles.card}>
           <Text style={styles.subheading}>Follow-up Summary</Text>
@@ -285,7 +283,6 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
             </View>
           </View>
         </View>
-
         {/* Call Summary Section  */}
         <View style={styles.card}>
           <Text style={styles.subheading}>Call Summary</Text>
@@ -398,7 +395,6 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
             </View>
           </View>
         </View>
-
         {/* No Order Customer Section */}
         <View style={styles.card}>
           <Text style={styles.subheading}>No Order Customer</Text>
@@ -430,7 +426,6 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
             </View>
           </View>
         </View>
-
         {/* PI Summary Section */}
         <View style={styles.card}>
           <Text style={styles.subheading}>Pi Summary</Text>
@@ -453,7 +448,6 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
             </View>
           </View>
         </View>
-
         {/* New Customer Summary Section */}
         <View style={styles.card}>
           <Text style={styles.subheading}>New Customer Summary</Text>
@@ -478,7 +472,6 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
             </View>
           </View>
         </View>
-
         {/* Pending Payment Section */}
         <View style={styles.card}>
           <Text style={styles.subheading}>Pending Payment</Text>
@@ -520,7 +513,6 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
             </View>
           ))}
         </View>
-
         {/* lead to customer conversion Ratio Section */}
         <View style={styles.card}>
           <Text style={styles.subheading}>Lead to Customer Ratio</Text>
@@ -544,7 +536,6 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
             </View>
           </View>
         </View>
-
         {/* Top Customer Section */}
         <View style={styles.card}>
           <Text style={styles.subheading}>Top Customer</Text>
@@ -580,7 +571,6 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
             </View>
           ))}
         </View>
-
         {/* Top Forecast Customer */}
         <View style={styles.card}>
           <Text style={styles.subheading}>Top Forecast Customer</Text>
@@ -616,7 +606,6 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
             </View>
           ))}
         </View>
-
         {/* Today Missed Customer Order */}
         <View style={styles.card}>
           <Text style={styles.subheading}>Today Missed Customer Order</Text>
@@ -651,7 +640,6 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
             </View>
           ))}
         </View>
-
         {/*Today Customer Estimated Order */}
         <View style={styles.card}>
           <Text style={styles.subheading}>Today Customer Estimated Order</Text>
@@ -684,7 +672,6 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
             </View>
           ))}
         </View>
-
         {/* Today Missed Lead Order */}
         <View style={styles.card}>
           <Text style={styles.subheading}>Today Missed Lead Order</Text>
@@ -719,7 +706,6 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
             </View>
           ))}
         </View>
-
         {/* Today Lead Estimate Order */}
         <View style={styles.card}>
           <Text style={styles.subheading}>Today Lead Estimate Order</Text>
@@ -754,7 +740,6 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
             </View>
           ))}
         </View>
-
         {/* Sales Summary Section */}
         <View style={styles.card}>
           <Text style={styles.subheading}>Sales Summary</Text>
@@ -810,7 +795,6 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
             </View>
           ))}
         </View>
-
         {/* Monthly sales section */}
         <View style={styles.card}>
           <Text style={styles.subheading}>Monthly Sales</Text>
@@ -842,7 +826,6 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
             </View>
           ))}
         </View>
-
         {/* Whatsapp Summary Section */}
         <View style={styles.card}>
           <Text style={styles.subheading}>Whatsapp Summary</Text>
@@ -867,7 +850,6 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
             </View>
           </View>
         </View>
-
         {/* customer billed today */}
         <View style={styles.card}>
           <Text style={styles.subheading}>Customer Billing Today</Text>
@@ -894,7 +876,50 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
             </View>
           </View>
         </View>
+        {/* pipeline summary section */}
+        // Pipeline Summary Section
+        <View style={styles.card}>
+          <Text style={styles.subheading}>Pipeline Summary</Text>
+          {/* Hot Lead Performance */}
+          <View style={styles.section}>
+            <Text style={styles.subheading}>Hot Lead Performance</Text>
+            {pipeline_summary &&
+              pipeline_summary.hot_lead_performance &&
+              Object.entries(pipeline_summary.hot_lead_performance).map(
+                ([key, value]) => (
+                  <View key={key} style={styles.entryContainer}>
+                    <Text style={styles.textKey}>
+                      {key
+                        .replace(/_/g, " ")
+                        .replace(/^\w/, (c) => c.toUpperCase())}
+                      :
+                    </Text>
+                    <Text style={styles.textValue}> {value}</Text>
+                  </View>
+                )
+              )}
+          </View>
 
+          {/* Lead Pipeline */}
+          <View style={styles.section}>
+            <Text style={styles.subheading}>Lead Pipeline</Text>
+            {pipeline_summary &&
+              pipeline_summary.lead_pipeline &&
+              Object.entries(pipeline_summary.lead_pipeline).map(
+                ([key, value]) => (
+                  <View key={key} style={styles.entryContainer}>
+                    <Text style={styles.textKey}>
+                      {key
+                        .replace(/_/g, " ")
+                        .replace(/^\w/, (c) => c.toUpperCase())}
+                      :
+                    </Text>
+                    <Text style={styles.textValue}> {value}</Text>
+                  </View>
+                )
+              )}
+          </View>
+        </View>
         {/* Signature section */}
         <View style={styles.signatureSection}>
           <View style={styles.signatureBlock}>
