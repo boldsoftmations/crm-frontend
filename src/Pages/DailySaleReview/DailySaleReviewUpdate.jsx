@@ -335,7 +335,7 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
           {/* Pending Payments */}
           <GridItemCard title="Pending Payments" xs={12}>
             <TableContainer style={{ maxHeight: "400px", overflow: "auto" }}>
-              <Table aria-label="Pending Payment Overview">
+              <Table stickyHeader aria-label="Pending Payment Overview">
                 <TableHead>
                   <TableRow>
                     <TableCell>Date</TableCell>
@@ -368,7 +368,7 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
           </GridItemCard>
           <GridItemCard title="Top Customer" xs={6}>
             <TableContainer style={{ maxHeight: "400px", overflow: "auto" }}>
-              <Table aria-label="Top Customer Overview">
+              <Table stickyHeader aria-label="Top Customer Overview">
                 <TableHead>
                   <TableRow>
                     <TableCell>Customer</TableCell>
@@ -397,7 +397,7 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
           </GridItemCard>
           <GridItemCard title="Top Forecast Customer" xs={6}>
             <TableContainer style={{ maxHeight: "400px", overflow: "auto" }}>
-              <Table aria-label="Top Forecast Customer Overview">
+              <Table stickyHeader aria-label="Top Forecast Customer Overview">
                 <TableHead>
                   <TableRow>
                     <TableCell>Customer</TableCell>
@@ -431,7 +431,7 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
             // lg={6}
           >
             <TableContainer style={{ maxHeight: "400px", overflow: "auto" }}>
-              <Table aria-label="Missed Customer Orders">
+              <Table stickyHeader aria-label="Missed Customer Orders">
                 <TableHead>
                   <TableRow>
                     <TableCell>Forecast</TableCell>
@@ -464,7 +464,7 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
             // lg={6}
           >
             <TableContainer style={{ maxHeight: "400px", overflow: "auto" }}>
-              <Table aria-label="Estimate Customer Order">
+              <Table stickyHeader aria-label="Estimate Customer Order">
                 <TableHead>
                   <TableRow>
                     <TableCell>Customer</TableCell>
@@ -492,7 +492,7 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
           </GridItemCard>
           <GridItemCard title="Today Missed Lead Order" xs={6}>
             <TableContainer style={{ maxHeight: "400px", overflow: "auto" }}>
-              <Table aria-label="Missed Customer Orders">
+              <Table stickyHeader aria-label="Missed Customer Orders">
                 <TableHead>
                   <TableRow>
                     <TableCell>Quantity</TableCell>
@@ -520,7 +520,7 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
           </GridItemCard>
           <GridItemCard title="Today Lead Estimate Order" xs={6}>
             <TableContainer style={{ maxHeight: "400px", overflow: "auto" }}>
-              <Table aria-label="Lead Estimate Order">
+              <Table stickyHeader aria-label="Lead Estimate Order">
                 <TableHead>
                   <TableRow>
                     <TableCell>Stage</TableCell>
@@ -550,7 +550,7 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
           </GridItemCard>
           <GridItemCard title="Sales Summary" xs={12}>
             <TableContainer style={{ maxHeight: "400px", overflow: "auto" }}>
-              <Table aria-label="Sales Summary Table">
+              <Table stickyHeader aria-label="Sales Summary Table">
                 <TableHead>
                   <TableRow>
                     <TableCell>Description</TableCell>
@@ -587,7 +587,7 @@ export const DailySaleReviewUpdate = ({ recordForEdit }) => {
           </GridItemCard>
           <GridItemCard title="Monthly Sales Chart" xs={12}>
             <TableContainer style={{ maxHeight: "400px", overflow: "auto" }}>
-              <Table aria-label="Monthly Sales Overview">
+              <Table stickyHeader aria-label="Monthly Sales Overview">
                 <TableHead>
                   <TableRow>
                     <TableCell>Month</TableCell>
