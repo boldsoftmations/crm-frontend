@@ -240,7 +240,16 @@ export const RetailCustomerData = () => {
             />
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
-            <Typography variant="h6" align="right">
+            <Typography
+              variant="h6"
+              style={{
+                fontWeight: "bold",
+                fontSize: "1.25rem",
+                fontFamily: "Arial, sans-serif",
+                color: "#333",
+                margin: "20px 0",
+              }}
+            >
               Retailer Customer Count: {retailerCustomerCount}
             </Typography>
           </Grid>
