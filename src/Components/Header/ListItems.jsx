@@ -1205,6 +1205,19 @@ export const ListItems = (props) => {
                   primary="Bulk Message"
                 />
               </ListItem>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/customers/automation"
+                style={{ width: 300 }}
+              >
+                <ListItemText
+                  component={Button}
+                  onClick={() => setOpen(false)}
+                  inset
+                  primary="Scheduler"
+                />
+              </ListItem>
             </List>
           </Collapse>
           {/* <ListItem

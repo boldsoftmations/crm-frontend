@@ -323,6 +323,17 @@ const bulkResendMessage = (data) => {
   );
 };
 
+const getAutomatioData = (page = 1, isScheduledFilter = '') => {
+  const params = new URLSearchParams();
+  if (page) {
+    params.append('page', page);
+  }
+  if (isScheduledFilter !== '') {
+    params.append('is_scheduled', isScheduledFilter);
+  }
+
+  return CustomAxios.get(`/api/whatsapp/whatsapp-automation/?${params.toString()}`);
+};
 const CustomerServices = {
   getAllCustomerData,
   getIncompleteKycCustomerData,
@@ -379,6 +390,7 @@ const CustomerServices = {
   getWhatsappImageData,
   resendWhatsappMessage,
   bulkResendMessage,
+  getAutomatioData
 };
 
 export default CustomerServices;
