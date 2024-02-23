@@ -12,7 +12,7 @@ import CustomTextField from "../Components/CustomTextField";
 import DashboardService from "../services/DashboardService";
 
 const StateOption = [
-  { id: 1, value: "All", label: "All States / UT" },
+  { id: 1, value: "All", label: "States / UT" },
   {
     id: 1,
     value: "Andhra Pradesh",
@@ -156,8 +156,8 @@ const StateOption = [
   },
   {
     id: 28,
-    value: "New Delhi",
-    label: "New Delhi",
+    value: "Delhi",
+    label: "Delhi",
   },
   {
     id: 29,
