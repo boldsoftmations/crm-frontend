@@ -128,7 +128,7 @@ export const ListItems = (props) => {
                   component={Button}
                   onClick={() => setOpen(false)}
                   inset
-                  primary="Retail Customer Data"
+                  primary="Distribution Customer Data"
                 />
               </ListItem>
               <ListItem
