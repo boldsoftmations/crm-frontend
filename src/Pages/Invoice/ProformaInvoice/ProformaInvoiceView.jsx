@@ -16,6 +16,7 @@ import MSME from "../../../Images/MSME.jpeg";
 import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 import { MyDocument } from "./MyDocument";
 import { Button } from "@mui/material";
+import { CheckPrice } from "./CheckPrice";
 
 export const ProformaInvoiceView = (props) => {
   const { idForEdit, setOpenPopup, getProformaInvoiceData } = props;
@@ -25,6 +26,8 @@ export const ProformaInvoiceView = (props) => {
   const [hsnData, setHsnData] = useState([]);
   const [open, setOpen] = useState(false);
   const [errMsg, setErrMsg] = useState("");
+  const [checkPricePopupOpen, setCheckPricePopupOpen] = useState(false);
+  const [priceData, setPriceData] = useState(null);
   const data = useSelector((state) => state.auth);
   const users = data.profile;
   const componentRef = useRef();
@@ -33,6 +36,22 @@ export const ProformaInvoiceView = (props) => {
     content: () => componentRef.current,
     documentTitle: `PI Number ${invoiceData.pi_number}`,
   });
+
+  const handleCheckPrice = async () => {
+    setOpen(true);
+    try {
+      const response = await InvoiceServices.checkPrice(invoiceData.pi_number);
+      const data = Array.isArray(response.data)
+        ? response.data
+        : [response.data];
+      setPriceData(data);
+      setCheckPricePopupOpen(true);
+    } catch (error) {
+      console.error("Error fetching price data:", error);
+    } finally {
+      setOpen(false);
+    }
+  };
 
   const handleDownload = async (data) => {
     try {
@@ -282,6 +301,17 @@ export const ProformaInvoiceView = (props) => {
                   Print
                 </Button>
               )}
+            <div>
+              {invoiceData && invoiceData.status && (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleCheckPrice}
+                >
+                  Check Price
+                </Button>
+              )}
+            </div>
           </div>
           <div className="col-xs-6 ">
             {(users.groups.includes("Sales") ||
@@ -987,6 +1017,14 @@ export const ProformaInvoiceView = (props) => {
           setOpenPopup2={setOpenPopup}
           getProformaInvoiceData={getProformaInvoiceData}
         />
+      </Popup>
+      <Popup
+        maxWidth={"lg"}
+        openPopup={checkPricePopupOpen}
+        setOpenPopup={setCheckPricePopupOpen}
+        title="Price Information"
+      >
+        <CheckPrice priceData={priceData} />
       </Popup>
     </>
   );

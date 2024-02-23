@@ -297,6 +297,10 @@ const getPODCopyDashboardData = (pageNumber, boolean, isNull, unit) => {
   );
 };
 
+const checkPrice = (pi_number) => {
+  return CustomAxios.get(`/api/invoice/check-price-list/?pi_number=${pi_number}`);
+}
+
 const InvoiceServices = {
   getAllSellerAccountData,
   getfilterSellerAccountData,
@@ -348,6 +352,7 @@ const InvoiceServices = {
   getDispatchDashboardData,
   getLRCopyDashboardData,
   getPODCopyDashboardData,
+  checkPrice
 };
 
 export default InvoiceServices;
