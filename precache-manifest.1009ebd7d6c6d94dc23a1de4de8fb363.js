@@ -68,12 +68,12 @@ self.__precacheManifest = [
     "url": "/crm-frontend/static/media/Roboto-Thin.66209ae0.ttf"
   },
   {
-    "revision": "b8e42971dec8d49207a8c8e2b919a6ac",
-    "url": "/crm-frontend/static/media/Roboto-Bold.b8e42971.ttf"
-  },
-  {
     "revision": "881e150ab929e26d1f812c4342c15a7c",
     "url": "/crm-frontend/static/media/Roboto-Light.881e150a.ttf"
+  },
+  {
+    "revision": "b8e42971dec8d49207a8c8e2b919a6ac",
+    "url": "/crm-frontend/static/media/Roboto-Bold.b8e42971.ttf"
   },
   {
     "revision": "5a21985c92a7b45fdb5ab4b79b48d423",
