@@ -301,17 +301,6 @@ export const ProformaInvoiceView = (props) => {
                   Print
                 </Button>
               )}
-            <div>
-              {invoiceData && invoiceData.status && (
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleCheckPrice}
-                >
-                  Check Price
-                </Button>
-              )}
-            </div>
           </div>
           <div className="col-xs-6 ">
             {(users.groups.includes("Sales") ||
@@ -393,6 +382,16 @@ export const ProformaInvoiceView = (props) => {
                   }}
                 >
                   Reject
+                </Button>
+              )}
+            {users.groups.includes("Accounts") &&
+              invoiceData.status === "Price Approval" && (
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={handleCheckPrice}
+                >
+                  Check Price
                 </Button>
               )}
           </div>
