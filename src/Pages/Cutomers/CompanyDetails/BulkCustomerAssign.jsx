@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Grid } from "@mui/material";
+import { Autocomplete, Box, Grid } from "@mui/material";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { CustomButton } from "../../../Components/CustomButton";
 import CustomerServices from "../../../services/CustomerService";
@@ -15,6 +15,7 @@ export const BulkCustomerAssign = (props) => {
   const [assigned, setAssigned] = useState([]);
   const [touchedAssignFrom, setTouchedAssignFrom] = useState(false);
   const [touchedAssignTo, setTouchedAssignTo] = useState(false);
+  const [selectedState, setSelectedState] = useState([]);
 
   useEffect(() => {
     getAssignedData();
@@ -39,6 +40,7 @@ export const BulkCustomerAssign = (props) => {
       const req = {
         assign_from: assignFrom,
         assign_to: assignTo,
+        states: selectedState.map((state) => state.value),
       };
       await CustomerServices.BulkCustomerAssign(req);
       setOpenPopup(false);
@@ -60,12 +62,125 @@ export const BulkCustomerAssign = (props) => {
     return "";
   };
 
+  const StateOption = [
+    {
+      value: "Andhra Pradesh",
+    },
+
+    {
+      value: "Arunachal Pradesh",
+    },
+    {
+      value: "Assam",
+    },
+    {
+      value: "Bihar",
+    },
+    {
+      value: "Chhattisgarh",
+    },
+    {
+      value: "Goa",
+    },
+    {
+      value: "Gujarat",
+    },
+    {
+      value: "Haryana",
+    },
+    {
+      value: "Himachal Pradesh",
+    },
+    {
+      value: "Jharkhand",
+    },
+    {
+      value: "Karnataka",
+    },
+    {
+      value: "Kerala",
+    },
+    {
+      value: "Madhya Pradesh",
+    },
+    {
+      value: "Maharashtra",
+    },
+    {
+      value: "Manipur",
+    },
+    {
+      value: "Meghalaya",
+    },
+    {
+      value: "Mizoram",
+    },
+    {
+      value: "Nagaland",
+    },
+    {
+      value: "Odisha",
+    },
+    {
+      value: "Punjab",
+    },
+    {
+      value: "Rajasthan",
+    },
+    {
+      value: "Sikkim",
+    },
+    {
+      value: "Tamil Nadu",
+    },
+    {
+      value: "Telangana",
+    },
+    {
+      value: "Tripura",
+    },
+    {
+      value: "Uttar Pradesh",
+    },
+    {
+      value: "Uttarakhand",
+    },
+    {
+      value: "West Bengal",
+    },
+    {
+      value: "Delhi",
+    },
+    {
+      value: "Jammu & Kashmir",
+    },
+    {
+      value: "Ladakh",
+    },
+  ];
+
   return (
     <>
       <CustomLoader open={open} />
 
       <Box component="form" noValidate onSubmit={AssignBulkLead}>
         <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <Autocomplete
+              multiple
+              fullWidth
+              size="small"
+              value={selectedState}
+              onChange={(event, value) => {
+                setSelectedState(value);
+              }}
+              options={StateOption}
+              getOptionLabel={(option) => option.value}
+              renderInput={(params) => (
+                <CustomTextField {...params} label="Select States" />
+              )}
+            />
+          </Grid>
           <Grid item xs={12}>
             <CustomAutocomplete
               fullWidth
