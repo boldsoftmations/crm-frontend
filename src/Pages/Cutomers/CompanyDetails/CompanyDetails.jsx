@@ -401,7 +401,8 @@ export const CompanyDetails = () => {
             <Grid container spacing={2} alignItems="center">
               <Grid item xs={12} sm={6}>
                 {/* Bulk Assign Button */}
-                {userData.is_staff === true && (
+                {(userData.groups.includes("Director") ||
+                  userData.groups.includes("Sales Manager")) && (
                   <Button
                     variant="contained"
                     onClick={() => setOpenModal(true)}
