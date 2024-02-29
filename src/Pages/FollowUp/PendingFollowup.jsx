@@ -10,7 +10,7 @@ import { FollowupDone } from "./FollowupDone";
 import LeadServices from "../../services/LeadService";
 import { Helmet } from "react-helmet";
 import { useSelector } from "react-redux";
-import CustomTextField from "../../Components/CustomTextField";
+import { CustomPagination } from "../../Components/CustomPagination";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 
 export const PendingFollowup = ({ product }) => {
@@ -22,6 +22,8 @@ export const PendingFollowup = ({ product }) => {
   const [popupCustomer, setPopupCustomer] = useState(false);
   const [leadsByID, setLeadsByID] = useState(null);
   const [isPrinting, setIsPrinting] = useState(false);
+  const [pageCount, setPageCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const userData = useSelector((state) => state.auth.profile);
   const assigned = userData.sales_users || [];
@@ -48,34 +50,34 @@ export const PendingFollowup = ({ product }) => {
 
   const handleFilterChange = (filterSelectedValue) => {
     setFilterSelectedQuery(filterSelectedValue);
-    getFollowUp(filterSelectedValue);
+    setCurrentPage(1);
+    getFollowUp(1, filterSelectedValue);
+  };
+
+  const handlePageClick = (event, value) => {
+    setCurrentPage(value);
+    getFollowUp(value, filterSelectedQuery);
   };
 
   useEffect(() => {
-    getFollowUp();
-  }, []);
+    getFollowUp(currentPage, filterSelectedQuery);
+  }, [currentPage, filterSelectedQuery]);
 
-  const getFollowUp = async (filterValue) => {
+  const getFollowUp = async (page = 1, filterValue = "") => {
     try {
       setOpen(true);
-      let response;
-      if (filterValue) {
-        response = await LeadServices.getAllFollowUp({
-          typeValue: "overdue_followup",
-          assignToFilter: filterValue,
-        });
-      } else {
-        response = await LeadServices.getAllFollowUp({
-          typeValue: "overdue_followup",
-        });
-      }
+      const response = await LeadServices.getAllFollowUp({
+        typeValue: "overdue_followup",
+        page,
+        assignToFilter: filterValue,
+      });
 
-      setPendingFollowUp(response.data);
-
+      setPendingFollowUp(response.data.results);
+      setPageCount(Math.ceil(response.data.count / 25)); // Assuming 25 items per page
       setOpen(false);
     } catch (err) {
+      console.error("Error fetching follow up data:", err);
       setOpen(false);
-      console.error("error followup", err);
     }
   };
 
@@ -104,22 +106,23 @@ export const PendingFollowup = ({ product }) => {
     setOpenModal(true);
   };
 
-  const Tabledata = pendingFollowUp.map((row, i) => ({
-    type: row.type,
-    lead: row.leads,
-    company: row.company,
-    company_name: row.company_name,
-    name: row.name,
-    user: row.user,
-
-    current_date: moment(row.current_date ? row.current_date : "-").format(
-      "DD/MM/YYYY h:mm:ss"
-    ),
-    next_followup_date: moment(
-      row.next_followup_date ? row.next_followup_date : "-"
-    ).format("DD/MM/YYYY h:mm:ss"),
-    notes: row.notes,
-  }));
+  const Tabledata = Array.isArray(pendingFollowUp)
+    ? pendingFollowUp.map((row, i) => ({
+        type: row.type,
+        lead: row.leads,
+        company: row.company,
+        company_name: row.company_name,
+        name: row.name,
+        user: row.user,
+        current_date: moment(row.current_date ? row.current_date : "-").format(
+          "DD/MM/YYYY h:mm:ss"
+        ),
+        next_followup_date: moment(
+          row.next_followup_date ? row.next_followup_date : "-"
+        ).format("DD/MM/YYYY h:mm:ss"),
+        notes: row.notes,
+      }))
+    : [];
 
   const Tableheaders = [
     "TYPE",
@@ -185,6 +188,10 @@ export const PendingFollowup = ({ product }) => {
             openInPopup={openInPopup}
             openInPopup2={openInPopup2}
             ButtonText={"Done"}
+          />
+          <CustomPagination
+            pageCount={pageCount}
+            handlePageClick={handlePageClick}
           />
         </Paper>
       </Grid>
