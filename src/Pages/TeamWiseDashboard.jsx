@@ -124,16 +124,19 @@ export const TeamWiseDashboard = () => {
       setEndDate(endDate);
       setStartDate(startDate);
     } else if (selectedValue === "This Month") {
-      const endDate = new Date();
-      endDate.setMonth(endDate.getMonth() + 1); // Set the next month from the current date
+      const currentDate = new Date();
       const startDate = new Date(
-        endDate.getFullYear(),
-        endDate.getMonth() - 1,
+        currentDate.getFullYear(),
+        currentDate.getMonth(),
         1
       );
-      endDate.setDate(endDate.getDate() + 1); // Set the next day from the current date
-      setEndDate(endDate);
+      const endDate = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() + 1,
+        1
+      );
       setStartDate(startDate);
+      setEndDate(endDate);
     } else if (selectedValue === "Last Month") {
       const endDate = new Date();
       endDate.setDate(0); // Set the last day of the previous month
@@ -554,8 +557,12 @@ export const TeamWiseDashboard = () => {
   const getConsCallPerformanceDetails = async () => {
     try {
       setOpen(true);
-      const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
-      const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
+      const timezoneOffset = startDate.getTimezoneOffset() * 60000; // Offset in milliseconds
+      const adjustedStartDate = new Date(startDate.getTime() - timezoneOffset);
+      const adjustedEndDate = new Date(endDate.getTime() - timezoneOffset);
+
+      const StartDate = adjustedStartDate.toISOString().split("T")[0];
+      const EndDate = adjustedEndDate.toISOString().split("T")[0];
       const response = await DashboardService.getConsCallPerformanceData(
         StartDate,
         EndDate
