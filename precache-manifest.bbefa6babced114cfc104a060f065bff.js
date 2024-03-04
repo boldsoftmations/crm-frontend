@@ -56,16 +56,12 @@ self.__precacheManifest = [
     "url": "/crm-frontend/static/media/browser.5ef5f772.cjs"
   },
   {
-    "revision": "8a36205bd9b83e03af0591a004bc97f4",
-    "url": "/crm-frontend/static/media/Roboto-Regular.8a36205b.ttf"
-  },
-  {
-    "revision": "881e150ab929e26d1f812c4342c15a7c",
-    "url": "/crm-frontend/static/media/Roboto-Light.881e150a.ttf"
-  },
-  {
     "revision": "66209ae01f484e46679622dd607fcbc5",
     "url": "/crm-frontend/static/media/Roboto-Thin.66209ae0.ttf"
+  },
+  {
+    "revision": "8a36205bd9b83e03af0591a004bc97f4",
+    "url": "/crm-frontend/static/media/Roboto-Regular.8a36205b.ttf"
   },
   {
     "revision": "68ea4734cf86bd544650aee05137d7bb",
@@ -74,6 +70,10 @@ self.__precacheManifest = [
   {
     "revision": "b8e42971dec8d49207a8c8e2b919a6ac",
     "url": "/crm-frontend/static/media/Roboto-Bold.b8e42971.ttf"
+  },
+  {
+    "revision": "881e150ab929e26d1f812c4342c15a7c",
+    "url": "/crm-frontend/static/media/Roboto-Light.881e150a.ttf"
   },
   {
     "revision": "e9bcc4a85467911dad0e0f67b37a613b",
