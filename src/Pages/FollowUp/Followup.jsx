@@ -78,6 +78,10 @@ export const Followup = () => {
     }
   };
 
+  const isUserInGroups = (groups, userGroups) => {
+    return groups.some((group) => userGroups.includes(group));
+  };
+
   const SalesTabs = [
     { label: "Overdue Followup" },
     { label: "Today Followup" },
@@ -91,12 +95,19 @@ export const Followup = () => {
     { label: "All Followup" },
   ];
 
+  const visibleTabs = isUserInGroups(
+    ["Director", "Sales Manager", "Sales Deputy Manager"],
+    userData.groups
+  )
+    ? StaffTabs
+    : SalesTabs;
+
   return (
     <div>
       <CustomLoader open={open} />
       <div>
         <CustomTabs
-          tabs={userData.is_staff === true ? StaffTabs : SalesTabs}
+          tabs={visibleTabs}
           activeTab={activeTab}
           onTabChange={handleTabChange}
         />
