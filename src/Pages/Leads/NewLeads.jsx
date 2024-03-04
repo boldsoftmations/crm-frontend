@@ -69,6 +69,8 @@ export const NewLeads = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [errorMessages, setErrorMessages] = useState([]);
   const [currentErrorIndex, setCurrentErrorIndex] = useState(0);
+  const data = useSelector((state) => state.auth);
+  const userData = data.profile;
 
   const FilterOptions = [
     { label: "References", value: "references__source" },
@@ -307,14 +309,6 @@ export const NewLeads = () => {
         </style>
       </Helmet>
       <CustomLoader open={open} />
-      <Popup
-        maxWidth={"lg"}
-        title={"Assign Bulk Lead to another Employee"}
-        openPopup={openModal}
-        setOpenPopup={setOpenModal}
-      >
-        <BulkLeadAssign setOpenPopup={setOpenModal} />
-      </Popup>
       <Grid item xs={12}>
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
           <Box display="flex" marginBottom="10px">
@@ -417,6 +411,17 @@ export const NewLeads = () => {
                   Reset
                 </Button>
               </Grid>
+              <Grid item xs={12} sm={3}>
+                {(userData.groups.includes("Director") ||
+                  userData.groups.includes("Sales Manager")) && (
+                  <Button
+                    variant="contained"
+                    onClick={() => setOpenModal(true)}
+                  >
+                    Assign Bulk Lead
+                  </Button>
+                )}
+              </Grid>
             </Grid>
           </Box>
           <Box display="flex" alignItems="center" justifyContent="center">
@@ -433,21 +438,6 @@ export const NewLeads = () => {
               users.groups.includes("Sales Assistant Deputy Manager") ? null : (
                 <Grid item lg={3}></Grid>
               )}
-
-              {/* Assign Bulk Lead Button - Conditionally Rendered on the Left */}
-              {(users.groups.includes("Sales Manager") ||
-                users.groups.includes("Sales Deputy Manager") ||
-                users.groups.includes("Sales Assistant Deputy Manager")) && (
-                <Grid item xs={4}>
-                  <Button
-                    onClick={() => setOpenModal(true)}
-                    variant="contained"
-                  >
-                    Assign Bulk Lead
-                  </Button>
-                </Grid>
-              )}
-
               {/* New Leads Text - Center */}
               <Grid item xs={4} style={{ textAlign: "center" }}>
                 <h3
@@ -646,6 +636,14 @@ export const NewLeads = () => {
           leadsByID={leadsByID}
           setOpenPopup={setOpenModalForecast}
         />
+      </Popup>
+      <Popup
+        maxWidth={"lg"}
+        title={"Assign Bulk Lead to another Employee"}
+        openPopup={openModal}
+        setOpenPopup={setOpenModal}
+      >
+        <BulkLeadAssign setOpenPopup={setOpenModal} />
       </Popup>
     </>
   );

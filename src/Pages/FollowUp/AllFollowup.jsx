@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Grid,
-  Paper,
-  Box,
-  Button,
-} from "@mui/material";
+import { Grid, Paper, Box, Button } from "@mui/material";
 import LeadServices from "../../services/LeadService";
 import moment from "moment";
 import { Popup } from "../../Components/Popup";
@@ -258,6 +253,7 @@ export const AllFollowup = () => {
     lead: row.leads,
     name: row.name,
     company: row.company,
+    company_name: row.company_name,
     user: row.user,
 
     current_date: moment(row.current_date ? row.current_date : "-").format(
@@ -274,6 +270,7 @@ export const AllFollowup = () => {
     "LEADS",
     "NAME",
     "COMPANY",
+    "COMPANY NAME",
     "USER",
     "CURRENT DATE",
     "NEXT FOLLOWUP DATE",

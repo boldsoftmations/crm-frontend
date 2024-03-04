@@ -118,6 +118,32 @@ export const ListItems = (props) => {
                   primary="Sales Team Analytics"
                 />
               </ListItem>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/user/retailer-data"
+                style={{ width: 300 }}
+              >
+                <ListItemText
+                  component={Button}
+                  onClick={() => setOpen(false)}
+                  inset
+                  primary="Distribution Customer Data"
+                />
+              </ListItem>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/user/dasboard-lead-data"
+                style={{ width: 300 }}
+              >
+                <ListItemText
+                  component={Button}
+                  onClick={() => setOpen(false)}
+                  inset
+                  primary="Lead Data"
+                />
+              </ListItem>
             </List>
           </Collapse>
 
@@ -1203,6 +1229,19 @@ export const ListItems = (props) => {
                   onClick={() => setOpen(false)}
                   inset
                   primary="Bulk Message"
+                />
+              </ListItem>
+              <ListItem
+                button
+                component={RouterLink}
+                to="/customers/automation"
+                style={{ width: 300 }}
+              >
+                <ListItemText
+                  component={Button}
+                  onClick={() => setOpen(false)}
+                  inset
+                  primary="Scheduler"
                 />
               </ListItem>
             </List>

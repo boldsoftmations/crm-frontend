@@ -10,7 +10,7 @@ import { FollowupDone } from "./FollowupDone";
 import LeadServices from "../../services/LeadService";
 import { Helmet } from "react-helmet";
 import { useSelector } from "react-redux";
-import CustomTextField from "../../Components/CustomTextField";
+import { CustomPagination } from "../../Components/CustomPagination";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 
 export const TodayFollowup = () => {
@@ -19,6 +19,8 @@ export const TodayFollowup = () => {
   const [todayFollowUpById, setTodayFollowUpById] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const [popupLead, setPopupLead] = useState(false);
+  const [pageCount, setPageCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [popupCustomer, setPopupCustomer] = useState(false);
   const [leadsByID, setLeadsByID] = useState(null);
   const [isPrinting, setIsPrinting] = useState(false);
@@ -48,34 +50,34 @@ export const TodayFollowup = () => {
 
   const handleFilterChange = (filterSelectedValue) => {
     setFilterSelectedQuery(filterSelectedValue);
-    getFollowUp(filterSelectedValue);
+    setCurrentPage(1);
+    getFollowUp(1, filterSelectedValue);
+  };
+
+  const handlePageClick = (event, value) => {
+    setCurrentPage(value);
+    getFollowUp(value, filterSelectedQuery);
   };
 
   useEffect(() => {
-    getFollowUp();
-  }, []);
+    getFollowUp(currentPage, filterSelectedQuery);
+  }, [currentPage, filterSelectedQuery]);
 
-  const getFollowUp = async (filterValue) => {
+  const getFollowUp = async (page = 1, filterValue = "") => {
     try {
       setOpen(true);
-      let response;
-      if (filterValue) {
-        response = await LeadServices.getAllFollowUp({
-          typeValue: "today_followup",
-          assignToFilter: filterValue,
-        });
-      } else {
-        response = await LeadServices.getAllFollowUp({
-          typeValue: "today_followup",
-        });
-      }
+      const response = await LeadServices.getAllFollowUp({
+        typeValue: "today_followup",
+        page,
+        assignToFilter: filterValue,
+      });
 
-      setTodayFollowUp(response.data);
-
+      setTodayFollowUp(response.data.results);
+      setPageCount(Math.ceil(response.data.count / 25));
       setOpen(false);
     } catch (err) {
+      console.error("Error fetching follow up data:", err);
       setOpen(false);
-      console.error("error followup", err);
     }
   };
 
@@ -186,6 +188,11 @@ export const TodayFollowup = () => {
             openInPopup2={openInPopup2}
             openInPopup4={null}
             ButtonText={"Done"}
+          />
+          <CustomPagination
+            key={currentPage}
+            pageCount={pageCount}
+            handlePageClick={handlePageClick}
           />
         </Paper>
       </Grid>

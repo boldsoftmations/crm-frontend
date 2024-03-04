@@ -123,31 +123,33 @@ export const LeadActivityCreate = ({
               onChange={handleInputChange}
             />
           </Grid>
-          <Grid item xs={12}>
-            <CustomTextField
-              fullWidth
-              type="date"
-              name="next_followup_date"
-              size="small"
-              label="Next Followup Date"
-              variant="outlined"
-              value={followUp.next_followup_date || ""}
-              onChange={handleInputChange}
-              InputLabelProps={{
-                shrink: true,
-              }}
-              required={activityRequiresFollowup}
-              error={activityRequiresFollowup && !followUp.next_followup_date}
-              helperText={
-                activityRequiresFollowup && !followUp.next_followup_date
-                  ? "Next Followup Date is required."
-                  : ""
-              }
-              inputProps={{
-                min: new Date().toISOString().split("T")[0], // Set minimum date to today
-              }}
-            />
-          </Grid>
+          {followUp.activity !== "Drop the lead" && (
+            <Grid item xs={12}>
+              <CustomTextField
+                fullWidth
+                type="date"
+                name="next_followup_date"
+                size="small"
+                label="Next Followup Date"
+                variant="outlined"
+                value={followUp.next_followup_date || ""}
+                onChange={handleInputChange}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                required={activityRequiresFollowup}
+                error={activityRequiresFollowup && !followUp.next_followup_date}
+                helperText={
+                  activityRequiresFollowup && !followUp.next_followup_date
+                    ? "Next Followup Date is required."
+                    : ""
+                }
+                inputProps={{
+                  min: new Date().toISOString().split("T")[0], // Set minimum date to today
+                }}
+              />
+            </Grid>
+          )}
         </Grid>
         <Button
           fullWidth

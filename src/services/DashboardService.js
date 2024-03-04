@@ -364,6 +364,14 @@ const getConsDailyOrderBookQuantityDataByFilter = (filter) => {
   );
 };
 
+const getRetailerCustomerData =() => {
+  return CustomAxios.get("/api/customer/customer-summary/");
+}
+
+const getLeadRetailData = () => {
+  return CustomAxios.get("/api/lead/lead-summary/");
+}
+
 const DashboardService = {
   getLastThreeMonthForecastData,
   getLastThreeMonthForecastDataByFilter,
@@ -437,6 +445,8 @@ const DashboardService = {
   getConsDailyInvoiceQuantityDataByFilter,
   getConsDailyOrderBookQuantityData,
   getConsDailyOrderBookQuantityDataByFilter,
+  getRetailerCustomerData,
+  getLeadRetailData
 };
 
 export default DashboardService;

@@ -46,10 +46,8 @@ export const SalesPersonNotInGroup = () => {
     ? whatsappGroupData.map((row) => ({
         company: row.name,
         whatsapp_group: row.whatsapp_group,
-        sales_person_not_in_group: Array.isArray(
-          row.member_details.not_user
-        ) ? (
-          row.member_details.not_user.map((assigned, id) => (
+        sales_person_not_in_group: Array.isArray(row.member_details) ? (
+          row.member_details.map((assigned, id) => (
             <div
               key={id}
               style={{
@@ -69,7 +67,7 @@ export const SalesPersonNotInGroup = () => {
               color: "#4caf50",
             }}
           >
-            row.member_details.not_user
+            row.member_details
           </div>
         ),
       }))

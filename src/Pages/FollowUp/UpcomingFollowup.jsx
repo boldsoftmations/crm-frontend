@@ -11,6 +11,7 @@ import LeadServices from "../../services/LeadService";
 import { Helmet } from "react-helmet";
 import { useSelector } from "react-redux";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
+import { CustomPagination } from "../../Components/CustomPagination";
 
 export const UpcomingFollowup = ({ product }) => {
   const [upcomingFollowUp, setUpcomingFollowUp] = useState([]);
@@ -18,6 +19,8 @@ export const UpcomingFollowup = ({ product }) => {
   const [upcomingFollowUpByID, setUpcomingFollowUpByID] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const [popupLead, setPopupLead] = useState(false);
+  const [pageCount, setPageCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [popupCustomer, setPopupCustomer] = useState(false);
   const [leadsByID, setLeadsByID] = useState(null);
   const [isPrinting, setIsPrinting] = useState(false);
@@ -45,16 +48,22 @@ export const UpcomingFollowup = ({ product }) => {
     };
   }, []);
 
+  const handlePageClick = (event, value) => {
+    setCurrentPage(value);
+    getFollowUp(value, filterSelectedQuery);
+  };
+
   useEffect(() => {
-    getFollowUp();
-  }, []);
+    getFollowUp(currentPage);
+  }, [currentPage]);
 
   const handleFilterChange = (filterSelectedValue) => {
     setFilterSelectedQuery(filterSelectedValue);
-    getFollowUp(filterSelectedValue);
+    setCurrentPage(1);
+    getFollowUp(1, filterSelectedValue);
   };
 
-  const getFollowUp = async (filterValue) => {
+  const getFollowUp = async (page, filterValue) => {
     try {
       setOpen(true);
       let response;
@@ -66,13 +75,24 @@ export const UpcomingFollowup = ({ product }) => {
       } else {
         response = await LeadServices.getAllFollowUp({
           typeValue: "upcoming_followup",
+          page,
         });
       }
-      setUpcomingFollowUp(response.data);
+      if (Array.isArray(response.data.results)) {
+        setUpcomingFollowUp(response.data.results);
+        setPageCount(Math.ceil(response.data.count / 25));
+      } else {
+        console.error(
+          "Expected an array for upcomingFollowUp, but got:",
+          response.data
+        );
+        setUpcomingFollowUp([]);
+      }
+
       setOpen(false);
     } catch (err) {
+      setUpcomingFollowUp([]);
       setOpen(false);
-      console.error("error followup", err);
     }
   };
 
@@ -182,6 +202,11 @@ export const UpcomingFollowup = ({ product }) => {
             openInPopup2={openInPopup2}
             openInPopup4={null}
             ButtonText={"Done"}
+          />
+          <CustomPagination
+            key={currentPage}
+            pageCount={pageCount}
+            handlePageClick={handlePageClick}
           />
         </Paper>
       </Grid>
