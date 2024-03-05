@@ -142,7 +142,7 @@ export const Home = () => {
       const endDate = new Date(
         currentDate.getFullYear(),
         currentDate.getMonth() + 1,
-        1
+        0
       );
       setStartDate(startDate);
       setEndDate(endDate);
