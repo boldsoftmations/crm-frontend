@@ -18,7 +18,6 @@ import {
 } from "@mui/material";
 import PropTypes from "prop-types";
 import { CustomChart } from "../Components/CustomChart";
-import { Popup } from "../Components/Popup";
 import { useSelector } from "react-redux";
 import CustomTextField from "../Components/CustomTextField";
 import CustomAutocomplete from "../Components/CustomAutocomplete";
@@ -854,29 +853,83 @@ export const SalesPersonAnalytics = (props) => {
                     Call Performance
                   </Typography>
                   <Divider />
-                  <FormControl
-                    sx={{
-                      width: "300px",
-                      // marginBottom: "10px",
-                      marginTop: "10px",
-                    }}
-                    size="small"
+                  <Box
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="start"
+                    sx={{ marginTop: "20px" }}
                   >
-                    <InputLabel id="demo-select-small">Date</InputLabel>
-                    <Select
-                      labelId="demo-select-small"
-                      id="demo-select-small"
-                      label="Date"
-                      value={selectedDate}
-                      onChange={(event) => handleChange(event)}
-                    >
-                      {DateOptions.map((option, i) => (
-                        <MenuItem key={i} value={option.value}>
-                          {option.value}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
+                    <FormControl sx={{ minWidth: 120, marginRight: 2 }}>
+                      <InputLabel id="date-select-label">Date</InputLabel>
+                      <Select
+                        labelId="date-select-label"
+                        id="date-select"
+                        label="Date"
+                        value={selectedDate || ""}
+                        onChange={handleChange}
+                        size="small"
+                      >
+                        {DateOptions.map((option, i) => (
+                          <MenuItem key={i} value={option.value}>
+                            {option.value}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+
+                    {selectedDate === "Custom Date" && (
+                      <React.Fragment>
+                        <FormControl sx={{ marginRight: 2 }}>
+                          <CustomTextField
+                            fullWidth
+                            label="Start Date"
+                            variant="outlined"
+                            size="small"
+                            type="date"
+                            id="start-date"
+                            value={
+                              startDate
+                                ? startDate.toISOString().split("T")[0]
+                                : ""
+                            }
+                            min={minDate}
+                            max={maxDate}
+                            onChange={handleStartDateChange}
+                          />
+                        </FormControl>
+                        <FormControl>
+                          <CustomTextField
+                            fullWidth
+                            label="End Date"
+                            variant="outlined"
+                            size="small"
+                            type="date"
+                            id="end-date"
+                            value={
+                              endDate ? endDate.toISOString().split("T")[0] : ""
+                            }
+                            min={
+                              startDate
+                                ? startDate.toISOString().split("T")[0]
+                                : minDate
+                            }
+                            max={maxDate}
+                            onChange={handleEndDateChange}
+                            disabled={!startDate}
+                          />
+                        </FormControl>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          onClick={getResetDate}
+                          sx={{ marginLeft: 2 }}
+                        >
+                          Reset
+                        </Button>
+                      </React.Fragment>
+                    )}
+                  </Box>
+
                   <CustomChart
                     chartType="BarChart"
                     data={[
@@ -976,65 +1029,6 @@ export const SalesPersonAnalytics = (props) => {
           </Grid>
         </div>
       )}
-      <Popup
-        openPopup={openPopup3}
-        setOpenPopup={setOpenPopup3}
-        title="Date Filter"
-        maxWidth="md"
-      >
-        <Box
-          sx={{
-            backgroundColor: "white",
-            borderRadius: "8px",
-            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-            margin: "10px",
-            padding: "20px",
-          }}
-        >
-          <Grid container spacing={2}>
-            <Grid item xs={5} sm={5} md={5} lg={5}>
-              <CustomTextField
-                fullWidth
-                label="Start Date"
-                variant="outlined"
-                size="small"
-                type="date"
-                id="start-date"
-                value={startDate ? startDate.toISOString().split("T")[0] : ""}
-                min={minDate}
-                max={maxDate}
-                onChange={handleStartDateChange}
-              />
-            </Grid>
-            <Grid item xs={5} sm={5} md={5} lg={5}>
-              <CustomTextField
-                fullWidth
-                label="End Date"
-                variant="outlined"
-                size="small"
-                type="date"
-                id="end-date"
-                value={endDate ? endDate.toISOString().split("T")[0] : ""}
-                min={
-                  startDate ? startDate.toISOString().split("T")[0] : minDate
-                }
-                max={maxDate}
-                onChange={handleEndDateChange}
-                disabled={!startDate}
-              />
-            </Grid>
-            <Grid item xs={2} sm={2} md={2} lg={2}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={getResetDate}
-              >
-                Reset
-              </Button>
-            </Grid>
-          </Grid>
-        </Box>
-      </Popup>
     </Box>
   );
 };
@@ -1073,25 +1067,16 @@ CircularProgressWithLabel.propTypes = {
 };
 
 const DateOptions = [
-  {
-    value: "Today",
-  },
-  {
-    value: "Yesterday",
-  },
-  {
-    value: "Last 7 Days",
-  },
-  {
-    value: "Last 30 Days",
-  },
-  {
-    value: "This Month",
-  },
-  {
-    value: "Last Month",
-  },
-  {
-    value: "Custom Date",
-  },
+  { value: "Today" },
+  { value: "Yesterday" },
+  { value: "Last 3 Days" },
+  { value: "Last 7 Days" },
+  { value: "Last 14 Days" },
+  { value: "Last 30 Days" },
+  { value: "Last 90 Days" },
+  { value: "Last 180 Days" },
+  { value: "Last 365 Days" },
+  { value: "This Month" },
+  { value: "Last Month" },
+  { value: "Custom Date" },
 ];

@@ -51,6 +51,7 @@ export const Home = () => {
     currentDate.getMonth() + 1,
     0
   );
+
   const [selectedDate, setSelectedDate] = useState("This Month");
   const [endDate, setEndDate] = useState(initialEndDate);
   const [startDate, setStartDate] = useState(initialStartDate); // set default value as current date
@@ -107,66 +108,75 @@ export const Home = () => {
   const handleChange = (event) => {
     const selectedValue = event.target.value;
     setSelectedDate(selectedValue);
-    if (selectedValue === "Today") {
-      const currentDate = new Date();
-      const nextDate = new Date();
-      nextDate.setDate(nextDate.getDate() + 1); // Set the next day from the current date
-      setStartDate(currentDate);
-      setEndDate(nextDate);
-    } else if (selectedValue === "Yesterday") {
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
-      setEndDate(yesterday);
-      setStartDate(yesterday);
-    } else if (selectedValue === "Last 7 Days") {
-      const endDate = new Date();
-      endDate.setDate(endDate.getDate() + 1); // Set the next day from the current date
-      const startDate = new Date();
-      startDate.setDate(startDate.getDate() - 6); // Set the start date 7 days ago
-      setEndDate(endDate);
+
+    const today = new Date();
+    let startDate, endDate;
+
+    switch (selectedValue) {
+      case "Today":
+        startDate = new Date(today);
+        endDate = new Date(today.getTime() + 86400000); // Plus 1 day
+        break;
+      case "Yesterday":
+        startDate = new Date(today.setDate(today.getDate() - 1));
+        endDate = new Date();
+        break;
+      case "Last 3 Days":
+        startDate = new Date(today.setDate(today.getDate() - 2));
+        endDate = new Date();
+        break;
+      case "Last 7 Days":
+        startDate = new Date(today.setDate(today.getDate() - 6));
+        endDate = new Date();
+        break;
+      case "Last 14 Days":
+        startDate = new Date(today.setDate(today.getDate() - 13));
+        endDate = new Date();
+        break;
+      case "Last 30 Days":
+        startDate = new Date(today.setDate(today.getDate() - 29));
+        endDate = new Date();
+        break;
+      case "Last 90 Days":
+        startDate = new Date(today.setDate(today.getDate() - 89));
+        endDate = new Date();
+        break;
+      case "Last 180 Days":
+        startDate = new Date(today.setDate(today.getDate() - 179));
+        endDate = new Date();
+        break;
+      case "Last 365 Days":
+        startDate = new Date(today.setDate(today.getDate() - 364));
+        endDate = new Date();
+        break;
+      case "This Month":
+        startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+        endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        break;
+      case "Last Month":
+        endDate = new Date(today.getFullYear(), today.getMonth(), 0);
+        startDate = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
+        endDate = new Date(endDate.getFullYear(), endDate.getMonth() + 1, 0);
+        break;
+      case "Custom Date":
+        startDate = new Date(); // Today
+        endDate = new Date(); // Now
+        endDate.setDate(startDate.getDate() + 1); // Set endDate to tomorrow
+        break;
+      default:
+        break;
+    }
+
+    if (startDate && endDate) {
       setStartDate(startDate);
-    } else if (selectedValue === "Last 30 Days") {
-      const endDate = new Date();
-      endDate.setDate(endDate.getDate() + 1); // Set the next day from the current date
-      const startDate = new Date();
-      startDate.setDate(startDate.getDate() - 30);
       setEndDate(endDate);
-      setStartDate(startDate);
-    } else if (selectedValue === "This Month") {
-      const currentDate = new Date();
-      const startDate = new Date(
-        currentDate.getFullYear(),
-        currentDate.getMonth(),
-        1
-      );
-      const endDate = new Date(
-        currentDate.getFullYear(),
-        currentDate.getMonth() + 1,
-        1
-      );
-      setStartDate(startDate);
-      setEndDate(endDate);
-    } else if (selectedValue === "Last Month") {
-      const endDate = new Date();
-      endDate.setDate(0); // Set the last day of the previous month
-      const startDate = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
-      endDate.setDate(endDate.getDate() + 1); // Set the next day from the current date
-      setEndDate(endDate);
-      setStartDate(startDate);
-    } else if (selectedValue === "Custom Date") {
-      const startDate = new Date();
-      const endDate = new Date();
-      endDate.setDate(endDate.getDate() + 1); // Set the next day from the current date
-      setStartDate(startDate);
-      setEndDate(endDate);
-      setOpenPopup3(true);
     }
   };
 
-  const getResetData = () => {
-    setStartDate(new Date());
-    setEndDate(new Date());
-    setAssign(null);
+  const getResetDate = () => {
+    setStartDate(initialStartDate);
+    setEndDate(initialEndDate);
+    setSelectedDate("This Month");
   };
 
   const getAllTaskDetails = async () => {
@@ -1228,7 +1238,7 @@ export const Home = () => {
         assign={assign}
         total={total}
         assigned={assigned}
-        getResetData={getResetData}
+        getResetDate={getResetDate}
         funnelData={funnelData}
         hoveredSegment={hoveredSegment}
         handleRowClick={handleRowClick}
