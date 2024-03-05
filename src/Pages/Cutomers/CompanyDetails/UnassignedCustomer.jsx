@@ -120,7 +120,7 @@ export const UnassignedCustomer = () => {
   const getSearchData = async (value) => {
     try {
       setOpen(true);
-      const filterSearch = value;
+      const filterSearch = encodeURIComponent(value);
       if (filterSearch !== "") {
         const response = await CustomerServices.getSearchByUnassignedData(
           filterSearch

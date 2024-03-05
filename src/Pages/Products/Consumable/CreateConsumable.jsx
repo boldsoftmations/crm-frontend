@@ -164,7 +164,7 @@ export const CreateConsumable = (props) => {
               fullWidth
               name="addDsc"
               size="small"
-              label="Additional Descriptionj"
+              label="Additional Description"
               variant="outlined"
               value={consumable.addDsc}
               onChange={handleInputChange}
@@ -191,7 +191,7 @@ export const CreateConsumable = (props) => {
               onChange={(event, value) => setBrand(value)}
               options={brandData.map((option) => option.name)}
               getOptionLabel={(option) => `${option}`}
-              label="Brand" 
+              label="Brand"
             />
           </Grid>
           <Grid item xs={12} sm={6}>

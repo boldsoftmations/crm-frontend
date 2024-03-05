@@ -85,10 +85,10 @@ const getPaginationByUnassignedData = (page) => {
 };
 
 const getSearchandPaginationByUnassignedData = (page, search) => {
-  return CustomAxios.get(
-    `/api/customer/list-company/?unassigned=true&page=${page}&search=${search}`
-  );
+  const encodedSearch = encodeURIComponent(search);
+  return CustomAxios.get(`/api/customer/list-company/?unassigned=true&page=${page}&search=${encodedSearch}`);
 };
+
 
 const getBankDataById = (id) => {
   return CustomAxios.get(`/api/customer/list-bank/${id}`);
