@@ -43,6 +43,9 @@ export const JobOpeningUpdate = ({
     e.preventDefault();
     try {
       if (values && values.id) {
+        if (values.closing_date == "") {
+          values.closing_date = null;
+        }
         await updateJobOpening(values.id, values);
         alert("Successfully updated Job Opening");
         setOpenUpdatePopup(false);
@@ -79,7 +82,7 @@ export const JobOpeningUpdate = ({
             name="closing_date"
             fullWidth
             type="date"
-            value={values.closing_date || ""}
+            value={values.closing_date || null}
             onChange={handleInputChange}
             InputLabelProps={{
               shrink: true,
