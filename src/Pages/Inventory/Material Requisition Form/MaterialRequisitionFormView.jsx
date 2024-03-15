@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Box,
   Grid,
@@ -43,6 +43,7 @@ import {
 import moment from "moment";
 import InvoiceServices from "../../../services/InvoiceService";
 import CustomTextField from "../../../Components/CustomTextField";
+import { CSVLink } from "react-csv";
 
 export const MaterialRequisitionFormView = () => {
   const [openPopup, setOpenPopup] = useState(false);
@@ -60,6 +61,69 @@ export const MaterialRequisitionFormView = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [sellerOption, setSellerOption] = useState(null);
   const users = useSelector((state) => state.auth.profile);
+  const [exportData, setExportData] = useState([]);
+  const csvLinkRef = useRef(null);
+
+  const handleDownload = async () => {
+    try {
+      const data = await handleExport();
+      setExportData(data);
+      setTimeout(() => {
+        csvLinkRef.current.link.click();
+      });
+    } catch (error) {
+      console.log("CSVLink Download error", error);
+    }
+  };
+
+  const headers = [
+    { label: "ID", key: "id" },
+    { label: "USER", key: "user" },
+    { label: "SELLER STATE", key: "seller_account" },
+    { label: "DATE", key: "created_on" },
+    { label: "PRODUCT", key: "product" },
+    { label: "UNIT", key: "unit" },
+    { label: "QUANTITY", key: "quantity" },
+  ];
+
+  const handleExport = async () => {
+    try {
+      setOpen(true);
+      let response;
+      if (searchQuery) {
+        response = await InventoryServices.getAllMaterialRequisitionFormData(
+          "all",
+          searchQuery
+        );
+      } else {
+        response = await InventoryServices.getAllMaterialRequisitionFormData(
+          "all"
+        );
+      }
+      // Flatten the data structure
+      const ArrayData = response.data.reduce((acc, item) => {
+        // Iterate over each product in the current item's products array
+        const productsFlattened = item.products_data.map((product) => ({
+          id: item.id, // Retain the ID for each product
+          user: item.user, // Retain the user for each product
+          seller_account: item.seller_account, // Retain the seller_account for each product
+          created_on: item.created_on, // Retain the created_on date for each product
+          product: product.product, // Extract the product name
+          quantity: product.quantity, // Extract the quantity
+          unit: product.unit, // Extract the unit
+        }));
+        // Concatenate the flattened products to the accumulator
+        return acc.concat(productsFlattened);
+      }, []); // Initial value of accumulator is an empty array
+      setOpen(false);
+      console.log("ArrayData", ArrayData);
+      return ArrayData;
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setOpen(false);
+    }
+  };
 
   useEffect(() => {
     getAllSellerAccountsDetails();
@@ -242,7 +306,30 @@ export const MaterialRequisitionFormView = () => {
           </Box>
           <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
             <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} sm={5}></Grid>
+              <Grid item xs={12} sm={5}>
+                {(users.groups.includes("Accounts") ||
+                  users.groups.includes("Director")) && (
+                  <>
+                    <Button onClick={handleDownload} variant="contained">
+                      Download CSV
+                    </Button>
+                    {exportData.length > 0 && (
+                      <CSVLink
+                        data={[...exportData]}
+                        headers={headers}
+                        ref={csvLinkRef}
+                        filename="Store Inventory.csv"
+                        target="_blank"
+                        style={{
+                          textDecoration: "none",
+                          outline: "none",
+                          height: "5vh",
+                        }}
+                      />
+                    )}
+                  </>
+                )}
+              </Grid>
 
               <Grid item xs={12} sm={3}>
                 <h3
@@ -354,7 +441,7 @@ export const MaterialRequisitionFormView = () => {
         </Paper>
       </Grid>
       <Popup
-        fullScreen={true}
+        maxWidth="xl"
         title={"Create Material Requisition Details"}
         openPopup={openPopup2}
         setOpenPopup={setOpenPopup2}
@@ -369,7 +456,7 @@ export const MaterialRequisitionFormView = () => {
         />
       </Popup>
       <Popup
-        fullScreen={true}
+        maxWidth="xl"
         title={"Update Material Requisition Details"}
         openPopup={openPopup}
         setOpenPopup={setOpenPopup}

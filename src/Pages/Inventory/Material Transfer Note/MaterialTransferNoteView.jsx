@@ -341,6 +341,7 @@ export const MaterialTransferNoteView = () => {
             <Grid item xs={12} sm={6}>
               {/* Add Button */}
               {(userData.groups.includes("Production") ||
+                userData.groups.includes("Director") ||
                 userData.groups.includes("Production Delhi")) && (
                 <Button
                   variant="contained"
