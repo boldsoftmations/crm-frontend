@@ -42,11 +42,14 @@ export const WhatsappGroupCreate = ({ setOpenPopup, refreshData }) => {
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
     setUploadedFile(file);
-    setIsPdf(file.type === "application/pdf"); // Set isPdf based on file type
+    // Updated to check if the file is a video
+    setIsPdf(file.type === "application/pdf" || file.type.startsWith("video/"));
 
     if (
       file &&
-      (file.type.startsWith("image/") || file.type === "application/pdf")
+      (file.type.startsWith("image/") ||
+        file.type === "application/pdf" ||
+        file.type.startsWith("video/"))
     ) {
       try {
         setUploadedFile(file);
@@ -133,6 +136,7 @@ export const WhatsappGroupCreate = ({ setOpenPopup, refreshData }) => {
         );
       case "image":
       case "pdf":
+      case "video":
         return (
           <>
             <Button
@@ -203,6 +207,7 @@ export const WhatsappGroupCreate = ({ setOpenPopup, refreshData }) => {
             />
             <FormControlLabel value="image" control={<Radio />} label="Image" />
             <FormControlLabel value="pdf" control={<Radio />} label="PDF" />
+            <FormControlLabel value="video" control={<Radio />} label="Video" />
           </RadioGroup>
         </FormControl>
         <Grid container spacing={2}>
