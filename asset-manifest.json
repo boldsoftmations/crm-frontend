@@ -1,7 +1,7 @@
 {
   "main.css": "/crm-frontend/static/css/main.e361745d.chunk.css",
-  "main.js": "/crm-frontend/static/js/main.f02ce359.chunk.js",
-  "main.js.map": "/crm-frontend/static/js/main.f02ce359.chunk.js.map",
+  "main.js": "/crm-frontend/static/js/main.08d6efd5.chunk.js",
+  "main.js.map": "/crm-frontend/static/js/main.08d6efd5.chunk.js.map",
   "runtime~main.js": "/crm-frontend/static/js/runtime~main.f756ea64.js",
   "runtime~main.js.map": "/crm-frontend/static/js/runtime~main.f756ea64.js.map",
   "static/css/2.8950954d.chunk.css": "/crm-frontend/static/css/2.8950954d.chunk.css",
@@ -14,7 +14,7 @@
   "static/js/5.8ce5d07f.chunk.js": "/crm-frontend/static/js/5.8ce5d07f.chunk.js",
   "static/js/5.8ce5d07f.chunk.js.map": "/crm-frontend/static/js/5.8ce5d07f.chunk.js.map",
   "index.html": "/crm-frontend/index.html",
-  "precache-manifest.d9ada5cbf152fa4e9fd5f3c067d3bd6b.js": "/crm-frontend/precache-manifest.d9ada5cbf152fa4e9fd5f3c067d3bd6b.js",
+  "precache-manifest.05f2f26ce9a6d7e8d7ef8f5e1184198a.js": "/crm-frontend/precache-manifest.05f2f26ce9a6d7e8d7ef8f5e1184198a.js",
   "service-worker.js": "/crm-frontend/service-worker.js",
   "static/css/2.8950954d.chunk.css.map": "/crm-frontend/static/css/2.8950954d.chunk.css.map",
   "static/css/main.e361745d.chunk.css.map": "/crm-frontend/static/css/main.e361745d.chunk.css.map",
