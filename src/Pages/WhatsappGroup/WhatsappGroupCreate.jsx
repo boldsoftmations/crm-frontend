@@ -20,9 +20,9 @@ export const WhatsappGroupCreate = ({ setOpenPopup, refreshData }) => {
   const [allWhatsappGroupMenu, setAllWhatsappGroupMenu] = useState([]);
   const [uploadedFile, setUploadedFile] = useState(null);
   const [filePreview, setFilePreview] = useState(null);
-  const [selectedGroupIds, setSelectedGroupIds] = useState([]);
   const [isPdf, setIsPdf] = useState(false);
   const [filter, setFilter] = useState("message");
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     getAllWhatsappGroup();
@@ -41,8 +41,17 @@ export const WhatsappGroupCreate = ({ setOpenPopup, refreshData }) => {
   // Updated handleFileChange function
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
+
+    // Reset error message each time a file is selected
+    setErrorMessage("");
+    if (file.type.startsWith("video/") && file.size > 15728640) {
+      setErrorMessage("Error: Video size must be less than or equal to 15MB.");
+      setUploadedFile(null);
+      setFilePreview(null);
+      return;
+    }
+
     setUploadedFile(file);
-    // Updated to check if the file is a video
     setIsPdf(file.type === "application/pdf" || file.type.startsWith("video/"));
 
     if (
@@ -52,7 +61,6 @@ export const WhatsappGroupCreate = ({ setOpenPopup, refreshData }) => {
         file.type.startsWith("video/"))
     ) {
       try {
-        setUploadedFile(file);
         const fileURL = URL.createObjectURL(file);
         setFilePreview(fileURL);
       } catch (error) {
@@ -148,6 +156,11 @@ export const WhatsappGroupCreate = ({ setOpenPopup, refreshData }) => {
               Upload File
               <input type="file" hidden onChange={handleFileChange} />
             </Button>
+            {errorMessage && (
+              <Typography color="error" sx={{ mt: 2 }}>
+                {errorMessage}
+              </Typography>
+            )}
             {uploadedFile && (
               <Box sx={{ mt: 2, mb: 2 }}>
                 {isPdf || filter === "pdf" ? (
