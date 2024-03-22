@@ -68,6 +68,7 @@ export const GRNCreate = ({
     try {
       const response = await InventoryServices.createGRNData({
         packing_list: idForEdit.id,
+        grn_source: "Purchase",
         products,
       });
 
