@@ -1,3 +1,4 @@
+// Import necessary actions, Axios instance, and token service functions
 import { logoutUser, refreshToken } from "../Redux/Action/Action";
 import CustomAxios from "./api";
 import {
@@ -7,9 +8,17 @@ import {
   updateLocalAccessToken,
 } from "./TokenService";
 
+// Define a logout process to be used when the token refresh fails or when the refresh token is also expired
+const logoutProcess = (dispatch) => {
+  dispatch(logoutUser());
+  removeUser();
+};
+
+// Setup Axios interceptors
 const SetupInterceptor = (store) => {
   const { dispatch } = store;
 
+  // Request interceptor to append the access token to every request
   CustomAxios.interceptors.request.use(
     (config) => {
       const token = getLocalAccessToken();
@@ -21,66 +30,58 @@ const SetupInterceptor = (store) => {
     (error) => Promise.reject(error)
   );
 
+  // Response interceptor to handle 401 Unauthorized responses
   CustomAxios.interceptors.response.use(
     (response) => response,
     async (error) => {
       const originalRequest = error.config;
 
-      // Check for a network error or no response
-      if (!error.response) {
-        return Promise.reject(new Error("Network Error - Unable to connect"));
+      // Handle non-401 errors or when the response is undefined
+      if (!error.response || error.response.status !== 401) {
+        return Promise.reject(error);
       }
 
-      // If the error is specifically for an expired access token and we haven't already retried
+      // Check for expired access token
       if (
-        error.response.status === 401 &&
-        error.response.data.code === "token_not_valid" &&
-        error.response.data.messages &&
-        error.response.data.messages.some(
-          (m) => m.token_class === "AccessToken"
-        ) &&
+        error.response &&
+        error.response.data &&
+        error.response.data.errors &&
+        error.response.data.errors.code === "token_not_valid" &&
         !originalRequest._retry
       ) {
-        originalRequest._retry = true; // Mark that we have already retried
+        originalRequest._retry = true; // Mark this request as already attempted
         const refreshTokenValue = getLocalRefreshToken();
 
+        // No refresh token available, initiate logout
         if (!refreshTokenValue) {
-          // No refresh token available, log out immediately
-          dispatch(logoutUser());
-          removeUser();
-          window.location.href = "/crm-frontend"; // Redirect to the login page
+          logoutProcess(dispatch);
           return Promise.reject(new Error("No refresh token available"));
         }
 
+        // Attempt to refresh the token
         try {
           const { data } = await CustomAxios.post("/api/token/refresh/", {
             refresh: refreshTokenValue,
           });
-
-          // Update tokens and retry original request
+          // Update tokens in the store and local storage
           dispatch(refreshToken(data.access));
           updateLocalAccessToken(data.access);
+          // Update the original request with new token and retry
           originalRequest.headers.Authorization = `Bearer ${data.access}`;
           return CustomAxios(originalRequest);
         } catch (refreshError) {
-          // If refresh attempt fails, log out and redirect
-          dispatch(logoutUser());
-          removeUser();
-          window.location.href = "/crm-frontend"; // Redirect to the login page
+          // Refresh token failed, logout
+          logoutProcess(dispatch);
           return Promise.reject(refreshError);
         }
       }
 
-      // If the refresh token is also expired or invalid, log out and redirect
-      if (error.response.status === 401 && originalRequest._retry) {
-        // If we already retried, don't go into a loop
-        dispatch(logoutUser());
-        removeUser();
-        window.location.href = "/crm-frontend"; // Redirect to the login page
+      // Handle failed retries or other errors after a retry
+      if (originalRequest._retry) {
+        logoutProcess(dispatch);
         return Promise.reject(error);
       }
 
-      // For all other response errors, just forward the error
       return Promise.reject(error);
     }
   );
