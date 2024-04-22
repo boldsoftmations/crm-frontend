@@ -13,7 +13,6 @@ import {
 } from "./OrderBookUpdate";
 import { CustomTable } from "../../Components/CustomTable";
 import { CustomSearchWithButton } from "../../Components/CustomSearchWithButton";
-import CustomTextField from "../../Components/CustomTextField";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 
 export const CustomerOrderBookDetails = () => {
@@ -123,6 +122,7 @@ export const CustomerOrderBookDetails = () => {
         ) {
           return {
             company: item.company,
+            order_book_date: item.order_book_date,
             pi_date: item.pi_date,
             proforma_invoice: item.proforma_invoice,
             billing_city: item.billing_city,
@@ -139,6 +139,7 @@ export const CustomerOrderBookDetails = () => {
         } else if (userData.groups.includes("Customer Service")) {
           return {
             company: item.company,
+            order_book_date: item.order_book_date,
             pi_date: item.pi_date,
             proforma_invoice: item.proforma_invoice,
             billing_city: item.billing_city,
@@ -164,6 +165,7 @@ export const CustomerOrderBookDetails = () => {
         } else {
           return {
             company: item.company,
+            order_book_date: item.order_book_date,
             pi_date: item.pi_date,
             proforma_invoice: item.proforma_invoice,
             billing_city: item.billing_city,
@@ -269,6 +271,7 @@ export const CustomerOrderBookDetails = () => {
 
   const Tableheaders = [
     "ID",
+    "Approval Date",
     "Company",
     "Raised By",
     "Billing City",
@@ -288,6 +291,7 @@ export const CustomerOrderBookDetails = () => {
 
   const Tabledata = orderBookData.map((row, i) => ({
     id: row.id,
+    approval_data: row.order_book_date,
     company: row.company,
     raised_by: row.raised_by,
     billing_city: row.billing_city,
@@ -306,6 +310,7 @@ export const CustomerOrderBookDetails = () => {
 
   const Tableheaders2 = [
     "ID",
+    "Approval Date",
     "Company",
     "Raised By",
     "Billing City",
@@ -324,6 +329,7 @@ export const CustomerOrderBookDetails = () => {
 
   const Tabledata2 = orderBookData.map((row, i) => ({
     id: row.id,
+    approval_data: row.order_book_date,
     company: row.company,
     raised_by: row.raised_by,
     billing_city: row.billing_city,
@@ -494,6 +500,7 @@ const headers = [
     label: "Seller State",
     key: "seller_state",
   },
+  { label: "Approval Date", key: "order_book_date" },
   { label: "PI Date", key: "pi_date" },
   { label: "PI Number", key: "proforma_invoice" },
   { label: "Customer", key: "company" },
@@ -558,6 +565,7 @@ const headers = [
 
 const headers2 = [
   { label: "Customer", key: "company" },
+  { label: "Approval Date", key: "order_book_date" },
   { label: "PI Date", key: "pi_date" },
   { label: "PI Number", key: "proforma_invoice" },
   { label: "Billing City", key: "billing_city" },

@@ -1,21 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import InvoiceServices from "../../services/InvoiceService";
-import {
-  Button,
-  Box,
-  Paper,
-  Grid,
-  InputLabel,
-  FormControl,
-  Select,
-  IconButton,
-  MenuItem,
-} from "@mui/material";
-import ClearIcon from "@mui/icons-material/Clear";
+import { Button, Box, Paper, Grid } from "@mui/material";
 import { CSVLink } from "react-csv";
 import { ErrorMessage } from "./../../Components/ErrorMessage/ErrorMessage";
 import { CustomLoader } from "../../Components/CustomLoader";
-import { CustomSearch } from "./../../Components/CustomSearch";
 import { CustomPagination } from "./../../Components/CustomPagination";
 import { useSelector } from "react-redux";
 import { Popup } from "../../Components/Popup";
@@ -24,7 +12,6 @@ import {
   OrderBookUpdate,
 } from "./OrderBookUpdate";
 import { CustomTable } from "../../Components/CustomTable";
-import CustomTextField from "../../Components/CustomTextField";
 import { CustomSearchWithButton } from "../../Components/CustomSearchWithButton";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 
@@ -93,6 +80,7 @@ export const PIOrderBookDetails = () => {
         ) {
           return {
             proforma_invoice: item.proforma_invoice,
+            order_book_date: item.order_book_date,
             pi_date: item.pi_date,
             company: item.company,
             billing_city: item.billing_city,
@@ -109,6 +97,7 @@ export const PIOrderBookDetails = () => {
         } else {
           return {
             proforma_invoice: item.proforma_invoice,
+            order_book_date: item.order_book_date,
             pi_date: item.pi_date,
             company: item.company,
             billing_city: item.billing_city,
@@ -256,7 +245,8 @@ export const PIOrderBookDetails = () => {
   };
 
   const Tableheaders = [
-    "id",
+    "Id",
+    "Approval Date",
     "Pi No",
     "Pi Date",
     "Company",
@@ -276,6 +266,7 @@ export const PIOrderBookDetails = () => {
 
   const Tabledata = orderBookData.map((row, i) => ({
     id: row.id,
+    approval_data: row.order_book_date,
     pi_no: row.proforma_invoice,
     pi_date: row.pi_date,
     company: row.company,
@@ -294,6 +285,7 @@ export const PIOrderBookDetails = () => {
 
   const Tableheaders2 = [
     "ID",
+    "Approval Date",
     "Pi No",
     "Pi Date",
     "Company",
@@ -312,6 +304,7 @@ export const PIOrderBookDetails = () => {
 
   const Tabledata2 = orderBookData.map((row, i) => ({
     id: row.id,
+    approval_data: row.order_book_date,
     pi_no: row.proforma_invoice,
     pi_date: row.pi_date,
     company: row.company,
@@ -365,8 +358,7 @@ export const PIOrderBookDetails = () => {
                 onChange={handleSalesPersonFilterChange}
                 options={assigned.map((option) => option.email)}
                 getOptionLabel={(option) => option}
-                label="Filter By Sales Person" 
-                
+                label="Filter By Sales Person"
               />
             )}
 
@@ -396,7 +388,7 @@ export const PIOrderBookDetails = () => {
                 headers={headers}
                 data={exportData}
                 ref={csvLinkRef}
-                filename="Customer Order Book.csv"
+                filename="PI Order Book.csv"
                 target="_blank"
                 style={{
                   textDecoration: "none",
@@ -476,6 +468,7 @@ const StateOption = ["Delhi", "Maharashtra"];
 
 const headers = [
   { label: "PI Number", key: "proforma_invoice" },
+  { label: "Approval Date", key: "order_book_date" },
   { label: "PI Date", key: "pi_date" },
   { label: "Customer", key: "company" },
   { label: "Billing City", key: "billing_city" },
