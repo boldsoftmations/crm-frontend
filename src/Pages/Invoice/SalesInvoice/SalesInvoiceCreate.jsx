@@ -172,6 +172,7 @@ export const SalesInvoiceCreate = (props) => {
         .map(({ pending_quantity, rate, requested_date, ...rest }) => rest); // Exclude specified fields
 
       const req = {
+        invoice_type: "customer",
         order_book: customerorderBookData.id,
         order_book_list: orderBookID,
         generation_date: inputValue.generation_date
