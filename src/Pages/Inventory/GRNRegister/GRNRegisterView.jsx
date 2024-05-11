@@ -20,26 +20,26 @@ import {
   Typography,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
-import { useSelector } from "react-redux";
 import CustomTextField from "../../../Components/CustomTextField";
 import { GRNPDFDownload } from "./GRNPDFDownload";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../../Components/MessageAlert";
 
 export const GRNRegisterView = () => {
   const [open, setOpen] = useState(false);
   const [grnRegisterData, setGRNRegisterData] = useState([]);
-  const [pageCount, setPageCount] = useState(0);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const [exportData, setExportData] = useState([]);
   const csvLinkRef = useRef(null);
-  const data = useSelector((state) => state.auth);
-  const userData = data.profile;
   const currentYearMonth = `${new Date().getFullYear()}-${(
     new Date().getMonth() + 1
   )
     .toString()
     .padStart(2, "0")}`;
   const [selectedYearMonth, setSelectedYearMonth] = useState(currentYearMonth);
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   const handleDownload = async () => {
     try {
@@ -48,6 +48,7 @@ export const GRNRegisterView = () => {
       setTimeout(() => {
         csvLinkRef.current.link.click();
       });
+      handleSuccess("CSV file downloaded successfully");
     } catch (error) {
       console.log("CSVLink Download error", error);
     }
@@ -139,14 +140,6 @@ export const GRNRegisterView = () => {
     }
   };
 
-  useEffect(() => {
-    getAllGRNRegisterDetails();
-  }, []);
-
-  useEffect(() => {
-    getAllGRNRegisterDetails(currentPage);
-  }, [currentPage, getAllGRNRegisterDetails]);
-
   const getAllGRNRegisterDetails = useCallback(
     async (page, filter = selectedYearMonth) => {
       try {
@@ -156,11 +149,10 @@ export const GRNRegisterView = () => {
           page
         );
         setGRNRegisterData(response.data.results);
-        setPageCount(Math.ceil(response.data.count / 25));
+        setTotalPages(Math.ceil(response.data.count / 25));
         setOpen(false);
       } catch (error) {
-        setOpen(false);
-        console.error("error", error);
+        handleError(error);
       } finally {
         setOpen(false);
       }
@@ -168,16 +160,16 @@ export const GRNRegisterView = () => {
     [selectedYearMonth]
   );
 
-  const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
-  };
+  useEffect(() => {
+    getAllGRNRegisterDetails(currentPage);
+  }, [currentPage, getAllGRNRegisterDetails]);
 
-  const handlePageClick = (event, value) => {
+  const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
 
   const Tableheaders = [
-    "Grn ID",
+    "Grn NO",
     "Date",
     "Vendor",
     "Invoce No",
@@ -191,6 +183,12 @@ export const GRNRegisterView = () => {
 
   return (
     <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
       <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
         <Box display="flex" marginBottom="10px">
@@ -271,7 +269,9 @@ export const GRNRegisterView = () => {
             <TableBody>
               {grnRegisterData.map((row, index) => (
                 <StyledTableRow key={index}>
-                  <StyledTableCell align="center">{row.grn_no}</StyledTableCell>
+                  <StyledTableCell align="center">
+                    {row.grn_number}
+                  </StyledTableCell>
                   <StyledTableCell align="center">
                     {row.invoice_date}
                   </StyledTableCell>
@@ -309,8 +309,9 @@ export const GRNRegisterView = () => {
           </Table>
         </TableContainer>
         <CustomPagination
-          pageCount={pageCount}
-          handlePageClick={handlePageClick}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          handlePageChange={handlePageChange}
         />
       </Paper>
     </>

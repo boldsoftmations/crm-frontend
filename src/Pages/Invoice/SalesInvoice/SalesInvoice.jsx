@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import InvoiceServices from "../../../services/InvoiceService";
 import { Button } from "@mui/material";
-
 import { useReactToPrint } from "react-to-print";
 import logo from "../../../Images/LOGOS3.png";
 import ISO from "../../../Images/ISOLogo.ico";
@@ -14,9 +13,8 @@ export const SalesInvoice = (props) => {
   const [productData, setProductData] = useState([]);
   const [hsnData, setHsnData] = useState([]);
   const [open, setOpen] = useState(false);
-  useEffect(() => {
-    getSalesInvoiceByIDDetails();
-  }, []);
+
+  console.log("idforedit", idForEdit);
 
   const getSalesInvoiceByIDDetails = async () => {
     try {
@@ -31,6 +29,11 @@ export const SalesInvoice = (props) => {
     }
   };
 
+  useEffect(() => {
+    if (idForEdit) getSalesInvoiceByIDDetails();
+  }, [idForEdit]);
+
+  console.log("salesinvoicedata", salesInvoiceData);
   const getCombieProductData = (products) => {
     let product_json = [];
 
@@ -77,6 +80,74 @@ export const SalesInvoice = (props) => {
 
   const TOTAL_GST_DATA = salesInvoiceData.total - salesInvoiceData.amount;
   const TOTAL_GST = TOTAL_GST_DATA.toFixed(2);
+
+  // Ensure that all checks are done manually without optional chaining
+  const getBillingDetails = () => {
+    if (salesInvoiceData.buyer_details) {
+      return (
+        <>
+          <strong style={typographyStyling}>Company:</strong>
+          {salesInvoiceData.buyer_details.name || "N/A"}
+          <br />
+          <strong style={typographyStyling}>Address:</strong>
+          {salesInvoiceData.buyer_details.billing_address || "N/A"}
+          <br />
+          <strong style={typographyStyling}>City & State:</strong>
+          {salesInvoiceData.buyer_details.billing_city || "N/A"} &{" "}
+          {salesInvoiceData.buyer_details.billing_state || "N/A"}
+          <br />
+          <strong style={typographyStyling}>Pin Code:</strong>
+          {salesInvoiceData.buyer_details.billing_pincode || "N/A"}
+          <br />
+          <strong style={typographyStyling}>GST Number:</strong>
+          {salesInvoiceData.buyer_details.gst || "N/A"}
+          <br />
+          <strong style={typographyStyling}>PAN Number:</strong>
+          {salesInvoiceData.buyer_details.pan || "N/A"}
+          <br />
+          <strong style={typographyStyling}>Contact:</strong>
+          {salesInvoiceData.contact || "N/A"}
+        </>
+      );
+    } else {
+      return <p>Buyer details are not available.</p>;
+    }
+  };
+
+  // Function to get shipping details with logical checks
+  const getShippingDetails = () => {
+    if (salesInvoiceData.buyer_details) {
+      return (
+        <>
+          <strong style={typographyStyling}>Company:</strong>
+          {salesInvoiceData.buyer_details.name || "N/A"}
+          <br />
+          <strong style={typographyStyling}>Address:</strong>
+          {salesInvoiceData.buyer_details.shipping_address || "N/A"}
+          <br />
+          <strong style={typographyStyling}>City & State:</strong>
+          {salesInvoiceData.buyer_details.shipping_city || "N/A"} &{" "}
+          {salesInvoiceData.buyer_details.shipping_state || "N/A"}
+          <br />
+          <strong style={typographyStyling}>Pin Code:</strong>
+          {salesInvoiceData.buyer_details.shipping_pincode || "N/A"}
+          <br />
+          <strong style={typographyStyling}>GST Number:</strong>
+          {salesInvoiceData.buyer_details.gst || "N/A"}
+          <br />
+          <strong style={typographyStyling}>PAN Number:</strong>
+          {salesInvoiceData.buyer_details.pan || "N/A"}
+          <br />
+          <strong style={typographyStyling}>Contact:</strong>
+          {salesInvoiceData.contact || "N/A"}
+        </>
+      );
+    } else {
+      return <p>Shipping details are not available.</p>;
+    }
+  };
+
+  // In your main JSX, call the function as needed:
 
   return (
     <>
@@ -213,6 +284,7 @@ export const SalesInvoice = (props) => {
                     </div>
                   </div>
                 </div>
+                {/* Billed To */}
                 <div
                   className="row"
                   style={{
@@ -222,107 +294,20 @@ export const SalesInvoice = (props) => {
                 >
                   <div className="col-md-6">
                     <address>
-                      <strong style={{ ...typographyStyling }}>
-                        Billed To:
-                      </strong>
+                      <strong style={typographyStyling}>Billed To:</strong>
                       <br />
-                      <div>
-                        <strong style={{ ...typographyStyling }}>
-                          Company :{" "}
-                        </strong>
-                        {salesInvoiceData.company},
-                      </div>
-                      <div>
-                        <strong style={{ ...typographyStyling }}>
-                          Address :{" "}
-                        </strong>
-                        {salesInvoiceData.billing_address},
-                      </div>
-                      <div>
-                        <strong style={{ ...typographyStyling }}>
-                          City & State:{" "}
-                        </strong>
-                        {salesInvoiceData.billing_city} &{" "}
-                        {salesInvoiceData.billing_state},
-                      </div>
-                      <div>
-                        <strong style={{ ...typographyStyling }}>
-                          Pin Code :{" "}
-                        </strong>
-                        {salesInvoiceData.billing_pincode}
-                      </div>
-                      <div>
-                        <strong style={{ ...typographyStyling }}>
-                          Gst Number :{" "}
-                        </strong>
-                        {salesInvoiceData.buyer_gst}
-                      </div>
-                      <div>
-                        <strong style={{ ...typographyStyling }}>
-                          Pan Number :{" "}
-                        </strong>
-                        {salesInvoiceData.buyer_pan}
-                      </div>
-                      <div>
-                        <strong style={{ ...typographyStyling }}>
-                          Contact :{" "}
-                        </strong>
-                        {salesInvoiceData.contact}
-                      </div>
+                      {getBillingDetails()}
                     </address>
                   </div>
+                  {/* Shipped to */}
                   <div
                     className="col-md-6 justify-content-end"
                     style={{ borderLeft: "1px Solid #000000" }}
                   >
                     <address className="justify-content-end">
-                      <strong style={{ ...typographyStyling }}>
-                        Shipped To:
-                      </strong>
+                      <strong style={typographyStyling}>Shipped To:</strong>
                       <br />
-                      <div>
-                        <strong style={{ ...typographyStyling }}>
-                          Company :{" "}
-                        </strong>
-                        {salesInvoiceData.company},
-                      </div>
-                      <div>
-                        <strong style={{ ...typographyStyling }}>
-                          Address :{" "}
-                        </strong>
-                        {salesInvoiceData.shipping_address}
-                      </div>
-                      <div>
-                        <strong style={{ ...typographyStyling }}>
-                          City & State:{" "}
-                        </strong>
-                        {salesInvoiceData.shipping_city} &{" "}
-                        {salesInvoiceData.shipping_state},
-                      </div>
-                      <div>
-                        <strong style={{ ...typographyStyling }}>
-                          Pin Code :{" "}
-                        </strong>
-                        {salesInvoiceData.shipping_pincode}
-                      </div>
-                      <div>
-                        <strong style={{ ...typographyStyling }}>
-                          Gst Number :{" "}
-                        </strong>
-                        {salesInvoiceData.buyer_gst}
-                      </div>
-                      <div>
-                        <strong style={{ ...typographyStyling }}>
-                          Pan Number :{" "}
-                        </strong>
-                        {salesInvoiceData.buyer_pan}
-                      </div>
-                      <div>
-                        <strong style={{ ...typographyStyling }}>
-                          Contact :{" "}
-                        </strong>
-                        {salesInvoiceData.contact}
-                      </div>
+                      {getShippingDetails()}
                     </address>
                   </div>
                 </div>
@@ -408,32 +393,45 @@ export const SalesInvoice = (props) => {
                               <strong style={{ ...typographyStyling }}>
                                 Bank :{" "}
                               </strong>
-                              {salesInvoiceData.seller_bank_name}{" "}
+                              {salesInvoiceData.seller_details
+                                ? salesInvoiceData.seller_details.bank_name
+                                : "NA"}{" "}
                             </div>
                             <div>
                               <strong style={{ ...typographyStyling }}>
                                 Account No :{" "}
                               </strong>
-                              {salesInvoiceData.seller_account_no}{" "}
+                              {salesInvoiceData.seller_details
+                                ? salesInvoiceData.seller_details.account_no
+                                : "NA"}
                             </div>
                             <div>
                               <strong style={{ ...typographyStyling }}>
                                 Branch & IFSC Code :{" "}
                               </strong>
-                              {salesInvoiceData.seller_branch} &{" "}
-                              {salesInvoiceData.seller_ifsc}{" "}
+                              {salesInvoiceData.seller_details
+                                ? salesInvoiceData.seller_details.branch
+                                : "NA"}{" "}
+                              &
+                              {salesInvoiceData.seller_details
+                                ? salesInvoiceData.seller_details.ifsc
+                                : "NA"}
                             </div>
                             <div>
                               <strong style={{ ...typographyStyling }}>
                                 Gst Number :{" "}
                               </strong>
-                              {salesInvoiceData.seller_gst}
+                              {salesInvoiceData.seller_details
+                                ? salesInvoiceData.seller_details.gst
+                                : "NA"}
                             </div>
                             <div>
                               <strong style={{ ...typographyStyling }}>
                                 Pan Number :{" "}
                               </strong>
-                              {salesInvoiceData.seller_pan}
+                              {salesInvoiceData.seller_details
+                                ? salesInvoiceData.seller_details.pan
+                                : "NA"}
                             </div>
                           </td>
                           <td colspan="3">

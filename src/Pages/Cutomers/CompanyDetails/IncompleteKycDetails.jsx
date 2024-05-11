@@ -10,7 +10,6 @@ import { CustomSearchWithButton } from "../../../Components/CustomSearchWithButt
 import { BulkCustomerAssign } from "./BulkCustomerAssign";
 import { CustomTable } from "./../../../Components/CustomTable";
 import { CustomPagination } from "../../../Components/CustomPagination";
-import ProductService from "../../../services/ProductService";
 import { CSVLink } from "react-csv";
 import { Button } from "@mui/material";
 import { Helmet } from "react-helmet";
@@ -28,9 +27,8 @@ export const IncompleteKycDetails = () => {
   const [errMsg, setErrMsg] = useState("");
   const [companyData, setCompanyData] = useState([]);
   const [recordForEdit, setRecordForEdit] = useState();
-  const [pageCount, setpageCount] = useState(1);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [product, setProduct] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const [exportData, setExportData] = useState([]);
@@ -168,7 +166,6 @@ export const IncompleteKycDetails = () => {
   useEffect(() => {
     getAllSellerAccountsDetails();
     getIncompleteKycCustomerData();
-    getProduct();
   }, []);
 
   const getAllSellerAccountsDetails = async () => {
@@ -180,18 +177,6 @@ export const IncompleteKycDetails = () => {
       dispatch(getSellerAccountData(response.data));
       setOpen(false);
     } catch (err) {
-      setOpen(false);
-    }
-  };
-
-  const getProduct = async () => {
-    try {
-      setOpen(true);
-      const res = await ProductService.getAllProduct();
-      setProduct(res.data);
-      setOpen(false);
-    } catch (err) {
-      console.error("error potential", err);
       setOpen(false);
     }
   };
@@ -215,7 +200,7 @@ export const IncompleteKycDetails = () => {
         });
       }
       setCompanyData(response.data.results);
-      setpageCount(Math.ceil(response.data.count / 25));
+      setTotalPages(Math.ceil(response.data.count / 25));
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -257,14 +242,14 @@ export const IncompleteKycDetails = () => {
         });
       }
       setCompanyData(response.data.results);
-      setpageCount(Math.ceil(response.data.count / 25));
+      setTotalPages(Math.ceil(response.data.count / 25));
       setOpen(false);
     } catch (error) {
       console.log("error Search leads", error);
       setOpen(false);
     }
   };
-  const handlePageClick = async (event, value) => {
+  const handlePageChange = async (event, value) => {
     try {
       const page = value;
       setCurrentPage(page);
@@ -283,7 +268,7 @@ export const IncompleteKycDetails = () => {
         setCompanyData(response.data.results);
       }
       setCompanyData(response.data.results);
-      setpageCount(Math.ceil(response.data.count / 25));
+      setTotalPages(Math.ceil(response.data.count / 25));
 
       setOpen(false);
     } catch (error) {
@@ -474,8 +459,8 @@ export const IncompleteKycDetails = () => {
         >
           <CustomPagination
             currentPage={currentPage}
-            pageCount={pageCount}
-            handlePageClick={handlePageClick}
+            totalPages={totalPages}
+            handlePageChange={handlePageChange}
           />
         </div>
       </div>

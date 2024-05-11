@@ -27,23 +27,20 @@ export const PackingListUpdate = ({
   getAllPackingListDetails,
   idForEdit,
 }) => {
-  console.log("idForEdit", idForEdit);
   const [open, setOpen] = useState(false);
   const [error, setError] = useState(null);
-  const [packingListDetails, setPackingListDetails] = useState(idForEdit);
   const [products, setProducts] = useState([]);
-  const today = new Date().toISOString().slice(0, 10);
 
   useEffect(() => {
     // Initialize products state with packingListDetails data
-    if (packingListDetails && packingListDetails.products) {
-      const initialProducts = packingListDetails.products.map((p) => ({
+    if (idForEdit && idForEdit.products) {
+      const initialProducts = idForEdit.products.map((p) => ({
         ...p,
         quantity: p.quantity || 0,
       }));
       setProducts(initialProducts);
     }
-  }, [packingListDetails]);
+  }, [idForEdit]);
 
   const handleQuantityChange = (index, newQuantity) => {
     const updatedProducts = products.map((product, idx) =>
@@ -52,29 +49,22 @@ export const PackingListUpdate = ({
     setProducts(updatedProducts);
   };
 
-  const handleInput = (e) => {
-    const { name, value } = e.target;
-    const updatedRow = { ...packingListDetails, [name]: value };
-    setPackingListDetails(updatedRow);
-  };
-
   const updatePackingListDetails = async (e) => {
     e.preventDefault();
     try {
       setOpen(true);
       const req = {
-        purchase_order: packingListDetails.purchase_order || null,
-
-        packing_list_no: packingListDetails.packing_list_no || null,
-        invoice_date: packingListDetails.invoice_date,
-        seller_account: packingListDetails.seller_account || null,
+        purchase_order: idForEdit.purchase_order || null,
+        packing_list_no: idForEdit.packing_list_no || null,
+        invoice_date: idForEdit.invoice_date,
+        seller_account: idForEdit.seller_account || null,
         products: products || [], // Send updated products
       };
-      await InventoryServices.updatePackingListData(packingListDetails.id, req);
+      await InventoryServices.updatePackingListData(idForEdit.id, req);
       setOpenPopup(false);
       getAllPackingListDetails();
     } catch (error) {
-      console.error("Creating Packing list error", error);
+      console.error("Updating Packing List Error:", error);
       setError(error.message || "An error occurred");
     } finally {
       setOpen(false);
@@ -84,6 +74,7 @@ export const PackingListUpdate = ({
   const handleCloseSnackbar = () => {
     setError(null);
   };
+
   return (
     <div>
       <CustomLoader open={open} />
@@ -112,7 +103,7 @@ export const PackingListUpdate = ({
               name="seller_account"
               label="Buyer Account"
               variant="outlined"
-              value={packingListDetails.seller_account || ""}
+              value={idForEdit.seller_account || ""}
               disabled
             />
           </Grid>
@@ -122,7 +113,7 @@ export const PackingListUpdate = ({
               size="small"
               label="Purchase Order Number"
               variant="outlined"
-              value={packingListDetails.purchase_order || ""}
+              value={idForEdit.purchase_order || ""}
               disabled
             />
           </Grid>
@@ -135,23 +126,19 @@ export const PackingListUpdate = ({
               name="packing_list_no"
               label="Invoice No"
               variant="outlined"
-              value={packingListDetails.packing_list_no || ""}
-              // onChange={handleInput}
+              value={idForEdit.packing_list_no || ""}
             />
           </Grid>
           <Grid item xs={12} sm={3}>
             <CustomTextField
               fullWidth
               disabled
-              // type="date"
               size="small"
               name="invoice_date"
               label="Invoice Date"
               variant="outlined"
               InputLabelProps={{ shrink: true }}
-              value={packingListDetails.invoice_date}
-              // InputProps={{ inputProps: { max: today } }}
-              // onChange={handleInput}
+              value={idForEdit.invoice_date}
             />
           </Grid>
           <Grid item xs={12}>

@@ -47,7 +47,6 @@ export const UpdateAllCompanyDetails = (props) => {
                 setOpenPopup={setOpenPopup}
                 getAllCompanyDetails={getAllCompanyDetails}
                 recordForEdit={recordForEdit}
-                product={product}
               />
             </div>
           )}

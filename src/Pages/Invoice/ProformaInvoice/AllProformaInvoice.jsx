@@ -32,13 +32,13 @@ export const AllProformaInvoice = () => {
   const [open, setOpen] = useState(false);
   const [errMsg, setErrMsg] = useState("");
   const [invoiceData, setInvoiceData] = useState([]);
-  const [pageCount, setpageCount] = useState(0);
   const [filterType, setFilterType] = useState("");
   const [searchValue, setSearchValue] = useState("");
   const [statusValue, setStatusValue] = useState("");
   const [typeValue, setTypeValue] = useState("");
   const [assign, setAssign] = useState("");
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const data = useSelector((state) => state.auth);
   const users = data.profile;
   const assigned = users.sales_users || [];
@@ -179,7 +179,7 @@ export const AllProformaInvoice = () => {
         : await InvoiceServices.getPIDataWithDateRange(StartDate, EndDate);
       setInvoiceData(response.data.results);
       const total = response.data.count;
-      setpageCount(Math.ceil(total / 25));
+      setTotalPages(Math.ceil(total / 25));
       console.log("response filters", response);
 
       setOpen(false);
@@ -222,7 +222,7 @@ export const AllProformaInvoice = () => {
         if (response) {
           setInvoiceData(response.data.results);
           const total = response.data.count;
-          setpageCount(Math.ceil(total / 25));
+          setTotalPages(Math.ceil(total / 25));
         } else {
           getProformaInvoiceData();
           setSearchValue(null);
@@ -237,7 +237,7 @@ export const AllProformaInvoice = () => {
     }
   };
 
-  const handlePageClick = async (event, value) => {
+  const handlePageChange = async (event, value) => {
     try {
       const page = value;
       const Search = searchValue ? "search" : "";
@@ -260,7 +260,7 @@ export const AllProformaInvoice = () => {
         if (response) {
           setInvoiceData(response.data.results);
           const total = response.data.count;
-          setpageCount(Math.ceil(total / 25));
+          setTotalPages(Math.ceil(total / 25));
         } else {
           getProformaInvoiceData();
           setSearchValue(null);
@@ -463,8 +463,9 @@ export const AllProformaInvoice = () => {
           />
 
           <CustomPagination
-            pageCount={pageCount}
-            handlePageClick={handlePageClick}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            handlePageChange={handlePageChange}
           />
         </Paper>
       </Grid>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Grid, Paper, Box, Button } from "@mui/material";
 import LeadServices from "../../services/LeadService";
 import moment from "moment";
@@ -11,6 +11,8 @@ import CustomTextField from "../../Components/CustomTextField";
 import { UpdateCompanyDetails } from "../Cutomers/CompanyDetails/UpdateCompanyDetails";
 import { useSelector } from "react-redux";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
+import { useNotificationHandling } from "../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../Components/MessageAlert";
 
 export const AllFollowup = () => {
   const [open, setOpen] = useState(false);
@@ -19,8 +21,8 @@ export const AllFollowup = () => {
   const [popupCustomer, setPopupCustomer] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [leadsByID, setLeadsByID] = useState(null);
-  const [pageCount, setpageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   // Get the current date
   const currentDate = new Date();
   // Set the initial startDate to the first day of the current month
@@ -44,6 +46,8 @@ export const AllFollowup = () => {
   const [filterByActivity, setFilterByActivity] = useState("");
   const userData = useSelector((state) => state.auth.profile);
   const assigned = userData.sales_users || [];
+  const { handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   const openInPopup = async (item) => {
     try {
@@ -95,7 +99,9 @@ export const AllFollowup = () => {
 
   const handleChange = (value) => {
     const selectedValue = value;
+
     setSelectedDate(selectedValue);
+    setCurrentPage(1);
     if (selectedValue === "Today") {
       const today = new Date();
       setEndDate(today);
@@ -136,116 +142,43 @@ export const AllFollowup = () => {
     }
   };
 
-  const FilterBySalesPerson = (value) => {
-    setFilterBySalesperson(value);
-    getSearchData(value, filterByActivity);
-  };
-
-  const FilterByActivity = (value) => {
-    setFilterByActivity(value);
-    getSearchData(filterBySalesperson, value);
-  };
-
   useEffect(() => {
-    getFollowup();
-  }, [startDate, endDate]);
+    getFollowUp();
+  }, [currentPage, filterBySalesperson, filterByActivity]);
 
-  const getFollowup = async () => {
+  const getFollowUp = useCallback(async () => {
     try {
       setOpen(true);
       const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
       const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
-
-      const options = {
-        startDate: StartDate,
-        endDate: EndDate,
-        currentPage: currentPage,
-      };
-
-      const response = await LeadServices.getAllFollowup(options);
-
-      if (response) {
-        setAllFollowupData(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      }
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.error("error all followup", err);
-    }
-  };
-
-  const getSearchData = async (filterBySalesPerson, filterByActivity) => {
-    try {
-      setOpen(true);
-      const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
-      const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
-
-      let options = {
-        startDate: StartDate,
-        endDate: EndDate,
-      };
-
-      if (filterBySalesPerson && filterByActivity) {
-        options.search = "user_email";
-        options.searchValue = filterBySalesPerson;
-        options.filter = "activity";
-        options.filterValue = filterByActivity;
-      } else if (filterBySalesPerson) {
-        options.search = "user_email";
-        options.searchValue = filterBySalesPerson;
-      } else if (filterByActivity) {
-        options.filter = "activity";
-        options.filterValue = filterByActivity;
-      }
-
-      const response = await LeadServices.getAllFollowup(options);
-
+      const response = await LeadServices.getAllFollowUp(
+        StartDate,
+        EndDate,
+        currentPage,
+        filterBySalesperson,
+        filterByActivity
+      );
       setAllFollowupData(response.data.results);
-      const total = response.data.count;
-      setpageCount(Math.ceil(total / 25));
-      setOpen(false);
+      setTotalPages(Math.ceil(response.data.count / 25));
     } catch (error) {
-      console.log("error Search sale register", error);
+      handleError(error);
+    } finally {
       setOpen(false);
     }
+  }, [currentPage, filterBySalesperson, filterByActivity]);
+
+  const handleSalesPersonFilterChange = (filterSelectedValue) => {
+    setFilterBySalesperson(filterSelectedValue);
+    setCurrentPage(1);
   };
 
-  const handlePageClick = async (event, value) => {
-    try {
-      const page = value;
-      setCurrentPage(page);
-      const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
-      const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
+  const handleActivityFilterChange = (filterSelectedValue) => {
+    setFilterByActivity(filterSelectedValue);
+    setCurrentPage(1);
+  };
 
-      let options = {
-        startDate: StartDate,
-        endDate: EndDate,
-        currentPage: page,
-      };
-
-      if (filterBySalesperson) {
-        options.search = "user_email";
-        options.searchValue = filterBySalesperson;
-      }
-
-      const response = await LeadServices.getAllFollowup(options);
-
-      if (response) {
-        setAllFollowupData(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      } else {
-        getFollowup();
-        setFilterBySalesperson("");
-      }
-
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
   };
 
   const Tabledata = allFollowupData.map((row, i) => ({
@@ -280,6 +213,12 @@ export const AllFollowup = () => {
 
   return (
     <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
 
       {/* Overdue FollowUp */}
@@ -299,7 +238,7 @@ export const AllFollowup = () => {
             <CustomAutocomplete
               size="small"
               sx={{ width: 300 }}
-              onChange={(event, value) => FilterBySalesPerson(value)}
+              onChange={(event, value) => handleSalesPersonFilterChange(value)}
               value={filterBySalesperson}
               options={assigned.map((option) => option.email)}
               getOptionLabel={(option) => option}
@@ -309,7 +248,7 @@ export const AllFollowup = () => {
             <CustomAutocomplete
               size="small"
               sx={{ width: 300 }}
-              onChange={(event, value) => FilterByActivity(value)}
+              onChange={(event, value) => handleActivityFilterChange(value)}
               value={filterByActivity}
               options={ActivityOption.map((option) => option.label)}
               getOptionLabel={(option) => option}
@@ -335,8 +274,9 @@ export const AllFollowup = () => {
             openInPopup2={null}
           />
           <CustomPagination
-            pageCount={pageCount}
-            handlePageClick={handlePageClick}
+            totalPages={totalPages}
+            currentPage={currentPage}
+            handlePageChange={handlePageChange}
           />
         </Paper>
       </Grid>
@@ -349,7 +289,11 @@ export const AllFollowup = () => {
         <UpdateLeads
           leadsByID={leadsByID}
           setOpenPopup={setPopupLead}
-          getAllleadsData={getFollowup}
+          getAllleadsData={getFollowUp}
+          currentPage={currentPage}
+          filterQuery={filterBySalesperson}
+          filterSelectedQuery={filterByActivity}
+          searchQuery={null}
         />
       </Popup>
       <Popup
@@ -360,7 +304,7 @@ export const AllFollowup = () => {
       >
         <UpdateCompanyDetails
           setOpenPopup={setPopupCustomer}
-          getAllCompanyDetails={getFollowup}
+          getAllCompanyDetails={getFollowUp}
           recordForEdit={leadsByID}
         />
       </Popup>

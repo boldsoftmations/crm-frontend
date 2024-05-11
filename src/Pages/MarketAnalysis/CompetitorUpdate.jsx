@@ -3,6 +3,8 @@ import React, { useRef, useState } from "react";
 import { CustomLoader } from "../../Components/CustomLoader";
 import CustomTextField from "../../Components/CustomTextField";
 import CustomerServices from "../../services/CustomerService";
+import { useNotificationHandling } from "../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../Components/MessageAlert";
 
 export const CompetitorUpdate = (props) => {
   const { recordForEdit, setOpenPopup, getCompetitors } = props;
@@ -10,6 +12,8 @@ export const CompetitorUpdate = (props) => {
   const [competitors, setCompetitors] = useState(recordForEdit);
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -25,11 +29,15 @@ export const CompetitorUpdate = (props) => {
       };
       if (recordForEdit) {
         await CustomerServices.updateCompetitors(competitors.id, data);
-        setOpenPopup(false);
+        handleSuccess("Competitor Updated Successfully");
+        setTimeout(() => {
+          setOpenPopup(false);
+        }, 300);
         setOpen(false);
         getCompetitors();
       }
     } catch (err) {
+      handleError(err);
       console.log("error update color :>> ", err);
       setOpen(false);
       if (!err.response) {
@@ -51,6 +59,12 @@ export const CompetitorUpdate = (props) => {
 
   return (
     <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
       <Box component="form" noValidate onSubmit={(e) => CompetitorUpdate(e)}>
         <Grid container spacing={2}>

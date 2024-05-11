@@ -962,10 +962,6 @@ const logo2Style = {
   height: "auto",
   width: "50pt",
 };
-const alllogoStyle = {
-  height: "auto",
-  width: "100%",
-};
 const lightTextStyle = {
   fontWeight: 300,
   color: "#454545",

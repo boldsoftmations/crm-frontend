@@ -15,8 +15,8 @@ import CustomAutocomplete from "../../Components/CustomAutocomplete";
 
 export const DeadCustomerView = () => {
   const [open, setOpen] = useState(false);
-  const [pageCount, setPageCount] = useState(0);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const [salesPersonByFilter, setSalesPersonByFilter] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [deadCustomer, setDeadCustomer] = useState([]);
@@ -138,7 +138,7 @@ export const DeadCustomerView = () => {
         );
         setDeadCustomer(response.data.results);
         const total = response.data.count;
-        setPageCount(Math.ceil(total / 25));
+        setTotalPages(Math.ceil(total / 25));
         setOpen(false);
       } catch (error) {
         console.error("Error fetching Customer Having Forecast", error);
@@ -152,7 +152,7 @@ export const DeadCustomerView = () => {
     setSearchQuery(event.target.value);
   };
 
-  const handlePageClick = (event, value) => {
+  const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
 
@@ -311,8 +311,9 @@ export const DeadCustomerView = () => {
             openInPopup4={null}
           />
           <CustomPagination
-            pageCount={pageCount}
-            handlePageClick={handlePageClick}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            handlePageChange={handlePageChange}
           />
         </Paper>
       </Grid>

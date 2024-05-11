@@ -1,76 +1,56 @@
 import { Box, Button, Grid } from "@mui/material";
-
-import { useState } from "react";
-import React, { useRef } from "react";
-
+import React, { memo, useCallback, useState } from "react";
 import ProductService from "../../../services/ProductService";
-
-import "../../CommonStyle.css";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomTextField from "../../../Components/CustomTextField";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../../Components/MessageAlert";
 
-export const CreateColor = (props) => {
-  const { setOpenPopup, getColours } = props;
+export const CreateColor = memo((props) => {
+  const { setOpenPopup, getColours, currentPage, searchQuery } = props;
   const [colour, setColour] = useState("");
   const [open, setOpen] = useState(false);
-  const errRef = useRef();
-  const [errMsg, setErrMsg] = useState("");
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
-  const createColours = async (e) => {
-    try {
-      e.preventDefault();
-      const req = {
-        name: colour,
-      };
+  const createColours = useCallback(
+    async (e) => {
+      try {
+        e.preventDefault();
+        const req = {
+          name: colour,
+        };
 
-      setOpen(true);
-      await ProductService.createColour(req);
+        setOpen(true);
+        const response = await ProductService.createColour(req);
+        const successMessage =
+          response.data.message || "Colour Created successfully";
+        handleSuccess(successMessage);
 
-      setOpenPopup(false);
-      setOpen(false);
-      getColours();
-    } catch (err) {
-      setOpen(false);
-      if (!err.response) {
-        setErrMsg("No Server Response");
-      } else if (err.response.status === 400) {
-        setErrMsg(
-          err.response.data.errors.name
-            ? err.response.data.errors.name
-            : err.response.data.errors.non_field_errors
-        );
-      } else if (err.response.status === 401) {
-        setErrMsg(err.response.data.errors.code);
-      } else {
-        setErrMsg("Server Error");
+        setTimeout(() => {
+          setOpenPopup(false);
+          getColours(currentPage, searchQuery);
+        }, 300);
+      } catch (error) {
+        handleError(error); // Handle errors from the API call
+      } finally {
+        setOpen(false); // Always close the loader
       }
-      errRef.current.focus();
-    }
-  };
+    },
+    [colour, currentPage, searchQuery]
+  );
 
   return (
     <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
       <Box component="form" noValidate onSubmit={(e) => createColours(e)}>
         <Grid container spacing={2}>
-          <p
-            style={{
-              width: "100%",
-              padding: 10,
-              marginBottom: 10,
-              borderRadius: 4,
-              backgroundColor: errMsg ? "red" : "offscreen",
-              textAlign: "center",
-              color: "white",
-              textTransform: "capitalize",
-            }}
-            ref={errRef}
-            className={errMsg ? "errmsg" : "offscreen"}
-            aria-live="assertive"
-          >
-            {errMsg}
-          </p>
-
           <Grid item xs={12}>
             <CustomTextField
               fullWidth
@@ -95,4 +75,4 @@ export const CreateColor = (props) => {
       </Box>
     </>
   );
-};
+});

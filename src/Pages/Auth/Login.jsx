@@ -32,18 +32,11 @@ import { CustomLoader } from "./../../Components/CustomLoader";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import UserProfileService from "../../services/UserProfileService";
 
-const paperStyle = {
-  padding: 20,
-  height: "73vh",
-  width: 340,
-  margin: "0 auto",
-};
 const avatarStyle = { backgroundColor: "#1bbd7e" };
 // const btnstyle = { margin: "8px 0" };
 
 export const Login = () => {
   const [open, setOpen] = useState(false);
-  const [token, setToken] = useState([]);
   const theme = createTheme();
   let navigate = useNavigate();
   const dispatch = useDispatch();
@@ -95,7 +88,6 @@ export const Login = () => {
         setUserData(response.data.token);
         dispatch(loginsucces(response.data));
         dispatch(getProfileUser(response.data));
-        setToken(response.data.token);
         getUsers();
       }
 

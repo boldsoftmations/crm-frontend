@@ -8,7 +8,6 @@ import { CustomSearchWithButton } from "../../../Components/CustomSearchWithButt
 import { CustomTable } from "./../../../Components/CustomTable";
 import { CustomPagination } from "../../../Components/CustomPagination";
 import LeadServices from "../../../services/LeadService";
-import CustomTextField from "../../../Components/CustomTextField";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 export const UnassignedCustomer = () => {
@@ -19,8 +18,8 @@ export const UnassignedCustomer = () => {
   const [errMsg, setErrMsg] = useState("");
   const [companyData, setCompanyData] = useState([]);
   const [recordForEdit, setRecordForEdit] = useState();
-  const [pageCount, setpageCount] = useState(0);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const [assigned, setAssigned] = useState([]);
   const [assign, setAssign] = useState([]);
@@ -88,12 +87,12 @@ export const UnassignedCustomer = () => {
         );
         setCompanyData(response.data.results);
         const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
+        setTotalPages(Math.ceil(total / 25));
       } else {
         const response = await CustomerServices.getUnassignedData();
         setCompanyData(response.data.results);
         const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
+        setTotalPages(Math.ceil(total / 25));
       }
       setOpen(false);
     } catch (err) {
@@ -127,7 +126,7 @@ export const UnassignedCustomer = () => {
         );
         setCompanyData(response.data.results);
         const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
+        setTotalPages(Math.ceil(total / 25));
       } else {
         getUnassignedCompanyDetails();
         setFilterSelectedQuery("");
@@ -138,7 +137,7 @@ export const UnassignedCustomer = () => {
       setOpen(false);
     }
   };
-  const handlePageClick = async (event, value) => {
+  const handlePageChange = async (event, value) => {
     try {
       const page = value;
       setCurrentPage(page);
@@ -153,7 +152,7 @@ export const UnassignedCustomer = () => {
         if (response) {
           setCompanyData(response.data.results);
           const total = response.data.count;
-          setpageCount(Math.ceil(total / 25));
+          setTotalPages(Math.ceil(total / 25));
         } else {
           getUnassignedCompanyDetails();
           setFilterSelectedQuery("");
@@ -316,8 +315,8 @@ export const UnassignedCustomer = () => {
           >
             <CustomPagination
               currentPage={currentPage}
-              pageCount={pageCount}
-              handlePageClick={handlePageClick}
+              totalPages={totalPages}
+              handlePageChange={handlePageChange}
             />
           </div>
         </div>

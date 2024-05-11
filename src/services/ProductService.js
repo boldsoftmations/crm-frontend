@@ -1,48 +1,33 @@
 import CustomAxios from "./api";
 
-const getAllColour = () => {
-  return CustomAxios.get("/api/product/color");
-};
-
-const getColourPaginatewithSearch = (all, search) => {
-  return CustomAxios.get(`/api/product/color/?page=${all}&search=${search}`);
-};
-
-const getAllPaginateColour = (all) => {
-  return CustomAxios.get(`/api/product/color/?page=${all}`);
-};
-
-const getColourById = (id) => {
-  return CustomAxios.get(`/api/product/color/${id}`);
+const getAllColour = (page, searchQuery) => {
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+  if (searchQuery) {
+    params.append("search", searchQuery);
+  }
+  return CustomAxios.get(`api/product/color/?${params.toString()}`);
 };
 
 const createColour = (data) => {
   return CustomAxios.post("/api/product/color/", data);
 };
 
-const getAllSearchColour = (search) => {
-  return CustomAxios.get(`/api/product/color/?search=${search}`);
-};
-
 const updateColour = (id, data) => {
   return CustomAxios.patch(`/api/product/color/${id}`, data);
 };
 
-const getAllBrand = () => {
-  return CustomAxios.get("/api/product/brand");
-};
-
-const getAllPaginateBrand = (all) => {
-  return CustomAxios.get(`/api/product/brand/?page=${all}`);
-};
-
-const getAllSearchBrand = (search) => {
-  console.log("search", search);
-  return CustomAxios.get(`/api/product/brand/?search=${search}`);
-};
-
-const getBrandById = (id) => {
-  return CustomAxios.get(`/api/product/brand/${id}`);
+const getAllBrand = (page, searchQuery) => {
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+  if (searchQuery) {
+    params.append("search", searchQuery);
+  }
+  return CustomAxios.get(`api/product/brand/?${params.toString()}`);
 };
 
 const createBrand = (data) => {
@@ -53,19 +38,15 @@ const updateBrand = (id, data) => {
   return CustomAxios.patch(`/api/product/brand/${id}`, data);
 };
 
-const getAllBasicUnit = () => {
-  return CustomAxios.get("/api/product/basic-unit");
-};
-
-const getAllPaginateBasicUnit = (all) => {
-  return CustomAxios.get(`/api/product/basic-unit/?page=${all}`);
-};
-const getAllSearchBasicUnit = (search) => {
-  return CustomAxios.get(`/api/product/basic-unit/?search=${search}`);
-};
-
-const getBasicUnitById = (id) => {
-  return CustomAxios.get(`/api/product/basic-unit/${id}`);
+const getAllBasicUnit = (page, searchQuery) => {
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+  if (searchQuery) {
+    params.append("search", searchQuery);
+  }
+  return CustomAxios.get(`api/product/basic-unit/?${params.toString()}`);
 };
 
 const createBasicUnit = (data) => {
@@ -76,70 +57,53 @@ const updateBasicUnit = (id, data) => {
   return CustomAxios.patch(`/api/product/basic-unit/${id}`, data);
 };
 
-const getAllUnit = () => {
-  return CustomAxios.get("/api/product/unit");
-};
-
-const getAllPaginateUnit = (all) => {
-  return CustomAxios.get(`/api/product/unit/?page=${all}`);
-};
-
-const getAllSearchUnit = (search) => {
-  return CustomAxios.get(`/api/product/unit/?search=${search}`);
+const getAllUnit = (page, searchQuery) => {
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+  if (searchQuery) {
+    params.append("search", searchQuery);
+  }
+  return CustomAxios.get(`api/product/unit/?${params.toString()}`);
 };
 
 const createUnit = (data) => {
   return CustomAxios.post("/api/product/unit/", data);
 };
 
-const getUnitById = (id) => {
-  return CustomAxios.get(`/api/product/unit/${id}`);
-};
-
 const updateUnit = (id, data) => {
   return CustomAxios.patch(`/api/product/unit/${id}`, data);
 };
 
-const getAllPackingUnit = () => {
-  return CustomAxios.get("/api/product/packing-unit");
-};
-
-const getAllPaginatePackingUnit = (all) => {
-  return CustomAxios.get(`/api/product/packing-unit/?page=${all}`);
-};
-
-const getAllSearchPackingUnit = (search) => {
-  return CustomAxios.get(`/api/product/packing-unit/?search=${search}`);
+const getAllPackingUnit = (page, searchQuery) => {
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+  if (searchQuery) {
+    params.append("search", searchQuery);
+  }
+  return CustomAxios.get(`api/product/packing-unit/?${params.toString()}`);
 };
 
 const createPackingUnit = (data) => {
   return CustomAxios.post("/api/product/packing-unit/", data);
 };
 
-const getPackingUnitById = (id) => {
-  return CustomAxios.get(`/api/product/packing-unit/${id}`);
-};
-
 const updatePackingUnit = (id, data) => {
   return CustomAxios.patch(`/api/product/packing-unit/${id}`, data);
 };
 
-const getAllDescription = () => {
-  return CustomAxios.get("/api/product/description");
-};
-
-const getAllSearchDescription = (search) => {
-  return CustomAxios.get(`/api/product/description/?search=${search}`);
-};
-
-const getDescriptionPaginateWithSearch = (currentPage, search) => {
-  return CustomAxios.get(
-    `/api/product/description/?page=${currentPage}&search=${search}`
-  );
-};
-
-const getDescriptionPaginate = (currentPage) => {
-  return CustomAxios.get(`/api/product/description/?page=${currentPage}`);
+const getAllDescription = (page, searchQuery) => {
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+  if (searchQuery) {
+    params.append("search", searchQuery);
+  }
+  return CustomAxios.get(`api/product/description/?${params.toString()}`);
 };
 
 const getYesDescription = () => {
@@ -154,64 +118,38 @@ const createDescription = (data) => {
   return CustomAxios.post("/api/product/description/", data);
 };
 
-const getDescriptionById = (id) => {
-  return CustomAxios.get(`/api/product/description/${id}`);
-};
-
 const updateDescription = (id, data) => {
   return CustomAxios.patch(`/api/product/description/${id}`, data);
 };
 
-const getAllProductCode = () => {
-  return CustomAxios.get("/api/product/product-code");
-};
-
-const getAllPaginateProductCode = (all) => {
-  return CustomAxios.get(`/api/product/product-code/?page=${all}`);
-};
-
-const getAllSearchProductCode = (search) => {
-  return CustomAxios.get(`/api/product/product-code/?search=${search}`);
-};
-
-const getSearchWithPaginateProductCode = (all, search) => {
-  return CustomAxios.get(
-    `/api/product/product-code/?page=${all}&search=${search}`
-  );
+const getAllProductCode = (page, searchQuery) => {
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+  if (searchQuery) {
+    params.append("search", searchQuery);
+  }
+  return CustomAxios.get(`api/product/product-code/?${params.toString()}`);
 };
 
 const createProductCode = (data) => {
   return CustomAxios.post("/api/product/product-code/", data);
 };
 
-const getProductCodeById = (id) => {
-  return CustomAxios.get(`/api/product/product-code/${id}`);
-};
-
 const updateProductCode = (id, data) => {
   return CustomAxios.patch(`/api/product/product-code/${id}`, data);
 };
 
-const getAllConsumable = () => {
-  return CustomAxios.get("/api/product/consumables");
-};
-
-const getAllSearchConsumable = (search) => {
-  return CustomAxios.get(`/api/product/consumables/?search=${search}`);
-};
-
-const getConsumablePaginate = (currentPage) => {
-  return CustomAxios.get(`/api/product/consumables/?page=${currentPage}`);
-};
-
-const getConsumablePaginateWithSearch = (currentPage, search) => {
-  return CustomAxios.get(
-    `/api/product/consumables/?page=${currentPage}&search=${search}`
-  );
-};
-
-const getConsumableById = (id) => {
-  return CustomAxios.get(`/api/product/consumables/${id}`);
+const getAllConsumable = (page, searchQuery) => {
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+  if (searchQuery) {
+    params.append("search", searchQuery);
+  }
+  return CustomAxios.get(`api/product/consumables/?${params.toString()}`);
 };
 
 const updateConsumable = (id, data) => {
@@ -222,94 +160,60 @@ const createConsumable = (data) => {
   return CustomAxios.post("/api/product/consumables/", data);
 };
 
-const getAllFinishGoods = () => {
-  return CustomAxios.get("/api/product/finished-goods");
-};
-
-const getAllSearchFinishGoods = (search) => {
-  return CustomAxios.get(`/api/product/finished-goods/?search=${search}`);
-};
-
-const getFinishGoodsPaginate = (currentPage) => {
-  return CustomAxios.get(`/api/product/finished-goods/?page=${currentPage}`);
-};
-
-const getFinishGoodsPaginateWithSearch = (currentPage, search) => {
-  return CustomAxios.get(
-    `/api/product/finished-goods/?page=${currentPage}&search=${search}`
-  );
+const getAllFinishGoods = (page, searchQuery) => {
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+  if (searchQuery) {
+    params.append("search", searchQuery);
+  }
+  return CustomAxios.get(`api/product/finished-goods/?${params.toString()}`);
 };
 
 const createFinishGoods = (data) => {
   return CustomAxios.post("/api/product/finished-goods/", data);
 };
 
-const getFinishGoodsById = (id) => {
-  return CustomAxios.get(`/api/product/finished-goods/${id}`);
-};
-
 const updateFinishGoods = (id, data) => {
   return CustomAxios.patch(`/api/product/finished-goods/${id}`, data);
 };
 
-const getAllRawMaterials = () => {
-  return CustomAxios.get("/api/product/raw-materials/");
-};
-
-const getAllSearchRawMaterials = (search) => {
-  return CustomAxios.get(`/api/product/raw-materials/?search=${search}`);
-};
-
-const getRawMaterialsPaginate = (currentPage) => {
-  return CustomAxios.get(`/api/product/raw-materials/?page=${currentPage}`);
-};
-
-const getRawMaterialsPaginateWithSearch = (currentPage, search) => {
-  return CustomAxios.get(
-    `/api/product/raw-materials/?page=${currentPage}&search=${search}`
-  );
+const getAllRawMaterials = (page, searchQuery) => {
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+  if (searchQuery) {
+    params.append("search", searchQuery);
+  }
+  return CustomAxios.get(`api/product/raw-materials/?${params.toString()}`);
 };
 
 const createRawMaterials = (data) => {
   return CustomAxios.post("/api/product/raw-materials/", data);
 };
 
-const getRawMaterialsById = (id) => {
-  return CustomAxios.get(`/api/product/raw-materials/${id}`);
-};
-
 const updateRawMaterials = (id, data) => {
   return CustomAxios.patch(`/api/product/raw-materials/${id}`, data);
 };
 
-const getAllPriceList = () => {
-  return CustomAxios.get("/api/product/pricelist/");
-};
-
-const getAllPaginatePriceList = (filter, all) => {
-  return CustomAxios.get(`/api/product/pricelist/?${filter}=${all}`);
-};
-
-const getAllSearchPriceList = (type, search) => {
-  return CustomAxios.get(`/api/product/pricelist/?${type}=${search}`);
-};
-
-const getAllPriceListPaginate = (currentPage, type, search) => {
-  return CustomAxios.get(
-    `/api/product/pricelist/?page=${currentPage}&${type}=${search}`
-  );
-};
-
-const getPriceListPaginate = (currentPage) => {
-  return CustomAxios.get(`/api/product/pricelist/?page=${currentPage}`);
+const getAllPriceList = (page, filterQuery, searchQuery) => {
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+  if (filterQuery) {
+    params.append("validity", filterQuery);
+  }
+  if (searchQuery) {
+    params.append("search", searchQuery);
+  }
+  return CustomAxios.get(`api/product/pricelist/?${params.toString()}`);
 };
 
 const createPriceList = (data) => {
   return CustomAxios.post("/api/product/pricelist/", data);
-};
-
-const getPriceListById = (id) => {
-  return CustomAxios.get(`/api/product/pricelist/${id}`);
 };
 
 const getAllValidPriceList = (all) => {
@@ -326,80 +230,39 @@ const getAllProduct = () => {
 
 const ProductService = {
   getAllColour,
-  getColourPaginatewithSearch,
-  getAllPaginateColour,
-  getAllSearchColour,
-  getColourById,
   createColour,
   updateColour,
   getAllBrand,
-  getAllPaginateBrand,
-  getAllSearchBrand,
-  getBrandById,
   createBrand,
   updateBrand,
   getAllBasicUnit,
-  getAllPaginateBasicUnit,
-  getAllSearchBasicUnit,
-  getBasicUnitById,
   createBasicUnit,
   updateBasicUnit,
   getAllUnit,
-  getAllPaginateUnit,
-  getAllSearchUnit,
   createUnit,
-  getUnitById,
   updateUnit,
   getAllPackingUnit,
-  getAllPaginatePackingUnit,
-  getAllSearchPackingUnit,
   createPackingUnit,
-  getPackingUnitById,
   updatePackingUnit,
   getAllDescription,
-  getAllSearchDescription,
-  getDescriptionPaginateWithSearch,
-  getDescriptionPaginate,
   getYesDescription,
   getNoDescription,
   createDescription,
-  getDescriptionById,
   updateDescription,
   getAllProductCode,
-  getAllPaginateProductCode,
-  getAllSearchProductCode,
-  getSearchWithPaginateProductCode,
   createProductCode,
-  getProductCodeById,
   updateProductCode,
   getAllConsumable,
-  getAllSearchConsumable,
-  getConsumablePaginate,
-  getConsumablePaginateWithSearch,
   createConsumable,
-  getConsumableById,
   updateConsumable,
   getAllFinishGoods,
-  getAllSearchFinishGoods,
-  getFinishGoodsPaginate,
-  getFinishGoodsPaginateWithSearch,
   createFinishGoods,
-  getFinishGoodsById,
   updateFinishGoods,
   getAllRawMaterials,
-  getAllSearchRawMaterials,
-  getRawMaterialsPaginate,
-  getRawMaterialsPaginateWithSearch,
   createRawMaterials,
-  getRawMaterialsById,
   updateRawMaterials,
   getAllPriceList,
-  getAllPaginatePriceList,
-  getAllSearchPriceList,
-  getAllPriceListPaginate,
-  getPriceListPaginate,
   createPriceList,
-  getPriceListById,
   getAllValidPriceList,
   updatePriceList,
   getAllProduct,

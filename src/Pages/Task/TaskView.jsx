@@ -1,37 +1,37 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import LeadServices from "../../services/LeadService";
 import TaskService from "../../services/TaskService";
 import { CustomTable } from "../../Components/CustomTable";
 import { CustomPagination } from "../../Components/CustomPagination";
 import { CustomSearchWithButton } from "./../../Components/CustomSearchWithButton";
 import { CustomLoader } from "../../Components/CustomLoader";
-import { ErrorMessage } from "../../Components/ErrorMessage/ErrorMessage";
 import { Popup } from "../../Components/Popup";
 import { TaskUpdate } from "./TaskUpdate";
 import { TaskCreate } from "./TaskCreate";
 import { TaskActivityCreate } from "./TaskActivityCreate";
 import { useSelector } from "react-redux";
 import { Box, Button } from "@mui/material";
-import CustomTextField from "../../Components/CustomTextField";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
+import { useNotificationHandling } from "../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../Components/MessageAlert";
 
 export const TaskView = () => {
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [open, setOpen] = useState(false);
-  const errRef = useRef();
-  const [errMsg, setErrMsg] = useState("");
   const [assigned, setAssigned] = useState([]);
   const [task, setTask] = useState([]);
   const [filterSelectedQuery, setFilterSelectedQuery] = useState(null);
   const [searchValue, setSearchValue] = useState(null);
   const [activity, setActivity] = useState(null);
-  const [pageCount, setpageCount] = useState(0);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const [taskByID, setTaskByID] = useState([]);
   const [openModalactivity, setOpenModalActivity] = useState(false);
   const UsersData = useSelector((state) => state.auth.profile);
   const assignedOption = UsersData.sales_users || [];
+  const { handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   const handleFilterChange = (value) => {
     setFilterSelectedQuery(value);
@@ -73,6 +73,7 @@ export const TaskView = () => {
       setAssigned(res.data);
       setOpen(false);
     } catch (error) {
+      handleError(error);
       console.log("error", error);
       setOpen(false);
     }
@@ -89,24 +90,9 @@ export const TaskView = () => {
 
       setTask(response.data.results);
       const total = response.data.count;
-      setpageCount(Math.ceil(total / 25));
+      setTotalPages(Math.ceil(total / 25));
     } catch (err) {
-      if (!err.response) {
-        setErrMsg(
-          "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
-        );
-      } else if (err.response.status === 400) {
-        setErrMsg(
-          err.response.data.errors.name ||
-            err.response.data.errors.non_field_errors
-        );
-      } else if (err.response.status === 401) {
-        setErrMsg(err.response.data.errors.code);
-      } else if (err.response.status === 404 || !err.response.data) {
-        setErrMsg("Data not found or request was null/empty");
-      } else {
-        setErrMsg("Server Error");
-      }
+      handleError(err);
     } finally {
       setOpen(false);
     }
@@ -123,20 +109,21 @@ export const TaskView = () => {
       if (response) {
         setTask(response.data.results);
         const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
+        setTotalPages(Math.ceil(total / 25));
       } else {
         await getAllTaskDetails();
         setFilterSelectedQuery("");
         setSearchValue("");
       }
     } catch (error) {
+      handleError(error);
       console.log("error Search leads", error);
     } finally {
       setOpen(false);
     }
   };
 
-  const handlePageClick = async (event, value) => {
+  const handlePageChange = async (event, value) => {
     try {
       const page = value;
       setCurrentPage(page);
@@ -154,12 +141,13 @@ export const TaskView = () => {
       if (response) {
         setTask(response.data.results);
         const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
+        setTotalPages(Math.ceil(total / 25));
       } else {
         await getAllTaskDetails();
         setFilterSelectedQuery("");
       }
     } catch (error) {
+      handleError(error);
       console.log("error", error);
     } finally {
       setOpen(false);
@@ -209,11 +197,14 @@ export const TaskView = () => {
 
   return (
     <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
-
       <div>
-        <ErrorMessage errRef={errRef} errMsg={errMsg} />
-
         <div
           style={{
             padding: "16px",
@@ -282,8 +273,8 @@ export const TaskView = () => {
           />
           <CustomPagination
             currentPage={currentPage}
-            pageCount={pageCount}
-            handlePageClick={handlePageClick}
+            totalPages={totalPages}
+            handlePageChange={handlePageChange}
           />
         </div>
       </div>

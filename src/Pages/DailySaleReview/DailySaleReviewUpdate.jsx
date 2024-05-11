@@ -4,7 +4,6 @@ import {
   Button,
   Card,
   CardContent,
-  Chip,
   Divider,
   Grid,
   LinearProgress,
@@ -130,29 +129,6 @@ const OverviewItemCard = ({ label, count }) => (
       <Typography variant="subtitle1">{label}</Typography>
       <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
         {count}
-      </Typography>
-    </CardContent>
-    <Divider variant="middle" />
-  </>
-);
-
-const TopCustomerItemCard = ({ primary, amount, isBilledThisMonth }) => (
-  <>
-    <CardContent
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "flex-start",
-        justifyContent: "center",
-        py: 1,
-      }}
-    >
-      <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
-        {primary}
-      </Typography>
-      <Typography variant="body2">Amount: {amount}</Typography>
-      <Typography variant="body2">
-        Billed This Month: {isBilledThisMonth ? "Yes" : "No"}
       </Typography>
     </CardContent>
     <Divider variant="middle" />

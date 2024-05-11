@@ -23,8 +23,8 @@ export const PIOrderBookDetails = () => {
   const [openModal2, setOpenModal2] = useState(false);
   const [recordForEdit, setRecordForEdit] = useState(null);
   const [errMsg, setErrMsg] = useState("");
-  const [pageCount, setpageCount] = useState(0);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [exportData, setExportData] = useState([]);
   const [filterQuery, setFilterQuery] = useState("");
@@ -174,7 +174,7 @@ export const PIOrderBookDetails = () => {
       if (response) {
         setOrderBookData(response.data.results);
         const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
+        setTotalPages(Math.ceil(total / 25));
       } else {
         getAllPIWiseOrderBook();
         setSearchQuery("");
@@ -232,7 +232,7 @@ export const PIOrderBookDetails = () => {
     });
   };
 
-  const handlePageClick = async (event, value) => {
+  const handlePageChange = async (event, value) => {
     const page = value;
     setCurrentPage(page);
     await fetchData({
@@ -433,8 +433,9 @@ export const PIOrderBookDetails = () => {
             openInPopup2={null}
           />
           <CustomPagination
-            pageCount={pageCount}
-            handlePageClick={handlePageClick}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            handlePageChange={handlePageChange}
           />
         </Paper>
       </Grid>

@@ -43,11 +43,10 @@ export const JobOpeningUpdate = ({
     e.preventDefault();
     try {
       if (values && values.id) {
-        if (values.closing_date == "") {
+        if (values.closing_date === "") {
           values.closing_date = null;
         }
         await updateJobOpening(values.id, values);
-        alert("Successfully updated Job Opening");
         setOpenUpdatePopup(false);
       }
     } catch (error) {

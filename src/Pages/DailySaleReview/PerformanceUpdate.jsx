@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Box, Grid } from "@mui/material";
 import { CustomButton } from "../../Components/CustomButton";
 import { CustomLoader } from "../../Components/CustomLoader";
-import CustomTextField from "../../Components/CustomTextField";
 import UserProfileService from "../../services/UserProfileService";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 

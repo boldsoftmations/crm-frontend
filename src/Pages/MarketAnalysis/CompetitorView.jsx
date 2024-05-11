@@ -10,6 +10,9 @@ import { CustomPagination } from "./../../Components/CustomPagination";
 import { CustomTable } from "../../Components/CustomTable";
 import CustomerServices from "../../services/CustomerService";
 import { CompetitorCreate } from "./CompetitorCreate";
+import { useNotificationHandling } from "../../Components/useNotificationHandling ";
+import { ErrorOutlineRounded } from "@mui/icons-material";
+import { MessageAlert } from "../../Components/MessageAlert";
 
 export const CompetitorView = () => {
   const [allCompetitors, setAllCompetitors] = useState([]);
@@ -20,8 +23,10 @@ export const CompetitorView = () => {
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [recordForEdit, setRecordForEdit] = useState(null);
-  const [pageCount, setpageCount] = useState(0);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const { handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   useEffect(() => {
     getCompetitors();
@@ -36,15 +41,16 @@ export const CompetitorView = () => {
         );
         setAllCompetitors(response.data.results);
         const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
+        setTotalPages(Math.ceil(total / 25));
       } else {
         const response = await CustomerServices.getAllCompetitors();
         setAllCompetitors(response.data.results);
         const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
+        setTotalPages(Math.ceil(total / 25));
       }
       setOpen(false);
     } catch (err) {
+      handleError(err);
       setOpen(false);
       if (!err.response) {
         setErrMsg(
@@ -80,19 +86,20 @@ export const CompetitorView = () => {
       if (response) {
         setAllCompetitors(response.data.results);
         const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
+        setTotalPages(Math.ceil(total / 25));
       } else {
         getCompetitors();
         setSearchQuery("");
       }
       setOpen(false);
     } catch (error) {
+      handleError(ErrorOutlineRounded);
       console.log("error Search leads", error);
       setOpen(false);
     }
   };
 
-  const handlePageClick = async (event, value) => {
+  const handlePageChange = async (event, value) => {
     try {
       const page = value;
       setCurrentPage(page);
@@ -107,7 +114,7 @@ export const CompetitorView = () => {
         if (response) {
           setAllCompetitors(response.data.results);
           const total = response.data.count;
-          setpageCount(Math.ceil(total / 25));
+          setTotalPages(Math.ceil(total / 25));
         } else {
           getCompetitors();
           setSearchQuery("");
@@ -116,11 +123,12 @@ export const CompetitorView = () => {
         const response = await CustomerServices.getAllPaginateCompetitors(page);
         setAllCompetitors(response.data.results);
         const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
+        setTotalPages(Math.ceil(total / 25));
       }
 
       setOpen(false);
     } catch (error) {
+      handleError(error);
       console.log("error", error);
       setOpen(false);
     }
@@ -140,6 +148,12 @@ export const CompetitorView = () => {
 
   return (
     <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
 
       <Grid item xs={12}>
@@ -184,8 +198,9 @@ export const CompetitorView = () => {
             openInPopup={openInPopup}
           />
           <CustomPagination
-            pageCount={pageCount}
-            handlePageClick={handlePageClick}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            handlePageChange={handlePageChange}
           />
         </Paper>
       </Grid>

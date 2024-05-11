@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, Grid, Button, Paper } from "@mui/material";
+import { Box, Grid, Button, Paper } from "@mui/material";
 import { Popup } from "../../../Components/Popup";
 import { DepartmentCreate } from "./DepartmentCreate";
 import { DepartmentUpdate } from "./DepartmentUpdate";
@@ -16,10 +16,6 @@ export const DepartmentView = () => {
   const [openUpdatePopup, setOpenUpdatePopup] = useState(false);
   const [recordForEdit, setRecordForEdit] = useState(false);
 
-  useEffect(() => {
-    fetchDepartments();
-  }, [fetchDepartments]);
-
   const fetchDepartments = async (query = searchQuery) => {
     try {
       setOpen(true);
@@ -31,6 +27,10 @@ export const DepartmentView = () => {
       setOpen(false);
     }
   };
+
+  useEffect(() => {
+    fetchDepartments();
+  }, []);
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);

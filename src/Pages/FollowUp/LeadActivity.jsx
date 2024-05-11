@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 import { Box, Button, Paper, Typography } from "@mui/material";
 import {
   Timeline,
@@ -14,7 +14,7 @@ import moment from "moment";
 import { Popup } from "../../Components/Popup";
 import { LeadActivityCreate } from "./LeadActivityCreate";
 
-export const LeadActivity = (props) => {
+export const LeadActivity = memo((props) => {
   const { followup, leadsByID, getLeadByID } = props;
 
   const [openModal, setOpenModal] = useState(false);
@@ -121,9 +121,14 @@ export const LeadActivity = (props) => {
         <LeadActivityCreate
           leadsByID={leadsByID}
           getLeadByID={getLeadByID}
-          setOpenModal={setOpenModal}
+          setOpenPopup={setOpenModal}
+          getleads={null}
+          currentPage={null}
+          filterQuery={null}
+          filterSelectedQuery={null}
+          searchQuery={null}
         />
       </Popup>
     </>
   );
-};
+});

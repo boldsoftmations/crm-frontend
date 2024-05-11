@@ -1,107 +1,110 @@
-import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Button,
-  TextField,
-  Grid,
-  Snackbar,
-  Alert,
-} from "@mui/material";
+import React, { memo, useCallback, useState } from "react";
+import { Box, Button, Grid } from "@mui/material";
 import LeadServices from "../../../services/LeadService";
+import CustomTextField from "../../../Components/CustomTextField";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../../Components/MessageAlert";
+import { CustomLoader } from "../../../Components/CustomLoader";
 
-export const LeadForecastUpdate = ({
-  leadForecastId,
-  onUpdateSuccess,
-  initialQuantity,
-  initialDate,
-}) => {
-  console.log("Lead Forecast ID:", leadForecastId);
-  const [quantity, setQuantity] = useState("");
-  const [anticipated_date, setEstimatedDate] = useState(initialDate || "");
+export const LeadForecastUpdate = memo(
+  ({ getAllLeadDetails, setOpenPopup, leadForecastData, currentPage }) => {
+    const [formData, setFormData] = useState(leadForecastData);
+    const [open, setOpen] = useState(false);
+    const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+      useNotificationHandling();
 
-  const [openSnackbar, setOpenSnackbar] = useState(false);
+    const handleInputChange = (e) => {
+      const { name, value } = e.target;
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    };
 
-  useEffect(() => {
-    setQuantity(initialQuantity);
-    setEstimatedDate(initialDate);
-  }, [initialQuantity, initialDate]);
+    const handleSubmit = useCallback(
+      async (e) => {
+        try {
+          e.preventDefault();
+          setOpen(true);
+          const data = {
+            quantity: formData.quantity,
+            anticipated_date: formData.anticipated_date,
+          };
+          const response = await LeadServices.updateLeadForecast(
+            formData.id,
+            data
+          );
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    if (name === "quantity") {
-      setQuantity(value);
-    } else if (name === "anticipated_date") {
-      console.log("Estimated Date:", value);
+          const successMessage =
+            response.data.message || "Forecast Leads Updated successfully";
+          handleSuccess(successMessage);
 
-      setEstimatedDate(value);
-    }
-  };
+          setTimeout(() => {
+            setOpenPopup(false);
+            getAllLeadDetails(formData, currentPage);
+          }, 300);
+        } catch (error) {
+          handleError(error);
+        } finally {
+          setOpen(false);
+        }
+      },
+      [formData, currentPage]
+    );
 
-  const handleSubmit = async () => {
-    try {
-      const data = { quantity, anticipated_date };
-      await LeadServices.updateLeadForecast(leadForecastId, data);
-      setOpenSnackbar(true);
-      onUpdateSuccess();
-
-      console.log("Lead Forecast Updated:", data);
-    } catch (err) {
-      console.error("Error updating lead forecast:", err);
-    }
-  };
-  const handleCloseSnackbar = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenSnackbar(false);
-  };
-
-  return (
-    <form>
-      <Grid container spacing={2}>
-        <Grid item xs={12}>
-          <TextField
-            fullWidth
-            label="Quantity"
-            name="quantity"
-            type="number"
-            value={quantity}
-            onChange={handleChange}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <TextField
-            label="Anticipated Date"
-            type="date"
-            fullWidth
-            InputLabelProps={{ shrink: true }}
-            value={anticipated_date}
-            onChange={handleChange}
-            name="anticipated_date"
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <Box display="flex" justifyContent="flex-end">
-            <Button variant="contained" color="success" onClick={handleSubmit}>
-              Update Lead Forecast
-            </Button>
-          </Box>
-        </Grid>
-      </Grid>
-      <Snackbar
-        open={openSnackbar}
-        autoHideDuration={100000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "center", horizontal: "center" }}
-      >
-        <Alert
+    return (
+      <>
+        <MessageAlert
+          open={alertInfo.open}
           onClose={handleCloseSnackbar}
-          severity="success"
-          sx={{ width: "100%" }}
+          severity={alertInfo.severity}
+          message={alertInfo.message}
+        />
+        <CustomLoader open={open} />
+        <Box
+          component="form"
+          noValidate
+          onSubmit={(e) => handleSubmit(e)}
+          sx={{ mt: 1 }}
         >
-          Lead Forecast successfully updated!
-        </Alert>
-      </Snackbar>
-    </form>
-  );
-};
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <CustomTextField
+                fullWidth
+                size="small"
+                label="Quantity"
+                name="quantity"
+                type="number"
+                value={formData.quantity || ""}
+                onChange={handleInputChange}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <CustomTextField
+                fullWidth
+                size="small"
+                label="Anticipated Date"
+                name="anticipated_date"
+                type="date"
+                value={formData.anticipated_date || ""}
+                onChange={handleInputChange}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Box display="flex" justifyContent="flex-end">
+                <Button
+                  fullWidth
+                  type="submit"
+                  variant="contained"
+                  sx={{ mt: 3, mb: 2, textAlign: "right" }}
+                >
+                  Submit
+                </Button>
+              </Box>
+            </Grid>
+          </Grid>
+        </Box>
+      </>
+    );
+  }
+);

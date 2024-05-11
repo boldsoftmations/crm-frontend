@@ -36,21 +36,6 @@ export const MisReportView = () => {
   const [costAnalysisData, setCostAnalysisData] = useState([]);
   const [rejectionReasonsData, setRejectionReasonsData] = useState([]);
 
-  const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-
   const currentYearMonth = `${new Date().getFullYear()}-${(
     new Date().getMonth() + 1
   )

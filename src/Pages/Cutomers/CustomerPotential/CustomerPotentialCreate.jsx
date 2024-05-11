@@ -36,7 +36,7 @@ export const CustomerPotentialCreate = ({
     setPotential({ ...potential, [name]: value });
   };
 
-  const handleAutocompleteChange = (event, value) => {
+  const handleAutocompleteChange = (event,value) => {
     setPotential({ ...potential, product: value });
   };
 
@@ -67,7 +67,7 @@ export const CustomerPotentialCreate = ({
             <CustomAutocomplete
               sx={{ minWidth: 180 }}
               size="small"
-              onChange={handleAutocompleteChange}
+              onChange={ handleAutocompleteChange}
               value={potential.product}
               options={product.map((option) => option.name)}
               getOptionLabel={(option) => `${option ? option : "No Options"}`}

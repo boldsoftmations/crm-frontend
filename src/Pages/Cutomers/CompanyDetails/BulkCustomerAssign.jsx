@@ -177,7 +177,7 @@ export const BulkCustomerAssign = (props) => {
               options={StateOption}
               getOptionLabel={(option) => option.value}
               renderInput={(params) => (
-                <CustomTextField {...params} label="Select States" />
+                <CustomTextField {...params} label="Select State(s)" />
               )}
             />
           </Grid>

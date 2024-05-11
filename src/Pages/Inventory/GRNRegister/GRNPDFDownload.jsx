@@ -6,7 +6,6 @@ import {
   Text,
   StyleSheet,
   Image,
-  Font,
 } from "@react-pdf/renderer";
 import logo from "../../../Images/LOGOS3.png"; // Ensure the logo is imported correctly
 
@@ -107,26 +106,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const colStyles = StyleSheet.create({
-  col1: { flex: 0.5 },
-  col2: { flex: 1 },
-  col3: { flex: 3 },
-  col4: { flex: 1 },
-  col5: { flex: 1 },
-  col6: { flex: 1 },
-});
-
-// Example data structure for items
-const items = [
-  {
-    code: "0001",
-    description: "Sample Item Description",
-    orderQty: 10,
-    qaRejection: 0,
-    receivedQty: 10,
-  },
-  // ... more items
-];
 // Define your document component
 export const GRNPDFDownload = ({ grnRegisterPDFData }) => {
   return (
@@ -141,7 +120,7 @@ export const GRNPDFDownload = ({ grnRegisterPDFData }) => {
             <Text style={styles.title}>GOODS RECEIVED NOTE</Text>
             <View style={styles.grnInfoContainer}>
               <Text style={styles.grnInfo}>
-                GRN No: {grnRegisterPDFData.grn_no}
+                GRN No: {grnRegisterPDFData.grn_number}
               </Text>
             </View>
           </View>

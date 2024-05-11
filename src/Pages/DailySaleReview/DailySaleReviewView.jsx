@@ -41,24 +41,10 @@ export const DailySaleReviewView = () => {
   const [selectedYearMonth, setSelectedYearMonth] = useState(currentYearMonth);
   const [salesPersonByFilter, setSalesPersonByFilter] = useState(null);
 
-  const formatDate = (dateString) => {
-    return dateString
-      ? new Intl.DateTimeFormat("en-GB", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-        }).format(new Date(dateString))
-      : "-";
-  };
-
   const handleFilterChange = (value) => {
     setSalesPersonByFilter(value);
     getDailySaleReviewData(selectedYearMonth, value, searchQuery);
   };
-
-  useEffect(() => {
-    getDailySaleReviewData(selectedYearMonth);
-  }, [selectedYearMonth, getDailySaleReviewData]);
 
   const getDailySaleReviewData = useCallback(
     async (
@@ -86,6 +72,10 @@ export const DailySaleReviewView = () => {
     },
     [salesPersonByFilter, searchQuery]
   );
+
+  useEffect(() => {
+    getDailySaleReviewData(selectedYearMonth);
+  }, [selectedYearMonth, getDailySaleReviewData]);
 
   const openInPopup = async (item) => {
     try {

@@ -1,37 +1,26 @@
 import { Box, Button, Grid } from "@mui/material";
-
-import { useRef, useState } from "react";
-// import { useSelector } from "react-redux";
-import React, { useEffect } from "react";
-
+import React, { memo, useCallback, useEffect, useState } from "react";
 import ProductService from "../../../services/ProductService";
-
-import "../../CommonStyle.css";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomTextField from "../../../Components/CustomTextField";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import { useNotificationHandling } from "./../../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../../Components/MessageAlert";
 
-export const UpdateProductCode = (props) => {
-  const { recordForEdit, setOpenPopup, getproductCodes } = props;
-
+export const UpdateProductCode = memo((props) => {
+  const {
+    recordForEdit,
+    setOpenPopup,
+    getproductCodes,
+    currentPage,
+    searchQuery,
+  } = props;
   const [open, setOpen] = useState(false);
+  const [descriptionOption, setDescriptionOption] = useState([]);
+  const [productCode, setProductCode] = useState(recordForEdit);
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
-  // const desc = useSelector((state) => state.auth);
-  const [description, setDescription] = useState([]);
-  const [selectedDescription, setSelectedDescription] = useState([]);
-  // const [error, setError] = useState("");
-  const [productCode, setProductCode] = useState([]);
-  const errRef = useRef();
-  const [errMsg, setErrMsg] = useState("");
-  const descriptionValue = selectedDescription.description
-    ? selectedDescription.description
-    : selectedDescription;
-  console.log(
-    "selectedDescription description :>> ",
-    selectedDescription.description
-  );
-  console.log("descriptionValue", descriptionValue);
-  console.log("selectedDescription", selectedDescription);
   useEffect(() => {
     getNoDescriptionData();
   }, []);
@@ -40,7 +29,7 @@ export const UpdateProductCode = (props) => {
     try {
       setOpen(true);
       const res = await ProductService.getNoDescription();
-      setDescription(res.data);
+      setDescriptionOption(res.data);
 
       setOpen(false);
     } catch (error) {
@@ -49,86 +38,50 @@ export const UpdateProductCode = (props) => {
     }
   };
 
-  const getproductCode = async (recordForEdit) => {
-    try {
-      setOpen(true);
-      const res = await ProductService.getProductCodeById(recordForEdit);
-      setProductCode(res.data);
-      setSelectedDescription(res.data);
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
-  };
+  const updatesproductCode = useCallback(
+    async (e) => {
+      try {
+        e.preventDefault();
+        setOpen(true);
+        const data = {
+          code: productCode.code,
+          description: productCode.description,
+        };
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setProductCode({ ...productCode, [name]: value });
-  };
+        if (recordForEdit) {
+          const response = await ProductService.updateProductCode(
+            productCode.id,
+            data
+          );
+          const successMessage =
+            response.data.message || "Product Code updated successfully";
+          handleSuccess(successMessage);
 
-  const updatesproductCode = async (e) => {
-    try {
-      e.preventDefault();
-      setOpen(true);
-      const data = {
-        code: productCode.code,
-        description: descriptionValue,
-      };
-
-      if (recordForEdit) {
-        await ProductService.updateProductCode(productCode.id, data);
-        setOpenPopup(false);
-        setOpen(false);
-        getproductCodes();
+          setTimeout(() => {
+            setOpenPopup(false);
+            getproductCodes(currentPage, searchQuery);
+          }, 300);
+        }
+      } catch (error) {
+        handleError(error); // Handle errors from the API call
+      } finally {
+        setOpen(false); // Always close the loader
       }
-    } catch (err) {
-      console.log("error update product code :>> ", err);
-      setOpen(false);
-      if (!err.response) {
-        setErrMsg("No Server Response");
-      } else if (err.response.status === 400) {
-        setErrMsg(
-          err.response.data.errors
-            ? err.response.data.errors.description
-            : err.response.data.errors.non_field_errors
-        );
-      } else if (err.response.status === 401) {
-        setErrMsg(err.response.data.errors.code);
-      } else {
-        setErrMsg("Server Error");
-      }
-      errRef.current.focus();
-    }
-  };
-  useEffect(() => {
-    if (recordForEdit) getproductCode(recordForEdit);
-  }, [recordForEdit]);
+    },
+    [productCode, currentPage, searchQuery]
+  );
 
   return (
     <>
-      <div>
-        <CustomLoader open={open} />
-      </div>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
+      <CustomLoader open={open} />
       <Box component="form" noValidate onSubmit={(e) => updatesproductCode(e)}>
         <Grid container spacing={2}>
-          <p
-            style={{
-              width: "100%",
-              padding: 10,
-              marginBottom: 10,
-              borderRadius: 4,
-              backgroundColor: errMsg ? "red" : "offscreen",
-              textAlign: "center",
-              color: "white",
-              textTransform: "capitalize",
-            }}
-            ref={errRef}
-            className={errMsg ? "errmsg" : "offscreen"}
-            aria-live="assertive"
-          >
-            {errMsg}
-          </p>
           <Grid item xs={12} sm={6}>
             <CustomTextField
               fullWidth
@@ -136,8 +89,10 @@ export const UpdateProductCode = (props) => {
               size="small"
               label="Code"
               variant="outlined"
-              value={productCode.code ? productCode.code : ""}
-              onChange={handleInputChange}
+              value={productCode.code || ""}
+              onChange={(event, newValue) => {
+                setProductCode((prev) => ({ ...prev, code: newValue }));
+              }}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -148,9 +103,11 @@ export const UpdateProductCode = (props) => {
               }}
               size="small"
               disableClearable
-              value={descriptionValue ? descriptionValue : ""}
-              onChange={(event, value) => setSelectedDescription(value)}
-              options={description.map((option) => option.name)}
+              value={productCode.description}
+              onChange={(event, newValue) => {
+                setProductCode((prev) => ({ ...prev, description: newValue }));
+              }}
+              options={descriptionOption.map((option) => option.name)}
               getOptionLabel={(option) => `${option}`}
               label="Description"
             />
@@ -168,4 +125,4 @@ export const UpdateProductCode = (props) => {
       </Box>
     </>
   );
-};
+});

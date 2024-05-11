@@ -8,14 +8,12 @@ import {
   Select,
 } from "@mui/material";
 
-import { useRef, useState } from "react";
-import React from "react";
-
+import React, { memo, useCallback, useState } from "react";
 import ProductService from "../../../services/ProductService";
-
-import "../../CommonStyle.css";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomTextField from "../../../Components/CustomTextField";
+import { MessageAlert } from "../../../Components/MessageAlert";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 
 // const consume = [
 //   {
@@ -29,73 +27,56 @@ import CustomTextField from "../../../Components/CustomTextField";
 //   },
 // ];
 
-export const CreateDescription = (props) => {
-  const { setOpenPopup, getDescriptions } = props;
+export const CreateDescription = memo((props) => {
+  const { setOpenPopup, getDescriptions, currentPage, searchQuery } = props;
   const [description, setDescription] = useState([]);
   const [open, setOpen] = useState(false);
-  const errRef = useRef();
-  const [errMsg, setErrMsg] = useState("");
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setDescription({ ...description, [name]: value });
   };
 
-  const createdescription = async (e) => {
-    try {
-      e.preventDefault();
-      setOpen(true);
-      const data = {
-        name: description.name,
-        consumable: description.consumable,
-      };
-      await ProductService.createDescription(data);
-      setOpenPopup(false);
-      setOpen(false);
-      getDescriptions();
-    } catch (err) {
-      console.log("error update color :>> ", err);
-      setOpen(false);
-      if (!err.response) {
-        setErrMsg("No Server Response");
-      } else if (err.response.status === 400) {
-        setErrMsg(
-          err.response.data.errors.name
-            ? err.response.data.errors.name
-            : err.response.data.errors.non_field_errors
-        );
-      } else if (err.response.status === 401) {
-        setErrMsg(err.response.data.errors.code);
-      } else {
-        setErrMsg("Server Error");
+  const createdescription = useCallback(
+    async (e) => {
+      try {
+        e.preventDefault();
+        setOpen(true);
+        const data = {
+          name: description.name,
+          consumable: description.consumable,
+        };
+        const response = await ProductService.createDescription(data);
+        const successMessage =
+          response.data.message || "Description Created successfully";
+        handleSuccess(successMessage);
+
+        setTimeout(() => {
+          setOpenPopup(false);
+          getDescriptions(currentPage, searchQuery);
+        }, 300);
+      } catch (error) {
+        handleError(error); // Handle errors from the API call
+      } finally {
+        setOpen(false); // Always close the loader
       }
-      errRef.current.focus();
-    }
-  };
+    },
+    [description, currentPage, searchQuery]
+  );
 
   return (
     <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
       <Box component="form" noValidate onSubmit={(e) => createdescription(e)}>
         <Grid container spacing={2}>
-          <p
-            style={{
-              width: "100%",
-              padding: 10,
-              marginBottom: 10,
-              borderRadius: 4,
-              backgroundColor: errMsg ? "red" : "offscreen",
-              textAlign: "center",
-              color: "white",
-              textTransform: "capitalize",
-            }}
-            ref={errRef}
-            className={errMsg ? "errmsg" : "offscreen"}
-            aria-live="assertive"
-          >
-            {errMsg}
-          </p>
-
           <Grid item xs={12} sm={6}>
             <CustomTextField
               fullWidth
@@ -134,4 +115,4 @@ export const CreateDescription = (props) => {
       </Box>
     </>
   );
-};
+});

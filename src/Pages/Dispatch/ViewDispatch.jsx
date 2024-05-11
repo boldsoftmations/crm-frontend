@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Table,
   Typography,
@@ -24,165 +24,116 @@ import {
 } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-
 import { tableCellClasses } from "@mui/material/TableCell";
 import InvoiceServices from "../../services/InvoiceService";
 import { CustomLoader } from "./../../Components/CustomLoader";
 import { CustomPagination } from "./../../Components/CustomPagination";
-import { CustomSearch } from "./../../Components/CustomSearch";
 import moment from "moment";
-import { ErrorMessage } from "../../Components/ErrorMessage/ErrorMessage";
 import { useSelector } from "react-redux";
+import { useNotificationHandling } from "../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../Components/MessageAlert";
+import SearchComponent from "../../Components/SearchComponent ";
+import CustomAutocomplete from "../../Components/CustomAutocomplete";
+
 export const ViewDispatch = () => {
   const [dispatchData, setDispatchData] = useState([]);
   const [open, setOpen] = useState(false);
-  const errRef = useRef();
-  const [errMsg, setErrMsg] = useState("");
-  const [pageCount, setpageCount] = useState(0);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
+  const [unitFilter, setUnitFilter] = useState("");
   const data = useSelector((state) => state.auth);
   const users = data.profile;
-  useEffect(() => {
-    getAllDispatchDetails();
-  }, []);
-  const getAllDispatchDetails = async () => {
+  const { handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
+
+  const getAllDispatchDetails = useCallback(async (page, filter, query) => {
     try {
       setOpen(true);
-      if (currentPage) {
-        const response = await InvoiceServices.getDispatchDataWithPagination(
-          "false",
-          currentPage
-        );
-        setDispatchData(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      } else {
-        const response = await InvoiceServices.getDispatchData("false");
-        setDispatchData(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      }
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      if (!err.response) {
-        setErrMsg(
-          "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
-        );
-      } else if (err.response.status === 400) {
-        setErrMsg(
-          err.response.data.errors.name
-            ? err.response.data.errors.name
-            : err.response.data.errors.non_field_errors
-        );
-      } else if (err.response.status === 401) {
-        setErrMsg(err.response.data.errors.code);
-      } else {
-        setErrMsg("Server Error");
-      }
-      errRef.current.focus();
-    }
-  };
-
-  const handleInputChange = (event) => {
-    setSearchQuery(event.target.value);
-    getSearchData(event.target.value);
-  };
-
-  const getSearchData = async (value) => {
-    try {
-      setOpen(true);
-      const filterSearch = value;
-      const response = await InvoiceServices.getDispatchDataWithSearch(
+      const response = await InvoiceServices.getDispatchData(
         "false",
-        filterSearch
+        page,
+        filter,
+        query
       );
-      if (response) {
-        setDispatchData(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      } else {
-        getAllDispatchDetails();
-        setSearchQuery("");
-      }
-      setOpen(false);
+      setDispatchData(response.data.results);
+      setTotalPages(Math.ceil(response.data.count / 25));
     } catch (error) {
-      console.log("error Search leads", error);
+      handleError(error);
+    } finally {
       setOpen(false);
     }
+  }, []);
+
+  useEffect(() => {
+    getAllDispatchDetails(currentPage, unitFilter, searchQuery);
+  }, [currentPage, unitFilter, searchQuery]);
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    setCurrentPage(1);
   };
 
-  const getResetData = () => {
+  const handleFilter = (query) => {
+    setUnitFilter(query);
+    setCurrentPage(1);
+  };
+
+  const handleReset = () => {
     setSearchQuery("");
-    getAllDispatchDetails();
+    setCurrentPage(1); // Reset to first page with no search query
   };
 
-  const handlePageClick = async (event, value) => {
-    try {
-      const page = value;
-      setCurrentPage(page);
-      setOpen(true);
-      if (searchQuery) {
-        const response = await InvoiceServices.getDispatchSearchWithPagination(
-          "false",
-          page,
-          searchQuery
-        );
-        if (response) {
-          setDispatchData(response.data.results);
-          const total = response.data.count;
-          setpageCount(Math.ceil(total / 25));
-        } else {
-          getAllDispatchDetails();
-          setSearchQuery("");
-        }
-      } else {
-        const response = await InvoiceServices.getDispatchDataWithPagination(
-          "false",
-          page
-        );
-        setDispatchData(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      }
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
   };
 
   return (
-    <div>
-      {" "}
+    <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
       <Grid item xs={12}>
-        <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
-          <Box display="flex">
-            <Box flexGrow={2}>
-              {" "}
-              <CustomSearch
-                filterSelectedQuery={searchQuery}
-                handleInputChange={handleInputChange}
-                getResetData={getResetData}
-              />
-            </Box>
-            <Box flexGrow={2}>
-              <h3
-                style={{
-                  textAlign: "left",
-                  marginBottom: "1em",
-                  fontSize: "24px",
-                  color: "rgb(34, 34, 34)",
-                  fontWeight: 800,
-                }}
-              >
-                Pending Dispatch
-              </h3>
-            </Box>
-            <Box flexGrow={0.5}></Box>
+          <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={12} sm={3}>
+                <CustomAutocomplete
+                  sx={{ flexGrow: 1, mr: 1 }}
+                  size="small"
+                  value={unitFilter}
+                  onChange={(event, newValue) => handleFilter(newValue)}
+                  options={UnitOption}
+                  getOptionLabel={(option) => option}
+                  label="Filter By Accepted"
+                />
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <SearchComponent
+                  onSearch={handleSearch}
+                  onReset={handleReset}
+                />
+              </Grid>
+            </Grid>
+          </Box>
+          <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={12} sx={{ textAlign: "center" }}>
+                <h3
+                  style={{
+                    fontSize: "24px",
+                    color: "rgb(34, 34, 34)",
+                    fontWeight: 800,
+                  }}
+                >
+                  Pending Dispatch
+                </h3>
+              </Grid>
+            </Grid>
           </Box>
           <TableContainer
             sx={{
@@ -215,7 +166,8 @@ export const ViewDispatch = () => {
                     Dispatch Location
                   </StyledTableCell>
                   {(users.groups.includes("Factory-Mumbai-Dispatch") ||
-                    users.groups.includes("Factory-Delhi-Dispatch")) && (
+                    users.groups.includes("Factory-Delhi-Dispatch") ||
+                    users.groups.includes("Director")) && (
                     <StyledTableCell align="center">Dispatched</StyledTableCell>
                   )}
                 </StyledTableRow>
@@ -234,12 +186,13 @@ export const ViewDispatch = () => {
             </Table>
           </TableContainer>
           <CustomPagination
-            pageCount={pageCount}
-            handlePageClick={handlePageClick}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            handlePageChange={handlePageChange}
           />
         </Paper>
       </Grid>
-    </div>
+    </>
   );
 };
 
@@ -296,7 +249,8 @@ function Row(props) {
         </TableCell>
         <TableCell align="center">{row.dispatch_location}</TableCell>
         {(users.groups.includes("Factory-Mumbai-Dispatch") ||
-          users.groups.includes("Factory-Delhi-Dispatch")) && (
+          users.groups.includes("Factory-Delhi-Dispatch") ||
+          users.groups.includes("Director")) && (
           <TableCell align="center">
             <Button
               onClick={() => {
@@ -388,6 +342,8 @@ function Row(props) {
     </React.Fragment>
   );
 }
+
+const UnitOption = ["customer", "invoice"];
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {

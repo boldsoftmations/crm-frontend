@@ -16,41 +16,7 @@ import LeadServices from "../../services/LeadService";
 import CustomTextField from "./../../Components/CustomTextField";
 import { CustomLoader } from "./../../Components/CustomLoader";
 
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
-
-const monthOptions = [
-  { value: "1", label: "January" },
-  { value: "2", label: "February" },
-  { value: "3", label: "March" },
-  { value: "4", label: "April" },
-  { value: "5", label: "May" },
-  { value: "6", label: "June" },
-  { value: "7", label: "July" },
-  { value: "8", label: "August" },
-  { value: "9", label: "September" },
-  { value: "10", label: "October" },
-  { value: "11", label: "November" },
-  { value: "12", label: "December" },
-];
 export const IndiaMartLeads = () => {
-  const currentMonth = new Date().getMonth() + 1;
   const [open, setOpen] = useState(false);
   const [data, setData] = useState([]);
   const currentYearMonth = `${new Date().getFullYear()}-${(
@@ -67,10 +33,6 @@ export const IndiaMartLeads = () => {
     "Total Lead",
   ];
 
-  useEffect(() => {
-    getIndiaMartLeads();
-  }, [selectedYearMonth]);
-
   const getIndiaMartLeads = async () => {
     try {
       setOpen(true);
@@ -82,6 +44,10 @@ export const IndiaMartLeads = () => {
       setOpen(false);
     }
   };
+
+  useEffect(() => {
+    getIndiaMartLeads();
+  }, [selectedYearMonth]);
 
   const filteredData = data.filter((row) => {
     const rowDate = new Date(row.date_time__date);
@@ -164,3 +130,25 @@ export const IndiaMartLeads = () => {
     </>
   );
 };
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+    padding: 0, // Remove padding from header cells
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+    padding: 0, // Remove padding from body cells
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  "&:nth-of-type(odd)": {
+    backgroundColor: theme.palette.action.hover,
+  },
+  // hide last border
+  "&:last-child td, &:last-child th": {
+    border: 0,
+  },
+}));

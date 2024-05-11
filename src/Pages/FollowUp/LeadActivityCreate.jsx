@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { memo, useCallback, useState } from "react";
 import {
   Box,
   Button,
@@ -7,181 +7,209 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  Typography,
 } from "@mui/material";
-import ErrorIcon from "@mui/icons-material/Error";
 import { useSelector } from "react-redux";
 import LeadServices from "../../services/LeadService";
 import { CustomLoader } from "../../Components/CustomLoader";
 import CustomTextField from "../../Components/CustomTextField";
+import { useNotificationHandling } from "../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../Components/MessageAlert";
 
-export const LeadActivityCreate = ({
-  leadsByID,
-  getLeadByID,
-  setOpenModal,
-}) => {
-  const [open, setOpen] = useState(false);
-  const [followUp, setFollowUp] = useState({});
-  const [errorMessage, setErrorMessage] = useState("");
-  const data = useSelector((state) => state.auth);
-  const userId = data.profile.email;
-  const [activityRequiresFollowup, setActivityRequiresFollowup] =
-    useState(false);
+export const LeadActivityCreate = memo(
+  ({
+    leadsByID,
+    getLeadByID,
+    setOpenPopup,
+    getleads,
+    currentPage,
+    filterQuery,
+    filterSelectedQuery,
+    searchQuery,
+  }) => {
+    const [open, setOpen] = useState(false);
+    const [followUp, setFollowUp] = useState({});
+    const data = useSelector((state) => state.auth);
+    const userId = data.profile.email;
+    const [activityRequiresFollowup, setActivityRequiresFollowup] =
+      useState(false);
+    const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+      useNotificationHandling();
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setFollowUp((prevFollowUp) => ({ ...prevFollowUp, [name]: value }));
+    const handleInputChange = (event) => {
+      const { name, value } = event.target;
+      setFollowUp((prevFollowUp) => ({ ...prevFollowUp, [name]: value }));
 
-    // Check if the selected activity requires a followup date
-    const requiresFollowup = [
-      "Not answering/busy/disconnecting",
-      "Having stock",
-      "Rate issue",
-      "Send detail on WhatsApp/sms/email",
-      "Dealing in other brand",
-      "Transportation cost issue",
-      "Call me back",
-      "Send sample",
-      "Require exclusive distributorship/dealership",
-      "Require credit",
-    ].includes(value);
+      // Check if the selected activity requires a followup date
+      const requiresFollowup = [
+        "Not answering/busy/disconnecting",
+        "Having stock",
+        "Rate issue",
+        "Send detail on WhatsApp/sms/email",
+        "Dealing in other brand",
+        "Transportation cost issue",
+        "Call me back",
+        "Send sample",
+        "Require exclusive distributorship/dealership",
+        "Require credit",
+      ].includes(value);
 
-    setActivityRequiresFollowup(requiresFollowup);
-  };
+      setActivityRequiresFollowup(requiresFollowup);
+    };
 
-  const createFollowUpLeadsData = async (e) => {
-    e.preventDefault();
-    try {
-      setOpen(true);
+    const createFollowUpLeadsData = useCallback(
+      async (e) => {
+        e.preventDefault();
+        try {
+          setOpen(true);
 
-      const followUpData = {
-        leads: leadsByID,
-        user: userId,
-        ...followUp,
-      };
+          const followUpData = {
+            leads: leadsByID,
+            user: userId,
+            ...followUp,
+          };
 
-      await LeadServices.createFollowUpLeads(followUpData);
-      await getLeadByID(leadsByID);
-    } catch (error) {
-      console.error("Error creating follow-up leads data:", error);
-      // Check if error.response and error.response.data exist before trying to access error.response.data.message
-      const errorMessage =
-        error.response && error.response.data
-          ? error.response.data.message
-          : "An unexpected error occurred";
-      setErrorMessage(errorMessage);
-    } finally {
-      setOpen(false);
-      setOpenModal(false);
-    }
-  };
+          const response = await LeadServices.createFollowUpLeads(followUpData);
+          const successMessage =
+            response.data.message || "Activity Created successfully";
+          handleSuccess(successMessage);
 
-  return (
-    <>
-      <CustomLoader open={open} />
-      <Box
-        component="form"
-        noValidate
-        sx={{ mt: 1 }}
-        onSubmit={(e) => createFollowUpLeadsData(e)}
-      >
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <FormControl fullWidth size="small">
-              <InputLabel id="demo-simple-select-label">Activity</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                name="activity"
-                label="Activity"
-                MenuProps={{
-                  PaperProps: {
-                    style: {
-                      maxHeight: "200px",
+          setTimeout(() => {
+            setOpenPopup(false);
+            if (getleads) {
+              getleads(
+                currentPage,
+                filterQuery,
+                filterSelectedQuery,
+                searchQuery
+              );
+            }
+            if (getLeadByID) getLeadByID(leadsByID);
+          }, 300);
+        } catch (error) {
+          handleError(error);
+        } finally {
+          setOpen(false);
+        }
+      },
+      [
+        followUp,
+        leadsByID,
+        currentPage,
+        filterQuery,
+        filterSelectedQuery,
+        searchQuery,
+      ]
+    );
+
+    return (
+      <>
+        <MessageAlert
+          open={alertInfo.open}
+          onClose={handleCloseSnackbar}
+          severity={alertInfo.severity}
+          message={alertInfo.message}
+        />
+        <CustomLoader open={open} />
+        <Box
+          component="form"
+          noValidate
+          sx={{ mt: 1 }}
+          onSubmit={(e) => createFollowUpLeadsData(e)}
+        >
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <FormControl fullWidth size="small">
+                <InputLabel id="demo-simple-select-label">Activity</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  name="activity"
+                  label="Activity"
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        maxHeight: "200px",
+                      },
                     },
-                  },
-                }}
-                onChange={handleInputChange}
-              >
-                {ActivityOption.map((option) => (
-                  <MenuItem key={option.id} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12}>
-            <CustomTextField
-              fullWidth
-              multiline
-              name="notes"
-              size="small"
-              label="Note"
-              variant="outlined"
-              value={followUp.notes}
-              onChange={handleInputChange}
-            />
-          </Grid>
-          {followUp.activity !== "Drop the lead" && (
+                  }}
+                  onChange={handleInputChange}
+                >
+                  {ActivityOption.map((option) => (
+                    <MenuItem key={option.id} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
             <Grid item xs={12}>
               <CustomTextField
                 fullWidth
-                type="date"
-                name="next_followup_date"
+                multiline
+                name="notes"
                 size="small"
-                label="Next Followup Date"
+                label="Note"
                 variant="outlined"
-                value={followUp.next_followup_date || ""}
+                value={followUp.notes}
                 onChange={handleInputChange}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                required={activityRequiresFollowup}
-                error={activityRequiresFollowup && !followUp.next_followup_date}
-                helperText={
-                  activityRequiresFollowup && !followUp.next_followup_date
-                    ? "Next Followup Date is required."
-                    : ""
-                }
-                inputProps={{
-                  min: new Date().toISOString().split("T")[0], // Set minimum date to today
-                }}
               />
             </Grid>
-          )}
-        </Grid>
-        <Button
-          fullWidth
-          type="submit"
-          variant="contained"
-          disabled={
-            [
-              "Not answering/busy/disconnecting",
-              "Having stock",
-              "Rate issue",
-              "Send detail on WhatsApp/sms/email",
-              "Dealing in other brand",
-              "Transportation cost issue",
-              "Call me back",
-              "Send sample",
-              "Require exclusive distributorship/dealership",
-              "Require credit",
-            ].includes(followUp.activity) && !followUp.next_followup_date
-          }
-        >
-          Submit
-        </Button>
-        {errorMessage && (
-          <Box sx={{ display: "flex", alignItems: "center", mt: 2 }}>
-            <ErrorIcon color="error" sx={{ mr: 1 }} />
-            <Typography color="error">{errorMessage}</Typography>
-          </Box>
-        )}
-      </Box>
-    </>
-  );
-};
+            {followUp.activity !== "Drop the lead" && (
+              <Grid item xs={12}>
+                <CustomTextField
+                  fullWidth
+                  type="date"
+                  name="next_followup_date"
+                  size="small"
+                  label="Next Followup Date"
+                  variant="outlined"
+                  value={followUp.next_followup_date || ""}
+                  onChange={handleInputChange}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  required={activityRequiresFollowup}
+                  error={
+                    activityRequiresFollowup && !followUp.next_followup_date
+                  }
+                  helperText={
+                    activityRequiresFollowup && !followUp.next_followup_date
+                      ? "Next Followup Date is required."
+                      : ""
+                  }
+                  inputProps={{
+                    min: new Date().toISOString().split("T")[0], // Set minimum date to today
+                  }}
+                />
+              </Grid>
+            )}
+          </Grid>
+          <Button
+            fullWidth
+            type="submit"
+            variant="contained"
+            disabled={
+              [
+                "Not answering/busy/disconnecting",
+                "Having stock",
+                "Rate issue",
+                "Send detail on WhatsApp/sms/email",
+                "Dealing in other brand",
+                "Transportation cost issue",
+                "Call me back",
+                "Send sample",
+                "Require exclusive distributorship/dealership",
+                "Require credit",
+              ].includes(followUp.activity) && !followUp.next_followup_date
+            }
+          >
+            Submit
+          </Button>
+        </Box>
+      </>
+    );
+  }
+);
 
 const ActivityOption = [
   {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import {
   Box,
   Chip,
@@ -26,30 +26,35 @@ import Option from "../../Options/Options";
 import CustomTextField from "../../Components/CustomTextField";
 import ProductService from "../../services/ProductService";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
+import { MessageAlert } from "../../Components/MessageAlert";
+import { useNotificationHandling } from "../../Components/useNotificationHandling ";
 
-export const CreateLeads = (props) => {
-  const { setOpenPopup, getleads } = props;
+export const CreateLeads = memo((props) => {
+  const {
+    setOpenPopup,
+    getleads,
+    currentPage,
+    filterQuery,
+    filterSelectedQuery,
+    searchQuery,
+  } = props;
   const [open, setOpen] = useState(false);
   const [checked, setChecked] = useState(false);
   const [leads, setLeads] = useState({
     estd_year: new Date().getFullYear().toString(),
   });
   const [referenceData, setReferenceData] = useState([]);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
   const [assigned, setAssigned] = useState([]);
   const [descriptionMenuData, setDescriptionMenuData] = useState([]);
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     let updatedValue = value;
-
-    // Conditionally update gst_number and pan_number to uppercase
     if (name === "gst_number" || name === "pan_number") {
       updatedValue = value.toUpperCase();
     }
-
-    // Conditionally update purchase_decision_maker based on the presence of leads.name
     if (name === "name") {
       setLeads({
         ...leads,
@@ -59,11 +64,6 @@ export const CreateLeads = (props) => {
     } else {
       setLeads({ ...leads, [name]: updatedValue });
     }
-  };
-
-  const handleCloseSnackbar = () => {
-    setErrorMessage("");
-    setSuccessMessage("");
   };
 
   const handleSelectChange = (name, value) => {
@@ -118,85 +118,80 @@ export const CreateLeads = (props) => {
     }
   };
 
-  const createLeadsData = async (e) => {
-    try {
-      e.preventDefault();
-      setOpen(true);
+  const createLeadsData = useCallback(
+    async (e) => {
+      try {
+        e.preventDefault();
+        setOpen(true);
 
-      const data = {
-        name: leads.name,
-        alternate_contact_name: leads.alternate_contact_name,
-        email: leads.email,
-        alternate_email: leads.alternate_email,
-        contact: leads.contact || null,
-        alternate_contact: leads.alternate_contact || null,
-        business_type: leads.business_type,
-        description: leads.description || [],
-        assigned_to: leads.assigned_to,
-        references: leads.references,
-        company: leads.company,
-        gst_number: leads.gst_number || null,
-        pan_number: leads.pan_number || null,
-        address: leads.address,
-        city: leads.city,
-        state: leads.state,
-        country: leads.country,
-        pincode: leads.pincode || null,
-        shipping_address:
-          checked === true ? leads.address : leads.shipping_address,
-        shipping_city: checked === true ? leads.city : leads.shipping_city,
-        shipping_state: checked === true ? leads.state : leads.shipping_state,
-        shipping_pincode:
-          checked === true
-            ? leads.pincode || null
-            : leads.shipping_pincode || null,
-        type_of_customer: leads.type_of_customer,
-        website: leads.website,
-        approx_annual_turnover: leads.approx_annual_turnover,
-        industrial_list:
-          leads.type_of_customer === "Industrial Customer"
-            ? leads.industrial_list
-            : null,
-        category:
-          leads.type_of_customer === "Distribution Customer"
-            ? leads.category
-            : null,
-        distribution_type:
-          leads.type_of_customer === "Distribution Customer"
-            ? leads.distribution_type
-            : null,
-        main_distribution:
-          leads.type_of_customer === "Distribution Customer"
-            ? leads.main_distribution
-            : null,
-        estd_year: leads.estd_year,
-        purchase_decision_maker: leads.purchase_decision_maker,
-      };
+        const data = {
+          name: leads.name,
+          alternate_contact_name: leads.alternate_contact_name,
+          email: leads.email,
+          alternate_email: leads.alternate_email,
+          contact: leads.contact || null,
+          alternate_contact: leads.alternate_contact || null,
+          business_type: leads.business_type,
+          description: leads.description || [],
+          assigned_to: leads.assigned_to,
+          references: leads.references,
+          company: leads.company,
+          gst_number: leads.gst_number || null,
+          pan_number: leads.pan_number || null,
+          address: leads.address,
+          city: leads.city,
+          state: leads.state,
+          country: leads.country,
+          pincode: leads.pincode || null,
+          shipping_address:
+            checked === true ? leads.address : leads.shipping_address,
+          shipping_city: checked === true ? leads.city : leads.shipping_city,
+          shipping_state: checked === true ? leads.state : leads.shipping_state,
+          shipping_pincode:
+            checked === true
+              ? leads.pincode || null
+              : leads.shipping_pincode || null,
+          type_of_customer: leads.type_of_customer,
+          website: leads.website,
+          approx_annual_turnover: leads.approx_annual_turnover,
+          industrial_list:
+            leads.type_of_customer === "Industrial Customer"
+              ? leads.industrial_list
+              : null,
+          category:
+            leads.type_of_customer === "Distribution Customer"
+              ? leads.category
+              : null,
+          distribution_type:
+            leads.type_of_customer === "Distribution Customer"
+              ? leads.distribution_type
+              : null,
+          main_distribution:
+            leads.type_of_customer === "Distribution Customer"
+              ? leads.main_distribution
+              : null,
+          estd_year: leads.estd_year,
+          purchase_decision_maker: leads.purchase_decision_maker,
+        };
 
-      await LeadServices.createLeads(data);
-      // Set success message
-      setSuccessMessage("Leads created successfully.");
-      setErrorMessage(""); // Reset error message if it was previously set
+        const response = await LeadServices.createLeads(data);
+        // Set success message
+        const successMessage =
+          response.data.message || "Leads Created successfully";
+        handleSuccess(successMessage);
 
-      setOpenPopup(false);
-      setOpen(false);
-      getleads();
-    } catch (error) {
-      setErrorMessage("");
-      // Handle the error response
-      if (error.response && error.response.data && error.response.data.errors) {
-        const errorData = error.response.data.errors;
-
-        // Set error message based on the error data
-        const errorMessage = Object.values(errorData).flat().join(" ");
-        setErrorMessage(errorMessage);
-      } else {
-        setErrorMessage("An error occurred while creating leads.");
+        setTimeout(() => {
+          setOpenPopup(false);
+          getleads(currentPage, filterQuery, filterSelectedQuery, searchQuery);
+        }, 300);
+      } catch (error) {
+        handleError(error);
+      } finally {
+        setOpen(false);
       }
-      setSuccessMessage("");
-      setOpen(false);
-    }
-  };
+    },
+    [leads, currentPage, filterQuery, filterSelectedQuery, searchQuery]
+  );
 
   const GST_NO = (gst_no) =>
     /^[0-9]{2}[A-Za-z]{5}[0-9]{4}[A-Za-z]{1}[1-9A-Za-z]{1}Z[0-9A-Za-z]{1}$/.test(
@@ -208,26 +203,15 @@ export const CreateLeads = (props) => {
 
   return (
     <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
       {/* Snackbar to display the error or success message */}
-      <Snackbar
-        open={errorMessage !== "" || successMessage !== ""}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "center",
-        }}
-        autoHideDuration={6000}
-      >
-        <MuiAlert
-          onClose={handleCloseSnackbar}
-          severity={errorMessage !== "" ? "error" : "success"}
-          elevation={6}
-          variant="filled"
-        >
-          {errorMessage !== "" ? errorMessage : successMessage}
-        </MuiAlert>
-      </Snackbar>
+
       <Box
         component="form"
         noValidate
@@ -785,7 +769,7 @@ export const CreateLeads = (props) => {
       </Box>
     </>
   );
-};
+});
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",

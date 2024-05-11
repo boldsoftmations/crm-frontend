@@ -10,10 +10,11 @@ import {
 } from "@mui/material";
 import Hr from "../../../services/Hr";
 import CustomAxios from "../../../services/api";
-import CustomTextField from "../../../Components/CustomTextField";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../../Components/MessageAlert";
 
-export const ApplicantListCreate = ({ jobOpeningId, onSuccess }) => {
+export const ApplicantListCreate = ({ jobOpeningId }) => {
   console.log("jobOpeningId:", jobOpeningId);
   const [formData, setFormData] = useState({
     job: jobOpeningId,
@@ -29,9 +30,9 @@ export const ApplicantListCreate = ({ jobOpeningId, onSuccess }) => {
     interested: "",
     shortlisted: false,
   });
-
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
   const [source, setSource] = useState([]);
-  const [selectedSource, setSelectedSource] = useState(null);
 
   useEffect(() => {
     const fetchSource = async () => {
@@ -41,6 +42,7 @@ export const ApplicantListCreate = ({ jobOpeningId, onSuccess }) => {
           setSource(response.data);
         }
       } catch (error) {
+        handleError("error");
         console.error("Error fetching designations:", error);
       }
     };
@@ -71,11 +73,11 @@ export const ApplicantListCreate = ({ jobOpeningId, onSuccess }) => {
     try {
       const response = await Hr.addApplicant(formData);
       console.log("Applicant created:", response.data);
-      onSuccess();
-      alert("Successfully added an applicant");
+      handleSuccess("Applicant created successfully");
+      setTimeout(() => {}, 300);
     } catch (error) {
+      handleError(error);
       console.error("Error creating applicant:", error);
-      alert("Error adding applicant");
     }
   };
   const spokenEnglishOptions = ["Bad", "Average", "Good"];
@@ -97,175 +99,184 @@ export const ApplicantListCreate = ({ jobOpeningId, onSuccess }) => {
     "24 LPA - Above",
   ];
   return (
-    <Container
-      component="form"
-      onSubmit={handleSubmit}
-      noValidate
-      sx={{
-        mt: 1,
-        height: "70vh",
-        overflowY: "auto",
-      }}
-    >
-      <Box>
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              size="small"
-              label="Name of Candidate"
-              name="name"
-              fullWidth
-              value={formData.name}
-              onChange={handleInputChange}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              size="small"
-              label="Phone Number"
-              name="contact"
-              fullWidth
-              value={formData.contact}
-              onChange={handleInputChange}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              size="small"
-              label="Email Address"
-              name="email"
-              fullWidth
-              value={formData.email}
-              onChange={handleInputChange}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              size="small"
-              label="Highest Education Qualification"
-              name="qualification"
-              fullWidth
-              value={formData.qualification}
-              onChange={handleInputChange}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <CustomAutocomplete
-              size="small"
-              style={{ minWidth: 220 }}
-              onChange={(event, newValue) =>
-                handleInputChange(
-                  { target: { name: "source", value: newValue } },
-                  newValue
-                )
-              }
-              options={source.map((option) => option.name)}
-              getOptionLabel={(option) => `${option}`}
-              label="Candidate Source"
-              value={formData.source}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              size="small"
-              fullWidth
-              label="Current Location"
-              name="current_location"
-              value={formData.current_location}
-              onChange={handleInputChange}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              size="small"
-              label="Current Salary"
-              name="current_salary"
-              fullWidth
-              value={formData.current_salary}
-              onChange={handleInputChange}
-            />
-          </Grid>
+    <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
 
-          <Grid item xs={12} sm={6}>
-            <CustomAutocomplete
-              size="small"
-              id="expected_salary"
-              options={salaryRange}
-              renderInput={(params) => (
-                <TextField {...params} label="Expected Salary" />
-              )}
-              value={formData.expected_salary}
-              onChange={(event, newValue) => {
-                handleInputChange(event, newValue, "expected_salary");
-              }}
-              label="Expected Salary"
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
-            <CustomAutocomplete
-              size="small"
-              id="interested"
-              options={["Yes", "No", "CallBackLater"]}
-              renderInput={(params) => (
-                <TextField {...params} label="Interested" />
-              )}
-              value={formData.is_interested}
-              onChange={(event, newValue) => {
-                handleInputChange(event, newValue);
-                if (newValue === "No") {
-                  setFormData({
-                    ...formData,
-                    noReason: "",
-                  });
+      <Container
+        component="form"
+        onSubmit={handleSubmit}
+        noValidate
+        sx={{
+          mt: 1,
+          height: "70vh",
+          overflowY: "auto",
+        }}
+      >
+        <Box>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                size="small"
+                label="Name of Candidate"
+                name="name"
+                fullWidth
+                value={formData.name}
+                onChange={handleInputChange}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                size="small"
+                label="Phone Number"
+                name="contact"
+                fullWidth
+                value={formData.contact}
+                onChange={handleInputChange}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                size="small"
+                label="Email Address"
+                name="email"
+                fullWidth
+                value={formData.email}
+                onChange={handleInputChange}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                size="small"
+                label="Highest Education Qualification"
+                name="qualification"
+                fullWidth
+                value={formData.qualification}
+                onChange={handleInputChange}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <CustomAutocomplete
+                size="small"
+                style={{ minWidth: 220 }}
+                onChange={(event, newValue) =>
+                  handleInputChange(
+                    { target: { name: "source", value: newValue } },
+                    newValue
+                  )
                 }
-              }}
-              label="Interested"
-            />
-          </Grid>
+                options={source.map((option) => option.name)}
+                getOptionLabel={(option) => `${option}`}
+                label="Candidate Source"
+                value={formData.source}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                size="small"
+                fullWidth
+                label="Current Location"
+                name="current_location"
+                value={formData.current_location}
+                onChange={handleInputChange}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                size="small"
+                label="Current Salary"
+                name="current_salary"
+                fullWidth
+                value={formData.current_salary}
+                onChange={handleInputChange}
+              />
+            </Grid>
 
-          <Grid item xs={12} sm={6}>
-            <CustomAutocomplete
-              size="small"
-              id="spoken_english"
-              options={spokenEnglishOptions}
-              renderInput={(params) => (
-                <TextField {...params} label="Spoken English" />
-              )}
-              value={formData.spoken_english}
-              onChange={(event, newValue) => {
-                setFormData((prevData) => ({
-                  ...prevData,
-                  spoken_english: newValue,
-                }));
-              }}
-              label="Spoken English"
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={formData.shortlisted}
-                  onChange={(event) => {
+            <Grid item xs={12} sm={6}>
+              <CustomAutocomplete
+                size="small"
+                id="expected_salary"
+                options={salaryRange}
+                renderInput={(params) => (
+                  <TextField {...params} label="Expected Salary" />
+                )}
+                value={formData.expected_salary}
+                onChange={(event, newValue) => {
+                  handleInputChange(event, newValue, "expected_salary");
+                }}
+                label="Expected Salary"
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <CustomAutocomplete
+                size="small"
+                id="interested"
+                options={["Yes", "No", "CallBackLater"]}
+                renderInput={(params) => (
+                  <TextField {...params} label="Interested" />
+                )}
+                value={formData.is_interested}
+                onChange={(event, newValue) => {
+                  handleInputChange(event, newValue);
+                  if (newValue === "No") {
                     setFormData({
                       ...formData,
-                      shortlisted: event.target.checked,
+                      noReason: "",
                     });
-                  }}
-                  name="shortlisted"
-                />
-              }
-              label="Shortlisted"
-            />
+                  }
+                }}
+                label="Interested"
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <CustomAutocomplete
+                size="small"
+                id="spoken_english"
+                options={spokenEnglishOptions}
+                renderInput={(params) => (
+                  <TextField {...params} label="Spoken English" />
+                )}
+                value={formData.spoken_english}
+                onChange={(event, newValue) => {
+                  setFormData((prevData) => ({
+                    ...prevData,
+                    spoken_english: newValue,
+                  }));
+                }}
+                label="Spoken English"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={formData.shortlisted}
+                    onChange={(event) => {
+                      setFormData({
+                        ...formData,
+                        shortlisted: event.target.checked,
+                      });
+                    }}
+                    name="shortlisted"
+                  />
+                }
+                label="Shortlisted"
+              />
+            </Grid>
           </Grid>
-        </Grid>
-        <Box display="flex" justifyContent="flex-end" mt={2}>
-          <Button fullWidth type="submit" variant="contained" color="primary">
-            Add Applicant
-          </Button>
+          <Box display="flex" justifyContent="flex-end" mt={2}>
+            <Button fullWidth type="submit" variant="contained" color="primary">
+              Add Applicant
+            </Button>
+          </Box>
         </Box>
-      </Box>
-    </Container>
+      </Container>
+    </>
   );
 };

@@ -12,11 +12,11 @@ import {
 } from "@mui/material";
 import { Popup } from "../../../Components/Popup";
 import { CustomPagination } from "../../../Components/CustomPagination";
-import CustomTextField from "../../../Components/CustomTextField";
 import { useSelector } from "react-redux";
 import { ObjectionsCreate } from "./ObjectionsCreate";
 import { ObjectionsUpdate } from "./ObjectionsUpdate";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import SearchComponent from "../../../Components/SearchComponent ";
 
 export const ObjectionsView = () => {
   const [objection, setObjection] = useState([]);
@@ -26,13 +26,9 @@ export const ObjectionsView = () => {
   const [recordForEdit, setRecordForEdit] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageCount, setPageCount] = useState(0); // Assuming you know how many pages there are
+  const [totalPages, setTotalPages] = useState(0);
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
-
-  useEffect(() => {
-    getObjectionDetails(currentPage);
-  }, [currentPage, getObjectionDetails]);
 
   const formatDate = useCallback((dateString) => {
     const options = {
@@ -57,7 +53,7 @@ export const ObjectionsView = () => {
         );
         setObjection(response.data.results);
         const total = response.data.count;
-        setPageCount(Math.ceil(total / 25));
+        setTotalPages(Math.ceil(total / 25));
         setOpen(false);
       } catch (error) {
         console.error("Error fetching scripts", error);
@@ -67,12 +63,22 @@ export const ObjectionsView = () => {
     [searchQuery]
   );
 
-  const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
+  useEffect(() => {
+    getObjectionDetails(currentPage);
+  }, [currentPage, searchQuery, getObjectionDetails]);
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
   };
 
-  const handlePageClick = (event, value) => {
-    setCurrentPage(value);
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    setCurrentPage(1);
+  };
+
+  const handleReset = () => {
+    setSearchQuery("");
+    setCurrentPage(1);
   };
 
   const handleEditClick = (item) => {
@@ -91,38 +97,7 @@ export const ObjectionsView = () => {
           sx={{ marginRight: 5, marginLeft: 5 }}
         >
           <Grid item xs={12} sm={6}>
-            <CustomTextField
-              size="small"
-              label="Search"
-              variant="outlined"
-              value={searchQuery}
-              onChange={handleSearchChange}
-              fullWidth
-            />
-          </Grid>
-          <Grid item xs={12} sm={2}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => getObjectionDetails(currentPage, searchQuery)}
-              fullWidth
-            >
-              Search
-            </Button>
-          </Grid>
-          <Grid item xs={12} sm={2}>
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={() => {
-                setSearchQuery("");
-                setCurrentPage(1);
-                getObjectionDetails(1, "");
-              }}
-              fullWidth
-            >
-              Reset
-            </Button>
+            <SearchComponent onSearch={handleSearch} onReset={handleReset} />
           </Grid>
           {(userData.groups.includes("Sales Manager") ||
             userData.groups.includes("Sales Deputy Manager") ||
@@ -201,8 +176,8 @@ export const ObjectionsView = () => {
       <Box sx={{ marginBottom: 4 }}>
         <CustomPagination
           currentPage={currentPage}
-          pageCount={pageCount}
-          handlePageClick={handlePageClick}
+          totalPages={totalPages}
+          handlePageChange={handlePageChange}
         />
       </Box>
       <Popup

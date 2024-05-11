@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { TextField, Button, Grid, Box } from "@mui/material";
 import Hr from "../../../services/Hr";
 import CustomAxios from "../../../services/api";
-import CustomTextField from "../../../Components/CustomTextField";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 export const InterviewStatusCreate = ({ row, closeDialog }) => {

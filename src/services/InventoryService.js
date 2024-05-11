@@ -1,6 +1,6 @@
 import CustomAxios from "./api";
 
-const getAllVendorData = (page, searchValue) => {
+const getAllVendorData = (page, searchValue, sourceFilter) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
 
@@ -11,7 +11,9 @@ const getAllVendorData = (page, searchValue) => {
   if (searchValue) {
     params.append("search", searchValue);
   }
-
+  if (sourceFilter) {
+    params.append("vendor_source", sourceFilter);
+  }
   // Sending a GET request with query parameters
   return CustomAxios.get(`api/inventory/list-vendor/?${params.toString()}`);
 };
@@ -28,10 +30,6 @@ const updateVendorData = (id, data) => {
   return CustomAxios.patch(`/api/inventory/list-vendor/${id}`, data);
 };
 
-const getBankInventoryDataById = (id) => {
-  return CustomAxios.get(`/api/inventory/list-bank/${id}`);
-};
-
 const createBankInventoryData = (data) => {
   return CustomAxios.post("/api/inventory/list-bank/", data);
 };
@@ -44,24 +42,12 @@ const createContactInventoryData = (data) => {
   return CustomAxios.post("/api/inventory/list-contact/", data);
 };
 
-const getContactInventoryDataById = (id) => {
-  return CustomAxios.get(`/api/inventory/list-contact/${id}`);
-};
-
 const updateContactInventoryData = (id, data) => {
   return CustomAxios.patch(`/api/inventory/list-contact/${id}`, data);
 };
 
-const getAllContactInventoryData = () => {
-  return CustomAxios.get(`/api/inventory/list-contact/`);
-};
-
 const createWareHouseInventoryData = (data) => {
   return CustomAxios.post("/api/inventory/list-warehouse/", data);
-};
-
-const getWareHouseInventoryDataById = (id) => {
-  return CustomAxios.get(`/api/inventory/list-warehouse/${id}`);
 };
 
 const updatetWareHouseInventoryData = (id, data) => {
@@ -91,10 +77,6 @@ const getAllPurchaseOrderData = (page, acceptedToFilter, searchValue) => {
 
 const createPurchaseOrderData = (data) => {
   return CustomAxios.post("/api/inventory/purchase-order/", data);
-};
-
-const getPurchaseOrderDataById = (id) => {
-  return CustomAxios.get(`/api/inventory/purchase-order/${id}`);
 };
 
 const updatePurchaseOrderData = (id, data) => {
@@ -128,10 +110,6 @@ const getAllPackingListData = (page, acceptedToFilter, searchValue) => {
 
 const createPackingListData = (data) => {
   return CustomAxios.post("/api/inventory/list-packing-list/", data);
-};
-
-const getPackingListDataById = (id) => {
-  return CustomAxios.get(`/api/inventory/list-packing-list/${id}`);
 };
 
 const updatePackingListData = (id, data) => {
@@ -221,10 +199,6 @@ const getPurchaseInvoiceDataById = (id) => {
   return CustomAxios.get(`/api/inventory/list-purchase-invoice/${id}`);
 };
 
-const updatePurchaseInvoiceData = (id, data) => {
-  return CustomAxios.patch(`/api/inventory/list-purchase-invoice/${id}`, data);
-};
-
 // Stores Inventory List Api
 const getAllStoresInventoryDetails = (page, searchValue) => {
   const params = new URLSearchParams();
@@ -250,39 +224,45 @@ const getAllConsStoresInventoryData = () => {
   return CustomAxios.get(`/api/inventory/list-con-stores-inventory/`);
 };
 
-const getAllPaginateConsStoresInventoryData = (all) => {
+// Description Stores Inventory List Api
+const getDescriptionStoresInventoryDetails = (filter, searchValue) => {
+  const params = new URLSearchParams();
+
+  if (filter) {
+    params.append("unit", filter);
+  }
+
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+
   return CustomAxios.get(
-    `/api/inventory/list-con-stores-inventory/?page=${all}`
+    `api/inventory/description-stores-inventory/?${params.toString()}`
   );
 };
 
-const getAllPaginateConsStoresInventoryDataWithSearch = (all, search) => {
-  return CustomAxios.get(
-    `/api/inventory/list-con-stores-inventory/?page=${all}&search=${search}`
+// job worker store inventory api
+const getJobWorkerInventoryData = () => {
+  return CustomAxios.get(`api/inventory/job-worker-inventory/`);
+};
+
+const getProductCodeStoresInventoryDetails = (data) => {
+  return CustomAxios.post(
+    "api/inventory/description-stores-inventory/cons_store_product/",
+    data
   );
 };
 
-const getAllSearchConsStoresInventoryData = (search) => {
-  return CustomAxios.get(
-    `/api/inventory/list-con-stores-inventory/?search=${search}`
+const getAllProductStoresInventoryDetails = (data) => {
+  return CustomAxios.post(
+    "api/inventory/description-stores-inventory/store_product/",
+    data
   );
 };
 
-const getAllConsStoresInventoryDataPaginate = (currentPage, search) => {
-  return CustomAxios.get(
-    `/api/inventory/list-con-stores-inventory/?page=${currentPage}&search=${search}`
-  );
-};
-
-const getConsStoresInventoryPaginateData = (currentPage) => {
-  return CustomAxios.get(
-    `/api/inventory/list-con-stores-inventory/?page=${currentPage}`
-  );
-};
 // Material Requisition Form List Api
 
 const getAllMaterialRequisitionFormData = (page, searchValue) => {
-  // Constructing the query parameters
   const params = new URLSearchParams();
 
   if (page) {
@@ -304,10 +284,6 @@ const createMaterialRequisitionFormData = (data) => {
     "/api/inventory/list-material-requisition-form/",
     data
   );
-};
-
-const getMaterialRequisitionFormDataById = (id) => {
-  return CustomAxios.get(`/api/inventory/list-material-requisition-form/${id}`);
 };
 
 const updateMaterialRequisitionFormData = (id, data) => {
@@ -345,10 +321,6 @@ const createBillofMaterialsData = (data) => {
   return CustomAxios.post("/api/inventory/list-bill-of-materials/", data);
 };
 
-const getBillofMaterialsDataById = (id) => {
-  return CustomAxios.get(`/api/inventory/list-bill-of-materials/${id}`);
-};
-
 const updateBillofMaterialsData = (id, data) => {
   return CustomAxios.patch(`/api/inventory/list-bill-of-materials/${id}`, data);
 };
@@ -375,14 +347,6 @@ const getAllProductionEntryData = (page, searchValue) => {
 
 const createProductionEntryData = (data) => {
   return CustomAxios.post("/api/inventory/list-production-entry/", data);
-};
-
-const getProductionEntryDataById = (id) => {
-  return CustomAxios.get(`/api/inventory/list-production-entry/${id}`);
-};
-
-const updateProductionEntryData = (id, data) => {
-  return CustomAxios.patch(`/api/inventory/list-production-entry/${id}`, data);
 };
 
 // Material Requisition Form List Api
@@ -416,10 +380,6 @@ const createMaterialTransferNoteData = (data) => {
   return CustomAxios.post("/api/inventory/list-material-transfer-note/", data);
 };
 
-const getMaterialTransferNoteDataById = (id) => {
-  return CustomAxios.get(`/api/inventory/list-material-transfer-note/${id}`);
-};
-
 const updateMaterialTransferNoteData = (id, data) => {
   return CustomAxios.patch(
     `/api/inventory/list-material-transfer-note/${id}`,
@@ -433,67 +393,17 @@ const getAllConsProductionInventoryData = () => {
   return CustomAxios.get(`/api/inventory/list-con-production-inventory/`);
 };
 
-const getAllPaginateConsProductionInventoryData = (all) => {
-  return CustomAxios.get(
-    `/api/inventory/list-con-production-inventory/?page=${all}`
-  );
-};
+const getProductionInventoryData = (page, searchQuery = "") => {
+  const params = new URLSearchParams();
 
-const getAllPaginateConsProductionInventoryDataWithSearch = (all, search) => {
+  if (page) {
+    params.append("page", page);
+  }
+  if (searchQuery) {
+    params.append("search", searchQuery);
+  }
   return CustomAxios.get(
-    `/api/inventory/list-con-production-inventory/?page=${all}&search=${search}`
-  );
-};
-
-const getAllSearchConsProductionInventoryData = (search) => {
-  return CustomAxios.get(
-    `/api/inventory/list-con-production-inventory/?search=${search}`
-  );
-};
-
-const getAllConsProductionInventoryDataPaginate = (currentPage, search) => {
-  return CustomAxios.get(
-    `/api/inventory/list-con-production-inventory/?page=${currentPage}&search=${search}`
-  );
-};
-
-const getConsProductionInventoryPaginateData = (currentPage) => {
-  return CustomAxios.get(
-    `/api/inventory/list-con-production-inventory/?page=${currentPage}`
-  );
-};
-
-const getAllProductionInventoryData = () => {
-  return CustomAxios.get(`/api/inventory/list-production-inventory/`);
-};
-
-const getAllPaginateProductionInventoryData = (all) => {
-  return CustomAxios.get(
-    `/api/inventory/list-production-inventory/?page=${all}`
-  );
-};
-
-const getAllPaginateProductionInventoryDataWithSearch = (all, search) => {
-  return CustomAxios.get(
-    `/api/inventory/list-production-inventory/?page=${all}&search=${search}`
-  );
-};
-
-const getAllSearchProductionInventoryData = (search) => {
-  return CustomAxios.get(
-    `/api/inventory/list-production-inventory/?search=${search}`
-  );
-};
-
-const getAllProductionInventoryDataPaginate = (currentPage, search) => {
-  return CustomAxios.get(
-    `/api/inventory/list-production-inventory/?page=${currentPage}&search=${search}`
-  );
-};
-
-const getProductionInventoryPaginateData = (currentPage) => {
-  return CustomAxios.get(
-    `/api/inventory/list-production-inventory/?page=${currentPage}`
+    `/api/inventory/list-production-inventory/?${params.toString()}`
   );
 };
 
@@ -521,94 +431,27 @@ const getAllProductionShortFallData = () => {
   return CustomAxios.get(`/api/inventory/list-production-shortfall/`);
 };
 
-const getAllPaginateProductionShortFallData = (all) => {
-  return CustomAxios.get(
-    `/api/inventory/list-production-shortfall/?page=${all}`
-  );
-};
-
-const getAllPaginateProductionShortFallDataWithSearch = (all, search) => {
-  return CustomAxios.get(
-    `/api/inventory/list-production-shortfall/?page=${all}&search=${search}`
-  );
-};
-
-const getAllSearchProductionShortFallData = (search) => {
-  return CustomAxios.get(
-    `/api/inventory/list-production-shortfall/?search=${search}`
-  );
-};
-
-const getAllProductionShortFallDataPaginate = (currentPage, search) => {
-  return CustomAxios.get(
-    `/api/inventory/list-production-shortfall/?page=${currentPage}&search=${search}`
-  );
-};
-
-const getProductionShortFallPaginateData = (currentPage) => {
-  return CustomAxios.get(
-    `/api/inventory/list-production-shortfall/?page=${currentPage}`
-  );
-};
-
-// Daily Production Repor Api
-
-const getAllDailyProductionReport = (startDate, endDate) => {
-  return CustomAxios.get(
-    `/api/inventory/list-daily-production-report/?date_range_after=${startDate}&date_range_before=${endDate}`
-  );
-};
-
-const getDailyProductionReportWithPagination = (
+// Improved API Call Implementation
+const getAllDailyProductionReport = (
   startDate,
   endDate,
-  currentPage
+  page = 1,
+  searchValue = ""
 ) => {
-  return CustomAxios.get(
-    `/api/inventory/list-daily-production-report/?date_range_after=${startDate}&date_range_before=${endDate}&page=${currentPage}`
-  );
-};
+  // Construct query parameters
+  const params = new URLSearchParams();
+  if (startDate) params.append("date_range_after", startDate);
+  if (endDate) params.append("date_range_before", endDate);
+  params.append("page", page);
+  if (searchValue) params.append("search", searchValue);
 
-const getDailyProductionReportWithSearch = (startDate, endDate, search) => {
+  // Make GET request with all parameters
   return CustomAxios.get(
-    `/api/inventory/list-daily-production-report/?date_range_after=${startDate}&date_range_before=${endDate}&search=${search}`
-  );
-};
-
-const getDailyProductionReportWithPaginationAndSearch = (
-  startDate,
-  endDate,
-  currentPage,
-  search
-) => {
-  return CustomAxios.get(
-    `/api/inventory/list-daily-production-report/?date_range_after=${startDate}&date_range_before=${endDate}&page=${currentPage}&search=${search}`
+    `api/inventory/list-daily-production-report/?${params.toString()}`
   );
 };
 
 // Weekly Production Report List Api
-
-const getAllWeeklyProductionReportData = () => {
-  return CustomAxios.get(`/api/inventory/list-weekly-product-quantity/`);
-};
-
-const getAllSearchWeeklyProductionReportData = (search) => {
-  return CustomAxios.get(
-    `/api/inventory/list-weekly-product-quantity/?search=${search}`
-  );
-};
-
-const getAllWeeklyProductionReportDataPaginate = (currentPage, search) => {
-  return CustomAxios.get(
-    `/api/inventory/list-weekly-product-quantity/?page=${currentPage}&search=${search}`
-  );
-};
-
-const getWeeklyProductionReportPaginateData = (currentPage) => {
-  return CustomAxios.get(
-    `/api/inventory/list-weekly-product-quantity/?page=${currentPage}`
-  );
-};
 
 const getWeeklyProductionReportFilterData = (month, year) => {
   return CustomAxios.get(
@@ -623,10 +466,6 @@ const getCurrencyData = () => {
 
 const createCurrencyData = (data) => {
   return CustomAxios.post("/api/inventory/currency/", data);
-};
-
-const getCurrencyDataById = (id) => {
-  return CustomAxios.get(`/api/inventory/currency/${id}`);
 };
 
 const updateCurrencyData = (id, data) => {
@@ -646,28 +485,72 @@ const createSafetyStockData = (data) => {
 const updateSafetyStockData = (id, data) => {
   return CustomAxios.patch(`/api/inventory/safety-stock/${id}/`, data);
 };
+
+const getChalan = (page) => {
+  const params = new URLSearchParams();
+
+  if (page) {
+    params.append("page", page);
+  }
+  return CustomAxios.get(`/api/inventory/challan/?${params.toString()}`);
+};
+const createChalan = (data) => {
+  return CustomAxios.post(`/api/inventory/challan/`, data);
+};
+const updateChalan = (id, data) => {
+  return CustomAxios.patch(`/api/inventory/challan/${id}/`, data);
+};
+
+const getChallanInvoice = (page) => {
+  const params = new URLSearchParams();
+
+  if (page) {
+    params.append("page", page);
+  }
+  return CustomAxios.get(
+    `/api/inventory/challan-invoice/?${params.toString()}`
+  );
+};
+const createChalanInvoice = (data) => {
+  return CustomAxios.post(`/api/inventory/challan-invoice/`, data);
+};
+
+const getPhysical = (page, searchQuery) => {
+  const params = new URLSearchParams();
+
+  if (page) {
+    params.append("page", page);
+  }
+  if (searchQuery) {
+    params.append("search", searchQuery);
+  }
+  return CustomAxios.get(
+    `/api/inventory/physical-inventory/?${params.toString()}`
+  );
+};
+const createPhysical = (data) => {
+  return CustomAxios.post(`/api/inventory/physical-inventory/`, data);
+};
+const updatePhysical = (id, data) => {
+  return CustomAxios.patch(`/api/inventory/physical-inventory/${id}/`, data);
+};
+
 const InventoryServices = {
   getAllVendorData,
   createVendorData,
   getVendorDataById,
   updateVendorData,
-  getBankInventoryDataById,
   createBankInventoryData,
   updateBankInventoryData,
   createContactInventoryData,
-  getContactInventoryDataById,
   updateContactInventoryData,
-  getAllContactInventoryData,
   createWareHouseInventoryData,
   updatetWareHouseInventoryData,
-  getWareHouseInventoryDataById,
   getAllPurchaseOrderData,
   createPurchaseOrderData,
-  getPurchaseOrderDataById,
   updatePurchaseOrderData,
   getAllPackingListData,
   createPackingListData,
-  getPackingListDataById,
   updatePackingListData,
   getAllGRNData,
   createGRNData,
@@ -677,66 +560,44 @@ const InventoryServices = {
   getAllPurchaseInvoiceData,
   createPurchaseInvoiceData,
   getPurchaseInvoiceDataById,
-  updatePurchaseInvoiceData,
   createStoresInventoryData,
   getAllConsStoresInventoryData,
-  getAllPaginateConsStoresInventoryData,
-  getAllPaginateConsStoresInventoryDataWithSearch,
-  getAllSearchConsStoresInventoryData,
-  getAllConsStoresInventoryDataPaginate,
-  getConsStoresInventoryPaginateData,
+  getDescriptionStoresInventoryDetails,
+  getJobWorkerInventoryData,
+  getProductCodeStoresInventoryDetails,
+  getAllProductStoresInventoryDetails,
   getAllMaterialRequisitionFormData,
   createMaterialRequisitionFormData,
-  getMaterialRequisitionFormDataById,
   updateMaterialRequisitionFormData,
   getAllBillofMaterialsData,
   createBillofMaterialsData,
-  getBillofMaterialsDataById,
   updateBillofMaterialsData,
   getAllProductionEntryData,
   createProductionEntryData,
-  getProductionEntryDataById,
-  updateProductionEntryData,
   getAllMaterialTransferNoteData,
   createMaterialTransferNoteData,
-  getMaterialTransferNoteDataById,
   updateMaterialTransferNoteData,
-  getAllProductionInventoryData,
-  getAllPaginateProductionInventoryData,
-  getAllPaginateProductionInventoryDataWithSearch,
-  getAllSearchProductionInventoryData,
-  getAllProductionInventoryDataPaginate,
-  getProductionInventoryPaginateData,
+  getProductionInventoryData,
   getAllConsProductionInventoryData,
-  getAllPaginateConsProductionInventoryData,
-  getAllPaginateConsProductionInventoryDataWithSearch,
-  getAllSearchConsProductionInventoryData,
-  getAllConsProductionInventoryDataPaginate,
-  getConsProductionInventoryPaginateData,
   getAllProductionGAndLInventoryData,
   getAllProductionShortFallData,
-  getAllPaginateProductionShortFallData,
-  getAllPaginateProductionShortFallDataWithSearch,
-  getAllSearchProductionShortFallData,
-  getAllProductionShortFallDataPaginate,
-  getProductionShortFallPaginateData,
   getAllDailyProductionReport,
-  getDailyProductionReportWithPagination,
-  getDailyProductionReportWithSearch,
-  getDailyProductionReportWithPaginationAndSearch,
-  getAllWeeklyProductionReportData,
-  getAllSearchWeeklyProductionReportData,
-  getAllWeeklyProductionReportDataPaginate,
-  getWeeklyProductionReportPaginateData,
   getWeeklyProductionReportFilterData,
   getCurrencyData,
   createCurrencyData,
-  getCurrencyDataById,
   updateCurrencyData,
   getAllStoresInventoryDetails,
   getAllSafetyStockData,
   createSafetyStockData,
   updateSafetyStockData,
+  getChalan,
+  createChalan,
+  updateChalan,
+  getChallanInvoice,
+  createChalanInvoice,
+  getPhysical,
+  createPhysical,
+  updatePhysical,
 };
 
 export default InventoryServices;

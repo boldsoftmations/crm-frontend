@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 import { Box, Button, Divider, Grid, Paper } from "@mui/material";
 import { Popup } from "../../../Components/Popup";
 import { LeadPotentialCreate } from "./LeadPotentialCreate";
 
-export const LeadPotentialView = (props) => {
+export const LeadPotentialView = memo((props) => {
   const { potential, getLeadByID, leadsByID } = props;
   const [openModal, setOpenModal] = useState(false);
   return (
@@ -91,9 +91,14 @@ export const LeadPotentialView = (props) => {
         <LeadPotentialCreate
           getLeadByID={getLeadByID}
           leadsByID={leadsByID}
-          setOpenModal={setOpenModal}
+          setOpenPopup={setOpenModal}
+          getleads={null}
+          currentPage={null}
+          filterQuery={null}
+          filterSelectedQuery={null}
+          searchQuery={null}
         />
       </Popup>
     </>
   );
-};
+});

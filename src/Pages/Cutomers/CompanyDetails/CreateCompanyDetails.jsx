@@ -24,7 +24,7 @@ import { CustomLoader } from "../../../Components/CustomLoader";
 import Option from "../../../Options/Options";
 import CustomTextField from "../../../Components/CustomTextField";
 import { useDispatch } from "react-redux";
-import { getCompanyID, getCompanyName } from "../../../Redux/Action/Action";
+import { getCompanyName } from "../../../Redux/Action/Action";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 export const CreateCompanyDetails = (props) => {

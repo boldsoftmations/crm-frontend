@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Table,
   Typography,
@@ -17,7 +17,6 @@ import {
 } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-// import { saveAs } from "file-saver";
 import FileSaver from "file-saver";
 import { tableCellClasses } from "@mui/material/TableCell";
 import InvoiceServices from "../../services/InvoiceService";
@@ -26,158 +25,84 @@ import { Popup } from "./../../Components/Popup";
 import { UpdateDispatch } from "./UpdateDispatch";
 import { CustomPagination } from "./../../Components/CustomPagination";
 import { useSelector } from "react-redux";
-import { CustomSearch } from "./../../Components/CustomSearch";
 import moment from "moment";
-import { ErrorMessage } from "../../Components/ErrorMessage/ErrorMessage";
+import SearchComponent from "../../Components/SearchComponent ";
+import { useNotificationHandling } from "../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../Components/MessageAlert";
+
 export const Dispatched = () => {
   const [dispatchData, setDispatchData] = useState([]);
   const [open, setOpen] = useState(false);
-  const errRef = useRef();
-  const [errMsg, setErrMsg] = useState("");
-  const [pageCount, setpageCount] = useState(0);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+  const [totalPages, setTotalPages] = useState(0);
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
-  useEffect(() => {
-    getAllDispatchDetails();
+  const { handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
+
+  const getAllDispatchDetails = useCallback(async (page, query) => {
+    try {
+      setOpen(true);
+      const response = await InvoiceServices.getDispatchData(true, page, query);
+      setDispatchData(response.data.results);
+      setTotalPages(Math.ceil(response.data.count / 25));
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setOpen(false);
+    }
   }, []);
-  const getAllDispatchDetails = async () => {
-    try {
-      setOpen(true);
-      if (currentPage) {
-        const response = await InvoiceServices.getDispatchDataWithPagination(
-          "true",
-          currentPage
-        );
-        setDispatchData(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      } else {
-        const response = await InvoiceServices.getDispatchData("true");
-        setDispatchData(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      }
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      if (!err.response) {
-        setErrMsg(
-          "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
-        );
-      } else if (err.response.status === 400) {
-        setErrMsg(
-          err.response.data.errors.name
-            ? err.response.data.errors.name
-            : err.response.data.errors.non_field_errors
-        );
-      } else if (err.response.status === 401) {
-        setErrMsg(err.response.data.errors.code);
-      } else {
-        setErrMsg("Server Error");
-      }
-      errRef.current.focus();
-    }
+
+  useEffect(() => {
+    getAllDispatchDetails(currentPage, searchQuery);
+  }, [currentPage, searchQuery]);
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    setCurrentPage(1);
   };
 
-  const handleInputChange = (event) => {
-    setSearchQuery(event.target.value);
-    getSearchData(event.target.value);
-  };
-
-  const getSearchData = async (value) => {
-    try {
-      setOpen(true);
-      const filterSearch = value;
-      const response = await InvoiceServices.getDispatchDataWithSearch(
-        "true",
-        filterSearch
-      );
-      if (response) {
-        setDispatchData(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      } else {
-        getAllDispatchDetails();
-        setSearchQuery("");
-      }
-      setOpen(false);
-    } catch (error) {
-      console.log("error Search leads", error);
-      setOpen(false);
-    }
-  };
-
-  const getResetData = () => {
+  const handleReset = () => {
     setSearchQuery("");
-    getAllDispatchDetails();
+    setCurrentPage(1); // Reset to first page with no search query
   };
 
-  const handlePageClick = async (event, value) => {
-    try {
-      const page = value;
-      setCurrentPage(page);
-      setOpen(true);
-      if (searchQuery) {
-        const response = await InvoiceServices.getDispatchSearchWithPagination(
-          "true",
-          page,
-          searchQuery
-        );
-        if (response) {
-          setDispatchData(response.data.results);
-          const total = response.data.count;
-          setpageCount(Math.ceil(total / 25));
-        } else {
-          getAllDispatchDetails();
-          setSearchQuery("");
-        }
-      } else {
-        const response = await InvoiceServices.getDispatchDataWithPagination(
-          "true",
-          page
-        );
-        setDispatchData(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      }
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
   };
 
   return (
-    <div>
+    <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
       <Grid item xs={12}>
-        <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
-          <Box display="flex">
-            <Box flexGrow={2}>
-              {" "}
-              <CustomSearch
-                filterSelectedQuery={searchQuery}
-                handleInputChange={handleInputChange}
-                getResetData={getResetData}
-              />
-            </Box>
-            <Box flexGrow={2}>
-              <h3
-                style={{
-                  textAlign: "left",
-                  marginBottom: "1em",
-                  fontSize: "24px",
-                  color: "rgb(34, 34, 34)",
-                  fontWeight: 800,
-                }}
-              >
-                Dispatched
-              </h3>
-            </Box>
-            <Box flexGrow={0.5}></Box>
+          <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={12} sm={3}>
+                <SearchComponent
+                  onSearch={handleSearch}
+                  onReset={handleReset}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6} sx={{ textAlign: "center" }}>
+                <h3
+                  style={{
+                    fontSize: "24px",
+                    color: "rgb(34, 34, 34)",
+                    fontWeight: 800,
+                  }}
+                >
+                  Pending Dispatch
+                </h3>
+              </Grid>
+            </Grid>
           </Box>
           <TableContainer
             sx={{
@@ -231,12 +156,13 @@ export const Dispatched = () => {
             </Table>
           </TableContainer>
           <CustomPagination
-            pageCount={pageCount}
-            handlePageClick={handlePageClick}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            handlePageChange={handlePageChange}
           />
         </Paper>
       </Grid>
-    </div>
+    </>
   );
 };
 

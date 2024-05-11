@@ -3,6 +3,7 @@ import { CSVLink } from "react-csv";
 import { CustomTable } from "../../Components/CustomTable";
 import { Button } from "@mui/material";
 import InvoiceServices from "../../services/InvoiceService";
+import { CustomLoader } from "./../../Components/CustomLoader";
 
 export const TotalPendingQuantity = () => {
   const [open, setOpen] = useState(false);
@@ -59,6 +60,7 @@ export const TotalPendingQuantity = () => {
         backgroundColor: "rgb(255, 255, 255)", // set background color to default Paper color
       }}
     >
+      <CustomLoader open={open} />
       <div style={{ display: "flex" }}>
         <div style={{ flexGrow: 0.9 }}></div>
         <div style={{ flexGrow: 2 }}>

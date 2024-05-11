@@ -1,32 +1,26 @@
-import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Chip,
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select,
-  Button,
-  FormControlLabel,
-  FormLabel,
-  RadioGroup,
-  Radio,
-  Divider,
-  Checkbox,
-} from "@mui/material";
+import React, { memo, useEffect, useState } from "react";
+import { Box, Grid, Button } from "@mui/material";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import ProductService from "../../../services/ProductService";
 import InvoiceServices from "../../../services/InvoiceService";
 import InventoryServices from "../../../services/InventoryService";
 import CustomTextField from "../../../Components/CustomTextField";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
-export const StoresInventoryCreate = (props) => {
-  const { setOpenPopup, getAllStoresInventoryDetails } = props;
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../../Components/MessageAlert";
+export const StoresInventoryCreate = memo((props) => {
+  const {
+    setOpenPopup,
+    getAllStoresInventoryDetails,
+    currentPage,
+    searchQuery,
+  } = props;
   const [open, setOpen] = useState(false);
   const [storeInventoryData, setStoreInventoryData] = useState([]);
   const [product, setProduct] = useState([]);
   const [sellerData, setSellerData] = useState([]);
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -101,10 +95,15 @@ export const StoresInventoryCreate = (props) => {
       };
       setOpen(true);
       await InventoryServices.createStoresInventoryData(req);
-      setOpenPopup(false);
-      getAllStoresInventoryDetails();
+      const successMessage = "Store Inventory Created Successfully";
+      handleSuccess(successMessage);
+      setTimeout(() => {
+        setOpenPopup(false);
+      }, 300);
+      getAllStoresInventoryDetails(currentPage, searchQuery);
       setOpen(false);
     } catch (err) {
+      handleError(err);
       setOpen(false);
       console.error("error Store Inventory", err);
     }
@@ -112,6 +111,12 @@ export const StoresInventoryCreate = (props) => {
 
   return (
     <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
 
       <Box
@@ -205,4 +210,4 @@ export const StoresInventoryCreate = (props) => {
       </Box>
     </>
   );
-};
+});

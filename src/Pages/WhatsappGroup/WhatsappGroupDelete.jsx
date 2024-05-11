@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { Button, Checkbox, Box } from "@mui/material";
 import CustomerServices from "../../services/CustomerService";
+import { useNotificationHandling } from "../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../Components/MessageAlert";
 
-export const WhatsappGroupDelete = ({
-  selectedData,
-  onClose,
-  onDeleteSuccess,
-}) => {
+export const WhatsappGroupDelete = ({ selectedData, onClose }) => {
   const [isChecked, setIsChecked] = useState(false);
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   const handleCheckboxChange = (event) => {
     setIsChecked(event.target.checked);
@@ -17,8 +17,10 @@ export const WhatsappGroupDelete = ({
     if (selectedData) {
       try {
         await CustomerServices.deleteWhatsappData(selectedData.id);
-        onDeleteSuccess(selectedData.id);
+        handleSuccess("Group deleted successfully");
+        setTimeout(() => {}, 300);
       } catch (error) {
+        handleError(error);
         console.error("Error deleting group:", error);
         alert("Error deleting group");
       } finally {
@@ -28,7 +30,13 @@ export const WhatsappGroupDelete = ({
   };
 
   return (
-    <div>
+    <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <Box
         sx={{ display: "flex", alignItems: "center", gap: 1, marginBottom: 2 }}
       >
@@ -51,6 +59,6 @@ export const WhatsappGroupDelete = ({
       >
         Delete Group
       </Button>
-    </div>
+    </>
   );
 };

@@ -25,7 +25,6 @@ import ClearIcon from "@mui/icons-material/Clear";
 import { tableCellClasses } from "@mui/material/TableCell";
 import { SalesInvoiceCreate } from "./SalesInvoiceCreate";
 import { Popup } from "../../../Components/Popup";
-import AddIcon from "@mui/icons-material/Add";
 import { SalesInvoice } from "./SalesInvoice";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -36,24 +35,25 @@ import { useSelector } from "react-redux";
 import { CancelSalesInvoice } from "./CancelSalesInvoice";
 import { CSVLink } from "react-csv";
 import CustomTextField from "../../../Components/CustomTextField";
+import BranchInvoicesCreate from "../BranchInvoices/BranchInvoicesCreate";
 
 export const SalesInvoiceView = () => {
   const errRef = useRef();
   const [open, setOpen] = useState(false);
   const [errMsg, setErrMsg] = useState("");
   const [salesInvoiceData, setSalesInvoiceData] = useState([]);
+  const [openModalBI, setOpenModalBI] = useState(false);
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [openPopup3, setOpenPopup3] = useState(false);
   const [openPopup4, setOpenPopup4] = useState(false);
   const [idForEdit, setIDForEdit] = useState();
-  const [pageCount, setpageCount] = useState(0);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterQuery, setFilterQuery] = useState("search");
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const [sellerUnitOption, setSellerUnitOption] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [endDate, setEndDate] = useState(new Date());
   const [startDate, setStartDate] = useState(new Date()); // set default value as current date
   const minDate = new Date().toISOString().split("T")[0];
@@ -221,13 +221,13 @@ export const SalesInvoiceView = () => {
       if (currentPage) {
         const response =
           await InvoiceServices.getSalesInvoiceDataWithPagination(
-            currentPage,
             StartDate,
-            EndDate
+            EndDate,
+            currentPage
           );
         setSalesInvoiceData(response.data.results);
         const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
+        setTotalPages(Math.ceil(total / 25));
       } else {
         const response = await InvoiceServices.getSalesInvoiceData(
           StartDate,
@@ -235,7 +235,7 @@ export const SalesInvoiceView = () => {
         );
         setSalesInvoiceData(response.data.results);
         const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
+        setTotalPages(Math.ceil(total / 25));
       }
       setOpen(false);
     } catch (err) {
@@ -284,7 +284,7 @@ export const SalesInvoiceView = () => {
       if (response) {
         setSalesInvoiceData(response.data.results);
         const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
+        setTotalPages(Math.ceil(total / 25));
       } else {
         getSalesInvoiceDetails();
         setSearchQuery("");
@@ -296,7 +296,7 @@ export const SalesInvoiceView = () => {
     }
   };
 
-  const handlePageClick = async (event, value) => {
+  const handlePageChange = async (event, value) => {
     try {
       const page = value;
       setCurrentPage(page);
@@ -314,7 +314,7 @@ export const SalesInvoiceView = () => {
         if (response) {
           setSalesInvoiceData(response.data.results);
           const total = response.data.count;
-          setpageCount(Math.ceil(total / 25));
+          setTotalPages(Math.ceil(total / 25));
         } else {
           getSalesInvoiceDetails();
           setSearchQuery("");
@@ -331,7 +331,7 @@ export const SalesInvoiceView = () => {
         if (response) {
           setSalesInvoiceData(response.data.results);
           const total = response.data.count;
-          setpageCount(Math.ceil(total / 25));
+          setTotalPages(Math.ceil(total / 25));
         } else {
           getSalesInvoiceDetails();
           setSearchQuery("");
@@ -345,7 +345,7 @@ export const SalesInvoiceView = () => {
           );
         setSalesInvoiceData(response.data.results);
         const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
+        setTotalPages(Math.ceil(total / 25));
       }
 
       setOpen(false);
@@ -468,12 +468,18 @@ export const SalesInvoiceView = () => {
             )}
             <Button
               sx={{ marginLeft: "1em", marginRight: "1em" }}
+              onClick={() => setOpenModalBI(true)}
+              variant="contained"
+            >
+              BranchInvoice
+            </Button>
+            <Button
+              sx={{ marginLeft: "1em", marginRight: "1em" }}
               onClick={() => setOpenPopup(true)}
               variant="contained"
               color="success"
-              startIcon={<AddIcon />}
             >
-              Create SalesInvoice
+              SalesInvoice
             </Button>
 
             <Button variant="contained" onClick={handleDownload}>
@@ -544,40 +550,13 @@ export const SalesInvoiceView = () => {
                   <StyledTableCell align="center">
                     PROFORMA INVOICE LIST
                   </StyledTableCell>
-
+                  <StyledTableCell align="center">
+                    PROFIT/LOSS %
+                  </StyledTableCell>
                   <StyledTableCell align="center">Action</StyledTableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {/* {salesInvoiceData.map((row, i) => {
-                  return (
-                    <StyledTableRow key={i}>
-                      <StyledTableCell align="center">
-                        {row.invoice_no}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.igst}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.product}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.amount}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.total}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        <Button
-                          variant="contained"
-                          onClick={() => openInPopup(row.invoice_no)}
-                        >
-                          View
-                        </Button>
-                      </StyledTableCell>
-                    </StyledTableRow>
-                  );
-                })} */}
                 {salesInvoiceData.map((row) => (
                   <Row
                     key={row.id}
@@ -590,11 +569,23 @@ export const SalesInvoiceView = () => {
             </Table>
           </TableContainer>
           <CustomPagination
-            pageCount={pageCount}
-            handlePageClick={handlePageClick}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            handlePageChange={handlePageChange}
           />
         </Paper>
       </Grid>
+      <Popup
+        fullScreen={true}
+        title={"Create Branch Invoice"}
+        openPopup={openModalBI}
+        setOpenPopup={setOpenModalBI}
+      >
+        <BranchInvoicesCreate
+          getSalesInvoiceDetails={getSalesInvoiceDetails}
+          setOpenPopup={setOpenPopup}
+        />
+      </Popup>
       <Popup
         fullScreen={true}
         title={"Create Sales Invoice"}
@@ -604,7 +595,6 @@ export const SalesInvoiceView = () => {
         <SalesInvoiceCreate
           getSalesInvoiceDetails={getSalesInvoiceDetails}
           setOpenPopup={setOpenPopup}
-          loading={loading}
         />
       </Popup>
       <Popup
@@ -719,11 +709,16 @@ function Row(props) {
         </StyledTableCell>
         <StyledTableCell align="center">{row.generation_date}</StyledTableCell>
         <StyledTableCell align="center">{row.invoice_no}</StyledTableCell>
-        <StyledTableCell align="center">{row.seller_unit}</StyledTableCell>
+        <StyledTableCell align="center">
+          {row.seller_details.unit}
+        </StyledTableCell>
         <StyledTableCell align="center">{row.amount}</StyledTableCell>
-        <StyledTableCell align="center">{row.gst}</StyledTableCell>
+        <StyledTableCell align="center">
+          {row.seller_details.gst}
+        </StyledTableCell>
         <StyledTableCell align="center">{row.total}</StyledTableCell>
         <StyledTableCell align="center">{row.company}</StyledTableCell>
+
         {row.proforma_invoice_list !== null ? (
           <StyledTableCell align="center">
             {`${row.proforma_invoice_list},`}
@@ -731,6 +726,9 @@ function Row(props) {
         ) : (
           <StyledTableCell align="center"></StyledTableCell>
         )}
+        <StyledTableCell align="center">
+          {row.profit_or_loss_pct}
+        </StyledTableCell>
         <StyledTableCell align="center">
           <Button variant="text" onClick={() => openInPopup(row.invoice_no)}>
             View
@@ -757,19 +755,25 @@ function Row(props) {
               <Table size="small" aria-label="purchases">
                 <TableHead>
                   <TableRow>
-                    <TableCell>PRODUCT CODE</TableCell>
-                    <TableCell>QUANTITY</TableCell>
-                    <TableCell align="right">AMOUNT</TableCell>
+                    <TableCell align="center">PRODUCT CODE</TableCell>
+                    <TableCell align="center">QUANTITY</TableCell>
+                    <TableCell align="center">AMOUNT</TableCell>
+                    <TableCell align="center">PROFIT/LOSS(PER UNIT)</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {row.products_si.map((historyRow) => (
                     <TableRow key={historyRow.date}>
-                      <TableCell component="th" scope="row">
+                      <TableCell component="th" scope="row" align="center">
                         {historyRow.product}
                       </TableCell>
-                      <TableCell>{historyRow.quantity}</TableCell>
-                      <TableCell align="right">{historyRow.amount}</TableCell>
+                      <TableCell align="center">
+                        {historyRow.quantity}
+                      </TableCell>
+                      <TableCell align="center">{historyRow.amount}</TableCell>
+                      <TableCell align="center">
+                        {historyRow.profit_or_loss}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

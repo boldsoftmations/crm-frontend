@@ -33,13 +33,13 @@ export const PriceApprovalPI = () => {
   const [open, setOpen] = useState(false);
   const [errMsg, setErrMsg] = useState("");
   const [invoiceData, setInvoiceData] = useState([]);
-  const [pageCount, setpageCount] = useState(0);
   const [filterType, setFilterType] = useState("");
   const [searchValue, setSearchValue] = useState("");
   const [statusValue, setStatusValue] = useState("");
   const [typeValue, setTypeValue] = useState("");
   const [assign, setAssign] = useState("");
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const data = useSelector((state) => state.auth);
   const users = data.profile;
   const assigned = users.sales_users || [];
@@ -91,15 +91,6 @@ export const PriceApprovalPI = () => {
     setOpenPopup2(true);
   };
 
-  const openInPopup2 = (item) => {
-    setIDForEdit(item);
-    if (item.type === "Customer") {
-      setOpenPopup(true);
-    } else {
-      setOpenPopup1(true);
-    }
-  };
-
   useEffect(() => {
     getAllSellerAccountsDetails();
     getProformaInvoiceData();
@@ -130,7 +121,7 @@ export const PriceApprovalPI = () => {
       });
       setInvoiceData(response.data.results);
       const total = response.data.count;
-      setpageCount(Math.ceil(total / 25));
+      setTotalPages(Math.ceil(total / 25));
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -156,7 +147,6 @@ export const PriceApprovalPI = () => {
   const getSearchData = async (filterValue) => {
     try {
       setOpen(true);
-      const Search = searchValue ? "search" : "";
       if (filterValue || searchValue) {
         const response = await InvoiceServices.getAllPIData({
           piType: "price_approval",
@@ -167,7 +157,7 @@ export const PriceApprovalPI = () => {
         if (response) {
           setInvoiceData(response.data.results);
           const total = response.data.count;
-          setpageCount(Math.ceil(total / 25));
+          setTotalPages(Math.ceil(total / 25));
         } else {
           getProformaInvoiceData();
           setSearchValue(null);
@@ -182,7 +172,7 @@ export const PriceApprovalPI = () => {
     }
   };
 
-  const handlePageClick = async (event, value) => {
+  const handlePageChange = async (event, value) => {
     try {
       const page = value;
       setCurrentPage(page);
@@ -205,7 +195,7 @@ export const PriceApprovalPI = () => {
       if (response) {
         setInvoiceData(response.data.results);
         const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
+        setTotalPages(Math.ceil(total / 25));
       } else {
         getProformaInvoiceData();
         setSearchValue(null);
@@ -387,8 +377,9 @@ export const PriceApprovalPI = () => {
             Styles={{ paddingLeft: "10px", paddingRight: "10px" }}
           />
           <CustomPagination
-            pageCount={pageCount}
-            handlePageClick={handlePageClick}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            handlePageChange={handlePageChange}
           />
         </Paper>
       </Grid>

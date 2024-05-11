@@ -8,19 +8,24 @@ import { Popup } from "../../../Components/Popup";
 import { StoresInventoryCreate } from "./StoresInventoryCreate";
 import { Box, Button, Grid, Paper } from "@mui/material";
 import { useSelector } from "react-redux";
-import CustomTextField from "../../../Components/CustomTextField";
+import SearchComponent from "../../../Components/SearchComponent ";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../../Components/MessageAlert";
 
 export const StoresInventoryView = () => {
   const [open, setOpen] = useState(false);
   const [openPopup, setOpenPopup] = useState(false);
   const [storesInventoryData, setStoresInventoryData] = useState([]);
   const [pageCount, setPageCount] = useState(0);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [exportData, setExportData] = useState([]);
   const csvLinkRef = useRef(null);
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   const handleDownload = async () => {
     try {
@@ -29,6 +34,7 @@ export const StoresInventoryView = () => {
       setTimeout(() => {
         csvLinkRef.current.link.click();
       });
+      handleSuccess("CSV file downloaded successfully");
     } catch (error) {
       console.log("CSVLink Download error", error);
     }
@@ -85,8 +91,8 @@ export const StoresInventoryView = () => {
   }, []);
 
   useEffect(() => {
-    getAllStoresInventoryDetails(currentPage);
-  }, [currentPage, getAllStoresInventoryDetails]);
+    getAllStoresInventoryDetails(currentPage, searchQuery);
+  }, [currentPage, searchQuery]);
 
   const getAllStoresInventoryDetails = useCallback(
     async (page, search = searchQuery) => {
@@ -97,96 +103,113 @@ export const StoresInventoryView = () => {
           search
         );
         setStoresInventoryData(response.data.results);
-        setPageCount(Math.ceil(response.data.count / 25));
-        setOpen(false);
+        setTotalPages(Math.ceil(response.data.count / 25));
       } catch (error) {
+        handleError(error);
+      } finally {
         setOpen(false);
-        console.error("error", error);
       }
     },
-    [searchQuery]
+    []
   );
 
-  const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    setCurrentPage(1);
   };
 
-  const handlePageClick = (event, value) => {
+  const handleReset = () => {
+    setSearchQuery("");
+    setCurrentPage(1);
+  };
+
+  const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
 
   const Tableheaders = [
     "PRODUCT",
+    "SOURCE",
+    "SOURCE KEY",
     "SELLER STATE",
     "DESCRIPTION",
-    "DATE",
     "UNIT",
     "QUANTITY",
     "PENDING QUANTITY",
+    "MFG. DATE",
+    "EXPIRY DATE",
     "RATE",
     "AMOUNT",
   ];
 
   const Tabledata = storesInventoryData.map((row, i) => ({
     product: row.product,
+    source: row.source,
+    source_key: row.source_key,
     seller_account: row.seller_account,
     description: row.description,
-    created_on: row.created_on,
     unit: row.unit,
     quantity: row.quantity,
     pending_quantity: row.pending_quantity,
+    created_on: row.created_on,
+    expiry_date: row.expiry_date,
     rate: row.rate,
     amount: row.amount,
   }));
 
   return (
     <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
       <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
-        <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            p: 2,
+          }}
+        >
           <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} sm={3}>
-              <CustomTextField
-                size="small"
-                label="Search"
-                variant="outlined"
-                value={searchQuery}
-                onChange={handleSearchChange}
-                fullWidth
-              />
-            </Grid>
-            <Grid item xs={12} sm={1}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() =>
-                  getAllStoresInventoryDetails(currentPage, searchQuery)
-                } // Call `handleSearch` when the button is clicked
-              >
-                Search
-              </Button>
-            </Grid>
-            <Grid item xs={12} sm={1}>
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={() => {
-                  setSearchQuery("");
-                  getAllStoresInventoryDetails(1, "");
+            <Box sx={{ flexGrow: 1, flexBasis: "40%", minWidth: "300px" }}>
+              <SearchComponent onSearch={handleSearch} onReset={handleReset} />
+            </Box>
+
+            <Box sx={{ flexGrow: 2, textAlign: "center", minWidth: "150px" }}>
+              <h3
+                style={{
+                  margin: 0,
+                  fontSize: "24px",
+                  color: "rgb(34, 34, 34)",
+                  fontWeight: 800,
                 }}
               >
-                Reset
-              </Button>
-            </Grid>
-          </Grid>
-        </Box>
-        <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} sm={5}>
-              <Button onClick={handleDownload} variant="contained">
+                Stores Inventory
+              </h3>
+            </Box>
+
+            <Box
+              sx={{
+                flexGrow: 1,
+                flexBasis: "40%",
+                display: "flex",
+                justifyContent: "flex-end",
+                minWidth: "300px",
+              }}
+            >
+              <Button
+                onClick={handleDownload}
+                variant="contained"
+                sx={{ marginRight: 1 }}
+              >
                 Download CSV
               </Button>
-
               {exportData.length > 0 && (
                 <CSVLink
                   data={[...exportData]}
@@ -197,26 +220,11 @@ export const StoresInventoryView = () => {
                   style={{
                     textDecoration: "none",
                     outline: "none",
-                    height: "5vh",
+                    marginRight: 1,
                   }}
                 />
               )}
-            </Grid>
-
-            <Grid item xs={12} sm={6}>
-              <h3
-                style={{
-                  textAlign: "left",
-                  fontSize: "24px",
-                  color: "rgb(34, 34, 34)",
-                  fontWeight: 800,
-                }}
-              >
-                Stores Inventory
-              </h3>
-            </Grid>
-            <Grid item xs={12} sm={1}>
-              {(userData.groups.includes("Accounts") ||
+              {/* {(userData.groups.includes("Accounts") ||
                 userData.groups.includes("Director") ||
                 userData.groups.includes("Production")) && (
                 <Button
@@ -226,8 +234,8 @@ export const StoresInventoryView = () => {
                 >
                   Add
                 </Button>
-              )}
-            </Grid>
+              )} */}
+            </Box>
           </Grid>
         </Box>
 
@@ -240,8 +248,8 @@ export const StoresInventoryView = () => {
 
         <CustomPagination
           currentPage={currentPage}
-          pageCount={pageCount}
-          handlePageClick={handlePageClick}
+          totalPages={totalPages}
+          handlePageChange={handlePageChange}
         />
         <Popup
           maxWidth="xl"
@@ -250,6 +258,8 @@ export const StoresInventoryView = () => {
           setOpenPopup={setOpenPopup}
         >
           <StoresInventoryCreate
+            currentPage={currentPage}
+            searchQuery={searchQuery}
             setOpenPopup={setOpenPopup}
             getAllStoresInventoryDetails={getAllStoresInventoryDetails}
           />

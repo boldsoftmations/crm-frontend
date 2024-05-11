@@ -7,7 +7,7 @@ import { CustomPagination } from "../Components/CustomPagination";
 import InvoiceServices from "../services/InvoiceService";
 
 export const DispatchData = (props) => {
-  const { dispatchDataByID, setOpenPopup2 } = props;
+  const { dispatchDataByID } = props;
   const [open, setOpen] = useState(false);
   const [leads, setLeads] = useState([]);
   const [pageCount, setpageCount] = useState(0);

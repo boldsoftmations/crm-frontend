@@ -1,23 +1,20 @@
 import { Box, Button, Grid } from "@mui/material";
-import React, { useEffect, useRef, useState } from "react";
-
+import React, { memo, useCallback, useEffect, useState } from "react";
 import ProductService from "../../../services/ProductService";
-
-import "../../CommonStyle.css";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomTextField from "../../../Components/CustomTextField";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../../Components/MessageAlert";
 
-export const CreateProductCode = (props) => {
-  const { setOpenPopup, getproductCodes } = props;
+export const CreateProductCode = memo((props) => {
+  const { setOpenPopup, getproductCodes, currentPage, searchQuery } = props;
   const [description, setDescription] = useState([]);
   const [allDescription, seAllDescription] = useState([]);
   const [productCode, setProductCode] = useState([]);
-
   const [open, setOpen] = useState(false);
-
-  const errRef = useRef();
-  const [errMsg, setErrMsg] = useState("");
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -30,73 +27,52 @@ export const CreateProductCode = (props) => {
 
   const getNoDescriptionData = async () => {
     try {
-      setOpen(true);
       const res = await ProductService.getNoDescription();
       seAllDescription(res.data);
-
-      setOpen(false);
     } catch (error) {
-      console.log("error", error);
-      setOpen(false);
+      console.log("error No Description Fetching Data", error);
     }
   };
 
-  const createProductCode = async (e) => {
-    try {
-      e.preventDefault();
-      setOpen(true);
-      const data = {
-        code: productCode.code,
-        description: description,
-      };
-      await ProductService.createProductCode(data);
-      setOpenPopup(false);
-      setOpen(false);
-      getproductCodes();
-    } catch (err) {
-      console.log("error update color :>> ", err);
-      setOpen(false);
-      if (!err.response) {
-        setErrMsg("No Server Response");
-      } else if (err.response.status === 400) {
-        setErrMsg(
-          err.response.data.errors
-            ? err.response.data.errors.code
-            : err.response.data.errors.non_field_errors
-        );
-      } else if (err.response.status === 401) {
-        setErrMsg(err.response.data.errors.code);
-      } else {
-        setErrMsg("Server Error");
+  const createProductCode = useCallback(
+    async (e) => {
+      try {
+        e.preventDefault();
+        setOpen(true);
+        const data = {
+          code: productCode.code,
+          description: description,
+        };
+        const response = await ProductService.createProductCode(data);
+        const successMessage =
+          response.data.message || "Product Code Created successfully";
+        handleSuccess(successMessage);
+
+        setTimeout(() => {
+          setOpenPopup(false);
+          getproductCodes(currentPage, searchQuery);
+        }, 300);
+      } catch (error) {
+        handleError(error); // Handle errors from the API call
+      } finally {
+        setOpen(false); // Always close the loader
       }
-      errRef.current.focus();
-    }
-  };
+    },
+    [productCode, currentPage, searchQuery]
+  );
 
   return (
     <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
 
       <Box component="form" noValidate onSubmit={(e) => createProductCode(e)}>
         <Grid container spacing={2}>
-          <p
-            style={{
-              width: "100%",
-              padding: 10,
-              marginBottom: 10,
-              borderRadius: 4,
-              backgroundColor: errMsg ? "red" : "offscreen",
-              textAlign: "center",
-              color: "white",
-              textTransform: "capitalize",
-            }}
-            ref={errRef}
-            className={errMsg ? "errmsg" : "offscreen"}
-            aria-live="assertive"
-          >
-            {errMsg}
-          </p>
-
           <Grid item xs={12} sm={6}>
             <CustomTextField
               name="code"
@@ -134,4 +110,4 @@ export const CreateProductCode = (props) => {
       </Box>
     </>
   );
-};
+});

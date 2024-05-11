@@ -14,6 +14,7 @@ export const UpdateWareHouseDetails = (props) => {
   const [inputValue, setInputValue] = useState([]);
   const data = useSelector((state) => state.auth);
   const [pinCodeData, setPinCodeData] = useState([]);
+
   const [selectedcontact, setSelectedContact] = useState("");
   const handleInputChange = (event) => {
     const { name, value } = event.target;

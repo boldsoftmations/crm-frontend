@@ -9,8 +9,8 @@ import CustomTextField from "../../Components/CustomTextField";
 
 export const DescriptionWiseForecastView = () => {
   const [open, setOpen] = useState(false);
-  const [pageCount, setPageCount] = useState(0);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [descriptionWiseForecast, setDescriptionWiseForecast] = useState([]);
   const [exportData, setExportData] = useState([]);
@@ -185,7 +185,7 @@ export const DescriptionWiseForecastView = () => {
           );
         setDescriptionWiseForecast(response.data.results);
         const total = response.data.count;
-        setPageCount(Math.ceil(total / 25));
+        setTotalPages(Math.ceil(total / 25));
         setOpen(false);
       } catch (error) {
         console.error("Error fetching Customer Having Forecast", error);
@@ -199,7 +199,7 @@ export const DescriptionWiseForecastView = () => {
     setSearchQuery(event.target.value);
   };
 
-  const handlePageClick = (event, value) => {
+  const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
 
@@ -370,8 +370,9 @@ export const DescriptionWiseForecastView = () => {
             Styles={{ paddingLeft: "10px", paddingRight: "10px" }}
           />
           <CustomPagination
-            pageCount={pageCount}
-            handlePageClick={handlePageClick}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            handlePageChange={handlePageChange}
           />
         </Paper>
       </Grid>

@@ -14,9 +14,9 @@ import { ScriptCreate } from "./ScriptCreate";
 import { Popup } from "../../../Components/Popup";
 import { ScriptUpdate } from "./ScriptUpdate";
 import { CustomPagination } from "../../../Components/CustomPagination";
-import CustomTextField from "../../../Components/CustomTextField";
 import { useSelector } from "react-redux";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import SearchComponent from "../../../Components/SearchComponent ";
 
 export const ScriptView = () => {
   const [script, setScript] = useState([]);
@@ -26,13 +26,9 @@ export const ScriptView = () => {
   const [recordForEdit, setRecordForEdit] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageCount, setPageCount] = useState(0); // Assuming you know how many pages there are
+  const [totalPages, setTotalPages] = useState(0);
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
-
-  useEffect(() => {
-    getScriptDetails(currentPage);
-  }, [currentPage, getScriptDetails]);
 
   const formatDate = useCallback((dateString) => {
     const options = {
@@ -54,7 +50,7 @@ export const ScriptView = () => {
         const response = await UserProfileService.getAllScriptData(page, query);
         setScript(response.data.results);
         const total = response.data.count;
-        setPageCount(Math.ceil(total / 25));
+        setTotalPages(Math.ceil(total / 25));
         setOpen(false);
       } catch (error) {
         console.error("Error fetching scripts", error);
@@ -64,11 +60,21 @@ export const ScriptView = () => {
     [searchQuery]
   );
 
-  const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
+  useEffect(() => {
+    getScriptDetails(currentPage);
+  }, [currentPage, searchQuery, getScriptDetails]);
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    setCurrentPage(1);
   };
 
-  const handlePageClick = (event, value) => {
+  const handleReset = () => {
+    setSearchQuery("");
+    setCurrentPage(1);
+  };
+
+  const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
 
@@ -88,38 +94,7 @@ export const ScriptView = () => {
           sx={{ marginRight: 5, marginLeft: 5 }}
         >
           <Grid item xs={12} sm={6}>
-            <CustomTextField
-              size="small"
-              label="Search"
-              variant="outlined"
-              value={searchQuery}
-              onChange={handleSearchChange}
-              fullWidth
-            />
-          </Grid>
-          <Grid item xs={12} sm={2}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => getScriptDetails(currentPage, searchQuery)}
-              fullWidth
-            >
-              Search
-            </Button>
-          </Grid>
-          <Grid item xs={12} sm={2}>
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={() => {
-                setSearchQuery("");
-                setCurrentPage(1);
-                getScriptDetails(1, "");
-              }}
-              fullWidth
-            >
-              Reset
-            </Button>
+            <SearchComponent onSearch={handleSearch} onReset={handleReset} />
           </Grid>
           {(userData.groups.includes("Sales Manager") ||
             userData.groups.includes("Sales Deputy Manager") ||
@@ -215,8 +190,8 @@ export const ScriptView = () => {
       <Box sx={{ marginBottom: 4 }}>
         <CustomPagination
           currentPage={currentPage}
-          pageCount={pageCount}
-          handlePageClick={handlePageClick}
+          totalPages={totalPages}
+          handlePageChange={handlePageChange}
         />
       </Box>
       <Popup

@@ -7,7 +7,6 @@ import { CustomSearchWithButton } from "../../../Components/CustomSearchWithButt
 import { CustomTable } from "./../../../Components/CustomTable";
 import { CustomPagination } from "../../../Components/CustomPagination";
 import LeadServices from "../../../services/LeadService";
-import CustomTextField from "../../../Components/CustomTextField";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 export const InActiveCustomer = () => {
@@ -16,8 +15,8 @@ export const InActiveCustomer = () => {
   const [open, setOpen] = useState(false);
   const [inActiveCustomerData, setInActiveCustomerData] = useState([]);
   const [recordForEdit, setRecordForEdit] = useState();
-  const [pageCount, setpageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const [assigned, setAssigned] = useState([]);
   const [assign, setAssign] = useState([]);
@@ -84,7 +83,7 @@ export const InActiveCustomer = () => {
       console.log("response inactive", response);
       console.log("api calling ended after response");
       setInActiveCustomerData(response.data.results);
-      setpageCount(Math.ceil(response.data.count / 25));
+      setTotalPages(Math.ceil(response.data.count / 25));
     } catch (error) {
       setOpen(false);
       console.log("error InActive Customer Api", error);
@@ -101,7 +100,7 @@ export const InActiveCustomer = () => {
           searchValue: value,
         });
         setInActiveCustomerData(response.data.results);
-        setpageCount(Math.ceil(response.data.count / 25));
+        setTotalPages(Math.ceil(response.data.count / 25));
       } else {
         getInActiveCustomerDetails();
       }
@@ -112,7 +111,7 @@ export const InActiveCustomer = () => {
     }
   };
 
-  const handlePageClick = async (event, value) => {
+  const handlePageChange = async (event, value) => {
     try {
       setOpen(true);
       setCurrentPage(value);
@@ -121,7 +120,7 @@ export const InActiveCustomer = () => {
         searchValue: filterSelectedQuery,
       });
       setInActiveCustomerData(response.data.results);
-      setpageCount(Math.ceil(response.data.count / 25));
+      setTotalPages(Math.ceil(response.data.count / 25));
     } catch (error) {
       console.log("error", error);
     } finally {
@@ -275,8 +274,8 @@ export const InActiveCustomer = () => {
         >
           <CustomPagination
             currentPage={currentPage}
-            pageCount={pageCount}
-            handlePageClick={handlePageClick}
+            totalPages={totalPages}
+            handlePageChange={handlePageChange}
           />
         </div>
       </div>

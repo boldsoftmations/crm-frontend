@@ -1,14 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Grid,
   Button,
   Paper,
   Box,
-  IconButton,
-  Select,
-  FormControl,
-  InputLabel,
-  MenuItem,
+  Typography,
   styled,
   Table,
   TableBody,
@@ -20,16 +16,15 @@ import {
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
 import LeadServices from "../../services/LeadService";
-import ClearIcon from "@mui/icons-material/Clear";
-import "../CommonStyle.css";
 import { Popup } from "../../Components/Popup";
 import { UpdateLeads } from "./UpdateLeads";
-import { CustomSearch } from "../../Components/CustomSearch";
 import { CustomLoader } from "../../Components/CustomLoader";
 import { CustomPagination } from "../../Components/CustomPagination";
 import Option from "../../Options/Options";
-import CustomTextField from "../../Components/CustomTextField";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
+import { useNotificationHandling } from "../../Components/useNotificationHandling ";
+import SearchComponent from "../../Components/SearchComponent ";
+import { MessageAlert } from "../../Components/MessageAlert";
 
 export const UnassignedLead = () => {
   const [leads, setLeads] = useState([]);
@@ -39,18 +34,15 @@ export const UnassignedLead = () => {
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const [assign, setAssign] = useState("");
   const [assigned, setAssigned] = useState([]);
-  const [pageCount, setpageCount] = useState(0);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const [openPopup, setOpenPopup] = useState(false);
   const [recordForEdit, setRecordForEdit] = useState(null);
   const [referenceData, setReferenceData] = useState([]);
   const [leadsByID, setLeadsByID] = useState(null);
   const [selectedRows, setSelectedRows] = useState([]);
-
-  const handleInputChange = (event) => {
-    setFilterSelectedQuery(event.target.value);
-    getSearchData(event.target.value);
-  };
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   const openInPopup = (item) => {
     setLeadsByID(item.lead_id);
@@ -76,29 +68,20 @@ export const UnassignedLead = () => {
     });
   };
 
-  const getResetData = () => {
-    setFilterSelectedQuery("");
-  };
+  useEffect(() => {
+    FetchData();
+    getAssignedData();
+  }, []);
 
   const FetchData = async (value) => {
     try {
       setOpen(true);
-      setFilterQuery(value);
-      if (value.includes("references__source")) {
-        const res = await LeadServices.getAllRefernces();
-        setReferenceData(res.data);
-      }
-      setOpen(false);
+      const res = await LeadServices.getAllRefernces();
+      setReferenceData(res.data);
     } catch (error) {
       console.log("error", error);
-      setOpen(false);
     }
   };
-
-  useEffect(() => {
-    getUnassigned();
-    getAssignedData();
-  }, []);
 
   const getAssignedData = async () => {
     try {
@@ -116,247 +99,161 @@ export const UnassignedLead = () => {
     }
   };
 
-  // Main function to get unassigned leads
-  const getUnassigned = async () => {
+  useEffect(() => {
+    getUnassigned();
+  }, [currentPage, filterQuery, filterSelectedQuery]);
+
+  const getUnassigned = useCallback(async () => {
     try {
       setOpen(true);
-      let response;
-
-      if (currentPage || filterSelectedQuery) {
-        response = await LeadServices.getAllPaginateWithFilterUnassigned(
-          currentPage,
-          filterQuery,
-          filterSelectedQuery
-        );
-      } else if (currentPage) {
-        response = await LeadServices.getAllPaginateUnassigned(currentPage);
-      } else {
-        response = await LeadServices.getAllUnassignedData();
-      }
-
-      if (response) {
-        setLeads(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      }
+      const response = await LeadServices.getAllUnassignedData(
+        currentPage,
+        filterQuery,
+        filterSelectedQuery
+      );
+      setLeads(response.data.results);
+      setTotalPages(Math.ceil(response.data.count / 25));
     } catch (error) {
-      setOpen(false);
-      // Handle the error as per your requirement
-      console.error(error);
+      handleError(error);
     } finally {
       setOpen(false);
     }
+  }, [currentPage, filterQuery, filterSelectedQuery]);
+
+  const handleFilter = (event) => {
+    setFilterQuery(event.target.value);
+    setCurrentPage(1);
   };
 
-  const getSearchData = async (value) => {
-    try {
-      setOpen(true);
-      const filterSearch = value;
-      const response = await LeadServices.getAllFilterByUnassignedData(
-        filterQuery,
-        filterSearch
-      );
+  const handleSearch = (query) => {
+    setFilterSelectedQuery(query);
+    setCurrentPage(1);
+  };
 
-      if (response) {
-        setLeads(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      } else {
-        getUnassigned();
-        setFilterSelectedQuery("");
+  const handleReset = () => {
+    setFilterSelectedQuery("");
+    setCurrentPage(1);
+  };
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
+
+  const updateAssigned = useCallback(
+    async (e) => {
+      try {
+        e.preventDefault();
+        setOpen(true);
+        const data = {
+          contact: recordForEdit.contact ? recordForEdit.contact : null,
+          business_mismatch: recordForEdit.business_mismatch
+            ? recordForEdit.business_mismatch
+            : "No",
+          description: recordForEdit.description || [],
+          interested: recordForEdit.interested
+            ? recordForEdit.interested
+            : "Yes",
+          assigned_to: assign ? assign : recordForEdit.assigned_to,
+          references: recordForEdit.references
+            ? recordForEdit.references
+            : "Indiamart",
+        };
+        const req = {
+          lead_id: selectedRows,
+          assign_to: assign,
+        };
+        let response; // Declare response variable here
+        if (selectedRows.length > 0) {
+          response = await LeadServices.AssignMultipleLeads(req);
+        } else {
+          response = await LeadServices.updateLeads(
+            recordForEdit.lead_id,
+            data
+          );
+        }
+        const successMessage =
+          response.data.message || "UnAssigned Leads Created successfully";
+        handleSuccess(successMessage);
+
+        setTimeout(() => {
+          setModalOpen(false);
+          getUnassigned(currentPage, filterQuery, filterSelectedQuery);
+        }, 300);
+      } catch (error) {
+        handleError(error);
+      } finally {
+        setOpen(false);
       }
-      setOpen(false);
-    } catch (error) {
-      console.log("error Search leads", error);
-      setOpen(false);
-    }
-  };
-
-  const handlePageClick = async (event, value) => {
-    try {
-      const page = value;
-      setCurrentPage(page);
-      setOpen(true);
-      if (filterSelectedQuery) {
-        const response = await LeadServices.getAllPaginateWithFilterUnassigned(
-          page,
-          filterQuery,
-          filterSelectedQuery
-        );
-        setLeads(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      } else {
-        const response = await LeadServices.getAllPaginateUnassigned(page);
-        setLeads(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      }
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
-  };
-
-  const updateAssigned = async (e) => {
-    try {
-      e.preventDefault();
-      setOpen(true);
-      const data = {
-        contact: recordForEdit.contact ? recordForEdit.contact : null,
-        business_mismatch: recordForEdit.business_mismatch
-          ? recordForEdit.business_mismatch
-          : "No",
-        description: recordForEdit.description || [],
-        interested: recordForEdit.interested ? recordForEdit.interested : "Yes",
-        assigned_to: assign ? assign : recordForEdit.assigned_to,
-        references: recordForEdit.references
-          ? recordForEdit.references
-          : "Indiamart",
-      };
-      const req = {
-        lead_id: selectedRows,
-        assign_to: assign,
-      };
-      selectedRows.length > 0
-        ? await LeadServices.AssignMultipleLeads(req)
-        : await LeadServices.updateLeads(recordForEdit.lead_id, data);
-      getUnassigned();
-      setOpen(false);
-      setModalOpen(false);
-    } catch (error) {
-      console.log("error :>> ", error);
-      setOpen(false);
-    }
-  };
-
-  const Tabledata = leads.map((row, i) => ({
-    id: row.lead_id,
-    name: row.name,
-    contact: row.contact,
-    product: row.query_product_name,
-    assigned_to: row.assigned_to,
-    company: row.company,
-    references: row.references,
-    city: row.city,
-    state: row.state,
-  }));
-
-  const Tableheaders = [
-    "ID",
-    "NAME",
-    "CONTACT",
-    "PRODUCT",
-    "ASSIGNED TO",
-    "COMPANY",
-    "REFERENCE",
-    "CITY",
-    "STATE",
-    "ACTION",
-  ];
+    },
+    [recordForEdit, assign, currentPage, filterQuery, filterSelectedQuery]
+  );
 
   return (
     <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
       <Grid item xs={12}>
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
-          <Box display="flex">
-            <Box flexGrow={1}>
-              <FormControl fullWidth size="small">
-                <InputLabel id="demo-simple-select-label">Fliter By</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  name="values"
-                  label="Fliter By"
-                  value={filterQuery}
-                  onChange={(event) => FetchData(event.target.value)}
-                >
-                  {FilterOptions.map((option, i) => (
-                    <MenuItem key={i} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Box>
-            <Box flexGrow={1}>
-              {filterQuery === "references__source" && (
-                <FormControl
-                  sx={{ minWidth: "200px", marginLeft: "1em" }}
+          <Box sx={{ mb: 2 }}>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={12} sm={6} md={3}>
+                <CustomAutocomplete
                   size="small"
-                >
-                  <InputLabel id="demo-simple-select-label">
-                    Reference
-                  </InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    name="values"
-                    label="Reference"
-                    value={filterSelectedQuery}
-                    onChange={(event) => handleInputChange(event)}
-                    sx={{
-                      "& .MuiSelect-iconOutlined": {
-                        display: filterSelectedQuery ? "none" : "",
-                      },
-                      "&.Mui-focused .MuiIconButton-root": {
-                        color: "primary.main",
-                      },
-                    }}
-                    endAdornment={
-                      <IconButton
-                        sx={{
-                          visibility: filterSelectedQuery
-                            ? "visible"
-                            : "hidden",
-                        }}
-                        onClick={getResetData}
-                      >
-                        <ClearIcon />
-                      </IconButton>
-                    }
-                  >
-                    {referenceData.map((option) => (
-                      <MenuItem key={option.id} value={option.source}>
-                        {option.source}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              )}
-              {filterQuery === "search" && (
-                <CustomSearch
-                  filterSelectedQuery={filterSelectedQuery}
-                  handleInputChange={handleInputChange}
-                  getResetData={getResetData}
+                  value={filterQuery}
+                  onChange={(event, value) => handleFilter(value)}
+                  options={referenceData.map((option) => option.source)}
+                  getOptionLabel={(option) => option}
+                  label="Filter By References"
                 />
-              )}
-            </Box>
-            <Box flexGrow={2}>
-              <h3
-                style={{
-                  textAlign: "left",
-                  marginBottom: "1em",
-                  fontSize: "24px",
-                  color: "rgb(34, 34, 34)",
-                  fontWeight: 800,
-                }}
-              >
-                Unassigned Leads
-              </h3>
-            </Box>
-            {selectedRows.length > 0 && (
-              <Box flexGrow={0.5}>
-                <Button
-                  variant="contained"
-                  onClick={() => openInPopup2(selectedRows)}
+              </Grid>
+
+              <Grid item xs={12} sm={6} md={3}>
+                <SearchComponent
+                  onSearch={handleSearch}
+                  onReset={handleReset}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                {selectedRows.length > 0 && (
+                  <Button
+                    variant="contained"
+                    onClick={() => openInPopup2(selectedRows)}
+                  >
+                    Assign
+                  </Button>
+                )}
+              </Grid>
+            </Grid>
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              mt: 2,
+            }}
+          >
+            <Grid container justifyContent="center">
+              <Grid item xs={12}>
+                <Typography
+                  variant="h3"
+                  component="h3"
+                  sx={{
+                    textAlign: "center",
+                    fontSize: "24px",
+                    fontWeight: 800,
+                    color: "rgb(34, 34, 34)",
+                  }}
                 >
-                  Assign
-                </Button>
-              </Box>
-            )}
+                  UnAssigned Leads
+                </Typography>
+              </Grid>
+            </Grid>
           </Box>
 
           <TableContainer
@@ -448,8 +345,9 @@ export const UnassignedLead = () => {
           </TableContainer>
 
           <CustomPagination
-            pageCount={pageCount}
-            handlePageClick={handlePageClick}
+            totalPages={totalPages}
+            currentPage={currentPage}
+            handlePageChange={handlePageChange}
           />
         </Paper>
       </Grid>
@@ -463,6 +361,10 @@ export const UnassignedLead = () => {
           leadsByID={leadsByID}
           setOpenPopup={setOpenPopup}
           getAllleadsData={getUnassigned}
+          currentPage={currentPage}
+          filterQuery={filterQuery}
+          filterSelectedQuery={filterSelectedQuery}
+          searchQuery={null}
         />
       </Popup>
       <Popup
@@ -499,11 +401,6 @@ export const UnassignedLead = () => {
     </>
   );
 };
-
-const FilterOptions = [
-  { label: "References", value: "references__source" },
-  { label: "Search", value: "search" },
-];
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {

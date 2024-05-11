@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Box, Typography, Grid, Button, Paper } from "@mui/material";
+import { Box, Grid, Button, Paper } from "@mui/material";
 import { Popup } from "../../../Components/Popup";
 import { DesignationCreate } from "./DesignationCreate";
 import { DesignationUpdate } from "./DesignationUpdate";
@@ -17,7 +17,7 @@ export const DesignationView = () => {
   const [openUpdatePopup, setOpenUpdatePopup] = useState(false);
   const [recordForEdit, setRecordForEdit] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageCount, setPageCount] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
   useEffect(() => {
     getDesignationsDetails(currentPage);
@@ -30,7 +30,7 @@ export const DesignationView = () => {
         const response = await Hr.getDesignationsData(page, query);
         setDesignations(response.data.results);
         const total = response.data.count;
-        setPageCount(Math.ceil(total / 25));
+        setTotalPages(Math.ceil(total / 25));
         setOpen(false);
       } catch (error) {
         console.error("Error fetching scripts", error);
@@ -44,7 +44,7 @@ export const DesignationView = () => {
     setSearchQuery(event.target.value);
   };
 
-  const handlePageClick = (event, value) => {
+  const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
 
@@ -145,8 +145,9 @@ export const DesignationView = () => {
           />
 
           <CustomPagination
-            pageCount={pageCount}
-            handlePageClick={handlePageClick}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            handlePageChange={handlePageChange}
           />
           <Popup
             title="Add New Designation"

@@ -1,23 +1,37 @@
-import React, { useEffect, useState } from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import { Box, Button, Grid } from "@mui/material";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomTextField from "../../../Components/CustomTextField";
 import ProductService from "../../../services/ProductService";
 import LeadServices from "../../../services/LeadService";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../../Components/MessageAlert";
 
-export const LeadPotentialCreate = (props) => {
-  const { leadsByID, getLeadByID, setOpenModal } = props;
+export const LeadPotentialCreate = memo((props) => {
+  const {
+    leadsByID,
+    getLeadByID,
+    setOpenPopup,
+    getleads,
+    currentPage,
+    filterQuery,
+    filterSelectedQuery,
+    searchQuery,
+  } = props;
   const [open, setOpen] = useState(false);
   const [potential, setPotential] = useState([]);
   const [product, setProduct] = useState([]);
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
+
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setPotential({ ...potential, [name]: value });
   };
 
   const handleAutocompleteChange = (value) => {
-    setPotential({ ...potential, ["product"]: value });
+    setPotential((prev) => ({ ...prev, product: value }));
   };
 
   useEffect(() => {
@@ -36,32 +50,56 @@ export const LeadPotentialCreate = (props) => {
     }
   };
 
-  let handleSubmit = async (e) => {
-    e.preventDefault();
+  let handleSubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
 
-    try {
-      setOpen(true);
+      try {
+        setOpen(true);
 
-      const data = {
-        lead: leadsByID,
-        product: potential.product,
-        current_brand: potential.current_brand,
-        current_buying_price: potential.current_buying_price,
-        current_buying_quantity: potential.current_buying_quantity,
-        target_price: potential.target_price,
-        quantity: potential.quantity,
-      };
+        const data = {
+          lead: leadsByID,
+          product: potential.product,
+          current_brand: potential.current_brand,
+          current_buying_price: potential.current_buying_price,
+          current_buying_quantity: potential.current_buying_quantity,
+          target_price: potential.target_price,
+          quantity: potential.quantity,
+        };
 
-      await LeadServices.createPotentialLead(data);
+        const response = await LeadServices.createPotentialLead(data);
+        setOpen(false);
+        const successMessage =
+          response.data.message || "Potential Created successfully";
+        handleSuccess(successMessage);
 
-      setOpenModal(false);
-      await getLeadByID(leadsByID);
-      setOpen(false);
-    } catch (error) {
-      console.log("error:", error);
-      setOpen(false);
-    }
-  };
+        setTimeout(() => {
+          setOpenPopup(false);
+          if (getleads) {
+            getleads(
+              currentPage,
+              filterQuery,
+              filterSelectedQuery,
+              searchQuery
+            );
+          }
+          if (getLeadByID) getLeadByID(leadsByID);
+        }, 300);
+      } catch (error) {
+        handleError(error);
+      } finally {
+        setOpen(false);
+      }
+    },
+    [
+      potential,
+      leadsByID,
+      currentPage,
+      filterQuery,
+      filterSelectedQuery,
+      searchQuery,
+    ]
+  );
   const handleBrandChange = (event, value) => {
     setPotential({ ...potential, current_brand: value.value });
   };
@@ -200,6 +238,12 @@ export const LeadPotentialCreate = (props) => {
   ];
   return (
     <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
 
       <Box
@@ -300,4 +344,4 @@ export const LeadPotentialCreate = (props) => {
       </Box>
     </>
   );
-};
+});

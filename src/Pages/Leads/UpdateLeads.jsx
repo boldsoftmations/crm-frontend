@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, memo, useCallback } from "react";
 import {
   Box,
   Chip,
@@ -21,7 +21,6 @@ import {
 import { styled } from "@mui/material/styles";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/material.css";
-import CloseIcon from "@mui/icons-material/Close";
 import LeadServices from "../../services/LeadService";
 import { CustomLoader } from "../../Components/CustomLoader";
 import { LeadActivity } from "../FollowUp/LeadActivity";
@@ -31,10 +30,20 @@ import CustomerServices from "../../services/CustomerService";
 import ProductService from "../../services/ProductService";
 import { LeadPotentialView } from "./LeadPotential/LeadPotentialView";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
+import { useNotificationHandling } from "../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../Components/MessageAlert";
 
-export const UpdateLeads = (props) => {
+export const UpdateLeads = memo((props) => {
   // Destructure props
-  const { setOpenPopup, getAllleadsData, leadsByID } = props;
+  const {
+    setOpenPopup,
+    getAllleadsData,
+    leadsByID,
+    currentPage,
+    filterQuery,
+    filterSelectedQuery,
+    searchQuery,
+  } = props;
   // State variables
   const [open, setOpen] = useState(false);
   const [checked, setChecked] = useState(false);
@@ -43,11 +52,12 @@ export const UpdateLeads = (props) => {
   });
   const [followup, setFollowup] = useState(null);
   const [potential, setPotential] = useState(null);
-  const [error, setError] = useState(null);
   const [allCompetitors, setAllCompetitors] = useState([]);
   const [assigned, setAssigned] = useState([]);
   const [descriptionMenuData, setDescriptionMenuData] = useState([]);
-  // Helper function to get target date
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
+
   const getTargetDate = () => {
     const currentDate = new Date();
     const targetDate = new Date(currentDate.setDate(currentDate.getDate() + 3));
@@ -58,13 +68,9 @@ export const UpdateLeads = (props) => {
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     let updatedValue = value;
-
-    // Conditionally update gst_number and pan_number to uppercase
     if (name === "gst_number" || name === "pan_number") {
       updatedValue = value.toUpperCase();
     }
-
-    // Conditionally update purchase_decision_maker based on the presence of leads.name
     if (name === "name") {
       setLeads({
         ...leads,
@@ -81,7 +87,7 @@ export const UpdateLeads = (props) => {
       setLeads({
         ...leads,
         [name]: value,
-        target_date: value ? getTargetDate() : "", // Set target_date if hot_lead is true, otherwise clear the value
+        target_date: value ? getTargetDate() : "",
       });
     } else {
       setLeads({
@@ -160,79 +166,90 @@ export const UpdateLeads = (props) => {
   };
 
   // Update leads data
-  const updateLeadsData = async (e) => {
-    try {
-      e.preventDefault();
-      setOpen(true);
+  const updateLeadsData = useCallback(
+    async (e) => {
+      try {
+        e.preventDefault();
+        setOpen(true);
 
-      const data = {
-        hot_lead: leads.hot_lead,
-        pinned: leads.pinned,
-        name: leads.name,
-        alternate_contact_name: leads.alternate_contact_name,
-        email: leads.email,
-        alternate_email: leads.alternate_email,
-        contact: leads.contact || null,
-        alternate_contact: leads.alternate_contact || null,
-        business_type: leads.business_type,
-        business_mismatch: leads.business_mismatch || "No",
-        interested: leads.interested || "Yes",
-        references: leads.references,
-        assigned_to: leads.assigned_to || null,
-        description: leads.description || [],
-        target_date: leads.target_date || null,
-        company: leads.company || null,
-        gst_number: leads.gst_number || null,
-        pan_number: leads.pan_number || null,
-        address: leads.address,
-        city: leads.city,
-        state: leads.state,
-        country: leads.country,
-        pincode: leads.pincode || null,
-        shipping_address:
-          checked === true ? leads.address : leads.shipping_address,
-        shipping_city: checked === true ? leads.city : leads.shipping_city,
-        shipping_state: checked === true ? leads.state : leads.shipping_state,
-        shipping_pincode:
-          checked === true
-            ? leads.pincode || null
-            : leads.shipping_pincode || null,
-        type_of_customer: leads.type_of_customer,
-        website: leads.website,
-        approx_annual_turnover: leads.approx_annual_turnover,
-        industrial_list:
-          leads.type_of_customer === "Industrial Customer"
-            ? leads.industrial_list
-            : null,
-        category:
-          leads.type_of_customer === "Distribution Customer"
-            ? leads.category
-            : null,
-        distribution_type:
-          leads.type_of_customer === "Distribution Customer"
-            ? leads.distribution_type
-            : null,
-        main_distribution:
-          leads.type_of_customer === "Distribution Customer"
-            ? leads.main_distribution
-            : null,
-        estd_year: leads.estd_year || null,
-        purchase_decision_maker: leads.purchase_decision_maker,
-      };
+        const data = {
+          hot_lead: leads.hot_lead,
+          pinned: leads.pinned,
+          name: leads.name,
+          alternate_contact_name: leads.alternate_contact_name,
+          email: leads.email,
+          alternate_email: leads.alternate_email,
+          contact: leads.contact || null,
+          alternate_contact: leads.alternate_contact || null,
+          business_type: leads.business_type,
+          business_mismatch: leads.business_mismatch || "No",
+          interested: leads.interested || "Yes",
+          references: leads.references,
+          assigned_to: leads.assigned_to || null,
+          description: leads.description || [],
+          target_date: leads.target_date || null,
+          company: leads.company || null,
+          gst_number: leads.gst_number || null,
+          pan_number: leads.pan_number || null,
+          address: leads.address,
+          city: leads.city,
+          state: leads.state,
+          country: leads.country,
+          pincode: leads.pincode || null,
+          shipping_address:
+            checked === true ? leads.address : leads.shipping_address,
+          shipping_city: checked === true ? leads.city : leads.shipping_city,
+          shipping_state: checked === true ? leads.state : leads.shipping_state,
+          shipping_pincode:
+            checked === true
+              ? leads.pincode || null
+              : leads.shipping_pincode || null,
+          type_of_customer: leads.type_of_customer,
+          website: leads.website,
+          approx_annual_turnover: leads.approx_annual_turnover,
+          industrial_list:
+            leads.type_of_customer === "Industrial Customer"
+              ? leads.industrial_list
+              : null,
+          category:
+            leads.type_of_customer === "Distribution Customer"
+              ? leads.category
+              : null,
+          distribution_type:
+            leads.type_of_customer === "Distribution Customer"
+              ? leads.distribution_type
+              : null,
+          main_distribution:
+            leads.type_of_customer === "Distribution Customer"
+              ? leads.main_distribution
+              : null,
+          estd_year: leads.estd_year || null,
+          purchase_decision_maker: leads.purchase_decision_maker,
+        };
 
-      await LeadServices.updateLeads(leadsByID, data);
+        const response = await LeadServices.updateLeads(leadsByID, data);
 
-      setOpen(false);
-      setOpenPopup(false);
-      getAllleadsData();
-    } catch (error) {
-      console.log("error :>> ", error);
-      setError(
-        error.response.data.errors ? error.response.data.errors.assigned_to : ""
-      );
-      setOpen(false);
-    }
-  };
+        const successMessage =
+          response.data.message || "Leads Updated successfully";
+        handleSuccess(successMessage);
+
+        setTimeout(() => {
+          setOpenPopup(false);
+          getAllleadsData(
+            currentPage,
+            filterQuery,
+            filterSelectedQuery,
+            searchQuery
+          );
+        }, 300);
+      } catch (error) {
+        handleError(error);
+      } finally {
+        setOpen(false);
+      }
+    },
+    [leads, currentPage, filterQuery, filterSelectedQuery, searchQuery]
+  );
 
   // Regular expressions for GST and PAN validation
   const GST_NO = (gst_no) =>
@@ -245,6 +262,12 @@ export const UpdateLeads = (props) => {
 
   return (
     <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
       <Box
         component="form"
@@ -252,22 +275,6 @@ export const UpdateLeads = (props) => {
         onSubmit={(e) => updateLeadsData(e)}
         sx={{ mt: 1 }}
       >
-        <Snackbar
-          open={Boolean(error)}
-          onClose={() => setError(null)}
-          message={`Assigned To ${error}`}
-          anchorOrigin={{ vertical: "top", horizontal: "center" }}
-          action={
-            <IconButton
-              aria-label="close"
-              color="inherit"
-              sx={{ p: 0.5 }}
-              onClick={() => setError(null)}
-            >
-              <CloseIcon />
-            </IconButton>
-          }
-        />
         <Grid container spacing={2}>
           {/* Create Basic Details */}
           <Grid item xs={12}>
@@ -465,12 +472,7 @@ export const UpdateLeads = (props) => {
               getOptionLabel={(option) => option}
               // sx={{ minWidth: 300 }}
               renderInput={(params) => (
-                <CustomTextField
-                  {...params}
-                  label="Assigned To"
-                  error={error} // Set the 'error' prop based on the error variable
-                  helperText={error ? error : ""}
-                />
+                <CustomTextField {...params} label="Assigned To" />
               )}
             />
           </Grid>
@@ -952,7 +954,7 @@ export const UpdateLeads = (props) => {
       </Grid>
     </>
   );
-};
+});
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",

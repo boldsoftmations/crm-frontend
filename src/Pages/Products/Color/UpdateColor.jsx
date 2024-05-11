@@ -1,105 +1,70 @@
 import { Box, Button, Grid } from "@mui/material";
-
-import { useRef, useState } from "react";
-import React, { useEffect } from "react";
-
+import React, { memo, useCallback, useState } from "react";
 import ProductService from "../../../services/ProductService";
-
-import "../../CommonStyle.css";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomTextField from "../../../Components/CustomTextField";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../../Components/MessageAlert";
 
-export const UpdateColor = (props) => {
-  const { recordForEdit, setOpenPopup, getColours } = props;
+export const UpdateColor = memo((props) => {
+  const { recordForEdit, setOpenPopup, getColours, currentPage, searchQuery } =
+    props;
   const [open, setOpen] = useState(false);
-  const [colour, setColour] = useState([]);
-  const errRef = useRef();
-  const [errMsg, setErrMsg] = useState("");
-  const getcolor = async (id) => {
-    try {
-      setOpen(true);
-      const res = await ProductService.getColourById(recordForEdit);
-
-      setColour(res.data);
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
-  };
+  const [colour, setColour] = useState(recordForEdit);
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setColour({ ...colour, [name]: value });
   };
 
-  const updateColour = async (e) => {
-    try {
-      e.preventDefault();
-      setOpen(true);
-      const data = {
-        name: colour.name,
-      };
-      if (recordForEdit) {
-        await ProductService.updateColour(colour.id, data);
-        setOpenPopup(false);
-        setOpen(false);
-        getColours();
-      }
-    } catch (err) {
-      console.log("error update color :>> ", err);
-      setOpen(false);
-      if (!err.response) {
-        setErrMsg("No Server Response");
-      } else if (err.response.status === 400) {
-        setErrMsg(
-          err.response.data.errors.name
-            ? err.response.data.errors.name
-            : err.response.data.errors.non_field_errors
-        );
-      } else if (err.response.status === 401) {
-        setErrMsg(err.response.data.errors.code);
-      } else {
-        setErrMsg("Server Error");
-      }
-      errRef.current.focus();
-    }
-  };
+  const updateColour = useCallback(
+    async (e) => {
+      try {
+        e.preventDefault();
+        setOpen(true);
+        const data = {
+          name: colour.name,
+        };
+        if (recordForEdit) {
+          const response = await ProductService.updateColour(colour.id, data);
+          const successMessage =
+            response.data.message || "Colour updated successfully";
+          handleSuccess(successMessage);
 
-  useEffect(() => {
-    if (recordForEdit) getcolor(recordForEdit);
-  }, [recordForEdit]);
+          setTimeout(() => {
+            setOpenPopup(false);
+            getColours(currentPage, searchQuery);
+          }, 300);
+        }
+      } catch (error) {
+        handleError(error); // Handle errors from the API call
+      } finally {
+        setOpen(false); // Always close the loader
+      }
+    },
+    [colour, currentPage, searchQuery]
+  );
 
   return (
     <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
       <Box component="form" noValidate onSubmit={(e) => updateColour(e)}>
         <Grid container spacing={2}>
-          <p
-            style={{
-              width: "100%",
-              padding: 10,
-              marginBottom: 10,
-              borderRadius: 4,
-              backgroundColor: errMsg ? "red" : "offscreen",
-              textAlign: "center",
-              color: "white",
-              textTransform: "capitalize",
-            }}
-            ref={errRef}
-            className={errMsg ? "errmsg" : "offscreen"}
-            aria-live="assertive"
-          >
-            {errMsg}
-          </p>
-
           <Grid item xs={12} sm={6}>
             <CustomTextField
               fullWidth
               size="small"
               label="Id"
               variant="outlined"
-              value={recordForEdit ? recordForEdit : ""}
+              value={recordForEdit.id || ""}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -109,7 +74,7 @@ export const UpdateColor = (props) => {
               size="small"
               label="Colour"
               variant="outlined"
-              value={colour.name ? colour.name : ""}
+              value={colour.name || ""}
               onChange={handleInputChange}
             />
           </Grid>
@@ -126,4 +91,4 @@ export const UpdateColor = (props) => {
       </Box>
     </>
   );
-};
+});

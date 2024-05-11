@@ -9,8 +9,8 @@ import {
   Select,
   MenuItem,
   IconButton,
-  Snackbar,
-  Alert,
+  Typography,
+  styled,
 } from "@mui/material";
 import PushPinIcon from "@mui/icons-material/PushPin";
 import PushPinOutlinedIcon from "@mui/icons-material/PushPinOutlined";
@@ -23,9 +23,7 @@ import {
   TableRow,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
-import { styled } from "@mui/material/styles";
 import LeadServices from "../../services/LeadService";
-import "../CommonStyle.css";
 import { CreateLeads } from "./CreateLeads";
 import { UpdateLeads } from "./UpdateLeads";
 import { Popup } from "../../Components/Popup";
@@ -40,7 +38,9 @@ import { Helmet } from "react-helmet";
 import { LeadPotentialCreate } from "./LeadPotential/LeadPotentialCreate";
 import { LeadForecastCreate } from "./LeadForecast/LeadForecastCreate";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
-import CustomTextField from "../../Components/CustomTextField";
+import SearchComponent from "../../Components/SearchComponent ";
+import { MessageAlert } from "../../Components/MessageAlert";
+import { useNotificationHandling } from "../../Components/useNotificationHandling ";
 
 export const NewLeads = () => {
   const [leads, setLeads] = useState([]);
@@ -48,8 +48,8 @@ export const NewLeads = () => {
   const [filterQuery, setFilterQuery] = useState("");
   const [filterSelectedQuery, setFilterSelectedQuery] = useState(null);
   const [searchQuery, setSearchQuery] = useState(null);
-  const [pageCount, setPageCount] = useState(0);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [openModalFollowup, setOpenModalFollowup] = useState(false);
@@ -60,17 +60,15 @@ export const NewLeads = () => {
   const [leadsByID, setLeadsByID] = useState(null);
   const [referenceData, setReferenceData] = useState([]);
   const [descriptionMenuData, setDescriptionMenuData] = useState([]);
-
   const [openModal, setOpenModal] = useState(false);
   const tokenData = useSelector((state) => state.auth);
   const users = tokenData.profile;
   const [isPrinting, setIsPrinting] = useState(false);
   const assigned = users.sales_users || [];
-  const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [errorMessages, setErrorMessages] = useState([]);
-  const [currentErrorIndex, setCurrentErrorIndex] = useState(0);
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
+  const { handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   const FilterOptions = [
     { label: "References", value: "references__source" },
@@ -126,7 +124,6 @@ export const NewLeads = () => {
 
   const FetchData = async (value) => {
     try {
-      setOpen(true);
       setFilterQuery(value);
       if (value.includes("references__source")) {
         const res = await LeadServices.getAllRefernces();
@@ -136,17 +133,14 @@ export const NewLeads = () => {
         const res = await ProductService.getNoDescription();
         setDescriptionMenuData(res.data);
       }
-      setOpen(false);
     } catch (error) {
-      console.log("error", error);
-      setOpen(false);
+      handleError(error);
     }
   };
 
   const renderAutocomplete = (label, options, onChange) => (
     <CustomAutocomplete
       fullWidth
-      sx={{ marginLeft: "1em", marginRight: "2em" }}
       size="small"
       onChange={(event, value) => onChange(value)}
       options={options}
@@ -157,19 +151,14 @@ export const NewLeads = () => {
 
   const handlePin = async (e, row) => {
     e.preventDefault();
-    // Check if the row is already pinned
     const isPinned = pinnedRows.includes(row.lead_id);
     if (isPinned) {
-      // If already pinned, remove it from the pinned rows
       setPinnedRows((prevPinnedRows) =>
         prevPinnedRows.filter((rowId) => rowId !== row.lead_id)
       );
     } else {
-      // If not pinned, add it to the pinned rows
       setPinnedRows((prevPinnedRows) => [...prevPinnedRows, row.lead_id]);
     }
-
-    // Call the API to update the pin status
     try {
       setOpen(true);
 
@@ -180,66 +169,48 @@ export const NewLeads = () => {
 
       await LeadServices.updateLeads(row.lead_id, data);
       getleads();
-      setOpen(false);
     } catch (error) {
-      console.log("error :>> ", error);
+      handleError(error);
+    } finally {
       setOpen(false);
     }
-  };
-
-  const extractErrorMessages = (data) => {
-    let messages = [];
-    if (data.errors) {
-      for (const [key, value] of Object.entries(data.errors)) {
-        value.forEach((msg) => {
-          messages.push(`${key}: ${msg}`);
-        });
-      }
-    }
-    return messages;
   };
 
   useEffect(() => {
-    getleads(currentPage);
-  }, [currentPage, getleads]);
+    getleads();
+  }, [currentPage, filterSelectedQuery, searchQuery]);
 
-  const getleads = useCallback(
-    async (
-      page,
-      filter = filterQuery,
-      filterValue = filterSelectedQuery,
-      search = searchQuery
-    ) => {
-      try {
-        setOpen(true);
-        const response = await LeadServices.getAllLeads(
-          page,
-          "new",
-          "-lead_id",
-          filter,
-          filterValue,
-          search
-        );
-        setLeads(response.data.results);
-        setPageCount(Math.ceil(response.data.count / 25));
-        setOpen(false);
-      } catch (error) {
-        console.log("New leads get api", error);
-        const newErrors = extractErrorMessages(error.response.data);
-        setErrorMessages(newErrors);
-        setOpenSnackbar(true);
-      } finally {
-        setOpen(false);
-      }
-    },
-    [filterSelectedQuery, searchQuery]
-  );
+  const getleads = useCallback(async () => {
+    try {
+      setOpen(true);
+      const response = await LeadServices.getAllLeads(
+        currentPage,
+        "new",
+        "-lead_id",
+        filterQuery,
+        filterSelectedQuery,
+        searchQuery
+      );
+      setLeads(response.data.results);
+      setTotalPages(Math.ceil(response.data.count / 25));
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setOpen(false);
+    }
+  }, [currentPage, filterSelectedQuery, searchQuery]);
 
-  const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    setCurrentPage(1);
   };
 
-  const handlePageClick = (event, value) => {
+  const handleReset = () => {
+    setSearchQuery("");
+    setCurrentPage(1);
+  };
+
+  const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
 
@@ -275,28 +246,14 @@ export const NewLeads = () => {
     "ACTION",
   ];
 
-  const handleCloseSnackbar = useCallback(() => {
-    if (currentErrorIndex < errorMessages.length - 1) {
-      setCurrentErrorIndex((prevIndex) => prevIndex + 1);
-    } else {
-      setOpenSnackbar(false);
-      setCurrentErrorIndex(0); // Reset for any future errors
-    }
-  }, [currentErrorIndex, errorMessages.length]);
-
   return (
     <>
-      <Snackbar
-        open={openSnackbar}
-        autoHideDuration={6000}
+      <MessageAlert
+        open={alertInfo.open}
         onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      >
-        <Alert onClose={handleCloseSnackbar} severity="error">
-          {errorMessages.join(", ")}{" "}
-          {/* Display all errors as a comma-separated string */}
-        </Alert>
-      </Snackbar>
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <Helmet>
         <style>
           {`
@@ -311,16 +268,9 @@ export const NewLeads = () => {
       <CustomLoader open={open} />
       <Grid item xs={12}>
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
-          <Box display="flex" marginBottom="10px">
-            <Grid
-              container
-              spacing={2}
-              alignItems="center"
-              justifyContent="flex-start"
-              marginBottom="10px"
-            >
-              {/* Filter By Select */}
-              <Grid item xs={12} sm={6} md={4} lg={3}>
+          <Box sx={{ mb: 2 }}>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={12} sm={6} md={3}>
                 <FormControl fullWidth size="small">
                   <InputLabel id="demo-simple-select-label">
                     Fliter By
@@ -344,7 +294,7 @@ export const NewLeads = () => {
 
               {/* Dynamic Autocomplete Component */}
               {filterQuery && (
-                <Grid item xs={12} sm={6} md={4} lg={3}>
+                <Grid item xs={12} sm={6} md={3}>
                   {filterQuery &&
                     renderAutocomplete(
                       filterQuery === "assigned_to__email"
@@ -367,102 +317,69 @@ export const NewLeads = () => {
                         : [],
                       (value) => {
                         setFilterSelectedQuery(value);
-                        setCurrentPage(0);
-                        getleads(0, filterQuery, value, searchQuery); // Pass filterQuery and filterSelectedQuery as parameters
+                        setCurrentPage(1);
                       }
                     )}
                 </Grid>
               )}
 
               {/* Search Field */}
-              <Grid item xs={12} sm={6} md={4} lg={3}>
-                <CustomTextField
-                  size="small"
-                  label="Search"
-                  variant="outlined"
-                  value={searchQuery}
-                  onChange={handleSearchChange}
-                  fullWidth
+              <Grid item xs={12} sm={6} md={3}>
+                <SearchComponent
+                  onSearch={handleSearch}
+                  onReset={handleReset}
                 />
               </Grid>
 
-              {/* Search and Reset Buttons */}
-              <Grid item xs={12} sm={6} md={4} lg={3}>
-                <Button
-                  sx={{ marginLeft: "1em", marginRight: "1em" }}
-                  variant="contained"
-                  color="primary"
-                  onClick={() => {
-                    setCurrentPage(0);
-                    getleads(0, filterQuery, filterSelectedQuery, searchQuery);
-                  }}
-                >
-                  Search
-                </Button>
-                <Button
-                  sx={{ marginRight: "1em" }}
-                  variant="contained"
-                  color="secondary"
-                  onClick={() => {
-                    setSearchQuery("");
-                    getleads(1, filterQuery, filterSelectedQuery, "");
-                  }}
-                >
-                  Reset
-                </Button>
-              </Grid>
-              <Grid item xs={12} sm={3}>
+              <Grid item xs={6} sm={3} md={1.5}>
                 {(userData.groups.includes("Director") ||
                   userData.groups.includes("Sales Manager")) && (
                   <Button
                     variant="contained"
                     onClick={() => setOpenModal(true)}
                   >
-                    Assign Bulk Lead
+                    Assign Bulk
                   </Button>
                 )}
               </Grid>
-            </Grid>
-          </Box>
-          <Box display="flex" alignItems="center" justifyContent="center">
-            {/* Second Box with Title and Optional Buttons */}
-            <Grid
-              container
-              alignItems="center"
-              justifyContent="center"
-              spacing={2}
-            >
-              {/* Invisible Spacer - Only shows if 'Assign Bulk Lead' is not there */}
-              {users.groups.includes("Sales Manager") ||
-              users.groups.includes("Sales Deputy Manager") ||
-              users.groups.includes("Sales Assistant Deputy Manager") ? null : (
-                <Grid item lg={3}></Grid>
-              )}
-              {/* New Leads Text - Center */}
-              <Grid item xs={4} style={{ textAlign: "center" }}>
-                <h3
-                  style={{
-                    fontSize: "24px",
-                    color: "rgb(34, 34, 34)",
-                    fontWeight: 800,
-                  }}
-                >
-                  New Leads
-                </h3>
-              </Grid>
 
-              {/* Add Button - Right */}
-              <Grid item xs={4} style={{ textAlign: "right" }}>
+              <Grid item xs={6} sm={3} md={1.5}>
                 <Button
-                  onClick={() => setOpenPopup2(true)}
                   variant="contained"
                   color="success"
+                  onClick={() => setOpenPopup2(true)}
                 >
                   Add
                 </Button>
               </Grid>
             </Grid>
           </Box>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              mt: 2,
+            }}
+          >
+            <Grid container justifyContent="center">
+              <Grid item xs={12}>
+                <Typography
+                  variant="h3"
+                  component="h3"
+                  sx={{
+                    textAlign: "center",
+                    fontSize: "24px",
+                    fontWeight: 800,
+                    color: "rgb(34, 34, 34)",
+                  }}
+                >
+                  New Leads
+                </Typography>
+              </Grid>
+            </Grid>
+          </Box>
+
           <TableContainer
             sx={{
               maxHeight: 440,
@@ -565,8 +482,9 @@ export const NewLeads = () => {
             </Table>
           </TableContainer>
           <CustomPagination
-            pageCount={pageCount}
-            handlePageClick={handlePageClick}
+            totalPages={totalPages}
+            currentPage={currentPage}
+            handlePageChange={handlePageChange}
           />
         </Paper>
       </Grid>
@@ -576,7 +494,14 @@ export const NewLeads = () => {
         openPopup={openPopup2}
         setOpenPopup={setOpenPopup2}
       >
-        <CreateLeads getleads={getleads} setOpenPopup={setOpenPopup2} />
+        <CreateLeads
+          getleads={getleads}
+          setOpenPopup={setOpenPopup2}
+          currentPage={currentPage}
+          filterQuery={filterQuery}
+          filterSelectedQuery={filterSelectedQuery}
+          searchQuery={searchQuery}
+        />
       </Popup>
       <Popup
         fullScreen={true}
@@ -588,6 +513,10 @@ export const NewLeads = () => {
           leadsByID={leadsByID}
           setOpenPopup={setOpenPopup}
           getAllleadsData={getleads}
+          currentPage={currentPage}
+          filterQuery={filterQuery}
+          filterSelectedQuery={filterSelectedQuery}
+          searchQuery={searchQuery}
         />
       </Popup>
 
@@ -598,9 +527,14 @@ export const NewLeads = () => {
         setOpenPopup={setOpenModalFollowup}
       >
         <LeadActivityCreate
+          getleads={getleads}
           leadsByID={leadsByID}
-          setOpenModal={setOpenModalFollowup}
+          setOpenPopup={setOpenModalFollowup}
           getLeadByID={null}
+          currentPage={currentPage}
+          filterQuery={filterQuery}
+          filterSelectedQuery={filterSelectedQuery}
+          searchQuery={searchQuery}
         />
       </Popup>
       <Popup
@@ -610,9 +544,14 @@ export const NewLeads = () => {
         setOpenPopup={setOpenModalPotential}
       >
         <LeadPotentialCreate
+          getleads={getleads}
           getLeadByID={null}
           leadsByID={leadsByID}
-          setOpenModal={setOpenModalPotential}
+          setOpenPopup={setOpenModalPotential}
+          currentPage={currentPage}
+          filterQuery={filterQuery}
+          filterSelectedQuery={filterSelectedQuery}
+          searchQuery={searchQuery}
         />
       </Popup>
       <Popup
@@ -633,8 +572,13 @@ export const NewLeads = () => {
         setOpenPopup={setOpenModalForecast}
       >
         <LeadForecastCreate
+          getleads={getleads}
           leadsByID={leadsByID}
           setOpenPopup={setOpenModalForecast}
+          currentPage={currentPage}
+          filterQuery={filterQuery}
+          filterSelectedQuery={filterSelectedQuery}
+          searchQuery={searchQuery}
         />
       </Popup>
       <Popup

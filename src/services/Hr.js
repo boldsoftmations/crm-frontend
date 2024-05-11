@@ -59,10 +59,13 @@ const updateSource = (id, data) => {
 }
 
 //Job-Opening API
-const getJobOpening = (page) => {
+const getJobOpening = (page,search) => {
   const params = new URLSearchParams();
   if (page) {
     params.append("page", page);
+  }
+  if(search){
+    params.append("search", search);
   }
   return CustomAxios.get(`/api/hr/job-opening/?${params.toString()}`);
 };

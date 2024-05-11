@@ -17,11 +17,11 @@ export const InterviewStatusView = () => {
   const [open, setOpen] = useState(false);
   const [interviews, setInterviews] = useState([]);
   const [selectedRow, setSelectedRow] = useState(null);
-  const [pageCount, setPageCount] = useState(1);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [totalPages, setTotalPages] = useState(0);
 
-  const handlePageClick = (event, value) => {
+  const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
 
@@ -31,7 +31,7 @@ export const InterviewStatusView = () => {
       const response = await Hr.getInterviewStatus({ page });
       setInterviews(response.data.results);
       const total = response.data.count;
-      setPageCount(Math.ceil(total / 25));
+      setTotalPages(Math.ceil(total / 25));
       setIsLoading(false);
     } catch (error) {
       console.error("Error fetching interviews:", error);
@@ -98,8 +98,9 @@ export const InterviewStatusView = () => {
             openInPopup={handleClickOpen}
           />
           <CustomPagination
-            pageCount={pageCount}
-            handlePageClick={handlePageClick}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            handlePageChange={handlePageChange}
           />
 
           <Dialog

@@ -62,52 +62,42 @@ const getAllLeads = (
 //   return CustomAxios.get(`api/lead/duplicate-leads/?${params.toString()}`);
 // };
 
-const getAllDuplicateLeads = (filterValue) => {
-  return CustomAxios.get(`/api/lead/duplicate-leads/?field=${filterValue}`);
+const getAllDuplicateLeads = (page, filterValue, searchValue) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
+
+  if (page) {
+    params.append("page", page);
+  }
+
+  if (filterValue) {
+    params.append("field", filterValue);
+  }
+
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+
+  return CustomAxios.get(`api/lead/duplicate-leads/?${params.toString()}`);
 };
 
-const getAllPaginateDuplicateLeads = (
-  currentPage,
-  filterValue,
-  searchValue
-) => {
-  return CustomAxios.get(
-    `/api/lead/duplicate-leads/?page=${currentPage}&field=${filterValue}&search=${searchValue}`
-  );
-};
+const getAllUnassignedData = (page, filterValue, searchValue) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
 
-const getSearchDuplicateLeads = (filterValue, searchValue) => {
-  return CustomAxios.get(
-    `/api/lead/duplicate-leads/?field=${filterValue}&search=${searchValue}`
-  );
-};
+  if (page) {
+    params.append("page", page);
+  }
 
-const getFilterPaginateDuplicateLeads = (
-  currentPage,
-  filterValue,
-  searchValue
-) => {
-  return CustomAxios.get(
-    `/api/lead/duplicate-leads/?page=${currentPage}&field=${filterValue}&search=${searchValue}`
-  );
-};
+  if (filterValue) {
+    params.append("references__source", filterValue);
+  }
 
-const getAllUnassignedData = () => {
-  return CustomAxios.get(`/api/lead/list-unassigned/`);
-};
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
 
-const getAllPaginateUnassigned = (currentPage) => {
-  return CustomAxios.get(`/api/lead/list-unassigned/?page=${currentPage}`);
-};
-
-const getAllPaginateWithFilterUnassigned = (currentPage, filter, search) => {
-  return CustomAxios.get(
-    `/api/lead/list-unassigned/?page=${currentPage}&${filter}=${search}`
-  );
-};
-
-const getAllFilterByUnassignedData = (filter, search) => {
-  return CustomAxios.get(`/api/lead/list-unassigned/?${filter}=${search}`);
+  return CustomAxios.get(`api/lead/list-unassigned/?${params.toString()}`);
 };
 
 const getAllAssignedUser = () => {
@@ -146,13 +136,23 @@ const createFollowUpLeads = (data) => {
   return CustomAxios.post("/api/lead/list-followup/", data);
 };
 
-// Generic function to get order book data
-const getAllFollowUp = ({ typeValue, page = 1, assignToFilter }) => {
-  let url = `/api/lead/list-followup/?type=${typeValue}&page=${page}`;
-  if (assignToFilter) {
-    url += `&user__email=${assignToFilter}`;
+const getFollowUp = (typeValue, page, filterValue) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
+
+  if (typeValue) {
+    params.append("type", typeValue);
   }
-  return CustomAxios.get(url);
+
+  if (page) {
+    params.append("page", page);
+  }
+
+  if (filterValue) {
+    params.append("user__email", filterValue);
+  }
+
+  return CustomAxios.get(`api/lead/list-followup/?${params.toString()}`);
 };
 
 const createPotentialLead = (data) => {
@@ -175,32 +175,37 @@ const AssignMultipleLeads = (data) => {
   return CustomAxios.post("/api/lead/assign-multiple-leads/", data);
 };
 
-const getAllFollowup = (options) => {
-  const {
-    startDate,
-    endDate,
-    currentPage,
-    filter,
-    filterValue,
-    search,
-    searchValue,
-  } = options;
+const getAllFollowUp = (
+  startDate,
+  endDate,
+  page,
+  assignedFilter,
+  filterValue
+) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
 
-  let url = `/api/lead/list-all-follow-ups/?date_range_after=${startDate}&date_range_before=${endDate}`;
-
-  if (currentPage) {
-    url += `&page=${currentPage}`;
+  if (startDate) {
+    params.append("date_range_after", startDate);
   }
 
-  if (filter && filterValue) {
-    url += `&${filter}=${filterValue}`;
+  if (endDate) {
+    params.append("date_range_before", endDate);
   }
 
-  if (search && searchValue) {
-    url += `&${search}=${searchValue}`;
+  if (page) {
+    params.append("page", page);
   }
 
-  return CustomAxios.get(url);
+  if (assignedFilter) {
+    params.append("user_email", assignedFilter);
+  }
+
+  if (filterValue) {
+    params.append("activity", filterValue);
+  }
+
+  return CustomAxios.get(`api/lead/list-all-follow-ups/?${params.toString()}`);
 };
 
 // IndiaMart Leads API
@@ -222,18 +227,12 @@ const LeadServices = {
   getAllLeads,
   getAllAssignedUser,
   getAllUnassignedData,
-  getAllFilterByUnassignedData,
-  getAllPaginateUnassigned,
-  getAllPaginateWithFilterUnassigned,
   getAllDuplicateLeads,
-  getAllPaginateDuplicateLeads,
-  getSearchDuplicateLeads,
-  getFilterPaginateDuplicateLeads,
   createLeads,
   getLeadsById,
   updateLeads,
   createFollowUpLeads,
-  getAllFollowUp,
+  getFollowUp,
   createPotentialLead,
   deletePotentialLeadsById,
   getAllRefernces,
@@ -243,7 +242,7 @@ const LeadServices = {
   DoneLeadFollowup,
   BulkLeadAssign,
   AssignMultipleLeads,
-  getAllFollowup,
+  getAllFollowUp,
   getIndiaMartLeads,
   createLeadForecast,
   getLeadForecast,

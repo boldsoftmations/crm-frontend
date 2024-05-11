@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Grid, Chip, Divider, Button, Box, Autocomplete } from "@mui/material";
+import { Grid, Chip, Divider, Button, Box } from "@mui/material";
 import Option from "../../../Options/Options";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomerServices from "../../../services/CustomerService";
 import CustomTextField from "../../../Components/CustomTextField";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../../Components/MessageAlert";
 
 const KycUpdate = ({
   recordForEdit,
@@ -21,6 +23,9 @@ const KycUpdate = ({
   const [errorMessage, setErrorMessage] = useState("");
   const [groupCompanies, setGroupCompanies] = useState([]);
   const [loading, setLoading] = useState(false);
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
+
   // Fetch company details based on the active tab when the component mounts or the active tab changes
   useEffect(() => {
     if (recordForEdit) {
@@ -65,6 +70,7 @@ const KycUpdate = ({
       }));
       return names;
     } catch (error) {
+      handleError(error);
       console.error("Failed to fetch group companies", error);
       return [];
     }
@@ -143,6 +149,7 @@ const KycUpdate = ({
         setContactValue(decisionMaker);
       }
     } catch (error) {
+      handleError(error);
       console.error("Error fetching company details:", error);
     } finally {
       setOpen(false);
@@ -237,12 +244,17 @@ const KycUpdate = ({
       };
       await CustomerServices.updateCompanyData(recordForEdit, req);
       UpdateContactDetails();
+      handleSuccess("Company details updated successfully");
+      setTimeout(() => {
+        setOpenPopup(false);
+      }, 300);
       if (onDataUpdated) {
         onDataUpdated();
       }
-      setOpenPopup(false);
+      // setOpenPopup(false);
       // getIncompleteKycCustomerData();
     } catch (error) {
+      handleError(error);
       if (error.response && error.response.data && error.response.data.errors) {
         const errors = error.response.data.errors;
         if (errors["non_field_errors"]) {
@@ -274,6 +286,7 @@ const KycUpdate = ({
 
       await CustomerServices.updateContactData(contactValue.id, req);
       getAllCompanyDetailsByID();
+      handleSuccess("Contact details updated successfully");
     } finally {
       setOpen(false);
     }
@@ -285,6 +298,12 @@ const KycUpdate = ({
 
   return (
     <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
 
       {/* Form for KYC Details */}

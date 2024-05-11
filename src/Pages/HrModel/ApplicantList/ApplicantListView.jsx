@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Box, Grid, Button, Paper } from "@mui/material";
+import { Box, Grid, Paper } from "@mui/material";
 import { Popup } from "../../../Components/Popup";
 import { ApplicantListCreate } from "./ApplicantListCreate";
 import { ApplicantListUpdate } from "./ApplicantListUpdate";
 import { CustomTable } from "../../../Components/CustomTable";
 import { CustomPagination } from "../../../Components/CustomPagination";
 import Hr from "./../../../services/Hr";
-import CustomTextField from "../../../Components/CustomTextField";
 import { CustomLoader } from "../../../Components/CustomLoader";
+import SearchComponent from "../../../Components/SearchComponent ";
 
 export const ApplicantListView = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -16,15 +16,11 @@ export const ApplicantListView = () => {
   const [openUpdatePopup, setOpenUpdatePopup] = useState(false);
   const [recordForEdit, setRecordForEdit] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [pageCount, setPageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
 
-  const handlePageClick = (event, value) => {
+  const handlePageChange = (event, value) => {
     setCurrentPage(value);
-  };
-
-  const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
   };
 
   const openInPopup = (item) => {
@@ -37,7 +33,7 @@ export const ApplicantListView = () => {
       const response = await Hr.getApplicants(page, searchValue);
       setApplicants(response.data.results);
       const total = response.data.count;
-      setPageCount(Math.ceil(total / 25));
+      setTotalPages(Math.ceil(total / 25));
     } catch (error) {
       console.error("Error fetching applicants:", error);
     }
@@ -46,11 +42,6 @@ export const ApplicantListView = () => {
   useEffect(() => {
     fetchApplicants(currentPage, searchQuery);
   }, [currentPage, searchQuery]);
-
-  const handleSearchClick = () => {
-    setCurrentPage(0);
-    fetchApplicants(0, searchQuery);
-  };
 
   const filteredApplicants = applicants.filter((applicant) => {
     const name = applicant.name ? applicant.name.toLowerCase() : "";
@@ -91,6 +82,16 @@ export const ApplicantListView = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    setCurrentPage(1);
+  };
+
+  const handleReset = () => {
+    setSearchQuery("");
+    setCurrentPage(1);
   };
 
   const handleApplicantAdded = () => {
@@ -138,38 +139,10 @@ export const ApplicantListView = () => {
               sx={{ marginRight: 5, marginLeft: 5 }}
             >
               <Grid item xs={12} sm={6}>
-                <CustomTextField
-                  size="small"
-                  label="Search"
-                  variant="outlined"
-                  value={searchQuery}
-                  onChange={handleSearchChange}
-                  fullWidth
+                <SearchComponent
+                  onSearch={handleSearch}
+                  onReset={handleReset}
                 />
-              </Grid>
-              <Grid item xs={12} sm={2}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => fetchApplicants(currentPage, searchQuery)}
-                  fullWidth
-                >
-                  Search
-                </Button>
-              </Grid>
-              <Grid item xs={12} sm={2}>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  onClick={() => {
-                    setSearchQuery("");
-                    setCurrentPage(1);
-                    fetchApplicants(1, "");
-                  }}
-                  fullWidth
-                >
-                  Reset
-                </Button>
               </Grid>
             </Grid>
           </Box>
@@ -193,8 +166,9 @@ export const ApplicantListView = () => {
             openInPopup={openInPopup}
           />
           <CustomPagination
-            pageCount={pageCount}
-            handlePageClick={handlePageClick}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            handlePageChange={handlePageChange}
           />
           <Popup
             title="Add New Applicant"

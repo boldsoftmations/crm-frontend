@@ -13,6 +13,8 @@ import { useSelector } from "react-redux";
 import { CustomLoader } from "../../Components/CustomLoader";
 import { TaskActivityView } from "./TaskActivityView";
 import CustomTextField from "../../Components/CustomTextField";
+import { useNotificationHandling } from "../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../Components/MessageAlert";
 
 export const TaskUpdate = (props) => {
   const { setOpenPopup, getAllTaskDetails, taskByID, activity } = props; // 1
@@ -21,6 +23,9 @@ export const TaskUpdate = (props) => {
   const data = useSelector((state) => state.auth);
   const users = data.profile;
   const assigned = users.sales_users || [];
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
+
   const handleFormChange = (event) => {
     const { name, value } = event.target;
     setTask({ ...task, [name]: value });
@@ -47,17 +52,27 @@ export const TaskUpdate = (props) => {
         completed: task.completed,
       };
       await TaskService.updateTask(task.id, req);
-      setOpenPopup(false);
+      handleSuccess("Task Updated Successfully");
+      setTimeout(() => {
+        setOpenPopup(false);
+      }, 300);
       getAllTaskDetails();
       setOpen(false);
     } catch (error) {
+      handleError(error);
       setOpen(false);
       console.error("error Task", error);
     }
   };
 
   return (
-    <div>
+    <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
 
       <Box component="form" noValidate onSubmit={(e) => updateTaskDetails(e)}>
@@ -207,6 +222,6 @@ export const TaskUpdate = (props) => {
           <TaskActivityView activity={activity} />
         </Grid>
       </Grid>
-    </div>
+    </>
   );
 };

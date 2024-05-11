@@ -3,6 +3,8 @@ import React, { useRef, useState } from "react";
 import { CustomLoader } from "../../Components/CustomLoader";
 import CustomTextField from "../../Components/CustomTextField";
 import CustomerServices from "../../services/CustomerService";
+import { useNotificationHandling } from "../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../Components/MessageAlert";
 
 export const CompetitorCreate = (props) => {
   const { setOpenPopup, getCompetitors } = props;
@@ -10,6 +12,8 @@ export const CompetitorCreate = (props) => {
   const [open, setOpen] = useState(false);
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   const CompetitorCreate = async (e) => {
     try {
@@ -20,11 +24,14 @@ export const CompetitorCreate = (props) => {
 
       setOpen(true);
       await CustomerServices.createCompetitorAPI(req);
-
-      setOpenPopup(false);
+      handleSuccess("Competitor created successfully");
+      setTimeout(() => {
+        setOpenPopup(false);
+      }, 300);
       setOpen(false);
       getCompetitors();
     } catch (err) {
+      handleError(err);
       setOpen(false);
       if (!err.response) {
         setErrMsg("No Server Response");
@@ -45,6 +52,12 @@ export const CompetitorCreate = (props) => {
 
   return (
     <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
       <Box component="form" noValidate onSubmit={(e) => CompetitorCreate(e)}>
         <Grid container spacing={2}>

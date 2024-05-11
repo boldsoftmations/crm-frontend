@@ -22,8 +22,8 @@ export const WhatsappGroup = () => {
   const [whatsappGroupData, setWhatsappGroupData] = useState([]);
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [pageCount, setPageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const [openPopupWhatsapp, setOpenPopupWhatsapp] = useState(false);
   const [error, setError] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -37,7 +37,7 @@ export const WhatsappGroup = () => {
       setOpen(true);
       const res = await CustomerServices.getWhatsappImageData(currentPage);
       setWhatsappGroupData(res.data.results);
-      setPageCount(Math.ceil(res.data.count / 25));
+      setTotalPages(Math.ceil(res.data.count / 25));
     } catch (err) {
       console.error(err);
     } finally {
@@ -90,7 +90,7 @@ export const WhatsappGroup = () => {
       setOpen(false);
     }
   };
-  const handlePageClick = (event, value) => {
+  const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
 
@@ -169,8 +169,9 @@ export const WhatsappGroup = () => {
             ))}
         <Box sx={{ marginBottom: 4 }}>
           <CustomPagination
-            pageCount={pageCount}
-            handlePageClick={handlePageClick}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            handlePageChange={handlePageChange}
           />
           <Popup
             title={"Whatsapp Message Create"}

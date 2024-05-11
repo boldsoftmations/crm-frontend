@@ -31,12 +31,12 @@ export const ProductForecastViewAll = () => {
   const [activeTab, setActiveTab] = useState(isAdmin ? 0 : 4);
 
   const tabs = [
-    { label: "Current Month Forecast", visible: isAdmin, index: 0 },
-    { label: "Customer Having Forecast", visible: isAdmin, index: 1 },
-    { label: "Customer Not Having Forecast", visible: isAdmin, index: 2 },
-    { label: "Dead Customer", visible: isAdmin, index: 3 },
-    { label: "Product Wise Forecast", visible: isPurchase, index: 4 },
-    { label: "Description Wise Forecast", visible: isPurchase, index: 5 },
+    { label: "Curr. Month Forecast", visible: isAdmin, index: 0 }, // Shortened "Current" to "Curr."
+    { label: "Customers w/ Forecast", visible: isAdmin, index: 1 }, // Used "w/" as shorthand for "with"
+    { label: "Customers w/o Forecast", visible: isAdmin, index: 2 }, // Used "w/o" as shorthand for "without"
+    { label: "Dead Customers", visible: isAdmin, index: 3 }, // Used "Inactive" as a clearer term for "Dead"
+    { label: "Prod. Forecast", visible: isPurchase, index: 4 }, // Shortened "Product" to "Prod."
+    { label: "Desc. Forecast", visible: isPurchase, index: 5 }, // Shortened "Description" to "Desc."
     { label: "Lead Forecast", visible: isAdmin, index: 6 },
   ];
 

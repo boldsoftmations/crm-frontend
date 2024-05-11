@@ -1,23 +1,24 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { CSVLink } from "react-csv";
 import { CustomLoader } from "../../../Components/CustomLoader";
-import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 import InventoryServices from "../../../services/InventoryService";
 import { CustomPagination } from "../../../Components/CustomPagination";
 import { CustomTable } from "../../../Components/CustomTable";
-import { CustomSearchWithButton } from "../../../Components/CustomSearchWithButton";
 import { Button } from "@mui/material";
+import SearchComponent from "../../../Components/SearchComponent ";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../../Components/MessageAlert";
 
 export const ProductionInventoryView = () => {
   const [open, setOpen] = useState(false);
-  const errRef = useRef();
-  const [errMsg, setErrMsg] = useState("");
   const [productionInventoryData, setProductionInventoryData] = useState([]);
-  const [pageCount, setpageCount] = useState(0);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
   const [exportData, setExportData] = useState([]);
   const csvLinkRef = useRef(null);
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   const handleDownload = async () => {
     try {
@@ -26,7 +27,9 @@ export const ProductionInventoryView = () => {
       setTimeout(() => {
         csvLinkRef.current.link.click();
       });
+      handleSuccess("CSV Download Successful");
     } catch (error) {
+      handleError(error);
       console.log("CSVLink Download error", error);
     }
   };
@@ -47,10 +50,10 @@ export const ProductionInventoryView = () => {
     try {
       setOpen(true);
       let response;
-      if (filterSelectedQuery) {
+      if (searchQuery) {
         response = await InventoryServices.getProductionInventoryPaginateData(
           "all",
-          filterSelectedQuery
+          searchQuery
         );
       } else {
         response = await InventoryServices.getProductionInventoryPaginateData(
@@ -79,112 +82,45 @@ export const ProductionInventoryView = () => {
     }
   };
 
-  const handleInputChange = () => {
-    setFilterSelectedQuery(filterSelectedQuery);
-    getSearchData(filterSelectedQuery);
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    setCurrentPage(1);
+  };
+
+  const handleReset = () => {
+    setSearchQuery("");
+    setCurrentPage(1);
   };
 
   useEffect(() => {
-    getAllProductionInventoryDetails();
+    getAllProductionInventoryDetails(currentPage, searchQuery);
+  }, [currentPage, searchQuery]);
+
+  const getAllProductionInventoryDetails = useCallback(async (page, query) => {
+    try {
+      setOpen(true);
+      const response = await InventoryServices.getProductionInventoryData(
+        page,
+        query
+      );
+      setProductionInventoryData(response.data.results);
+      setTotalPages(Math.ceil(response.data.count / 25));
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setOpen(false);
+    }
   }, []);
 
-  const getAllProductionInventoryDetails = async () => {
-    try {
-      setOpen(true);
-      const response = currentPage
-        ? await InventoryServices.getProductionInventoryPaginateData(
-            currentPage
-          )
-        : await InventoryServices.getAllProductionInventoryData();
-
-      setProductionInventoryData(response.data.results);
-      const total = response.data.count;
-      setpageCount(Math.ceil(total / 25));
-    } catch (err) {
-      handleErrorResponse(err);
-    } finally {
-      setOpen(false);
-    }
-  };
-
-  const handleErrorResponse = (err) => {
-    if (!err.response) {
-      setErrMsg(
-        "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
-      );
-    } else if (err.response.status === 400) {
-      setErrMsg(
-        err.response.data.errors.name ||
-          err.response.data.errors.non_field_errors
-      );
-    } else if (err.response.status === 401) {
-      setErrMsg(err.response.data.errors.code);
-    } else if (err.response.status === 404 || !err.response.data) {
-      setErrMsg("Data not found or request was null/empty");
-    } else {
-      setErrMsg("Server Error");
-    }
-  };
-
-  const getSearchData = async (value) => {
-    try {
-      setOpen(true);
-      const filterSearch = value;
-      if (filterSearch !== "") {
-        const response =
-          await InventoryServices.getAllSearchProductionInventoryData(
-            filterSearch
-          );
-        setProductionInventoryData(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      } else {
-        await getAllProductionInventoryDetails();
-        setFilterSelectedQuery("");
-      }
-    } catch (error) {
-      console.log("error Search leads", error);
-    } finally {
-      setOpen(false);
-    }
-  };
-
-  const handlePageClick = async (event, value) => {
-    try {
-      const page = value;
-      setCurrentPage(page);
-      setOpen(true);
-
-      const response = filterSelectedQuery
-        ? await InventoryServices.getProductionInventoryPaginateData(
-            page,
-            filterSelectedQuery
-          )
-        : await InventoryServices.getProductionInventoryPaginateData(page);
-      if (response) {
-        setProductionInventoryData(response.data.results);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      } else {
-        await getAllProductionInventoryDetails();
-        setFilterSelectedQuery("");
-      }
-    } catch (error) {
-      console.log("error", error);
-    } finally {
-      setOpen(false);
-    }
-  };
-
-  const getResetData = () => {
-    setFilterSelectedQuery("");
-    getAllProductionInventoryDetails();
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
   };
 
   const Tableheaders = [
     "PRODUCT",
     "SELLER STATE",
     "DESCRIPTION",
+    "BATCH NO",
     "DATE",
     "UNIT",
     "QUANTITY",
@@ -197,6 +133,7 @@ export const ProductionInventoryView = () => {
     product: row.product,
     seller_account: row.seller_account,
     description: row.description,
+    source_key: row.source_key,
     created_on: row.created_on,
     unit: row.unit,
     quantity: row.quantity,
@@ -207,11 +144,14 @@ export const ProductionInventoryView = () => {
 
   return (
     <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
-
       <div>
-        <ErrorMessage errRef={errRef} errMsg={errMsg} />
-
         <div
           style={{
             padding: "16px",
@@ -225,12 +165,7 @@ export const ProductionInventoryView = () => {
         >
           <div style={{ display: "flex" }}>
             <div style={{ flexGrow: 0.9 }}>
-              <CustomSearchWithButton
-                filterSelectedQuery={filterSelectedQuery}
-                setFilterSelectedQuery={setFilterSelectedQuery}
-                handleInputChange={handleInputChange}
-                getResetData={getResetData}
-              />
+              <SearchComponent onSearch={handleSearch} onReset={handleReset} />
             </div>
             <div style={{ flexGrow: 2 }}>
               <h3
@@ -271,12 +206,13 @@ export const ProductionInventoryView = () => {
             data={Tabledata}
             openInPopup={null}
             openInPopup2={null}
+            Styles={{ paddingLeft: "10px", paddingRight: "10px" }}
           />
 
           <CustomPagination
             currentPage={currentPage}
-            pageCount={pageCount}
-            handlePageClick={handlePageClick}
+            totalPages={totalPages}
+            handlePageChange={handlePageChange}
           />
         </div>
       </div>

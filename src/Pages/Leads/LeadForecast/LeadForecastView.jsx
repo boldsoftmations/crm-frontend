@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Box,
   Grid,
@@ -13,71 +13,58 @@ import {
   Paper,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
-import { LeadForecastCreate } from "./LeadForecastCreate";
 import { LeadForecastUpdate } from "./LeadForecastUpdate";
 import { Popup } from "../../../Components/Popup";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import LeadServices from "../../../services/LeadService";
 import { CustomPagination } from "../../../Components/CustomPagination";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../../Components/MessageAlert";
 
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
-
-export const LeadForecastView = ({ recordForEdit }) => {
+export const LeadForecastView = () => {
   const [open, setOpen] = useState(false);
   const [leadForecastData, setLeadForecastData] = useState([]);
-  const [pageCount, setPageCount] = useState(0);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [openPopup, setOpenPopup] = useState(false);
-  const [openPopup2, setOpenPopup2] = useState(false);
-  const [leadForecastDataByID, setLeadForecastDataByID] = useState([]);
-  const [selectedForecastId, setSelectedForecastId] = useState(null);
-  const [quantity, setQuantity] = useState(null);
   const [currentRowData, setCurrentRowData] = useState(null);
-  const handlePageClick = (event, value) => {
+  const { handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
+
+  useEffect(() => {
+    getAllLeadDetails();
+  }, [currentPage]);
+
+  const getAllLeadDetails = useCallback(async () => {
+    try {
+      setOpen(true);
+      const response = await LeadServices.getLeadForecast(currentPage);
+      setLeadForecastData(response.data.results);
+      setTotalPages(Math.ceil(response.data.count / 25));
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setOpen(false);
+    }
+  }, [currentPage]);
+
+  const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
 
-  useEffect(() => {
-    getAllLeadDetails(currentPage);
-  }, [currentPage, recordForEdit]);
-
-  const getAllLeadDetails = async (page = 0) => {
-    try {
-      setOpen(true);
-      const response = await LeadServices.getLeadForecast({ page });
-      setLeadForecastData(response.data.results);
-      const total = response.data.count;
-      setPageCount(Math.ceil(total / 25));
-      setOpen(false);
-    } catch (err) {
-      console.error("Error fetching lead forecast data:", err);
-      setOpen(false);
-    }
+  const openInPopup = (data) => {
+    setCurrentRowData(data);
+    setOpenPopup(true);
   };
 
-  const closePopupAndUpdate = () => {
-    setOpenPopup(false);
-    getAllLeadDetails(currentPage);
-  };
   return (
     <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
       <Grid item xs={12}>
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
@@ -155,18 +142,7 @@ export const LeadForecastView = ({ recordForEdit }) => {
                         {row.anticipated_date || null}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        <Button
-                          variant="contained"
-                          onClick={() => {
-                            setOpenPopup(true);
-                            setCurrentRowData(row);
-                            setLeadForecastDataByID(row);
-                            setSelectedForecastId(row.id);
-                            setQuantity(row.quantity);
-                          }}
-                        >
-                          Edit
-                        </Button>
+                        <Button onClick={() => openInPopup(row)}>Edit</Button>
                       </StyledTableCell>
                     </StyledTableRow>
                   ))}
@@ -174,8 +150,9 @@ export const LeadForecastView = ({ recordForEdit }) => {
             </Table>
           </TableContainer>
           <CustomPagination
-            pageCount={pageCount}
-            handlePageClick={handlePageClick}
+            totalPages={totalPages}
+            currentPage={currentPage}
+            handlePageChange={handlePageChange}
           />
         </Paper>
       </Grid>
@@ -188,13 +165,33 @@ export const LeadForecastView = ({ recordForEdit }) => {
           <LeadForecastUpdate
             getAllLeadDetails={getAllLeadDetails}
             setOpenPopup={setOpenPopup}
-            leadForecastId={selectedForecastId}
-            onUpdateSuccess={closePopupAndUpdate}
-            initialQuantity={currentRowData.quantity}
-            initialDate={currentRowData.anticipated_date}
+            leadForecastData={currentRowData}
+            currentPage={currentPage}
           />
         </Popup>
       )}
     </>
   );
 };
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+    padding: 0, // Remove padding from header cells
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+    padding: 0, // Remove padding from body cells
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  "&:nth-of-type(odd)": {
+    backgroundColor: theme.palette.action.hover,
+  },
+  // hide last border
+  "&:last-child td, &:last-child th": {
+    border: 0,
+  },
+}));

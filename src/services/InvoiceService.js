@@ -211,7 +211,7 @@ const cancelSalesInvoice = (id, data) => {
 };
 
 const getSalesnvoiceDataById = (id) => {
-  return CustomAxios.get(`/api/invoice/list-sales-invoice/${id}`);
+  return CustomAxios.get(`api/invoice/list-sales-invoice/${id}`);
 };
 
 const getAllSaleRegisterData = (startDate, endDate) => {
@@ -243,9 +243,28 @@ const getSaleRegisterDataWithPaginationAndSearch = (
   );
 };
 
-const getDispatchData = (value) => {
+const getDispatchData = (dispatchedValue, page, unitFilter, searchValue) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
+
+  if (dispatchedValue) {
+    params.append("dispatched", dispatchedValue);
+  }
+  if (page) {
+    params.append("page", page);
+  }
+
+  if (unitFilter !== undefined) {
+    params.append("unit", unitFilter);
+  }
+
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+
+  // Sending a GET request with query parameters
   return CustomAxios.get(
-    `/api/invoice/list-dispatch-book/?dispatched=${value}`
+    `api/invoice/list-dispatch-book/?${params.toString()}`
   );
 };
 
@@ -298,8 +317,10 @@ const getPODCopyDashboardData = (pageNumber, boolean, isNull, unit) => {
 };
 
 const checkPrice = (pi_number) => {
-  return CustomAxios.get(`/api/invoice/check-price-list/?pi_number=${pi_number}`);
-}
+  return CustomAxios.get(
+    `/api/invoice/check-price-list/?pi_number=${pi_number}`
+  );
+};
 
 const InvoiceServices = {
   getAllSellerAccountData,
@@ -352,7 +373,7 @@ const InvoiceServices = {
   getDispatchDashboardData,
   getLRCopyDashboardData,
   getPODCopyDashboardData,
-  checkPrice
+  checkPrice,
 };
 
 export default InvoiceServices;

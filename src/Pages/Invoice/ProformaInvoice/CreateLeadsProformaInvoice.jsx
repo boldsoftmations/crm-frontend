@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
 import {
-  Alert,
   Box,
   Button,
   Checkbox,
   FormControlLabel,
   Grid,
-  Snackbar,
   Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
@@ -14,15 +12,17 @@ import Chip from "@mui/material/Chip";
 import Divider from "@mui/material/Divider";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import ProductService from "../../../services/ProductService";
 import InvoiceServices from "../../../services/InvoiceService";
 import { CustomLoader } from "../../../Components/CustomLoader";
-import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 import { Popup } from "../../../Components/Popup";
 import { UpdateLeads } from "../../Leads/UpdateLeads";
 import LeadServices from "../../../services/LeadService";
 import CustomTextField from "../../../Components/CustomTextField";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../../Components/MessageAlert";
+import useDynamicFormFields from "../../../Components/useDynamicFormFields ";
+import ProductService from "../../../services/ProductService";
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -45,70 +45,47 @@ const values = {
 
 export const CreateLeadsProformaInvoice = (props) => {
   const { setOpenPopup, leadsByID } = props;
+  const [productOption, setProductOption] = useState([]);
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
+  const {
+    handleAutocompleteChange,
+    handleFormChange,
+    addFields,
+    removeFields,
+    products,
+  } = useDynamicFormFields(
+    [
+      {
+        product: "",
+        unit: "",
+        quantity: "",
+        rate: "",
+        requested_date: values.someDate,
+        special_instructions: "",
+      },
+    ],
+    productOption,
+    true
+  );
   const navigate = useNavigate();
   const [openPopup2, setOpenPopup2] = useState(false);
   const [openPopup3, setOpenPopup3] = useState(false);
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState([]);
   const [selectedSellerData, setSelectedSellerData] = useState("");
-  const [product, setProduct] = useState([]);
   const [paymentTermData, setPaymentTermData] = useState([]);
   const [deliveryTermData, setDeliveryTermData] = useState([]);
   const [idForEdit, setIDForEdit] = useState();
   const [checked, setChecked] = useState(true);
   const [priceApproval, setPriceApproval] = useState(false);
   const [leads, setLeads] = useState([]);
-  const [products, setProducts] = useState([
-    {
-      product: "",
-      unit: "",
-      quantity: "",
-      rate: "",
-      requested_date: values.someDate,
-      special_instructions: "",
-    },
-  ]);
   const [sellerData, setSellerData] = useState([]);
-  const data = useSelector((state) => state.auth);
-  const users = data.profile;
-  const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [errorMessages, setErrorMessages] = useState([]);
-  const [currentErrorIndex, setCurrentErrorIndex] = useState(0);
+  const { profile: users } = useSelector((state) => state.auth);
 
-  const handleAutocompleteChange = (index, event, value) => {
-    let data = [...products];
-    const productObj = product.find((item) => item.product === value);
-
-    data[index]["product"] = value;
-    data[index]["unit"] = productObj ? productObj.unit : "";
-    setProducts(data);
-  };
-
-  const handleFormChange = (index, event) => {
-    let data = [...products];
-    data[index][event.target.name ? event.target.name : "product"] = event
-      .target.value
-      ? event.target.value
-      : event.target.textContent;
-    setProducts(data);
-  };
-
-  const addFields = () => {
-    let newfield = {
-      product: "",
-      unit: "",
-      quantity: "",
-      rate: "",
-      requested_date: values.someDate,
-      special_instructions: "",
-    };
-    setProducts([...products, newfield]);
-  };
-
-  const removeFields = (index) => {
-    let data = [...products];
-    data.splice(index, 1);
-    setProducts(data);
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setInputValue({ ...inputValue, [name]: value });
   };
 
   useEffect(() => {
@@ -116,34 +93,24 @@ export const CreateLeadsProformaInvoice = (props) => {
     getProduct();
   }, []);
 
+  const getProduct = useCallback(async () => {
+    try {
+      const res = await ProductService.getAllValidPriceList("all");
+      setProductOption(res.data);
+    } catch (err) {
+      console.error("error potential", err);
+    }
+  }, []);
+
   const getAllSellerAccountsDetails = async () => {
     try {
-      setOpen(true);
       const response = await InvoiceServices.getAllPaginateSellerAccountData(
         "all"
       );
       setSellerData(response.data);
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
+    } catch (error) {
+      console.log("Error fetching seller account data:", error);
     }
-  };
-
-  const getProduct = async () => {
-    try {
-      setOpen(true);
-      const res = await ProductService.getAllValidPriceList("all");
-      setProduct(res.data);
-      setOpen(false);
-    } catch (err) {
-      console.error("error potential", err);
-      setOpen(false);
-    }
-  };
-
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setInputValue({ ...inputValue, [name]: value });
   };
 
   useEffect(() => {
@@ -152,134 +119,113 @@ export const CreateLeadsProformaInvoice = (props) => {
 
   const getLeadsData = async (recordForEdit) => {
     try {
-      setOpen(true);
       const res = await LeadServices.getLeadsById(recordForEdit);
       setLeads(res.data);
-
-      setOpen(false);
     } catch (error) {
       console.log("error", error);
-      setOpen(false);
     }
-  };
-
-  const extractErrorMessages = (data) => {
-    let messages = [];
-    if (data.errors) {
-      for (const [key, value] of Object.entries(data.errors)) {
-        // Assuming each key has an array of messages, concatenate them.
-        value.forEach((msg) => {
-          messages.push(`${key}: ${msg}`);
-        });
-      }
-    }
-    return messages;
   };
 
   const createLeadProformaInvoiceDetails = async (e) => {
+    e.preventDefault();
+    const payload = {
+      type: "Lead",
+      raised_by: users.email,
+      raised_by_first_name: users.first_name,
+      raised_by_last_name: users.last_name,
+      seller_account: selectedSellerData.unit,
+      seller_address: selectedSellerData.address,
+      seller_pincode: selectedSellerData.pincode,
+      seller_state: selectedSellerData.state,
+      seller_city: selectedSellerData.city,
+      seller_gst: selectedSellerData.gst_number || null,
+      seller_pan: selectedSellerData.pan_number,
+      seller_state_code: selectedSellerData.state_code,
+      seller_cin: selectedSellerData.cin_number,
+      seller_email: selectedSellerData.email,
+      seller_contact: selectedSellerData.contact,
+      seller_bank_name: selectedSellerData.bank_name,
+      seller_account_no: selectedSellerData.current_account_no,
+      seller_ifsc_code: selectedSellerData.ifsc_code,
+      seller_branch: selectedSellerData.branch,
+      lead: leads.lead_id,
+      contact_person_name: leads.name,
+      contact: leads.contact,
+      alternate_contact: leads.alternate_contact,
+      company_name: leads.company,
+      gst_number: leads.gst_number || null,
+      pan_number: leads.pan_number,
+      billing_address: leads.address,
+      billing_state: leads.state,
+      billing_city: leads.city,
+      billing_pincode: leads.pincode,
+      address: leads.shipping_address,
+      pincode: leads.shipping_pincode,
+      state: leads.shipping_state,
+      city: leads.shipping_city,
+      place_of_supply: inputValue.place_of_supply,
+      transporter_name: inputValue.transporter_name,
+      buyer_order_no: checked === true ? "verbal" : inputValue.buyer_order_no,
+      buyer_order_date: inputValue.buyer_order_date
+        ? inputValue.buyer_order_date
+        : values.someDate,
+      payment_terms: paymentTermData,
+      delivery_terms: deliveryTermData,
+      status: priceApproval ? "Price Approval" : "Approved",
+      price_approval: priceApproval,
+      products: products,
+    };
     try {
-      e.preventDefault();
-      const req = {
-        type: "Lead",
-        raised_by: users.email,
-        raised_by_first_name: users.first_name,
-        raised_by_last_name: users.last_name,
-        seller_account: selectedSellerData.unit,
-        seller_address: selectedSellerData.address,
-        seller_pincode: selectedSellerData.pincode,
-        seller_state: selectedSellerData.state,
-        seller_city: selectedSellerData.city,
-        seller_gst: selectedSellerData.gst_number || null,
-        seller_pan: selectedSellerData.pan_number,
-        seller_state_code: selectedSellerData.state_code,
-        seller_cin: selectedSellerData.cin_number,
-        seller_email: selectedSellerData.email,
-        seller_contact: selectedSellerData.contact,
-        seller_bank_name: selectedSellerData.bank_name,
-        seller_account_no: selectedSellerData.current_account_no,
-        seller_ifsc_code: selectedSellerData.ifsc_code,
-        seller_branch: selectedSellerData.branch,
-        lead: leads.lead_id,
-        contact_person_name: leads.name,
-        contact: leads.contact,
-        alternate_contact: leads.alternate_contact,
-        company_name: leads.company,
-        gst_number: leads.gst_number || null,
-        pan_number: leads.pan_number,
-        billing_address: leads.address,
-        billing_state: leads.state,
-        billing_city: leads.city,
-        billing_pincode: leads.pincode,
-        address: leads.shipping_address,
-        pincode: leads.shipping_pincode,
-        state: leads.shipping_state,
-        city: leads.shipping_city,
-        place_of_supply: inputValue.place_of_supply,
-        transporter_name: inputValue.transporter_name,
-        buyer_order_no: checked === true ? "verbal" : inputValue.buyer_order_no,
-        buyer_order_date: inputValue.buyer_order_date
-          ? inputValue.buyer_order_date
-          : values.someDate,
-        payment_terms: paymentTermData,
-        delivery_terms: deliveryTermData,
-        status: priceApproval ? "Price Approval" : "Approved",
-        price_approval: priceApproval,
-        products: products,
-      };
       setOpen(true);
-      if (
-        leads.contact !== null &&
-        leads.address !== null &&
-        leads.state !== null &&
-        leads.city !== null &&
-        leads.pincode !== null &&
-        leads.shipping_address !== null &&
-        leads.shipping_state !== null &&
-        leads.shipping_city !== null &&
-        leads.shipping_pincode !== null &&
-        (leads.pan_number !== null || leads.gst_number !== null) &&
-        leads.company != null
-      ) {
-        await InvoiceServices.createLeadsProformaInvoiceData(req);
-        setOpenPopup(false);
-        navigate("/invoice/active-pi");
-      } else {
+      const isDataValid = validateLeadData(leads); // Custom validation function
+
+      if (!isDataValid) {
         setIDForEdit(leads.lead_id);
-        setOpenPopup2(true);
+        setOpenPopup2(true); // Assuming this opens a popup to edit lead details
+        return;
       }
-      setOpen(false);
+      const response = await InvoiceServices.createLeadsProformaInvoiceData(
+        payload
+      );
+      const successMessage =
+        response.data.message || "Proforma Invoice created successfully!";
+      handleSuccess(successMessage);
+
+      setTimeout(() => {
+        navigate("/invoice/active-pi");
+      }, 300);
     } catch (error) {
-      console.log("creating Lead PI error", error);
-      const newErrors = extractErrorMessages(error); // Pass the entire error object
-      setErrorMessages(newErrors);
-      setCurrentErrorIndex(0); // Reset the error index when new errors arrive
-      setOpenSnackbar((prevOpen) => !prevOpen);
+      handleError(error); // Using the custom hook's method to handle errors
+      console.error("Creating Lead PI error", error);
     } finally {
-      setOpen(false);
+      setOpen(false); // Close the loading indicator
     }
   };
 
-  const handleCloseSnackbar = useCallback(() => {
-    if (currentErrorIndex < errorMessages.length - 1) {
-      setCurrentErrorIndex((prevIndex) => prevIndex + 1);
-    } else {
-      setOpenSnackbar(false);
-      setCurrentErrorIndex(0); // Reset for any future errors
-    }
-  }, [currentErrorIndex, errorMessages.length]);
+  function validateLeadData(lead) {
+    return (
+      lead.contact !== null &&
+      lead.address !== null &&
+      lead.state !== null &&
+      lead.city !== null &&
+      lead.pincode !== null &&
+      lead.shipping_address !== null &&
+      lead.shipping_state !== null &&
+      lead.shipping_city !== null &&
+      lead.shipping_pincode !== null &&
+      (lead.pan_number !== null || lead.gst_number !== null) &&
+      lead.company != null
+    );
+  }
 
   return (
     <div>
-      <Snackbar
-        open={openSnackbar}
-        autoHideDuration={6000}
+      <MessageAlert
+        open={alertInfo.open}
         onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      >
-        <Alert onClose={handleCloseSnackbar} severity="error">
-          {errorMessages[currentErrorIndex]}
-        </Alert>
-      </Snackbar>
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
 
       <Box
@@ -563,7 +509,7 @@ export const CreateLeadsProformaInvoice = (props) => {
                     onChange={(event, value) =>
                       handleAutocompleteChange(index, event, value)
                     }
-                    options={product.map((option) => option.product)}
+                    options={productOption.map((option) => option.product)}
                     getOptionLabel={(option) => option}
                     sx={{ minWidth: 300 }}
                     label="Product Name"
@@ -587,7 +533,7 @@ export const CreateLeadsProformaInvoice = (props) => {
                     size="small"
                     label="Unit"
                     variant="outlined"
-                    value={input.unit ? input.unit : ""}
+                    value={input.unit || ""}
                   />
                 </Grid>
                 <Grid item xs={12} sm={3}>
@@ -621,11 +567,7 @@ export const CreateLeadsProformaInvoice = (props) => {
                     size="small"
                     label="Request Date"
                     variant="outlined"
-                    value={
-                      input.requested_date
-                        ? input.requested_date
-                        : values.someDate
-                    }
+                    value={input.requested_date || values.someDate}
                     onChange={(event) => handleFormChange(index, event)}
                     InputLabelProps={{
                       shrink: true,
@@ -639,22 +581,11 @@ export const CreateLeadsProformaInvoice = (props) => {
                     size="small"
                     label="Special Instructions"
                     variant="outlined"
-                    value={
-                      input.special_instructions
-                        ? input.special_instructions
-                        : ""
-                    }
+                    value={input.special_instructions || ""}
                     onChange={(event) => handleFormChange(index, event)}
                   />
                 </Grid>
                 <Grid item xs={12} sm={4} alignContent="right">
-                  <Button
-                    onClick={addFields}
-                    variant="contained"
-                    sx={{ marginRight: "1em" }}
-                  >
-                    Add More...
-                  </Button>
                   {index !== 0 && (
                     <Button
                       disabled={index === 0}
@@ -668,6 +599,15 @@ export const CreateLeadsProformaInvoice = (props) => {
               </>
             );
           })}
+          <Grid item xs={12} sm={4} alignContent="right">
+            <Button
+              onClick={addFields}
+              variant="contained"
+              sx={{ marginRight: "1em" }}
+            >
+              Add More...
+            </Button>
+          </Grid>
         </Grid>
         <Button
           type="submit"

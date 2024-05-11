@@ -32,11 +32,10 @@ export const SalesRegisterView = () => {
   const errRef = useRef();
   const [open, setOpen] = useState(false);
   const [errMsg, setErrMsg] = useState("");
-  const [pageCount, setpageCount] = useState(0);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [salesRegisterData, setsalesRegisterData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-
+  const [totalPages, setTotalPages] = useState(0);
   const [endDate, setEndDate] = useState(new Date()); // set endDate as one week ahead of startDate
   const [startDate, setStartDate] = useState(
     new Date(endDate.getTime() - 7 * 24 * 60 * 60 * 1000)
@@ -68,7 +67,7 @@ export const SalesRegisterView = () => {
           );
         setsalesRegisterData(response.data.results);
         const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
+        setTotalPages(Math.ceil(total / 25));
       } else {
         let response = await InvoiceServices.getAllSaleRegisterData(
           StartDate,
@@ -77,7 +76,7 @@ export const SalesRegisterView = () => {
         if (response) {
           setsalesRegisterData(response.data.results);
           const total = response.data.count;
-          setpageCount(Math.ceil(total / 25));
+          setTotalPages(Math.ceil(total / 25));
         }
       }
       setOpen(false);
@@ -123,7 +122,7 @@ export const SalesRegisterView = () => {
       if (response) {
         setsalesRegisterData(response.data.results);
         const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
+        setTotalPages(Math.ceil(total / 25));
       } else {
         getSalesRegisterData();
         setSearchQuery("");
@@ -140,7 +139,7 @@ export const SalesRegisterView = () => {
     getSalesRegisterData();
   };
 
-  const handlePageClick = async (event, value) => {
+  const handlePageChange = async (event, value) => {
     try {
       const page = value;
       const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
@@ -158,7 +157,7 @@ export const SalesRegisterView = () => {
         if (response) {
           setsalesRegisterData(response.data.results);
           const total = response.data.count;
-          setpageCount(Math.ceil(total / 25));
+          setTotalPages(Math.ceil(total / 25));
         } else {
           getSalesRegisterData();
           setSearchQuery("");
@@ -172,7 +171,7 @@ export const SalesRegisterView = () => {
           );
         setsalesRegisterData(response.data.results);
         const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
+        setTotalPages(Math.ceil(total / 25));
       }
       setOpen(false);
     } catch (error) {
@@ -326,8 +325,9 @@ export const SalesRegisterView = () => {
             </Table>
           </TableContainer>
           <CustomPagination
-            pageCount={pageCount}
-            handlePageClick={handlePageClick}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            handlePageChange={handlePageChange}
           />
         </Paper>
       </Grid>

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, TextField, DialogActions, Grid } from "@mui/material";
 import Hr from "../../../services/Hr";
-import CustomTextField from "../../../Components/CustomTextField";
 import CustomAxios from "../../../services/api";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
@@ -16,7 +15,6 @@ export const RejectedCandidateUpdate = ({
   const [isLoading, setIsLoading] = useState(false);
   const [interviewDate, setInterviewDate] = useState(row.interview_date || "");
   const [interviewTime, setInterviewTime] = useState(row.interview_time || "");
-  const [status, setStatus] = useState(row.status || null);
   const [interviewerName, setInterviewerName] = useState(
     row.interviewer_name || ""
   );
@@ -38,7 +36,7 @@ export const RejectedCandidateUpdate = ({
       time: interviewTime,
       interviewer_name: interviewerName,
       stage: stage,
-      offer_status: status,
+      offer_status: row.status || null,
     };
 
     try {

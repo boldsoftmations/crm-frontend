@@ -1,78 +1,62 @@
 import { Box, Button, Grid } from "@mui/material";
-import { useRef, useState } from "react";
-import React from "react";
+import React, { memo, useCallback, useState } from "react";
 import ProductService from "../../../services/ProductService";
-import "../../CommonStyle.css";
 import CustomTextField from "../../../Components/CustomTextField";
 import { CustomLoader } from "./../../../Components/CustomLoader";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../../Components/MessageAlert";
 
-export const CreateBasicUnit = (props) => {
-  const { setOpenPopup, getBasicUnit } = props;
+export const CreateBasicUnit = memo((props) => {
+  const { setOpenPopup, getBasicUnit, currentPage, searchQuery } = props;
   const [brand, setBrand] = useState([]);
   const [open, setOpen] = useState(false);
-  const errRef = useRef();
-  const [errMsg, setErrMsg] = useState("");
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setBrand({ ...brand, [name]: value });
   };
 
-  const createBrand = async (e) => {
-    try {
-      e.preventDefault();
-      setOpen(true);
-      const data = {
-        name: brand.name,
-        short_name: brand.shortName,
-      };
+  const createBrand = useCallback(
+    async (e) => {
+      try {
+        e.preventDefault();
+        setOpen(true);
+        const data = {
+          name: brand.name,
+          short_name: brand.shortName,
+        };
 
-      await ProductService.createBasicUnit(data);
-      setOpenPopup(false);
-      setOpen(false);
-      getBasicUnit();
-    } catch (err) {
-      console.log("error :>> ", err);
-      setOpen(false);
-      if (!err.response) {
-        setErrMsg("No Server Response");
-      } else if (err.response.status === 400) {
-        setErrMsg(
-          err.response.data.errors.name
-            ? err.response.data.errors.name
-            : err.response.data.errors.non_field_errors
-        );
-      } else if (err.response.status === 401) {
-        setErrMsg(err.response.data.errors.code);
-      } else {
-        setErrMsg("Server Error");
+        const response = await ProductService.createBasicUnit(data);
+        const successMessage =
+          response.data.message || "Basic Unit Created successfully";
+        handleSuccess(successMessage);
+
+        setTimeout(() => {
+          setOpenPopup(false);
+          getBasicUnit(currentPage, searchQuery);
+        }, 300);
+      } catch (error) {
+        handleError(error); // Handle errors from the API call
+      } finally {
+        setOpen(false); // Always close the loader
       }
-      errRef.current.focus();
-    }
-  };
+    },
+    [brand, currentPage, searchQuery]
+  );
 
   return (
     <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
       <Box component="form" noValidate onSubmit={(e) => createBrand(e)}>
         <Grid container spacing={2}>
-          <p
-            style={{
-              padding: 10,
-              marginBottom: 10,
-              borderRadius: 4,
-              backgroundColor: errMsg ? "red" : "offscreen",
-              textAlign: "center",
-              color: "white",
-              textTransform: "capitalize",
-            }}
-            ref={errRef}
-            className={errMsg ? "errmsg" : "offscreen"}
-            aria-live="assertive"
-          >
-            {errMsg}
-          </p>
-
           <Grid item xs={12}>
             <CustomTextField
               fullWidth
@@ -108,4 +92,4 @@ export const CreateBasicUnit = (props) => {
       </Box>
     </>
   );
-};
+});

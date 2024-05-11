@@ -1,108 +1,79 @@
 import { Box, Button, Grid } from "@mui/material";
-
-import { useRef, useState } from "react";
-import React, { useEffect } from "react";
-
+import React, { memo, useCallback, useState } from "react";
 import ProductService from "../../../services/ProductService";
-
-import "../../CommonStyle.css";
 import CustomTextField from "../../../Components/CustomTextField";
 import { CustomLoader } from "../../../Components/CustomLoader";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../../Components/MessageAlert";
 
-export const UpdateBrand = (props) => {
-  const { recordForEdit, setOpenPopup, getBrandList } = props;
+export const UpdateBrand = memo((props) => {
+  const {
+    recordForEdit,
+    setOpenPopup,
+    getBrandList,
+    currentPage,
+    searchQuery,
+  } = props;
   const [open, setOpen] = useState(false);
-  const [brand, setBrand] = useState([]);
-  const errRef = useRef();
-  const [errMsg, setErrMsg] = useState("");
-  const getBrand = async (recordForEdit) => {
-    try {
-      setOpen(true);
-      const res = await ProductService.getBrandById(recordForEdit);
-
-      setBrand(res.data);
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
-  };
+  const [brand, setBrand] = useState(recordForEdit);
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setBrand({ ...brand, [name]: value });
   };
 
-  const updatesBrand = async (e) => {
-    try {
-      e.preventDefault();
-      setOpen(true);
-      const data = {
-        name: brand.name,
-        short_name: brand.short_name,
-      };
+  const updatesBrand = useCallback(
+    async (e) => {
+      try {
+        e.preventDefault();
+        setOpen(true);
+        const data = {
+          name: brand.name,
+          short_name: brand.short_name,
+        };
 
-      if (recordForEdit) {
-        await ProductService.updateBrand(brand.id, data);
+        if (recordForEdit) {
+          const response = await ProductService.updateBrand(brand.id, data);
+          // Example adjustment for fallback success message
+          const successMessage =
+            response.data.message || "Brand updated successfully";
+          handleSuccess(successMessage);
 
-        setOpenPopup(false);
-        setOpen(false);
-        getBrandList();
+          setTimeout(() => {
+            setOpenPopup(false);
+            getBrandList(currentPage, searchQuery);
+          }, 300); // Adjust delay as needed
+        }
+      } catch (error) {
+        handleError(error); // Handle errors from the API call
+      } finally {
+        setOpen(false); // Always close the loader
       }
-    } catch (err) {
-      console.log("error :>> ", err);
-      setOpen(false);
-      if (!err.response) {
-        setErrMsg("No Server Response");
-      } else if (err.response.status === 400) {
-        setErrMsg(
-          err.response.data.errors.name
-            ? err.response.data.errors.name
-            : err.response.data.errors.non_field_errors
-        );
-      } else if (err.response.status === 401) {
-        setErrMsg(err.response.data.errors.code);
-      } else {
-        setErrMsg("Server Error");
-      }
-      errRef.current.focus();
-    }
-  };
-
-  useEffect(() => {
-    if (recordForEdit) getBrand(recordForEdit);
-  }, [recordForEdit]);
+    },
+    [brand, currentPage, searchQuery]
+  );
 
   return (
     <>
+      <MessageAlert
+        open={alertInfo.open} // Updated to use alertInfo.open
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity} // Updated to use alertInfo.severity
+        message={alertInfo.message} // Updated to use alertInfo.message
+      />
+
       <CustomLoader open={open} />
       <Box component="form" noValidate onSubmit={(e) => updatesBrand(e)}>
         <Grid container spacing={2}>
-          <p
-            style={{
-              width: "100%",
-              padding: 10,
-              marginBottom: 10,
-              borderRadius: 4,
-              backgroundColor: errMsg ? "red" : "offscreen",
-              textAlign: "center",
-              color: "white",
-              textTransform: "capitalize",
-            }}
-            ref={errRef}
-            className={errMsg ? "errmsg" : "offscreen"}
-            aria-live="assertive"
-          >
-            {errMsg}
-          </p>
-
           <Grid item xs={12}>
             <CustomTextField
               fullWidth
               size="small"
-              label="Id"
+              label="ID"
               variant="outlined"
-              value={recordForEdit ? recordForEdit : ""}
+              value={brand.id || ""}
             />
           </Grid>
           <Grid item xs={12}>
@@ -112,7 +83,7 @@ export const UpdateBrand = (props) => {
               size="small"
               label="Brand"
               variant="outlined"
-              value={brand.name ? brand.name : ""}
+              value={brand.name || ""}
               onChange={handleInputChange}
             />
           </Grid>
@@ -123,7 +94,7 @@ export const UpdateBrand = (props) => {
               size="small"
               label="Short Name"
               variant="outlined"
-              value={brand.short_name ? brand.short_name : ""}
+              value={brand.short_name || ""}
               onChange={handleInputChange}
             />
           </Grid>
@@ -140,4 +111,4 @@ export const UpdateBrand = (props) => {
       </Box>
     </>
   );
-};
+});

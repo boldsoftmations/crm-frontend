@@ -29,10 +29,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 5,
   },
-  text: {
-    fontSize: 12,
-    marginBottom: 5,
-  },
   underline: {
     textDecoration: "underline",
   },
@@ -871,11 +867,8 @@ export const DailySalesReviewPDF = ({ recordForEdit, reviewData }) => {
             </View>
           </View>
         </View>
-        {/* pipeline summary section */}
-        // Pipeline Summary Section
         <View style={styles.card}>
           <Text style={styles.subheading}>Pipeline Summary</Text>
-          {/* Hot Lead Performance */}
           <View style={styles.section}>
             <Text style={styles.subheading}>Hot Lead Performance</Text>
             {pipeline_summary &&

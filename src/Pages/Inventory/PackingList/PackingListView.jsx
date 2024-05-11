@@ -15,13 +15,8 @@ import {
   Collapse,
   Typography,
   IconButton,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
-import ClearIcon from "@mui/icons-material/Clear";
 import React, { useCallback, useEffect, useState } from "react";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -32,8 +27,12 @@ import { PackingListUpdate } from "./PackingListUpdate";
 import InvoiceServices from "../../../services/InvoiceService";
 import { useDispatch, useSelector } from "react-redux";
 import { getSellerAccountData } from "../../../Redux/Action/Action";
-import CustomTextField from "../../../Components/CustomTextField";
-import { GRNCreate } from "../GRN/GRNCreate";
+import SearchComponent from "../../../Components/SearchComponent ";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../../Components/MessageAlert";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import { CustomPagination } from "../../../Components/CustomPagination";
+import { GRNCreate } from "../../Purchase/GRN/GRNCreate";
 
 export const PackingListView = () => {
   const dispatch = useDispatch();
@@ -42,11 +41,13 @@ export const PackingListView = () => {
   const [openPopupCreateGrn, setOpenPopupCreateGrn] = useState(false);
   const [open, setOpen] = useState(false);
   const [packingListData, setPackingListData] = useState([]);
-  const [pageCount, setPageCount] = useState(1);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [acceptedFilter, setAcceptedFilter] = useState(false);
   const [idForEdit, setIDForEdit] = useState("");
+  const { handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   useEffect(() => {
     getAllSellerAccountsDetails();
@@ -66,41 +67,48 @@ export const PackingListView = () => {
   };
 
   useEffect(() => {
-    getAllPackingListDetails(currentPage);
-  }, [currentPage, getAllPackingListDetails]);
+    getAllPackingListDetails(currentPage, acceptedFilter, searchQuery);
+  }, [currentPage, acceptedFilter, searchQuery]);
 
-  const getAllPackingListDetails = useCallback(
-    async (page, filter = acceptedFilter, search = searchQuery) => {
-      try {
-        setOpen(true);
-        const response = await InventoryServices.getAllPackingListData(
-          page,
-          filter,
-          search
-        );
-        setPackingListData(response.data.results);
-        setPageCount(Math.ceil(response.data.count / 25));
-        setOpen(false);
-      } catch (error) {
-        setOpen(false);
-        console.error("error", error);
-      }
-    },
-    [acceptedFilter, searchQuery] // Depend on acceptedFilter directly
-  );
+  const getAllPackingListDetails = useCallback(async (page, filter, query) => {
+    try {
+      setOpen(true);
+      const response = await InventoryServices.getAllPackingListData(
+        page,
+        filter,
+        query
+      );
+      setPackingListData(response.data.results);
+      setTotalPages(Math.ceil(response.data.count / 25));
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setOpen(false);
+    }
+  }, []);
 
-  const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
+  const handleFilter = (query) => {
+    if (query) {
+      const value = query.value === "true"; // Convert string to boolean
+      setAcceptedFilter(value);
+    } else {
+      setAcceptedFilter(false); // Set it back to false instead of null
+      setCurrentPage(0);
+    }
   };
 
-  const handlePageClick = (event, value) => {
-    setCurrentPage(value);
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    setCurrentPage(1); // Reset to first page on new search
   };
 
-  const handleFilterChange = (event) => {
-    const { value } = event.target;
-    setAcceptedFilter(value);
-    getAllPackingListDetails(currentPage, value, searchQuery);
+  const handleReset = () => {
+    setSearchQuery("");
+    setCurrentPage(1); // Reset to the first page
+  };
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value); // Assuming `value` is already adjusted for 0-based indexing in CustomPagination
   };
 
   const openInPopup = (item) => {
@@ -115,97 +123,62 @@ export const PackingListView = () => {
 
   return (
     <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
 
       <Grid item xs={12}>
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
-          <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
-            <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} sm={3}>
-                <FormControl sx={{ minWidth: "100px" }} fullWidth size="small">
-                  <InputLabel id="demo-simple-select-label">
-                    Filter By Accepted
-                  </InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    name="status"
-                    label="Filter By Accepted"
-                    value={acceptedFilter}
-                    onChange={handleFilterChange}
-                  >
-                    {AcceptedOption.map((option, i) => (
-                      <MenuItem key={i} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  {acceptedFilter && (
-                    <IconButton
-                      size="small"
-                      onClick={() => {
-                        setAcceptedFilter(false);
-                        getAllPackingListDetails(1, false, searchQuery);
-                      }}
-                      sx={{
-                        position: "absolute",
-                        right: 8,
-                        top: "50%",
-                        transform: "translateY(-50%)",
-                      }}
-                    >
-                      <ClearIcon />
-                    </IconButton>
-                  )}
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} sm={3}>
-                <CustomTextField
+          <Box sx={{ marginBottom: 2 }}>
+            <Grid
+              container
+              spacing={2}
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              {/* Left Section: Filter and Search */}
+              <Grid
+                item
+                xs={12}
+                sm={6}
+                md={4}
+                display="flex"
+                alignItems="center"
+                gap={2}
+              >
+                <CustomAutocomplete
+                  sx={{ width: "200px" }}
                   size="small"
-                  label="Search"
-                  variant="outlined"
-                  value={searchQuery}
-                  onChange={handleSearchChange}
-                  fullWidth
+                  value={AcceptedOption.find(
+                    (option) => option.value === acceptedFilter.toString()
+                  )}
+                  onChange={(event, newValue) => handleFilter(newValue)}
+                  options={AcceptedOption}
+                  getOptionLabel={(option) => option.label}
+                  label="Filter By Accepted"
+                />
+
+                <SearchComponent
+                  onSearch={handleSearch}
+                  onReset={handleReset}
                 />
               </Grid>
-              <Grid item xs={12} sm={1}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() =>
-                    getAllPackingListDetails(
-                      currentPage,
-                      acceptedFilter,
-                      searchQuery
-                    )
-                  } // Call `handleSearch` when the button is clicked
-                >
-                  Search
-                </Button>
-              </Grid>
-              <Grid item xs={12} sm={1}>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  onClick={() => {
-                    setSearchQuery("");
-                    getAllPackingListDetails(1, acceptedFilter, "");
-                  }}
-                >
-                  Reset
-                </Button>
-              </Grid>
-            </Grid>
-          </Box>
-          <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
-            <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} sm={6}></Grid>
-
-              <Grid item xs={12} sm={3}>
+              {/* Center Section: Title */}
+              <Grid
+                item
+                xs={12}
+                sm={4}
+                md={4}
+                display="flex"
+                justifyContent="center"
+              >
                 <h3
                   style={{
-                    textAlign: "left",
+                    textAlign: "center",
                     fontSize: "24px",
                     color: "rgb(34, 34, 34)",
                     fontWeight: 800,
@@ -214,7 +187,15 @@ export const PackingListView = () => {
                   Pending GRN
                 </h3>
               </Grid>
-              <Grid item xs={12} sm={3}></Grid>
+              {/* Right Section: Add Button */}
+              <Grid
+                item
+                xs={12}
+                sm={4}
+                md={4}
+                display="flex"
+                justifyContent="flex-end"
+              ></Grid>
             </Grid>
           </Box>
           <TableContainer
@@ -259,18 +240,16 @@ export const PackingListView = () => {
                     userData={userData}
                   />
                 ))}
-              </TableBody>{" "}
+              </TableBody>
             </Table>
           </TableContainer>
           <TableFooter
             sx={{ display: "flex", justifyContent: "center", marginTop: "2em" }}
           >
-            <Pagination
-              count={pageCount}
-              onChange={handlePageClick}
-              color={"primary"}
-              variant="outlined"
-              shape="circular"
+            <CustomPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              handlePageChange={handlePageChange}
             />
           </TableFooter>
         </Paper>
@@ -295,6 +274,9 @@ export const PackingListView = () => {
         setOpenPopup={setOpenPopupCreateGrn}
       >
         <GRNCreate
+          currentPage={currentPage}
+          searchQuery={searchQuery}
+          acceptedFilter={acceptedFilter}
           setOpenPopup={setOpenPopupCreateGrn}
           idForEdit={idForEdit}
           getAllPackingListDetails={getAllPackingListDetails}
