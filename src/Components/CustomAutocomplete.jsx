@@ -1,7 +1,5 @@
 import React from "react";
-import Autocomplete, {
-  AutocompleteRenderGetTagProps,
-} from "@mui/material/Autocomplete";
+import Autocomplete from "@mui/material/Autocomplete";
 import CustomTextField from "./CustomTextField"; // Adjust the path as needed
 import Chip from "@mui/material/Chip";
 
@@ -21,7 +19,6 @@ const CustomAutocomplete = ({
   limitTags, // Added to limit the number of tags shown
   freeSolo, // Added for allowing arbitrary values not present in the options
   renderTags, // Added for custom tag rendering
-  style,
   // Include any additional props that might be necessary
 }) => (
   <Autocomplete
@@ -34,8 +31,7 @@ const CustomAutocomplete = ({
     groupBy={groupBy}
     getOptionLabel={getOptionLabel || ((option) => option)} // Ensuring there's a default getOptionLabel
     renderInput={
-      renderInput ||
-      ((params) => <CustomTextField {...params} sx={sx} label={label} />)
+      renderInput || ((params) => <CustomTextField {...params} label={label} />)
     }
     sx={sx}
     multiple={multiple}

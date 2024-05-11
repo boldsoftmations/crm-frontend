@@ -2,8 +2,7 @@ import React from "react";
 import Chart from "react-google-charts";
 
 export const CustomChart = (props) => {
-  const { chartType, data, options, widthStyle, heightStyle, onClickType } =
-    props;
+  const { chartType, data, options, widthStyle, heightStyle } = props;
 
   return (
     <div>

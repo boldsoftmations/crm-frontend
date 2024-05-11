@@ -2,15 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import CloseIcon from "@mui/icons-material/Close";
 import { styled } from "@mui/material/styles";
-import {
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Typography,
-  IconButton,
-} from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, IconButton } from "@mui/material";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -51,12 +43,20 @@ BootstrapDialogTitle.propTypes = {
 };
 
 export const Popup = (props) => {
-  const { title, children, openPopup, setOpenPopup, maxWidth,others,fullScreen } = props;
+  const {
+    title,
+    children,
+    openPopup,
+    setOpenPopup,
+    maxWidth,
+    others,
+    fullScreen,
+  } = props;
 
   return (
     <BootstrapDialog
-    fullScreen={fullScreen}
-    {...others}
+      fullScreen={fullScreen}
+      {...others}
       maxWidth={maxWidth}
       onClose={() => {
         setOpenPopup(false);

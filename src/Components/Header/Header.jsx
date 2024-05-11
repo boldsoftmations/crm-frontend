@@ -117,28 +117,39 @@ export const Header = () => {
       {auth.user && (
         <AppBar
           position="fixed"
-          sx={{ backgroundColor: "#006ba1" }}
+          sx={{
+            backgroundColor: "#006ba1",
+            height: { xs: "40px", sm: "54px" },
+          }}
           className="not-scrolled"
         >
-          <Toolbar>
+          <Toolbar sx={{ minHeight: { xs: "40px", sm: "54px" } }}>
             <IconButton
               edge="start"
-              style={{
-                fontFamily: "Open Sans; sans-serif",
-                fontWeight: "700px",
-                size: "18px",
-                marginLeft: "38px",
+              sx={{
+                color: "inherit",
+                marginLeft: { xs: "0px", sm: "38px" }, // Adjust marginLeft for smaller screens
+                "& .MuiSvgIcon-root": {
+                  // Adjusting icon sizes directly
+                  fontSize: { xs: "1.2rem", sm: "1.5rem" }, // Adjust based on your needs
+                },
               }}
-              color="inherit"
               onClick={() => setOpen(true)}
             >
               <MenuIcon />
             </IconButton>
 
-            <Typography variant="h6" sx={{ marginRight: "auto" }}>
+            <Typography
+              variant="h6"
+              sx={{
+                marginRight: "auto",
+                fontSize: { xs: "0.75rem", sm: "1rem" }, // Adjust font size for responsiveness
+              }}
+            >
               Bold-SoftMation
             </Typography>
             <>
+              {/* Other Icons */}
               <IconButton color="inherit" onClick={handleBellClick}>
                 <Badge badgeContent={task.length} color="error">
                   <NotificationsIcon />
@@ -152,8 +163,15 @@ export const Header = () => {
                 aria-haspopup="false"
                 onClick={handleMenu}
                 color="inherit"
+                sx={{
+                  "& span": {
+                    // Adjusting span styles directly
+                    marginRight: "auto",
+                    fontSize: { xs: "0.75rem", sm: "1rem" }, // Adjust font size for responsiveness
+                  },
+                }}
               >
-                <span style={{ marginRight: "auto", fontSize: "15px" }}>
+                <span>
                   {ProfileName.first_name} {ProfileName.last_name}
                 </span>
                 <ExpandMoreIcon />
@@ -189,6 +207,7 @@ export const Header = () => {
           </Toolbar>
         </AppBar>
       )}
+
       <Popup
         openPopup={popupOpen}
         setOpenPopup={setPopupOpen}

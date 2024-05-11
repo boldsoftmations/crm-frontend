@@ -37,10 +37,10 @@ import {
   getFinishGoodProduct,
   getRawMaterialProduct,
 } from "../../../Redux/Action/Action";
+import { CustomPagination } from "../../../Components/CustomPagination";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
-import SearchComponent from "../../../Components/SearchComponent ";
-import { CustomPagination } from "../../../Components/CustomPagination";
+import SearchComponent from "./../../../Components/SearchComponent ";
 
 export const BillofMaterialsView = () => {
   const [openPopup, setOpenPopup] = useState(false);
