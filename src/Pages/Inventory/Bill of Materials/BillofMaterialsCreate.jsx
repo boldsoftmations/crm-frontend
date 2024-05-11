@@ -1,20 +1,14 @@
-import {
-  Box,
-  Button,
-  Chip,
-  Divider,
-  Grid,
-  IconButton,
-  Snackbar,
-} from "@mui/material";
-import React, { useState } from "react";
-import CloseIcon from "@mui/icons-material/Close";
+import { Box, Button, Chip, Divider, Grid } from "@mui/material";
+import React, { memo, useMemo, useState } from "react";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import InventoryServices from "../../../services/InventoryService";
 import { useSelector } from "react-redux";
 import { styled } from "@mui/material/styles";
 import CustomTextField from "../../../Components/CustomTextField";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
+import useDynamicFormFields from "../../../Components/useDynamicFormFields ";
+import { MessageAlert } from "../../../Components/MessageAlert";
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
   ...theme.typography.body2,
@@ -22,11 +16,16 @@ const Root = styled("div")(({ theme }) => ({
     marginTop: theme.spacing(2),
   },
 }));
-export const BillofMaterialsCreate = (props) => {
-  const { setOpenPopup, getAllBillofMaterialsDetails } = props;
+export const BillofMaterialsCreate = memo((props) => {
+  const {
+    setOpenPopup,
+    getAllBillofMaterialsDetails,
+    currentPage,
+    searchQuery,
+    filterApproved,
+  } = props;
   const [open, setOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState([]);
-  const [error, setError] = useState(null);
+  const [inputChange, setInputChange] = useState([]);
   const data = useSelector((state) => state.auth);
   const FinishGoodsProduct = data.finishgoodsProduct;
   const ConsumableProduct = data.consumableProduct;
@@ -35,46 +34,40 @@ export const BillofMaterialsCreate = (props) => {
     ...(ConsumableProduct || []),
     ...(RawMaterialProduct || []),
   ];
+  const productOption = useMemo(
+    () =>
+      RawAndConsumableProduct.map((data) => ({
+        product: data.product,
+        unit: data.unit,
+        quantity: data.quantity,
+      })),
+    [RawAndConsumableProduct]
+  );
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
-  const [products, setProducts] = useState([
-    {
-      product: "",
-      quantity: "",
-      unit: "",
-    },
-  ]);
+  const {
+    handleAutocompleteChange,
+    handleFormChange,
+    addFields,
+    removeFields,
+    products,
+  } = useDynamicFormFields(
+    [
+      {
+        product: "",
+        unit: "",
+        quantity: "",
+      },
+    ],
+    productOption
+  );
 
-  const handleAutocompleteChange = (index, event, value) => {
-    let data = [...products];
-    const productObj = RawAndConsumableProduct.find(
-      (item) => item.product === value
-    );
-    console.log("productObj", productObj);
-    data[index]["product"] = value;
-    data[index]["unit"] = productObj ? productObj.unit : "";
-    setProducts(data);
-  };
-
-  const handleFormChange = (index, event) => {
-    let data = [...products];
-
-    data[index][event.target.name] = event.target.value;
-    setProducts(data);
-  };
-
-  const addFields = () => {
-    let newfield = {
-      product: "",
-      quantity: "",
-      unit: "",
-    };
-    setProducts([...products, newfield]);
-  };
-
-  const removeFields = (index) => {
-    let data = [...products];
-    data.splice(index, 1);
-    setProducts(data);
+  const handleSelectChanges = (name, value) => {
+    setInputChange({
+      ...inputChange,
+      [name]: value,
+    });
   };
 
   const createMaterialRequisitionFormDetails = async (e) => {
@@ -82,31 +75,31 @@ export const BillofMaterialsCreate = (props) => {
       e.preventDefault();
       setOpen(true);
       const req = {
-        product: selectedProduct,
-
+        product: inputChange.product,
+        bom_type: inputChange.bom_type,
         products_data: products,
       };
       await InventoryServices.createBillofMaterialsData(req);
-      setOpenPopup(false);
-      getAllBillofMaterialsDetails();
-      setOpen(false);
+      handleSuccess("BOM Created Successfully");
+      setTimeout(() => {
+        setOpenPopup(false);
+      }, 300);
+      getAllBillofMaterialsDetails(currentPage, searchQuery, filterApproved);
     } catch (error) {
-      setError(
-        error.response.data.errors
-          ? error.response.data.errors.non_field_errors
-          : ""
-      );
-      setOpen(false);
+      handleError(error); // Handle errors from the API call
+    } finally {
+      setOpen(false); // Always close the loader
     }
-  };
-  console.log("products", products);
-  console.log("RawAndConsumableProduct", RawAndConsumableProduct);
-  const handleCloseSnackbar = () => {
-    setError(null);
   };
 
   return (
-    <div>
+    <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
 
       <Box
@@ -114,22 +107,6 @@ export const BillofMaterialsCreate = (props) => {
         noValidate
         onSubmit={(e) => createMaterialRequisitionFormDetails(e)}
       >
-        <Snackbar
-          open={Boolean(error)}
-          onClose={handleCloseSnackbar}
-          message={error}
-          anchorOrigin={{ vertical: "top", horizontal: "center" }}
-          action={
-            <IconButton
-              aria-label="close"
-              color="inherit"
-              sx={{ p: 0.5 }}
-              onClick={handleCloseSnackbar}
-            >
-              <CloseIcon />
-            </IconButton>
-          }
-        />
         <Grid container spacing={2}>
           <Grid item xs={12} sm={4}>
             <CustomAutocomplete
@@ -137,7 +114,7 @@ export const BillofMaterialsCreate = (props) => {
               size="small"
               disablePortal
               id="combo-box-demo"
-              onChange={(event, value) => setSelectedProduct(value)}
+              onChange={(event, value) => handleSelectChanges("product", value)}
               options={
                 FinishGoodsProduct
                   ? FinishGoodsProduct.map((option) => option.product)
@@ -146,6 +123,20 @@ export const BillofMaterialsCreate = (props) => {
               getOptionLabel={(option) => option}
               sx={{ minWidth: 300 }}
               label="Product Name"
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <CustomAutocomplete
+              size="small"
+              disablePortal
+              id="combo-box-demo"
+              onChange={(event, value) =>
+                handleSelectChanges("bom_type", value)
+              }
+              options={BOM_CHOICE}
+              getOptionLabel={(option) => option}
+              sx={{ minWidth: 300 }}
+              label="Bom Type"
             />
           </Grid>
           <Grid item xs={12}>
@@ -237,6 +228,8 @@ export const BillofMaterialsCreate = (props) => {
           Submit
         </Button>
       </Box>
-    </div>
+    </>
   );
-};
+});
+
+const BOM_CHOICE = ["production", "job_worker"];

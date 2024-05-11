@@ -1,20 +1,14 @@
-import {
-  Box,
-  Button,
-  Chip,
-  Divider,
-  Grid,
-  IconButton,
-  Snackbar,
-} from "@mui/material";
-import React, { useEffect, useState } from "react";
-import CloseIcon from "@mui/icons-material/Close";
+import { Box, Button, Chip, Divider, Grid } from "@mui/material";
+import React, { memo, useMemo, useState } from "react";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import InventoryServices from "../../../services/InventoryService";
 import CustomTextField from "../../../Components/CustomTextField";
 import { styled } from "@mui/material/styles";
 import { useSelector } from "react-redux";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import { MessageAlert } from "../../../Components/MessageAlert";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
+import useDynamicFormFields from "../../../Components/useDynamicFormFields ";
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -24,118 +18,81 @@ const Root = styled("div")(({ theme }) => ({
   },
 }));
 
-export const BillofMaterialsUpdate = (props) => {
-  const { setOpenPopup, getAllBillofMaterialsDetails, idForEdit } = props;
-  const [billofMaterialDataByID, setBillofMaterialDataByID] = useState([]);
+export const BillofMaterialsUpdate = memo((props) => {
+  const {
+    setOpenPopup,
+    getAllBillofMaterialsDetails,
+    idForEdit,
+    currentPage,
+    searchQuery,
+    filterApproved,
+  } = props;
   const [open, setOpen] = useState(false);
-  const [error, setError] = useState(null);
-  const data = useSelector((state) => state.auth);
-  const ConsumableProduct = data.consumableProduct;
-  const RawMaterialProduct = data.rawMaterialProduct;
-  const RawAndConsumableProduct = [
-    ...(ConsumableProduct || []),
-    ...(RawMaterialProduct || []),
-  ];
-
-  const [products, setProducts] = useState([
-    {
-      product: "",
-      quantity: "",
-      unit: "",
-    },
-  ]);
-
-  const handleAutocompleteChange = (index, event, value) => {
-    let data = [...products];
-    const productObj = RawAndConsumableProduct.find(
-      (item) => item.product === value
-    );
-    console.log("productObj", productObj);
-    data[index]["product"] = value;
-    data[index]["unit"] = productObj ? productObj.unit : "";
-    setProducts(data);
-  };
-
-  const handleFormChange = (index, event) => {
-    let data = [...products];
-    data[index][event.target.name ? event.target.name : "product"] = event
-      .target.value
-      ? event.target.value
-      : event.target.textContent;
-    setProducts(data);
-  };
-
-  const addFields = () => {
-    let newfield = {
-      product: "",
-      quantity: "",
-      unit: "",
-    };
-    setProducts([...products, newfield]);
-  };
-
-  const removeFields = (index) => {
-    let data = [...products];
-    data.splice(index, 1);
-    setProducts(data);
-  };
-
-  useEffect(() => {
-    if (idForEdit) getBillofMaterialsDetailsByID();
-  }, [idForEdit]);
-
-  const getBillofMaterialsDetailsByID = async () => {
-    try {
-      setOpen(true);
-      const response = await InventoryServices.getBillofMaterialsDataById(
-        idForEdit
-      );
-
-      setBillofMaterialDataByID(response.data);
-      var arr = response.data.products_data.map((fruit) => ({
-        product: fruit.product,
-        quantity: fruit.quantity,
-        unit: fruit.unit,
-      }));
-      setProducts(arr);
-
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("company data by id error", err);
-    }
-  };
+  const { consumableProduct, rawMaterialProduct } = useSelector(
+    (state) => state.auth
+  );
+  const RawAndConsumableProduct = useMemo(
+    () => [...(consumableProduct || []), ...(rawMaterialProduct || [])],
+    [consumableProduct, rawMaterialProduct]
+  );
+  const productOption = useMemo(
+    () =>
+      RawAndConsumableProduct.map((data) => ({
+        product: data.product,
+        unit: data.unit,
+        quantity: data.quantity,
+      })),
+    [RawAndConsumableProduct]
+  );
+  const initialFields = useMemo(
+    () =>
+      idForEdit.products_data.map((data) => ({
+        product: data.product,
+        unit: data.unit, // Assuming this correction is needed
+        quantity: data.quantity, // Assuming this correction is needed
+      })),
+    [idForEdit]
+  );
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
+  const {
+    handleAutocompleteChange,
+    handleFormChange,
+    addFields,
+    removeFields,
+    products,
+  } = useDynamicFormFields(initialFields, productOption);
 
   const updateBillofMaterialsDetails = async (e) => {
     try {
       e.preventDefault();
       setOpen(true);
       const req = {
-        product: billofMaterialDataByID.product,
-        approved: false,
+        product: idForEdit.product,
+        approved: idForEdit.approved,
         products_data: products,
       };
-      await InventoryServices.updateBillofMaterialsData(idForEdit, req);
-
-      setOpenPopup(false);
-      getAllBillofMaterialsDetails();
-      setOpen(false);
+      await InventoryServices.updateBillofMaterialsData(idForEdit.id, req);
+      handleSuccess("BOM Updated Successfully");
+      setTimeout(() => {
+        setOpenPopup(false);
+      }, 300);
+      getAllBillofMaterialsDetails(currentPage, searchQuery, filterApproved);
     } catch (error) {
-      setError(
-        error.response.data.errors
-          ? error.response.data.errors.non_field_errors
-          : ""
-      );
-      setOpen(false);
+      handleError(error); // Handle errors from the API call
+    } finally {
+      setOpen(false); // Always close the loader
     }
   };
 
-  const handleCloseSnackbar = () => {
-    setError(null);
-  };
-
   return (
-    <div>
+    <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
 
       <Box
@@ -143,22 +100,6 @@ export const BillofMaterialsUpdate = (props) => {
         noValidate
         onSubmit={(e) => updateBillofMaterialsDetails(e)}
       >
-        <Snackbar
-          open={Boolean(error)}
-          onClose={handleCloseSnackbar}
-          message={error}
-          anchorOrigin={{ vertical: "top", horizontal: "center" }}
-          action={
-            <IconButton
-              aria-label="close"
-              color="inherit"
-              sx={{ p: 0.5 }}
-              onClick={handleCloseSnackbar}
-            >
-              <CloseIcon />
-            </IconButton>
-          }
-        />
         <Grid container spacing={2}>
           <Grid item xs={12} sm={3}>
             <CustomTextField
@@ -166,11 +107,7 @@ export const BillofMaterialsUpdate = (props) => {
               size="small"
               label="Product"
               variant="outlined"
-              value={
-                billofMaterialDataByID.product
-                  ? billofMaterialDataByID.product
-                  : ""
-              }
+              value={idForEdit.product || ""}
             />
           </Grid>
           <Grid item xs={12}>
@@ -260,6 +197,6 @@ export const BillofMaterialsUpdate = (props) => {
           Submit
         </Button>
       </Box>
-    </div>
+    </>
   );
-};
+});

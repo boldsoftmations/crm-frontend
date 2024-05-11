@@ -12,11 +12,9 @@ import {
   TableCell,
   Button,
   TableFooter,
-  Pagination,
   Collapse,
   Typography,
   IconButton,
-  Snackbar,
   Switch,
   FormControl,
   InputLabel,
@@ -39,21 +37,25 @@ import {
   getFinishGoodProduct,
   getRawMaterialProduct,
 } from "../../../Redux/Action/Action";
-import CustomTextField from "../../../Components/CustomTextField";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../../Components/MessageAlert";
+import SearchComponent from "../../../Components/SearchComponent ";
+import { CustomPagination } from "../../../Components/CustomPagination";
 
 export const BillofMaterialsView = () => {
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [open, setOpen] = useState(false);
   const [billofMaterials, setBillofMaterials] = useState([]);
-  const [pageCount, setPageCount] = useState(0);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [idForEdit, setIDForEdit] = useState("");
   const dispatch = useDispatch();
-  const [openSnackbar, setOpenSnackbar] = useState(false);
   const [filterApproved, setFilterApproved] = useState(null);
   const users = useSelector((state) => state.auth.profile);
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   useEffect(() => {
     getFinishGoods();
@@ -64,7 +66,7 @@ export const BillofMaterialsView = () => {
   const getFinishGoods = async () => {
     try {
       setOpen(true);
-      const response = await ProductService.getFinishGoodsPaginate("all");
+      const response = await ProductService.getAllFinishGoods("all");
       var arr = response.data.map((ProductData) => ({
         product: ProductData.name,
         unit: ProductData.unit,
@@ -72,6 +74,7 @@ export const BillofMaterialsView = () => {
       dispatch(getFinishGoodProduct(arr));
       setOpen(false);
     } catch (err) {
+      handleError(err);
       setOpen(false);
       console.log("err", err);
     }
@@ -80,7 +83,7 @@ export const BillofMaterialsView = () => {
   const getrawMaterials = async () => {
     try {
       setOpen(true);
-      const response = await ProductService.getRawMaterialsPaginate("all");
+      const response = await ProductService.getAllRawMaterials("all");
       console.log("raw material", response.data);
       var arr = response.data.map((ProductData) => ({
         product: ProductData.name,
@@ -89,6 +92,7 @@ export const BillofMaterialsView = () => {
       dispatch(getRawMaterialProduct(arr));
       setOpen(false);
     } catch (err) {
+      handleError(err);
       setOpen(false);
       console.log("err", err);
     }
@@ -97,7 +101,7 @@ export const BillofMaterialsView = () => {
   const getconsumables = async () => {
     try {
       setOpen(true);
-      const response = await ProductService.getConsumablePaginate("all");
+      const response = await ProductService.getAllConsumable("all");
       console.log("consumable", response.data);
       var arr = response.data.map((ProductData) => ({
         product: ProductData.name,
@@ -106,6 +110,7 @@ export const BillofMaterialsView = () => {
       dispatch(getConsumableProduct(arr));
       setOpen(false);
     } catch (err) {
+      handleError(err);
       setOpen(false);
       console.log("err", err);
     }
@@ -113,7 +118,7 @@ export const BillofMaterialsView = () => {
 
   useEffect(() => {
     getAllBillofMaterialsDetails(currentPage);
-  }, [currentPage, getAllBillofMaterialsDetails]);
+  }, [currentPage, searchQuery]);
 
   const getAllBillofMaterialsDetails = useCallback(
     async (page, filter = filterApproved, search = searchQuery) => {
@@ -125,9 +130,10 @@ export const BillofMaterialsView = () => {
           search
         );
         setBillofMaterials(response.data.results);
-        setPageCount(Math.ceil(response.data.count / 25));
+        setTotalPages(Math.ceil(response.data.count / 25));
         setOpen(false);
       } catch (error) {
+        handleError(error);
         setOpen(false);
         console.error("error", error);
       }
@@ -135,11 +141,17 @@ export const BillofMaterialsView = () => {
     [filterApproved, searchQuery]
   );
 
-  const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    setCurrentPage(1);
   };
 
-  const handlePageClick = (event, value) => {
+  const handleReset = () => {
+    setSearchQuery("");
+    setCurrentPage(1);
+  };
+
+  const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
 
@@ -157,13 +169,14 @@ export const BillofMaterialsView = () => {
         product: data.product,
       };
       await InventoryServices.updateBillofMaterialsData(data.id, req);
-
-      setOpenPopup(false);
+      handleSuccess("BOM Accepted Successfully");
+      setTimeout(() => {
+        setOpenPopup(false);
+      }, 300);
       getAllBillofMaterialsDetails(currentPage, filterApproved, searchQuery);
       setOpen(false);
-      // Show success snackbar
-      setOpenSnackbar(true);
     } catch (error) {
+      handleError(error);
       console.log("error Store Accepting", error);
       setOpen(false);
     }
@@ -174,20 +187,35 @@ export const BillofMaterialsView = () => {
     setOpenPopup(true);
   };
 
-  const handleSnackbarClose = () => {
-    setOpenSnackbar(false);
-  };
-
   return (
     <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
 
       <Grid item xs={12}>
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
-          <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
-            <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} sm={3}>
-                <FormControl sx={{ minWidth: "100px" }} fullWidth size="small">
+          <Box sx={{ marginBottom: 2 }}>
+            <Grid
+              container
+              spacing={2}
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              {/* Left Section: Filter and Search */}
+              <Grid
+                item
+                xs={12}
+                sm={6}
+                md={4}
+                display="flex"
+                alignItems="center"
+              >
+                <FormControl fullWidth size="small" sx={{ marginRight: 2 }}>
                   <InputLabel id="demo-simple-select-label">
                     Filter By Approved
                   </InputLabel>
@@ -195,7 +223,7 @@ export const BillofMaterialsView = () => {
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
                     name="status"
-                    label="Filter By Accepted"
+                    label="Filter By Approved"
                     value={filterApproved}
                     onChange={handleFilterChange}
                   >
@@ -223,69 +251,46 @@ export const BillofMaterialsView = () => {
                     </IconButton>
                   )}
                 </FormControl>
-              </Grid>
-              <Grid item xs={12} sm={3}>
-                <CustomTextField
-                  size="small"
-                  label="Search"
-                  variant="outlined"
-                  value={searchQuery}
-                  onChange={handleSearchChange}
-                  fullWidth
+                <SearchComponent
+                  onSearch={handleSearch}
+                  onReset={handleReset}
                 />
               </Grid>
-              <Grid item xs={12} sm={1}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() =>
-                    getAllBillofMaterialsDetails(
-                      // currentPage,
-                      filterApproved,
-                      searchQuery
-                    )
-                  } // Call `handleSearch` when the button is clicked
-                >
-                  Search
-                </Button>
-              </Grid>
-              <Grid item xs={12} sm={1}>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  onClick={() => {
-                    setSearchQuery("");
-                    getAllBillofMaterialsDetails(1, filterApproved, "");
-                  }}
-                >
-                  Reset
-                </Button>
-              </Grid>
-            </Grid>
-          </Box>
-          <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
-            <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} sm={6}></Grid>
 
-              <Grid item xs={12} sm={3}>
-                {/* Customer Header */}
+              {/* Center Section: Title */}
+              <Grid
+                item
+                xs={12}
+                sm={6}
+                md={4}
+                display="flex"
+                justifyContent="center"
+              >
                 <h3
                   style={{
-                    textAlign: "left",
                     fontSize: "24px",
                     color: "rgb(34, 34, 34)",
                     fontWeight: 800,
+                    textAlign: "center",
                   }}
                 >
                   Bill of Materials
                 </h3>
               </Grid>
-              <Grid item xs={12} sm={3}>
+
+              {/* Right Section: Add Button */}
+              <Grid
+                item
+                xs={12}
+                sm={6}
+                md={4}
+                display="flex"
+                justifyContent="flex-end"
+              >
                 <Button
                   onClick={() => setOpenPopup2(true)}
                   variant="contained"
                   color="success"
-                  // startIcon={<AddIcon />}
                 >
                   Add
                 </Button>
@@ -306,22 +311,6 @@ export const BillofMaterialsView = () => {
               },
             }}
           >
-            <Snackbar
-              open={openSnackbar}
-              onClose={handleSnackbarClose}
-              message={"Bill Of Material details Accepted successfully!"}
-              anchorOrigin={{ vertical: "top", horizontal: "center" }}
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  sx={{ p: 0.5 }}
-                  onClick={handleSnackbarClose}
-                >
-                  <CloseIcon />
-                </IconButton>
-              }
-            />
             <Table
               sx={{ minWidth: 700 }}
               stickyHeader
@@ -331,6 +320,7 @@ export const BillofMaterialsView = () => {
                 <StyledTableRow>
                   <StyledTableCell align="center"></StyledTableCell>
                   <StyledTableCell align="center">ID</StyledTableCell>
+                  <StyledTableCell align="center">BOM TYPE</StyledTableCell>
                   <StyledTableCell align="center">PRODUCT</StyledTableCell>
                   <StyledTableCell align="center">QUANTITY</StyledTableCell>
                   <StyledTableCell align="center">DATE</StyledTableCell>
@@ -354,12 +344,10 @@ export const BillofMaterialsView = () => {
           <TableFooter
             sx={{ display: "flex", justifyContent: "center", marginTop: "2em" }}
           >
-            <Pagination
-              count={pageCount}
-              onChange={handlePageClick}
-              color={"primary"}
-              variant="outlined"
-              shape="circular"
+            <CustomPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              handlePageChange={handlePageChange}
             />
           </TableFooter>
         </Paper>
@@ -371,6 +359,9 @@ export const BillofMaterialsView = () => {
         setOpenPopup={setOpenPopup2}
       >
         <BillofMaterialsCreate
+          currentPage={currentPage}
+          filterApproved={filterApproved}
+          searchQuery={searchQuery}
           getAllBillofMaterialsDetails={getAllBillofMaterialsDetails}
           setOpenPopup={setOpenPopup2}
         />
@@ -382,6 +373,9 @@ export const BillofMaterialsView = () => {
         setOpenPopup={setOpenPopup}
       >
         <BillofMaterialsUpdate
+          currentPage={currentPage}
+          filterApproved={filterApproved}
+          searchQuery={searchQuery}
           setOpenPopup={setOpenPopup}
           getAllBillofMaterialsDetails={getAllBillofMaterialsDetails}
           idForEdit={idForEdit}
@@ -411,6 +405,7 @@ function Row(props) {
         </StyledTableCell>
 
         <StyledTableCell align="center">{row.bom_id}</StyledTableCell>
+        <StyledTableCell align="center">{row.bom_type}</StyledTableCell>
         <StyledTableCell align="center">{row.product}</StyledTableCell>
         <StyledTableCell align="center">{row.quantity}</StyledTableCell>
         <StyledTableCell align="center">{row.created_on}</StyledTableCell>
@@ -421,7 +416,9 @@ function Row(props) {
           />
         </StyledTableCell>
         <StyledTableCell align="center">
-          {users.groups.includes("Accounts") && row.approved === false ? (
+          {(users.groups.includes("Accounts") ||
+            users.groups.includes("Director")) &&
+          row.approved === false ? (
             <Button
               onClick={() => updateBillofMaterialsDetails(row)}
               color="success"
@@ -429,8 +426,10 @@ function Row(props) {
               Accept
             </Button>
           ) : null}
-          {users.groups.includes("Production") && row.approved === false ? (
-            <Button onClick={() => openInPopup(row.id)}>Edit</Button>
+          {(users.groups.includes("Production") ||
+            users.groups.includes("Director")) &&
+          row.approved === false ? (
+            <Button onClick={() => openInPopup(row)}>Edit</Button>
           ) : null}
         </StyledTableCell>
       </StyledTableRow>
