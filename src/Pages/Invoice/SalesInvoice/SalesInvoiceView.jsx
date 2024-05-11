@@ -60,6 +60,8 @@ export const SalesInvoiceView = () => {
   const maxDate = new Date("2030-12-31").toISOString().split("T")[0];
   const [exportData, setExportData] = useState([]);
   const csvLinkRef = useRef(null);
+  const data = useSelector((state) => state.auth);
+  const userData = data.profile;
 
   const handleDownload = async () => {
     const data = await handleExport();
@@ -550,9 +552,11 @@ export const SalesInvoiceView = () => {
                   <StyledTableCell align="center">
                     PROFORMA INVOICE LIST
                   </StyledTableCell>
-                  <StyledTableCell align="center">
-                    PROFIT/LOSS %
-                  </StyledTableCell>
+                  {userData.groups.includes("Director") && (
+                    <StyledTableCell align="center">
+                      PROFIT/LOSS %
+                    </StyledTableCell>
+                  )}
                   <StyledTableCell align="center">Action</StyledTableCell>
                 </TableRow>
               </TableHead>
@@ -726,9 +730,11 @@ function Row(props) {
         ) : (
           <StyledTableCell align="center"></StyledTableCell>
         )}
-        <StyledTableCell align="center">
-          {row.profit_or_loss_pct}
-        </StyledTableCell>
+        {userData.groups.includes("Director") && (
+          <StyledTableCell align="center">
+            {row.profit_or_loss_pct}
+          </StyledTableCell>
+        )}
         <StyledTableCell align="center">
           <Button variant="text" onClick={() => openInPopup(row.invoice_no)}>
             View
@@ -758,7 +764,11 @@ function Row(props) {
                     <TableCell align="center">PRODUCT CODE</TableCell>
                     <TableCell align="center">QUANTITY</TableCell>
                     <TableCell align="center">AMOUNT</TableCell>
-                    <TableCell align="center">PROFIT/LOSS(PER UNIT)</TableCell>
+                    {userData.groups.includes("Director") && (
+                      <TableCell align="center">
+                        PROFIT/LOSS(PER UNIT)
+                      </TableCell>
+                    )}
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -771,9 +781,11 @@ function Row(props) {
                         {historyRow.quantity}
                       </TableCell>
                       <TableCell align="center">{historyRow.amount}</TableCell>
-                      <TableCell align="center">
-                        {historyRow.profit_or_loss}
-                      </TableCell>
+                      {userData.groups.includes("Director") && (
+                        <TableCell align="center">
+                          {historyRow.profit_or_loss}
+                        </TableCell>
+                      )}
                     </TableRow>
                   ))}
                 </TableBody>
