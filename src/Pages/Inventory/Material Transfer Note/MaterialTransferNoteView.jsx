@@ -178,10 +178,6 @@ export const MaterialTransferNoteView = () => {
     }
   };
 
-  useEffect(() => {
-    getAllMaterialTransferNoteDetails(currentPage);
-  }, [currentPage, getAllMaterialTransferNoteDetails]);
-
   const getAllMaterialTransferNoteDetails = useCallback(
     async (page, filter = acceptedFilter, search = searchQuery) => {
       try {
@@ -203,6 +199,10 @@ export const MaterialTransferNoteView = () => {
     },
     [acceptedFilter, searchQuery]
   );
+
+  useEffect(() => {
+    getAllMaterialTransferNoteDetails(currentPage);
+  }, [currentPage, getAllMaterialTransferNoteDetails]);
 
   const Tableheaders = [
     "ID",
