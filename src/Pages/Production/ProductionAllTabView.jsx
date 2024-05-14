@@ -47,7 +47,7 @@ export const ProductionAllTabView = () => {
         "Accounts",
         "Stores",
         "Stores Delhi",
-        "Production ",
+        "Production",
         "Production Delhi",
         "Accounts Executive",
       ],
