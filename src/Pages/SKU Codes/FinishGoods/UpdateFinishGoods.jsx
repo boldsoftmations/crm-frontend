@@ -59,16 +59,25 @@ export const UpdateFinishGoods = memo((props) => {
 
   const productName = useMemo(() => {
     const productNameParts = [
-      formData.productcode,
+      formData.product_code,
       formData.color,
       shortName,
       formData.size,
       formData.unit_quantity,
       getPackingUnitShortName,
-      formData.packing_unit_quantity,
     ];
 
-    return productNameParts.filter((part) => part).join("-");
+    // Join the initial parts of the product name with dashes.
+    let combinedName = productNameParts.filter((part) => part).join("-");
+
+    // Append packing unit quantity directly without a preceding dash if it exists and other parts are present.
+    if (formData.packing_unit_quantity && combinedName) {
+      combinedName += formData.packing_unit_quantity;
+    } else if (formData.packing_unit_quantity) {
+      combinedName = formData.packing_unit_quantity;
+    }
+
+    return combinedName;
   }, [formData, shortName, getPackingUnitShortName]); // Add dependencies as needed
 
   const handleInputChange = useCallback((event) => {
