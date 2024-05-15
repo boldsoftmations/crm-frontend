@@ -1074,6 +1074,21 @@ export const ListItems = (props) => {
                 <ListItemText primary="Inventory" />
               </ListItem>
 
+              {/* Physical Inventory */}
+              <ListItem
+                button
+                component={RouterLink}
+                to="/inventory/physical"
+                style={{ width: 300 }}
+                onClick={() => setOpen(false)}
+                selected={isActive("/inventory/physical")}
+              >
+                <ListItemIcon>
+                  <StorageIcon />
+                </ListItemIcon>
+                <ListItemText primary="Physical Inventory" />
+              </ListItem>
+
               {/* Tasks */}
               <ListItem
                 button
