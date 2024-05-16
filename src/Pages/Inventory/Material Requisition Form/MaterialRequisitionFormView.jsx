@@ -41,9 +41,11 @@ import {
   StyleSheet,
 } from "@react-pdf/renderer";
 import moment from "moment";
-import InvoiceServices from "../../../services/InvoiceService";
-import CustomTextField from "../../../Components/CustomTextField";
 import { CSVLink } from "react-csv";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
+import SearchComponent from "../../../Components/SearchComponent ";
+import { MessageAlert } from "../../../Components/MessageAlert";
+import { CustomPagination } from "../../../Components/CustomPagination";
 
 export const MaterialRequisitionFormView = () => {
   const [openPopup, setOpenPopup] = useState(false);
@@ -53,13 +55,14 @@ export const MaterialRequisitionFormView = () => {
   const [materialRequisitionData, setMaterialRequisitionData] = useState([]);
   const [materialRequisitionDataByID, setMaterialRequisitionDataByID] =
     useState(null);
-  const [pageCount, setPageCount] = useState(0);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [idForEdit, setIDForEdit] = useState("");
   const [storesInventoryData, setStoresInventoryData] = useState([]);
-  const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [sellerOption, setSellerOption] = useState(null);
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
+
   const users = useSelector((state) => state.auth.profile);
   const [exportData, setExportData] = useState([]);
   const csvLinkRef = useRef(null);
@@ -71,6 +74,7 @@ export const MaterialRequisitionFormView = () => {
       setTimeout(() => {
         csvLinkRef.current.link.click();
       });
+      handleSuccess("CSV Downloaded Successfully");
     } catch (error) {
       console.log("CSVLink Download error", error);
     }
@@ -126,24 +130,8 @@ export const MaterialRequisitionFormView = () => {
   };
 
   useEffect(() => {
-    getAllSellerAccountsDetails();
     getAllStoresInventoryDetails();
   }, []);
-
-  const getAllSellerAccountsDetails = async () => {
-    try {
-      setOpen(true);
-      const data = users.groups.includes("Production Delhi")
-        ? "Delhi"
-        : "Maharashtra";
-      const response = await InvoiceServices.getfilterSellerAccountData(data);
-      setSellerOption(response.data.results);
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("err", err);
-    }
-  };
 
   const getAllStoresInventoryDetails = async () => {
     try {
@@ -157,10 +145,6 @@ export const MaterialRequisitionFormView = () => {
     }
   };
 
-  useEffect(() => {
-    getAllMaterialRequisitionFormDetails(currentPage);
-  }, [currentPage, getAllMaterialRequisitionFormDetails]);
-
   const getAllMaterialRequisitionFormDetails = useCallback(
     async (page, search = searchQuery) => {
       try {
@@ -171,9 +155,10 @@ export const MaterialRequisitionFormView = () => {
             search
           );
         setMaterialRequisitionData(response.data.results);
-        setPageCount(Math.ceil(response.data.count / 25));
+        setTotalPages(Math.ceil(response.data.count / 25));
         setOpen(false);
       } catch (error) {
+        handleError(error);
         setOpen(false);
         console.error("error", error);
       }
@@ -181,11 +166,20 @@ export const MaterialRequisitionFormView = () => {
     [searchQuery]
   );
 
-  const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
+  useEffect(() => {
+    getAllMaterialRequisitionFormDetails(currentPage, searchQuery);
+  }, [currentPage, searchQuery]);
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    setCurrentPage(1);
   };
 
-  const handlePageClick = (event, value) => {
+  const handleReset = () => {
+    setSearchQuery("");
+    setCurrentPage(1);
+  };
+  const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
 
@@ -204,10 +198,12 @@ export const MaterialRequisitionFormView = () => {
       setOpenPopup(false);
       setOpenPopup3(false);
       getAllMaterialRequisitionFormDetails();
-      setOpen(false);
-      // Show success snackbar
-      setOpenSnackbar(true);
+      handleSuccess("Material Requisition Form Accepted");
+      setTimeout(() => {
+        setOpen(false);
+      }, 300);
     } catch (error) {
+      handleError(error);
       console.log("error Store Accepting", error);
       setOpen(false);
     }
@@ -216,10 +212,6 @@ export const MaterialRequisitionFormView = () => {
   const openInPopup = (item) => {
     setIDForEdit(item);
     setOpenPopup(true);
-  };
-
-  const handleSnackbarClose = () => {
-    setOpenSnackbar(false);
   };
 
   const handlePrint = async (data) => {
@@ -249,9 +241,10 @@ export const MaterialRequisitionFormView = () => {
 
       // clean up the temporary link element
       document.body.removeChild(link);
-
+      handleSuccess("Material Requisition Form Printed");
       setOpen(false);
     } catch (error) {
+      handleError(error);
       console.log("error exporting pdf", error);
     } finally {
       setOpen(false);
@@ -260,53 +253,55 @@ export const MaterialRequisitionFormView = () => {
 
   return (
     <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
 
       <Grid item xs={12}>
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
-          <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
-            <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} sm={3}>
-                <CustomTextField
-                  size="small"
-                  label="Search"
-                  variant="outlined"
-                  value={searchQuery}
-                  onChange={handleSearchChange}
-                  fullWidth
+          <Box sx={{ marginBottom: 2 }}>
+            <Grid
+              container
+              spacing={2}
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              {/* Left Section: Search Component */}
+              <Grid item xs={12} sm={4} display="flex" alignItems="center">
+                <SearchComponent
+                  onSearch={handleSearch}
+                  onReset={handleReset}
                 />
               </Grid>
-              <Grid item xs={12} sm={1}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() =>
-                    getAllMaterialRequisitionFormDetails(
-                      currentPage,
-                      searchQuery
-                    )
-                  } // Call `handleSearch` when the button is clicked
-                >
-                  Search
-                </Button>
-              </Grid>
-              <Grid item xs={12} sm={1}>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  onClick={() => {
-                    setSearchQuery("");
-                    getAllMaterialRequisitionFormDetails(1, "");
+
+              {/* Center Section: Title */}
+              <Grid item xs={12} sm={4} display="flex" justifyContent="center">
+                <h3
+                  style={{
+                    fontSize: "24px",
+                    color: "rgb(34, 34, 34)",
+                    fontWeight: 800,
+                    textAlign: "center",
                   }}
                 >
-                  Reset
-                </Button>
+                  Material Requisition Form
+                </h3>
               </Grid>
-            </Grid>
-          </Box>
-          <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
-            <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} sm={5}>
+
+              {/* Right Section: Download and Add Buttons */}
+              <Grid
+                item
+                xs={12}
+                sm={4}
+                display="flex"
+                justifyContent="flex-end"
+                alignItems="center"
+                gap={2}
+              >
                 {(users.groups.includes("Accounts") ||
                   users.groups.includes("Director")) && (
                   <>
@@ -329,28 +324,13 @@ export const MaterialRequisitionFormView = () => {
                     )}
                   </>
                 )}
-              </Grid>
-
-              <Grid item xs={12} sm={3}>
-                <h3
-                  style={{
-                    textAlign: "left",
-                    fontSize: "24px",
-                    color: "rgb(34, 34, 34)",
-                    fontWeight: 800,
-                  }}
-                >
-                  Material Requisition Form
-                </h3>
-              </Grid>
-              <Grid item xs={12} sm={3}>
                 {(users.groups.includes("Production") ||
-                  users.groups.includes("Production Delhi")) && (
+                  users.groups.includes("Production Delhi") ||
+                  users.groups.includes("Director")) && (
                   <Button
                     onClick={() => setOpenPopup2(true)}
                     variant="contained"
                     color="success"
-                    // startIcon={<AddIcon />}
                   >
                     Add
                   </Button>
@@ -372,24 +352,6 @@ export const MaterialRequisitionFormView = () => {
               },
             }}
           >
-            <Snackbar
-              open={openSnackbar}
-              onClose={handleSnackbarClose}
-              message={
-                "Materail Requisition Form details Accepted successfully!"
-              }
-              anchorOrigin={{ vertical: "top", horizontal: "center" }}
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  sx={{ p: 0.5 }}
-                  onClick={handleSnackbarClose}
-                >
-                  <CloseIcon />
-                </IconButton>
-              }
-            />
             <Table
               sx={{ minWidth: 700 }}
               stickyHeader
@@ -430,12 +392,10 @@ export const MaterialRequisitionFormView = () => {
           <TableFooter
             sx={{ display: "flex", justifyContent: "center", marginTop: "2em" }}
           >
-            <Pagination
-              count={pageCount}
-              onChange={handlePageClick}
-              color={"primary"}
-              variant="outlined"
-              shape="circular"
+            <CustomPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              handlePageChange={handlePageChange}
             />
           </TableFooter>
         </Paper>
@@ -447,8 +407,9 @@ export const MaterialRequisitionFormView = () => {
         setOpenPopup={setOpenPopup2}
       >
         <MaterialRequisitionFormCreate
+          currentPage={currentPage}
+          searchQuery={searchQuery}
           storesInventoryData={storesInventoryData}
-          sellerOption={sellerOption}
           getAllMaterialRequisitionFormDetails={
             getAllMaterialRequisitionFormDetails
           }
@@ -462,8 +423,9 @@ export const MaterialRequisitionFormView = () => {
         setOpenPopup={setOpenPopup}
       >
         <MaterialRequisitionFormUpdate
+          currentPage={currentPage}
+          searchQuery={searchQuery}
           setOpenPopup={setOpenPopup}
-          sellerOption={sellerOption}
           storesInventoryData={storesInventoryData}
           getAllMaterialRequisitionFormDetails={
             getAllMaterialRequisitionFormDetails
@@ -473,7 +435,7 @@ export const MaterialRequisitionFormView = () => {
       </Popup>
       <Popup
         maxWidth="xl"
-        title={"View Material Transfer Note"}
+        title={"View Material Requisition Note"}
         openPopup={openPopup3}
         setOpenPopup={setOpenPopup3}
       >
@@ -582,10 +544,11 @@ function Row(props) {
         <StyledTableCell align="center">
           {(users.groups.includes("Accounts") ||
             users.groups.includes("Production") ||
-            users.groups.includes("Production Delhi")) &&
+            users.groups.includes("Production Delhi") ||
+            users.groups.includes("Director")) &&
             row.accepted === false && (
               <Button
-                onClick={() => openInPopup(row.id)}
+                onClick={() => openInPopup(row)}
                 // variant="contained"
                 color="success"
               >
@@ -605,7 +568,8 @@ function Row(props) {
           </Button>
 
           {(users.groups.includes("Stores") ||
-            users.groups.includes("Stores Delhi")) &&
+            users.groups.includes("Stores Delhi") ||
+            users.groups.includes("Director")) &&
             row.accepted === false && (
               <Button
                 onClick={() => {

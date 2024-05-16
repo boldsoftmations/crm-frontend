@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
+import { CustomTabs } from "../../../Components/CustomTabs";
 import { CompanyDetails } from "./CompanyDetails";
 import { UnassignedCustomer } from "./UnassignedCustomer";
 import { InActiveCustomer } from "./InActiveCustomer";
 import { IncompleteKycDetails } from "./IncompleteKycDetails";
-import { CustomTabs } from "../../../Components/CustomTabs";
 
 export const AllCustomerTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
@@ -13,55 +13,83 @@ export const AllCustomerTabView = () => {
     groups.some((group) => userData.groups.includes(group));
 
   const allCustomerTabs = isInGroups("Director", "Sales Manager", "Accounts");
-  const customerAndIncompleteKycTabs = isInGroups(
-    "Director",
-    "Sales Deputy Manager",
-    "Sales Assistant Deputy Manager",
-    "Sales Executive",
-    "Sales Manager without Leads",
-    "Sales Manager with Lead"
+
+  const isSalesDManager = isInGroups("Sales Deputy Manager");
+  const isSalesADManager = isInGroups("Sales Assistant Deputy Manager");
+  const isSalesExecutive = isInGroups("Sales Executive");
+  const isSalesManagerWithoutLeads = isInGroups("Sales Manager without Leads");
+  const isSalesManagerWithLeads = isInGroups("Sales Manager with Leads");
+  const isCustomerService = isInGroups("Customer Service");
+  const isAccountBillingDepartment = isInGroups("Accounts Billing Department");
+  const tabs = useMemo(
+    () => [
+      {
+        label: "Company Details",
+        visible:
+          allCustomerTabs ||
+          isSalesDManager ||
+          isSalesADManager ||
+          isSalesExecutive ||
+          isSalesManagerWithoutLeads ||
+          isSalesManagerWithLeads ||
+          isCustomerService ||
+          isAccountBillingDepartment,
+        index: 0,
+        component: <CompanyDetails />,
+      },
+      {
+        label: "Unassigned Customer",
+        visible: allCustomerTabs,
+        index: 1,
+        component: <UnassignedCustomer />,
+      },
+      {
+        label: "Inactive Customers",
+        visible: allCustomerTabs,
+        index: 2,
+        component: <InActiveCustomer />,
+      },
+      {
+        label: "Incomplete KYC",
+        visible:
+          allCustomerTabs ||
+          isSalesDManager ||
+          isSalesADManager ||
+          isSalesExecutive ||
+          isSalesManagerWithoutLeads ||
+          isSalesManagerWithLeads,
+        index: 3,
+        component: <IncompleteKycDetails />,
+      },
+    ],
+    [
+      allCustomerTabs,
+      allCustomerTabs,
+      isSalesDManager,
+      isSalesADManager,
+      isSalesExecutive,
+      isSalesManagerWithoutLeads,
+      isSalesManagerWithLeads,
+      isCustomerService,
+      isAccountBillingDepartment,
+    ]
   );
-  const customerOnlyTab = isInGroups(
-    "Director",
-    "Customer Service",
-    "Accounts Billing Department"
+
+  const visibleTabs = useMemo(() => tabs.filter((tab) => tab.visible), [tabs]);
+  const visibleTabIndexes = useMemo(
+    () => visibleTabs.map((tab) => tab.index),
+    [visibleTabs]
   );
 
-  const [activeTab, setActiveTab] = useState(allCustomerTabs ? 0 : 4);
+  // Set the first visible tab as active by default
+  const [activeTab, setActiveTab] = useState(visibleTabIndexes[0] || 0);
 
-  const tabs = [
-    {
-      label: "Company Details",
-      visible:
-        allCustomerTabs || customerAndIncompleteKycTabs || customerOnlyTab,
-      index: 0,
-    },
-    {
-      label: "Unassigned Customer",
-      visible: allCustomerTabs,
-      index: 1,
-    },
-    {
-      label: "InActive Employees",
-      visible: allCustomerTabs,
-      index: 2,
-    },
-    {
-      label: "InComplete KYC",
-      visible: allCustomerTabs || customerAndIncompleteKycTabs,
-      index: 3,
-    },
-  ];
-
-  const visibleTabs = tabs.filter((tab) => tab.visible);
-  const visibleTabIndexes = visibleTabs.map((tab) => tab.index);
-
-  const tabComponents = {
-    0: <CompanyDetails />,
-    1: <UnassignedCustomer />,
-    2: <InActiveCustomer />,
-    3: <IncompleteKycDetails />,
-  };
+  useEffect(() => {
+    // Update the active tab if the current one is no longer visible
+    if (!visibleTabIndexes.includes(activeTab)) {
+      setActiveTab(visibleTabIndexes[0] || 0);
+    }
+  }, [visibleTabIndexes, activeTab]);
 
   return (
     <div>
@@ -71,7 +99,9 @@ export const AllCustomerTabView = () => {
         onTabChange={(index) => setActiveTab(visibleTabIndexes[index])}
       />
       {visibleTabIndexes.includes(activeTab) && (
-        <div>{tabComponents[activeTab]}</div>
+        <div>
+          {visibleTabs.find((tab) => tab.index === activeTab).component}
+        </div>
       )}
     </div>
   );

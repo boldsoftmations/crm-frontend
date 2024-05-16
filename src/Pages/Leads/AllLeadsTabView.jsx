@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { CustomTabs } from "./../../Components/CustomTabs";
 import { NewLeads } from "./NewLeads";
@@ -12,11 +12,9 @@ import { IndiaMartLeads } from "./IndiaMartLeads";
 export const AllLeadsTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
 
-  // Function to check if user belongs to any of the specified groups
   const isInGroups = (...groups) =>
     groups.some((group) => userData.groups.includes(group));
 
-  // Determine the user's roles and permissions
   const isAdmin = isInGroups(
     "Director",
     "Sales Manager",
@@ -28,72 +26,92 @@ export const AllLeadsTabView = () => {
   const isSalesManagerWithLeads = isInGroups("Sales Manager with Leads");
   const isCustomerService = isInGroups("Customer Service");
 
-  // Initial active tab based on user role
-  const [activeTab, setActiveTab] = useState(isAdmin ? 0 : 4);
+  const tabs = useMemo(
+    () => [
+      {
+        label: "New Leads",
+        visible:
+          isAdmin ||
+          isSalesADManager ||
+          isSalesExecutive ||
+          isSalesManagerWithoutLeads ||
+          isSalesManagerWithLeads ||
+          isCustomerService,
+        index: 0,
+        component: <NewLeads />,
+      },
+      {
+        label: "Opened Leads",
+        visible:
+          isAdmin ||
+          isSalesADManager ||
+          isSalesExecutive ||
+          isSalesManagerWithoutLeads ||
+          isSalesManagerWithLeads ||
+          isCustomerService,
+        index: 1,
+        component: <OpenLead />,
+      },
+      {
+        label: "Hot Leads",
+        visible:
+          isAdmin ||
+          isSalesADManager ||
+          isSalesExecutive ||
+          isSalesManagerWithoutLeads ||
+          isSalesManagerWithLeads ||
+          isCustomerService,
+        index: 2,
+        component: <HotLeads />,
+      },
+      {
+        label: "Dropped Leads",
+        visible: isAdmin || isSalesADManager,
+        index: 3,
+        component: <ClosedLead />,
+      },
+      {
+        label: "Duplicate Leads",
+        visible: isAdmin || isSalesADManager,
+        index: 4,
+        component: <DuplicateLead />,
+      },
+      {
+        label: "Unassigned Leads",
+        visible: isAdmin || isSalesADManager || isSalesManagerWithLeads,
+        index: 5,
+        component: <UnassignedLead />,
+      },
+      {
+        label: "Indiamart Leads",
+        visible: isAdmin,
+        index: 6,
+        component: <IndiaMartLeads />,
+      },
+    ],
+    [
+      isAdmin,
+      isSalesADManager,
+      isSalesExecutive,
+      isSalesManagerWithoutLeads,
+      isSalesManagerWithLeads,
+      isCustomerService,
+    ]
+  );
 
-  // Define all possible tabs with visibility conditions
-  const tabs = [
-    {
-      label: "New Leads",
-      visible:
-        isAdmin ||
-        isSalesADManager ||
-        isSalesExecutive ||
-        isSalesManagerWithoutLeads ||
-        isSalesManagerWithLeads ||
-        isCustomerService,
-      index: 0,
-    },
-    {
-      label: "Opened Leads",
-      visible:
-        isAdmin ||
-        isSalesADManager ||
-        isSalesExecutive ||
-        isSalesManagerWithoutLeads ||
-        isSalesManagerWithLeads ||
-        isCustomerService,
-      index: 1,
-    },
-    {
-      label: "Hot Leads",
-      visible:
-        isAdmin ||
-        isSalesADManager ||
-        isSalesExecutive ||
-        isSalesManagerWithoutLeads ||
-        isSalesManagerWithLeads ||
-        isCustomerService,
-      index: 2,
-    },
-    { label: "Dropped Leads", visible: isAdmin || isSalesADManager, index: 3 },
-    {
-      label: "Duplicate Leads",
-      visible: isAdmin || isSalesADManager,
-      index: 4,
-    },
-    {
-      label: "Unassigned Leads",
-      visible: isAdmin || isSalesADManager || isSalesManagerWithLeads,
-      index: 5,
-    },
-    { label: "Indiamart Leads", visible: isAdmin, index: 6 },
-  ];
+  const visibleTabs = useMemo(() => tabs.filter((tab) => tab.visible), [tabs]);
+  const visibleTabIndexes = useMemo(
+    () => visibleTabs.map((tab) => tab.index),
+    [visibleTabs]
+  );
 
-  // Filter tabs based on visibility
-  const visibleTabs = tabs.filter((tab) => tab.visible);
-  const visibleTabIndexes = visibleTabs.map((tab) => tab.index);
+  const [activeTab, setActiveTab] = useState(visibleTabIndexes[0] || 0);
 
-  // Tab components mapping
-  const tabComponents = {
-    0: <NewLeads />,
-    1: <OpenLead />,
-    2: <HotLeads />,
-    3: <ClosedLead />,
-    4: <DuplicateLead />,
-    5: <UnassignedLead />,
-    6: <IndiaMartLeads />,
-  };
+  useEffect(() => {
+    if (!visibleTabIndexes.includes(activeTab)) {
+      setActiveTab(visibleTabIndexes[0] || 0);
+    }
+  }, [visibleTabIndexes, activeTab]);
 
   return (
     <div>
@@ -103,7 +121,9 @@ export const AllLeadsTabView = () => {
         onTabChange={(index) => setActiveTab(visibleTabIndexes[index])}
       />
       {visibleTabIndexes.includes(activeTab) && (
-        <div>{tabComponents[activeTab]}</div>
+        <div>
+          {visibleTabs.find((tab) => tab.index === activeTab).component}
+        </div>
       )}
     </div>
   );
