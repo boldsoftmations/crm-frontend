@@ -78,7 +78,7 @@ export const AllProductStoreInventoryView = ({ idForEdit, selectedRow }) => {
             >
               <TableHead>
                 <StyledTableRow>
-                  <StyledTableCell align="center">SOURCE</StyledTableCell>
+                  <StyledTableCell align="center">PRODUCT</StyledTableCell>
                   <StyledTableCell align="center">PRODUCT</StyledTableCell>
                   <StyledTableCell align="center">QUANTITY</StyledTableCell>
                   <StyledTableCell align="center">RATE</StyledTableCell>
