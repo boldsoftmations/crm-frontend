@@ -10,8 +10,6 @@ export const MaterialTransferAccept = memo(
     setOpenAcceptPopup,
     getAllMaterialTransferNoteDetails,
     currentPage,
-    searchQuery,
-    acceptedFilter,
   }) => {
     const [open, setOpen] = useState(false);
     const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
@@ -36,16 +34,11 @@ export const MaterialTransferAccept = memo(
         handleSuccess(response.data || "Accepted successfully");
         setTimeout(() => {
           setOpenAcceptPopup(false);
+          getAllMaterialTransferNoteDetails(currentPage);
         }, 300);
-        getAllMaterialTransferNoteDetails(
-          currentPage,
-          searchQuery,
-          acceptedFilter
-        );
-        setOpen(false);
       } catch (error) {
         handleError(error);
-        console.log("createing company detail error", error);
+        console.log("Material Transfer Note error", error);
       } finally {
         setOpen(false);
       }

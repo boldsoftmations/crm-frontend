@@ -468,8 +468,6 @@ export const MaterialTransferNoteView = () => {
       >
         <MaterialTransferAccept
           currentPage={currentPage}
-          searchQuery={searchQuery}
-          acceptedFilter={acceptedFilter}
           materialTransferNoteByID={materialTransferNoteByID}
           setOpenAcceptPopup={setOpenAcceptPopup}
           getAllMaterialTransferNoteDetails={getAllMaterialTransferNoteDetails}

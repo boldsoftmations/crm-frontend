@@ -1,6 +1,6 @@
-import { Routes, Route } from "react-router-dom";
-import { useSelector } from "react-redux";
 import React from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { ChangePassword } from "./../Pages/Auth/ChangePassword";
 import { ForgotPassword } from "./../Pages/Auth/ForgotPassword";
 import { CompanyDetails } from "../Pages/Cutomers/CompanyDetails/CompanyDetails";
@@ -64,211 +64,541 @@ import { Report } from "../Pages/Report/Report";
 import { AnalyticsAllTabView } from "../Pages/Analytics/AnalyticsAllTabView";
 import { AllDispatchTabView } from "../Pages/Dispatch/AllDispatchTabView";
 import { AllProfileTabView } from "../Pages/Users/AllProfileTabView";
+import { SalesReturnAllTabView } from "../Pages/SalesReturn/SalesReturnAllTabView";
+
+const PrivateRoute = ({ children, redirectTo = "/" }) => {
+  const tokenData = useSelector((state) => state.auth);
+  const token = tokenData.user;
+  return token ? children : <Navigate to={redirectTo} replace />;
+};
 
 export const RouteScreen = () => {
   const tokenData = useSelector((state) => state.auth);
   const token = tokenData.user;
 
   return (
-    <div>
-      <Routes>
-        {!token && (
-          <>
-            <Route path="/" exact element={<Auths />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route
-              path="/change-password/:id/:token"
-              element={<ChangePassword />}
-            />
-          </>
-        )}
-
-        {token && (
-          <>
-            <Route
-              path="/user/analytics"
-              exact
-              element={<AnalyticsAllTabView />}
-            />
-            <Route path="/user/report" element={<Report />} />
-            <Route path="/user/profile" exact element={<Profile />} />
-            <Route
-              path="/user/profile-tab"
-              exact
-              element={<AllProfileTabView />}
-            />
-            <Route
-              path="/user/personal-profile"
-              exact
-              element={<UserProfileView />}
-            />
-            {/* Leads Routes */}
-            <Route path="/leads/all-lead" element={<AllLeadsTabView />} />
-            {/* Products Routes */}
-            <Route
-              path="/products/all-product"
-              element={<AllProductsTabView />}
-            />
-            {/* SKU Codes Routes */}
-            <Route
-              path="/products/all-sku-codes"
-              element={<AllSKUCodesTabView />}
-            />
-            <Route path="/products/view-price-list" element={<PriceList />} />
-            {/* Customers Route */}
-            <Route
-              path="/customers/all-customer"
-              element={<AllCustomerTabView />}
-            />
-            <Route
-              path="/customers/company-details"
-              element={<CompanyDetails />}
-            />
-            <Route
-              path="/customers/incomplete-kyc-details"
-              element={<IncompleteKycDetails />}
-            />
-            <Route
-              path="/customers/unassigned-company-details"
-              element={<UnassignedCustomer />}
-            />
-            <Route
-              path="/customers/inactive-company-details"
-              element={<InActiveCustomer />}
-            />
-            <Route path="/followp/view-followup" element={<Followup />} />
-            {/* Invoice - Seller Account Route */}
-            <Route path="/invoice/seller-account" element={<SellerAccount />} />
-            <Route
-              path="/invoice/performa-invoice-tab"
-              element={<AllPerformaInvoiceTabView />}
-            />
-            <Route path="/invoice/approve-pi" element={<ApprovePi />} />
-            <Route path="/invoice/active-pi" element={<ActivePI />} />
-            <Route
-              path="/invoice/price-approval-pi"
-              element={<PriceApprovalPI />}
-            />
-            <Route
-              path="/invoice/all-performa-invoice"
-              element={<AllProformaInvoice />}
-            />
-            <Route
-              path="/invoice/sales-invoice"
-              element={<SalesInvoiceView />}
-            />
-            {/* Order Book */}
-            <Route
-              path="/invoice/orderbook-tab"
-              element={<AllOrderBookTabView />}
-            />
-            <Route
-              path="/invoice/customer-order-book"
-              element={<CustomerOrderBookDetails />}
-            />
-            <Route
-              path="/invoice/product-order-book"
-              element={<ProductOrderBookDetails />}
-            />
-            <Route
-              path="/invoice/pi-order-book"
-              element={<PIOrderBookDetails />}
-            />
-            {/* Dispatch Routes */}
-            <Route path="/dispatch/tab-view" element={<AllDispatchTabView />} />
-            <Route path="/dispatch/view-dispatch" element={<ViewDispatch />} />
-            <Route path="/dispatch/view-dispatched" element={<Dispatched />} />
-            <Route
-              path="/dispatch/view-sales-register"
-              element={<SalesRegisterView />}
-            />
-            {/* inventory Routes */}
-            <Route
-              path="/inventory/view-purchase"
-              element={<PurchaseAllTabView />}
-            />
-            <Route
-              path="/inventory/view-production"
-              element={<ProductionAllTabView />}
-            />
-            <Route
-              path="/inventory/view-inventory"
-              element={<InventoryAllTabView />}
-            />
-            <Route path="/inventory/view-vendor" element={<VendorView />} />
-            <Route
-              path="/inventory/view-stores-inventory"
-              element={<StoresInventoryView />}
-            />
-            <Route
-              path="/inventory/view-stores-inventory-cons"
-              element={<StoresInventoryConsView />}
-            />
-            <Route
-              path="/inventory/view-production-inventory"
-              element={<ProductionInventoryView />}
-            />
-            <Route
-              path="/inventory/view-production-inventory-cons"
-              element={<ProductionInventoryConsView />}
-            />
-            <Route path="/inventory/view-currency" element={<CurrencyView />} />
-            <Route
-              path="/inventory/view-safety-stock"
-              element={<SafetyStockView />}
-            />
-            <Route
-              path="/inventory/physical"
-              element={<PhysicalInventoryView />}
-            />
-            {/* ProductForecast Route */}
-            <Route
-              path="/forecast/view-product-forecast"
-              element={<ProductForecastViewAll />}
-            />
-            {/* task Routes */}
-            <Route path="/task/view-task" element={<TaskView />} />
-            <Route path="/user/active-user" element={<ActiveUsers />} />
-            <Route path="/user/inactive-user" element={<InActiveUsers />} />
-            <Route
-              path="/market-analysis/competitor"
-              element={<CompetitorView />}
-            />
-            // FAQ Routes
-            <Route path="/user/faq" element={<FaqAllTab />} />
-            {/* Daily sale review */}
-            <Route path="/user/sale-review" element={<DailySaleReviewView />} />
-            <Route path="/hr-model" element={<HrModelTabs />} />
-            <Route path="/hr-model/hr-master" element={<HrMasterTabView />} />
-            <Route path="/hr-model/designation" element={<DesignationView />} />
-            <Route path="/hr-model/department" element={<DepartmentView />} />
-            <Route path="/hr-model/source" element={<SourceView />} />
-            <Route
-              path="/customers/whatsapp-tabs"
-              element={<AllWhatsappTabs />}
-            />
-            <Route
-              path="/customers/whatsapp-group"
-              element={<WhatsappGroupView />}
-            />
-            <Route
-              path="/customers/not-in-whatsapp-group"
-              element={<CustomerNotInGroup />}
-            />
-            <Route
-              path="/customers/no-sales-person-group"
-              element={<SalesPersonNotInGroup />}
-            />
-            <Route
-              path="/customers/no-whatsapp-group"
-              element={<CustomerNoWhatsappGroup />}
-            />
-            <Route path="/customers/whatsapp" element={<WhatsappGroup />} />
-            <Route path="/customers/automation" element={<Automation />} />
-          </>
-        )}
-        <Route path="*" element={<Auths />} />
-      </Routes>
-    </div>
+    <Routes>
+      {token ? (
+        <>
+          {/* Preferred private route when token exists */}
+          <Route
+            path="/user/analytics"
+            exact
+            element={
+              <PrivateRoute>
+                <AnalyticsAllTabView />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/user/report"
+            element={
+              <PrivateRoute>
+                <Report />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/user/profile"
+            exact
+            element={
+              <PrivateRoute>
+                <Profile />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/user/profile-tab"
+            exact
+            element={
+              <PrivateRoute>
+                <AllProfileTabView />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/user/personal-profile"
+            exact
+            element={
+              <PrivateRoute>
+                <UserProfileView />
+              </PrivateRoute>
+            }
+          />
+          // Additional Private Routes
+          <Route
+            path="/leads/all-lead"
+            element={
+              <PrivateRoute>
+                <AllLeadsTabView />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/products/all-product"
+            element={
+              <PrivateRoute>
+                <AllProductsTabView />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/products/all-sku-codes"
+            element={
+              <PrivateRoute>
+                <AllSKUCodesTabView />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/products/view-price-list"
+            element={
+              <PrivateRoute>
+                <PriceList />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/customers/all-customer"
+            element={
+              <PrivateRoute>
+                <AllCustomerTabView />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/customers/company-details"
+            element={
+              <PrivateRoute>
+                <CompanyDetails />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/customers/incomplete-kyc-details"
+            element={
+              <PrivateRoute>
+                <IncompleteKycDetails />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/customers/unassigned-company-details"
+            element={
+              <PrivateRoute>
+                <UnassignedCustomer />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/customers/inactive-company-details"
+            element={
+              <PrivateRoute>
+                <InActiveCustomer />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/followp/view-followup"
+            element={
+              <PrivateRoute>
+                <Followup />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/invoice/seller-account"
+            element={
+              <PrivateRoute>
+                <SellerAccount />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/invoice/performa-invoice-tab"
+            element={
+              <PrivateRoute>
+                <AllPerformaInvoiceTabView />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/invoice/approve-pi"
+            element={
+              <PrivateRoute>
+                <ApprovePi />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/invoice/active-pi"
+            element={
+              <PrivateRoute>
+                <ActivePI />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/invoice/price-approval-pi"
+            element={
+              <PrivateRoute>
+                <PriceApprovalPI />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/invoice/all-performa-invoice"
+            element={
+              <PrivateRoute>
+                <AllProformaInvoice />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/invoice/sales-invoice"
+            element={
+              <PrivateRoute>
+                <SalesInvoiceView />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/invoice/orderbook-tab"
+            element={
+              <PrivateRoute>
+                <AllOrderBookTabView />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/invoice/customer-order-book"
+            element={
+              <PrivateRoute>
+                <CustomerOrderBookDetails />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/invoice/product-order-book"
+            element={
+              <PrivateRoute>
+                <ProductOrderBookDetails />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/invoice/pi-order-book"
+            element={
+              <PrivateRoute>
+                <PIOrderBookDetails />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/dispatch/tab-view"
+            element={
+              <PrivateRoute>
+                <AllDispatchTabView />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/dispatch/view-dispatch"
+            element={
+              <PrivateRoute>
+                <ViewDispatch />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/dispatch/view-dispatched"
+            element={
+              <PrivateRoute>
+                <Dispatched />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/dispatch/view-sales-register"
+            element={
+              <PrivateRoute>
+                <SalesRegisterView />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/inventory/view-purchase"
+            element={
+              <PrivateRoute>
+                <PurchaseAllTabView />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/inventory/view-production"
+            element={
+              <PrivateRoute>
+                <ProductionAllTabView />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/inventory/view-inventory"
+            element={
+              <PrivateRoute>
+                <InventoryAllTabView />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/inventory/view-vendor"
+            element={
+              <PrivateRoute>
+                <VendorView />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/inventory/view-stores-inventory"
+            element={
+              <PrivateRoute>
+                <StoresInventoryView />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/inventory/view-stores-inventory-cons"
+            element={
+              <PrivateRoute>
+                <StoresInventoryConsView />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/inventory/view-production-inventory"
+            element={
+              <PrivateRoute>
+                <ProductionInventoryView />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/inventory/view-production-inventory-cons"
+            element={
+              <PrivateRoute>
+                <ProductionInventoryConsView />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/inventory/view-currency"
+            element={
+              <PrivateRoute>
+                <CurrencyView />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/inventory/view-safety-stock"
+            element={
+              <PrivateRoute>
+                <SafetyStockView />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/inventory/physical"
+            element={
+              <PrivateRoute>
+                <PhysicalInventoryView />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/inventory/sales-return"
+            element={
+              <PrivateRoute>
+                <SalesReturnAllTabView />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/forecast/view-product-forecast"
+            element={
+              <PrivateRoute>
+                <ProductForecastViewAll />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/task/view-task"
+            element={
+              <PrivateRoute>
+                <TaskView />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/user/active-user"
+            element={
+              <PrivateRoute>
+                <ActiveUsers />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/user/inactive-user"
+            element={
+              <PrivateRoute>
+                <InActiveUsers />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/market-analysis/competitor"
+            element={
+              <PrivateRoute>
+                <CompetitorView />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/user/faq"
+            element={
+              <PrivateRoute>
+                <FaqAllTab />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/user/sale-review"
+            element={
+              <PrivateRoute>
+                <DailySaleReviewView />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/hr-model"
+            element={
+              <PrivateRoute>
+                <HrModelTabs />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/hr-model/hr-master"
+            element={
+              <PrivateRoute>
+                <HrMasterTabView />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/hr-model/designation"
+            element={
+              <PrivateRoute>
+                <DesignationView />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/hr-model/department"
+            element={
+              <PrivateRoute>
+                <DepartmentView />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/hr-model/source"
+            element={
+              <PrivateRoute>
+                <SourceView />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/customers/whatsapp-tabs"
+            element={
+              <PrivateRoute>
+                <AllWhatsappTabs />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/customers/whatsapp-group"
+            element={
+              <PrivateRoute>
+                <WhatsappGroupView />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/customers/not-in-whatsapp-group"
+            element={
+              <PrivateRoute>
+                <CustomerNotInGroup />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/customers/no-sales-person-group"
+            element={
+              <PrivateRoute>
+                <SalesPersonNotInGroup />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/customers/no-whatsapp-group"
+            element={
+              <PrivateRoute>
+                <CustomerNoWhatsappGroup />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/customers/whatsapp"
+            element={
+              <PrivateRoute>
+                <WhatsappGroup />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/customers/automation"
+            element={
+              <PrivateRoute>
+                <Automation />
+              </PrivateRoute>
+            }
+          />
+        </>
+      ) : (
+        <>
+          {/* Public and authentication routes */}
+          <Route path="/" exact element={<Auths />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route
+            path="/change-password/:id/:token"
+            element={<ChangePassword />}
+          />
+        </>
+      )}
+      {/* Redirect unknown routes to login or analytics based on token presence */}
+      <Route
+        path="*"
+        element={
+          token ? (
+            <PrivateRoute>
+              <AnalyticsAllTabView />
+            </PrivateRoute>
+          ) : (
+            <Auths />
+          )
+        }
+      />
+    </Routes>
   );
 };
