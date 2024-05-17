@@ -335,6 +335,21 @@ export const ListItems = (props) => {
             <ListItemText primary="Physical Inventory" />
           </ListItem>
 
+          {/* sales return */}
+          <ListItem
+            button
+            component={RouterLink}
+            to="/inventory/sales-return"
+            style={{ width: 300 }}
+            onClick={() => setOpen(false)}
+            selected={isActive("/inventory/sales-return")}
+          >
+            <ListItemIcon>
+              <DescriptionIcon />
+            </ListItemIcon>
+            <ListItemText primary="Sales Return" />
+          </ListItem>
+
           {/* Currency */}
           <ListItem
             button
@@ -2314,6 +2329,22 @@ export const ListItems = (props) => {
                 </ListItemIcon>
                 <ListItemText primary="Physical Inventory" />
               </ListItem>
+
+              {/* sales return */}
+              <ListItem
+                button
+                component={RouterLink}
+                to="/inventory/sales-return"
+                style={{ width: 300 }}
+                onClick={() => setOpen(false)}
+                selected={isActive("/inventory/sales-return")}
+              >
+                <ListItemIcon>
+                  <DescriptionIcon />
+                </ListItemIcon>
+                <ListItemText primary="Sales Return" />
+              </ListItem>
+
               {/* Tasks */}
               <ListItem
                 button
