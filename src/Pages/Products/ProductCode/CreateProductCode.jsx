@@ -9,7 +9,7 @@ import { MessageAlert } from "../../../Components/MessageAlert";
 
 export const CreateProductCode = memo((props) => {
   const { setOpenPopup, getproductCodes, currentPage, searchQuery } = props;
-  const [description, setDescription] = useState([]);
+  const [description, setDescription] = useState("");
   const [allDescription, seAllDescription] = useState([]);
   const [productCode, setProductCode] = useState([]);
   const [open, setOpen] = useState(false);
@@ -60,7 +60,7 @@ export const CreateProductCode = memo((props) => {
     },
     [productCode, currentPage, searchQuery]
   );
-
+  console.log("description", description);
   return (
     <>
       <MessageAlert
