@@ -10,6 +10,7 @@ import {
   TableRow,
   TableCell,
   Paper,
+  Button,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
 import SearchComponent from "../../Components/SearchComponent ";
@@ -18,6 +19,8 @@ import InventoryServices from "../../services/InventoryService";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
 import { CustomPagination } from "../../Components/CustomPagination";
 import { CustomLoader } from "../../Components/CustomLoader";
+import { Popup } from "../../Components/Popup";
+import { SalesReturnInventoryUpdate } from "./SalesReturnInventoryUpdate";
 
 export const SaleReturnInventory = () => {
   const [open, setOpen] = useState(false);
@@ -25,6 +28,8 @@ export const SaleReturnInventory = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
+  const [openPopup, setOpenPopup] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
@@ -60,6 +65,11 @@ export const SaleReturnInventory = () => {
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
+  };
+
+  const openInPopup = (item) => {
+    setSelectedRow(item);
+    setOpenPopup(true);
   };
 
   return (
@@ -141,6 +151,7 @@ export const SaleReturnInventory = () => {
                   <StyledTableCell align="center">QUANTITY</StyledTableCell>
                   <StyledTableCell align="center">RATE</StyledTableCell>
                   <StyledTableCell align="center">AMOUNT</StyledTableCell>
+                  <StyledTableCell align="center">ACTION</StyledTableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -163,6 +174,9 @@ export const SaleReturnInventory = () => {
                     <StyledTableCell align="center">
                       {row.amount}
                     </StyledTableCell>
+                    <StyledTableCell align="center">
+                      <Button onClick={() => openInPopup(row)}>View</Button>
+                    </StyledTableCell>
                   </StyledTableRow>
                 ))}
               </TableBody>
@@ -175,6 +189,19 @@ export const SaleReturnInventory = () => {
           />
         </Paper>
       </Grid>
+      <Popup
+        title={"Update Sales Return Inventory"}
+        openPopup={openPopup}
+        setOpenPopup={setOpenPopup}
+      >
+        <SalesReturnInventoryUpdate
+          selectedRow={selectedRow}
+          setOpenPopup={setOpenPopup}
+          getSalesReturnInventoryDetails={getSalesReturnInventoryDetails}
+          currentPage={currentPage}
+          searchQuery={searchQuery}
+        />
+      </Popup>
     </>
   );
 };

@@ -584,6 +584,11 @@ const getSalesReturnInventoryData = (page, searchValue) => {
     `api/inventory/sales-return-inventory/?${params.toString()}`
   );
 };
+
+const updateSalesReturnInventoryData = (id, data) => {
+  return CustomAxios.patch(`api/inventory/sales-return-inventory/${id}/`, data);
+};
+
 const InventoryServices = {
   getAllVendorData,
   createVendorData,
@@ -651,6 +656,7 @@ const InventoryServices = {
   getSalesReturnByIDData,
   createSalesReturn,
   getSalesReturnInventoryData,
+  updateSalesReturnInventoryData,
 };
 
 export default InventoryServices;
