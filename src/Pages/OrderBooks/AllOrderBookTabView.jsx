@@ -24,7 +24,8 @@ export const AllOrderBookTabView = () => {
     "Sales Manager without Leads",
     "Sales Manager with Lead",
     "Accounts",
-    "Accounts Billing Department"
+    "Accounts Billing Department",
+    "Production"
   );
 
   const customerServiceTabs = isInGroups("Customer Service");
