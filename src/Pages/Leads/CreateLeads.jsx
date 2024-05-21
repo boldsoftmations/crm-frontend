@@ -77,12 +77,6 @@ export const CreateLeads = memo((props) => {
     setChecked(event.target.checked);
   };
 
-  useEffect(() => {
-    getDescriptionNoData();
-    getReference();
-    getAssignedData();
-  }, []);
-
   const getDescriptionNoData = async () => {
     try {
       const res = await ProductService.getNoDescription();
@@ -117,6 +111,12 @@ export const CreateLeads = memo((props) => {
       console.error(err);
     }
   };
+
+  useEffect(() => {
+    getDescriptionNoData();
+    getReference();
+    getAssignedData();
+  }, []);
 
   const createLeadsData = useCallback(
     async (e) => {

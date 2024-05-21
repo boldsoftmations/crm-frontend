@@ -13,10 +13,6 @@ export const ProductForecastAssignTo = (props) => {
   const [assignTo, setAssignTo] = useState(null);
   const [assigned, setAssigned] = useState([]);
 
-  useEffect(() => {
-    getAssignedData();
-  }, []);
-
   const getAssignedData = async (id) => {
     try {
       setOpen(true);
@@ -41,6 +37,10 @@ export const ProductForecastAssignTo = (props) => {
       setOpen(false);
     }
   };
+
+  useEffect(() => {
+    getAssignedData();
+  }, []);
 
   const AssignToProduct = async (e) => {
     try {

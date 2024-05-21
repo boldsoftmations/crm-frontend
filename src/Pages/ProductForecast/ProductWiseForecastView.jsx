@@ -5,7 +5,9 @@ import { CustomPagination } from "../../Components/CustomPagination";
 import { CustomLoader } from "../../Components/CustomLoader";
 import ProductForecastService from "../../services/ProductForecastService";
 import { CustomTable } from "../../Components/CustomTable";
-import CustomTextField from "../../Components/CustomTextField";
+import SearchComponent from "../../Components/SearchComponent ";
+import { MessageAlert } from "../../Components/MessageAlert";
+import { useNotificationHandling } from "../../Components/useNotificationHandling ";
 
 export const ProductWiseForecastView = () => {
   const [open, setOpen] = useState(false);
@@ -15,6 +17,8 @@ export const ProductWiseForecastView = () => {
   const [productWiseForecast, setProductWiseForecast] = useState([]);
   const [exportData, setExportData] = useState([]);
   const csvLinkRef = useRef(null);
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   // Get the current date
   const currentDate = new Date();
@@ -52,7 +56,9 @@ export const ProductWiseForecastView = () => {
       setTimeout(() => {
         csvLinkRef.current.link.click();
       });
+      handleSuccess("CSV Download successfully");
     } catch (error) {
+      handleError(error);
       console.log("CSVLink Download error", error);
     }
   };
@@ -166,7 +172,7 @@ export const ProductWiseForecastView = () => {
               .map((filteredData) => filteredData.total_forecast),
           };
         });
-      setOpen(false);
+
       return data;
     } catch (err) {
       console.log(err);
@@ -175,39 +181,42 @@ export const ProductWiseForecastView = () => {
     }
   };
 
+  const getAllProductWiseForecastDetails = useCallback(async () => {
+    try {
+      setOpen(true);
+      const response =
+        await ProductForecastService.getAllProductWiseForecastData(
+          currentPage,
+          searchQuery
+        );
+      setProductWiseForecast(response.data.results);
+      const total = response.data.count;
+      setTotalPages(Math.ceil(total / 25));
+    } catch (error) {
+      handleError(error);
+      console.error("Error fetching Customer Having Forecast", error);
+    } finally {
+      setOpen(false);
+    }
+  }, [currentPage, searchQuery]);
+
   useEffect(() => {
-    getAllProductWiseForecastDetails(currentPage);
-  }, [currentPage, getAllProductWiseForecastDetails]);
+    getAllProductWiseForecastDetails();
+  }, [currentPage, searchQuery]);
 
-  const getAllProductWiseForecastDetails = useCallback(
-    async (page, query = searchQuery) => {
-      try {
-        setOpen(true);
-        const response =
-          await ProductForecastService.getAllProductWiseForecastData(
-            page,
-            query
-          );
-        setProductWiseForecast(response.data.results);
-        const total = response.data.count;
-        setTotalPages(Math.ceil(total / 25));
-        setOpen(false);
-      } catch (error) {
-        console.error("Error fetching Customer Having Forecast", error);
-        setOpen(false);
-      }
-    },
-    [searchQuery]
-  );
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    setCurrentPage(1); // Reset to first page with new search
+  };
 
-  const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
+  const handleReset = () => {
+    setSearchQuery("");
+    setCurrentPage(1); // Reset to first page with no search query
   };
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
-
   const Tabledata = productWiseForecast
     .filter((row) => row.qty_forecast.length > 0) // Filter rows with non-empty qty_forecast array
     .map((row) => {
@@ -284,7 +293,13 @@ export const ProductWiseForecastView = () => {
   ];
 
   return (
-    <div>
+    <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
       <Grid item xs={12}>
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
@@ -296,40 +311,10 @@ export const ProductWiseForecastView = () => {
               sx={{ marginRight: 5, marginLeft: 5 }}
             >
               <Grid item xs={12} sm={3}>
-                <CustomTextField
-                  size="small"
-                  label="Search"
-                  variant="outlined"
-                  value={searchQuery}
-                  onChange={handleSearchChange}
-                  fullWidth
+                <SearchComponent
+                  onSearch={handleSearch}
+                  onReset={handleReset}
                 />
-              </Grid>
-              <Grid item xs={12} sm={2}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() =>
-                    getAllProductWiseForecastDetails(currentPage, searchQuery)
-                  }
-                  fullWidth
-                >
-                  Search
-                </Button>
-              </Grid>
-              <Grid item xs={12} sm={2}>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  onClick={() => {
-                    setSearchQuery("");
-                    setCurrentPage(1);
-                    getAllProductWiseForecastDetails(1, "");
-                  }}
-                  fullWidth
-                >
-                  Reset
-                </Button>
               </Grid>
               <Grid item xs={12} sm={2}>
                 <Button
@@ -374,12 +359,12 @@ export const ProductWiseForecastView = () => {
             Styles={{ paddingLeft: "10px", paddingRight: "10px" }}
           />
           <CustomPagination
-            currentPage={currentPage}
             totalPages={totalPages}
+            currentPage={currentPage}
             handlePageChange={handlePageChange}
           />
         </Paper>
       </Grid>
-    </div>
+    </>
   );
 };

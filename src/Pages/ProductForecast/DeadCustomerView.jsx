@@ -10,8 +10,10 @@ import { CustomTable } from "../../Components/CustomTable";
 import ProductService from "../../services/ProductService";
 import { Helmet } from "react-helmet";
 import { useSelector } from "react-redux";
-import CustomTextField from "../../Components/CustomTextField";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
+import { useNotificationHandling } from "../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../Components/MessageAlert";
+import SearchComponent from "../../Components/SearchComponent ";
 
 export const DeadCustomerView = () => {
   const [open, setOpen] = useState(false);
@@ -28,6 +30,8 @@ export const DeadCustomerView = () => {
   const [isPrinting, setIsPrinting] = useState(false);
   const UserData = useSelector((state) => state.auth.profile);
   const assignedOption = UserData.sales_users || [];
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   useEffect(() => {
     const beforePrint = () => {
@@ -57,8 +61,10 @@ export const DeadCustomerView = () => {
       setTimeout(() => {
         csvLinkRef.current.link.click();
       });
+      handleSuccess("CSV Download successfully");
     } catch (error) {
-      console.log("CSVLink Download error", error);
+      handleError(error);
+      console.error("CSVLink Download error", error);
     }
   };
 
@@ -99,10 +105,22 @@ export const DeadCustomerView = () => {
         return obj;
       });
       console.log(data);
-      setOpen(false);
+
       return data;
     } catch (err) {
       console.log(err);
+    } finally {
+      setOpen(false);
+    }
+  };
+
+  const getProduct = async () => {
+    try {
+      setOpen(true);
+      const res = await ProductService.getAllProduct();
+      setProduct(res.data);
+    } catch (err) {
+      console.error("error potential", err);
     } finally {
       setOpen(false);
     }
@@ -112,44 +130,37 @@ export const DeadCustomerView = () => {
     getProduct();
   }, []);
 
-  const getProduct = async () => {
+  const getAllDeadCustomerForecastDetails = useCallback(async () => {
     try {
       setOpen(true);
-      const res = await ProductService.getAllProduct();
-      setProduct(res.data);
-      setOpen(false);
-    } catch (err) {
-      console.error("error potential", err);
+      const response = await ProductForecastService.getAllDeadCustomerData(
+        currentPage,
+        salesPersonByFilter,
+        searchQuery
+      );
+      setDeadCustomer(response.data.results);
+      const total = response.data.count;
+      setTotalPages(Math.ceil(total / 25));
+    } catch (error) {
+      handleError(error);
+      console.error("Error fetching Customer Having Forecast", error);
+    } finally {
       setOpen(false);
     }
-  };
+  }, [currentPage, salesPersonByFilter, searchQuery]);
+
   useEffect(() => {
-    getAllDeadCustomerForecastDetails(currentPage);
-  }, [currentPage, getAllDeadCustomerForecastDetails]);
+    getAllDeadCustomerForecastDetails();
+  }, [currentPage, salesPersonByFilter, searchQuery]);
 
-  const getAllDeadCustomerForecastDetails = useCallback(
-    async (page, filter = salesPersonByFilter, query = searchQuery) => {
-      try {
-        setOpen(true);
-        const response = await ProductForecastService.getAllDeadCustomerData(
-          page,
-          filter,
-          query
-        );
-        setDeadCustomer(response.data.results);
-        const total = response.data.count;
-        setTotalPages(Math.ceil(total / 25));
-        setOpen(false);
-      } catch (error) {
-        console.error("Error fetching Customer Having Forecast", error);
-        setOpen(false);
-      }
-    },
-    [salesPersonByFilter, searchQuery]
-  );
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    setCurrentPage(1); // Reset to first page with new search
+  };
 
-  const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
+  const handleReset = () => {
+    setSearchQuery("");
+    setCurrentPage(1); // Reset to first page with no search query
   };
 
   const handlePageChange = (event, value) => {
@@ -204,6 +215,12 @@ export const DeadCustomerView = () => {
           `}
         </style>
       </Helmet>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
       <Grid item xs={12}>
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
@@ -226,49 +243,12 @@ export const DeadCustomerView = () => {
                 />
               </Grid>
               <Grid item xs={12} sm={3}>
-                <CustomTextField
-                  size="small"
-                  label="Search"
-                  variant="outlined"
-                  value={searchQuery}
-                  onChange={handleSearchChange}
-                  fullWidth
+                <SearchComponent
+                  onSearch={handleSearch}
+                  onReset={handleReset}
                 />
               </Grid>
-              <Grid item xs={12} sm={2}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() =>
-                    getAllDeadCustomerForecastDetails(
-                      currentPage,
-                      salesPersonByFilter,
-                      searchQuery
-                    )
-                  }
-                  fullWidth
-                >
-                  Search
-                </Button>
-              </Grid>
-              <Grid item xs={12} sm={2}>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  onClick={() => {
-                    setSearchQuery("");
-                    setCurrentPage(1);
-                    getAllDeadCustomerForecastDetails(
-                      1,
-                      salesPersonByFilter,
-                      ""
-                    );
-                  }}
-                  fullWidth
-                >
-                  Reset
-                </Button>
-              </Grid>
+
               <Grid item xs={12} sm={2}>
                 <Button
                   variant="contained"
@@ -311,8 +291,8 @@ export const DeadCustomerView = () => {
             openInPopup4={null}
           />
           <CustomPagination
-            currentPage={currentPage}
             totalPages={totalPages}
+            currentPage={currentPage}
             handlePageChange={handlePageChange}
           />
         </Paper>

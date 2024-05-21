@@ -22,8 +22,10 @@ import { ForecastUpdate } from "./../Cutomers/ForecastDetails/ForecastUpdate";
 import { ProductForecastAssignTo } from "./ProductForecastAssignTo";
 import { Helmet } from "react-helmet";
 import { useSelector } from "react-redux";
-import CustomTextField from "../../Components/CustomTextField";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
+import { useNotificationHandling } from "../../Components/useNotificationHandling ";
+import SearchComponent from "../../Components/SearchComponent ";
+import { MessageAlert } from "../../Components/MessageAlert";
 
 export const CustomerHavingForecastView = () => {
   const [open, setOpen] = useState(false);
@@ -45,6 +47,8 @@ export const CustomerHavingForecastView = () => {
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
   const currentYear = currentDate.getFullYear();
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   // Calculate the previous and next months
   const lastMonth1 = (currentMonth - 2 + 12) % 12;
@@ -138,7 +142,9 @@ export const CustomerHavingForecastView = () => {
       setTimeout(() => {
         csvLinkRef.current.link.click();
       }, 0);
+      handleSuccess("CSV Download successfully");
     } catch (error) {
+      handleError(error);
       console.error("CSVLink Download error", error);
     } finally {
       setOpen(false);
@@ -176,42 +182,46 @@ export const CustomerHavingForecastView = () => {
         return obj;
       });
 
-      setOpen(false);
       console.log("Export Data: ", data); // This line is for debugging, you can remove it later
       return data;
     } catch (err) {
       console.error("Error in handleExport", err);
+    } finally {
       setOpen(false);
     }
   };
 
+  const getAllCustomerForecastDetails = useCallback(async () => {
+    try {
+      setOpen(true);
+      const response = await ProductForecastService.getAllCustomerHavingData(
+        currentPage,
+        salesPersonByFilter,
+        searchQuery
+      );
+      setCustomerHavingForecast(response.data.results);
+      const total = response.data.count;
+      setTotalPages(Math.ceil(total / 25));
+    } catch (error) {
+      handleError(error);
+      console.error("Error fetching Customer Having Forecast", error);
+    } finally {
+      setOpen(false);
+    }
+  }, [currentPage, salesPersonByFilter, searchQuery]);
+
   useEffect(() => {
-    getAllCustomerForecastDetails(currentPage);
-  }, [currentPage, getAllCustomerForecastDetails]);
+    getAllCustomerForecastDetails();
+  }, [currentPage, salesPersonByFilter, searchQuery]);
 
-  const getAllCustomerForecastDetails = useCallback(
-    async (page, filter = salesPersonByFilter, query = searchQuery) => {
-      try {
-        setOpen(true);
-        const response = await ProductForecastService.getAllCustomerHavingData(
-          page,
-          filter,
-          query
-        );
-        setCustomerHavingForecast(response.data.results);
-        const total = response.data.count;
-        setTotalPages(Math.ceil(total / 25));
-        setOpen(false);
-      } catch (error) {
-        console.error("Error fetching Customer Having Forecast", error);
-        setOpen(false);
-      }
-    },
-    [salesPersonByFilter, searchQuery]
-  );
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    setCurrentPage(1); // Reset to first page with new search
+  };
 
-  const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
+  const handleReset = () => {
+    setSearchQuery("");
+    setCurrentPage(1); // Reset to first page with no search query
   };
 
   const handlePageChange = (event, value) => {
@@ -271,6 +281,12 @@ export const CustomerHavingForecastView = () => {
           `}
         </style>
       </Helmet>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
       <Grid item xs={12}>
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
@@ -295,44 +311,10 @@ export const CustomerHavingForecastView = () => {
                 </Grid>
               )}
               <Grid item xs={12} sm={3}>
-                <CustomTextField
-                  size="small"
-                  label="Search"
-                  variant="outlined"
-                  value={searchQuery}
-                  onChange={handleSearchChange}
-                  fullWidth
+                <SearchComponent
+                  onSearch={handleSearch}
+                  onReset={handleReset}
                 />
-              </Grid>
-              <Grid item xs={12} sm={2}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() =>
-                    getAllCustomerForecastDetails(
-                      currentPage,
-                      salesPersonByFilter,
-                      searchQuery
-                    )
-                  }
-                  fullWidth
-                >
-                  Search
-                </Button>
-              </Grid>
-              <Grid item xs={12} sm={2}>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  onClick={() => {
-                    setSearchQuery("");
-                    setCurrentPage(1);
-                    getAllCustomerForecastDetails(1, salesPersonByFilter, "");
-                  }}
-                  fullWidth
-                >
-                  Reset
-                </Button>
               </Grid>
               <Grid item xs={12} sm={2}>
                 <Button
@@ -494,8 +476,8 @@ export const CustomerHavingForecastView = () => {
             </Table>
           </TableContainer>
           <CustomPagination
-            currentPage={currentPage}
             totalPages={totalPages}
+            currentPage={currentPage}
             handlePageChange={handlePageChange}
           />
         </Paper>

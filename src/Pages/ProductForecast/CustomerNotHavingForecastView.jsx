@@ -22,8 +22,10 @@ import { ForecastUpdate } from "../Cutomers/ForecastDetails/ForecastUpdate";
 import { ProductForecastAssignTo } from "./ProductForecastAssignTo";
 import { Helmet } from "react-helmet";
 import { useSelector } from "react-redux";
-import CustomTextField from "../../Components/CustomTextField";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
+import { useNotificationHandling } from "../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../Components/MessageAlert";
+import SearchComponent from "../../Components/SearchComponent ";
 
 export const CustomerNotHavingForecastView = () => {
   const [open, setOpen] = useState(false);
@@ -43,6 +45,8 @@ export const CustomerNotHavingForecastView = () => {
   const [isPrinting, setIsPrinting] = useState(false);
   const UserData = useSelector((state) => state.auth.profile);
   const assignedOption = UserData.sales_users || [];
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   // Get the current date, month, and year
   const currentDate = new Date();
@@ -141,7 +145,9 @@ export const CustomerNotHavingForecastView = () => {
       setTimeout(() => {
         csvLinkRef.current.link.click();
       }, 0);
+      handleSuccess("CSV Download successfully");
     } catch (error) {
+      handleError(error);
       console.error("CSVLink Download error", error);
     } finally {
       setOpen(false);
@@ -179,43 +185,46 @@ export const CustomerNotHavingForecastView = () => {
         return obj;
       });
 
-      setOpen(false);
       console.log("Export Data: ", data); // This line is for debugging, you can remove it later
       return data;
     } catch (err) {
       console.error("Error in handleExport", err);
+    } finally {
       setOpen(false);
     }
   };
 
+  const getAllCustomerNotHavingForecastDetails = useCallback(async () => {
+    try {
+      setOpen(true);
+      const response = await ProductForecastService.getAllCustomerNotHavingData(
+        currentPage,
+        salesPersonByFilter,
+        searchQuery
+      );
+      setCustomerNotHavingForecast(response.data.results);
+      const total = response.data.count;
+      setTotalPages(Math.ceil(total / 25));
+    } catch (error) {
+      handleError(error);
+      console.error("Error fetching Customer Having Forecast", error);
+    } finally {
+      setOpen(false);
+    }
+  }, [currentPage, salesPersonByFilter, searchQuery]);
+
   useEffect(() => {
-    getAllCustomerNotHavingForecastDetails(currentPage);
-  }, [currentPage, getAllCustomerNotHavingForecastDetails]);
+    getAllCustomerNotHavingForecastDetails();
+  }, [currentPage, salesPersonByFilter, searchQuery]);
 
-  const getAllCustomerNotHavingForecastDetails = useCallback(
-    async (page, filter = salesPersonByFilter, query = searchQuery) => {
-      try {
-        setOpen(true);
-        const response =
-          await ProductForecastService.getAllCustomerNotHavingData(
-            page,
-            filter,
-            query
-          );
-        setCustomerNotHavingForecast(response.data.results);
-        const total = response.data.count;
-        setTotalPages(Math.ceil(total / 25));
-        setOpen(false);
-      } catch (error) {
-        console.error("Error fetching Customer Having Forecast", error);
-        setOpen(false);
-      }
-    },
-    [salesPersonByFilter, searchQuery]
-  );
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    setCurrentPage(1); // Reset to first page with new search
+  };
 
-  const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
+  const handleReset = () => {
+    setSearchQuery("");
+    setCurrentPage(1); // Reset to first page with no search query
   };
 
   const handlePageChange = (event, value) => {
@@ -275,6 +284,12 @@ export const CustomerNotHavingForecastView = () => {
           `}
         </style>
       </Helmet>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
       <Grid item xs={12}>
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
@@ -299,48 +314,10 @@ export const CustomerNotHavingForecastView = () => {
                 </Grid>
               )}
               <Grid item xs={12} sm={3}>
-                <CustomTextField
-                  size="small"
-                  label="Search"
-                  variant="outlined"
-                  value={searchQuery}
-                  onChange={handleSearchChange}
-                  fullWidth
+                <SearchComponent
+                  onSearch={handleSearch}
+                  onReset={handleReset}
                 />
-              </Grid>
-              <Grid item xs={12} sm={2}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() =>
-                    getAllCustomerNotHavingForecastDetails(
-                      currentPage,
-                      salesPersonByFilter,
-                      searchQuery
-                    )
-                  }
-                  fullWidth
-                >
-                  Search
-                </Button>
-              </Grid>
-              <Grid item xs={12} sm={2}>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  onClick={() => {
-                    setSearchQuery("");
-                    setCurrentPage(1);
-                    getAllCustomerNotHavingForecastDetails(
-                      1,
-                      salesPersonByFilter,
-                      ""
-                    );
-                  }}
-                  fullWidth
-                >
-                  Reset
-                </Button>
               </Grid>
               <Grid item xs={12} sm={2}>
                 <Button
@@ -502,8 +479,8 @@ export const CustomerNotHavingForecastView = () => {
             </Table>
           </TableContainer>
           <CustomPagination
-            currentPage={currentPage}
             totalPages={totalPages}
+            currentPage={currentPage}
             handlePageChange={handlePageChange}
           />
         </Paper>

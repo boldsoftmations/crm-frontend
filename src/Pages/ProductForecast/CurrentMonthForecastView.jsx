@@ -18,8 +18,10 @@ import { Helmet } from "react-helmet";
 import { useSelector } from "react-redux";
 import { Popup } from "../../Components/Popup";
 import { AnticipatedDateUpdate } from "./AnticipatedDateUpdate";
-import CustomTextField from "../../Components/CustomTextField";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
+import SearchComponent from "../../Components/SearchComponent ";
+import { MessageAlert } from "../../Components/MessageAlert";
+import { useNotificationHandling } from "../../Components/useNotificationHandling ";
 
 export const CurrentMonthForecastView = () => {
   const [open, setOpen] = useState(false);
@@ -35,6 +37,8 @@ export const CurrentMonthForecastView = () => {
   const [isPrinting, setIsPrinting] = useState(false);
   const UserData = useSelector((state) => state.auth.profile);
   const assignedOption = UserData.sales_users || [];
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   useEffect(() => {
     const beforePrint = () => {
@@ -74,7 +78,9 @@ export const CurrentMonthForecastView = () => {
       setTimeout(() => {
         csvLinkRef.current.link.click();
       });
+      handleSuccess("CSV Download successfully");
     } catch (error) {
+      handleError(error);
       console.log("CSVLink Download error", error);
     }
   };
@@ -102,42 +108,45 @@ export const CurrentMonthForecastView = () => {
             forecast_achieved: forecast_achieved > 0 ? forecast_achieved : 0,
           };
         });
-      setOpen(false);
       return data;
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
     } finally {
       setOpen(false);
     }
   };
 
+  const getAllCurrentMonthForecastDetails = useCallback(async () => {
+    try {
+      setOpen(true);
+      const response = await ProductForecastService.getAllCurrentMonthData(
+        currentPage,
+        salesPersonByFilter,
+        searchQuery
+      );
+      setCurrentMonthForecast(response.data.results);
+      const total = response.data.count;
+      setTotalPages(Math.ceil(total / 25));
+    } catch (error) {
+      handleError(error);
+      console.error("Error fetching Customer Having Forecast", error);
+    } finally {
+      setOpen(false);
+    }
+  }, [currentPage, salesPersonByFilter, searchQuery]);
+
   useEffect(() => {
-    getAllCurrentMonthForecastDetails(currentPage);
-  }, [currentPage, getAllCurrentMonthForecastDetails]);
+    getAllCurrentMonthForecastDetails();
+  }, [currentPage, salesPersonByFilter, searchQuery]);
 
-  const getAllCurrentMonthForecastDetails = useCallback(
-    async (page, filter = salesPersonByFilter, query = searchQuery) => {
-      try {
-        setOpen(true);
-        const response = await ProductForecastService.getAllCurrentMonthData(
-          page,
-          filter,
-          query
-        );
-        setCurrentMonthForecast(response.data.results);
-        const total = response.data.count;
-        setTotalPages(Math.ceil(total / 25));
-        setOpen(false);
-      } catch (error) {
-        console.error("Error fetching Customer Having Forecast", error);
-        setOpen(false);
-      }
-    },
-    [salesPersonByFilter, searchQuery]
-  );
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    setCurrentPage(1); // Reset to first page with new search
+  };
 
-  const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
+  const handleReset = () => {
+    setSearchQuery("");
+    setCurrentPage(1); // Reset to first page with no search query
   };
 
   const handlePageChange = (event, value) => {
@@ -233,6 +242,12 @@ export const CurrentMonthForecastView = () => {
           `}
         </style>
       </Helmet>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
       <Grid item xs={12}>
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
@@ -257,48 +272,10 @@ export const CurrentMonthForecastView = () => {
                 </Grid>
               )}
               <Grid item xs={12} sm={3}>
-                <CustomTextField
-                  size="small"
-                  label="Search"
-                  variant="outlined"
-                  value={searchQuery}
-                  onChange={handleSearchChange}
-                  fullWidth
+                <SearchComponent
+                  onSearch={handleSearch}
+                  onReset={handleReset}
                 />
-              </Grid>
-              <Grid item xs={12} sm={2}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() =>
-                    getAllCurrentMonthForecastDetails(
-                      currentPage,
-                      salesPersonByFilter,
-                      searchQuery
-                    )
-                  }
-                  fullWidth
-                >
-                  Search
-                </Button>
-              </Grid>
-              <Grid item xs={12} sm={2}>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  onClick={() => {
-                    setSearchQuery("");
-                    setCurrentPage(1);
-                    getAllCurrentMonthForecastDetails(
-                      1,
-                      salesPersonByFilter,
-                      ""
-                    );
-                  }}
-                  fullWidth
-                >
-                  Reset
-                </Button>
               </Grid>
               <Grid item xs={12} sm={2}>
                 <Button
@@ -407,8 +384,8 @@ export const CurrentMonthForecastView = () => {
             </Table>
           </TableContainer>
           <CustomPagination
-            currentPage={currentPage}
             totalPages={totalPages}
+            currentPage={currentPage}
             handlePageChange={handlePageChange}
           />
         </Paper>
