@@ -23,14 +23,13 @@ export const ViewColors = () => {
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
-  useEffect(() => {
-    getColours(currentPage, searchQuery);
-  }, [currentPage, searchQuery]);
-
-  const getColours = useCallback(async (page, query) => {
+  const getColours = useCallback(async () => {
     try {
       setOpen(true);
-      const response = await ProductService.getAllColour(page, query);
+      const response = await ProductService.getAllColour(
+        currentPage,
+        searchQuery
+      );
       setAllColor(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
     } catch (error) {
@@ -38,7 +37,11 @@ export const ViewColors = () => {
     } finally {
       setOpen(false);
     }
-  }, []); // Ensure dependencies are correctly listed
+  }, [currentPage, searchQuery]); // Ensure dependencies are correctly listed
+
+  useEffect(() => {
+    getColours();
+  }, [currentPage, searchQuery]);
 
   const handleSearch = (query) => {
     setSearchQuery(query);

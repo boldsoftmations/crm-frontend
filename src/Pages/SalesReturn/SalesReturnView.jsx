@@ -33,10 +33,13 @@ export const SalesReturnView = () => {
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
-  const getSalesReturnDetails = useCallback(async (page, query) => {
+  const getSalesReturnDetails = useCallback(async () => {
     try {
       setOpen(true);
-      const response = await InventoryServices.getSalesReturnData(page, query);
+      const response = await InventoryServices.getSalesReturnData(
+        currentPage,
+        searchQuery
+      );
       setSalesReturnData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
     } catch (error) {
@@ -44,10 +47,10 @@ export const SalesReturnView = () => {
     } finally {
       setOpen(false);
     }
-  }, []); // Ensure dependencies are correctly listed
+  }, [currentPage, searchQuery]); // Ensure dependencies are correctly listed
 
   useEffect(() => {
-    getSalesReturnDetails(currentPage, searchQuery);
+    getSalesReturnDetails();
   }, [currentPage, searchQuery]);
 
   const handleSearch = (query) => {

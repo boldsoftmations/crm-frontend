@@ -97,13 +97,6 @@ export const ViewRawMaterials = () => {
     }
   };
 
-  useEffect(() => {
-    getBrandList();
-    getColours();
-    getproductCodes();
-    getUnits();
-  }, []);
-
   const getBrandList = async () => {
     try {
       const res = await ProductService.getAllBrand("all");
@@ -141,13 +134,19 @@ export const ViewRawMaterials = () => {
   };
 
   useEffect(() => {
-    getRawMaterials(currentPage, searchQuery);
-  }, [currentPage, searchQuery]);
+    getBrandList();
+    getColours();
+    getproductCodes();
+    getUnits();
+  }, []);
 
-  const getRawMaterials = useCallback(async (page, query) => {
+  const getRawMaterials = useCallback(async () => {
     try {
       setOpen(true);
-      const response = await ProductService.getAllRawMaterials(page, query);
+      const response = await ProductService.getAllRawMaterials(
+        currentPage,
+        searchQuery
+      );
       setRawMaterials(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
     } catch (error) {
@@ -155,7 +154,11 @@ export const ViewRawMaterials = () => {
     } finally {
       setOpen(false);
     }
-  }, []);
+  }, [currentPage, searchQuery]);
+
+  useEffect(() => {
+    getRawMaterials();
+  }, [currentPage, searchQuery]);
 
   const handleSearch = (query) => {
     setSearchQuery(query);

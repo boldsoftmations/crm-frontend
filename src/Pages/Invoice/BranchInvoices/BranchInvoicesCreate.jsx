@@ -63,11 +63,6 @@ const BranchInvoicesCreate = ({ getSalesInvoiceDetails, setOpenPopup }) => {
     setInputValue({ ...inputValue, [name]: value ? value.unit : "" });
   };
 
-  useEffect(() => {
-    getAllSellerAccountsDetails();
-    getProduct();
-  }, []);
-
   const getProduct = useCallback(async () => {
     try {
       const response = await InventoryServices.getAllConsStoresInventoryData();
@@ -88,6 +83,11 @@ const BranchInvoicesCreate = ({ getSalesInvoiceDetails, setOpenPopup }) => {
       console.log("Error fetching seller account data:", error);
     }
   };
+
+  useEffect(() => {
+    getAllSellerAccountsDetails();
+    getProduct();
+  }, []);
 
   const createBranchInvoiceDetails = async (e) => {
     e.preventDefault();

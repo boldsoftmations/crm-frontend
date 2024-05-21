@@ -25,9 +25,6 @@ export const PriceList = () => {
   const [product, setProduct] = useState([]);
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
-  useEffect(() => {
-    getProduct();
-  }, []);
 
   const getProduct = async () => {
     try {
@@ -42,16 +39,16 @@ export const PriceList = () => {
   };
 
   useEffect(() => {
-    getPriceList(currentPage, filterQuery, searchQuery);
-  }, [currentPage, filterQuery, searchQuery]);
+    getProduct();
+  }, []);
 
-  const getPriceList = useCallback(async (page, filter, query) => {
+  const getPriceList = useCallback(async () => {
     try {
       setOpen(true);
       const response = await ProductService.getAllPriceList(
-        page,
-        filter,
-        query
+        currentPage,
+        filterQuery,
+        searchQuery
       );
       setPriceListData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -60,7 +57,11 @@ export const PriceList = () => {
     } finally {
       setOpen(false);
     }
-  }, []);
+  }, [currentPage, filterQuery, searchQuery]);
+
+  useEffect(() => {
+    getPriceList();
+  }, [currentPage, filterQuery, searchQuery]);
 
   const handleSearch = (query) => {
     setSearchQuery(query);

@@ -93,11 +93,6 @@ export const ViewConsumable = () => {
       setOpen(false);
     }
   };
-  useEffect(() => {
-    getBrandList();
-    getUnits();
-    getYesDescriptionData();
-  }, []);
 
   const getBrandList = async () => {
     try {
@@ -128,13 +123,18 @@ export const ViewConsumable = () => {
   };
 
   useEffect(() => {
-    getconsumables(currentPage, searchQuery);
-  }, [currentPage, searchQuery]);
+    getBrandList();
+    getUnits();
+    getYesDescriptionData();
+  }, []);
 
-  const getconsumables = useCallback(async (page, query) => {
+  const getconsumables = useCallback(async () => {
     try {
       setOpen(true);
-      const response = await ProductService.getAllConsumable(page, query);
+      const response = await ProductService.getAllConsumable(
+        currentPage,
+        searchQuery
+      );
       setConsumable(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
     } catch (error) {
@@ -142,7 +142,11 @@ export const ViewConsumable = () => {
     } finally {
       setOpen(false);
     }
-  }, []);
+  }, [currentPage, searchQuery]);
+
+  useEffect(() => {
+    getconsumables();
+  }, [currentPage, searchQuery]);
 
   const handleSearch = (query) => {
     setSearchQuery(query);

@@ -26,14 +26,13 @@ export const ViewBrand = () => {
     alertInfo, // Make sure this line is added
   } = useNotificationHandling();
 
-  useEffect(() => {
-    getBrandList(currentPage, searchQuery);
-  }, [currentPage, searchQuery]);
-
-  const getBrandList = useCallback(async (page, query) => {
+  const getBrandList = useCallback(async () => {
     try {
       setOpen(true);
-      const response = await ProductService.getAllBrand(page, query);
+      const response = await ProductService.getAllBrand(
+        currentPage,
+        searchQuery
+      );
       setBrand(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
     } catch (error) {
@@ -41,7 +40,11 @@ export const ViewBrand = () => {
     } finally {
       setOpen(false);
     }
-  }, []);
+  }, [currentPage, searchQuery]);
+
+  useEffect(() => {
+    getBrandList();
+  }, [currentPage, searchQuery]);
 
   const handleSearch = (query) => {
     setSearchQuery(query);

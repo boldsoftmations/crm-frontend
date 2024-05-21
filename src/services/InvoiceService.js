@@ -184,6 +184,7 @@ const getAllOrderBookDataWithSearch = (data, type, searchvalue) => {
 
 // sales invoice api
 const getSalesInvoiceData = (
+  invoiceType,
   startDate,
   endDate,
   page,
@@ -193,6 +194,9 @@ const getSalesInvoiceData = (
   // Constructing the query parameters
   const params = new URLSearchParams();
 
+  if (invoiceType) {
+    params.append("invoice_type", invoiceType);
+  }
   if (startDate) {
     params.append("start_date", startDate);
   }

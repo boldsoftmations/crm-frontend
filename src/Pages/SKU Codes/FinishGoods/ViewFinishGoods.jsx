@@ -113,15 +113,6 @@ export const ViewFinishGoods = () => {
     }
   };
 
-  useEffect(() => {
-    getPackingUnits();
-    getBrandList();
-    getColours();
-    getproductCodes();
-    getUnits();
-    getBasicUnit();
-  }, []);
-
   const getPackingUnits = async () => {
     try {
       const res = await ProductService.getAllPackingUnit("all");
@@ -177,13 +168,21 @@ export const ViewFinishGoods = () => {
   };
 
   useEffect(() => {
-    getFinishGoods(currentPage, searchQuery);
-  }, [currentPage, searchQuery]);
+    getPackingUnits();
+    getBrandList();
+    getColours();
+    getproductCodes();
+    getUnits();
+    getBasicUnit();
+  }, []);
 
-  const getFinishGoods = useCallback(async (page, query) => {
+  const getFinishGoods = useCallback(async () => {
     try {
       setOpen(true);
-      const response = await ProductService.getAllFinishGoods(page, query);
+      const response = await ProductService.getAllFinishGoods(
+        currentPage,
+        searchQuery
+      );
       setFinishGood(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
     } catch (error) {
@@ -191,7 +190,11 @@ export const ViewFinishGoods = () => {
     } finally {
       setOpen(false);
     }
-  }, []);
+  }, [currentPage, searchQuery]);
+
+  useEffect(() => {
+    getFinishGoods();
+  }, [currentPage, searchQuery]);
 
   const handleSearch = (query) => {
     setSearchQuery(query);

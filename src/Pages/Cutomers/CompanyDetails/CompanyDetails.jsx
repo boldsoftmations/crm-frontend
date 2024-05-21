@@ -27,6 +27,9 @@ import { Helmet } from "react-helmet";
 import CustomTextField from "../../../Components/CustomTextField";
 import { CustomerPotentialCreate } from "../CustomerPotential/CustomerPotentialCreate";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import SearchComponent from "../../../Components/SearchComponent ";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../../Components/MessageAlert";
 
 export const CompanyDetails = () => {
   const [openPopupOfUpdateCustomer, setOpenPopupOfUpdateCustomer] =
@@ -52,6 +55,9 @@ export const CompanyDetails = () => {
   const assigned = userData.sales_users || [];
   const [isPrinting, setIsPrinting] = useState(false);
   const [statusFilter, setStatusFilter] = useState("Active");
+  const { handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
+
   useEffect(() => {
     const beforePrint = () => {
       setIsPrinting(true);
@@ -148,8 +154,9 @@ export const CompanyDetails = () => {
       console.log("data", data);
       setOpen(false);
       return data;
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      handleError(error);
+      console.log("while downloading company details", error);
     } finally {
       setOpen(false);
     }
@@ -179,40 +186,38 @@ export const CompanyDetails = () => {
     setOpenSnackbar(false);
   };
 
-  const getAllCompanyDetails = useCallback(
-    async (
-      page,
-      statusValue = statusFilter,
-      assignToValue = filterSelectedQuery,
-      searchValue = searchQuery
-    ) => {
-      try {
-        setOpen(true);
-
-        const response = await CustomerServices.getAllCustomerData(
-          statusValue,
-          page,
-          assignToValue,
-          searchValue
-        );
-
-        setCompanyData(response.data.results);
-        setTotalPages(Math.ceil(response.data.count / 25));
-        setOpen(false);
-      } catch (error) {
-        setOpen(false);
-        console.log("error", error);
-      }
-    },
-    [searchQuery]
-  );
+  const getAllCompanyDetails = useCallback(async () => {
+    try {
+      setOpen(true);
+      const response = await CustomerServices.getAllCustomerData(
+        statusFilter,
+        currentPage,
+        filterSelectedQuery,
+        searchQuery
+      );
+      setCompanyData(response.data.results);
+      setTotalPages(Math.ceil(response.data.count / 25));
+      setOpen(false);
+    } catch (error) {
+      handleError(error);
+      console.log("while getting company details", error);
+    } finally {
+      setOpen(false);
+    }
+  }, [statusFilter, currentPage, filterSelectedQuery, searchQuery]);
 
   useEffect(() => {
-    getAllCompanyDetails(currentPage, statusFilter, filterSelectedQuery);
+    getAllCompanyDetails();
   }, [currentPage, statusFilter, filterSelectedQuery, getAllCompanyDetails]);
 
-  const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    setCurrentPage(1); // Reset to first page with new search
+  };
+
+  const handleReset = () => {
+    setSearchQuery("");
+    setCurrentPage(1); // Reset to first page with no search query
   };
 
   const handlePageChange = (event, value) => {
@@ -248,7 +253,12 @@ export const CompanyDetails = () => {
           `}
         </style>
       </Helmet>
-
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
       <div>
         <div
@@ -263,12 +273,12 @@ export const CompanyDetails = () => {
           }}
         >
           <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
-            <Grid container spacing={2} alignItems="center">
+            <Grid container spacing={2}>
               <Grid item xs={12} sm={3}>
                 <CustomAutocomplete
                   disabled={!isStatusFilterEnabled} // Disable based on user group
                   size="small"
-                  sx={{ minWidth: 300 }}
+                  sx={{ minWidth: 200 }}
                   options={["Active", "Closed", "Blacklist"]}
                   getOptionLabel={(option) => option}
                   value={statusFilter}
@@ -288,7 +298,7 @@ export const CompanyDetails = () => {
                 <Grid item xs={12} sm={3}>
                   <CustomAutocomplete
                     size="small"
-                    sx={{ minWidth: 300 }}
+                    sx={{ minWidth: 200 }}
                     value={filterSelectedQuery}
                     onChange={(event, newValue) => {
                       setFilterSelectedQuery(newValue);
@@ -305,57 +315,30 @@ export const CompanyDetails = () => {
                   />
                 </Grid>
               )}
-              <Grid item xs={12} sm={3}>
-                <CustomTextField
-                  size="small"
-                  label="Search"
-                  variant="outlined"
-                  value={searchQuery}
-                  onChange={handleSearchChange}
-                  fullWidth
+              <Grid item xs={12} sm={4}>
+                <SearchComponent
+                  onSearch={handleSearch}
+                  onReset={handleReset}
                 />
               </Grid>
-              <Grid item xs={12} sm={1}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => {
-                    setCurrentPage(0);
-                    getAllCompanyDetails(
-                      0,
-                      statusFilter,
 
-                      filterSelectedQuery,
-                      searchQuery
-                    );
-                  }}
-                >
-                  Search
-                </Button>
-              </Grid>
-              <Grid item xs={12} sm={1}>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  onClick={() => {
-                    setSearchQuery("");
-                    getAllCompanyDetails(
-                      1,
-                      statusFilter,
-                      filterSelectedQuery,
-                      ""
-                    );
-                  }}
-                >
-                  Reset
-                </Button>
-              </Grid>
+              {/* Add Button */}
+              {userData.groups.includes("Accounts") && (
+                <Grid item xs={12} sm={1}>
+                  <Button
+                    variant="contained"
+                    onClick={() => setOpenPopupOfCreateCustomer(true)}
+                  >
+                    Add
+                  </Button>
+                </Grid>
+              )}
             </Grid>
           </Box>
           <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
             <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} sm={3}>
-                {/* Bulk Assign Button */}
+              {/* Bulk Assign Button */}
+              <Grid item xs={12} sm={5}>
                 {(userData.groups.includes("Director") ||
                   userData.groups.includes("Sales Manager")) && (
                   <Button
@@ -365,19 +348,9 @@ export const CompanyDetails = () => {
                     Assign Bulk Customer
                   </Button>
                 )}
-                {/* Add Button */}
-                {userData.groups.includes("Accounts") && (
-                  <Button
-                    variant="contained"
-                    onClick={() => setOpenPopupOfCreateCustomer(true)}
-                  >
-                    Add
-                  </Button>
-                )}
               </Grid>
 
-              <Grid item xs={12} sm={6}>
-                {/* Customer Header */}
+              <Grid item xs={12} sm={4}>
                 <h3
                   style={{
                     textAlign: "left",
@@ -386,7 +359,7 @@ export const CompanyDetails = () => {
                     fontWeight: 800,
                   }}
                 >
-                  Customer
+                  Company
                 </h3>
               </Grid>
               <Grid item xs={12} sm={3}>

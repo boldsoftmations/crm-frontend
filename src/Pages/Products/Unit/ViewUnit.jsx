@@ -23,14 +23,13 @@ export const ViewUnit = () => {
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
-  useEffect(() => {
-    getUnits(currentPage, searchQuery);
-  }, [currentPage, searchQuery]);
-
-  const getUnits = useCallback(async (page, query) => {
+  const getUnits = useCallback(async () => {
     try {
       setOpen(true);
-      const response = await ProductService.getAllUnit(page, query);
+      const response = await ProductService.getAllUnit(
+        currentPage,
+        searchQuery
+      );
       setUnit(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
     } catch (error) {
@@ -38,7 +37,11 @@ export const ViewUnit = () => {
     } finally {
       setOpen(false);
     }
-  }, []);
+  }, [currentPage, searchQuery]);
+
+  useEffect(() => {
+    getUnits();
+  }, [currentPage, searchQuery]);
 
   const handleSearch = (query) => {
     setSearchQuery(query);

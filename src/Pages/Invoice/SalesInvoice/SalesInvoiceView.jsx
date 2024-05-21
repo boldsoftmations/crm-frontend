@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import InvoiceServices from "../../../services/InvoiceService";
 import { CustomLoader } from "./../../../Components/CustomLoader";
 import {
@@ -16,42 +16,40 @@ import {
   IconButton,
   Collapse,
   Typography,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
 } from "@mui/material";
-import ClearIcon from "@mui/icons-material/Clear";
 import { tableCellClasses } from "@mui/material/TableCell";
 import { SalesInvoiceCreate } from "./SalesInvoiceCreate";
 import { Popup } from "../../../Components/Popup";
 import { SalesInvoice } from "./SalesInvoice";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
 import { CustomPagination } from "../../../Components/CustomPagination";
-import { CustomSearch } from "../../../Components/CustomSearch";
 import { useSelector } from "react-redux";
 import { CancelSalesInvoice } from "./CancelSalesInvoice";
 import { CSVLink } from "react-csv";
 import CustomTextField from "../../../Components/CustomTextField";
 import BranchInvoicesCreate from "../BranchInvoices/BranchInvoicesCreate";
+import { SalesReturnCreate } from "../../SalesReturn/SalesReturnCreate";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
+import SearchComponent from "../../../Components/SearchComponent ";
+import { MessageAlert } from "../../../Components/MessageAlert";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import SupplierInvoicesCreate from "../SupplierInvoices/SupplierInvoicesCreate";
 
 export const SalesInvoiceView = () => {
-  const errRef = useRef();
   const [open, setOpen] = useState(false);
-  const [errMsg, setErrMsg] = useState("");
   const [salesInvoiceData, setSalesInvoiceData] = useState([]);
   const [openModalBI, setOpenModalBI] = useState(false);
+  const [openModalSI, setOpenModalSI] = useState(false);
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [openPopup3, setOpenPopup3] = useState(false);
   const [openPopup4, setOpenPopup4] = useState(false);
+  const [openPopupSalesReturn, setOpenPopupSalesReturn] = useState(false);
   const [idForEdit, setIDForEdit] = useState();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterQuery, setFilterQuery] = useState("search");
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const [sellerUnitOption, setSellerUnitOption] = useState([]);
   const [endDate, setEndDate] = useState(new Date());
@@ -60,8 +58,8 @@ export const SalesInvoiceView = () => {
   const maxDate = new Date("2030-12-31").toISOString().split("T")[0];
   const [exportData, setExportData] = useState([]);
   const csvLinkRef = useRef(null);
-  const data = useSelector((state) => state.auth);
-  const userData = data.profile;
+  const { handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   const handleDownload = async () => {
     const data = await handleExport();
@@ -86,21 +84,13 @@ export const SalesInvoiceView = () => {
       setOpen(true);
       const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
       const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
-      const response =
-        filterSelectedQuery || searchQuery
-          ? await InvoiceServices.getSalesInvoiceDataWithPaginationAndSearch(
-              StartDate,
-              EndDate,
-              "all",
-              filterQuery,
-              searchQuery || filterSelectedQuery
-            )
-          : await InvoiceServices.getSalesInvoiceDataWithPagination(
-              StartDate,
-              EndDate,
-              "all"
-            );
-
+      const response = await InvoiceServices.getSalesInvoiceData(
+        StartDate,
+        EndDate,
+        "all",
+        filterSelectedQuery,
+        searchQuery
+      );
       // Filter out items with 'cancelled' as true from the response
       const filteredData = response.data.filter(
         (item) => item.cancelled !== true
@@ -145,8 +135,8 @@ export const SalesInvoiceView = () => {
     setEndDate(date);
   };
 
-  const handleChange = (event) => {
-    const selectedValue = event.target.value;
+  const handleChange = (value) => {
+    const selectedValue = value;
 
     if (selectedValue === "Today") {
       const today = new Date();
@@ -193,14 +183,6 @@ export const SalesInvoiceView = () => {
     setEndDate(new Date());
   };
 
-  useEffect(() => {
-    getAllSellerAccountsDetails();
-  }, []);
-
-  useEffect(() => {
-    getSalesInvoiceDetails();
-  }, [startDate, endDate]);
-
   const getAllSellerAccountsDetails = async () => {
     try {
       setOpen(true);
@@ -215,153 +197,51 @@ export const SalesInvoiceView = () => {
     }
   };
 
-  const getSalesInvoiceDetails = async () => {
+  useEffect(() => {
+    getAllSellerAccountsDetails();
+  }, []);
+
+  const getSalesInvoiceDetails = useCallback(async () => {
     try {
       setOpen(true);
       const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
       const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
-      if (currentPage) {
-        const response =
-          await InvoiceServices.getSalesInvoiceDataWithPagination(
-            StartDate,
-            EndDate,
-            currentPage
-          );
-        setSalesInvoiceData(response.data.results);
-        const total = response.data.count;
-        setTotalPages(Math.ceil(total / 25));
-      } else {
-        const response = await InvoiceServices.getSalesInvoiceData(
-          StartDate,
-          EndDate
-        );
-        setSalesInvoiceData(response.data.results);
-        const total = response.data.count;
-        setTotalPages(Math.ceil(total / 25));
-      }
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      if (!err.response) {
-        setErrMsg(
-          "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
-        );
-      } else if (err.response.status === 400) {
-        setErrMsg(
-          err.response.data.errors.name
-            ? err.response.data.errors.name
-            : err.response.data.errors.non_field_errors
-        );
-      } else if (err.response.status === 401) {
-        setErrMsg(err.response.data.errors.code);
-      } else {
-        setErrMsg("Server Error");
-      }
-      errRef.current.focus();
-    }
-  };
-
-  const handleInputChange = (event) => {
-    setSearchQuery(event.target.value);
-    getSearchData(event.target.value);
-  };
-
-  const handleInputChanges = (event) => {
-    setFilterSelectedQuery(event.target.value);
-    getSearchData(event.target.value);
-  };
-
-  const getSearchData = async (value) => {
-    try {
-      setOpen(true);
-      const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
-      const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
-      const filterSearch = value;
-      const response = await InvoiceServices.getSalesInvoiceDataWithSearch(
+      const response = await InvoiceServices.getSalesInvoiceData(
+        "customer",
         StartDate,
         EndDate,
-        filterQuery,
-        filterSearch
+        currentPage,
+        filterSelectedQuery,
+        searchQuery
       );
-      if (response) {
-        setSalesInvoiceData(response.data.results);
-        const total = response.data.count;
-        setTotalPages(Math.ceil(total / 25));
-      } else {
-        getSalesInvoiceDetails();
-        setSearchQuery("");
-      }
-      setOpen(false);
+      setSalesInvoiceData(response.data.results);
+      setTotalPages(Math.ceil(response.data.count / 25));
     } catch (error) {
-      console.log("error Search sales invoice", error);
+      handleError(error);
+    } finally {
       setOpen(false);
     }
-  };
+  }, [startDate, endDate, currentPage, filterSelectedQuery, searchQuery]); // Ensure dependencies are correctly listed
 
-  const handlePageChange = async (event, value) => {
-    try {
-      const page = value;
-      setCurrentPage(page);
-      const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
-      const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
-      if (searchQuery) {
-        const response =
-          await InvoiceServices.getSalesInvoiceDataWithPaginationAndSearch(
-            StartDate,
-            EndDate,
-            page,
-            filterQuery,
-            searchQuery
-          );
-        if (response) {
-          setSalesInvoiceData(response.data.results);
-          const total = response.data.count;
-          setTotalPages(Math.ceil(total / 25));
-        } else {
-          getSalesInvoiceDetails();
-          setSearchQuery("");
-        }
-      } else if (filterSelectedQuery) {
-        const response =
-          await InvoiceServices.getSalesInvoiceDataWithPaginationAndSearch(
-            StartDate,
-            EndDate,
-            page,
-            filterQuery,
-            filterSelectedQuery
-          );
-        if (response) {
-          setSalesInvoiceData(response.data.results);
-          const total = response.data.count;
-          setTotalPages(Math.ceil(total / 25));
-        } else {
-          getSalesInvoiceDetails();
-          setSearchQuery("");
-        }
-      } else {
-        const response =
-          await InvoiceServices.getSalesInvoiceDataWithPagination(
-            StartDate,
-            EndDate,
-            page
-          );
-        setSalesInvoiceData(response.data.results);
-        const total = response.data.count;
-        setTotalPages(Math.ceil(total / 25));
-      }
-
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
-  };
-
-  const getResetData = () => {
-    setSearchQuery("");
-    setFilterSelectedQuery("");
-    setFilterQuery("");
+  useEffect(() => {
     getSalesInvoiceDetails();
+  }, [startDate, endDate, currentPage, filterSelectedQuery, searchQuery]);
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    setCurrentPage(1); // Reset to first page with new search
+  };
+
+  const handleReset = () => {
+    setSearchQuery("");
+    setCurrentPage(1); // Reset to first page with no search query
+  };
+
+  const handlePageChange = (event, value) => setCurrentPage(value);
+
+  const handleFilter = (value) => {
+    console.log("value", value);
+    setFilterSelectedQuery(value);
   };
 
   const openInPopup = (item) => {
@@ -374,147 +254,118 @@ export const SalesInvoiceView = () => {
     setOpenPopup3(true);
   };
 
+  const openInPopupSalesReturn = (item) => {
+    console.log("item", item);
+    setIDForEdit(item);
+    setOpenPopupSalesReturn(true);
+  };
   return (
     <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
 
       <Grid item xs={12}>
-        <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
-          <Box display="flex" marginBottom="10px">
-            <FormControl sx={{ width: "200px" }} size="small">
-              <InputLabel id="demo-select-small">Date</InputLabel>
-              <Select
-                labelId="demo-select-small"
-                id="demo-select-small"
-                label="Date"
-                onChange={(event) => handleChange(event)}
-              >
-                {DateOptions.map((option, i) => (
-                  <MenuItem key={i} value={option.value}>
-                    {option.value}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl
-              sx={{ width: "200px", marginLeft: "1em" }}
-              size="small"
+          <Box sx={{ flexGrow: 1 }}>
+            <Grid
+              container
+              spacing={2}
+              alignItems="center"
+              justifyContent="center"
             >
-              <InputLabel id="demo-simple-select-label">Fliter By</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                name="values"
-                label="Fliter By"
-                value={filterQuery}
-                onChange={(event) => setFilterQuery(event.target.value)}
-              >
-                {filterOption.map((option, i) => (
-                  <MenuItem key={i} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+              {/* Filters and Search - First Row */}
+              <Grid item xs={12} sm={6} md={3}>
+                <CustomAutocomplete
+                  size="small"
+                  onChange={(event, newValue) => handleChange(newValue)}
+                  options={DateOptions.map((option) => option.value)}
+                  getOptionLabel={(option) => option}
+                  label="Filter By Date" // Passed directly to CustomAutocomplete
+                />
+              </Grid>
 
-            {filterQuery ===
-              "order_book__proforma_invoice__seller_account__unit" && (
-              <FormControl
-                sx={{ minWidth: "200px", marginLeft: "1em" }}
-                size="small"
-              >
-                <InputLabel id="demo-simple-select-label">
-                  Filter By State
-                </InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  name="values"
-                  label="Filter By State"
+              <Grid item xs={12} sm={6} md={3}>
+                <CustomAutocomplete
+                  size="small"
                   value={filterSelectedQuery}
-                  onChange={(event) => handleInputChanges(event)}
-                  sx={{
-                    "& .MuiSelect-iconOutlined": {
-                      display: filterSelectedQuery ? "none" : "",
-                    },
-                    "&.Mui-focused .MuiIconButton-root": {
-                      color: "primary.main",
-                    },
-                  }}
-                  endAdornment={
-                    <IconButton
-                      sx={{
-                        visibility: filterSelectedQuery ? "visible" : "hidden",
-                      }}
-                      onClick={getResetData}
-                    >
-                      <ClearIcon />
-                    </IconButton>
-                  }
-                >
-                  {sellerUnitOption.map((option, i) => (
-                    <MenuItem key={i} value={option.unit}>
-                      {option.unit}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            )}
-            {filterQuery === "search" && (
-              <CustomSearch
-                filterSelectedQuery={searchQuery}
-                handleInputChange={handleInputChange}
-                getResetData={getResetData}
-              />
-            )}
-            <Button
-              sx={{ marginLeft: "1em", marginRight: "1em" }}
-              onClick={() => setOpenModalBI(true)}
-              variant="contained"
-            >
-              BranchInvoice
-            </Button>
-            <Button
-              sx={{ marginLeft: "1em", marginRight: "1em" }}
-              onClick={() => setOpenPopup(true)}
-              variant="contained"
-              color="success"
-            >
-              SalesInvoice
-            </Button>
+                  onChange={(event, newValue) => handleFilter(newValue)}
+                  options={sellerUnitOption.map((option) => option.unit)}
+                  getOptionLabel={(option) => option}
+                  label="Filter By State" // Passed directly to CustomAutocomplete
+                />
+              </Grid>
 
-            <Button variant="contained" onClick={handleDownload}>
-              Download CSV
-            </Button>
-            {exportData.length > 0 && (
-              <CSVLink
-                headers={headers}
-                data={exportData}
-                ref={csvLinkRef}
-                filename="Sales Invoice.csv"
-                target="_blank"
-                style={{
-                  textDecoration: "none",
-                  outline: "none",
-                  height: "5vh",
-                }}
-              />
-            )}
+              <Grid item xs={12} sm={6} md={3}>
+                <SearchComponent
+                  onSearch={handleSearch}
+                  onReset={handleReset}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Button onClick={handleDownload} variant="contained">
+                  Download CSV
+                </Button>
+                {exportData.length > 0 && (
+                  <CSVLink
+                    headers={headers}
+                    data={exportData}
+                    ref={csvLinkRef}
+                    filename="Sales Invoice.csv"
+                    target="_blank"
+                    style={{
+                      textDecoration: "none",
+                      outline: "none",
+                      height: "5vh",
+                    }}
+                  />
+                )}
+              </Grid>
+              {/* Title and Buttons - Second Row */}
+              <Grid item xs={12} md={4}>
+                <Button
+                  onClick={() => setOpenModalBI(true)}
+                  variant="contained"
+                >
+                  BranchInvoice
+                </Button>
+                <Button onClick={() => setOpenModalSI(true)} variant="outlined">
+                  Supplier Invoice
+                </Button>
+              </Grid>
+              <Grid item xs={12} md={5}>
+                <Box display="flex" justifyContent="center">
+                  <Typography
+                    variant="h4"
+                    sx={{ mt: 2, mb: 2, fontWeight: "bold" }}
+                  >
+                    Sales Invoice
+                  </Typography>
+                </Box>
+              </Grid>
+
+              <Grid
+                item
+                xs={12}
+                md={3}
+                display="flex"
+                justifyContent="flex-end"
+              >
+                <Button
+                  onClick={() => setOpenPopup(true)}
+                  variant="contained"
+                  color="success"
+                >
+                  SalesInvoice
+                </Button>
+              </Grid>
+            </Grid>
           </Box>
-          <Box display="flex" alignItems="center" justifyContent="center">
-            <h3
-              style={{
-                textAlign: "left",
-                marginBottom: "1em",
-                fontSize: "24px",
-                color: "rgb(34, 34, 34)",
-                fontWeight: 800,
-              }}
-            >
-              Sales Invoice
-            </h3>
-          </Box>
+
           <TableContainer
             sx={{
               maxHeight: 440,
@@ -552,11 +403,9 @@ export const SalesInvoiceView = () => {
                   <StyledTableCell align="center">
                     PROFORMA INVOICE LIST
                   </StyledTableCell>
-                  {userData.groups.includes("Director") && (
-                    <StyledTableCell align="center">
-                      PROFIT/LOSS %
-                    </StyledTableCell>
-                  )}
+                  <StyledTableCell align="center">
+                    PROFIT/LOSS %
+                  </StyledTableCell>
                   <StyledTableCell align="center">Action</StyledTableCell>
                 </TableRow>
               </TableHead>
@@ -567,6 +416,7 @@ export const SalesInvoiceView = () => {
                     row={row}
                     openInPopup={openInPopup}
                     openInPopup2={openInPopup2}
+                    openInPopupSalesReturn={openInPopupSalesReturn}
                   />
                 ))}
               </TableBody>
@@ -587,7 +437,18 @@ export const SalesInvoiceView = () => {
       >
         <BranchInvoicesCreate
           getSalesInvoiceDetails={getSalesInvoiceDetails}
-          setOpenPopup={setOpenPopup}
+          setOpenPopup={setOpenModalBI}
+        />
+      </Popup>
+      <Popup
+        fullScreen={true}
+        title={"Create Supplier Invoice"}
+        openPopup={openModalSI}
+        setOpenPopup={setOpenModalSI}
+      >
+        <SupplierInvoicesCreate
+          getSalesInvoiceDetails={getSalesInvoiceDetails}
+          setOpenPopup={setOpenModalSI}
         />
       </Popup>
       <Popup
@@ -623,6 +484,18 @@ export const SalesInvoiceView = () => {
           idForEdit={idForEdit}
           getSalesInvoiceDetails={getSalesInvoiceDetails}
           setOpenPopup={setOpenPopup3}
+        />
+      </Popup>
+      <Popup
+        fullScreen={true}
+        title={"Create Sales Return"}
+        openPopup={openPopupSalesReturn}
+        setOpenPopup={setOpenPopupSalesReturn}
+      >
+        <SalesReturnCreate
+          idForEdit={idForEdit}
+          getSalesInvoiceDetails={getSalesInvoiceDetails}
+          setOpenPopup={setOpenPopupSalesReturn}
         />
       </Popup>
       <Popup
@@ -689,7 +562,7 @@ export const SalesInvoiceView = () => {
 };
 
 function Row(props) {
-  const { row, openInPopup, openInPopup2 } = props;
+  const { row, openInPopup, openInPopup2, openInPopupSalesReturn } = props;
   const [tableExpand, setTableExpand] = useState(false);
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
@@ -730,11 +603,9 @@ function Row(props) {
         ) : (
           <StyledTableCell align="center"></StyledTableCell>
         )}
-        {userData.groups.includes("Director") && (
-          <StyledTableCell align="center">
-            {row.profit_or_loss_pct}
-          </StyledTableCell>
-        )}
+        <StyledTableCell align="center">
+          {row.profit_or_loss_pct}
+        </StyledTableCell>
         <StyledTableCell align="center">
           <Button variant="text" onClick={() => openInPopup(row.invoice_no)}>
             View
@@ -747,6 +618,16 @@ function Row(props) {
               onClick={() => openInPopup2(row)}
             >
               Cancel
+            </Button>
+          )}
+          {(userData.groups.includes("Director") ||
+            userData.groups.includes("Accounts")) && (
+            <Button
+              variant="text"
+              color="success"
+              onClick={() => openInPopupSalesReturn(row.invoice_no)}
+            >
+              Sales Return
             </Button>
           )}
         </StyledTableCell>
@@ -764,11 +645,7 @@ function Row(props) {
                     <TableCell align="center">PRODUCT CODE</TableCell>
                     <TableCell align="center">QUANTITY</TableCell>
                     <TableCell align="center">AMOUNT</TableCell>
-                    {userData.groups.includes("Director") && (
-                      <TableCell align="center">
-                        PROFIT/LOSS(PER UNIT)
-                      </TableCell>
-                    )}
+                    <TableCell align="center">PROFIT/LOSS(PER UNIT)</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -781,11 +658,9 @@ function Row(props) {
                         {historyRow.quantity}
                       </TableCell>
                       <TableCell align="center">{historyRow.amount}</TableCell>
-                      {userData.groups.includes("Director") && (
-                        <TableCell align="center">
-                          {historyRow.profit_or_loss}
-                        </TableCell>
-                      )}
+                      <TableCell align="center">
+                        {historyRow.profit_or_loss}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

@@ -70,14 +70,13 @@ export const ViewDescription = () => {
     }
   };
 
-  useEffect(() => {
-    getDescriptions(currentPage, searchQuery);
-  }, [currentPage, searchQuery]);
-
-  const getDescriptions = useCallback(async (page, query) => {
+  const getDescriptions = useCallback(async () => {
     try {
       setOpen(true);
-      const response = await ProductService.getAllDescription(page, query);
+      const response = await ProductService.getAllDescription(
+        currentPage,
+        searchQuery
+      );
       setDescription(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
     } catch (error) {
@@ -85,7 +84,11 @@ export const ViewDescription = () => {
     } finally {
       setOpen(false);
     }
-  }, []);
+  }, [currentPage, searchQuery]);
+
+  useEffect(() => {
+    getDescriptions();
+  }, [currentPage, searchQuery]);
 
   const handleSearch = (query) => {
     setSearchQuery(query);

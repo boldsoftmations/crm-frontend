@@ -70,14 +70,13 @@ export const ViewProductCode = () => {
     }
   };
 
-  useEffect(() => {
-    getproductCodes(currentPage, searchQuery);
-  }, [currentPage, searchQuery]);
-
-  const getproductCodes = useCallback(async (page, query) => {
+  const getproductCodes = useCallback(async () => {
     try {
       setOpen(true);
-      const response = await ProductService.getAllProductCode(page, query);
+      const response = await ProductService.getAllProductCode(
+        currentPage,
+        searchQuery
+      );
       setProductCode(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
     } catch (error) {
@@ -85,7 +84,11 @@ export const ViewProductCode = () => {
     } finally {
       setOpen(false);
     }
-  }, []);
+  }, [currentPage, searchQuery]);
+
+  useEffect(() => {
+    getproductCodes();
+  }, [currentPage, searchQuery]);
 
   const handleSearch = (query) => {
     setSearchQuery(query);
