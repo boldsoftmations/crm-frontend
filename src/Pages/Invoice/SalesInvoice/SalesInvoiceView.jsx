@@ -51,6 +51,7 @@ export const SalesInvoiceView = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
+  const [filterInvoiceType, setFilterInvoiceType] = useState("customer");
   const [sellerUnitOption, setSellerUnitOption] = useState([]);
   const [endDate, setEndDate] = useState(new Date());
   const [startDate, setStartDate] = useState(new Date()); // set default value as current date
@@ -207,7 +208,7 @@ export const SalesInvoiceView = () => {
       const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
       const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
       const response = await InvoiceServices.getSalesInvoiceData(
-        "customer",
+        filterInvoiceType,
         StartDate,
         EndDate,
         currentPage,
@@ -221,11 +222,25 @@ export const SalesInvoiceView = () => {
     } finally {
       setOpen(false);
     }
-  }, [startDate, endDate, currentPage, filterSelectedQuery, searchQuery]); // Ensure dependencies are correctly listed
+  }, [
+    filterInvoiceType,
+    startDate,
+    endDate,
+    currentPage,
+    filterSelectedQuery,
+    searchQuery,
+  ]); // Ensure dependencies are correctly listed
 
   useEffect(() => {
     getSalesInvoiceDetails();
-  }, [startDate, endDate, currentPage, filterSelectedQuery, searchQuery]);
+  }, [
+    filterInvoiceType,
+    startDate,
+    endDate,
+    currentPage,
+    filterSelectedQuery,
+    searchQuery,
+  ]);
 
   const handleSearch = (query) => {
     setSearchQuery(query);
@@ -242,6 +257,12 @@ export const SalesInvoiceView = () => {
   const handleFilter = (value) => {
     console.log("value", value);
     setFilterSelectedQuery(value);
+  };
+
+  //fuction for filter invoice
+  const handleFilterInvoiceType = (value) => {
+    console.log("value", value);
+    setFilterInvoiceType(value);
   };
 
   const openInPopup = (item) => {
@@ -271,13 +292,8 @@ export const SalesInvoiceView = () => {
 
       <Grid item xs={12}>
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
-          <Box sx={{ flexGrow: 1 }}>
-            <Grid
-              container
-              spacing={2}
-              alignItems="center"
-              justifyContent="center"
-            >
+          <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
+            <Grid container spacing={2}>
               {/* Filters and Search - First Row */}
               <Grid item xs={12} sm={6} md={3}>
                 <CustomAutocomplete
@@ -286,6 +302,19 @@ export const SalesInvoiceView = () => {
                   options={DateOptions.map((option) => option.value)}
                   getOptionLabel={(option) => option}
                   label="Filter By Date" // Passed directly to CustomAutocomplete
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6} md={3}>
+                <CustomAutocomplete
+                  size="small"
+                  value={filterInvoiceType}
+                  onChange={(event, newValue) =>
+                    handleFilterInvoiceType(newValue)
+                  }
+                  options={Invoice_Type_Options.map((option) => option)}
+                  getOptionLabel={(option) => option}
+                  label="Filter By Invoice Type" // Passed directly to CustomAutocomplete
                 />
               </Grid>
 
@@ -306,8 +335,49 @@ export const SalesInvoiceView = () => {
                   onReset={handleReset}
                 />
               </Grid>
-              <Grid item xs={12} sm={6} md={3}>
-                <Button onClick={handleDownload} variant="contained">
+            </Grid>
+          </Box>
+          <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
+            <Grid container spacing={2}>
+              {/* Title and Buttons - Second Row */}
+              <Grid item xs={12} md={4}>
+                <Button
+                  onClick={() => setOpenModalBI(true)}
+                  variant="contained"
+                >
+                  Branch Invoice
+                </Button>
+
+                <Button
+                  sx={{ marginLeft: "10px" }}
+                  onClick={() => setOpenModalSI(true)}
+                  variant="outlined"
+                >
+                  Supplier Invoice
+                </Button>
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <Box display="flex" justifyContent="center">
+                  <Typography variant="h4" sx={{ fontWeight: "bold" }}>
+                    Sales Invoice
+                  </Typography>
+                </Box>
+              </Grid>
+
+              <Grid item xs={12} md={4}>
+                <Button
+                  onClick={() => setOpenPopup(true)}
+                  variant="contained"
+                  color="success"
+                >
+                  Sales Invoice
+                </Button>
+
+                <Button
+                  sx={{ marginLeft: "10px" }}
+                  onClick={handleDownload}
+                  variant="contained"
+                >
                   Download CSV
                 </Button>
                 {exportData.length > 0 && (
@@ -324,44 +394,6 @@ export const SalesInvoiceView = () => {
                     }}
                   />
                 )}
-              </Grid>
-              {/* Title and Buttons - Second Row */}
-              <Grid item xs={12} md={4}>
-                <Button
-                  onClick={() => setOpenModalBI(true)}
-                  variant="contained"
-                >
-                  BranchInvoice
-                </Button>
-                <Button onClick={() => setOpenModalSI(true)} variant="outlined">
-                  Supplier Invoice
-                </Button>
-              </Grid>
-              <Grid item xs={12} md={5}>
-                <Box display="flex" justifyContent="center">
-                  <Typography
-                    variant="h4"
-                    sx={{ mt: 2, mb: 2, fontWeight: "bold" }}
-                  >
-                    Sales Invoice
-                  </Typography>
-                </Box>
-              </Grid>
-
-              <Grid
-                item
-                xs={12}
-                md={3}
-                display="flex"
-                justifyContent="flex-end"
-              >
-                <Button
-                  onClick={() => setOpenPopup(true)}
-                  variant="contained"
-                  color="success"
-                >
-                  SalesInvoice
-                </Button>
               </Grid>
             </Grid>
           </Box>
@@ -389,6 +421,7 @@ export const SalesInvoiceView = () => {
                 <TableRow>
                   <StyledTableCell></StyledTableCell>
                   <StyledTableCell align="center">DATE</StyledTableCell>
+                  <StyledTableCell align="center">INVOICE TYPE</StyledTableCell>
                   {/* <StyledTableCell align="center">company</StyledTableCell> */}
                   <StyledTableCell align="center">
                     SALES INVOICE NUMBER
@@ -585,6 +618,7 @@ function Row(props) {
           </IconButton>
         </StyledTableCell>
         <StyledTableCell align="center">{row.generation_date}</StyledTableCell>
+        <StyledTableCell align="center">{row.invoice_type}</StyledTableCell>
         <StyledTableCell align="center">{row.invoice_no}</StyledTableCell>
         <StyledTableCell align="center">
           {row.seller_details.unit}
@@ -700,6 +734,8 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     border: 0,
   },
 }));
+
+const Invoice_Type_Options = ["unit", "customer", "Scrap", "Supplier"];
 
 const DateOptions = [
   {

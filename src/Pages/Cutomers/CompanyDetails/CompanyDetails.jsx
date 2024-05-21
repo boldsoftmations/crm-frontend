@@ -24,7 +24,6 @@ import { CustomerActivityCreate } from "../../FollowUp/CustomerActivityCreate";
 import { CreateCustomerProformaInvoice } from "./../../Invoice/ProformaInvoice/CreateCustomerProformaInvoice";
 import { CSVLink } from "react-csv";
 import { Helmet } from "react-helmet";
-import CustomTextField from "../../../Components/CustomTextField";
 import { CustomerPotentialCreate } from "../CustomerPotential/CustomerPotentialCreate";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import SearchComponent from "../../../Components/SearchComponent ";
