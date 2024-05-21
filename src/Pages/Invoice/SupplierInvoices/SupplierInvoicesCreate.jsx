@@ -34,7 +34,6 @@ const SupplierInvoicesCreate = ({ getSalesInvoiceDetails, setOpenPopup }) => {
       product: "",
       quantity: "",
       rate: "",
-      user: "",
       amount: "",
     },
   ]);
