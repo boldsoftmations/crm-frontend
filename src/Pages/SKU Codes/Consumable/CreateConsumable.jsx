@@ -46,7 +46,7 @@ export const CreateConsumable = memo((props) => {
     descriptionOptions,
     "name",
     formData.description,
-    "short_name"
+    "auto_number"
   );
 
   const productName = `${formData.description || ""}-${

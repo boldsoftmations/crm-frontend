@@ -301,28 +301,6 @@ export const SalesPersonAnalytics = (props) => {
               );
             })}
           </Grid>
-          {/* Filter By Sales Person */}
-          <Grid container spacing={1} sx={{ my: "20px" }}>
-            {!userData.groups.includes("Sales Executive") && (
-              <Paper sx={{ width: "100%", padding: "20px" }}>
-                <Grid container alignItems="center" spacing={1}>
-                  <Grid item xs={9} sm={9} md={9} lg={9}>
-                    <CustomAutocomplete
-                      size="small"
-                      value={selectedOption}
-                      onChange={(event, value) =>
-                        handleAutocompleteChange(value)
-                      }
-                      options={displayOptions}
-                      groupBy={(option) => option.primaryGroup || ""}
-                      getOptionLabel={(option) => option.email}
-                      label="Filter By Sales Person"
-                    />
-                  </Grid>
-                </Grid>
-              </Paper>
-            )}
-          </Grid>
           <Grid container spacing={2}>
             <Grid item xs={12} lg={6}>
               <Card>
