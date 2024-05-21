@@ -123,7 +123,7 @@ export const PhysicalInventoryUpdate = memo((props) => {
           variant="contained"
           sx={{ mt: 3, mb: 2 }}
         >
-          Create
+          Update
         </Button>
       </Box>
     </>

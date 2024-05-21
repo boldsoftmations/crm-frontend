@@ -1060,21 +1060,6 @@ export const ListItems = (props) => {
           {userData.groups.includes("Production") && (
             <>
               {/* Production */}
-
-              <ListItem
-                button
-                component={RouterLink}
-                to="/invoice/orderbook-tab"
-                style={{ width: 300 }}
-                onClick={() => setOpen(false)}
-                selected={isActive("/invoice/orderbook-tab")}
-              >
-                <ListItemIcon>
-                  <ReceiptIcon />
-                </ListItemIcon>
-                <ListItemText primary="Order Book" />
-              </ListItem>
-
               <ListItem
                 button
                 component={RouterLink}
