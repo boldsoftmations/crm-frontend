@@ -65,7 +65,7 @@ export const MaterialRequisitionFormUpdate = memo((props) => {
       setOpen(true);
       const payload = {
         seller_account: idForEdit.seller_account,
-        user: idForEdit.user,
+        user: users.email,
         products_data: products,
       };
       await InventoryServices.updateMaterialRequisitionFormData(
