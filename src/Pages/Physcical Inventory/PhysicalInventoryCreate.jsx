@@ -36,11 +36,6 @@ export const PhysicalInventoryCreate = memo((props) => {
     [productOption]
   );
 
-  useEffect(() => {
-    getProduct();
-    getAllSellerAccountsDetails();
-  }, []);
-
   const getProduct = async () => {
     try {
       setOpen(true);
@@ -67,6 +62,11 @@ export const PhysicalInventoryCreate = memo((props) => {
     }
   };
 
+  useEffect(() => {
+    getProduct();
+    getAllSellerAccountsDetails();
+  }, []);
+  console.log("formdata", formData);
   const createPhysicalInventory = useCallback(
     async (e) => {
       try {
@@ -76,8 +76,9 @@ export const PhysicalInventoryCreate = memo((props) => {
           type: formData.type,
           seller_unit: formData.seller_unit,
           product: formData.product,
-          pending_quantity: formData.pending_quantity,
           physical_quantity: formData.physical_quantity,
+          gnl: formData.gnl,
+          reason: formData.reason,
         };
 
         const response = await InventoryServices.createPhysical(payload);
@@ -151,23 +152,36 @@ export const PhysicalInventoryCreate = memo((props) => {
             <CustomTextField
               fullWidth
               size="small"
-              label="Pending Quantity"
-              variant="outlined"
-              value={formData.pending_quantity || ""}
-              onChange={(event) =>
-                handleInputChange("pending_quantity", event.target.value)
-              }
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <CustomTextField
-              fullWidth
-              size="small"
               label="Physical Quantity"
               variant="outlined"
               value={formData.physical_quantity || ""}
               onChange={(event) =>
                 handleInputChange("physical_quantity", event.target.value)
+              }
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <CustomAutocomplete
+              size="small"
+              disablePortal
+              id="combo-box-demo"
+              value={formData.gnl || ""}
+              options={GNL_OPTIONS}
+              getOptionLabel={(option) => option}
+              onChange={(event, value) => handleInputChange("gnl", value)}
+              label="Gain/Loss"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <CustomTextField
+              fullWidth
+              multiline
+              size="small"
+              label="Reason"
+              variant="outlined"
+              value={formData.reason || ""}
+              onChange={(event) =>
+                handleInputChange("reason", event.target.value)
               }
             />
           </Grid>
@@ -187,3 +201,4 @@ export const PhysicalInventoryCreate = memo((props) => {
 });
 
 const TYPE_OPTIONS = ["Store", "Production"];
+const GNL_OPTIONS = ["Gain", "Loss"];

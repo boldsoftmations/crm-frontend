@@ -9,14 +9,11 @@ import { CustomTable } from "../../Components/CustomTable";
 import { CustomPagination } from "../../Components/CustomPagination";
 import { Popup } from "../../Components/Popup";
 import { PhysicalInventoryCreate } from "./PhysicalInventoryCreate";
-import { PhysicalInventoryUpdate } from "./PhysicalInventoryUpdate";
 
 export const PhysicalInventoryView = () => {
   const [open, setOpen] = useState(false);
   const [openCreateModal, setOpenCreateModal] = useState(false);
-  const [openUpdateModal, setOpenUpdateModal] = useState(false);
   const [data, setData] = useState([]);
-  const [selectedRowData, setSelectedRowData] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
@@ -66,9 +63,7 @@ export const PhysicalInventoryView = () => {
     "PENDING QUANTITY",
     "PHYSICAL QUANTITY",
     "GNL",
-    "ADD/REMOVE QUANTITY",
     "REASON",
-    "ACTIONS",
   ];
 
   const Tabledata = data.map((row, i) => ({
@@ -80,17 +75,9 @@ export const PhysicalInventoryView = () => {
     pending_quantity: row.pending_quantity,
     physical_quantity: row.physical_quantity,
     gnl: row.gnl,
-    add_or_remove_qty: row.add_or_remove_qty,
     reason: row.reason,
   }));
 
-  const openInPopup = (item) => {
-    setSelectedRowData(item);
-    setOpenUpdateModal(true);
-  };
-
-  console.log("current page", currentPage);
-  console.log("total page", totalPages);
   return (
     <>
       <MessageAlert
@@ -163,7 +150,7 @@ export const PhysicalInventoryView = () => {
         <CustomTable
           headers={Tableheaders}
           data={Tabledata}
-          openInPopup={openInPopup}
+          openInPopup={null}
           openInPopup2={null}
         />
 
@@ -183,20 +170,6 @@ export const PhysicalInventoryView = () => {
           currentPage={currentPage}
           searchQuery={searchQuery}
           setOpenPopup={setOpenCreateModal}
-          getPhysicalInventoryData={getPhysicalInventoryData}
-        />
-      </Popup>
-      <Popup
-        maxWidth="xl"
-        title={"Update Physical Inventory"}
-        openPopup={openUpdateModal}
-        setOpenPopup={setOpenUpdateModal}
-      >
-        <PhysicalInventoryUpdate
-          selectedRowData={selectedRowData}
-          currentPage={currentPage}
-          searchQuery={searchQuery}
-          setOpenPopup={setOpenUpdateModal}
           getPhysicalInventoryData={getPhysicalInventoryData}
         />
       </Popup>
