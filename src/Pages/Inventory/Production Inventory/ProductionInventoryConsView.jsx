@@ -3,9 +3,10 @@ import { CSVLink } from "react-csv";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import InventoryServices from "../../../services/InventoryService";
 import { CustomTable } from "../../../Components/CustomTable";
-import { CustomSearch } from "../../../Components/CustomSearch";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
+import SearchComponent from "../../../Components/SearchComponent ";
+import { Box, Button, Grid, Paper } from "@mui/material";
 
 export const ProductionInventoryConsView = () => {
   const [open, setOpen] = useState(false);
@@ -32,11 +33,11 @@ export const ProductionInventoryConsView = () => {
     }
   };
 
-  const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
+  const handleSearch = (query) => {
+    setSearchQuery(query);
   };
 
-  const handleResetClick = () => {
+  const handleReset = () => {
     setSearchQuery("");
   };
 
@@ -72,81 +73,56 @@ export const ProductionInventoryConsView = () => {
         message={alertInfo.message}
       />
       <CustomLoader open={open} />
-      <div>
-        <div
-          style={{
-            padding: "16px",
-            margin: "16px",
-            boxShadow: "0px 3px 6px #00000029",
-            borderRadius: "4px",
-            display: "flex",
-            flexDirection: "column",
-            backgroundColor: "rgb(255, 255, 255)", // set background color to default Paper color
-          }}
-        >
-          <div style={{ display: "flex" }}>
-            <div style={{ flexGrow: 0.9 }}>
-              <CustomSearch
-                filterSelectedQuery={searchQuery}
-                handleInputChange={handleSearchChange}
-                getResetData={handleResetClick}
-              />
-            </div>
-            <div style={{ flexGrow: 2 }}>
-              <h3
-                style={{
-                  textAlign: "left",
-                  marginBottom: "1em",
-                  fontSize: "24px",
-                  color: "rgb(34, 34, 34)",
-                  fontWeight: 800,
-                }}
-              >
-                Production Inventory Cons
-              </h3>
-            </div>
-            <div style={{ flexGrow: 0.5 }} align="right">
-              <CSVLink
-                data={data}
-                headers={headers}
-                filename={"Production Inventory Consolidate.csv"}
-                target="_blank"
-                style={{
-                  textDecoration: "none",
-                  outline: "none",
-                  height: "5vh",
-                }}
-              >
-                <div
-                  className="btn btn-primary"
+      <Grid item xs={12}>
+        <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
+          <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={4}>
+                <SearchComponent
+                  onSearch={handleSearch}
+                  onReset={handleReset}
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <h3
                   style={{
-                    display: "inline-block",
-                    padding: "6px 16px",
-                    margin: "10px",
-                    fontSize: "0.875rem",
-                    minWidth: "64px",
-                    fontWeight: 500,
-                    lineHeight: 1.75,
-                    borderRadius: "4px",
-                    letterSpacing: "0.02857em",
-                    textTransform: "uppercase",
-                    boxShadow:
-                      "0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2)",
+                    textAlign: "left",
+                    marginBottom: "1em",
+                    fontSize: "24px",
+                    color: "rgb(34, 34, 34)",
+                    fontWeight: 800,
                   }}
                 >
-                  Download CSV
-                </div>
-              </CSVLink>
-            </div>
-          </div>
+                  Production Inventory Cons
+                </h3>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <CSVLink
+                  data={data}
+                  headers={headers}
+                  filename={"my-file.csv"}
+                  target="_blank"
+                  style={{
+                    textDecoration: "none",
+                    outline: "none",
+                    height: "5vh",
+                  }}
+                >
+                  <Button variant="contained" color="success">
+                    Export to Excel
+                  </Button>
+                </CSVLink>
+              </Grid>
+            </Grid>
+          </Box>
           <CustomTable
             headers={Tableheaders}
             data={data}
             openInPopup={null}
             openInPopup2={null}
           />
-        </div>
-      </div>
+        </Paper>
+      </Grid>
     </>
   );
 };

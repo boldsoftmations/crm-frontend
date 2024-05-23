@@ -1,24 +1,20 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Grid, Button, Paper, Box } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { CompetitorUpdate } from "./CompetitorUpdate";
 import { Popup } from "./../../Components/Popup";
-import { ErrorMessage } from "./../../Components/ErrorMessage/ErrorMessage";
-import { CustomSearch } from "./../../Components/CustomSearch";
 import { CustomLoader } from "./../../Components/CustomLoader";
 import { CustomPagination } from "./../../Components/CustomPagination";
 import { CustomTable } from "../../Components/CustomTable";
 import CustomerServices from "../../services/CustomerService";
 import { CompetitorCreate } from "./CompetitorCreate";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
-import { ErrorOutlineRounded } from "@mui/icons-material";
 import { MessageAlert } from "../../Components/MessageAlert";
+import SearchComponent from "../../Components/SearchComponent ";
 
 export const CompetitorView = () => {
   const [allCompetitors, setAllCompetitors] = useState([]);
   const [open, setOpen] = useState(false);
-  const errRef = useRef();
-  const [errMsg, setErrMsg] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
@@ -28,116 +24,37 @@ export const CompetitorView = () => {
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
-  useEffect(() => {
-    getCompetitors();
-  }, []);
-
-  const getCompetitors = async () => {
+  const getCompetitors = useCallback(async () => {
     try {
       setOpen(true);
-      if (currentPage) {
-        const response = await CustomerServices.getAllPaginateCompetitors(
-          currentPage
-        );
-        setAllCompetitors(response.data.results);
-        const total = response.data.count;
-        setTotalPages(Math.ceil(total / 25));
-      } else {
-        const response = await CustomerServices.getAllCompetitors();
-        setAllCompetitors(response.data.results);
-        const total = response.data.count;
-        setTotalPages(Math.ceil(total / 25));
-      }
-      setOpen(false);
-    } catch (err) {
-      handleError(err);
-      setOpen(false);
-      if (!err.response) {
-        setErrMsg(
-          "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
-        );
-      } else if (err.response.status === 400) {
-        setErrMsg(
-          err.response.data.errors.name
-            ? err.response.data.errors.name
-            : err.response.data.errors.non_field_errors
-        );
-      } else if (err.response.status === 401) {
-        setErrMsg(err.response.data.errors.code);
-      } else {
-        setErrMsg("Server Error");
-      }
-      errRef.current.focus();
-    }
-  };
-
-  const handleInputChange = (event) => {
-    setSearchQuery(event.target.value);
-    getSearchData(event.target.value);
-  };
-
-  const getSearchData = async (value) => {
-    try {
-      setOpen(true);
-      const filterSearch = value;
-      const response = await CustomerServices.getAllSearchCompetitors(
-        filterSearch
+      const response = await CustomerServices.getAllCompetitors(
+        currentPage,
+        searchQuery
       );
-      if (response) {
-        setAllCompetitors(response.data.results);
-        const total = response.data.count;
-        setTotalPages(Math.ceil(total / 25));
-      } else {
-        getCompetitors();
-        setSearchQuery("");
-      }
-      setOpen(false);
-    } catch (error) {
-      handleError(ErrorOutlineRounded);
-      console.log("error Search leads", error);
-      setOpen(false);
-    }
-  };
-
-  const handlePageChange = async (event, value) => {
-    try {
-      const page = value;
-      setCurrentPage(page);
-      setOpen(true);
-
-      if (searchQuery) {
-        const response =
-          await CustomerServices.getCompetitorsPaginatewithSearch(
-            page,
-            searchQuery
-          );
-        if (response) {
-          setAllCompetitors(response.data.results);
-          const total = response.data.count;
-          setTotalPages(Math.ceil(total / 25));
-        } else {
-          getCompetitors();
-          setSearchQuery("");
-        }
-      } else {
-        const response = await CustomerServices.getAllPaginateCompetitors(page);
-        setAllCompetitors(response.data.results);
-        const total = response.data.count;
-        setTotalPages(Math.ceil(total / 25));
-      }
-
-      setOpen(false);
+      setAllCompetitors(response.data.results);
+      setTotalPages(Math.ceil(response.data.count / 25));
     } catch (error) {
       handleError(error);
-      console.log("error", error);
+    } finally {
       setOpen(false);
     }
+  }, [currentPage, searchQuery]); // Ensure dependencies are correctly listed
+
+  useEffect(() => {
+    getCompetitors();
+  }, [currentPage, searchQuery]);
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    setCurrentPage(1); // Reset to first page with new search
   };
 
-  const getResetData = () => {
+  const handleReset = () => {
     setSearchQuery("");
-    getCompetitors();
+    setCurrentPage(1); // Reset to first page with no search query
   };
+
+  const handlePageChange = (event, value) => setCurrentPage(value);
 
   const openInPopup = (item) => {
     setRecordForEdit(item);
@@ -157,39 +74,39 @@ export const CompetitorView = () => {
       <CustomLoader open={open} />
 
       <Grid item xs={12}>
-        <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
-          <Box display="flex">
-            <Box flexGrow={0.9}>
-              <CustomSearch
-                filterSelectedQuery={searchQuery}
-                handleInputChange={handleInputChange}
-                getResetData={getResetData}
-              />
-            </Box>
-            <Box flexGrow={2}>
-              <h3
-                style={{
-                  textAlign: "left",
-                  marginBottom: "1em",
-                  fontSize: "24px",
-                  color: "rgb(34, 34, 34)",
-                  fontWeight: 800,
-                }}
-              >
-                Competitor
-              </h3>
-            </Box>
-            <Box flexGrow={0.5} align="right">
-              <Button
-                onClick={() => setOpenPopup2(true)}
-                variant="contained"
-                color="success"
-                startIcon={<AddIcon />}
-              >
-                Add
-              </Button>
-            </Box>
+          <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={4}>
+                <SearchComponent
+                  onSearch={handleSearch}
+                  onReset={handleReset}
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <h3
+                  style={{
+                    textAlign: "left",
+                    marginBottom: "1em",
+                    fontSize: "24px",
+                    color: "rgb(34, 34, 34)",
+                    fontWeight: 800,
+                  }}
+                >
+                  Competitor
+                </h3>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Button
+                  onClick={() => setOpenPopup2(true)}
+                  variant="contained"
+                  color="success"
+                  startIcon={<AddIcon />}
+                >
+                  Add
+                </Button>
+              </Grid>
+            </Grid>
           </Box>
           {/* CustomTable */}
           <CustomTable

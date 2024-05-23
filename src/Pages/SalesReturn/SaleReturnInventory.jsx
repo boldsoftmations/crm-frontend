@@ -86,43 +86,50 @@ export const SaleReturnInventory = () => {
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
           <Box
             sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              flexWrap: "wrap",
               p: 2,
             }}
           >
-            {/* Search Component on the left */}
-            <Box sx={{ flexGrow: 1, flexBasis: "40%", minWidth: "300px" }}>
-              <SearchComponent onSearch={handleSearch} onReset={handleReset} />
-            </Box>
+            <Grid container spacing={2} alignItems="center">
+              {/* Search Component on the left */}
+              <Grid item xs={12} md={4}>
+                <SearchComponent
+                  onSearch={handleSearch}
+                  onReset={handleReset}
+                />
+              </Grid>
 
-            {/* Title Text centered */}
-            <Box sx={{ flexGrow: 2, textAlign: "center", minWidth: "150px" }}>
-              <h3
-                style={{
-                  margin: 0,
-                  fontSize: "24px",
-                  color: "rgb(34, 34, 34)",
-                  fontWeight: 800,
-                }}
+              {/* Title Text centered */}
+              <Grid
+                item
+                xs={12}
+                md={4}
+                sx={{ textAlign: { xs: "center", md: "center" } }}
               >
-                Sales Return Inventory
-              </h3>
-            </Box>
+                <h3
+                  style={{
+                    margin: 0,
+                    fontSize: "24px",
+                    color: "rgb(34, 34, 34)",
+                    fontWeight: 800,
+                  }}
+                >
+                  Sales Return Inventory
+                </h3>
+              </Grid>
 
-            {/* Add Button on the right */}
-            <Box
-              sx={{
-                flexGrow: 1,
-                flexBasis: "40%",
-                display: "flex",
-                justifyContent: "flex-end",
-                minWidth: "300px",
-              }}
-            ></Box>
+              {/* Add Button on the right */}
+              <Grid
+                item
+                xs={12}
+                md={4}
+                sx={{
+                  display: "flex",
+                  justifyContent: { xs: "center", md: "flex-end" },
+                }}
+              ></Grid>
+            </Grid>
           </Box>
+
           <TableContainer
             sx={{
               maxHeight: 440,

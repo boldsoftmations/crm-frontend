@@ -1,4 +1,4 @@
-import { Box, Button, Grid } from "@mui/material";
+import { Autocomplete, Box, Button, Grid } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import Divider from "@mui/material/Divider";
@@ -8,6 +8,8 @@ import CustomTextField from "../../Components/CustomTextField";
 import InventoryServices from "../../services/InventoryService";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../Components/MessageAlert";
+import InvoiceServices from "../../services/InvoiceService";
+import CustomAutocomplete from "../../Components/CustomAutocomplete";
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -18,9 +20,16 @@ const Root = styled("div")(({ theme }) => ({
 }));
 
 export const SalesReturnCreate = (props) => {
-  const { idForEdit, setOpenPopup, getSalesInvoiceDetails } = props;
+  const { setOpenPopup, getSalesReturnDetails } = props;
   const [open, setOpen] = useState(false);
   const [salesReturnData, setSalesReturnData] = useState();
+  const [invoiceNoOption, setInvoiceNoOption] = useState([]);
+  const [sellerUnitOptions, setSellerUnitOptions] = useState([]);
+  const [inputValue, setInputValue] = useState({
+    seller_unit: "",
+    company: "",
+    invoice_no: [],
+  });
   const [products, setProducts] = useState([
     {
       product: "",
@@ -44,25 +53,92 @@ export const SalesReturnCreate = (props) => {
     setProducts(data);
   };
 
-  useEffect(() => {
-    getSalesReturnDatabyInvoiceNo();
-  }, [idForEdit]);
-
-  const getSalesReturnDatabyInvoiceNo = async () => {
+  const getAllSellerAccountsDetails = async () => {
     try {
-      setOpen(true);
-      const response = await InventoryServices.getSalesReturnByIDData(
-        idForEdit
+      const response = await InvoiceServices.getAllPaginateSellerAccountData(
+        "all"
       );
-
-      setSalesReturnData(response.data);
-      setProducts(response.data.products_si);
-      setOpen(false);
+      setSellerUnitOptions(response.data);
     } catch (error) {
-      setOpen(false);
-      console.log("error", error);
+      console.log("Error fetching seller account data:", error);
     }
   };
+
+  useEffect(() => {
+    getAllSellerAccountsDetails();
+  }, []);
+
+  const getsearchByCompany = async (e) => {
+    try {
+      e.preventDefault();
+      setOpen(true);
+
+      const response = await InvoiceServices.getSalesReturnBySearchCompany(
+        inputValue.seller_unit,
+        inputValue.company
+      );
+      setInvoiceNoOption(response.data);
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setOpen(false);
+    }
+  };
+  console.log("inputValue", inputValue);
+  const getCustomerWiseOrderBook = async (value) => {
+    try {
+      setOpen(true); // Show loading spinner
+
+      const data = value;
+
+      // Initialize arrays
+      const productData = [];
+      const ORDERBOOKID = [];
+
+      // Iterate over data array
+      data.map((name) => {
+        // Update state with customer order book data
+        setSalesReturnData(name);
+
+        // Add order book id to array
+        ORDERBOOKID.push(name.id);
+
+        // Iterate over products array and push data to productData array
+        return name.products_si.map((data) => {
+          const product = {
+            product: data.product,
+            quantity: data.quantity,
+            rate: data.rate,
+            amount: data.amount,
+          };
+
+          // Push product data to array
+          productData.push(product);
+
+          // Return new product object
+          return product;
+        });
+      });
+
+      // Map over productData array and create new array with specific properties
+      const arr = productData.map((fruit) => ({
+        product: fruit.product,
+        quantity: fruit.quantity,
+        rate: fruit.rate,
+        amount: fruit.amount,
+      }));
+
+      // Update state with new array of product objects
+      setProducts(arr);
+
+      setOpen(false); // Hide loading spinner
+    } catch (err) {
+      setOpen(false); // Hide loading spinner
+      console.log("err", err);
+      alert(err.response.data.errors.proforma_invoice); // Display error message
+    }
+  };
+
   console.log("salesreturn", salesReturnData);
   const createSalesInvoiceDetails = async (e) => {
     try {
@@ -78,29 +154,25 @@ export const SalesReturnCreate = (props) => {
 
       const req = {
         invoice_type: "Sales Return",
-        sales_invoive_no: salesReturnData.invoice_no,
-        gst_number: salesReturnData.buyer_gst,
-        pan_number: salesReturnData.buyer_pan,
-        state: salesReturnData.billing_state,
-        address: salesReturnData.billing_address,
-        city: salesReturnData.billing_city,
-        pincode: salesReturnData.billing_pincode,
-        supplier_name: salesReturnData.company,
-        country: salesReturnData.billing_country,
-        name:
-          salesReturnData && salesReturnData.seller_details
-            ? salesReturnData.seller_details.name
-            : "",
-        seller_address: salesReturnData.seller_address,
-        seller_city: salesReturnData.seller_city,
-        seller_state: salesReturnData.seller_state,
-        seller_gst: salesReturnData.seller_gst,
-        seller_email: salesReturnData.seller_email,
-        seller_pan: salesReturnData.seller_pan,
-        seller_pincode: salesReturnData.seller_pincode,
-        seller_contact: salesReturnData.seller_contact,
-        seller_state_code: salesReturnData.seller_state_code,
-        seller_unit: salesReturnData.seller_unit,
+        sales_invoice_no: JSON.stringify(inputValue.invoice_no),
+        gst_number: salesReturnData.buyer_details.gst_number,
+        pan_number: salesReturnData.buyer_details.pan_number,
+        address: salesReturnData.buyer_details.address,
+        state: salesReturnData.buyer_details.state,
+        city: salesReturnData.buyer_details.city,
+        pincode: salesReturnData.buyer_details.pincode,
+        country: salesReturnData.buyer_details.country,
+        supplier_name: salesReturnData.buyer_details.supplier_name,
+        seller_address: salesReturnData.seller_details.seller_address,
+        seller_city: salesReturnData.seller_details.seller_city,
+        seller_state: salesReturnData.seller_details.seller_state,
+        seller_gst: salesReturnData.seller_details.seller_gst,
+        seller_email: salesReturnData.seller_details.seller_email,
+        seller_pan: salesReturnData.seller_details.seller_pan,
+        seller_pincode: salesReturnData.seller_details.seller_pincode,
+        seller_contact: salesReturnData.seller_details.seller_contact,
+        seller_state_code: salesReturnData.seller_details.seller_state_code,
+        seller_unit: inputValue.seller_unit,
         products_data: formattedProducts,
       };
 
@@ -113,7 +185,7 @@ export const SalesReturnCreate = (props) => {
 
       setTimeout(() => {
         setOpenPopup(false);
-        getSalesInvoiceDetails();
+        getSalesReturnDetails();
       }, 300);
     } catch (error) {
       handleError(error); // Handle errors from the API call
@@ -138,32 +210,93 @@ export const SalesReturnCreate = (props) => {
       >
         <Grid container spacing={2}>
           <Grid item xs={12} sm={3}>
-            <CustomTextField
-              fullWidth
+            <CustomAutocomplete
+              name="seller_account"
               size="small"
-              label="Seller Unit"
-              variant="outlined"
-              value={salesReturnData ? salesReturnData.seller_unit : ""}
+              disablePortal
+              id="combo-box-demo"
+              onChange={(event, value) =>
+                setInputValue((prev) => ({
+                  ...prev,
+                  seller_unit: value,
+                }))
+              }
+              options={sellerUnitOptions.map((option) => option.unit)}
+              getOptionLabel={(option) => option}
+              fullWidth
+              label="Seller Account"
             />
           </Grid>
           <Grid item xs={12} sm={3}>
-            <CustomTextField
-              fullWidth
-              size="small"
-              label="Invoice No"
-              variant="outlined"
-              value={salesReturnData ? salesReturnData.invoice_no : ""}
-            />
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 1, // Adjust gap between elements
+              }}
+            >
+              <CustomTextField
+                required
+                sx={{ flexGrow: 1 }} // Makes the TextField flexible in taking available space
+                fullWidth
+                name="company"
+                size="small"
+                label="Search By Company"
+                variant="outlined"
+                onChange={(event) =>
+                  setInputValue((prev) => ({
+                    ...prev,
+                    [event.target.name]: event.target.value,
+                  }))
+                }
+                value={inputValue.company}
+              />
+
+              <Button
+                onClick={(e) => getsearchByCompany(e)}
+                variant="contained"
+                sx={{ height: "40px" }} // Optional, adjust to align height with the TextField
+              >
+                Submit
+              </Button>
+            </Box>
           </Grid>
+
+          {invoiceNoOption && invoiceNoOption.length > 0 && (
+            <Grid item xs={12} sm={3}>
+              <Autocomplete
+                fullWidth
+                multiple
+                size="small"
+                disablePortal
+                id="combo-box-demo"
+                onChange={(event, value) => {
+                  const invoiceNumbers = value.map((v) => v.invoice_no);
+                  setInputValue((prev) => ({
+                    ...prev,
+                    invoice_no: invoiceNumbers, // Storing only invoice numbers as an array
+                  }));
+                  getCustomerWiseOrderBook(value); // Passing the entire selected option object array
+                }}
+                options={invoiceNoOption}
+                getOptionLabel={(option) => option.invoice_no || ""}
+                renderInput={(params) => (
+                  <CustomTextField {...params} label="Invoice No" />
+                )}
+              />
+            </Grid>
+          )}
           <Grid item xs={12} sm={3}>
             <CustomTextField
               fullWidth
+              disabled
               size="small"
               label="Supplier Name"
               variant="outlined"
               value={
-                salesReturnData && salesReturnData.seller_details
-                  ? salesReturnData.seller_details.name
+                salesReturnData && salesReturnData.buyer_details
+                  ? salesReturnData.buyer_details.supplier_name
                   : ""
               }
             />
@@ -171,109 +304,58 @@ export const SalesReturnCreate = (props) => {
           <Grid item xs={12} sm={3}>
             <CustomTextField
               fullWidth
-              name="seller_state"
-              size="small"
-              label="Seller State"
-              variant="outlined"
-              value={salesReturnData ? salesReturnData.seller_state : ""}
-            />
-          </Grid>
-          <Grid item xs={12} sm={3}>
-            <CustomTextField
-              fullWidth
-              name="company"
-              size="small"
-              label="Company"
-              variant="outlined"
-              value={salesReturnData ? salesReturnData.company : ""}
-            />
-          </Grid>
-          <Grid item xs={12} sm={3}>
-            <CustomTextField
-              fullWidth
+              disabled
               multiline
-              name="shipping_address"
               size="small"
               label="Shipping Address"
               variant="outlined"
-              value={salesReturnData ? salesReturnData.shipping_address : ""}
+              value={
+                salesReturnData && salesReturnData.buyer_details
+                  ? salesReturnData.buyer_details.address
+                  : ""
+              }
             />
           </Grid>
           <Grid item xs={12} sm={3}>
             <CustomTextField
               fullWidth
-              multiline
-              name="shipping_state"
+              disabled
               size="small"
               label="Shipping State"
               variant="outlined"
-              value={salesReturnData ? salesReturnData.shipping_state : ""}
+              value={
+                salesReturnData && salesReturnData.buyer_details
+                  ? salesReturnData.buyer_details.state
+                  : ""
+              }
             />
           </Grid>
           <Grid item xs={12} sm={3}>
             <CustomTextField
               fullWidth
-              multiline
-              name="shipping_city"
+              disabled
               size="small"
               label="Shipping City"
               variant="outlined"
-              value={salesReturnData ? salesReturnData.shipping_city : ""}
+              value={
+                salesReturnData && salesReturnData.buyer_details
+                  ? salesReturnData.buyer_details.city
+                  : ""
+              }
             />
           </Grid>
           <Grid item xs={12} sm={3}>
             <CustomTextField
               fullWidth
-              multiline
-              name="shipping_pincode"
+              disabled
               size="small"
               label="Shipping Pincode"
               variant="outlined"
-              value={salesReturnData ? salesReturnData.shipping_pincode : ""}
-            />
-          </Grid>
-          <Grid item xs={12} sm={3}>
-            <CustomTextField
-              fullWidth
-              multiline
-              name="billing_address"
-              size="small"
-              label="Billing Address"
-              variant="outlined"
-              value={salesReturnData ? salesReturnData.billing_address : ""}
-            />
-          </Grid>
-          <Grid item xs={12} sm={3}>
-            <CustomTextField
-              fullWidth
-              multiline
-              name="billing_state"
-              size="small"
-              label="Billing State"
-              variant="outlined"
-              value={salesReturnData ? salesReturnData.billing_state : ""}
-            />
-          </Grid>
-          <Grid item xs={12} sm={3}>
-            <CustomTextField
-              fullWidth
-              multiline
-              name="billing_city"
-              size="small"
-              label="Billing City"
-              variant="outlined"
-              value={salesReturnData ? salesReturnData.billing_city : ""}
-            />
-          </Grid>
-          <Grid item xs={12} sm={3}>
-            <CustomTextField
-              fullWidth
-              multiline
-              name="billing_pincode"
-              size="small"
-              label="Billing Pincode"
-              variant="outlined"
-              value={salesReturnData ? salesReturnData.billing_pincode : ""}
+              value={
+                salesReturnData && salesReturnData.buyer_details
+                  ? salesReturnData.buyer_details.pincode
+                  : ""
+              }
             />
           </Grid>
 
@@ -302,6 +384,7 @@ export const SalesReturnCreate = (props) => {
                   <Grid item xs={12} sm={3}>
                     <CustomTextField
                       fullWidth
+                      disabled
                       name="product"
                       size="small"
                       label="Product"
@@ -329,6 +412,7 @@ export const SalesReturnCreate = (props) => {
                   <Grid item xs={12} sm={2}>
                     <CustomTextField
                       fullWidth
+                      disabled
                       name="rate"
                       size="small"
                       label="Rate"
@@ -339,6 +423,7 @@ export const SalesReturnCreate = (props) => {
                   <Grid item xs={12} sm={2}>
                     <CustomTextField
                       fullWidth
+                      disabled
                       name="amount"
                       size="small"
                       label="Amount"

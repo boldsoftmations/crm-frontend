@@ -86,9 +86,10 @@ const getPaginationByUnassignedData = (page) => {
 
 const getSearchandPaginationByUnassignedData = (page, search) => {
   const encodedSearch = encodeURIComponent(search);
-  return CustomAxios.get(`/api/customer/list-company/?unassigned=true&page=${page}&search=${encodedSearch}`);
+  return CustomAxios.get(
+    `/api/customer/list-company/?unassigned=true&page=${page}&search=${encodedSearch}`
+  );
 };
-
 
 const getBankDataById = (id) => {
   return CustomAxios.get(`/api/customer/list-bank/${id}`);
@@ -189,32 +190,22 @@ const BulkCustomerAssign = (data) => {
 };
 
 // Competitor API
-const getAllCompetitors = () => {
-  return CustomAxios.get("/api/customer/list-main-distribution");
-};
-
-const getCompetitorsPaginatewithSearch = (all, search) => {
+const getAllCompetitors = (page, searchValue) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
   return CustomAxios.get(
-    `/api/customer/list-main-distribution/?page=${all}&search=${search}`
+    `api/customer/list-main-distribution/?${params.toString()}`
   );
-};
-
-const getAllPaginateCompetitors = (all) => {
-  return CustomAxios.get(`/api/customer/list-main-distribution/?page=${all}`);
-};
-
-const getCompetitorsById = (id) => {
-  return CustomAxios.get(`/api/customer/list-main-distribution/${id}`);
 };
 
 const createCompetitorAPI = (data) => {
   return CustomAxios.post("/api/customer/list-main-distribution/", data);
-};
-
-const getAllSearchCompetitors = (search) => {
-  return CustomAxios.get(
-    `/api/customer/list-main-distribution/?search=${search}`
-  );
 };
 
 const updateCompetitors = (id, data) => {
@@ -223,7 +214,7 @@ const updateCompetitors = (id, data) => {
 
 const getAllGroupCompanies = () => {
   return CustomAxios.get("/api/customer/list-group-company/");
-}
+};
 
 // Whatsapp routes
 const getAllWhatsappGroupData = (page = 1, searchValue) => {
@@ -323,16 +314,18 @@ const bulkResendMessage = (data) => {
   );
 };
 
-const getAutomatioData = (page = 1, isScheduledFilter = '') => {
+const getAutomatioData = (page = 1, isScheduledFilter = "") => {
   const params = new URLSearchParams();
   if (page) {
-    params.append('page', page);
+    params.append("page", page);
   }
-  if (isScheduledFilter !== '') {
-    params.append('is_scheduled', isScheduledFilter);
+  if (isScheduledFilter !== "") {
+    params.append("is_scheduled", isScheduledFilter);
   }
 
-  return CustomAxios.get(`/api/whatsapp/whatsapp-automation/?${params.toString()}`);
+  return CustomAxios.get(
+    `/api/whatsapp/whatsapp-automation/?${params.toString()}`
+  );
 };
 const CustomerServices = {
   getAllCustomerData,
@@ -372,11 +365,7 @@ const CustomerServices = {
   updatePotentialCustomer,
   BulkCustomerAssign,
   getAllCompetitors,
-  getCompetitorsPaginatewithSearch,
-  getAllPaginateCompetitors,
-  getCompetitorsById,
   createCompetitorAPI,
-  getAllSearchCompetitors,
   updateCompetitors,
   getAllGroupCompanies,
   getAllWhatsappGroupData,
@@ -390,7 +379,7 @@ const CustomerServices = {
   getWhatsappImageData,
   resendWhatsappMessage,
   bulkResendMessage,
-  getAutomatioData
+  getAutomatioData,
 };
 
 export default CustomerServices;

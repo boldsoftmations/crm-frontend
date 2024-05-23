@@ -101,16 +101,6 @@ export const CreateCustomerProformaInvoice = (props) => {
     setOpenPopup2(false);
   };
 
-  useEffect(() => {
-    getAllCompanyDetailsByID();
-    getContactsDetailsByID();
-  }, [openPopup3]);
-
-  useEffect(() => {
-    getAllSellerAccountsDetails();
-    getProduct();
-  }, []);
-
   const getProduct = useCallback(async () => {
     try {
       const res = await ProductService.getAllValidPriceList("all");
@@ -130,6 +120,11 @@ export const CreateCustomerProformaInvoice = (props) => {
       console.log("Error fetching seller account data:", error);
     }
   };
+
+  useEffect(() => {
+    getAllSellerAccountsDetails();
+    getProduct();
+  }, []);
 
   const getContactsDetailsByID = async () => {
     try {
@@ -153,6 +148,11 @@ export const CreateCustomerProformaInvoice = (props) => {
       console.log("company data by id error", err);
     }
   };
+
+  useEffect(() => {
+    getAllCompanyDetailsByID();
+    getContactsDetailsByID();
+  }, [openPopup3]);
 
   const createCustomerProformaInvoiceDetails = async (e) => {
     e.preventDefault();

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import InvoiceServices from "../../services/InvoiceService";
 import { styled } from "@mui/material/styles";
 import {
@@ -22,16 +22,15 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { tableCellClasses } from "@mui/material/TableCell";
 import { CustomPagination } from "./../../Components/CustomPagination";
 import { CustomLoader } from "./../../Components/CustomLoader";
-import { CustomSearch } from "./../../Components/CustomSearch";
 import moment from "moment";
-import { ErrorMessage } from "../../Components/ErrorMessage/ErrorMessage";
 import { CSVLink } from "react-csv";
 import CustomTextField from "../../Components/CustomTextField";
+import SearchComponent from "../../Components/SearchComponent ";
+import { MessageAlert } from "../../Components/MessageAlert";
+import { useNotificationHandling } from "../../Components/useNotificationHandling ";
 
 export const SalesRegisterView = () => {
-  const errRef = useRef();
   const [open, setOpen] = useState(false);
-  const [errMsg, setErrMsg] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [salesRegisterData, setsalesRegisterData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -42,6 +41,8 @@ export const SalesRegisterView = () => {
   ); // set default value as current date
   const minDate = new Date().toISOString().split("T")[0];
   const maxDate = new Date("2030-12-31").toISOString().split("T")[0];
+  const { handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   const handleStartDateChange = (event) => {
     const date = new Date(event.target.value);
@@ -49,136 +50,41 @@ export const SalesRegisterView = () => {
     setEndDate(new Date(date.getTime() + 7 * 24 * 60 * 60 * 1000));
   };
 
-  useEffect(() => {
-    getSalesRegisterData();
-  }, [startDate]);
-
-  const getSalesRegisterData = async () => {
+  const getSalesRegisterData = useCallback(async () => {
     try {
       setOpen(true);
       const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
       const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
-      if (currentPage) {
-        const response =
-          await InvoiceServices.getSaleRegisterDataWithPagination(
-            StartDate,
-            EndDate,
-            currentPage
-          );
-        setsalesRegisterData(response.data.results);
-        const total = response.data.count;
-        setTotalPages(Math.ceil(total / 25));
-      } else {
-        let response = await InvoiceServices.getAllSaleRegisterData(
-          StartDate,
-          EndDate
-        );
-        if (response) {
-          setsalesRegisterData(response.data.results);
-          const total = response.data.count;
-          setTotalPages(Math.ceil(total / 25));
-        }
-      }
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      if (!err.response) {
-        setErrMsg(
-          "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
-        );
-      } else if (err.response.status === 400) {
-        setErrMsg(
-          err.response.data.errors.name
-            ? err.response.data.errors.name
-            : err.response.data.errors.non_field_errors
-        );
-      } else if (err.response.status === 401) {
-        setErrMsg(err.response.data.errors.code);
-      } else {
-        setErrMsg("Server Error");
-      }
-      errRef.current.focus();
-    }
-  };
-
-  const handleInputChange = (event) => {
-    setSearchQuery(event.target.value);
-    getSearchData(event.target.value);
-  };
-
-  const getSearchData = async (value) => {
-    try {
-      setOpen(true);
-      const filterSearch = value;
-      const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
-      const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
-      console.log("StartDate", StartDate);
-      console.log("EndDate", EndDate);
-      const response = await InvoiceServices.getSaleRegisterDataWithSearch(
+      const response = await InvoiceServices.getAllSaleRegisterData(
         StartDate,
         EndDate,
-        filterSearch
+        currentPage,
+        searchQuery
       );
-      if (response) {
-        setsalesRegisterData(response.data.results);
-        const total = response.data.count;
-        setTotalPages(Math.ceil(total / 25));
-      } else {
-        getSalesRegisterData();
-        setSearchQuery("");
-      }
-      setOpen(false);
+      setsalesRegisterData(response.data.results);
+      setTotalPages(Math.ceil(response.data.count / 25));
     } catch (error) {
-      console.log("error Search sale register", error);
+      handleError(error);
+    } finally {
       setOpen(false);
     }
-  };
+  }, [startDate, currentPage, searchQuery]); // Ensure dependencies are correctly listed
 
-  const getResetData = () => {
-    setSearchQuery("");
+  useEffect(() => {
     getSalesRegisterData();
+  }, [startDate, currentPage, searchQuery]);
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    setCurrentPage(1); // Reset to first page with new search
   };
 
-  const handlePageChange = async (event, value) => {
-    try {
-      const page = value;
-      const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
-      const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
-      setCurrentPage(page);
-      setOpen(true);
-      if (searchQuery) {
-        const response =
-          await InvoiceServices.getSaleRegisterDataWithPaginationAndSearch(
-            StartDate,
-            EndDate,
-            page,
-            searchQuery
-          );
-        if (response) {
-          setsalesRegisterData(response.data.results);
-          const total = response.data.count;
-          setTotalPages(Math.ceil(total / 25));
-        } else {
-          getSalesRegisterData();
-          setSearchQuery("");
-        }
-      } else {
-        const response =
-          await InvoiceServices.getSaleRegisterDataWithPagination(
-            StartDate,
-            EndDate,
-            page
-          );
-        setsalesRegisterData(response.data.results);
-        const total = response.data.count;
-        setTotalPages(Math.ceil(total / 25));
-      }
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
+  const handleReset = () => {
+    setSearchQuery("");
+    setCurrentPage(1); // Reset to first page with no search query
   };
+
+  const handlePageChange = (event, value) => setCurrentPage(value);
 
   let data = salesRegisterData
     .map((item) => {
@@ -194,14 +100,19 @@ export const SalesRegisterView = () => {
     .filter((item) => item !== null);
 
   return (
-    <div>
+    <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
       <Grid item xs={12}>
-        <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
-          <Box display="flex">
-            <Box flexGrow={2}>
-              <Box flexGrow={2}>
+          <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={4}>
                 <CustomTextField
                   label="Start Date"
                   variant="outlined"
@@ -238,43 +149,45 @@ export const SalesRegisterView = () => {
                   }
                   disabled={!startDate}
                 />
-                <CustomSearch
-                  filterSelectedQuery={searchQuery}
-                  handleInputChange={handleInputChange}
-                  getResetData={getResetData}
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <SearchComponent
+                  onSearch={handleSearch}
+                  onReset={handleReset}
                 />
-              </Box>
-            </Box>
-            <Box flexGrow={2}>
-              <h3
-                style={{
-                  textAlign: "left",
-                  marginBottom: "1em",
-                  fontSize: "24px",
-                  color: "rgb(34, 34, 34)",
-                  fontWeight: 800,
-                }}
-              >
-                Sales Register
-              </h3>
-            </Box>
-            <Box flexGrow={0.5}>
-              <CSVLink
-                data={data}
-                headers={headers}
-                filename={"my-file.csv"}
-                target="_blank"
-                style={{
-                  textDecoration: "none",
-                  outline: "none",
-                  height: "5vh",
-                }}
-              >
-                <Button variant="contained" color="success">
-                  Export to Excel
-                </Button>
-              </CSVLink>
-            </Box>
+              </Grid>
+
+              <Grid item xs={12} sm={3}>
+                <h3
+                  style={{
+                    textAlign: "left",
+                    marginBottom: "1em",
+                    fontSize: "24px",
+                    color: "rgb(34, 34, 34)",
+                    fontWeight: 800,
+                  }}
+                >
+                  Sales Register
+                </h3>
+              </Grid>
+              <Grid item xs={12} sm={2}>
+                <CSVLink
+                  data={data}
+                  headers={headers}
+                  filename={"my-file.csv"}
+                  target="_blank"
+                  style={{
+                    textDecoration: "none",
+                    outline: "none",
+                    height: "5vh",
+                  }}
+                >
+                  <Button variant="contained" color="success">
+                    Export to Excel
+                  </Button>
+                </CSVLink>
+              </Grid>
+            </Grid>
           </Box>
           <TableContainer
             sx={{
@@ -331,7 +244,7 @@ export const SalesRegisterView = () => {
           />
         </Paper>
       </Grid>
-    </div>
+    </>
   );
 };
 

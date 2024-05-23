@@ -13,6 +13,7 @@ import {
   IconButton,
   Collapse,
   Typography,
+  Button,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
@@ -23,6 +24,8 @@ import InventoryServices from "../../services/InventoryService";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
 import { CustomPagination } from "../../Components/CustomPagination";
 import { CustomLoader } from "../../Components/CustomLoader";
+import { Popup } from "../../Components/Popup";
+import { SalesReturnCreate } from "./SalesReturnCreate";
 
 export const SalesReturnView = () => {
   const [open, setOpen] = useState(false);
@@ -30,6 +33,7 @@ export const SalesReturnView = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
+  const [openPopupSalesReturn, setOpenPopupSalesReturn] = useState(false);
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
@@ -81,43 +85,58 @@ export const SalesReturnView = () => {
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
           <Box
             sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              flexWrap: "wrap",
               p: 2,
             }}
           >
-            {/* Search Component on the left */}
-            <Box sx={{ flexGrow: 1, flexBasis: "40%", minWidth: "300px" }}>
-              <SearchComponent onSearch={handleSearch} onReset={handleReset} />
-            </Box>
+            <Grid container spacing={2} alignItems="center">
+              {/* Search Component on the left */}
+              <Grid item xs={12} md={4}>
+                <SearchComponent
+                  onSearch={handleSearch}
+                  onReset={handleReset}
+                />
+              </Grid>
 
-            {/* Title Text centered */}
-            <Box sx={{ flexGrow: 2, textAlign: "center", minWidth: "150px" }}>
-              <h3
-                style={{
-                  margin: 0,
-                  fontSize: "24px",
-                  color: "rgb(34, 34, 34)",
-                  fontWeight: 800,
+              {/* Title Text centered */}
+              <Grid
+                item
+                xs={12}
+                md={4}
+                sx={{ textAlign: { xs: "center", md: "center" } }}
+              >
+                <h3
+                  style={{
+                    margin: 0,
+                    fontSize: "24px",
+                    color: "rgb(34, 34, 34)",
+                    fontWeight: 800,
+                  }}
+                >
+                  Sales Return
+                </h3>
+              </Grid>
+
+              {/* Add Button on the right */}
+              <Grid
+                item
+                xs={12}
+                md={4}
+                sx={{
+                  display: "flex",
+                  justifyContent: { xs: "center", md: "flex-end" },
                 }}
               >
-                Sales Return
-              </h3>
-            </Box>
-
-            {/* Add Button on the right */}
-            <Box
-              sx={{
-                flexGrow: 1,
-                flexBasis: "40%",
-                display: "flex",
-                justifyContent: "flex-end",
-                minWidth: "300px",
-              }}
-            ></Box>
+                <Button
+                  color="success"
+                  variant="contained"
+                  onClick={() => setOpenPopupSalesReturn(true)}
+                >
+                  Sales Return
+                </Button>
+              </Grid>
+            </Grid>
           </Box>
+
           <TableContainer
             sx={{
               maxHeight: 440,
@@ -161,6 +180,17 @@ export const SalesReturnView = () => {
           />
         </Paper>
       </Grid>
+      <Popup
+        fullScreen={true}
+        title={"Create Sales Return"}
+        openPopup={openPopupSalesReturn}
+        setOpenPopup={setOpenPopupSalesReturn}
+      >
+        <SalesReturnCreate
+          getSalesReturnDetails={getSalesReturnDetails}
+          setOpenPopup={setOpenPopupSalesReturn}
+        />
+      </Popup>
     </>
   );
 };

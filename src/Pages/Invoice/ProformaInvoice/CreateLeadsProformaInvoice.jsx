@@ -88,11 +88,6 @@ export const CreateLeadsProformaInvoice = (props) => {
     setInputValue({ ...inputValue, [name]: value });
   };
 
-  useEffect(() => {
-    getAllSellerAccountsDetails();
-    getProduct();
-  }, []);
-
   const getProduct = useCallback(async () => {
     try {
       const res = await ProductService.getAllValidPriceList("all");
@@ -114,7 +109,8 @@ export const CreateLeadsProformaInvoice = (props) => {
   };
 
   useEffect(() => {
-    if (leadsByID) getLeadsData(leadsByID);
+    getAllSellerAccountsDetails();
+    getProduct();
   }, []);
 
   const getLeadsData = async (recordForEdit) => {
@@ -125,6 +121,10 @@ export const CreateLeadsProformaInvoice = (props) => {
       console.log("error", error);
     }
   };
+
+  useEffect(() => {
+    if (leadsByID) getLeadsData(leadsByID);
+  }, []);
 
   const createLeadProformaInvoiceDetails = async (e) => {
     e.preventDefault();

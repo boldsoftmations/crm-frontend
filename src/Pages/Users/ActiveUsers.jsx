@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import TaskService from "../../services/TaskService";
 import { CustomTable } from "../../Components/CustomTable";
-import { CustomSearch } from "../../Components/CustomSearch";
 import { CustomLoader } from "../../Components/CustomLoader";
 import {
   Box,
@@ -10,10 +9,15 @@ import {
   Chip,
   FormControlLabel,
   Grid,
+  Paper,
 } from "@mui/material";
 import { Popup } from "../../Components/Popup";
 import CustomTextField from "../../Components/CustomTextField";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
+import SearchComponent from "../../Components/SearchComponent ";
+import { MessageAlert } from "../../Components/MessageAlert";
+import { useNotificationHandling } from "../../Components/useNotificationHandling ";
+
 export const ActiveUsers = () => {
   const [open, setOpen] = useState(false);
   const [activeUsersData, setActiveUsersData] = useState([]);
@@ -23,6 +27,8 @@ export const ActiveUsers = () => {
   const [openPopup, setOpenPopup] = useState(false);
   const [refUserList, setRefUserList] = useState([]);
   const [showRefUserList, setShowRefUserList] = useState(false);
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   const handleSelectChange = (name, value) => {
     setActiveUsersByIDData({
@@ -46,11 +52,11 @@ export const ActiveUsers = () => {
     }
   };
 
-  const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
+  const handleSearch = (query) => {
+    setSearchQuery(query);
   };
 
-  const handleResetClick = () => {
+  const handleReset = () => {
     setSearchQuery("");
   };
 
@@ -59,10 +65,6 @@ export const ActiveUsers = () => {
     setActiveUsersByIDData(data);
     setOpenPopup(true);
   };
-  console.log("activeUsersByIDData.ref_user", activeUsersByIDData);
-  useEffect(() => {
-    getAllUsersDetails();
-  }, []);
 
   const getAllUsersDetails = async () => {
     try {
@@ -99,12 +101,16 @@ export const ActiveUsers = () => {
       }
       setOpen(false);
     } catch (error) {
-      console.log("error active users", error);
+      handleError(error);
     } finally {
       setOpen(false);
     }
   };
-  console.log("refUserList", refUserList);
+
+  useEffect(() => {
+    getAllUsersDetails();
+  }, []);
+
   // Helper function to preprocess the refUserList
   const preprocessRefUserList = (list, group) => {
     if (!group) return [];
@@ -157,8 +163,7 @@ export const ActiveUsers = () => {
   const selectedRefUser = processedRefUserList.find(
     (user) => user.email === activeUsersByIDData.ref_user
   );
-  console.log("selectedRefUser", selectedRefUser);
-  console.log("processedRefUserList", processedRefUserList);
+
   const createUsersDetails = async (e) => {
     try {
       e.preventDefault();
@@ -174,12 +179,22 @@ export const ActiveUsers = () => {
           ? activeUsersByIDData.ref_user.email
           : null,
       };
-      await TaskService.createUsers(activeUsersByIDData.emp_id, req);
-      setOpenPopup(false);
-      getAllUsersDetails();
-      setOpen(false);
+      const response = await TaskService.createUsers(
+        activeUsersByIDData.emp_id,
+        req
+      );
+
+      const successMessage =
+        response.data.message || "Active User Created successfully";
+      handleSuccess(successMessage);
+
+      setTimeout(() => {
+        setOpenPopup(false);
+        getAllUsersDetails();
+      }, 300);
     } catch (error) {
-      console.log("error while updating users", error);
+      handleError(error);
+    } finally {
       setOpen(false);
     }
   };
@@ -214,49 +229,49 @@ export const ActiveUsers = () => {
   });
 
   return (
-    <div>
+    <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
-      <div
-        style={{
-          padding: "16px",
-          margin: "16px",
-          boxShadow: "0px 3px 6px #00000029",
-          borderRadius: "4px",
-          display: "flex",
-          flexDirection: "column",
-          backgroundColor: "rgb(255, 255, 255)", // set background color to default Paper color
-        }}
-      >
-        <div style={{ display: "flex" }}>
-          <div style={{ flexGrow: 0.9 }}>
-            <CustomSearch
-              filterSelectedQuery={searchQuery}
-              handleInputChange={handleSearchChange}
-              getResetData={handleResetClick}
-            />
-          </div>
-          <div style={{ flexGrow: 2 }}>
-            <h3
-              style={{
-                textAlign: "left",
-                marginBottom: "1em",
-                fontSize: "24px",
-                color: "rgb(34, 34, 34)",
-                fontWeight: 800,
-              }}
-            >
-              Active Users
-            </h3>
-          </div>
-        </div>
-        <CustomTable
-          headers={Tableheaders}
-          data={data}
-          openInPopup={openInPopup}
-          openInPopup2={null}
-          Styles={{ paddingLeft: "10px", paddingRight: "10px" }}
-        />
-      </div>
+      <Grid item xs={12}>
+        <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
+          <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={4}>
+                <SearchComponent
+                  onSearch={handleSearch}
+                  onReset={handleReset}
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <h3
+                  style={{
+                    textAlign: "left",
+                    marginBottom: "1em",
+                    fontSize: "24px",
+                    color: "rgb(34, 34, 34)",
+                    fontWeight: 800,
+                  }}
+                >
+                  Active User
+                </h3>
+              </Grid>
+              <Grid item xs={12} sm={4}></Grid>
+            </Grid>
+          </Box>
+          <CustomTable
+            headers={Tableheaders}
+            data={data}
+            openInPopup={openInPopup}
+            openInPopup2={null}
+            Styles={{ paddingLeft: "10px", paddingRight: "10px" }}
+          />
+        </Paper>
+      </Grid>
       <Popup
         title={"Update Active Users"}
         openPopup={openPopup}
@@ -397,6 +412,6 @@ export const ActiveUsers = () => {
           </Button>
         </Box>
       </Popup>
-    </div>
+    </>
   );
 };

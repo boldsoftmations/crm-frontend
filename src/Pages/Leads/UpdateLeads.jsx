@@ -129,7 +129,7 @@ export const UpdateLeads = memo((props) => {
   const getCompetitors = async () => {
     try {
       setOpen(true);
-      const response = await CustomerServices.getAllPaginateCompetitors("all");
+      const response = await CustomerServices.getAllCompetitors("all");
       setAllCompetitors(response.data);
 
       setOpen(false);
@@ -164,7 +164,6 @@ export const UpdateLeads = memo((props) => {
   useEffect(() => {
     if (leadsByID) getLeadsData(leadsByID);
   }, []);
-
   // Update leads data
   const updateLeadsData = useCallback(
     async (e) => {

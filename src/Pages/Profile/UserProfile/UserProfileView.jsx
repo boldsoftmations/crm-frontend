@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 import UserProfileService from "../../../services/UserProfileService";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { CustomTable } from "../../../Components/CustomTable";
-import { CustomSearch } from "../../../Components/CustomSearch";
 import { Popup } from "../../../Components/Popup";
 import { UserProfileUpdate } from "./UserProfileUpdate";
 import { CSVLink } from "react-csv";
-import { Button } from "@mui/material";
+import { Box, Button, Grid, Paper } from "@mui/material";
+import { MessageAlert } from "../../../Components/MessageAlert";
+import SearchComponent from "../../../Components/SearchComponent ";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 
 export const UserProfileView = () => {
   const [openPopup, setOpenPopup] = useState(false);
@@ -14,10 +16,8 @@ export const UserProfileView = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [userProfiles, setUserProfiles] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-
-  useEffect(() => {
-    getAllUserProfileData();
-  }, []);
+  const { handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   const getAllUserProfileData = async () => {
     setIsLoading(true);
@@ -26,15 +26,23 @@ export const UserProfileView = () => {
       if (response.data) {
         setUserProfiles(response.data);
       }
-    } catch (err) {
-      console.error("error profile", err);
+    } catch (error) {
+      handleError(error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleInputChange = (event) => {
-    setSearchQuery(event.target.value);
+  useEffect(() => {
+    getAllUserProfileData();
+  }, []);
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+  };
+
+  const handleReset = () => {
+    setSearchQuery("");
   };
 
   const Tableheaders = [
@@ -66,7 +74,6 @@ export const UserProfileView = () => {
 
   const getCsvData = () => {
     return filteredUserProfiles.map((user) => {
-      console.log("user", user);
       const ID = user.id || "-";
       const personal = user.personal || {};
       const kyc = user.kyc || {};
@@ -222,42 +229,69 @@ export const UserProfileView = () => {
 
   return (
     <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
+
       <CustomLoader open={isLoading} />
-      <div style={styles.container}>
-        <div style={{ display: "flex" }}>
-          <div style={{ flexGrow: 0.9 }}>
-            <CustomSearch
-              filterSelectedQuery={searchQuery}
-              handleInputChange={handleInputChange}
-              getResetData={() => setSearchQuery("")}
+      <Grid item xs={12}>
+        <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
+          <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={4}>
+                <SearchComponent
+                  onSearch={handleSearch}
+                  onReset={handleReset}
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <h3
+                  style={{
+                    textAlign: "left",
+                    marginBottom: "1em",
+                    fontSize: "24px",
+                    color: "rgb(34, 34, 34)",
+                    fontWeight: 800,
+                  }}
+                >
+                  Personal Profiles
+                </h3>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <CSVLink
+                  data={csvData}
+                  headers={csvHeaders}
+                  filename="user_profiles.csv"
+                  target="_blank"
+                  style={{
+                    textDecoration: "none",
+                    outline: "none",
+                    height: "5vh",
+                  }}
+                >
+                  <Button variant="contained" color="success">
+                    Export to Excel
+                  </Button>
+                </CSVLink>
+              </Grid>
+            </Grid>
+          </Box>
+
+          {filteredUserProfiles.length > 0 ? (
+            <CustomTable
+              headers={Tableheaders}
+              data={data}
+              openInPopup={openInPopup}
             />
-          </div>
-          <div style={{ flexGrow: 2 }}>
-            <h3 style={styles.header}>Personal Profile</h3>
-          </div>
-          <div style={{ flexGrow: 1 }}>
-            <Button variant="contained" color="primary">
-              <CSVLink
-                data={csvData}
-                headers={csvHeaders}
-                filename="user_profiles.csv"
-                style={{ textDecoration: "none", color: "inherit" }}
-              >
-                Download CSV
-              </CSVLink>
-            </Button>
-          </div>
-        </div>
-        {filteredUserProfiles.length > 0 ? (
-          <CustomTable
-            headers={Tableheaders}
-            data={data}
-            openInPopup={openInPopup}
-          />
-        ) : (
-          <p>No results found for the search query.</p>
-        )}
-      </div>
+          ) : (
+            <p>No results found for the search query.</p>
+          )}
+        </Paper>
+      </Grid>
+
       <Popup
         fullScreen={true}
         title={"Update User Profile"}
@@ -272,23 +306,4 @@ export const UserProfileView = () => {
       </Popup>
     </>
   );
-};
-
-const styles = {
-  container: {
-    padding: "16px",
-    margin: "16px",
-    boxShadow: "0px 3px 6px #00000029",
-    borderRadius: "4px",
-    display: "flex",
-    flexDirection: "column",
-    backgroundColor: "rgb(255, 255, 255)",
-  },
-  header: {
-    textAlign: "left",
-    marginBottom: "1em",
-    fontSize: "24px",
-    color: "rgb(34, 34, 34)",
-    fontWeight: 800,
-  },
 };

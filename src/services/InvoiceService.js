@@ -238,32 +238,30 @@ const getSalesnvoiceDataById = (id) => {
   return CustomAxios.get(`api/invoice/list-sales-invoice/${id}`);
 };
 
-const getAllSaleRegisterData = (startDate, endDate) => {
-  return CustomAxios.get(
-    `/api/invoice/list-sales-register/?date_range_after=${startDate}&date_range_before=${endDate}`
-  );
-};
+// sales register api endpooint
+const getAllSaleRegisterData = (startDate, endDate, page, searchValue) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
 
-const getSaleRegisterDataWithPagination = (startDate, endDate, currentPage) => {
-  return CustomAxios.get(
-    `/api/invoice/list-sales-register/?date_range_after=${startDate}&date_range_before=${endDate}&page=${currentPage}`
-  );
-};
+  if (startDate) {
+    params.append("date_range_after", startDate);
+  }
 
-const getSaleRegisterDataWithSearch = (startDate, endDate, search) => {
-  return CustomAxios.get(
-    `/api/invoice/list-sales-register/?date_range_after=${startDate}&date_range_before=${endDate}&search=${search}`
-  );
-};
+  if (endDate) {
+    params.append("date_range_before", endDate);
+  }
 
-const getSaleRegisterDataWithPaginationAndSearch = (
-  startDate,
-  endDate,
-  currentPage,
-  search
-) => {
+  if (page) {
+    params.append("page", page);
+  }
+
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+
+  // Sending a GET request with query parameters
   return CustomAxios.get(
-    `/api/invoice/list-sales-register/?date_range_after=${startDate}&date_range_before=${endDate}&page=${currentPage}&search=${search}`
+    `api/invoice/list-sales-register/?${params.toString()}`
   );
 };
 
@@ -346,6 +344,25 @@ const checkPrice = (pi_number) => {
   );
 };
 
+// get sales return data by company search api endpoint
+const getSalesReturnBySearchCompany = (unitValue, companyValue) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
+
+  if (unitValue) {
+    params.append("seller_unit", unitValue);
+  }
+
+  if (companyValue) {
+    params.append("company", companyValue);
+  }
+
+  // Sending a GET request with query parameters
+  return CustomAxios.get(
+    `api/invoice/company-sales-invoice/?${params.toString()}`
+  );
+};
+
 const InvoiceServices = {
   getAllSellerAccountData,
   getfilterSellerAccountData,
@@ -381,9 +398,6 @@ const InvoiceServices = {
   cancelSalesInvoice,
   getSalesnvoiceDataById,
   getAllSaleRegisterData,
-  getSaleRegisterDataWithPagination,
-  getSaleRegisterDataWithSearch,
-  getSaleRegisterDataWithPaginationAndSearch,
   getDispatchData,
   getDispatchSearchWithPagination,
   getDispatchDataWithSearch,
@@ -395,6 +409,7 @@ const InvoiceServices = {
   getLRCopyDashboardData,
   getPODCopyDashboardData,
   checkPrice,
+  getSalesReturnBySearchCompany,
 };
 
 export default InvoiceServices;
