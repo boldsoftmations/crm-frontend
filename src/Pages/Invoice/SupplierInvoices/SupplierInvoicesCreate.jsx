@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Button, Grid } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import Chip from "@mui/material/Chip";
@@ -10,7 +10,6 @@ import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomAutocomplete from "./../../../Components/CustomAutocomplete";
 import CustomTextField from "../../../Components/CustomTextField";
 import InventoryServices from "../../../services/InventoryService";
-import SearchComponent from "../../../Components/SearchComponent ";
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -79,12 +78,13 @@ const SupplierInvoicesCreate = ({ getSalesInvoiceDetails, setOpenPopup }) => {
     setProducts(data);
   };
 
-  const getSalesReturnData = async (invoice_type) => {
+  const getSalesReturnData = async (e) => {
     try {
+      e.preventDefault();
       setOpen(true);
       const response = await InventoryServices.getSalesReturnData(
         "all",
-        invoice_type
+        inputValue.invoice_no
       );
       // Assume response.data[0] is the relevant invoice data
       const invoiceData = response.data[0];
@@ -111,10 +111,6 @@ const SupplierInvoicesCreate = ({ getSalesInvoiceDetails, setOpenPopup }) => {
     } finally {
       setOpen(false);
     }
-  };
-
-  const handleReset = () => {
-    setInputValue("");
   };
 
   const getAllSellerAccountsDetails = async () => {
@@ -178,10 +174,39 @@ const SupplierInvoicesCreate = ({ getSalesInvoiceDetails, setOpenPopup }) => {
       >
         <Grid container spacing={2}>
           <Grid item xs={12} sm={4}>
-            <SearchComponent
-              onSearch={getSalesReturnData}
-              onReset={handleReset}
-            />
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 1, // Adjust gap between elements
+              }}
+            >
+              <CustomTextField
+                required
+                sx={{ flexGrow: 1 }} // Makes the TextField flexible in taking available space
+                fullWidth
+                name="invoice_no"
+                size="small"
+                label="Search By Invoice No"
+                variant="outlined"
+                onChange={(event) =>
+                  setInputValue((prev) => ({
+                    ...prev,
+                    [event.target.name]: event.target.value,
+                  }))
+                }
+                value={inputValue.company}
+              />
+
+              <Button
+                onClick={(e) => getSalesReturnData(e)}
+                variant="contained"
+                sx={{ height: "40px" }} // Optional, adjust to align height with the TextField
+              >
+                Submit
+              </Button>
+            </Box>
           </Grid>
           <Grid item xs={12} sm={4}>
             <CustomAutocomplete
