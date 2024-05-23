@@ -59,7 +59,7 @@ export const UpdateFinishGoods = memo((props) => {
 
   const productName = useMemo(() => {
     const productNameParts = [
-      formData.product_code,
+      formData.productcode,
       formData.color,
       shortName,
       formData.size,
