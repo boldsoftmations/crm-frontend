@@ -13,13 +13,6 @@ export const loginsucces = (token) => {
   };
 };
 
-export const loginfail = (error) => {
-  return {
-    type: types.LOGIN_FAIL,
-    payload: error,
-  };
-};
-
 export const logoutUser = () => {
   return {
     type: types.LOGOUT_USER,

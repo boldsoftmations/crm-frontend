@@ -12,22 +12,24 @@ import logo from "../../../Images/LOGOS3.png";
 import ISO from "../../../Images/ISOLogo.ico";
 import AllLogo from "../../../Images/allLogo.jpg";
 import MSME from "../../../Images/MSME.jpeg";
-import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 import { MyDocument } from "./MyDocument";
 import { useReactToPrint } from "react-to-print";
 import { Button } from "@mui/material";
+import { MessageAlert } from "../../../Components/MessageAlert";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 
 export const AllProformaInvoiceView = (props) => {
-  const { idForEdit, setOpenPopup } = props;
+  const { idForEdit } = props;
   const [openPopup2, setOpenPopup2] = useState(false);
   const [invoiceData, setInvoiceData] = useState([]);
   const [productData, setProductData] = useState([]);
   const [hsnData, setHsnData] = useState([]);
   const [open, setOpen] = useState(false);
-  const [errMsg, setErrMsg] = useState("");
   const data = useSelector((state) => state.auth);
   const users = data.profile;
   const componentRef = useRef();
+  const { handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
@@ -67,18 +69,12 @@ export const AllProformaInvoiceView = (props) => {
 
       // clean up the temporary link element
       document.body.removeChild(link);
-
-      setOpen(false);
     } catch (error) {
-      console.log("error exporting pdf", error);
+      handleError(error);
     } finally {
       setOpen(false);
     }
   };
-
-  useEffect(() => {
-    getAllProformaInvoiceDetails();
-  }, []);
 
   const getAllProformaInvoiceDetails = async () => {
     try {
@@ -94,11 +90,17 @@ export const AllProformaInvoiceView = (props) => {
       setInvoiceData(response.data);
       setProductData(response.data.products);
       setHsnData(response.data.hsn_table);
-      setOpen(false);
-    } catch (err) {
+    } catch (error) {
+      handleError(error);
+    } finally {
       setOpen(false);
     }
   };
+
+  useEffect(() => {
+    getAllProformaInvoiceDetails();
+  }, []);
+
   const str = invoiceData.amount_in_words ? invoiceData.amount_in_words : "";
   const arr = str.split(" ");
   for (var i = 0; i < arr.length; i++) {
@@ -110,8 +112,13 @@ export const AllProformaInvoiceView = (props) => {
   const TOTAL_GST = TOTAL_GST_DATA.toFixed(2);
   return (
     <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
-      <ErrorMessage errMsg={errMsg} />
       {invoiceData.status !== "Pending Approval" &&
         invoiceData.status !== "Raised" && (
           <div

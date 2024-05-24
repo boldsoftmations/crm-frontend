@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import "../CommonStyle.css";
-
 import {
   ThemeProvider,
   createTheme,
@@ -26,7 +24,6 @@ export const SignUp = (props) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [message, setMessage] = useState("");
 
-  const paperStyle = { padding: 20, width: 340, margin: "0 auto" };
   const headerStyle = { margin: 0 };
   const avatarStyle = { backgroundColor: "#1bbd7e" };
 

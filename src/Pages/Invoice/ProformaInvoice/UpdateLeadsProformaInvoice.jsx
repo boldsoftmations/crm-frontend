@@ -11,17 +11,17 @@ import { styled } from "@mui/material/styles";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { CustomLoader } from "../../../Components/CustomLoader";
-import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 import InvoiceServices from "../../../services/InvoiceService";
 import LeadServices from "../../../services/LeadService";
 import ProductService from "../../../services/ProductService";
 import CustomTextField from "../../../Components/CustomTextField";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../../Components/MessageAlert";
 
 export const UpdateLeadsProformaInvoice = (props) => {
   const { idForEdit, getAllLeadsPIDetails, setOpenPopup } = props;
   const [open, setOpen] = useState(false);
-  const [error, setError] = useState("");
   const [leadPIdataByID, setLeadPIdataByID] = useState([]);
   const [productOption, setProductOption] = useState([]);
   const [inputValue, setInputValue] = useState([]);
@@ -43,6 +43,8 @@ export const UpdateLeadsProformaInvoice = (props) => {
   ]);
   const data = useSelector((state) => state.auth);
   const users = data.profile;
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   const sellerData = data.sellerAccount;
 
@@ -85,25 +87,17 @@ export const UpdateLeadsProformaInvoice = (props) => {
     setProductEdit(true);
   };
 
-  useEffect(() => {
-    getProduct();
-  }, []);
-
   const getProduct = async () => {
     try {
       setOpen(true);
       const res = await ProductService.getAllValidPriceList("all");
       setProductOption(res.data);
-      setOpen(false);
-    } catch (err) {
-      console.error("error potential", err);
+    } catch (error) {
+      handleError(error);
+    } finally {
       setOpen(false);
     }
   };
-
-  useEffect(() => {
-    getLeadProformaInvoiceDetailsByID();
-  }, []);
 
   const getLeadProformaInvoiceDetailsByID = async (e) => {
     try {
@@ -127,24 +121,30 @@ export const UpdateLeadsProformaInvoice = (props) => {
         unit: fruit.unit,
       }));
       setProducts(arr);
-
+    } catch (error) {
+      handleError(error);
+    } finally {
       setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("err", err);
     }
   };
+
+  useEffect(() => {
+    getProduct();
+    getLeadProformaInvoiceDetailsByID();
+  }, []);
 
   const getLeadsData = async (value) => {
     try {
       setOpen(true);
       const data = value;
-      const res = await LeadServices.getLeadsById(data);
-      setLeads(res.data);
-
-      setOpen(false);
+      const response = await LeadServices.getLeadsById(data);
+      setLeads(response.data);
+      const successMessage =
+        response.data.message || "Lead Data Get successfully";
+      handleSuccess(successMessage);
     } catch (error) {
-      console.log("error", error);
+      handleError(error);
+    } finally {
       setOpen(false);
     }
   };
@@ -246,30 +246,34 @@ export const UpdateLeadsProformaInvoice = (props) => {
         status: "Raised",
         products: productList,
       };
-      await InvoiceServices.updateLeadsProformaInvoiceData(
+      const response = await InvoiceServices.updateLeadsProformaInvoiceData(
         leadPIdataByID.pi_number,
         req
       );
-      setOpenPopup(false);
-      getAllLeadsPIDetails();
-      setOpen(false);
-    } catch (err) {
-      if (err.response.status === 400) {
-        setError({
-          place_of_supply: err.response.data.errors.place_of_supply || "",
-          buyer_order_no: err.response.data.errors.buyer_order_no || "",
-          transporter_name: err.response.data.errors.transporter_name || "",
-          validationPrice:
-            err.response.data.errors.non_field_errors ||
-            err.response.data.errors,
-        });
-      }
+      const successMessage =
+        response.data.message ||
+        "Lead Proforma Invoice update Created successfully";
+      handleSuccess(successMessage);
+
+      setTimeout(() => {
+        setOpenPopup(false);
+        getAllLeadsPIDetails();
+      }, 300);
+    } catch (error) {
+      handleError(error);
     } finally {
       setOpen(false);
     }
   };
+
   return (
-    <div>
+    <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
 
       <Box
@@ -495,8 +499,6 @@ export const UpdateLeadsProformaInvoice = (props) => {
                   : ""
               }
               onChange={handleInputChange}
-              error={Boolean(error.buyer_order_no)}
-              helperText={error.buyer_order_no ? error.buyer_order_no[0] : ""}
               InputLabelProps={{
                 shrink: true,
               }}
@@ -531,10 +533,6 @@ export const UpdateLeadsProformaInvoice = (props) => {
               value={
                 inputValue.place_of_supply || leadPIdataByID.place_of_supply
               }
-              error={Boolean(error.place_of_supply)}
-              helperText={
-                error.place_of_supply ? error.place_of_supply.join(", ") : ""
-              }
               InputLabelProps={{
                 shrink: true,
               }}
@@ -554,10 +552,6 @@ export const UpdateLeadsProformaInvoice = (props) => {
               InputLabelProps={{
                 shrink: true,
               }}
-              error={Boolean(error.transporter_name)}
-              helperText={
-                error.transporter_name ? error.transporter_name[0] : ""
-              }
               onChange={handleInputChange}
             />
           </Grid>
@@ -568,7 +562,6 @@ export const UpdateLeadsProformaInvoice = (props) => {
               </Divider>
             </Root>
           </Grid>
-          <ErrorMessage errMsg={error.validationPrice} />
           {products.map((input, index) => {
             return (
               <>
@@ -617,8 +610,6 @@ export const UpdateLeadsProformaInvoice = (props) => {
                     size="small"
                     label="Rate"
                     variant="outlined"
-                    // error={validationPrice}
-                    // helperText={validationPrice}
                     value={input.rate ? input.rate : ""}
                     onChange={(event) => handleFormChange(index, event)}
                   />
@@ -704,7 +695,7 @@ export const UpdateLeadsProformaInvoice = (props) => {
           Submit
         </Button>
       </Box>
-    </div>
+    </>
   );
 };
 

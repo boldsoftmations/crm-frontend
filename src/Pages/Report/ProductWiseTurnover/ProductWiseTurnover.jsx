@@ -1,55 +1,28 @@
-import React, { useEffect, useRef, useState } from "react";
-import {
-  Box,
-  Paper,
-  Grid,
-  InputLabel,
-  FormControl,
-  Select,
-  IconButton,
-  MenuItem,
-} from "@mui/material";
-import ClearIcon from "@mui/icons-material/Clear";
+import React, { useCallback, useEffect, useState } from "react";
+import { Box, Paper, Grid } from "@mui/material";
 import ProductForecastService from "../../../services/ProductForecastService";
 import LeadServices from "../../../services/LeadService";
 import { CustomLoader } from "../../../Components/CustomLoader";
-import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 import { CustomTable } from "../../../Components/CustomTable";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../../Components/MessageAlert";
+import CustomSelect from "../../../Components/CustomSelect";
 
 export const ProductWiseTurnover = () => {
   const [open, setOpen] = useState(false);
-  const errRef = useRef();
-  const [errMsg, setErrMsg] = useState("");
-  const [pageCount, setpageCount] = useState(0);
-  const [currentPage, setCurrentPage] = useState(0);
-  // const [filterQuery, setFilterQuery] = useState("sales_person__email");
-  const [searchQuery, setSearchQuery] = useState("");
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const [assigned, setAssigned] = useState([]);
   const [productWiseTurnover, setProductWiseTurnover] = useState([]);
+  const { handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
+
+  const clearFilterValue = () => setFilterSelectedQuery("");
 
   const numberFormat = (value) =>
     new Intl.NumberFormat("en-IN", {
       style: "currency",
       currency: "INR",
     }).format(value);
-
-  const getResetData = () => {
-    setSearchQuery("");
-    setFilterSelectedQuery("");
-
-    getAllProductionForecastDetails();
-  };
-
-  const handleInputChange = () => {
-    setSearchQuery(searchQuery);
-    getSearchData(searchQuery);
-  };
-
-  const handleInputChanges = (event) => {
-    setFilterSelectedQuery(event.target.value);
-    getSearchData(event.target.value);
-  };
 
   // Get the current date
   const currentDate = new Date();
@@ -82,17 +55,15 @@ export const ProductWiseTurnover = () => {
     "December",
   ];
 
-  useEffect(() => {
-    getAssignedData();
-    getAllProductionForecastDetails();
-  }, []);
-
   const getAssignedData = async (id) => {
     try {
       setOpen(true);
-      const res = await LeadServices.getAllAssignedUser();
-
-      setAssigned(res.data);
+      const response = await LeadServices.getAllAssignedUser();
+      const AssignedOptions = response.data.map((user) => ({
+        label: `${user.first_name} ${user.last_name}`,
+        value: user.email,
+      }));
+      setAssigned(AssignedOptions);
       setOpen(false);
     } catch (error) {
       console.log("error", error);
@@ -100,61 +71,32 @@ export const ProductWiseTurnover = () => {
     }
   };
 
-  const getAllProductionForecastDetails = async () => {
+  useEffect(() => {
+    getAssignedData();
+  }, []);
+
+  const getAllProductionForecastDetails = useCallback(async () => {
     try {
       setOpen(true);
       const response =
-        await ProductForecastService.getProductWiseTurnoverForecast();
-      setProductWiseTurnover(response.data);
-      const total = response.data.count;
-      setpageCount(Math.ceil(total / 25));
-      setOpen(false);
-    } catch (err) {
-      handleErrorResponse(err);
-    }
-  };
-
-  const handleErrorResponse = (err) => {
-    if (!err.response) {
-      setErrMsg(
-        "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
-      );
-    } else if (err.response.status === 400) {
-      setErrMsg(
-        err.response.data.errors.name ||
-          err.response.data.errors.non_field_errors
-      );
-    } else if (err.response.status === 401) {
-      setErrMsg(err.response.data.errors.code);
-    } else if (err.response.status === 404 || !err.response.data) {
-      setErrMsg("Data not found or request was null/empty");
-    } else {
-      setErrMsg("Server Error");
-    }
-  };
-
-  const getSearchData = async (value) => {
-    try {
-      setOpen(true);
-      const filterSearch = value;
-      const response =
-        await ProductForecastService.getAllSearchProductWiseTurnoverForecast(
-          "sales_person__email",
-          filterSearch
+        await ProductForecastService.getProductWiseTurnoverForecast(
+          filterSelectedQuery
         );
-      if (response) {
-        setProductWiseTurnover(response.data);
-        const total = response.data.count;
-        setpageCount(Math.ceil(total / 25));
-      } else {
-        getAllProductionForecastDetails();
-        setSearchQuery("");
-      }
-      setOpen(false);
+      console.log("response", response);
+      setProductWiseTurnover(response.data);
     } catch (error) {
-      console.log("error Search leads", error);
+      handleError(error);
+    } finally {
       setOpen(false);
     }
+  }, [filterSelectedQuery]); // Ensure dependencies are correctly listed
+
+  useEffect(() => {
+    getAllProductionForecastDetails();
+  }, [filterSelectedQuery]);
+
+  const handleFilter = (event) => {
+    setFilterSelectedQuery(event.target.value);
   };
 
   const Tabledata = productWiseTurnover.map((row) => {
@@ -164,12 +106,18 @@ export const ProductWiseTurnover = () => {
       brand: row.product__brand__name,
     };
     row.total_turnover_monthly.forEach((rowData, index) => {
-      tableRow[`total_turnover_monthly_${index}`] =
-        rowData.total_turnover_monthly;
+      tableRow[`total_turnover_monthly_${index}`] = numberFormat(
+        rowData.total_turnover_monthly
+      );
     });
 
     return tableRow;
   });
+
+  // Add the column totals row to the Tabledata
+  if (Tabledata.length > 0) {
+    Tabledata.push(columnTotals);
+  }
 
   // Calculate the total for each column
   const columnTotals = {
@@ -206,53 +154,25 @@ export const ProductWiseTurnover = () => {
   ];
 
   return (
-    <div>
+    <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
       <Grid item xs={12}>
-        <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 2, display: "flex", flexDirection: "column" }}>
           <Box display="flex">
             <Box flexGrow={1}>
-              <FormControl
-                sx={{ minWidth: "200px", marginLeft: "1em" }}
-                size="small"
-              >
-                <InputLabel id="demo-simple-select-label">
-                  Filter By State
-                </InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  name="values"
-                  label="Filter By State"
-                  value={filterSelectedQuery}
-                  onChange={(event) => handleInputChanges(event)}
-                  sx={{
-                    "& .MuiSelect-iconOutlined": {
-                      display: filterSelectedQuery ? "none" : "",
-                    },
-                    "&.Mui-focused .MuiIconButton-root": {
-                      color: "primary.main",
-                    },
-                  }}
-                  endAdornment={
-                    <IconButton
-                      sx={{
-                        visibility: filterSelectedQuery ? "visible" : "hidden",
-                      }}
-                      onClick={getResetData}
-                    >
-                      <ClearIcon />
-                    </IconButton>
-                  }
-                >
-                  {assigned.map((option, i) => (
-                    <MenuItem key={i} value={option.email}>
-                      {option.first_name + " " + option.last_name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+              <CustomSelect
+                label="Sales Person"
+                options={assigned}
+                value={filterSelectedQuery}
+                onChange={handleFilter}
+                onClear={clearFilterValue}
+              />
             </Box>
             <Box flexGrow={2}>
               <h3
@@ -281,7 +201,7 @@ export const ProductWiseTurnover = () => {
           />
         </Paper>
       </Grid>
-    </div>
+    </>
   );
 };
 

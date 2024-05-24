@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import InvoiceServices from "../../services/InvoiceService";
-import { ErrorMessage } from "../../Components/ErrorMessage/ErrorMessage";
 import { CustomLoader } from "../../Components/CustomLoader";
 import { Box, Button, Grid } from "@mui/material";
 import { useSelector } from "react-redux";
 import CustomTextField from "../../Components/CustomTextField";
+import { useNotificationHandling } from "../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../Components/MessageAlert";
 
 export const OrderBookUpdate = (props) => {
   const { recordForEdit, setOpenPopup, getAllOrderBook } = props;
@@ -12,9 +13,11 @@ export const OrderBookUpdate = (props) => {
   const [estimateDate, setEstimateDate] = useState(
     recordForEdit.estimated_date
   );
-  console.log("estimateDate", estimateDate);
   const data = useSelector((state) => state.auth);
   const users = data.profile;
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
+
   const updatesCustomerOrderBook = async (e) => {
     try {
       e.preventDefault();
@@ -30,27 +33,40 @@ export const OrderBookUpdate = (props) => {
         estimated_date: estimateDate,
       };
 
-      await InvoiceServices.updateOrderBookData(recordForEdit.id, data);
+      const response = await InvoiceServices.updateOrderBookData(
+        recordForEdit.id,
+        data
+      );
+      const successMessage =
+        response.data.message || "Customer OrderBook updated successfully";
+      handleSuccess(successMessage);
 
-      setOpenPopup(false);
+      setTimeout(() => {
+        setOpenPopup(false);
+        getAllOrderBook();
+      }, 300);
+    } catch (error) {
+      handleError(error);
+    } finally {
       setOpen(false);
-      getAllOrderBook();
-    } catch (err) {
-      console.log("err update orderbook", err);
     }
   };
   return (
     <>
-      <div>
-        <CustomLoader open={open} />
-      </div>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
+      <CustomLoader open={open} />
+
       <Box
         component="form"
         noValidate
         onSubmit={(e) => updatesCustomerOrderBook(e)}
       >
         <Grid container spacing={2}>
-          {/* <ErrorMessage errMsg={errMsg} errRef={errRef} /> */}
           <Grid item xs={12} sm={6}>
             <CustomTextField
               fullWidth
@@ -129,6 +145,8 @@ export const OrderBookPeningQuantityUpdate = (props) => {
   );
   const data = useSelector((state) => state.auth);
   const users = data.profile;
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   const updatesCustomerOrderBook = async (e) => {
     try {
@@ -146,18 +164,33 @@ export const OrderBookPeningQuantityUpdate = (props) => {
         revision: recordForEdit.revision + 1,
       };
 
-      await InvoiceServices.updateOrderBookData(recordForEdit.id, data);
+      const response = await InvoiceServices.updateOrderBookData(
+        recordForEdit.id,
+        data
+      );
+      const successMessage =
+        response.data.message || "Customer OrderBook updated successfully";
+      handleSuccess(successMessage);
 
-      setOpenPopup(false);
+      setTimeout(() => {
+        setOpenPopup(false);
+        getAllOrderBook();
+      }, 300);
+    } catch (error) {
+      handleError(error);
+    } finally {
       setOpen(false);
-      getAllOrderBook();
-    } catch (err) {
-      console.log("err update orderbook", err);
     }
   };
 
   return (
     <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
       <Box
         component="form"
@@ -165,7 +198,6 @@ export const OrderBookPeningQuantityUpdate = (props) => {
         onSubmit={(e) => updatesCustomerOrderBook(e)}
       >
         <Grid container spacing={2}>
-          {/* <ErrorMessage errMsg={errMsg} errRef={errRef} /> */}
           <Grid item xs={12} sm={6}>
             <CustomTextField
               fullWidth

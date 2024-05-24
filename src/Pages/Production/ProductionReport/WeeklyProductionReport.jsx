@@ -1,12 +1,13 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Grid, Paper, Button } from "@mui/material";
 import { CSVLink } from "react-csv";
 import moment from "moment";
 import InventoryServices from "../../../services/InventoryService";
-import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 import { CustomTable } from "../../../Components/CustomTable";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomTextField from "../../../Components/CustomTextField";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../../Components/MessageAlert";
 const currentDate = new Date();
 const currentYear = currentDate.getFullYear();
 const currentMonth = currentDate.getMonth() + 1;
@@ -23,16 +24,12 @@ const currentMonthStartDate = currentDates.startOf("month");
 const currentMonths = currentMonthStartDate.format("YYYY-MM");
 export const WeeklyProductionReport = () => {
   const [open, setOpen] = useState(false);
-  const errRef = useRef();
-  const [errMsg, setErrMsg] = useState("");
   const [weeklyProductionReportData, setWeeklyProductionReportData] = useState(
     []
   );
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
-
-  useEffect(() => {
-    getAllWeeklyProductionReportDetails();
-  }, [searchQuery]);
+  const { handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   const getAllWeeklyProductionReportDetails = async () => {
     try {
@@ -48,31 +45,16 @@ export const WeeklyProductionReport = () => {
         );
 
       setWeeklyProductionReportData(response.data);
-    } catch (err) {
-      handleErrorResponse(err);
+    } catch (error) {
+      handleError(error);
     } finally {
       setOpen(false);
     }
   };
 
-  const handleErrorResponse = (err) => {
-    if (!err.response) {
-      setErrMsg(
-        "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
-      );
-    } else if (err.response.status === 400) {
-      setErrMsg(
-        err.response.data.errors.name ||
-          err.response.data.errors.non_field_errors
-      );
-    } else if (err.response.status === 401) {
-      setErrMsg(err.response.data.errors.code);
-    } else if (err.response.status === 404 || !err.response.data) {
-      setErrMsg("Data not found or request was null/empty");
-    } else {
-      setErrMsg("Server Error");
-    }
-  };
+  useEffect(() => {
+    getAllWeeklyProductionReportDetails();
+  }, [searchQuery]);
 
   const getWeeksInYearAndMonth = (year, month) => {
     const startDate = new Date(year, month - 1, 1);
@@ -321,10 +303,15 @@ export const WeeklyProductionReport = () => {
   const tableData = [...TableData, totalRow];
   return (
     <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
 
       <Grid item xs={12}>
-        <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
           <Box display="flex">
             <Box flexGrow={0.9}>

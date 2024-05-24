@@ -319,10 +319,7 @@ export const AllProformaInvoice = () => {
         openPopup={openPopup2}
         setOpenPopup={setOpenPopup2}
       >
-        <AllProformaInvoiceView
-          idForEdit={idForEdit}
-          setOpenPopup={setOpenPopup2}
-        />
+        <AllProformaInvoiceView idForEdit={idForEdit} />
       </Popup>
     </>
   );

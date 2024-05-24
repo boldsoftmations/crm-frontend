@@ -195,29 +195,17 @@ const getLastThreeMonthForecastDataByFilter = (filter) => {
   );
 };
 
-const getProductWiseTurnoverForecast = () => {
-  return CustomAxios.get(`/api/forecast/productwise-turnover`);
-};
+const getProductWiseTurnoverForecast = (page, filterValue) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
 
-const getAllSearchProductWiseTurnoverForecast = (type, search) => {
-  return CustomAxios.get(
-    `/api/forecast/productwise-turnover/?${type}=${search}`
-  );
-};
+  if (filterValue) {
+    params.append("sales_person__email", filterValue);
+  }
 
-const getAllProductWiseTurnoverForecastPaginate = (
-  currentPage,
-  type,
-  search
-) => {
+  // Sending a GET request with query parameters
   return CustomAxios.get(
-    `/api/forecast/productwise-turnover/?page=${currentPage}&${type}=${search}`
-  );
-};
-
-const getProductWiseTurnoverForecastPaginateData = (currentPage) => {
-  return CustomAxios.get(
-    `/api/forecast/productwise-turnover/?page=${currentPage}`
+    `api/forecast/productwise-turnover/?${params.toString()}`
   );
 };
 
@@ -241,9 +229,6 @@ const ProductForecastService = {
   getConsLastThreeMonthForecastData,
   getLastThreeMonthForecastDataByFilter,
   getProductWiseTurnoverForecast,
-  getAllSearchProductWiseTurnoverForecast,
-  getAllProductWiseTurnoverForecastPaginate,
-  getProductWiseTurnoverForecastPaginateData,
 };
 
 export default ProductForecastService;
