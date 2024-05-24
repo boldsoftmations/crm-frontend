@@ -114,6 +114,7 @@ export const VendorView = () => {
     { label: "Vendor", value: "Vendor" },
     { label: "Job Worker", value: "Job Worker" },
     { label: "Vendor/ Job Worker", value: "Vendor/Job Worker" },
+    { label: "Scrap", value: "Scrap" },
   ];
 
   const Tabledata = vendorData.map((row) => ({

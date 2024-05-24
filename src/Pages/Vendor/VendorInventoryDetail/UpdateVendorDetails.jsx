@@ -192,6 +192,7 @@ export const UpdateVendorDetails = (props) => {
                 { name: "Vendor" },
                 { name: "Job Worker" },
                 { name: "Vendor/Job Worker" },
+                { name: "Scrap" },
               ]}
               getOptionLabel={(option) => option.name}
               value={
