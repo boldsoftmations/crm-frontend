@@ -16,9 +16,9 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Paper,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
-import { styled } from "@mui/material/styles";
 import { CSVLink } from "react-csv";
 import { pdf } from "@react-pdf/renderer";
 import { CustomLoader } from "../../../Components/CustomLoader";
@@ -163,10 +163,6 @@ export const MaterialTransferNoteView = () => {
     getAllMaterialTransferNoteDetails(currentPage, value, searchQuery);
   };
 
-  useEffect(() => {
-    getAllSellerAccountsDetails();
-  }, []);
-
   const getAllSellerAccountsDetails = async () => {
     try {
       setOpen(true);
@@ -183,32 +179,33 @@ export const MaterialTransferNoteView = () => {
     }
   };
 
-  const getAllMaterialTransferNoteDetails = useCallback(
-    async (page, filter = acceptedFilter, search = searchQuery) => {
-      try {
-        setOpen(true);
+  useEffect(() => {
+    getAllSellerAccountsDetails();
+  }, []);
 
-        const response = await InventoryServices.getAllMaterialTransferNoteData(
-          page,
-          filter,
-          search
-        );
+  const getAllMaterialTransferNoteDetails = useCallback(async () => {
+    try {
+      setOpen(true);
 
-        setMaterialTransferNote(response.data.results);
-        setTotalPages(Math.ceil(response.data.count / 25));
-        setOpen(false);
-      } catch (error) {
-        handleError(error);
-      } finally {
-        setOpen(false);
-      }
-    },
-    [acceptedFilter, searchQuery]
-  );
+      const response = await InventoryServices.getAllMaterialTransferNoteData(
+        currentPage,
+        acceptedFilter,
+        searchQuery
+      );
+
+      setMaterialTransferNote(response.data.results);
+      setTotalPages(Math.ceil(response.data.count / 25));
+      setOpen(false);
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setOpen(false);
+    }
+  }, [currentPage, acceptedFilter, searchQuery]);
 
   useEffect(() => {
-    getAllMaterialTransferNoteDetails(currentPage);
-  }, [currentPage, searchQuery, getAllMaterialTransferNoteDetails]);
+    getAllMaterialTransferNoteDetails();
+  }, [currentPage, acceptedFilter, searchQuery]);
 
   const handleSearch = (query) => {
     setSearchQuery(query);
@@ -246,203 +243,204 @@ export const MaterialTransferNoteView = () => {
         message={alertInfo.message}
       />
       <CustomLoader open={open} />
-      <div
-        style={{
-          padding: "16px",
-          margin: "16px",
-          boxShadow: "0px 3px 6px #00000029",
-          borderRadius: "4px",
-          display: "flex",
-          flexDirection: "column",
-          backgroundColor: "rgb(255, 255, 255)", // set background color to default Paper color
-        }}
-      >
-        <Box sx={{ marginBottom: 2 }}>
-          <Grid
-            container
-            spacing={2}
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            {/* Left Section: Filter and Search */}
-            <Grid item xs={12} sm={6} display="flex" alignItems="center">
-              <FormControl fullWidth size="small" sx={{ marginRight: 2 }}>
-                <InputLabel id="demo-simple-select-label">
-                  Filter By Accepted
-                </InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  name="status"
-                  label="Filter By Accepted"
-                  value={acceptedFilter}
-                  onChange={handleFilterChange}
-                >
-                  {AcceptedOption.map((option, i) => (
-                    <MenuItem key={i} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-                {acceptedFilter && (
-                  <IconButton
-                    size="small"
-                    onClick={() => {
-                      setAcceptedFilter("");
-                      getAllMaterialTransferNoteDetails(1, "", searchQuery);
-                    }}
-                    sx={{
-                      position: "absolute",
-                      right: 8,
-                      top: "50%",
-                      transform: "translateY(-50%)",
-                    }}
-                  >
-                    <ClearIcon />
-                  </IconButton>
-                )}
-              </FormControl>
-              <SearchComponent onSearch={handleSearch} onReset={handleReset} />
-            </Grid>
-
-            {/* Center Section: Title */}
-            <Grid item xs={12} sm={3} display="flex" justifyContent="center">
-              <h3
-                style={{
-                  fontSize: "24px",
-                  color: "rgb(34, 34, 34)",
-                  fontWeight: 800,
-                  textAlign: "center",
-                }}
-              >
-                Material Transfer Note
-              </h3>
-            </Grid>
-
-            {/* Right Section: Add and Download Buttons */}
+      <Grid item xs={12}>
+        <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
+          <Box sx={{ marginBottom: 2 }}>
             <Grid
-              item
-              xs={12}
-              sm={3}
-              display="flex"
-              justifyContent="flex-end"
+              container
+              spacing={2}
               alignItems="center"
-              gap={2}
+              justifyContent="space-between"
             >
-              {(userData.groups.includes("Production") ||
-                userData.groups.includes("Director") ||
-                userData.groups.includes("Production Delhi")) && (
-                <Button
-                  variant="contained"
-                  onClick={() => setOpenCreatePopup(true)}
-                >
-                  Add
-                </Button>
-              )}
-              <Button variant="contained" onClick={handleDownload}>
-                Download CSV
-              </Button>
-              {exportData.length > 0 && (
-                <CSVLink
-                  data={exportData}
-                  headers={headers}
-                  ref={csvLinkRef}
-                  filename="Material Transfer Note.csv"
-                  target="_blank"
-                  style={{
-                    textDecoration: "none",
-                    outline: "none",
-                    height: "5vh",
-                  }}
+              {/* Left Section: Filter and Search */}
+              <Grid item xs={12} sm={6} display="flex" alignItems="center">
+                <FormControl fullWidth size="small" sx={{ marginRight: 2 }}>
+                  <InputLabel id="demo-simple-select-label">
+                    Filter By Accepted
+                  </InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    name="status"
+                    label="Filter By Accepted"
+                    value={acceptedFilter}
+                    onChange={handleFilterChange}
+                  >
+                    {AcceptedOption.map((option, i) => (
+                      <MenuItem key={i} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {acceptedFilter && (
+                    <IconButton
+                      size="small"
+                      onClick={() => {
+                        setAcceptedFilter("");
+                        getAllMaterialTransferNoteDetails(1, "", searchQuery);
+                      }}
+                      sx={{
+                        position: "absolute",
+                        right: 8,
+                        top: "50%",
+                        transform: "translateY(-50%)",
+                      }}
+                    >
+                      <ClearIcon />
+                    </IconButton>
+                  )}
+                </FormControl>
+                <SearchComponent
+                  onSearch={handleSearch}
+                  onReset={handleReset}
                 />
-              )}
-            </Grid>
-          </Grid>
-        </Box>
-        <TableContainer
-          sx={{
-            maxHeight: 400,
-            "&::-webkit-scrollbar": {
-              width: 15,
-            },
-            "&::-webkit-scrollbar-track": {
-              backgroundColor: "#f2f2f2",
-            },
-            "&::-webkit-scrollbar-thumb": {
-              backgroundColor: "#aaa9ac",
-            },
-          }}
-        >
-          <Table sx={{ minWidth: 1200 }} stickyHeader aria-label="sticky table">
-            <TableHead>
-              <StyledTableRow>
-                <StyledTableCell align="center">User</StyledTableCell>
-                <StyledTableCell align="center">Seller Account</StyledTableCell>
-                <StyledTableCell align="center">Product</StyledTableCell>
-                <StyledTableCell align="center">Unit</StyledTableCell>
-                <StyledTableCell align="center">Quantity</StyledTableCell>
-                <StyledTableCell align="center">Date</StyledTableCell>
-                <StyledTableCell align="center">Accepted</StyledTableCell>
-                <StyledTableCell align="center">Action</StyledTableCell>
-              </StyledTableRow>
-            </TableHead>
-            <TableBody>
-              {materialTransferNote.map((mtnData) => (
-                <React.Fragment key={mtnData.id}>
-                  <StyledTableRow sx={{ "& > *": { borderBottom: "unset" } }}>
-                    <StyledTableCell align="center">
-                      {mtnData.user}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {mtnData.seller_account}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {mtnData.product}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {mtnData.unit}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {mtnData.quantity}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {mtnData.created_on}
-                    </StyledTableCell>
+              </Grid>
 
-                    <StyledTableCell align="center">
-                      <Switch
-                        checked={mtnData.accepted}
-                        inputProps={{ "aria-label": "controlled" }}
-                      />
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {isAcceptedView && mtnData.accepted === false && (
+              {/* Center Section: Title */}
+              <Grid item xs={12} sm={3} display="flex" justifyContent="center">
+                <h3
+                  style={{
+                    fontSize: "24px",
+                    color: "rgb(34, 34, 34)",
+                    fontWeight: 800,
+                    textAlign: "center",
+                  }}
+                >
+                  Material Transfer Note
+                </h3>
+              </Grid>
+
+              {/* Right Section: Add and Download Buttons */}
+              <Grid
+                item
+                xs={12}
+                sm={3}
+                display="flex"
+                justifyContent="flex-end"
+                alignItems="center"
+                gap={2}
+              >
+                {(userData.groups.includes("Production") ||
+                  userData.groups.includes("Director") ||
+                  userData.groups.includes("Production Delhi")) && (
+                  <Button
+                    variant="contained"
+                    onClick={() => setOpenCreatePopup(true)}
+                  >
+                    Add
+                  </Button>
+                )}
+                <Button variant="contained" onClick={handleDownload}>
+                  Download CSV
+                </Button>
+                {exportData.length > 0 && (
+                  <CSVLink
+                    data={exportData}
+                    headers={headers}
+                    ref={csvLinkRef}
+                    filename="Material Transfer Note.csv"
+                    target="_blank"
+                    style={{
+                      textDecoration: "none",
+                      outline: "none",
+                      height: "5vh",
+                    }}
+                  />
+                )}
+              </Grid>
+            </Grid>
+          </Box>
+          <TableContainer
+            sx={{
+              maxHeight: 400,
+              "&::-webkit-scrollbar": {
+                width: 15,
+              },
+              "&::-webkit-scrollbar-track": {
+                backgroundColor: "#f2f2f2",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: "#aaa9ac",
+              },
+            }}
+          >
+            <Table
+              sx={{ minWidth: 1200 }}
+              stickyHeader
+              aria-label="sticky table"
+            >
+              <TableHead>
+                <StyledTableRow>
+                  <StyledTableCell align="center">User</StyledTableCell>
+                  <StyledTableCell align="center">
+                    Seller Account
+                  </StyledTableCell>
+                  <StyledTableCell align="center">Product</StyledTableCell>
+                  <StyledTableCell align="center">Unit</StyledTableCell>
+                  <StyledTableCell align="center">Quantity</StyledTableCell>
+                  <StyledTableCell align="center">Date</StyledTableCell>
+                  <StyledTableCell align="center">Accepted</StyledTableCell>
+                  <StyledTableCell align="center">Action</StyledTableCell>
+                </StyledTableRow>
+              </TableHead>
+              <TableBody>
+                {materialTransferNote.map((mtnData) => (
+                  <React.Fragment key={mtnData.id}>
+                    <StyledTableRow sx={{ "& > *": { borderBottom: "unset" } }}>
+                      <StyledTableCell align="center">
+                        {mtnData.user}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {mtnData.seller_account}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {mtnData.product}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {mtnData.unit}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {mtnData.quantity}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {mtnData.created_on}
+                      </StyledTableCell>
+
+                      <StyledTableCell align="center">
+                        <Switch
+                          checked={mtnData.accepted}
+                          inputProps={{ "aria-label": "controlled" }}
+                        />
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {isAcceptedView && mtnData.accepted === false && (
+                          <Button
+                            color="success"
+                            onClick={() => handleAccept(mtnData)}
+                          >
+                            Accept
+                          </Button>
+                        )}
                         <Button
-                          color="success"
-                          onClick={() => handleAccept(mtnData)}
+                          color="primary"
+                          onClick={() => handleDownloadPdf(mtnData)}
                         >
-                          Accept
+                          Downlaod
                         </Button>
-                      )}
-                      <Button
-                        color="primary"
-                        onClick={() => handleDownloadPdf(mtnData)}
-                      >
-                        Downlaod
-                      </Button>
-                    </StyledTableCell>
-                  </StyledTableRow>
-                </React.Fragment>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <CustomPagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          handlePageChange={handlePageChange}
-        />
-      </div>
+                      </StyledTableCell>
+                    </StyledTableRow>
+                  </React.Fragment>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <CustomPagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            handlePageChange={handlePageChange}
+          />
+        </Paper>
+      </Grid>
 
       <Popup
         maxWidth="xl"
@@ -451,9 +449,6 @@ export const MaterialTransferNoteView = () => {
         setOpenPopup={setOpenCreatePopup}
       >
         <MaterialTransferNoteCreate
-          currentPage={currentPage}
-          searchQuery={searchQuery}
-          acceptedFilter={acceptedFilter}
           getAllMaterialTransferNoteDetails={getAllMaterialTransferNoteDetails}
           setOpenCreatePopup={setOpenCreatePopup}
           sellerOption={sellerOption}
@@ -467,7 +462,6 @@ export const MaterialTransferNoteView = () => {
         setOpenPopup={setOpenAcceptPopup}
       >
         <MaterialTransferAccept
-          currentPage={currentPage}
           materialTransferNoteByID={materialTransferNoteByID}
           setOpenAcceptPopup={setOpenAcceptPopup}
           getAllMaterialTransferNoteDetails={getAllMaterialTransferNoteDetails}
