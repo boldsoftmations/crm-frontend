@@ -117,30 +117,27 @@ export const ActivePI = () => {
     getAllSellerAccountsDetails();
   }, []);
 
-  const getProformaInvoiceData = useCallback(
-    async (page) => {
-      try {
-        setOpen(true);
-        const response = await InvoiceServices.getAllPIData(
-          "active",
-          currentPage,
-          filterType,
-          filterValue,
-          searchValue
-        );
-        setInvoiceData(response.data.results);
-        setTotalPages(Math.ceil(response.data.count / 25));
-      } catch (error) {
-        handleError(error);
-      } finally {
-        setOpen(false);
-      }
-    },
-    [currentPage, filterType, filterValue, searchValue]
-  );
+  const getProformaInvoiceData = useCallback(async () => {
+    try {
+      setOpen(true);
+      const response = await InvoiceServices.getAllPIData(
+        "active",
+        currentPage,
+        filterType,
+        filterValue,
+        searchValue
+      );
+      setInvoiceData(response.data.results);
+      setTotalPages(Math.ceil(response.data.count / 25));
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setOpen(false);
+    }
+  }, [currentPage, filterType, filterValue, searchValue]);
 
   useEffect(() => {
-    getProformaInvoiceData(currentPage);
+    getProformaInvoiceData();
   }, [currentPage, filterType, filterValue, searchValue]);
 
   const handleSearch = (query) => {

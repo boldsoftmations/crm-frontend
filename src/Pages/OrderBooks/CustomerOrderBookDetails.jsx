@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import InvoiceServices from "../../services/InvoiceService";
 import { Button, Box, Paper, Grid } from "@mui/material";
 import { CSVLink } from "react-csv";
-import { ErrorMessage } from "./../../Components/ErrorMessage/ErrorMessage";
 import { CustomLoader } from "../../Components/CustomLoader";
 import { CustomPagination } from "./../../Components/CustomPagination";
 import { useSelector } from "react-redux";
@@ -12,42 +11,29 @@ import {
   OrderBookUpdate,
 } from "./OrderBookUpdate";
 import { CustomTable } from "../../Components/CustomTable";
-import { CustomSearchWithButton } from "../../Components/CustomSearchWithButton";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
+import SearchComponent from "../../Components/SearchComponent ";
+import { useNotificationHandling } from "../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../Components/MessageAlert";
 
 export const CustomerOrderBookDetails = () => {
   const [orderBookData, setOrderBookData] = useState([]);
-  const errRef = useRef();
   const [open, setOpen] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [openModal2, setOpenModal2] = useState(false);
-  const [errMsg, setErrMsg] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [totalPages, setTotalPages] = useState(0);
   const [exportData, setExportData] = useState([]);
-  const [filterQuery, setFilterQuery] = useState("");
-  const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
+  const [filterSellerUnit, setFilterSellerUnit] = useState("");
+  const [filterRaisedByEmail, setFilterRaisedByEmail] = useState("");
   const [recordForEdit, setRecordForEdit] = useState(null);
   const csvLinkRef = useRef(null);
   const dataList = useSelector((state) => state.auth);
   const userData = dataList.profile;
   const assigned = userData.sales_users || [];
-
-  const filterOption = [
-    {
-      label: "Search By State",
-      value: "orderbook__proforma_invoice__seller_account__state",
-    },
-    ...(!userData.groups.includes("Sales Executive")
-      ? [
-          {
-            label: "Sales Person",
-            value: "orderbook__proforma_invoice__raised_by__email",
-          },
-        ]
-      : []),
-  ];
+  const { handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   const openInPopup = (item) => {
     try {
@@ -69,28 +55,6 @@ export const CustomerOrderBookDetails = () => {
     }
   };
 
-  const handleMainFilterChange = (event, newValue) => {
-    if (newValue) {
-      setFilterQuery(newValue.value);
-    } else {
-      setFilterQuery(""); // or any default value you'd like to set when the filter is cleared
-    }
-  };
-
-  const selectedOption = filterOption.find(
-    (option) => option.value === filterQuery
-  );
-
-  const handleStateFilterChange = (event, newValue) => {
-    setFilterSelectedQuery(newValue);
-    getSearchData(newValue, searchQuery);
-  };
-
-  const handleSalesPersonFilterChange = (event, newValue) => {
-    setFilterSelectedQuery(newValue);
-    getSearchData(newValue, searchQuery);
-  };
-
   const handleDownload = async () => {
     const data = await handleExport();
     setExportData(data);
@@ -102,19 +66,13 @@ export const CustomerOrderBookDetails = () => {
   const handleExport = async () => {
     try {
       setOpen(true);
-      const response =
-        filterSelectedQuery || searchQuery
-          ? await InvoiceServices.getOrderBookData({
-              type: "customer",
-              page: "all",
-              filterType: filterQuery,
-              filterValue: filterSelectedQuery,
-              searchValue: searchQuery,
-            })
-          : await InvoiceServices.getOrderBookData({
-              type: "customer",
-              page: "all",
-            });
+      const response = await InvoiceServices.getOrderBookData(
+        "customer",
+        "all",
+        filterSellerUnit,
+        filterRaisedByEmail,
+        searchQuery
+      );
       let data = response.data.map((item) => {
         if (
           userData.groups.includes("Factory-Mumbai-OrderBook") ||
@@ -192,81 +150,41 @@ export const CustomerOrderBookDetails = () => {
     }
   };
 
-  // Common function to fetch data
-  const fetchData = async (params) => {
+  const getAllCustomerWiseOrderBook = useCallback(async () => {
     try {
       setOpen(true);
-      const response = await InvoiceServices.getOrderBookData(params);
-      if (response) {
-        setOrderBookData(response.data.results);
-        const total = response.data.count;
-        setTotalPages(Math.ceil(total / 25));
-      } else {
-        getAllCustomerWiseOrderBook();
-        setSearchQuery("");
-      }
-      setOpen(false);
+      const response = await InvoiceServices.getOrderBookData(
+        "customer",
+        currentPage,
+        filterSellerUnit,
+        filterRaisedByEmail,
+        searchQuery
+      );
+      setOrderBookData(response.data.results);
+      setTotalPages(Math.ceil(response.data.count / 25));
     } catch (error) {
-      handleErrors(error);
+      handleError(error);
+    } finally {
+      setOpen(false);
     }
-  };
+  }, [currentPage, filterSellerUnit, filterRaisedByEmail, searchQuery]);
 
-  const handleErrors = (error) => {
-    setOpen(false);
-    let errorMessage = "Server Error";
-    if (!error.response) {
-      errorMessage =
-        "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin";
-    } else {
-      switch (error.response.status) {
-        case 400:
-          errorMessage = error.response.data.errors.name
-            ? error.response.data.errors.name
-            : error.response.data.errors.non_field_errors;
-          break;
-        case 401:
-          errorMessage = error.response.data.errors.code;
-          break;
-        default:
-          errorMessage = "Server Error";
-      }
-    }
-    setErrMsg(errorMessage);
-    errRef.current.focus();
-  };
   useEffect(() => {
     getAllCustomerWiseOrderBook();
-  }, []);
+  }, [currentPage, filterSellerUnit, filterRaisedByEmail, searchQuery]);
 
-  const getAllCustomerWiseOrderBook = async () => {
-    await fetchData({
-      type: "customer",
-      page: currentPage,
-      filterType: filterQuery,
-      filterValue: filterSelectedQuery,
-      searchValue: searchQuery,
-    });
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    setCurrentPage(1); // Reset to first page with new search
   };
 
-  const getSearchData = async (FilterValue, SearchValue) => {
-    await fetchData({
-      type: "customer",
-      filterType: filterQuery,
-      filterValue: FilterValue,
-      searchValue: SearchValue,
-    });
+  const handleReset = () => {
+    setSearchQuery("");
+    setCurrentPage(1); // Reset to first page with no search query
   };
 
-  const handlePageChange = async (event, value) => {
-    const page = value;
-    setCurrentPage(page);
-    await fetchData({
-      type: "customer",
-      page: page,
-      filterType: filterQuery,
-      filterValue: filterSelectedQuery,
-      searchValue: searchQuery,
-    });
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
   };
 
   const Tableheaders = [
@@ -345,87 +263,71 @@ export const CustomerOrderBookDetails = () => {
     revision: row.revision,
   }));
   return (
-    <div>
+    <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
       <Grid item xs={12}>
-        <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
-          <Box display="flex" marginBottom="10px">
-            <CustomAutocomplete
-              size="small"
-              sx={{ width: 300 }}
-              value={selectedOption} // Pass the entire option object here
-              onChange={handleMainFilterChange}
-              options={filterOption}
-              getOptionLabel={(option) => option.label}
-              label="Filter By"
-            />
-            {filterQuery ===
-              "orderbook__proforma_invoice__seller_account__state" && (
-              <CustomAutocomplete
-                size="small"
-                sx={{ width: 300, marginLeft: "10px" }}
-                value={filterSelectedQuery}
-                onChange={handleStateFilterChange}
-                options={StateOption.map((option) => option)}
-                getOptionLabel={(option) => option}
-                label="Filter By State"
-              />
-            )}
+          <Box marginBottom="10px">
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={3}>
+                <CustomAutocomplete
+                  size="small"
+                  fullWidth
+                  value={filterSellerUnit}
+                  onChange={(event, value) => setFilterSellerUnit(value)}
+                  options={StateOption.map((option) => option)}
+                  getOptionLabel={(option) => option}
+                  label="Filter By State"
+                />
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <CustomAutocomplete
+                  size="small"
+                  fullWidth
+                  value={filterRaisedByEmail}
+                  onChange={(event, value) => setFilterRaisedByEmail(value)}
+                  options={assigned.map((option) => option.email)}
+                  getOptionLabel={(option) => option}
+                  label="Filter By Sales Person"
+                />
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <SearchComponent
+                  onSearch={handleSearch}
+                  onReset={handleReset}
+                />
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <Button variant="contained" onClick={handleDownload}>
+                  Download CSV
+                </Button>
 
-            {filterQuery.includes(
-              "orderbook__proforma_invoice__raised_by__email"
-            ) && (
-              <CustomAutocomplete
-                size="small"
-                sx={{ width: 300, marginLeft: "10px" }}
-                value={filterSelectedQuery}
-                onChange={handleSalesPersonFilterChange}
-                options={assigned.map((option) => option.email)}
-                getOptionLabel={(option) => option}
-                label="Filter By Sales Person"
-              />
-            )}
-
-            <CustomSearchWithButton
-              filterSelectedQuery={searchQuery}
-              setFilterSelectedQuery={setSearchQuery}
-              handleInputChange={(e) => {
-                setSearchQuery(searchQuery);
-                getSearchData(filterSelectedQuery, searchQuery);
-              }}
-              getResetData={() => {
-                setSearchQuery("");
-                getSearchData(filterSelectedQuery, null);
-              }}
-            />
-
-            <Button
-              sx={{ marginLeft: "10px" }}
-              variant="contained"
-              onClick={handleDownload}
-            >
-              Download CSV
-            </Button>
-
-            {exportData.length > 0 && (
-              <CSVLink
-                headers={
-                  userData.groups.includes("Customer Service")
-                    ? headers
-                    : headers2
-                }
-                data={exportData}
-                ref={csvLinkRef}
-                filename="Customer Order Book.csv"
-                target="_blank"
-                style={{
-                  textDecoration: "none",
-                  outline: "none",
-                  height: "5vh",
-                }}
-              />
-            )}
+                {exportData.length > 0 && (
+                  <CSVLink
+                    headers={
+                      userData.groups.includes("Customer Service")
+                        ? headers
+                        : headers2
+                    }
+                    data={exportData}
+                    ref={csvLinkRef}
+                    filename="Customer Order Book.csv"
+                    target="_blank"
+                    style={{
+                      textDecoration: "none",
+                      outline: "none",
+                      height: "5vh",
+                    }}
+                  />
+                )}
+              </Grid>
+            </Grid>
           </Box>
           <Box display="flex" alignItems="center" justifyContent="center">
             <h3
@@ -463,8 +365,8 @@ export const CustomerOrderBookDetails = () => {
             openInPopup2={null}
           />
           <CustomPagination
-            currentPage={currentPage}
             totalPages={totalPages}
+            currentPage={currentPage}
             handlePageChange={handlePageChange}
           />
         </Paper>
@@ -491,7 +393,7 @@ export const CustomerOrderBookDetails = () => {
           getAllOrderBook={getAllCustomerWiseOrderBook}
         />
       </Popup>
-    </div>
+    </>
   );
 };
 

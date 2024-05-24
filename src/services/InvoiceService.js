@@ -34,47 +34,47 @@ const updateSellerAccountData = (id, data) => {
   return CustomAxios.patch(`/api/invoice/list-seller-account/${id}`, data);
 };
 
-// all proforma invoice api
-const getPIDataWithDateRange = (startDate, endDate) => {
-  return CustomAxios.get(
-    `/api/invoice/list-proforma-invoice/?pi=all&date_range_after=${startDate}&date_range_before=${endDate}`
-  );
-};
-
-const getPISearchWithDateRange = (
+const getAllPIWithDateRange = (
   startDate,
   endDate,
-  filter,
+  piType,
+  page,
+  filterType,
   filterValue,
-  search,
   searchValue
 ) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
+
+  if (startDate) {
+    params.append("date_range_after", startDate);
+  }
+
+  if (endDate) {
+    params.append("date_range_before", endDate);
+  }
+
+  if (piType) {
+    params.append("pi", piType);
+  }
+  if (page) {
+    params.append("page", page);
+  }
+
+  if (filterType && filterValue) {
+    params.append(filterType, filterValue);
+  }
+
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+
+  // Sending a GET request with query parameters
   return CustomAxios.get(
-    `/api/invoice/list-proforma-invoice/?pi=all&date_range_after=${startDate}&date_range_before=${endDate}&${filter}=${filterValue}&${search}=${searchValue}`
+    `api/invoice/list-proforma-invoice/?${params.toString()}`
   );
 };
 
-const getPIPaginationWithDateRange = (currentPage, startDate, endDate) => {
-  return CustomAxios.get(
-    `/api/invoice/list-proforma-invoice/?page=${currentPage}&pi=all&date_range_after=${startDate}&date_range_before=${endDate}`
-  );
-};
-
-const getPIPaginationWithFilterByWithDateRange = (
-  currentPage,
-  startDate,
-  endDate,
-  filter,
-  filterValue,
-  search,
-  searchValue
-) => {
-  return CustomAxios.get(
-    `/api/invoice/list-proforma-invoice/?page=${currentPage}&pi=all&date_range_after=${startDate}&date_range_before=${endDate}&${filter}=${filterValue}&${search}=${searchValue}`
-  );
-};
-
-// Generic function to get order book data
 const getAllPIData = (piType, page, filterType, filterValue, searchValue) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
@@ -147,19 +147,43 @@ const updateCustomerProformaInvoiceData = (id, data) => {
 };
 
 // All order Api
-// Generic function to get order book data
-const getOrderBookData = ({
-  type,
+const getOrderBookData = (
+  orderingType,
   page,
-  filterType,
-  filterValue,
-  searchValue,
-}) => {
-  let url = `/api/invoice/list-order-book/?ordering=${type}`;
-  if (page) url += `&page=${page}`;
-  if (filterType && filterValue) url += `&${filterType}=${filterValue}`;
-  if (searchValue) url += `&search=${searchValue}`;
-  return CustomAxios.get(url);
+  filterBySellerUnit,
+  filterBySellerEmail,
+  searchValue
+) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
+  if (orderingType) {
+    params.append("ordering", orderingType);
+  }
+
+  if (page) {
+    params.append("page", page);
+  }
+
+  if (filterBySellerUnit) {
+    params.append(
+      "orderbook__proforma_invoice__seller_account__state",
+      filterBySellerUnit
+    );
+  }
+
+  if (filterBySellerEmail) {
+    params.append(
+      "orderbook__proforma_invoice__raised_by__email",
+      filterBySellerEmail
+    );
+  }
+
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+
+  // Sending a GET request with query parameters
+  return CustomAxios.get(`api/invoice/list-order-book/?${params.toString()}`);
 };
 
 // Generic function to update order book data
@@ -290,24 +314,6 @@ const getDispatchData = (dispatchedValue, page, unitFilter, searchValue) => {
   );
 };
 
-const getDispatchDataWithSearch = (value, search) => {
-  return CustomAxios.get(
-    `/api/invoice/list-dispatch-book/?dispatched=${value}&search=${search}`
-  );
-};
-
-const getDispatchSearchWithPagination = (value, search, currentPage) => {
-  return CustomAxios.get(
-    `/api/invoice/list-dispatch-book/?dispatched=${value}&search=${search}&page=${currentPage}`
-  );
-};
-
-const getDispatchDataWithPagination = (value, currentPage) => {
-  return CustomAxios.get(
-    `/api/invoice/list-dispatch-book/?dispatched=${value}&page=${currentPage}`
-  );
-};
-
 const updateDispatched = (id, data) => {
   return CustomAxios.patch(`/api/invoice/list-dispatch-book/${id}`, data);
 };
@@ -374,10 +380,7 @@ const InvoiceServices = {
   getOrderBookDataByID,
   getSellerAccountDataById,
   updateSellerAccountData,
-  getPIDataWithDateRange,
-  getPISearchWithDateRange,
-  getPIPaginationWithDateRange,
-  getPIPaginationWithFilterByWithDateRange,
+  getAllPIWithDateRange,
   getAllPIData,
   getCompanyPerformaInvoiceByIDData,
   getLeadsPerformaInvoiceByIDData,
@@ -399,9 +402,6 @@ const InvoiceServices = {
   getSalesnvoiceDataById,
   getAllSaleRegisterData,
   getDispatchData,
-  getDispatchSearchWithPagination,
-  getDispatchDataWithSearch,
-  getDispatchDataWithPagination,
   updateDispatched,
   getAllDashboardData,
   getFilterDashboardData,

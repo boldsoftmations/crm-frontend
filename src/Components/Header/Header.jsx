@@ -81,7 +81,7 @@ export const Header = () => {
   const getAllTaskDetails = async () => {
     try {
       setOpen(true);
-      const response = await TaskService.getAllTaskData({ page: "all" });
+      const response = await TaskService.getAllTaskData("all");
       setTask(response.data);
     } catch (err) {
       console.log(err);

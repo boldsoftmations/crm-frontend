@@ -25,24 +25,43 @@ const getAllCustomerData = (statusValue, page, assignToFilter, searchValue) => {
   return CustomAxios.get(`/api/customer/list-company/?${params.toString()}`);
 };
 
-const getIncompleteKycCustomerData = ({
-  page,
-  assignToFilter,
-  searchValue,
-}) => {
-  let url = `/api/customer/list-company/?is_verified=false&`;
-  if (page) url += `page=${page}&`;
-  if (assignToFilter) url += `assigned_to__email=${assignToFilter}&`;
-  if (searchValue) url += `search=${searchValue}&`;
-  return CustomAxios.get(url);
+const getIncompleteKycCustomerData = (page, assignToFilter, searchValue) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
+
+  params.append("is_verified", false);
+
+  if (page) {
+    params.append("page", page);
+  }
+
+  if (assignToFilter) {
+    params.append("assigned_to__email", assignToFilter);
+  }
+
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+
+  return CustomAxios.get(`/api/customer/list-company/?${params.toString()}`);
 };
 
 // Inactive customer api
-const getInActiveCustomerData = ({ page, searchValue }) => {
-  let url = `/api/customer/list-company/?is_active=false`;
-  if (page) url += `&page=${page}`;
-  if (searchValue) url += `&search=${searchValue}`;
-  return CustomAxios.get(url);
+const getInActiveCustomerData = (page, searchValue) => {
+  const params = new URLSearchParams();
+
+  params.append("is_active", false);
+
+  if (page) {
+    params.append("page", page);
+  }
+
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+
+  // Sending a GET request with query parameters
+  return CustomAxios.get(`api/customer/list-company/?${params.toString()}`);
 };
 
 const createCompanyData = (data) => {
@@ -68,27 +87,21 @@ const updateCompanyData = (id, data) => {
 };
 
 // Unassigned Company api endpoint
-const getUnassignedData = () => {
-  return CustomAxios.get(`/api/customer/list-company/?unassigned=true`);
-};
+const getUnassignedData = (page, searchValue) => {
+  const params = new URLSearchParams();
 
-const getSearchByUnassignedData = (search) => {
-  return CustomAxios.get(
-    `/api/customer/list-company/?unassigned=true&search=${search}`
-  );
-};
+  params.append("unassigned", true);
 
-const getPaginationByUnassignedData = (page) => {
-  return CustomAxios.get(
-    `/api/customer/list-company/?unassigned=true&page=${page}`
-  );
-};
+  if (page) {
+    params.append("page", page);
+  }
 
-const getSearchandPaginationByUnassignedData = (page, search) => {
-  const encodedSearch = encodeURIComponent(search);
-  return CustomAxios.get(
-    `/api/customer/list-company/?unassigned=true&page=${page}&search=${encodedSearch}`
-  );
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+
+  // Sending a GET request with query parameters
+  return CustomAxios.get(`api/customer/list-company/?${params.toString()}`);
 };
 
 const getBankDataById = (id) => {
@@ -337,9 +350,6 @@ const CustomerServices = {
   getSalesHistoryDataByIdWithType,
   updateCompanyData,
   getUnassignedData,
-  getSearchByUnassignedData,
-  getPaginationByUnassignedData,
-  getSearchandPaginationByUnassignedData,
   getBankDataById,
   createBankData,
   updateBankData,

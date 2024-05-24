@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import LeadServices from "../../services/LeadService";
 import TaskService from "../../services/TaskService";
 import { CustomTable } from "../../Components/CustomTable";
 import { CustomPagination } from "../../Components/CustomPagination";
-import { CustomSearchWithButton } from "./../../Components/CustomSearchWithButton";
 import { CustomLoader } from "../../Components/CustomLoader";
 import { Popup } from "../../Components/Popup";
 import { TaskUpdate } from "./TaskUpdate";
 import { TaskCreate } from "./TaskCreate";
 import { TaskActivityCreate } from "./TaskActivityCreate";
 import { useSelector } from "react-redux";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Grid, Paper } from "@mui/material";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../Components/MessageAlert";
+import SearchComponent from "../../Components/SearchComponent ";
 
 export const TaskView = () => {
   const [openPopup, setOpenPopup] = useState(false);
@@ -33,20 +33,6 @@ export const TaskView = () => {
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
-  const handleFilterChange = (value) => {
-    setFilterSelectedQuery(value);
-    getSearchData(value, searchValue);
-  };
-  const handleInputChange = () => {
-    setSearchValue(searchValue);
-    getSearchData(filterSelectedQuery, searchValue);
-  };
-
-  const getResetData = async () => {
-    setSearchValue("");
-    await getAllTaskDetails();
-  };
-
   const openInPopup = (item) => {
     const matchedActivity = task.find((activity) => activity.id === item.id);
     setActivity(matchedActivity.activities);
@@ -61,97 +47,60 @@ export const TaskView = () => {
     setOpenModalActivity(true);
   };
 
-  useEffect(() => {
-    getAssignedData();
-    getAllTaskDetails();
-  }, []);
-
   const getAssignedData = async (id) => {
     try {
       setOpen(true);
       const res = await LeadServices.getAllAssignedUser();
       setAssigned(res.data);
-      setOpen(false);
     } catch (error) {
       handleError(error);
-      console.log("error", error);
+    } finally {
       setOpen(false);
     }
   };
 
-  const getAllTaskDetails = async () => {
+  useEffect(() => {
+    getAssignedData();
+  }, []);
+
+  const getAllTaskDetails = useCallback(async () => {
     try {
       setOpen(true);
-      const response = await TaskService.getAllTaskData({
-        page: currentPage,
-        assignToFilter: filterSelectedQuery,
-        searchValue: searchValue,
-      });
-
+      const response = await TaskService.getAllTaskData(
+        currentPage,
+        filterSelectedQuery,
+        searchValue
+      );
       setTask(response.data.results);
-      const total = response.data.count;
-      setTotalPages(Math.ceil(total / 25));
-    } catch (err) {
-      handleError(err);
-    } finally {
-      setOpen(false);
-    }
-  };
-
-  const getSearchData = async (filterValue, searchValue) => {
-    try {
-      setOpen(true);
-
-      const response = await TaskService.getAllTaskData({
-        assignToFilter: filterValue,
-        searchValue: searchValue,
-      });
-      if (response) {
-        setTask(response.data.results);
-        const total = response.data.count;
-        setTotalPages(Math.ceil(total / 25));
-      } else {
-        await getAllTaskDetails();
-        setFilterSelectedQuery("");
-        setSearchValue("");
-      }
+      setTotalPages(Math.ceil(response.data.count / 25));
     } catch (error) {
       handleError(error);
-      console.log("error Search leads", error);
     } finally {
       setOpen(false);
     }
+  }, [currentPage, filterSelectedQuery, searchValue]);
+
+  useEffect(() => {
+    getAllTaskDetails();
+  }, [currentPage, filterSelectedQuery, searchValue]);
+
+  const handleSearch = (query) => {
+    setSearchValue(query);
+    setCurrentPage(1); // Reset to first page with new search
   };
 
-  const handlePageChange = async (event, value) => {
-    try {
-      const page = value;
-      setCurrentPage(page);
-      setOpen(true);
+  const handleReset = () => {
+    setSearchValue("");
+    setCurrentPage(1); // Reset to first page with no search query
+  };
 
-      const response =
-        filterSelectedQuery || searchValue
-          ? await TaskService.getAllTaskData({
-              page: page,
-              assignToFilter: filterSelectedQuery,
-              searchValue: searchValue,
-            })
-          : await TaskService.getAllTaskData({ page: page });
+  const handleFilterChange = (value) => {
+    setFilterSelectedQuery(value);
+    setCurrentPage(1);
+  };
 
-      if (response) {
-        setTask(response.data.results);
-        const total = response.data.count;
-        setTotalPages(Math.ceil(total / 25));
-      } else {
-        await getAllTaskDetails();
-        setFilterSelectedQuery("");
-      }
-    } catch (error) {
-      handleError(error);
-      console.log("error", error);
-    } finally {
-      setOpen(false);
-    }
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
   };
 
   const PriorityColor = task.map((row) => {
@@ -204,48 +153,44 @@ export const TaskView = () => {
         message={alertInfo.message}
       />
       <CustomLoader open={open} />
-      <div>
-        <div
-          style={{
-            padding: "16px",
-            margin: "16px",
-            boxShadow: "0px 3px 6px #00000029",
-            borderRadius: "4px",
-            display: "flex",
-            flexDirection: "column",
-            backgroundColor: "rgb(255, 255, 255)", // set background color to default Paper color
-          }}
-        >
-          <Box display="flex" marginBottom="10px">
-            {!UsersData.groups.includes("Sales Executive") && (
-              <CustomAutocomplete
-                size="small"
-                sx={{ width: 300 }}
-                onChange={(event, value) => handleFilterChange(value)}
-                value={filterSelectedQuery}
-                options={assignedOption.map((option) => option.email)}
-                getOptionLabel={(option) => option}
-                label="Filter By Sales Person"
-              />
-            )}
-            <CustomSearchWithButton
-              filterSelectedQuery={searchValue}
-              setFilterSelectedQuery={setSearchValue}
-              handleInputChange={handleInputChange}
-              getResetData={getResetData}
-            />
-            <Button
-              variant="contained"
-              onClick={() => setOpenPopup(true)}
-              style={{
-                backgroundColor: "#006ba1",
-                color: "#fff",
-                marginLeft: "auto",
-                marginRight: "1em",
-              }}
-            >
-              Create Task
-            </Button>
+      <Grid item xs={12}>
+        <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
+          <Box marginBottom="10px">
+            <Grid container spacing={2}>
+              {!UsersData.groups.includes("Sales Executive") && (
+                <Grid item xs={12} sm={4}>
+                  <CustomAutocomplete
+                    size="small"
+                    fullWidth
+                    onChange={(event, value) => handleFilterChange(value)}
+                    value={filterSelectedQuery}
+                    options={assignedOption.map((option) => option.email)}
+                    getOptionLabel={(option) => option}
+                    label="Filter By Sales Person"
+                  />
+                </Grid>
+              )}
+              <Grid item xs={12} sm={4}>
+                <SearchComponent
+                  onSearch={handleSearch}
+                  onReset={handleReset}
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Button
+                  variant="contained"
+                  onClick={() => setOpenPopup(true)}
+                  style={{
+                    backgroundColor: "#006ba1",
+                    color: "#fff",
+                    marginLeft: "auto",
+                    marginRight: "1em",
+                  }}
+                >
+                  Create Task
+                </Button>
+              </Grid>
+            </Grid>
           </Box>
           <Box display="flex" alignItems="center" justifyContent="center">
             <h3
@@ -272,12 +217,12 @@ export const TaskView = () => {
             PriorityColor={PriorityColor}
           />
           <CustomPagination
-            currentPage={currentPage}
             totalPages={totalPages}
+            currentPage={currentPage}
             handlePageChange={handlePageChange}
           />
-        </div>
-      </div>
+        </Paper>
+      </Grid>
       <Popup
         title={"Create Task"}
         openPopup={openPopup}

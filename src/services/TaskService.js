@@ -1,12 +1,23 @@
 import CustomAxios from "./api";
 
 // Generic function to get order book data
-const getAllTaskData = ({ page, assignToFilter, searchValue }) => {
-  let url = `/api/task/list-tasks/?`;
-  if (page) url += `page=${page}&`;
-  if (assignToFilter) url += `assigned_to__email=${assignToFilter}&`;
-  if (searchValue) url += `search=${searchValue}&`;
-  return CustomAxios.get(url);
+
+const getAllTaskData = (page, assignToFilter, searchValue) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
+
+  if (page) {
+    params.append("page", page);
+  }
+
+  if (assignToFilter) {
+    params.append("assigned_to__email", assignToFilter);
+  }
+
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+  return CustomAxios.get(`api/task/list-tasks/?${params.toString()}`);
 };
 
 const createTask = (data) => {

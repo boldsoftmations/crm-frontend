@@ -1,21 +1,22 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Popup } from "./../../../Components/Popup";
 import CustomerServices from "../../../services/CustomerService";
-import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
 import { useDispatch, useSelector } from "react-redux";
 import { getSellerAccountData } from "../../../Redux/Action/Action";
 import InvoiceServices from "../../../services/InvoiceService";
 import { CustomLoader } from "../../../Components/CustomLoader";
-import { CustomSearchWithButton } from "../../../Components/CustomSearchWithButton";
 import { BulkCustomerAssign } from "./BulkCustomerAssign";
 import { CustomTable } from "./../../../Components/CustomTable";
 import { CustomPagination } from "../../../Components/CustomPagination";
 import { CSVLink } from "react-csv";
-import { Button } from "@mui/material";
+import { Button, Grid, Paper } from "@mui/material";
 import { Helmet } from "react-helmet";
 import { Box } from "@mui/material";
 import KycUpdate from "../KycDetails/KycUpdate";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../../Components/MessageAlert";
+import SearchComponent from "../../../Components/SearchComponent ";
 
 export const IncompleteKycDetails = () => {
   const dispatch = useDispatch();
@@ -23,8 +24,6 @@ export const IncompleteKycDetails = () => {
   const [openModal, setOpenModal] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [open, setOpen] = useState(false);
-  const errRef = useRef();
-  const [errMsg, setErrMsg] = useState("");
   const [companyData, setCompanyData] = useState([]);
   const [recordForEdit, setRecordForEdit] = useState();
   const [currentPage, setCurrentPage] = useState(1);
@@ -37,6 +36,8 @@ export const IncompleteKycDetails = () => {
   const userData = data.profile;
   const assigned = userData.sales_users || [];
   const [isPrinting, setIsPrinting] = useState(false);
+  const { handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   useEffect(() => {
     const beforePrint = () => {
@@ -96,11 +97,11 @@ export const IncompleteKycDetails = () => {
   const handleExport = async () => {
     try {
       setOpen(true);
-      let response = await CustomerServices.getIncompleteKycCustomerData({
-        page: "all",
-        assignToFilter: filterSelectedQuery,
-        searchValue: searchQuery,
-      });
+      let response = await CustomerServices.getIncompleteKycCustomerData(
+        "all",
+        filterSelectedQuery,
+        searchQuery
+      );
       const data = response.data.map((row) => {
         return {
           id: row.id,
@@ -128,20 +129,13 @@ export const IncompleteKycDetails = () => {
             .join(", "),
         };
       });
-      console.log("data", data);
       setOpen(false);
       return data;
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      handleError(error);
     } finally {
       setOpen(false);
     }
-  };
-
-  const getResetData = () => {
-    getSearchData("", "");
-    setSearchQuery("");
-    setFilterSelectedQuery("");
   };
 
   const openInPopup = (item) => {
@@ -153,21 +147,6 @@ export const IncompleteKycDetails = () => {
     setOpenSnackbar(false);
   };
 
-  const handleSearchChange = () => {
-    setSearchQuery(searchQuery);
-    getSearchData(filterSelectedQuery, searchQuery);
-  };
-
-  const handleFilterChange = (filterSelectedValue) => {
-    setFilterSelectedQuery(filterSelectedValue);
-    getSearchData(filterSelectedValue, searchQuery);
-  };
-
-  useEffect(() => {
-    getAllSellerAccountsDetails();
-    getIncompleteKycCustomerData();
-  }, []);
-
   const getAllSellerAccountsDetails = async () => {
     try {
       setOpen(true);
@@ -176,105 +155,54 @@ export const IncompleteKycDetails = () => {
       );
       dispatch(getSellerAccountData(response.data));
       setOpen(false);
-    } catch (err) {
-      setOpen(false);
-    }
-  };
-
-  const getIncompleteKycCustomerData = async () => {
-    try {
-      setOpen(true);
-      const filterValue = filterSelectedQuery || null;
-      const searchValue = searchQuery || null;
-
-      let response;
-      if (filterValue || searchValue) {
-        response = await CustomerServices.getIncompleteKycCustomerData({
-          page: currentPage,
-          assignToFilter: filterValue,
-          searchValue: searchValue,
-        });
-      } else {
-        response = await CustomerServices.getIncompleteKycCustomerData({
-          page: currentPage,
-        });
-      }
-      setCompanyData(response.data.results);
-      setTotalPages(Math.ceil(response.data.count / 25));
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      if (!err.response) {
-        setErrMsg(
-          "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
-        );
-      } else if (err.response.status === 400) {
-        setErrMsg(
-          err.response.data.errors.name
-            ? err.response.data.errors.name
-            : err.response.data.errors.non_field_errors
-        );
-      } else if (err.response.status === 401) {
-        setErrMsg(err.response.data.errors.code);
-      } else {
-        setErrMsg("Server Error");
-      }
-      errRef.current.focus();
-    }
-  };
-
-  const getSearchData = async (filterValue, searchValue) => {
-    try {
-      setOpen(true);
-      console.log("filterValue", filterValue);
-      console.log("searchValue", searchValue);
-      console.log("currentPage", currentPage);
-      let response;
-      if (filterValue || searchValue) {
-        response = await CustomerServices.getIncompleteKycCustomerData({
-          assignToFilter: filterValue,
-          searchValue: searchValue,
-          page: currentPage,
-        });
-      } else {
-        response = await CustomerServices.getIncompleteKycCustomerData({
-          page: currentPage,
-        });
-      }
-      setCompanyData(response.data.results);
-      setTotalPages(Math.ceil(response.data.count / 25));
-      setOpen(false);
     } catch (error) {
-      console.log("error Search leads", error);
+      handleError(error);
+    } finally {
       setOpen(false);
     }
   };
-  const handlePageChange = async (event, value) => {
+
+  useEffect(() => {
+    getAllSellerAccountsDetails();
+  }, []);
+
+  const getIncompleteKycCustomerData = useCallback(async () => {
     try {
-      const page = value;
-      setCurrentPage(page);
       setOpen(true);
-      let response;
-      if (filterSelectedQuery || searchQuery) {
-        response = await CustomerServices.getIncompleteKycCustomerData({
-          page: page,
-          assignToFilter: filterSelectedQuery,
-          searchValue: searchQuery,
-        });
-      } else {
-        response = await CustomerServices.getIncompleteKycCustomerData({
-          page: page,
-        });
-        setCompanyData(response.data.results);
-      }
+      const response = await CustomerServices.getIncompleteKycCustomerData(
+        currentPage,
+        filterSelectedQuery,
+        searchQuery
+      );
       setCompanyData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
-
-      setOpen(false);
     } catch (error) {
-      console.log("error", error);
+      handleError(error);
+    } finally {
       setOpen(false);
     }
+  }, [currentPage, filterSelectedQuery, searchQuery]); // Ensure dependencies are correctly listed
+
+  useEffect(() => {
+    getIncompleteKycCustomerData();
+  }, [currentPage, filterSelectedQuery, searchQuery]);
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    setCurrentPage(1); // Reset to first page with new search
+  };
+
+  const handleReset = () => {
+    setSearchQuery("");
+    setCurrentPage(1); // Reset to first page with no search query
+  };
+
+  const handleFilterChange = (filterSelectedValue) => {
+    setFilterSelectedQuery(filterSelectedValue);
+  };
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
   };
 
   const Tableheaders = [
@@ -311,159 +239,143 @@ export const IncompleteKycDetails = () => {
           `}
         </style>
       </Helmet>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
-      <ErrorMessage errRef={errRef} errMsg={errMsg} />
-      <div
-        style={{
-          padding: "16px",
-          margin: "16px",
-          boxShadow: "0px 3px 6px #00000029",
-          borderRadius: "4px",
-          display: "flex",
-          flexDirection: "column",
-          backgroundColor: "rgb(255, 255, 255)", // set background color to default Paper color
-        }}
-      >
-        <Box display="flex" alignItems="center">
-          {!userData.groups.includes("Sales Executive") && (
-            <CustomAutocomplete
-              size="small"
-              sx={{ width: 300 }}
-              onChange={(event, value) => handleFilterChange(value)}
-              value={filterSelectedQuery}
-              options={assigned.map((option) => option.email)}
-              getOptionLabel={(option) => option}
-              label="Filter By Sales Person"
-            />
-          )}
-          <CustomSearchWithButton
-            filterSelectedQuery={searchQuery}
-            setFilterSelectedQuery={setSearchQuery}
-            handleInputChange={handleSearchChange}
-            getResetData={getResetData}
-          />
+      <Grid item xs={12}>
+        <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
+          <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
+            <Grid container spacing={2}>
+              {!userData.groups.includes("Sales Executive") && (
+                <Grid item xs={12} sm={4}>
+                  <CustomAutocomplete
+                    size="small"
+                    fullWidth
+                    onChange={(event, value) => handleFilterChange(value)}
+                    value={filterSelectedQuery}
+                    options={assigned.map((option) => option.email)}
+                    getOptionLabel={(option) => option}
+                    label="Filter By Sales Person"
+                  />
+                </Grid>
+              )}
+              <Grid item xs={12} sm={4}>
+                <SearchComponent
+                  onSearch={handleSearch}
+                  onReset={handleReset}
+                />
+              </Grid>
 
-          <Button
-            variant="contained"
-            onClick={() => getResetData()}
-            sx={{ marginLeft: "10px", marginRight: "10px" }}
-            size="small"
-          >
-            Reset
-          </Button>
+              <Grid item xs={12} sm={4}>
+                {userData.is_staff === true && (
+                  <Button
+                    variant="contained"
+                    onClick={() => setOpenModal(true)}
+                    sx={{ marginLeft: "10px", marginRight: "10px" }}
+                  >
+                    Assign Bulk Customer
+                  </Button>
+                )}
 
-          {userData.is_staff === true && (
-            <Button
-              variant="contained"
-              onClick={() => setOpenModal(true)}
-              sx={{ marginLeft: "10px", marginRight: "10px" }}
-              size="small"
+                <Button variant="contained" onClick={handleDownload}>
+                  Download CSV
+                </Button>
+                {exportData.length > 0 && (
+                  <CSVLink
+                    data={exportData}
+                    headers={headers}
+                    ref={csvLinkRef}
+                    filename="Customer.csv"
+                    target="_blank"
+                    style={{
+                      textDecoration: "none",
+                      outline: "none",
+                      height: "5vh",
+                    }}
+                  />
+                )}
+              </Grid>
+            </Grid>
+          </Box>
+
+          <Box display="flex" alignItems="center" justifyContent="center">
+            <h3
+              style={{
+                textAlign: "left",
+                marginBottom: "1em",
+                fontSize: "24px",
+                color: "rgb(34, 34, 34)",
+                fontWeight: 800,
+              }}
             >
-              Assign Bulk Customer
-            </Button>
-          )}
-
-          <Button variant="contained" onClick={handleDownload}>
-            Download CSV
-          </Button>
-        </Box>
-
-        {exportData.length > 0 && (
-          <CSVLink
-            data={exportData}
-            headers={headers}
-            ref={csvLinkRef}
-            filename="Customer.csv"
-            target="_blank"
+              Incomplete KYC Details
+            </h3>
+          </Box>
+          <div
             style={{
-              textDecoration: "none",
-              outline: "none",
-              height: "5vh",
-            }}
-          />
-        )}
-
-        <div
-          style={{
-            position: "fixed",
-            top: "20px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            backgroundColor: "green",
-            color: "white",
-            padding: "10px",
-            borderRadius: "4px",
-            display: openSnackbar ? "block" : "none",
-            zIndex: 9999,
-          }}
-        >
-          <span style={{ marginRight: "10px" }}>
-            Bulk Customer Assigned Successfully!
-          </span>
-          <button
-            style={{
-              backgroundColor: "transparent",
-              border: "none",
+              position: "fixed",
+              top: "20px",
+              left: "50%",
+              transform: "translateX(-50%)",
+              backgroundColor: "green",
               color: "white",
-              cursor: "pointer",
-              padding: "0",
+              padding: "10px",
+              borderRadius: "4px",
+              display: openSnackbar ? "block" : "none",
+              zIndex: 9999,
             }}
-            onClick={handleSnackbarClose}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              fill="currentColor"
-              viewBox="0 0 16 16"
+            <span style={{ marginRight: "10px" }}>
+              Bulk Customer Assigned Successfully!
+            </span>
+            <button
+              style={{
+                backgroundColor: "transparent",
+                border: "none",
+                color: "white",
+                cursor: "pointer",
+                padding: "0",
+              }}
+              onClick={handleSnackbarClose}
             >
-              <path
-                fillRule="evenodd"
-                d="M8 7.293l2.146-2.147a.5.5 0 11.708.708L8.707 8l2.147 2.146a.5.5 0 01-.708.708L8 8.707l-2.146 2.147a.5.5 0 01-.708-.708L7.293 8 5.146 5.854a.5.5 0 01.708-.708L8 7.293z"
-              />
-            </svg>
-          </button>
-        </div>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M8 7.293l2.146-2.147a.5.5 0 11.708.708L8.707 8l2.147 2.146a.5.5 0 01-.708.708L8 8.707l-2.146 2.147a.5.5 0 01-.708-.708L7.293 8 5.146 5.854a.5.5 0 01.708-.708L8 7.293z"
+                />
+              </svg>
+            </button>
+          </div>
 
-        <Box display="flex" alignItems="center" justifyContent="center">
-          <h3
-            style={{
-              textAlign: "left",
-              marginBottom: "1em",
-              fontSize: "24px",
-              color: "rgb(34, 34, 34)",
-              fontWeight: 800,
-            }}
-          >
-            Incomplete KYC Details
-          </h3>
-        </Box>
-        <CustomTable
-          headers={Tableheaders}
-          data={Tabledata}
-          openInPopup={openInPopup}
-          openInPopup2={null}
-          openInPopup3={null}
-          openInPopup4={null}
-          ButtonText={"PI"}
-          ButtonText1={"Activity"}
-          ButtonText2={"Potential"}
-        />
+          <CustomTable
+            headers={Tableheaders}
+            data={Tabledata}
+            openInPopup={openInPopup}
+            openInPopup2={null}
+            openInPopup3={null}
+            openInPopup4={null}
+            ButtonText={"PI"}
+            ButtonText1={"Activity"}
+            ButtonText2={"Potential"}
+          />
 
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            // marginTop: "2em",
-          }}
-        >
           <CustomPagination
             currentPage={currentPage}
             totalPages={totalPages}
             handlePageChange={handlePageChange}
           />
-        </div>
-      </div>
+        </Paper>
+      </Grid>
       <Popup
         fullScreen={true}
         title={"Update Customer"}

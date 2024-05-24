@@ -1,42 +1,28 @@
-import React, { useState, useEffect, useRef } from "react";
-
-import {
-  Box,
-  Grid,
-  Button,
-  Paper,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-} from "@mui/material";
+import React, { useState, useEffect, useCallback } from "react";
+import { Box, Grid, Paper } from "@mui/material";
 import InvoiceServices from "../../../services/InvoiceService";
 import { Popup } from "../../../Components/Popup";
 import { getSellerAccountData } from "../../../Redux/Action/Action";
 import { useDispatch, useSelector } from "react-redux";
 import { CustomLoader } from "../../../Components/CustomLoader";
-import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 import { CustomTable } from "../../../Components/CustomTable";
 import { CustomPagination } from "../../../Components/CustomPagination";
 import { AllProformaInvoiceView } from "./AllProformaInvoiceView";
-import CustomTextField from "../../../Components/CustomTextField";
-import { CustomSearchWithButton } from "../../../Components/CustomSearchWithButton";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import CustomSelect from "../../../Components/CustomSelect";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../../Components/MessageAlert";
+import SearchComponent from "../../../Components/SearchComponent ";
 
 export const AllProformaInvoice = () => {
   const dispatch = useDispatch();
-  const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [idForEdit, setIDForEdit] = useState();
-  const errRef = useRef();
   const [open, setOpen] = useState(false);
-  const [errMsg, setErrMsg] = useState("");
   const [invoiceData, setInvoiceData] = useState([]);
   const [filterType, setFilterType] = useState("");
+  const [filterValue, setFilterValue] = useState("");
   const [searchValue, setSearchValue] = useState("");
-  const [statusValue, setStatusValue] = useState("");
-  const [typeValue, setTypeValue] = useState("");
-  const [assign, setAssign] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const data = useSelector((state) => state.auth);
@@ -48,6 +34,11 @@ export const AllProformaInvoice = () => {
   };
   const [startDate, setStartDate] = useState(getFirstDayOfMonth(new Date()));
   const [selectedTimeRange, setSelectedTimeRange] = useState("monthly");
+  const { handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
+
+  const clearFilterType = () => setFilterType("");
+  const clearFilterValue = () => setFilterValue("");
 
   const FilterOptions = [
     { label: "Status", value: "status" },
@@ -56,6 +47,11 @@ export const AllProformaInvoice = () => {
       ? [{ label: "Sales Person", value: "raised_by__email" }]
       : []),
   ];
+
+  const AssignedOptions = assigned.map((user) => ({
+    label: user.email,
+    value: user.email,
+  }));
 
   const handleSelectChange = (value) => {
     const today = new Date();
@@ -102,52 +98,10 @@ export const AllProformaInvoice = () => {
     setEndDate(newEndDate);
   };
 
-  const handleSearchValue = () => {
-    setSearchValue(searchValue);
-    getSearchData(statusValue || typeValue);
-  };
-
-  const handleStatusValue = (event) => {
-    setStatusValue(event.target.value);
-    getSearchData(event.target.value);
-  };
-
-  const handleTypeValue = (event) => {
-    setTypeValue(event.target.value);
-    getSearchData(event.target.value);
-  };
-
-  const handleAssignValue = (event) => {
-    setAssign(event.target.value);
-    getSearchData(event.target.value);
-  };
-
-  const getResetData = () => {
-    setSearchValue("");
-    setStatusValue("");
-    setTypeValue("");
-    setFilterType("");
-    getProformaInvoiceData();
-  };
-
-  const getResetSearchData = () => {
-    setSearchValue("");
-    getProformaInvoiceData();
-  };
-
   const openInPopup = (item) => {
     setIDForEdit(item);
     setOpenPopup2(true);
   };
-
-  const openInPopup2 = (item) => {
-    setIDForEdit(item);
-    setOpenPopup(true);
-  };
-
-  useEffect(() => {
-    getAllSellerAccountsDetails();
-  }, []);
 
   const getAllSellerAccountsDetails = async () => {
     try {
@@ -156,131 +110,65 @@ export const AllProformaInvoice = () => {
         "all"
       );
       dispatch(getSellerAccountData(response.data));
-      setOpen(false);
-    } catch (err) {
+    } catch (error) {
+      handleError(error);
+    } finally {
       setOpen(false);
     }
   };
 
   useEffect(() => {
-    getProformaInvoiceData();
-  }, [startDate]);
-  const getProformaInvoiceData = async () => {
+    getAllSellerAccountsDetails();
+  }, []);
+
+  const getProformaInvoiceData = useCallback(async () => {
     try {
       setOpen(true);
       const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
       const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
-      const response = currentPage
-        ? await InvoiceServices.getPIPaginationWithDateRange(
-            currentPage,
-            StartDate,
-            EndDate
-          )
-        : await InvoiceServices.getPIDataWithDateRange(StartDate, EndDate);
+      const response = await InvoiceServices.getAllPIWithDateRange(
+        StartDate,
+        EndDate,
+        "all",
+        currentPage,
+        filterType,
+        filterValue,
+        searchValue
+      );
       setInvoiceData(response.data.results);
-      const total = response.data.count;
-      setTotalPages(Math.ceil(total / 25));
-      console.log("response filters", response);
-
+      setTotalPages(Math.ceil(response.data.count / 25));
+    } catch (error) {
+      handleError(error);
+    } finally {
       setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      if (!err.response) {
-        setErrMsg(
-          "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
-        );
-      } else if (err.response.status === 400) {
-        setErrMsg(
-          err.response.data.errors.name
-            ? err.response.data.errors.name
-            : err.response.data.errors.non_field_errors
-        );
-      } else if (err.response.status === 401) {
-        setErrMsg(err.response.data.errors.code);
-      } else {
-        setErrMsg("Server Error");
-      }
-      errRef.current.focus();
     }
+  }, [startDate, currentPage, filterType, filterValue, searchValue]);
+
+  useEffect(() => {
+    getProformaInvoiceData();
+  }, [startDate, currentPage, filterType, filterValue, searchValue]);
+
+  const handleSearch = (query) => {
+    setSearchValue(query);
+    setCurrentPage(1); // Reset to first page with new search
   };
 
-  const getSearchData = async (filterValue) => {
-    try {
-      setOpen(true);
-      const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
-      const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
-      const Search = searchValue ? "search" : "";
-      if (filterValue || searchValue) {
-        const response = await InvoiceServices.getPISearchWithDateRange(
-          StartDate,
-          EndDate,
-          filterType,
-          filterValue,
-          Search,
-          searchValue
-        );
-        if (response) {
-          setInvoiceData(response.data.results);
-          const total = response.data.count;
-          setTotalPages(Math.ceil(total / 25));
-        } else {
-          getProformaInvoiceData();
-          setSearchValue(null);
-          setStatusValue(null);
-          setTypeValue(null);
-        }
-      }
-      setOpen(false);
-    } catch (error) {
-      console.log("error Search leads", error);
-      setOpen(false);
-    }
+  const handleReset = () => {
+    setSearchValue("");
+    setCurrentPage(1); // Reset to first page with no search query
   };
 
-  const handlePageChange = async (event, value) => {
-    try {
-      const page = value;
-      const Search = searchValue ? "search" : "";
-      setCurrentPage(page);
-      setOpen(true);
-      const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
-      const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
-      if (statusValue || typeValue || searchValue) {
-        const response =
-          await InvoiceServices.getPIPaginationWithFilterByWithDateRange(
-            StartDate,
-            EndDate,
-            "page",
-            page,
-            filterType,
-            statusValue || typeValue,
-            Search,
-            searchValue
-          );
-        if (response) {
-          setInvoiceData(response.data.results);
-          const total = response.data.count;
-          setTotalPages(Math.ceil(total / 25));
-        } else {
-          getProformaInvoiceData();
-          setSearchValue(null);
-          setStatusValue(null);
-          setTypeValue(null);
-        }
-      } else {
-        const response = await InvoiceServices.getPIPaginationWithDateRange(
-          page,
-          StartDate,
-          EndDate
-        );
-        setInvoiceData(response.data.results);
-      }
+  const handleFilterType = (event) => {
+    setFilterType(event.target.value);
+    setFilterValue(""); // Reset filter value when type changes
+  };
 
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
+  const handleFilterValueChange = (event) => {
+    setFilterValue(event.target.value);
+  };
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
   };
 
   const Tabledata = invoiceData.map((row, i) => ({
@@ -314,130 +202,86 @@ export const AllProformaInvoice = () => {
 
   return (
     <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
 
       <Grid item xs={12}>
-        <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
-          <Box display="flex" marginBottom="10px">
-            <CustomAutocomplete
-              sx={{ width: 300, marginRight: "10px" }}
-              size="small"
-              options={["yearly", "monthly", "weekly", "today", "last year"]}
-              value={selectedTimeRange}
-              onChange={(event, value) => handleSelectChange(value)}
-              label="Sort By"
-            />
-            <FormControl fullWidth size="small" sx={{ maxWidth: "200px" }}>
-              <InputLabel id="demo-simple-select-label">Fliter By</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                name="values"
-                label="Fliter By"
-                value={filterType}
-                onChange={(event) => setFilterType(event.target.value)}
-              >
-                {FilterOptions.map((option, i) => (
-                  <MenuItem key={i} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            {filterType === "status" && (
-              <FormControl
-                sx={{ minWidth: "200px", marginLeft: "1em" }}
-                size="small"
-              >
-                <InputLabel id="demo-simple-select-label">Status</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  name="values"
-                  label="Status"
-                  value={statusValue}
-                  onChange={(event) => handleStatusValue(event)}
-                >
-                  {StatusOptions.map((option, i) => (
-                    <MenuItem key={i} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            )}
-            {filterType === "type" && (
-              <FormControl
-                sx={{ minWidth: "200px", marginLeft: "1em" }}
-                size="small"
-              >
-                <InputLabel id="demo-simple-select-label">Type</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  name="values"
-                  label="Type"
-                  value={typeValue}
-                  onChange={(event) => handleTypeValue(event)}
-                >
-                  {TypeOptions.map((option, i) => (
-                    <MenuItem key={i} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            )}
-            {filterType === "raised_by__email" &&
-              !users.groups.includes("Sales Executive") && (
-                <FormControl
-                  sx={{ minWidth: "200px", marginLeft: "1em" }}
+          <Box marginBottom="10px">
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={3}>
+                <CustomAutocomplete
+                  fullWidth
                   size="small"
-                >
-                  <InputLabel id="demo-simple-select-label">
-                    Filter By Sales Person
-                  </InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    name="values"
-                    label="Filter By Sales Person"
-                    value={assign}
-                    onChange={(event) => handleAssignValue(event)}
-                    MenuProps={{
-                      PaperProps: {
-                        style: {
-                          maxHeight: 300,
-                          width: 250,
-                        },
-                      },
-                    }}
-                  >
-                    {assigned.map((option, i) => (
-                      <MenuItem key={i} value={option.email}>
-                        {option.email}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                  options={[
+                    "yearly",
+                    "monthly",
+                    "weekly",
+                    "today",
+                    "last year",
+                  ]}
+                  value={selectedTimeRange}
+                  onChange={(event, value) => handleSelectChange(value)}
+                  label="Sort By"
+                />
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <CustomSelect
+                  label="Filter By"
+                  options={FilterOptions}
+                  value={filterType}
+                  onChange={handleFilterType}
+                  onClear={clearFilterType}
+                />
+              </Grid>
+              {filterType === "status" && (
+                <Grid item xs={12} sm={3}>
+                  <CustomSelect
+                    label="Status"
+                    options={StatusOptions}
+                    value={filterValue}
+                    onChange={handleFilterValueChange}
+                    onClear={clearFilterValue}
+                  />
+                </Grid>
               )}
-            <CustomSearchWithButton
-              filterSelectedQuery={searchValue}
-              setFilterSelectedQuery={setSearchValue}
-              handleInputChange={handleSearchValue}
-              getResetData={getResetSearchData}
-            />
-            <Button
-              variant="contained"
-              color="primary"
-              sx={{ marginLeft: "1rem" }}
-              onClick={getResetData}
-            >
-              Reset All
-            </Button>
+              {filterType === "type" && (
+                <Grid item xs={12} sm={3}>
+                  <CustomSelect
+                    label="Type"
+                    options={TypeOptions}
+                    value={filterValue}
+                    onChange={handleFilterValueChange}
+                    onClear={clearFilterValue}
+                  />
+                </Grid>
+              )}
+              {filterType === "raised_by__email" &&
+                !users.groups.includes("Sales Executive") && (
+                  <Grid item xs={12} sm={3}>
+                    <CustomSelect
+                      label="Sales Person"
+                      options={AssignedOptions}
+                      value={filterValue}
+                      onChange={handleFilterValueChange}
+                      onClear={clearFilterValue}
+                    />
+                  </Grid>
+                )}
+              <Grid item xs={12} sm={3}>
+                <SearchComponent
+                  onSearch={handleSearch}
+                  onReset={handleReset}
+                />
+              </Grid>
+            </Grid>
           </Box>
+
           <Box display="flex" alignItems="center" justifyContent="center">
             <h3
               style={{

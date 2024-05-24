@@ -1,33 +1,29 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Grid, Button, Chip } from "@mui/material";
+import React, { useState, useEffect, useCallback } from "react";
+import { Grid, Button, Chip, Paper, Box } from "@mui/material";
 import { Popup } from "./../../../Components/Popup";
 import CustomerServices from "../../../services/CustomerService";
-import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
 import { CustomLoader } from "../../../Components/CustomLoader";
-import { CustomSearchWithButton } from "../../../Components/CustomSearchWithButton";
 import { CustomTable } from "./../../../Components/CustomTable";
 import { CustomPagination } from "../../../Components/CustomPagination";
 import LeadServices from "../../../services/LeadService";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import SearchComponent from "../../../Components/SearchComponent ";
+import { MessageAlert } from "../../../Components/MessageAlert";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 
 export const UnassignedCustomer = () => {
   const [openPopup, setOpenPopup] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [open, setOpen] = useState(false);
-  const errRef = useRef();
-  const [errMsg, setErrMsg] = useState("");
   const [companyData, setCompanyData] = useState([]);
   const [recordForEdit, setRecordForEdit] = useState();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [assigned, setAssigned] = useState([]);
   const [assign, setAssign] = useState([]);
-
-  const getResetData = () => {
-    setFilterSelectedQuery("");
-    getUnassignedCompanyDetails();
-  };
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   const openInPopup = (item) => {
     const matchedCompany = companyData.find(
@@ -40,16 +36,6 @@ export const UnassignedCustomer = () => {
   const handleSnackbarClose = () => {
     setOpenSnackbar(false);
   };
-
-  const handleInputChange = () => {
-    setFilterSelectedQuery(filterSelectedQuery);
-    getSearchData(filterSelectedQuery);
-  };
-
-  useEffect(() => {
-    getUnassignedCompanyDetails();
-    getAssignedData();
-  }, []);
 
   const getAssignedData = async (id) => {
     try {
@@ -69,108 +55,51 @@ export const UnassignedCustomer = () => {
         employee.groups.some((group) => ALLOWED_ROLES.includes(group))
       );
 
-      console.log("filteredData", filteredData);
       setAssigned(filteredData);
-      setOpen(false);
     } catch (error) {
-      console.log("error", error);
+      handleError(error);
+    } finally {
       setOpen(false);
     }
   };
 
-  const getUnassignedCompanyDetails = async () => {
+  useEffect(() => {
+    getAssignedData();
+  }, []);
+
+  const getUnassignedCompanyDetails = useCallback(async () => {
     try {
       setOpen(true);
-      if (currentPage) {
-        const response = await CustomerServices.getPaginationByUnassignedData(
-          currentPage
-        );
-        setCompanyData(response.data.results);
-        const total = response.data.count;
-        setTotalPages(Math.ceil(total / 25));
-      } else {
-        const response = await CustomerServices.getUnassignedData();
-        setCompanyData(response.data.results);
-        const total = response.data.count;
-        setTotalPages(Math.ceil(total / 25));
-      }
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      if (!err.response) {
-        setErrMsg(
-          "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
-        );
-      } else if (err.response.status === 400) {
-        setErrMsg(
-          err.response.data.errors.name
-            ? err.response.data.errors.name
-            : err.response.data.errors.non_field_errors
-        );
-      } else if (err.response.status === 401) {
-        setErrMsg(err.response.data.errors.code);
-      } else {
-        setErrMsg("Server Error");
-      }
-      errRef.current.focus();
-    }
-  };
-
-  const getSearchData = async (value) => {
-    try {
-      setOpen(true);
-      const filterSearch = encodeURIComponent(value);
-      if (filterSearch !== "") {
-        const response = await CustomerServices.getSearchByUnassignedData(
-          filterSearch
-        );
-        setCompanyData(response.data.results);
-        const total = response.data.count;
-        setTotalPages(Math.ceil(total / 25));
-      } else {
-        getUnassignedCompanyDetails();
-        setFilterSelectedQuery("");
-      }
-      setOpen(false);
+      const response = await CustomerServices.getUnassignedData(
+        currentPage,
+        searchQuery
+      );
+      setCompanyData(response.data.results);
+      setTotalPages(Math.ceil(response.data.count / 25));
     } catch (error) {
-      console.log("error Search leads", error);
+      handleError(error);
+    } finally {
       setOpen(false);
     }
-  };
-  const handlePageChange = async (event, value) => {
-    try {
-      const page = value;
-      setCurrentPage(page);
-      setOpen(true);
+  }, [currentPage, searchQuery]); // Ensure dependencies are correctly listed
 
-      if (filterSelectedQuery) {
-        const response =
-          await CustomerServices.getSearchandPaginationByUnassignedData(
-            page,
-            filterSelectedQuery
-          );
-        if (response) {
-          setCompanyData(response.data.results);
-          const total = response.data.count;
-          setTotalPages(Math.ceil(total / 25));
-        } else {
-          getUnassignedCompanyDetails();
-          setFilterSelectedQuery("");
-        }
-      } else {
-        const response = await CustomerServices.getPaginationByUnassignedData(
-          page
-        );
-        setCompanyData(response.data.results);
-      }
+  useEffect(() => {
+    getUnassignedCompanyDetails();
+  }, [currentPage, searchQuery]);
 
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    setCurrentPage(1); // Reset to first page with new search
   };
-  console.log("recordForEdit", recordForEdit);
+
+  const handleReset = () => {
+    setSearchQuery("");
+    setCurrentPage(1); // Reset to first page with no search query
+  };
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
   const UpdateCompanyDetails = async (e) => {
     try {
       e.preventDefault();
@@ -189,14 +118,23 @@ export const UnassignedCustomer = () => {
         business_type: recordForEdit.business_type,
         assigned_to: assign ? assign : "",
       };
-      await CustomerServices.updateCompanyData(recordForEdit.id, req);
-      setOpenPopup(false);
-      getUnassignedCompanyDetails();
-      setAssign([]);
-      setOpen(false);
-    } catch (error) {
-      console.log("createing Unassigned company detail error", error);
+      const response = await CustomerServices.updateCompanyData(
+        recordForEdit.id,
+        req
+      );
+      const successMessage =
+        response.data.message || "Company Detail Updated Created successfully";
+      handleSuccess(successMessage);
 
+      setTimeout(() => {
+        setOpenPopup(false);
+        getUnassignedCompanyDetails();
+        setAssign([]);
+      }, 300);
+    } catch (error) {
+      handleError(error);
+      console.log("createing Unassigned company detail error", error);
+    } finally {
       setOpen(false);
     }
   };
@@ -220,44 +158,62 @@ export const UnassignedCustomer = () => {
   }));
   return (
     <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
-      <div>
-        <ErrorMessage errRef={errRef} errMsg={errMsg} />
-        <div
-          style={{
-            padding: "16px",
-            margin: "16px",
-            boxShadow: "0px 3px 6px #00000029",
-            borderRadius: "4px",
-            display: "flex",
-            flexDirection: "column",
-            backgroundColor: "rgb(255, 255, 255)", // set background color to default Paper color
-          }}
-        >
-          <div style={{ display: "flex" }}>
-            <div style={{ flexGrow: 0.9 }}>
-              <CustomSearchWithButton
-                filterSelectedQuery={filterSelectedQuery}
-                setFilterSelectedQuery={setFilterSelectedQuery}
-                handleInputChange={handleInputChange}
-                getResetData={getResetData}
-              />
-            </div>
-            <div style={{ flexGrow: 2 }}>
-              <h3
-                style={{
-                  textAlign: "left",
-                  marginBottom: "1em",
-                  fontSize: "24px",
-                  color: "rgb(34, 34, 34)",
-                  fontWeight: 800,
-                }}
+
+      <Grid item xs={12}>
+        <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
+          <Box
+            sx={{
+              p: 2,
+            }}
+          >
+            <Grid container spacing={2} alignItems="center">
+              {/* Search Component on the left */}
+              <Grid item xs={12} md={4}>
+                <SearchComponent
+                  onSearch={handleSearch}
+                  onReset={handleReset}
+                />
+              </Grid>
+
+              {/* Title Text centered */}
+              <Grid
+                item
+                xs={12}
+                md={4}
+                sx={{ textAlign: { xs: "center", md: "center" } }}
               >
-                Unassigned Customer
-              </h3>
-            </div>
-            <div style={{ flexGrow: 0.5 }} align="right"></div>
-          </div>
+                <h3
+                  style={{
+                    margin: 0,
+                    fontSize: "24px",
+                    color: "rgb(34, 34, 34)",
+                    fontWeight: 800,
+                  }}
+                >
+                  Unassigned Customer
+                </h3>
+              </Grid>
+
+              {/* Add Button on the right */}
+              <Grid
+                item
+                xs={12}
+                md={4}
+                sx={{
+                  display: "flex",
+                  justifyContent: { xs: "center", md: "flex-end" },
+                }}
+              ></Grid>
+            </Grid>
+          </Box>
+
           <div
             style={{
               position: "fixed",
@@ -306,21 +262,13 @@ export const UnassignedCustomer = () => {
             openInPopup={openInPopup}
           />
 
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              // marginTop: "2em",
-            }}
-          >
-            <CustomPagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              handlePageChange={handlePageChange}
-            />
-          </div>
-        </div>
-      </div>
+          <CustomPagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            handlePageChange={handlePageChange}
+          />
+        </Paper>
+      </Grid>
 
       <Popup
         maxWidth={"lg"}
