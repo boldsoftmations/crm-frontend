@@ -43,6 +43,8 @@ import { useNotificationHandling } from "../../../Components/useNotificationHand
 import SearchComponent from "../../../Components/SearchComponent ";
 import { MessageAlert } from "../../../Components/MessageAlert";
 import { CustomPagination } from "../../../Components/CustomPagination";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import InvoiceServices from "../../../services/InvoiceService";
 
 export const MaterialRequisitionFormView = () => {
   const [openPopup, setOpenPopup] = useState(false);
@@ -56,6 +58,8 @@ export const MaterialRequisitionFormView = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [idForEdit, setIDForEdit] = useState("");
+  const [filterByUnit, setFilterByUnit] = useState("");
+  const [sellerAccountOption, setSellerAccountOption] = useState([]);
   const [storesInventoryData, setStoresInventoryData] = useState([]);
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
@@ -126,15 +130,12 @@ export const MaterialRequisitionFormView = () => {
     }
   };
 
-  useEffect(() => {
-    getAllStoresInventoryDetails();
-  }, []);
-
   const getAllStoresInventoryDetails = async () => {
     try {
       setOpen(true);
       const response = await InventoryServices.getAllConsStoresInventoryData();
       setStoresInventoryData(response.data);
+      console.log(response.data);
     } catch (err) {
       console.log("err", err);
     } finally {
@@ -142,30 +143,50 @@ export const MaterialRequisitionFormView = () => {
     }
   };
 
-  const getAllMaterialRequisitionFormDetails = useCallback(
-    async (page, search = searchQuery) => {
-      try {
-        setOpen(true);
-        const response =
-          await InventoryServices.getAllMaterialRequisitionFormData(
-            page,
-            search
-          );
-        setMaterialRequisitionData(response.data.results);
-        setTotalPages(Math.ceil(response.data.count / 25));
-        setOpen(false);
-      } catch (error) {
-        handleError(error);
-        setOpen(false);
-        console.error("error", error);
-      }
-    },
-    [searchQuery]
-  );
+  useEffect(() => {
+    getAllStoresInventoryDetails();
+  }, []);
+
+  const getAllSellerAccountsDetails = async () => {
+    try {
+      setOpen(true);
+      const response = await InvoiceServices.getAllPaginateSellerAccountData(
+        "all"
+      );
+      setSellerAccountOption(response.data);
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setOpen(false);
+    }
+  };
 
   useEffect(() => {
-    getAllMaterialRequisitionFormDetails(currentPage, searchQuery);
-  }, [currentPage, searchQuery]);
+    getAllSellerAccountsDetails();
+  }, []);
+
+  const getAllMaterialRequisitionFormDetails = useCallback(async () => {
+    try {
+      setOpen(true);
+      const response =
+        await InventoryServices.getAllMaterialRequisitionFormData(
+          currentPage,
+          searchQuery,
+          filterByUnit
+        );
+      setMaterialRequisitionData(response.data.results);
+      setTotalPages(Math.ceil(response.data.count / 25));
+      setOpen(false);
+    } catch (error) {
+      handleError(error);
+      setOpen(false);
+      console.error("error", error);
+    }
+  }, [currentPage, searchQuery, filterByUnit]);
+
+  useEffect(() => {
+    getAllMaterialRequisitionFormDetails();
+  }, [currentPage, searchQuery, filterByUnit]);
 
   const handleSearch = (query) => {
     setSearchQuery(query);
@@ -176,6 +197,12 @@ export const MaterialRequisitionFormView = () => {
     setSearchQuery("");
     setCurrentPage(1);
   };
+
+  const handleFilter = (event, value) => {
+    console.log("value", value);
+    setFilterByUnit(value);
+  };
+
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
@@ -268,10 +295,27 @@ export const MaterialRequisitionFormView = () => {
               justifyContent="space-between"
             >
               {/* Left Section: Search Component */}
-              <Grid item xs={12} sm={4} display="flex" alignItems="center">
+              <Grid item xs={12} sm={3}>
                 <SearchComponent
                   onSearch={handleSearch}
                   onReset={handleReset}
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={2}>
+                <CustomAutocomplete
+                  name="seller_unit"
+                  size="small"
+                  disablePortal
+                  id="combo-box-demo"
+                  value={filterByUnit}
+                  onChange={(event, value) =>
+                    handleFilter("seller_unit", value)
+                  }
+                  options={sellerAccountOption.map((option) => option.unit)}
+                  getOptionLabel={(option) => option}
+                  fullWidth
+                  label="Filter By Seller Unit"
                 />
               </Grid>
 
@@ -290,15 +334,7 @@ export const MaterialRequisitionFormView = () => {
               </Grid>
 
               {/* Right Section: Download and Add Buttons */}
-              <Grid
-                item
-                xs={12}
-                sm={4}
-                display="flex"
-                justifyContent="flex-end"
-                alignItems="center"
-                gap={2}
-              >
+              <Grid item xs={12} sm={3} gap={2}>
                 {(users.groups.includes("Accounts") ||
                   users.groups.includes("Director")) && (
                   <>
@@ -328,6 +364,7 @@ export const MaterialRequisitionFormView = () => {
                     onClick={() => setOpenPopup2(true)}
                     variant="contained"
                     color="success"
+                    style={{ marginLeft: "5px" }}
                   >
                     Add
                   </Button>
