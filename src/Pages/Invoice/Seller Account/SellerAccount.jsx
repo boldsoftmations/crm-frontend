@@ -1,51 +1,38 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Grid, Button, Paper } from "@mui/material";
 import { Popup } from "./../../../Components/Popup";
 import { CreateSellerAccounts } from "./CreateSellerAccounts";
 import { UpdateSellerAccounts } from "./UpdateSellerAccounts";
 import InvoiceServices from "./../../../services/InvoiceService";
-import { ErrorMessage } from "./../../../Components/ErrorMessage/ErrorMessage";
 import { CustomTable } from "../../../Components/CustomTable";
 import { CustomLoader } from "../../../Components/CustomLoader";
+import { MessageAlert } from "../../../Components/MessageAlert";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 
 export const SellerAccount = () => {
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [idForEdit, setIDForEdit] = useState();
-  const errRef = useRef();
   const [open, setOpen] = useState(false);
-  const [errMsg, setErrMsg] = useState("");
   const [invoiceData, setInvoiceData] = useState([]);
-  useEffect(() => {
-    getAllSellerAccountsDetails();
-  }, []);
+  const { handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   const getAllSellerAccountsDetails = async () => {
     try {
       setOpen(true);
       const response = await InvoiceServices.getAllSellerAccountData();
       setInvoiceData(response.data.results);
+    } catch (error) {
+      handleError(error);
+    } finally {
       setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      if (!err.response) {
-        setErrMsg(
-          "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
-        );
-      } else if (err.response.status === 400) {
-        setErrMsg(
-          err.response.data.errors.name
-            ? err.response.data.errors.name
-            : err.response.data.errors.non_field_errors
-        );
-      } else if (err.response.status === 401) {
-        setErrMsg(err.response.data.errors.code);
-      } else {
-        setErrMsg("Server Error");
-      }
-      errRef.current.focus();
     }
   };
+
+  useEffect(() => {
+    getAllSellerAccountsDetails();
+  }, []);
 
   // const getResetData = () => {
   //   setSearchQuery("");
@@ -82,10 +69,15 @@ export const SellerAccount = () => {
 
   return (
     <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
 
       <Grid item xs={12}>
-        <ErrorMessage errRef={errRef} errMsg={errMsg} />
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
           <Box display="flex">
             <Box flexGrow={2}>

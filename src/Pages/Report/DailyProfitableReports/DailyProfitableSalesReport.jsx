@@ -1,10 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import DashboardService from "../../../services/DashboardService";
 import { CustomLoader } from "../../../Components/CustomLoader";
-import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 import { Box, Grid } from "@mui/material";
 import { CustomTable } from "../../../Components/CustomTable";
 import { CSVLink } from "react-csv";
+import { MessageAlert } from "../../../Components/MessageAlert";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 
 export const DailyProfitableSalesReport = (props) => {
   const { idForEdit } = props;
@@ -12,12 +13,8 @@ export const DailyProfitableSalesReport = (props) => {
   const [dailyProfitableReportsData, setDailyProfitableReportsData] = useState(
     []
   );
-  const errRef = useRef();
-  const [errMsg, setErrMsg] = useState("");
-
-  useEffect(() => {
-    getDailyProfitableReports();
-  }, []);
+  const { handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   const getDailyProfitableReports = async () => {
     try {
@@ -29,31 +26,16 @@ export const DailyProfitableSalesReport = (props) => {
           idForEdit.unit
         );
       setDailyProfitableReportsData(response.data);
-
+    } catch (error) {
+      handleError(error);
+    } finally {
       setOpen(false);
-    } catch (err) {
-      handleErrorResponse(err);
     }
   };
 
-  const handleErrorResponse = (err) => {
-    if (!err.response) {
-      setErrMsg(
-        "“Sorry, You Are Not Allowed to Access This Page” Please contact to admin"
-      );
-    } else if (err.response.status === 400) {
-      setErrMsg(
-        err.response.data.errors.name ||
-          err.response.data.errors.non_field_errors
-      );
-    } else if (err.response.status === 401) {
-      setErrMsg(err.response.data.errors.code);
-    } else if (err.response.status === 404 || !err.response.data) {
-      setErrMsg("Data not found or request was null/empty");
-    } else {
-      setErrMsg("Server Error");
-    }
-  };
+  useEffect(() => {
+    getDailyProfitableReports();
+  }, []);
 
   const Tableheaders = [
     "Unit",
@@ -98,11 +80,15 @@ export const DailyProfitableSalesReport = (props) => {
   }));
 
   return (
-    <div>
+    <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
       <Grid item xs={12}>
-        <ErrorMessage errRef={errRef} errMsg={errMsg} />
-
         <Box display="flex" justifyContent="flex-end" marginBottom={5}>
           <CSVLink
             data={Tabledata}
@@ -146,6 +132,6 @@ export const DailyProfitableSalesReport = (props) => {
           Styles={{ paddingLeft: "10px", paddingRight: "10px" }}
         />
       </Grid>
-    </div>
+    </>
   );
 };

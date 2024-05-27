@@ -4,7 +4,6 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   loginstart,
   loginsucces,
-  loginfail,
   getProfileUser,
 } from "./../../Redux/Action/Action";
 import "../CommonStyle.css";
@@ -27,7 +26,6 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useDispatch } from "react-redux";
 import { setUserData } from "./../../services/TokenService";
 import { CustomButton } from "../../Components/CustomButton";
-import { ErrorMessage } from "./../../Components/ErrorMessage/ErrorMessage";
 import { CustomLoader } from "./../../Components/CustomLoader";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import UserProfileService from "../../services/UserProfileService";
@@ -109,7 +107,6 @@ export const Login = () => {
       } else {
         setErrMsg("Login Failed");
       }
-      dispatch(loginfail(errMsg));
       errRef.current.focus();
     }
   };
@@ -144,7 +141,23 @@ export const Login = () => {
           component="form"
           noValidate
         >
-          <ErrorMessage errMsg={errMsg} errRef={errRef} />
+          <div
+            style={{
+              width: "100%",
+              padding: 10,
+              marginBottom: 10,
+              borderRadius: 4,
+              backgroundColor: errMsg ? "red" : "offscreen",
+              textAlign: "center",
+              color: "white",
+              textTransform: "capitalize",
+            }}
+            ref={errRef}
+            className={errMsg ? "errmsg" : "offscreen"}
+            aria-live="assertive"
+          >
+            {errMsg}
+          </div>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField

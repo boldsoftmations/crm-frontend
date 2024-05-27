@@ -9,7 +9,6 @@ export const MaterialTransferAccept = memo(
     materialTransferNoteByID,
     setOpenAcceptPopup,
     getAllMaterialTransferNoteDetails,
-    currentPage,
   }) => {
     const [open, setOpen] = useState(false);
     const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
@@ -34,7 +33,7 @@ export const MaterialTransferAccept = memo(
         handleSuccess(response.data || "Accepted successfully");
         setTimeout(() => {
           setOpenAcceptPopup(false);
-          getAllMaterialTransferNoteDetails(currentPage);
+          getAllMaterialTransferNoteDetails();
         }, 300);
       } catch (error) {
         handleError(error);

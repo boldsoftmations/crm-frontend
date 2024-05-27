@@ -29,7 +29,6 @@ export const CurrentSummaryFM = (props) => {
       {" "}
       {/* <CustomLoader open={open} /> */}
       <Grid item xs={12}>
-        {/* <ErrorMessage errRef={errRef} errMsg={errMsg} /> */}
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
           <Box display="flex">
             <Box flexGrow={2}></Box>

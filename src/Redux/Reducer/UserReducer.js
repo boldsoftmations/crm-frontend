@@ -3,7 +3,6 @@ import * as types from "../Action/actiontypes";
 const initialState = {
   user: null,
   loading: true,
-  error: false,
 };
 
 const userReducer = (state = initialState, action) => {
@@ -18,12 +17,6 @@ const userReducer = (state = initialState, action) => {
         ...state,
         loading: false,
         user: action.payload,
-      };
-    case types.LOGIN_FAIL:
-      return {
-        ...state,
-        loading: false,
-        error: action.payload,
       };
     case types.LOGOUT_USER:
       return {

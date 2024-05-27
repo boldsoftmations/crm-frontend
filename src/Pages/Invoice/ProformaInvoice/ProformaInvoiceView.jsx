@@ -13,10 +13,11 @@ import logo from "../../../Images/LOGOS3.png";
 import ISO from "../../../Images/ISO.png";
 import AllLogo from "../../../Images/allLogo.jpg";
 import MSME from "../../../Images/MSME.jpeg";
-import { ErrorMessage } from "../../../Components/ErrorMessage/ErrorMessage";
 import { MyDocument } from "./MyDocument";
 import { Button } from "@mui/material";
 import { CheckPrice } from "./CheckPrice";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../../Components/MessageAlert";
 
 export const ProformaInvoiceView = (props) => {
   const { idForEdit, setOpenPopup, getProformaInvoiceData } = props;
@@ -25,12 +26,13 @@ export const ProformaInvoiceView = (props) => {
   const [productData, setProductData] = useState([]);
   const [hsnData, setHsnData] = useState([]);
   const [open, setOpen] = useState(false);
-  const [errMsg, setErrMsg] = useState("");
   const [checkPricePopupOpen, setCheckPricePopupOpen] = useState(false);
   const [priceData, setPriceData] = useState(null);
   const data = useSelector((state) => state.auth);
   const users = data.profile;
   const componentRef = useRef();
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
@@ -47,7 +49,7 @@ export const ProformaInvoiceView = (props) => {
       setPriceData(data);
       setCheckPricePopupOpen(true);
     } catch (error) {
-      console.error("Error fetching price data:", error);
+      handleError(error);
     } finally {
       setOpen(false);
     }
@@ -86,18 +88,12 @@ export const ProformaInvoiceView = (props) => {
 
       // clean up the temporary link element
       document.body.removeChild(link);
-
-      setOpen(false);
     } catch (error) {
-      console.log("error exporting pdf", error);
+      handleError(error);
     } finally {
       setOpen(false);
     }
   };
-
-  useEffect(() => {
-    getAllProformaInvoiceDetails();
-  }, []);
 
   const getAllProformaInvoiceDetails = async () => {
     try {
@@ -113,11 +109,17 @@ export const ProformaInvoiceView = (props) => {
       setInvoiceData(response.data);
       setProductData(response.data.products);
       setHsnData(response.data.hsn_table);
-      setOpen(false);
-    } catch (err) {
+    } catch (error) {
+      handleError(error);
+    } finally {
       setOpen(false);
     }
   };
+
+  useEffect(() => {
+    getAllProformaInvoiceDetails();
+  }, []);
+
   const str = invoiceData.amount_in_words ? invoiceData.amount_in_words : "";
   const arr = str.split(" ");
   for (var i = 0; i < arr.length; i++) {
@@ -159,13 +161,10 @@ export const ProformaInvoiceView = (props) => {
       setOpenPopup(false);
       getProformaInvoiceData();
       setOpen(false);
-    } catch (err) {
+    } catch (error) {
+      handleError(error);
+    } finally {
       setOpen(false);
-      setErrMsg(
-        err.response.data.errors.non_field_errors
-          ? err.response.data.errors.non_field_errors
-          : err.response.data.errors
-      );
     }
   };
   // from Raised to Pending Approval Status
@@ -191,28 +190,32 @@ export const ProformaInvoiceView = (props) => {
         state: invoiceData.state,
         type: invoiceData.type,
       };
-      invoiceData.type === "Customer"
-        ? await InvoiceServices.updateCustomerProformaInvoiceData(
-            idForEdit.pi_number,
-            req
-          )
-        : await InvoiceServices.updateLeadsProformaInvoiceData(
-            idForEdit.pi_number,
-            req
-          );
-      setOpenPopup(false);
+      const response =
+        invoiceData.type === "Customer"
+          ? await InvoiceServices.updateCustomerProformaInvoiceData(
+              idForEdit.pi_number,
+              req
+            )
+          : await InvoiceServices.updateLeadsProformaInvoiceData(
+              idForEdit.pi_number,
+              req
+            );
+      const successMessage =
+        response.data.message ||
+        "send Pending_Approval_PI Convert To Approved successfully";
+      handleSuccess(successMessage);
 
-      getProformaInvoiceData();
+      setTimeout(() => {
+        setOpenPopup(false);
+        getProformaInvoiceData();
+      }, 300);
+    } catch (error) {
+      handleError(error);
+    } finally {
       setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      setErrMsg(
-        err.response.data.errors.non_field_errors
-          ? err.response.data.errors.non_field_errors
-          : err.response.data.errors
-      );
     }
   };
+
   // from Pending Approval to Approved Status
   const SendForApprovedPI = async (e) => {
     e.preventDefault();
@@ -223,17 +226,19 @@ export const ProformaInvoiceView = (props) => {
         approved_by: users.email,
         status: "Approved",
       };
-      await InvoiceServices.sendForApprovalData(req);
-      setOpenPopup(false);
-      getProformaInvoiceData();
+      const response = await InvoiceServices.sendForApprovalData(req);
+      const successMessage =
+        response.data.message || "Send For Approved Pi successfully";
+      handleSuccess(successMessage);
+
+      setTimeout(() => {
+        setOpenPopup(false);
+        getProformaInvoiceData();
+      }, 300);
+    } catch (error) {
+      handleError(error);
+    } finally {
       setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      setErrMsg(
-        err.response.data.errors.non_field_errors
-          ? err.response.data.errors.non_field_errors
-          : err.response.data.errors
-      );
     }
   };
 
@@ -247,25 +252,32 @@ export const ProformaInvoiceView = (props) => {
         approved_by: users.email,
         status: "Reject",
       };
-      await InvoiceServices.sendForApprovalData(req);
-      setOpenPopup(false);
-      getProformaInvoiceData();
+      const response = await InvoiceServices.sendForApprovalData(req);
+      const successMessage =
+        response.data.message || "Send For Approved Pi successfully";
+      handleSuccess(successMessage);
+
+      setTimeout(() => {
+        setOpenPopup(false);
+        getProformaInvoiceData();
+      }, 300);
+    } catch (error) {
+      handleError(error);
+    } finally {
       setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      setErrMsg(
-        err.response.data.errors.non_field_errors
-          ? err.response.data.errors.non_field_errors
-          : err.response.data.errors
-      );
     }
   };
   const TOTAL_GST_DATA = invoiceData.total - invoiceData.amount;
   const TOTAL_GST = TOTAL_GST_DATA.toFixed(2);
   return (
     <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <CustomLoader open={open} />
-      <ErrorMessage errMsg={errMsg} />
       <div
         className="container-fluid mb-4"
         style={{ border: "1px Solid #000000" }}

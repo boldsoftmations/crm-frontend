@@ -20,14 +20,7 @@ export const InventoryAllTabView = () => {
   const tabs = [
     {
       label: "Pending GRN",
-      roles: [
-        "Director",
-        "Accounts",
-        "Stores",
-        "Stores Delhi",
-        "Production Delhi",
-        "Production",
-      ],
+      roles: ["Director", "Accounts", "Stores", "Stores Delhi"],
       component: <PackingListView />,
     },
     {
@@ -43,14 +36,13 @@ export const InventoryAllTabView = () => {
         "Purchase",
         "Stores",
         "Stores Delhi",
-        "Production Delhi",
         "Accounts Executive",
       ],
       component: <GRNRegisterView />,
     },
     {
       label: "Stores Inventory",
-      roles: ["Director", "Accounts", "Production", "Accounts Executive"],
+      roles: ["Director", "Accounts", "Accounts Executive"],
       component: <StoresInventoryView />,
     },
     {
@@ -62,18 +54,19 @@ export const InventoryAllTabView = () => {
         "Stores",
         "Stores Delhi",
         "Production Delhi",
+        "Production",
         "Accounts Executive",
       ],
       component: <StoresInventoryConsView />,
     },
     {
       label: "Description Stores Inventory",
-      roles: ["Director", "Accounts", "Production", "Accounts Executive"],
+      roles: ["Director", "Accounts", "Accounts Executive"],
       component: <DescriptionStoreInventoryView />,
     },
     {
       label: "Job Worker Stores Inventory",
-      roles: ["Director", "Accounts", "Production", "Accounts Executive"],
+      roles: ["Director", "Accounts", "Accounts Executive"],
       component: <JobWorkerStoreInventoryView />,
     },
     {
