@@ -29,23 +29,20 @@ import { CancelSalesInvoice } from "./CancelSalesInvoice";
 import { CSVLink } from "react-csv";
 import CustomTextField from "../../../Components/CustomTextField";
 import BranchInvoicesCreate from "../BranchInvoices/BranchInvoicesCreate";
-import { SalesReturnCreate } from "../../SalesReturn/SalesReturnCreate";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import SearchComponent from "../../../Components/SearchComponent ";
 import { MessageAlert } from "../../../Components/MessageAlert";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
-import SupplierInvoicesCreate from "../SupplierInvoices/SupplierInvoicesCreate";
+import { SourceViewList } from "./SourceViewList";
 
 export const SalesInvoiceView = () => {
   const [open, setOpen] = useState(false);
   const [salesInvoiceData, setSalesInvoiceData] = useState([]);
   const [openModalBI, setOpenModalBI] = useState(false);
-  const [openModalSI, setOpenModalSI] = useState(false);
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [openPopup3, setOpenPopup3] = useState(false);
   const [openPopup4, setOpenPopup4] = useState(false);
-  const [openPopupSalesReturn, setOpenPopupSalesReturn] = useState(false);
   const [idForEdit, setIDForEdit] = useState();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -275,11 +272,6 @@ export const SalesInvoiceView = () => {
     setOpenPopup3(true);
   };
 
-  const openInPopupSalesReturn = (item) => {
-    console.log("item", item);
-    setIDForEdit(item);
-    setOpenPopupSalesReturn(true);
-  };
   return (
     <>
       <MessageAlert
@@ -340,23 +332,15 @@ export const SalesInvoiceView = () => {
           <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
             <Grid container spacing={2}>
               {/* Title and Buttons - Second Row */}
-              <Grid item xs={12} md={4}>
+              <Grid item xs={12} md={5}>
                 <Button
                   onClick={() => setOpenModalBI(true)}
                   variant="contained"
                 >
                   Branch Invoice
                 </Button>
-
-                <Button
-                  sx={{ marginLeft: "10px" }}
-                  onClick={() => setOpenModalSI(true)}
-                  variant="outlined"
-                >
-                  Supplier Invoice
-                </Button>
               </Grid>
-              <Grid item xs={12} md={4}>
+              <Grid item xs={12} md={3}>
                 <Box display="flex" justifyContent="center">
                   <Typography variant="h4" sx={{ fontWeight: "bold" }}>
                     Sales Invoice
@@ -374,7 +358,7 @@ export const SalesInvoiceView = () => {
                 </Button>
 
                 <Button
-                  sx={{ marginLeft: "10px" }}
+                  sx={{ marginLeft: "5px" }}
                   onClick={handleDownload}
                   variant="contained"
                 >
@@ -449,7 +433,6 @@ export const SalesInvoiceView = () => {
                     row={row}
                     openInPopup={openInPopup}
                     openInPopup2={openInPopup2}
-                    openInPopupSalesReturn={openInPopupSalesReturn}
                   />
                 ))}
               </TableBody>
@@ -471,17 +454,6 @@ export const SalesInvoiceView = () => {
         <BranchInvoicesCreate
           getSalesInvoiceDetails={getSalesInvoiceDetails}
           setOpenPopup={setOpenModalBI}
-        />
-      </Popup>
-      <Popup
-        fullScreen={true}
-        title={"Create Supplier Invoice"}
-        openPopup={openModalSI}
-        setOpenPopup={setOpenModalSI}
-      >
-        <SupplierInvoicesCreate
-          getSalesInvoiceDetails={getSalesInvoiceDetails}
-          setOpenPopup={setOpenModalSI}
         />
       </Popup>
       <Popup
@@ -517,18 +489,6 @@ export const SalesInvoiceView = () => {
           idForEdit={idForEdit}
           getSalesInvoiceDetails={getSalesInvoiceDetails}
           setOpenPopup={setOpenPopup3}
-        />
-      </Popup>
-      <Popup
-        fullScreen={true}
-        title={"Create Sales Return"}
-        openPopup={openPopupSalesReturn}
-        setOpenPopup={setOpenPopupSalesReturn}
-      >
-        <SalesReturnCreate
-          idForEdit={idForEdit}
-          getSalesInvoiceDetails={getSalesInvoiceDetails}
-          setOpenPopup={setOpenPopupSalesReturn}
         />
       </Popup>
       <Popup
@@ -595,11 +555,18 @@ export const SalesInvoiceView = () => {
 };
 
 function Row(props) {
-  const { row, openInPopup, openInPopup2, openInPopupSalesReturn } = props;
+  const { row, openInPopup, openInPopup2 } = props;
   const [tableExpand, setTableExpand] = useState(false);
+  const [openPopupProductViewList, setOpenPopupProductViewList] =
+    useState(false);
+  const [IDForViewList, setIDForViewList] = useState();
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
 
+  const handleOpenPopUp = (value) => {
+    setIDForViewList(value.source_list);
+    setOpenPopupProductViewList(true);
+  };
   return (
     <>
       <StyledTableRow
@@ -654,16 +621,6 @@ function Row(props) {
               Cancel
             </Button>
           )}
-          {(userData.groups.includes("Director") ||
-            userData.groups.includes("Accounts")) && (
-            <Button
-              variant="text"
-              color="success"
-              onClick={() => openInPopupSalesReturn(row.invoice_no)}
-            >
-              Sales Return
-            </Button>
-          )}
         </StyledTableCell>
       </StyledTableRow>
       <TableRow>
@@ -680,6 +637,7 @@ function Row(props) {
                     <TableCell align="center">QUANTITY</TableCell>
                     <TableCell align="center">AMOUNT</TableCell>
                     <TableCell align="center">PROFIT/LOSS(PER UNIT)</TableCell>
+                    <TableCell align="center">ACTION</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -695,6 +653,16 @@ function Row(props) {
                       <TableCell align="center">
                         {historyRow.profit_or_loss}
                       </TableCell>
+                      <TableCell align="center">
+                        <Button
+                          style={{ fontSize: "13px" }}
+                          variant="outlined"
+                          color="success"
+                          onClick={() => handleOpenPopUp(historyRow)}
+                        >
+                          Source View List
+                        </Button>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -703,6 +671,14 @@ function Row(props) {
           </Collapse>
         </TableCell>
       </TableRow>
+      <Popup
+        maxWidth="md"
+        title={"Source View List"}
+        openPopup={openPopupProductViewList}
+        setOpenPopup={setOpenPopupProductViewList}
+      >
+        <SourceViewList maxWidth="md" selectedRow={IDForViewList} />
+      </Popup>
     </>
   );
 }

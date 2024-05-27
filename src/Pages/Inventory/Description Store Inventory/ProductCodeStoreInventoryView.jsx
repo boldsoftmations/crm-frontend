@@ -28,10 +28,6 @@ export const ProductCodeStoreInventoryView = ({ idForEdit }) => {
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
-  useEffect(() => {
-    fetchConsStoreProductDetails();
-  }, [idForEdit]);
-
   const fetchConsStoreProductDetails = async () => {
     try {
       setOpen(true);
@@ -48,6 +44,10 @@ export const ProductCodeStoreInventoryView = ({ idForEdit }) => {
       setOpen(false);
     }
   };
+
+  useEffect(() => {
+    fetchConsStoreProductDetails();
+  }, [idForEdit]);
 
   const handleRowClick = (item) => {
     console.log("seus");

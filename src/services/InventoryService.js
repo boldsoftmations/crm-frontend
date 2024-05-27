@@ -264,7 +264,7 @@ const getAllProductStoresInventoryDetails = (data) => {
 
 // Material Requisition Form List Api
 
-const getAllMaterialRequisitionFormData = (page, searchValue) => {
+const getAllMaterialRequisitionFormData = (page, searchValue,filterValue) => {
   const params = new URLSearchParams();
 
   if (page) {
@@ -273,6 +273,10 @@ const getAllMaterialRequisitionFormData = (page, searchValue) => {
 
   if (searchValue) {
     params.append("search", searchValue);
+  }
+
+  if (filterValue) {
+    params.append("seller_account__unit", filterValue);
   }
 
   // Sending a GET request with query parameters
