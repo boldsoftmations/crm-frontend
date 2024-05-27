@@ -108,7 +108,7 @@ const BranchInvoicesCreate = ({ getSalesInvoiceDetails, setOpenPopup }) => {
 
     try {
       setOpen(true);
-      const response = await InvoiceServices.createSalesnvoiceData(payload);
+      const response = await InvoiceServices.createSalesinvoiceData(payload);
       const successMessage =
         response.data.message || "Branch Invoice created successfully!";
       handleSuccess(successMessage);

@@ -179,6 +179,10 @@ const updateFinishGoods = (id, data) => {
   return CustomAxios.patch(`/api/product/finished-goods/${id}`, data);
 };
 
+const getAllFinishGoodsProducts = () => {
+  return CustomAxios.get(`api/product/finish-goods-list/`);
+};
+
 const getAllRawMaterials = (page, searchQuery) => {
   const params = new URLSearchParams();
   if (page) {
@@ -258,6 +262,7 @@ const ProductService = {
   getAllFinishGoods,
   createFinishGoods,
   updateFinishGoods,
+  getAllFinishGoodsProducts,
   getAllRawMaterials,
   createRawMaterials,
   updateRawMaterials,

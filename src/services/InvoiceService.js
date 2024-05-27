@@ -250,7 +250,7 @@ const getSalesInvoiceData = (
   );
 };
 
-const createSalesnvoiceData = (data) => {
+const createSalesinvoiceData = (data) => {
   return CustomAxios.post("/api/invoice/list-sales-invoice/", data);
 };
 
@@ -397,7 +397,7 @@ const InvoiceServices = {
   getTotalPendingQuantity,
   getAllOrderBookDataWithSearch,
   getSalesInvoiceData,
-  createSalesnvoiceData,
+  createSalesinvoiceData,
   cancelSalesInvoice,
   getSalesnvoiceDataById,
   getAllSaleRegisterData,

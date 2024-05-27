@@ -264,7 +264,7 @@ const getAllProductStoresInventoryDetails = (data) => {
 
 // Material Requisition Form List Api
 
-const getAllMaterialRequisitionFormData = (page, searchValue,filterValue) => {
+const getAllMaterialRequisitionFormData = (page, searchValue, filterValue) => {
   const params = new URLSearchParams();
 
   if (page) {
@@ -593,6 +593,26 @@ const updateSalesReturnInventoryData = (id, data) => {
   return CustomAxios.patch(`api/inventory/sales-return-inventory/${id}/`, data);
 };
 
+// Rework Invoice Api endpoints
+const createReworkinvoiceData = (data) => {
+  return CustomAxios.post("api/inventory/rework-entry/", data);
+};
+
+const getReworkinvoiceData = (page, searchValue) => {
+  const params = new URLSearchParams();
+
+  params.append("invoice_type", "Sales Return");
+
+  if (page) {
+    params.append("page", page);
+  }
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+
+  return CustomAxios.get(`api/inventory/rework-entry/?${params.toString()}`);
+};
+
 const InventoryServices = {
   getAllVendorData,
   createVendorData,
@@ -661,6 +681,8 @@ const InventoryServices = {
   createSalesReturn,
   getSalesReturnInventoryData,
   updateSalesReturnInventoryData,
+  createReworkinvoiceData,
+  getReworkinvoiceData,
 };
 
 export default InventoryServices;
