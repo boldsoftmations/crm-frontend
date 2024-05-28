@@ -18,10 +18,6 @@ const Root = styled("div")(({ theme }) => ({
   },
 }));
 
-const values = {
-  someDate: new Date().toISOString().substring(0, 10),
-};
-
 export const ReworkInvoiceCreate = ({
   getSalesReturnInventoryDetails,
   setOpenPopup,
@@ -37,14 +33,6 @@ export const ReworkInvoiceCreate = ({
       raw_materials: product.raw_materials || [], // Ensure each product has a raw_materials array
     }))
   );
-
-  const [inputValue, setInputValue] = useState({
-    batch_no: selectedRow.batch_no.join(", "),
-    generation_date: new Date().toISOString().substring(0, 10),
-    vendor: "",
-    transporter_name: "",
-    seller_unit: selectedRow.unit,
-  });
   const [rawMaterialOptions, setRawMaterialOptions] = useState([]);
 
   const fetchRawMaterials = async () => {
@@ -63,11 +51,6 @@ export const ReworkInvoiceCreate = ({
   useEffect(() => {
     fetchRawMaterials();
   }, []);
-
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setInputValue({ ...inputValue, [name]: value });
-  };
 
   const handleFormChange = (productIndex, rawMaterialIndex, event) => {
     const { name, value } = event.target;
@@ -131,8 +114,8 @@ export const ReworkInvoiceCreate = ({
     e.preventDefault();
 
     const payload = {
-      seller_account: inputValue.seller_unit,
-      batch_no: inputValue.batch_no,
+      seller_account: selectedRow.unit,
+      batch_no: selectedRow.batch_no.join(", "),
       products: products.map((product) => ({
         ...product,
         raw_materials: product.raw_materials.map((rm) => ({
@@ -181,7 +164,7 @@ export const ReworkInvoiceCreate = ({
               size="small"
               label="Invoice No"
               variant="outlined"
-              value={inputValue.batch_no}
+              value={selectedRow.batch_no.join(", ")}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -190,45 +173,7 @@ export const ReworkInvoiceCreate = ({
               size="small"
               label="Seller Unit"
               variant="outlined"
-              value={inputValue.seller_unit}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={4}>
-            <CustomTextField
-              fullWidth
-              type={"date"}
-              name="generation_date"
-              size="small"
-              label="Generation Date"
-              variant="outlined"
-              value={inputValue.generation_date || values.someDate}
-              onChange={handleInputChange}
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <CustomTextField
-              fullWidth
-              name="vendor"
-              size="small"
-              label="Vendor"
-              variant="outlined"
-              value={inputValue.vendor}
-              onChange={handleInputChange}
-            />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <CustomTextField
-              fullWidth
-              name="transporter_name"
-              size="small"
-              label="Transporter Name"
-              variant="outlined"
-              value={inputValue.transporter_name}
-              onChange={handleInputChange}
+              value={selectedRow.unit}
             />
           </Grid>
 
