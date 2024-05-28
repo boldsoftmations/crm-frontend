@@ -3,50 +3,22 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { ChangePassword } from "./../Pages/Auth/ChangePassword";
 import { ForgotPassword } from "./../Pages/Auth/ForgotPassword";
-import { CompanyDetails } from "../Pages/Cutomers/CompanyDetails/CompanyDetails";
 import { SellerAccount } from "./../Pages/Invoice/Seller Account/SellerAccount";
-import { CustomerOrderBookDetails } from "../Pages/OrderBooks/CustomerOrderBookDetails";
-import { ProductOrderBookDetails } from "./../Pages/OrderBooks/ProductOrderBookDetails";
 import { SalesInvoiceView } from "./../Pages/Invoice/SalesInvoice/SalesInvoiceView";
 import { Auths } from "../Pages/Auth/Auths";
 import { Profile } from "./../Pages/Profile/Profile";
-import { ViewDispatch } from "./../Pages/Dispatch/ViewDispatch";
-import { Dispatched } from "./../Pages/Dispatch/Dispatched";
-import { SalesRegisterView } from "./../Pages/Dispatch/SalesRegisterView";
-import { PIOrderBookDetails } from "../Pages/OrderBooks/PIOrderBookDetails";
 import { VendorView } from "../Pages/Vendor/VendorInventoryDetail/VendorView";
-import { StoresInventoryView } from "../Pages/Inventory/Stores Inventory/StoresInventoryView";
-import { ProductionInventoryView } from "../Pages/Inventory/Production Inventory/ProductionInventoryView";
-import { ProductionInventoryConsView } from "../Pages/Inventory/Production Inventory/ProductionInventoryConsView";
-import { StoresInventoryConsView } from "../Pages/Inventory/Stores Inventory/StoresInventoryConsView";
 import { ProductForecastViewAll } from "../Pages/ProductForecast/ProductForecastViewAll";
 import { TaskView } from "../Pages/Task/TaskView";
-import { UnassignedCustomer } from "../Pages/Cutomers/CompanyDetails/UnassignedCustomer";
-import { AllProformaInvoice } from "./../Pages/Invoice/ProformaInvoice/AllProformaInvoice";
 import { Followup } from "../Pages/FollowUp/Followup";
 import { ActivePI } from "../Pages/Invoice/ProformaInvoice/ActivePI";
 import { ApprovePi } from "../Pages/Invoice/ProformaInvoice/ApprovePi";
-import { ActiveUsers } from "./../Pages/Users/ActiveUsers";
-import { InActiveUsers } from "./../Pages/Users/InActiveUsers";
-import { IncompleteKycDetails } from "../Pages/Cutomers/CompanyDetails/IncompleteKycDetails";
 import { CompetitorView } from "../Pages/MarketAnalysis/CompetitorView";
 import { PriceApprovalPI } from "../Pages/Invoice/ProformaInvoice/PriceApprovalPI";
-import { UserProfileView } from "../Pages/Profile/UserProfile/UserProfileView";
-import { InActiveCustomer } from "../Pages/Cutomers/CompanyDetails/InActiveCustomer";
 import { FaqAllTab } from "../Pages/Faq/FaqAllTab/FaqAllTab";
 import { DailySaleReviewView } from "../Pages/DailySaleReview/DailySaleReviewView";
 import { HrModelTabs } from "../Pages/HrModel/HrModelTabs";
-import { DesignationView } from "../Pages/HrModel/Designation/DesignationView";
-import { DepartmentView } from "../Pages/HrModel/Department/DepartmentView";
-import { SourceView } from "../Pages/HrModel/CandidateSource/SourceView";
 import { CurrencyView } from "../Pages/Currency/CurrencyView";
-import { SafetyStockView } from "../Pages/Inventory/SafetyStockLevel/SafetyStockView";
-import { WhatsappGroupView } from "../Pages/WhatsappGroup/WhatsappGroupView";
-import { WhatsappGroup } from "../Pages/WhatsappGroup/WhatsappGroup";
-import { CustomerNoWhatsappGroup } from "../Pages/WhatsappGroup/CustomerNoWhatsappGroup";
-import { CustomerNotInGroup } from "../Pages/WhatsappGroup/CustomerNotInGroup";
-import { SalesPersonNotInGroup } from "../Pages/WhatsappGroup/SalesPersonNotInGroup";
-import { Automation } from "../Pages/WhatsappGroup/Automation";
 import { PhysicalInventoryView } from "../Pages/Physcical Inventory/PhysicalInventoryView";
 import { AllLeadsTabView } from "../Pages/Leads/AllLeadsTabView";
 import { AllProductsTabView } from "../Pages/Products/AllProductsTabView";
@@ -117,16 +89,6 @@ export const RouteScreen = () => {
             }
           />
           <Route
-            path="/user/personal-profile"
-            exact
-            element={
-              <PrivateRoute>
-                <UserProfileView />
-              </PrivateRoute>
-            }
-          />
-          // Additional Private Routes
-          <Route
             path="/leads/all-lead"
             element={
               <PrivateRoute>
@@ -163,38 +125,6 @@ export const RouteScreen = () => {
             element={
               <PrivateRoute>
                 <AllCustomerTabView />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/customers/company-details"
-            element={
-              <PrivateRoute>
-                <CompanyDetails />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/customers/incomplete-kyc-details"
-            element={
-              <PrivateRoute>
-                <IncompleteKycDetails />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/customers/unassigned-company-details"
-            element={
-              <PrivateRoute>
-                <UnassignedCustomer />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/customers/inactive-company-details"
-            element={
-              <PrivateRoute>
-                <InActiveCustomer />
               </PrivateRoute>
             }
           />
@@ -247,14 +177,6 @@ export const RouteScreen = () => {
             }
           />
           <Route
-            path="/invoice/all-performa-invoice"
-            element={
-              <PrivateRoute>
-                <AllProformaInvoice />
-              </PrivateRoute>
-            }
-          />
-          <Route
             path="/invoice/sales-invoice"
             element={
               <PrivateRoute>
@@ -271,58 +193,10 @@ export const RouteScreen = () => {
             }
           />
           <Route
-            path="/invoice/customer-order-book"
-            element={
-              <PrivateRoute>
-                <CustomerOrderBookDetails />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/invoice/product-order-book"
-            element={
-              <PrivateRoute>
-                <ProductOrderBookDetails />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/invoice/pi-order-book"
-            element={
-              <PrivateRoute>
-                <PIOrderBookDetails />
-              </PrivateRoute>
-            }
-          />
-          <Route
             path="/dispatch/tab-view"
             element={
               <PrivateRoute>
                 <AllDispatchTabView />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/dispatch/view-dispatch"
-            element={
-              <PrivateRoute>
-                <ViewDispatch />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/dispatch/view-dispatched"
-            element={
-              <PrivateRoute>
-                <Dispatched />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/dispatch/view-sales-register"
-            element={
-              <PrivateRoute>
-                <SalesRegisterView />
               </PrivateRoute>
             }
           />
@@ -359,50 +233,10 @@ export const RouteScreen = () => {
             }
           />
           <Route
-            path="/inventory/view-stores-inventory"
-            element={
-              <PrivateRoute>
-                <StoresInventoryView />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/inventory/view-stores-inventory-cons"
-            element={
-              <PrivateRoute>
-                <StoresInventoryConsView />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/inventory/view-production-inventory"
-            element={
-              <PrivateRoute>
-                <ProductionInventoryView />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/inventory/view-production-inventory-cons"
-            element={
-              <PrivateRoute>
-                <ProductionInventoryConsView />
-              </PrivateRoute>
-            }
-          />
-          <Route
             path="/inventory/view-currency"
             element={
               <PrivateRoute>
                 <CurrencyView />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/inventory/view-safety-stock"
-            element={
-              <PrivateRoute>
-                <SafetyStockView />
               </PrivateRoute>
             }
           />
@@ -435,22 +269,6 @@ export const RouteScreen = () => {
             element={
               <PrivateRoute>
                 <TaskView />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/user/active-user"
-            element={
-              <PrivateRoute>
-                <ActiveUsers />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/user/inactive-user"
-            element={
-              <PrivateRoute>
-                <InActiveUsers />
               </PrivateRoute>
             }
           />
@@ -495,82 +313,10 @@ export const RouteScreen = () => {
             }
           />
           <Route
-            path="/hr-model/designation"
-            element={
-              <PrivateRoute>
-                <DesignationView />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/hr-model/department"
-            element={
-              <PrivateRoute>
-                <DepartmentView />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/hr-model/source"
-            element={
-              <PrivateRoute>
-                <SourceView />
-              </PrivateRoute>
-            }
-          />
-          <Route
             path="/customers/whatsapp-tabs"
             element={
               <PrivateRoute>
                 <AllWhatsappTabs />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/customers/whatsapp-group"
-            element={
-              <PrivateRoute>
-                <WhatsappGroupView />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/customers/not-in-whatsapp-group"
-            element={
-              <PrivateRoute>
-                <CustomerNotInGroup />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/customers/no-sales-person-group"
-            element={
-              <PrivateRoute>
-                <SalesPersonNotInGroup />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/customers/no-whatsapp-group"
-            element={
-              <PrivateRoute>
-                <CustomerNoWhatsappGroup />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/customers/whatsapp"
-            element={
-              <PrivateRoute>
-                <WhatsappGroup />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/customers/automation"
-            element={
-              <PrivateRoute>
-                <Automation />
               </PrivateRoute>
             }
           />

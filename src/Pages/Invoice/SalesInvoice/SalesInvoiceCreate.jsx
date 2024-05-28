@@ -195,7 +195,7 @@ export const SalesInvoiceCreate = (props) => {
 
       setOpen(true);
       if (inputValue.length !== 0) {
-        await InvoiceServices.createSalesnvoiceData(req);
+        await InvoiceServices.createSalesinvoiceData(req);
         setOpenPopup(false);
         getSalesInvoiceDetails();
       }

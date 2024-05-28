@@ -3,11 +3,12 @@ import { Box, Button, Grid } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import Chip from "@mui/material/Chip";
 import Divider from "@mui/material/Divider";
-import { useNotificationHandling } from "./../../../Components/useNotificationHandling ";
-import InvoiceServices from "../../../services/InvoiceService";
-import { MessageAlert } from "./../../../Components/MessageAlert";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../../Components/MessageAlert";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomTextField from "../../../Components/CustomTextField";
+import CustomAutocomplete from "./../../../Components/CustomAutocomplete";
+import InventoryServices from "../../../services/InventoryService";
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -21,49 +22,102 @@ const values = {
   someDate: new Date().toISOString().substring(0, 10),
 };
 
-const SupplierInvoicesCreate = ({
+export const ReworkInvoiceCreate = ({
   getSalesReturnInventoryDetails,
   setOpenPopup,
   selectedRow,
 }) => {
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
+
   const [open, setOpen] = useState(false);
   const [products, setProducts] = useState(
     selectedRow.products.map((product) => ({
       ...product,
-      rate: "", // Initialize rate as an empty string to be filled by the user
+      raw_materials: product.raw_materials || [], // Ensure each product has a raw_materials array
     }))
   );
+
   const [inputValue, setInputValue] = useState({
-    invoice_type: "Supplier",
     batch_no: selectedRow.batch_no.join(", "),
     generation_date: new Date().toISOString().substring(0, 10),
     vendor: "",
     transporter_name: "",
     seller_unit: selectedRow.unit,
   });
+  const [rawMaterialOptions, setRawMaterialOptions] = useState([]);
+
+  const fetchRawMaterials = async () => {
+    try {
+      setOpen(true);
+      const response = await InventoryServices.getAllConsStoresInventoryData();
+      setRawMaterialOptions(response.data);
+    } catch (error) {
+      handleError(error);
+      console.error("Error fetching raw materials:", error);
+    } finally {
+      setOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchRawMaterials();
+  }, []);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setInputValue({ ...inputValue, [name]: value });
   };
 
-  const handleFormChange = (index, event) => {
+  const handleFormChange = (productIndex, rawMaterialIndex, event) => {
     const { name, value } = event.target;
     let data = [...products];
-    data[index] = {
-      ...data[index],
-      [name]: value,
-    };
-
-    // Calculate the amount if either 'rate' or 'quantity' changes
-    if (name === "rate" || name === "quantity") {
-      const rate = parseFloat(data[index].rate) || 0;
-      const quantity = parseFloat(data[index].quantity) || 0;
-      data[index].amount = (rate * quantity).toFixed(2); // Ensure amount is calculated as a string to two decimal places
+    if (rawMaterialIndex === -1) {
+      // Changes for main product
+      data[productIndex] = {
+        ...data[productIndex],
+        [name]: value,
+      };
+    } else {
+      // Changes for raw materials
+      data[productIndex].raw_materials[rawMaterialIndex] = {
+        ...data[productIndex].raw_materials[rawMaterialIndex],
+        [name]: value,
+      };
     }
+    setProducts(data);
+  };
 
+  const handleRawMaterialChange = (
+    productIndex,
+    rawMaterialIndex,
+    newValue
+  ) => {
+    let data = [...products];
+    const selectedProduct = rawMaterialOptions.find(
+      (option) => option.product__name === newValue.product__name
+    );
+    data[productIndex].raw_materials[rawMaterialIndex] = {
+      ...data[productIndex].raw_materials[rawMaterialIndex],
+      product: selectedProduct.product__name,
+      unit: selectedProduct.product__unit,
+    };
+    setProducts(data);
+  };
+
+  const addRawMaterial = (productIndex) => {
+    let data = [...products];
+    data[productIndex].raw_materials.push({
+      product: "",
+      unit: "",
+      quantity: 0,
+    });
+    setProducts(data);
+  };
+
+  const removeRawMaterial = (productIndex, rawMaterialIndex) => {
+    let data = [...products];
+    data[productIndex].raw_materials.splice(rawMaterialIndex, 1);
     setProducts(data);
   };
 
@@ -77,18 +131,21 @@ const SupplierInvoicesCreate = ({
     e.preventDefault();
 
     const payload = {
-      invoice_type: inputValue.invoice_type,
-      generation_date: inputValue.generation_date,
-      sales_return: inputValue.sales_return,
-      transporter_name: inputValue.transporter_name,
-      vendor: inputValue.vendor,
-      seller_unit: inputValue.seller_unit,
-      products: products,
+      seller_account: inputValue.seller_unit,
+      batch_no: inputValue.batch_no,
+      products: products.map((product) => ({
+        ...product,
+        raw_materials: product.raw_materials.map((rm) => ({
+          product: rm.product,
+          unit: rm.unit,
+          quantity: rm.quantity,
+        })),
+      })),
     };
 
     try {
       setOpen(true);
-      const response = await InvoiceServices.createSalesinvoiceData(payload);
+      const response = await InventoryServices.createReworkinvoiceData(payload);
       handleSuccess(
         response.data.message || "Supplier Invoice created successfully!"
       );
@@ -131,7 +188,7 @@ const SupplierInvoicesCreate = ({
             <CustomTextField
               fullWidth
               size="small"
-              label="seller Unit"
+              label="Seller Unit"
               variant="outlined"
               value={inputValue.seller_unit}
             />
@@ -174,6 +231,7 @@ const SupplierInvoicesCreate = ({
               onChange={handleInputChange}
             />
           </Grid>
+
           <Grid item xs={12}>
             <Root>
               <Divider>
@@ -205,30 +263,6 @@ const SupplierInvoicesCreate = ({
                     value={input.quantity}
                   />
                 </Grid>
-                <Grid item xs={12} sm={2}>
-                  <CustomTextField
-                    fullWidth
-                    name="rate"
-                    size="small"
-                    label="Rate"
-                    variant="outlined"
-                    value={input.rate}
-                    onChange={(event) => handleFormChange(index, event)}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={2}>
-                  <CustomTextField
-                    fullWidth
-                    name="amount"
-                    size="small"
-                    label="Amount"
-                    variant="outlined"
-                    value={input.amount || "0.00"} // Ensure this reads from the correct source
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                  />
-                </Grid>
                 <Grid item xs={12} sm={1}>
                   <Button
                     onClick={() => removeFields(index)}
@@ -237,8 +271,79 @@ const SupplierInvoicesCreate = ({
                     Remove
                   </Button>
                 </Grid>
+                <Grid item xs={12}>
+                  <Root>
+                    <Divider>
+                      <Chip label="RAW MATERIALS" />
+                    </Divider>
+                  </Root>
+                </Grid>
+                {input.raw_materials.map((rm, rmIndex) => (
+                  <React.Fragment key={`${index}-${rmIndex}`}>
+                    <Grid item xs={12} sm={3}>
+                      <CustomAutocomplete
+                        options={rawMaterialOptions}
+                        getOptionLabel={(option) => option.product__name}
+                        value={{ product__name: rm.product }}
+                        onChange={(event, newValue) =>
+                          handleRawMaterialChange(index, rmIndex, newValue)
+                        }
+                        renderInput={(params) => (
+                          <CustomTextField
+                            {...params}
+                            label="Raw Material Product"
+                            variant="outlined"
+                            size="small"
+                          />
+                        )}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={2}>
+                      <CustomTextField
+                        fullWidth
+                        name="unit"
+                        size="small"
+                        label="Unit"
+                        variant="outlined"
+                        value={rm.unit}
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={2}>
+                      <CustomTextField
+                        fullWidth
+                        name="quantity"
+                        size="small"
+                        label="Raw Material Quantity"
+                        variant="outlined"
+                        value={rm.quantity}
+                        onChange={(event) =>
+                          handleFormChange(index, rmIndex, event)
+                        }
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={1}>
+                      <Button
+                        onClick={() => removeRawMaterial(index, rmIndex)}
+                        variant="contained"
+                      >
+                        Remove
+                      </Button>
+                    </Grid>
+                  </React.Fragment>
+                ))}
+                <Grid item xs={12}>
+                  <Button
+                    onClick={() => addRawMaterial(index)}
+                    variant="contained"
+                  >
+                    Add Raw Material
+                  </Button>
+                </Grid>
               </React.Fragment>
-            ); // Close the return statement properly
+            );
           })}
         </Grid>
         <Button
@@ -253,5 +358,3 @@ const SupplierInvoicesCreate = ({
     </>
   );
 };
-
-export default SupplierInvoicesCreate;
