@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Grid,
   styled,
@@ -34,11 +34,11 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-export const ReworkInvoiceProduct = ({ selectedRow, setOpenPopup }) => {
+export const ReworkInvoiceProduct = ({ selectedRow }) => {
   const [openPopSourceViewList, setOpenPopSourceViewList] = useState(false);
   const [materialData, setMaterialData] = useState(selectedRow);
 
-  const handleOpenPop = (value) => {
+  const handleOpenPopUp = (value) => {
     console.log("Selected raw material:", value);
     setMaterialData(value);
     setOpenPopSourceViewList(true);
@@ -90,9 +90,9 @@ export const ReworkInvoiceProduct = ({ selectedRow, setOpenPopup }) => {
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         <Button
-                          color="success"
+                          color="primary"
                           variant="outlined"
-                          onClick={() => handleOpenPop(row)}
+                          onClick={() => handleOpenPopUp(row)}
                         >
                           View Source List
                         </Button>

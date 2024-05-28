@@ -23,7 +23,7 @@ export const SalesReturnAllTabView = () => {
       component: <SaleReturnInventory />,
     },
     {
-      label: "Rework Invoice",
+      label: "Rework Entry",
       roles: ["Director", "Accounts"],
       component: <ReworkInvoiceView />,
     },

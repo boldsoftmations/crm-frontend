@@ -113,7 +113,7 @@ export const ReworkInvoiceView = () => {
                     fontWeight: 800,
                   }}
                 >
-                  Rework Invoice
+                  Rework Entry
                 </h3>
               </Grid>
 
@@ -290,7 +290,6 @@ function Row(props) {
                 <TableHead>
                   <TableRow>
                     <TableCell align="center">PRODUCT</TableCell>
-                    <TableCell align="center">UNIT</TableCell>
                     <TableCell align="center">RATE</TableCell>
                     <TableCell align="center">QUANTITY</TableCell>
                     <TableCell align="center">AMOUNT</TableCell>
@@ -304,16 +303,13 @@ function Row(props) {
                         {product.product}
                       </TableCell>
                       <TableCell component="th" scope="row" align="center">
-                        {product.unit}
-                      </TableCell>
-                      <TableCell component="th" scope="row" align="center">
                         {product.rate}
                       </TableCell>
                       <TableCell align="center">{product.quantity}</TableCell>
                       <TableCell align="center">{product.amount}</TableCell>
                       <TableCell align="center">
                         <Button
-                          color="success"
+                          color="info"
                           variant="outlined"
                           onClick={() => handleOpenPop(product)}
                         >

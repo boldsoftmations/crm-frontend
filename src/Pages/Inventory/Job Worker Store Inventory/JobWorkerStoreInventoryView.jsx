@@ -128,7 +128,7 @@ export const JobWorkerStoreInventoryView = () => {
                     </StyledTableCell>
                     <StyledTableCell align="center">{row.rate}</StyledTableCell>
                     <StyledTableCell align="center">
-                      {row.total_amount}
+                      {row.amount}
                     </StyledTableCell>
                     <StyledTableCell align="center">{row.unit}</StyledTableCell>
                   </StyledTableRow>
