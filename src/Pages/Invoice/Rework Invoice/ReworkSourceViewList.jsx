@@ -31,7 +31,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-export const SourceViewList = ({ selectedRow }) => {
+export const ReworkSourceSourceViewList = ({ selectedRow }) => {
   useEffect(() => {
     console.log("value from SourceViewList", selectedRow);
   }, [selectedRow]);
@@ -64,8 +64,8 @@ export const SourceViewList = ({ selectedRow }) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {selectedRow &&
-                selectedRow.map((row, index) => (
+              {selectedRow.source_list &&
+                selectedRow.source_list.map((row, index) => (
                   <StyledTableRow key={index}>
                     <StyledTableCell align="center">
                       {row.product}
