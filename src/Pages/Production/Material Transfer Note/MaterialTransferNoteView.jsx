@@ -35,6 +35,7 @@ import { MaterialTransferAccept } from "./MaterialTransferAccept";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
 import SearchComponent from "../../../Components/SearchComponent ";
+import CustomSelect from "../../../Components/CustomSelect";
 
 export const MaterialTransferNoteView = () => {
   const [openCreatePopup, setOpenCreatePopup] = useState(false);
@@ -149,21 +150,6 @@ export const MaterialTransferNoteView = () => {
     setMaterialTransferNoteByID(item);
   };
 
-  const handleAccept = (item) => {
-    setOpenAcceptPopup(true);
-    setMaterialTransferNoteByID(item);
-  };
-
-  const handlePageChange = (event, value) => {
-    setCurrentPage(value);
-  };
-
-  const handleFilterChange = (event) => {
-    const { value } = event.target;
-    setAcceptedFilter(value);
-    getAllMaterialTransferNoteDetails(currentPage, value, searchQuery);
-  };
-
   const getAllSellerAccountsDetails = async () => {
     try {
       setOpen(true);
@@ -217,6 +203,23 @@ export const MaterialTransferNoteView = () => {
     setSearchQuery("");
     setCurrentPage(1);
   };
+
+  const clearAcceptedFilter = () => setAcceptedFilter("");
+
+  const handleAcceptedFilter = (event) => {
+    setAcceptedFilter(event.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleAccept = (item) => {
+    setOpenAcceptPopup(true);
+    setMaterialTransferNoteByID(item);
+  };
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
+
   // Usage
   // const isAcceptedEdit =
   //   userData.groups.includes("Accounts") ||
@@ -255,42 +258,13 @@ export const MaterialTransferNoteView = () => {
             >
               {/* Left Section: Filter and Search */}
               <Grid item xs={12} sm={6} display="flex" alignItems="center">
-                <FormControl fullWidth size="small" sx={{ marginRight: 2 }}>
-                  <InputLabel id="demo-simple-select-label">
-                    Filter By Accepted
-                  </InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    name="status"
-                    label="Filter By Accepted"
-                    value={acceptedFilter}
-                    onChange={handleFilterChange}
-                  >
-                    {AcceptedOption.map((option, i) => (
-                      <MenuItem key={i} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  {acceptedFilter && (
-                    <IconButton
-                      size="small"
-                      onClick={() => {
-                        setAcceptedFilter("");
-                        getAllMaterialTransferNoteDetails(1, "", searchQuery);
-                      }}
-                      sx={{
-                        position: "absolute",
-                        right: 8,
-                        top: "50%",
-                        transform: "translateY(-50%)",
-                      }}
-                    >
-                      <ClearIcon />
-                    </IconButton>
-                  )}
-                </FormControl>
+                <CustomSelect
+                  label="Filter By Accepted"
+                  options={AcceptedOption}
+                  value={acceptedFilter}
+                  onChange={handleAcceptedFilter}
+                  onClear={clearAcceptedFilter}
+                />
                 <SearchComponent
                   onSearch={handleSearch}
                   onReset={handleReset}
