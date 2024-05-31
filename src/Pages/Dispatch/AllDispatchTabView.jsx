@@ -24,13 +24,14 @@ export const AllDispatchTabView = () => {
 
   const tabs = [
     {
-      label: "Dispatched",
-      visible: allTabs || twoTabs || customerServiceTab,
-      index: 0,
-    },
-    {
       label: "Pending Dispatch",
       visible: allTabs || twoTabs,
+      index: 0,
+    },
+
+    {
+      label: "Dispatched",
+      visible: allTabs || twoTabs || customerServiceTab,
       index: 1,
     },
 
@@ -45,8 +46,8 @@ export const AllDispatchTabView = () => {
   const visibleTabIndexes = visibleTabs.map((tab) => tab.index);
 
   const tabComponents = {
-    0: <Dispatched />,
-    1: <ViewDispatch />,
+    0: <ViewDispatch />,
+    1: <Dispatched />,
     2: <SalesRegisterView />,
   };
 
