@@ -55,28 +55,32 @@ export const PhysicalInventoryView = () => {
   };
 
   const Tableheaders = [
-    "ID",
+    "DATE",
+    "USER",
     "TYPE",
     "PRODUCT",
     "UNIT",
+    "BATCH NO",
     "SELLER UNIT",
     "PENDING QUANTITY",
     "PHYSICAL QUANTITY",
-    "CHANGED QUANTITY",
     "GNL",
+    "CHANGED QUANTITY",
     "REASON",
   ];
 
   const Tabledata = data.map((row, i) => ({
-    id: row.id,
+    creation_date: row.creation_date,
+    created_by: row.created_by,
     type: row.type,
     product: row.product,
     unit: row.unit,
+    batch_no: row.batch_no,
     seller_unit: row.seller_unit,
     pending_quantity: row.pending_quantity,
     physical_quantity: row.physical_quantity,
-    change_qty: row.change_qty,
     gnl: row.gnl,
+    change_qty: row.change_qty,
     reason: row.reason,
   }));
 
