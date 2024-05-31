@@ -15,10 +15,6 @@ export const ProductionInventoryConsView = () => {
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
-  useEffect(() => {
-    getAllProductionInventoryDetails();
-  }, []);
-
   const getAllProductionInventoryDetails = async () => {
     try {
       setOpen(true);
@@ -32,6 +28,10 @@ export const ProductionInventoryConsView = () => {
       setOpen(false);
     }
   };
+
+  useEffect(() => {
+    getAllProductionInventoryDetails();
+  }, []);
 
   const handleSearch = (query) => {
     setSearchQuery(query);

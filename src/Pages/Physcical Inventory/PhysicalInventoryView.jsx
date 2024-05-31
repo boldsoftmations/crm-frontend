@@ -62,6 +62,7 @@ export const PhysicalInventoryView = () => {
     "SELLER UNIT",
     "PENDING QUANTITY",
     "PHYSICAL QUANTITY",
+    "CHANGED QUANTITY",
     "GNL",
     "REASON",
   ];
@@ -74,6 +75,7 @@ export const PhysicalInventoryView = () => {
     seller_unit: row.seller_unit,
     pending_quantity: row.pending_quantity,
     physical_quantity: row.physical_quantity,
+    change_qty: row.change_qty,
     gnl: row.gnl,
     reason: row.reason,
   }));

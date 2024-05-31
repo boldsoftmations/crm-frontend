@@ -3,8 +3,7 @@ import { useSelector } from "react-redux";
 import { CustomTabs } from "../../Components/CustomTabs";
 import { SalesReturnView } from "./SalesReturnView";
 import { SaleReturnInventory } from "./SaleReturnInventory";
-import { ReworkInvoiceView } from "../Invoice/Rework Invoice/ReworkInvoiceVew";
-
+import { ReworkEntryView } from "../Invoice/Rework Entry/ReworkEntryView";
 export const SalesReturnAllTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
 
@@ -25,7 +24,7 @@ export const SalesReturnAllTabView = () => {
     {
       label: "Rework Entry",
       roles: ["Director", "Accounts"],
-      component: <ReworkInvoiceView />,
+      component: <ReworkEntryView />,
     },
   ];
 

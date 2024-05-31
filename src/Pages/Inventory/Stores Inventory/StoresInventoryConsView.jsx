@@ -15,10 +15,6 @@ export const StoresInventoryConsView = () => {
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
-  useEffect(() => {
-    getAllStoresInventoryDetails();
-  }, []);
-
   const getAllStoresInventoryDetails = async () => {
     try {
       setOpen(true);
@@ -30,6 +26,10 @@ export const StoresInventoryConsView = () => {
       setOpen(false);
     }
   };
+
+  useEffect(() => {
+    getAllStoresInventoryDetails();
+  }, []);
 
   const handleSearch = (query) => {
     setSearchQuery(query);

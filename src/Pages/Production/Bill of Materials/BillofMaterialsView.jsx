@@ -66,12 +66,8 @@ export const BillofMaterialsView = () => {
   const getFinishGoods = async () => {
     try {
       setOpen(true);
-      const response = await ProductService.getAllFinishGoods("all");
-      var arr = response.data.map((ProductData) => ({
-        product: ProductData.name,
-        unit: ProductData.unit,
-      }));
-      dispatch(getFinishGoodProduct(arr));
+      const response = await ProductService.getAllFinishGoodsProducts();
+      dispatch(getFinishGoodProduct(response.data.data));
       setOpen(false);
     } catch (err) {
       handleError(err);

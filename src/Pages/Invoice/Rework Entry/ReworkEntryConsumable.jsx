@@ -34,12 +34,11 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-export const ReworkInvoiceProduct = ({ selectedRow }) => {
+export const ReworkEntryConsumable = ({ selectedRow }) => {
   const [openPopSourceViewList, setOpenPopSourceViewList] = useState(false);
   const [materialData, setMaterialData] = useState(selectedRow);
 
   const handleOpenPopUp = (value) => {
-    console.log("Selected raw material:", value);
     setMaterialData(value);
     setOpenPopSourceViewList(true);
   };
@@ -77,7 +76,7 @@ export const ReworkInvoiceProduct = ({ selectedRow }) => {
               </TableHead>
               <TableBody>
                 {selectedRow &&
-                  selectedRow.raw_materials.map((row, index) => (
+                  selectedRow.consumable.map((row, index) => (
                     <StyledTableRow key={index}>
                       <StyledTableCell align="center">
                         {row.product}

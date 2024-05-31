@@ -9,7 +9,7 @@ import InvoiceServices from "../../../services/InvoiceService";
 import { PaymentConfirmationPi } from "./PaymentConfirmationPi";
 import { Popup } from "../../../Components/Popup";
 import { CustomLoader } from "../../../Components/CustomLoader";
-import logo from "../../../Images/LOGOS3.png";
+import logo from "../../../Images/glutape logo.jpg";
 import ISO from "../../../Images/ISO.png";
 import AllLogo from "../../../Images/allLogo.jpg";
 import MSME from "../../../Images/MSME.jpeg";
@@ -479,7 +479,7 @@ export const ProformaInvoiceView = (props) => {
                         style={{ borderBottom: "1px Solid #000000" }}
                       >
                         <p className="text-center fs-6 fw-bold p-0 m-0">
-                          Proforma Tax Invoice
+                          Proforma Tax Invoice / Sales Contract
                         </p>
                       </div>
                     </div>
@@ -951,7 +951,7 @@ export const ProformaInvoiceView = (props) => {
                       borderBottom: "1px Solid #000000",
                     }}
                   >
-                    <div className="col-md-8 text-right">
+                    <div className="col-md-5 text-right">
                       <strong style={{ ...typographyStyling }}>
                         Terms and Condition :-
                       </strong>
@@ -972,8 +972,16 @@ export const ProformaInvoiceView = (props) => {
                         );
                       })}
                     </div>
+                    <div className="col-md-3 text-center d-flex align-items-end justify-content-center">
+                      <div>
+                        <p>For Buyer</p>
+                        <p>----------------------------------------</p>
+                      </div>
+                    </div>
                     <div className="col-md-4 d-flex align-items-end justify-content-center">
                       <div className="text-center">
+                        For Glutape India Pvt. Ltd.
+                        <br />
                         {invoiceData.approval
                           ? invoiceData.approval.approve_name
                           : ""}
@@ -1016,7 +1024,7 @@ export const ProformaInvoiceView = (props) => {
             textAlign: "center",
           }}
         >
-          This is computer generated Proforma Invoice
+          This is computer generated Proforma Invoice / Sales Contract
         </div>
       </div>
 

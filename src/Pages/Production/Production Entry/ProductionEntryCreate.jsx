@@ -187,7 +187,7 @@ export const ProductionEntryCreate = memo((props) => {
               onChange={(event, value) => fetchProductOptions(value)}
               options={
                 FinishGoodsProduct
-                  ? FinishGoodsProduct.map((option) => option.product)
+                  ? FinishGoodsProduct.map((option) => option)
                   : []
               }
               getOptionLabel={(option) => option}

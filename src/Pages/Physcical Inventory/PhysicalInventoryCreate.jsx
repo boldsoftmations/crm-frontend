@@ -16,25 +16,25 @@ export const PhysicalInventoryCreate = memo((props) => {
   const [formData, setFormData] = useState({});
   const [productOption, setProductOption] = useState([]);
   const [sellerUnitOption, setSellerUnitOption] = useState([]);
+  const [inventoryData, setInventoryData] = useState([]);
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
-  const handleInputChange = useCallback(
-    (name, value) => {
-      setFormData((prevState) => {
-        // Directly handle the 'product' case to set both product and unit.
-        if (name === "product") {
-          const selectedProduct =
-            productOption.find((p) => p.name === value) || {};
-          const unit = selectedProduct.unit || "";
-          return { ...prevState, [name]: value, unit };
-        }
-        // Handle all other inputs generically.
-        return { ...prevState, [name]: value };
-      });
-    },
-    [productOption]
-  );
+  const fetchInventoryData = async (type) => {
+    setOpen(true);
+    try {
+      const api =
+        type === "Store"
+          ? InventoryServices.getAllConsStoresInventoryData
+          : InventoryServices.getAllConsProductionInventoryData;
+      const response = await api();
+      setInventoryData(response.data);
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setOpen(false);
+    }
+  };
 
   const getProduct = async () => {
     try {
@@ -66,26 +66,89 @@ export const PhysicalInventoryCreate = memo((props) => {
     getProduct();
     getAllSellerAccountsDetails();
   }, []);
-  console.log("formdata", formData);
+
+  const handleInputChange = useCallback((name, value) => {
+    setFormData((prevState) => {
+      if (name === "type") {
+        // Reset data when type changes
+        setInventoryData([]);
+        fetchInventoryData(value); // Fetch new inventory data based on type
+      }
+      return { ...prevState, [name]: value };
+    });
+  }, []);
+
+  const handleProductChange = useCallback(
+    (event, value) => {
+      const selectedProduct = inventoryData.find(
+        (data) =>
+          data.product__name === value &&
+          data.seller_account === formData.seller_unit
+      );
+      setFormData((prevState) => ({
+        ...prevState,
+        product: value,
+        pending_quantity: selectedProduct ? selectedProduct.quantity : 0,
+      }));
+    },
+    [inventoryData, formData.seller_unit]
+  );
+
+  const handleSellerUnitChange = useCallback(
+    (event, value) => {
+      const selectedSellerUnit = inventoryData.find(
+        (data) =>
+          data.seller_account === value &&
+          data.product__name === formData.product
+      );
+      setFormData((prevState) => ({
+        ...prevState,
+        seller_unit: value,
+        pending_quantity: selectedSellerUnit ? selectedSellerUnit.quantity : 0,
+      }));
+    },
+    [inventoryData, formData.product]
+  );
+
+  const handlePhysicalQuantityChange = (event) => {
+    const newPhysicalQuantity = event.target.value;
+    setFormData((prevState) => ({
+      ...prevState,
+      physical_quantity: newPhysicalQuantity,
+    }));
+  };
+
+  const calculateGNL = (physicalQuantity, pendingQuantity) => {
+    const physical = parseInt(physicalQuantity, 10);
+    const pending = parseInt(pendingQuantity, 10);
+    const diff = physical - pending;
+    return diff > 0 ? "Gain" : diff < 0 ? "Loss" : "No Change";
+  };
+
+  useEffect(() => {
+    const gnl = calculateGNL(
+      formData.physical_quantity,
+      formData.pending_quantity
+    );
+    setFormData((prevState) => ({
+      ...prevState,
+      gnl: gnl,
+    }));
+  }, [formData.physical_quantity, formData.pending_quantity, calculateGNL]);
+
   const createPhysicalInventory = useCallback(
     async (e) => {
+      e.preventDefault();
+      setOpen(true);
       try {
-        e.preventDefault();
-        setOpen(true);
         const payload = {
-          type: formData.type,
-          seller_unit: formData.seller_unit,
-          product: formData.product,
-          physical_quantity: formData.physical_quantity,
+          ...formData,
           gnl: formData.gnl,
-          reason: formData.reason,
         };
-
         const response = await InventoryServices.createPhysical(payload);
-        const successMessage =
-          response.data.message || "Physical Inventory Created successfully";
-        handleSuccess(successMessage);
-
+        handleSuccess(
+          response.data.message || "Physical Inventory Created successfully"
+        );
         setTimeout(() => {
           setOpenPopup(false);
           getPhysicalInventoryData(currentPage, searchQuery);
@@ -114,7 +177,7 @@ export const PhysicalInventoryCreate = memo((props) => {
             <CustomAutocomplete
               size="small"
               disablePortal
-              id="combo-box-demo"
+              id="type-selector"
               value={formData.type || ""}
               options={TYPE_OPTIONS}
               getOptionLabel={(option) => option}
@@ -126,13 +189,11 @@ export const PhysicalInventoryCreate = memo((props) => {
             <CustomAutocomplete
               size="small"
               disablePortal
-              id="combo-box-demo"
+              id="seller-unit-selector"
               value={formData.seller_unit || ""}
-              options={sellerUnitOption.map((option) => option.unit)}
+              options={sellerUnitOption.map((data) => data.unit)}
               getOptionLabel={(option) => option}
-              onChange={(event, value) =>
-                handleInputChange("seller_unit", value)
-              }
+              onChange={handleSellerUnitChange}
               label="Seller Unit"
             />
           </Grid>
@@ -140,12 +201,25 @@ export const PhysicalInventoryCreate = memo((props) => {
             <CustomAutocomplete
               size="small"
               disablePortal
-              id="combo-box-demo"
+              id="product-selector"
               value={formData.product || ""}
-              options={productOption.map((option) => option.name)}
+              options={productOption.map((data) => data.name)}
               getOptionLabel={(option) => option}
-              onChange={(event, value) => handleInputChange("product", value)}
+              onChange={handleProductChange}
               label="Product"
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <CustomTextField
+              fullWidth
+              size="small"
+              label="Pending Quantity"
+              variant="outlined"
+              value={formData.pending_quantity || ""}
+              InputProps={{
+                readOnly: true,
+              }}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -155,24 +229,22 @@ export const PhysicalInventoryCreate = memo((props) => {
               label="Physical Quantity"
               variant="outlined"
               value={formData.physical_quantity || ""}
-              onChange={(event) =>
-                handleInputChange("physical_quantity", event.target.value)
-              }
+              onChange={handlePhysicalQuantityChange} // Use the updated handler
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <CustomAutocomplete
+            <CustomTextField
+              fullWidth
               size="small"
-              disablePortal
-              id="combo-box-demo"
-              value={formData.gnl || ""}
-              options={GNL_OPTIONS}
-              getOptionLabel={(option) => option}
-              onChange={(event, value) => handleInputChange("gnl", value)}
               label="Gain/Loss"
+              variant="outlined"
+              value={formData.gnl || ""}
+              InputProps={{
+                readOnly: true,
+              }}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12}>
             <CustomTextField
               fullWidth
               multiline

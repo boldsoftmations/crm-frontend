@@ -15,6 +15,7 @@ export const MaterialTransferAccept = memo(
       useNotificationHandling();
 
     // Stores Accept Api
+
     const updateMaterialTransferNoteDetails = async (data) => {
       try {
         console.log("data", data);
