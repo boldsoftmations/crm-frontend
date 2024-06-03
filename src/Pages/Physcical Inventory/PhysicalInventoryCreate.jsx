@@ -8,6 +8,7 @@ import { MessageAlert } from "../../Components/MessageAlert";
 import { CustomLoader } from "../../Components/CustomLoader";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import CustomTextField from "../../Components/CustomTextField";
+import { useSelector } from "react-redux";
 
 export const PhysicalInventoryCreate = memo((props) => {
   const { currentPage, searchQuery, setOpenPopup, getPhysicalInventoryData } =
@@ -20,6 +21,7 @@ export const PhysicalInventoryCreate = memo((props) => {
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
+  const { profile: users } = useSelector((state) => state.auth);
   const fetchInventoryData = async (type) => {
     setOpen(true);
     try {
@@ -88,7 +90,7 @@ export const PhysicalInventoryCreate = memo((props) => {
       setFormData((prevState) => ({
         ...prevState,
         product: value,
-        pending_quantity: selectedProduct ? selectedProduct.quantity : 0,
+        pending_quantity: selectedProduct ? selectedProduct.quantity : "0",
       }));
     },
     [inventoryData, formData.seller_unit]
@@ -144,6 +146,7 @@ export const PhysicalInventoryCreate = memo((props) => {
         const payload = {
           ...formData,
           gnl: formData.gnl,
+          rate: Number(formData.rate),
         };
         const response = await InventoryServices.createPhysical(payload);
         handleSuccess(
@@ -161,7 +164,9 @@ export const PhysicalInventoryCreate = memo((props) => {
     },
     [formData, currentPage, searchQuery]
   );
-
+  const isAuthorizedAndPendingZero =
+    users.groups.includes("Accounts") ||
+    (users.groups.includes("Director") && formData.pending_quantity === "0");
   return (
     <>
       <MessageAlert
@@ -222,6 +227,22 @@ export const PhysicalInventoryCreate = memo((props) => {
               }}
             />
           </Grid>
+          {isAuthorizedAndPendingZero && (
+            <Grid item xs={12} sm={6}>
+              <CustomTextField
+                fullWidth
+                size="small"
+                name="rate"
+                type="number"
+                label="Rate"
+                variant="outlined"
+                value={formData.rate}
+                onChange={(event) =>
+                  handleInputChange("rate", event.target.value)
+                }
+              />
+            </Grid>
+          )}
           <Grid item xs={12} sm={6}>
             <CustomTextField
               fullWidth
@@ -273,4 +294,3 @@ export const PhysicalInventoryCreate = memo((props) => {
 });
 
 const TYPE_OPTIONS = ["Store", "Production"];
-const GNL_OPTIONS = ["Gain", "Loss"];
