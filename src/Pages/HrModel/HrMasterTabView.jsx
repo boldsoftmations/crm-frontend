@@ -4,6 +4,7 @@ import { DesignationView } from "./Designation/DesignationView";
 import { DepartmentView } from "./Department/DepartmentView";
 import { SourceView } from "./CandidateSource/SourceView";
 import { CustomTabs } from "../../Components/CustomTabs";
+import { LocationView } from "./Location/LocationView";
 
 export const HrMasterTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
@@ -30,6 +31,11 @@ export const HrMasterTabView = () => {
       visible: allTabs,
       index: 2,
     },
+    {
+      label: "Location",
+      visible: allTabs,
+      index: 3,
+    },
   ];
 
   const visibleTabs = tabs.filter((tab) => tab.visible);
@@ -39,6 +45,7 @@ export const HrMasterTabView = () => {
     0: <DesignationView />,
     1: <DepartmentView />,
     2: <SourceView />,
+    3: <LocationView />,
   };
 
   return (

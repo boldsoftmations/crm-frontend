@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Box, Grid, Button, TextField } from "@mui/material";
 import CustomAxios from "../../../services/api";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import Hr from "../../../services/Hr";
 
 export const JobOpeningCreate = ({ addNewJobOpening }) => {
   const [newJobOpening, setNewJobOpening] = useState({
@@ -16,6 +17,18 @@ export const JobOpeningCreate = ({ addNewJobOpening }) => {
   const [designations, setDesignations] = useState([]);
   const [department, setDepartment] = useState([]);
   const [emails, setEmails] = useState([]);
+  const [location, setLocation] = useState([]);
+
+  const fetchLocationList = async () => {
+    try {
+      const response = await Hr.getLocationList();
+      console.log("location", response.data);
+      setLocation(response.data);
+    } catch (error) {
+      console.error("Failed to fetch locationName", error);
+    }
+  };
+
   useEffect(() => {
     const fetchDesignations = async () => {
       try {
@@ -55,15 +68,9 @@ export const JobOpeningCreate = ({ addNewJobOpening }) => {
     };
     fetchDesignations();
     fetchDepartments();
+    fetchLocationList();
     fetchEmails();
   }, []);
-
-  const locations = [
-    "Andheri Head Office",
-    "Andheri Sales Office",
-    "Bhiwandi Factory",
-    "Delhi Factory",
-  ];
 
   const salaryRange = [
     "0.6 LPA - 1.2 LPA",
@@ -134,7 +141,7 @@ export const JobOpeningCreate = ({ addNewJobOpening }) => {
           <CustomAutocomplete
             id="location"
             size="small"
-            options={locations}
+            options={location.map((option) => option.name)}
             fullWidth
             label="Location"
             value={newJobOpening.location}
