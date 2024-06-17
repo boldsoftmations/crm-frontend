@@ -37,6 +37,7 @@ import { AnalyticsAllTabView } from "../Pages/Analytics/AnalyticsAllTabView";
 import { AllDispatchTabView } from "../Pages/Dispatch/AllDispatchTabView";
 import { AllProfileTabView } from "../Pages/Users/AllProfileTabView";
 import { SalesReturnAllTabView } from "../Pages/SalesReturn/SalesReturnAllTabView";
+import { DebitCreditAllTabView } from "../Pages/DebitCredit/DebitCreditAllTabView";
 
 const PrivateRoute = ({ children, redirectTo = "/" }) => {
   const tokenData = useSelector((state) => state.auth);
@@ -253,6 +254,14 @@ export const RouteScreen = () => {
             element={
               <PrivateRoute>
                 <SalesReturnAllTabView />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/invoice/credit-debit-note"
+            element={
+              <PrivateRoute>
+                <DebitCreditAllTabView />
               </PrivateRoute>
             }
           />

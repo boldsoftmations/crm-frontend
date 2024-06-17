@@ -29,6 +29,7 @@ import BusinessIcon from "@mui/icons-material/Business";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import StorageIcon from "@mui/icons-material/Storage";
 import AssessmentIcon from "@mui/icons-material/Assessment";
+import AssessmentSharpIcon from "@mui/icons-material/AssessmentSharp";
 export const ListItems = (props) => {
   const { setOpen } = props;
   const data = useSelector((state) => state.auth);
@@ -348,6 +349,22 @@ export const ListItems = (props) => {
               <DescriptionIcon />
             </ListItemIcon>
             <ListItemText primary="Sales Return" />
+          </ListItem>
+
+          {/* Debit-Credit */}
+
+          <ListItem
+            button
+            component={RouterLink}
+            to="/invoice/credit-debit-note"
+            style={{ width: 300 }}
+            onClick={() => setOpen(false)}
+            selected={isActive("/invoice/credit-debit-note")}
+          >
+            <ListItemIcon>
+              <AssessmentSharpIcon />
+            </ListItemIcon>
+            <ListItemText primary="Debit-Credit" />
           </ListItem>
 
           {/* Currency */}
@@ -2343,6 +2360,22 @@ export const ListItems = (props) => {
                   <DescriptionIcon />
                 </ListItemIcon>
                 <ListItemText primary="Sales Return" />
+              </ListItem>
+
+              {/* Debit-Credit */}
+
+              <ListItem
+                button
+                component={RouterLink}
+                to="/invoice/credit-debit-note"
+                style={{ width: 300 }}
+                onClick={() => setOpen(false)}
+                selected={isActive("/invoice/credit-debit-note")}
+              >
+                <ListItemIcon>
+                  <AssessmentSharpIcon />
+                </ListItemIcon>
+                <ListItemText primary="Debit-Credit-Notes" />
               </ListItem>
 
               {/* Tasks */}

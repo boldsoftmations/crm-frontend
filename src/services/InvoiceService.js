@@ -369,6 +369,33 @@ const getSalesReturnBySearchCompany = (unitValue, companyValue) => {
   );
 };
 
+//Debit/credit api starts here
+const getCustomersList = () => {
+  return CustomAxios.get(`/api/customer/customer/`);
+};
+
+const getDebitCreditnotes = (page, searchValue) => {
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+
+  return CustomAxios.get(
+    `/api/invoice/credit-debit-note/?${params.toString()}`
+  );
+};
+
+const CreateDebitCreditNote = (data) => {
+  return CustomAxios.post("/api/invoice/credit-debit-note/", data);
+};
+
+const getDebitCreditNoteById = (id) => {
+  return CustomAxios.get(`/api/invoice/credit-debit-note/${id}/`);
+};
+
 const InvoiceServices = {
   getAllSellerAccountData,
   getfilterSellerAccountData,
@@ -410,6 +437,10 @@ const InvoiceServices = {
   getPODCopyDashboardData,
   checkPrice,
   getSalesReturnBySearchCompany,
+  getCustomersList,
+  getDebitCreditnotes,
+  CreateDebitCreditNote,
+  getDebitCreditNoteById,
 };
 
 export default InvoiceServices;
