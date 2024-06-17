@@ -159,16 +159,6 @@ export const DebitCreditInvoiceNote = (props) => {
                         {invoiceNoteData.creation_date}
                       </div>
                       <div>
-                        <strong style={{ ...typographyStyling }}>
-                          Reason :
-                        </strong>
-                        <span className="p-1">
-                          {invoiceNoteData.reason === "Rate"
-                            ? `${invoiceNoteData.reason} Difference`
-                            : `${invoiceNoteData.reason}`}
-                        </span>
-                      </div>
-                      <div>
                         <strong>Note : </strong>
                         <span>{invoiceNoteData.notes}</span>
                       </div>
