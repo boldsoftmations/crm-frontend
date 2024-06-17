@@ -164,7 +164,7 @@ export const DebitCreditInvoiceNote = (props) => {
                       </div>
                     </div>
                     <div
-                      className="col-md-6"
+                      className="col-md-5"
                       style={{
                         ...typographyStyling,
                         borderLeft: "1px Solid #000000",
@@ -342,7 +342,7 @@ export const DebitCreditInvoiceNote = (props) => {
                     borderBottom: "1px Solid #000000",
                   }}
                 >
-                  <div className="col-md-8">
+                  <div className="col-md-8" style={{ fontSize: "11px" }}>
                     <strong>Amount Chargeable (in words) :-</strong>
                     <br />
                     <strong>Company's PAN : </strong>
@@ -350,8 +350,8 @@ export const DebitCreditInvoiceNote = (props) => {
                     <br />
                   </div>
                   <div className="col-md-4 text-right">
-                    <ul style={{ listStyle: "none", fontSize: "12px" }}>
-                      <strong style={{ fontSize: "14px" }}>
+                    <ul style={{ listStyle: "none", fontSize: "10px" }}>
+                      <strong style={{ fontSize: "12px" }}>
                         Company's Bank Details
                       </strong>
                       <li>
@@ -399,24 +399,16 @@ export const DebitCreditInvoiceNote = (props) => {
                       For Glutape India Limited -
                     </strong>
                     <br />
-                    <span style={{ fontSize: "12px" }}>
-                      {invoiceNoteData.seller_details.branch}
-                    </span>
+                    <span>{invoiceNoteData.seller_details.branch}</span>
                     <br />
-                    <span style={{ fontSize: "12px", paddingRight: "10px" }}>
+                    <span style={{ fontSize: "10px", padding: "4px" }}>
                       Authorised Signatory
                     </span>
                   </div>
                 </div>
                 <div className="row">
                   <div className="col-md-12 ">
-                    <img
-                      // className="p-2"
-                      src={AllLogo}
-                      alt=""
-                      height="50"
-                      width="100%"
-                    />
+                    <img src={AllLogo} alt="" width="100%" />
                   </div>
                 </div>
               </div>
