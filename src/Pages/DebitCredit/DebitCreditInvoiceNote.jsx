@@ -252,7 +252,7 @@ export const DebitCreditInvoiceNote = (props) => {
                           <td className="text-start">1</td>
                           <td className="text-left">
                             Reason :
-                            <span className="p-1">
+                            <span className="">
                               {invoiceNoteData.reason === "Rate"
                                 ? `${invoiceNoteData.reason} Difference`
                                 : `${invoiceNoteData.reason}`}
@@ -349,9 +349,11 @@ export const DebitCreditInvoiceNote = (props) => {
                     <span>{invoiceNoteData.seller_details.pan}</span>
                     <br />
                   </div>
-                  <div className="col-md-4 text-right bg-red">
-                    <ul style={{ listStyle: "none" }}>
-                      <h6>Company's Bank Details</h6>
+                  <div className="col-md-4 text-right">
+                    <ul style={{ listStyle: "none", fontSize: "12px" }}>
+                      <strong style={{ fontSize: "14px" }}>
+                        Company's Bank Details
+                      </strong>
                       <li>
                         Bank Name :{" "}
                         <span>{invoiceNoteData.seller_details.bank_name}</span>
@@ -392,13 +394,16 @@ export const DebitCreditInvoiceNote = (props) => {
                       );
                     })}
                   </div>
-                  <div className="col-md-5 text-end p-2">
+                  <div className="col-md-6 text-end px-5">
                     <strong style={{ ...typographyStyling }}>
-                      For Glutape India Limited - <br />
-                      <span>{invoiceNoteData.seller_details.branch}</span>
+                      For Glutape India Limited -
                     </strong>
                     <br />
-                    <span style={{ fontSize: "12px", padding: "4px" }}>
+                    <span style={{ fontSize: "12px" }}>
+                      {invoiceNoteData.seller_details.branch}
+                    </span>
+                    <br />
+                    <span style={{ fontSize: "12px", paddingRight: "10px" }}>
                       Authorised Signatory
                     </span>
                   </div>
