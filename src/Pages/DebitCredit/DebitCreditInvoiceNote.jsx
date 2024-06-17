@@ -245,7 +245,7 @@ export const DebitCreditInvoiceNote = (props) => {
                               SR.NO
                             </strong>
                           </td>
-                          <td className="text-center">
+                          <td className="text-left">
                             <strong style={{ ...typographyStyling }}>
                               DESCRIPTION
                             </strong>
@@ -260,12 +260,19 @@ export const DebitCreditInvoiceNote = (props) => {
                       <tbody>
                         <tr>
                           <td className="text-start">1</td>
-                          <td className="text-center">
+                          <td className="text-left">
+                            Reason :
+                            <span className="p-1">
+                              {invoiceNoteData.reason === "Rate"
+                                ? `${invoiceNoteData.reason} Difference`
+                                : `${invoiceNoteData.reason}`}
+                            </span>
+                            <br />
                             Sales Invoice No:{" "}
                             {invoices.map((invoice, index) => (
                               <span key={index} className="m-1">
                                 {invoice}
-                              </span> // Assuming 'number' is the property for the invoice number
+                              </span>
                             ))}
                             <br />
                             Date : {invoiceNoteData.creation_date}
