@@ -59,14 +59,6 @@ export const SalesInvoiceView = () => {
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
-  const handleDownload = async () => {
-    const data = await handleExport();
-    setExportData(data);
-    setTimeout(() => {
-      csvLinkRef.current.link.click();
-    });
-  };
-
   const headers = [
     { label: "Date", key: "date" },
     { label: "Invoice No", key: "invoice_no" },
@@ -83,6 +75,7 @@ export const SalesInvoiceView = () => {
       const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
       const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
       const response = await InvoiceServices.getSalesInvoiceData(
+        filterInvoiceType,
         StartDate,
         EndDate,
         "all",
@@ -120,6 +113,14 @@ export const SalesInvoiceView = () => {
     } finally {
       setOpen(false);
     }
+  };
+
+  const handleDownload = async () => {
+    const data = await handleExport();
+    setExportData(data);
+    setTimeout(() => {
+      csvLinkRef.current.link.click();
+    });
   };
 
   const handleStartDateChange = (event) => {
