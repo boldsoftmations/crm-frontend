@@ -174,6 +174,7 @@ export const SalesReturnCreate = (props) => {
         seller_state_code: salesReturnData.seller_details.seller_state_code,
         seller_unit: inputValue.seller_unit,
         products_data: formattedProducts,
+        user: salesReturnData.products_si[0].user,
       };
 
       setOpen(true);
