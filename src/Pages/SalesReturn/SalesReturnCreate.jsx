@@ -154,7 +154,7 @@ export const SalesReturnCreate = (props) => {
 
       const req = {
         invoice_type: "Sales Return",
-        sales_invoice_no: JSON.stringify(inputValue.invoice_no),
+        sales_invoice_no: inputValue.invoice_no,
         gst_number: salesReturnData.buyer_details.gst_number,
         pan_number: salesReturnData.buyer_details.pan_number,
         address: salesReturnData.buyer_details.address,
