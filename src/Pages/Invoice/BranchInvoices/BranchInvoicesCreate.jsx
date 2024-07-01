@@ -191,7 +191,7 @@ const BranchInvoicesCreate = ({ getSalesInvoiceDetails, setOpenPopup }) => {
               size="small"
               label="Transport Cost"
               variant="outlined"
-              value={inputValue.transport_cost}
+              value={inputValue.transport_cost || 0}
               onChange={handleInputChange}
             />
           </Grid>
