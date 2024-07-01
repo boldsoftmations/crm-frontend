@@ -340,6 +340,18 @@ const getAutomatioData = (page = 1, isScheduledFilter = "") => {
     `/api/whatsapp/whatsapp-automation/?${params.toString()}`
   );
 };
+
+const getAllEdc = () => {
+  return CustomAxios.get("/api/customer/assign-to-edc/");
+};
+
+const CreateEDC_Customer = (data) => {
+  return CustomAxios.post("/api/customer/assign-to-edc/", data);
+};
+const EDC_List = () => {
+  return CustomAxios.get("/api/customer/edc/");
+};
+
 const CustomerServices = {
   getAllCustomerData,
   getIncompleteKycCustomerData,
@@ -390,6 +402,9 @@ const CustomerServices = {
   resendWhatsappMessage,
   bulkResendMessage,
   getAutomatioData,
+  getAllEdc,
+  CreateEDC_Customer,
+  EDC_List,
 };
 
 export default CustomerServices;

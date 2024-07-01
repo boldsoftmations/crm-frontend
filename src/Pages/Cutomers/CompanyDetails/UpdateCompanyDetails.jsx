@@ -243,6 +243,11 @@ export const UpdateCompanyDetails = (props) => {
                   control={<Radio />}
                   label="Distribution Customer"
                 />
+                <FormControlLabel
+                  value="Exclusive Distribution Customer"
+                  control={<Radio />}
+                  label="Exclusive Distribution Customer"
+                />
               </RadioGroup>
             </FormControl>
           </Grid>

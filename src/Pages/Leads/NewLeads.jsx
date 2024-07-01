@@ -41,6 +41,7 @@ import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import SearchComponent from "../../Components/SearchComponent ";
 import { MessageAlert } from "../../Components/MessageAlert";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
+import { CreateEDCByLeads } from "./CreateEDByLeads";
 
 export const NewLeads = () => {
   const [leads, setLeads] = useState([]);
@@ -61,6 +62,8 @@ export const NewLeads = () => {
   const [referenceData, setReferenceData] = useState([]);
   const [descriptionMenuData, setDescriptionMenuData] = useState([]);
   const [openModal, setOpenModal] = useState(false);
+  const [openEDCModal, setOpenEDCModal] = useState(false);
+  const [editforedc, setEditforedc] = useState();
   const tokenData = useSelector((state) => state.auth);
   const users = tokenData.profile;
   const [isPrinting, setIsPrinting] = useState(false);
@@ -120,6 +123,10 @@ export const NewLeads = () => {
   const openInPopup5 = (item) => {
     setLeadsByID(item.lead_id);
     setOpenModalForecast(true);
+  };
+  const handleopenEDCmodal = (data) => {
+    setEditforedc(data);
+    setOpenEDCModal(true);
   };
 
   const FetchData = async (value) => {
@@ -475,6 +482,9 @@ export const NewLeads = () => {
                       <Button onClick={() => openInPopup5(row)}>
                         Forecast
                       </Button>
+                      <Button onClick={() => handleopenEDCmodal(row)}>
+                        Assign to EDC
+                      </Button>
                     </StyledTableCell>
                   </StyledTableRow>
                 ))}
@@ -588,6 +598,18 @@ export const NewLeads = () => {
         setOpenPopup={setOpenModal}
       >
         <BulkLeadAssign setOpenPopup={setOpenModal} />
+      </Popup>
+
+      <Popup
+        maxWidth="lg"
+        title={"Assign to Exclusive Distribution Customer"}
+        openPopup={openEDCModal}
+        setOpenPopup={setOpenEDCModal}
+      >
+        <CreateEDCByLeads
+          setOpenPopup={setOpenEDCModal}
+          editforedc={editforedc}
+        />
       </Popup>
     </>
   );

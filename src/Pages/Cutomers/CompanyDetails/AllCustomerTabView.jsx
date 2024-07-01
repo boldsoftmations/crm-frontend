@@ -5,6 +5,7 @@ import { CompanyDetails } from "./CompanyDetails";
 import { UnassignedCustomer } from "./UnassignedCustomer";
 import { InActiveCustomer } from "./InActiveCustomer";
 import { IncompleteKycDetails } from "./IncompleteKycDetails";
+import { ExclusiveDistributionCustomer } from "../Exclusive Distribution Customer/ExclusiveDistributionCustomer";
 
 export const AllCustomerTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
@@ -60,6 +61,12 @@ export const AllCustomerTabView = () => {
           isSalesManagerWithLeads,
         index: 3,
         component: <IncompleteKycDetails />,
+      },
+      {
+        label: "Exclusive Distribution Customers",
+        visible: allCustomerTabs,
+        index: 4,
+        component: <ExclusiveDistributionCustomer />,
       },
     ],
     [
