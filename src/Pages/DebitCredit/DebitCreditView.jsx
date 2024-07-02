@@ -225,7 +225,7 @@ export const DebitCreditView = () => {
         </Popup>
 
         <Popup
-          maxWidth="md"
+          fullScreen={true}
           title="Debit/Credit Note"
           openPopup={openInvoiceNote}
           setOpenPopup={setOpenInvoiceNote}

@@ -9,7 +9,6 @@ import InvoiceServices from "../../services/InvoiceService";
 import DownloadIcon from "@mui/icons-material/Download";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import { useReactToPrint } from "react-to-print";
 
 export const DebitCreditInvoiceNote = (props) => {
   const { invoiceNoteData } = props;
@@ -22,7 +21,6 @@ export const DebitCreditInvoiceNote = (props) => {
       const response = await InvoiceServices.getDebitCreditNoteById(
         invoiceNoteData.id
       );
-      console.log("data", response.data);
       setInvoices(response.data.sales_invoices);
       setOpen(false);
     } catch (err) {
@@ -37,32 +35,40 @@ export const DebitCreditInvoiceNote = (props) => {
   const componentRef = useRef();
   const downloadPDF = () => {
     const input = componentRef.current; // Reference to the component you want to print
+    setOpen(true);
     html2canvas(input, {
-      scale: 1, // Adjust for higher resolution, if needed
+      scale: 5, // Adjust the scale for higher resolution, lower it to reduce file size
       useCORS: true, // Ensures that external resources like images are loaded in the canvas
     })
       .then((canvas) => {
-        const imgData = canvas.toDataURL("image/png");
-        const pdf = new jsPDF({
-          orientation: "p",
-          unit: "px",
-          format: [canvas.width, canvas.height],
-        });
-        pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
-        pdf.save(`${invoiceNoteData.note_type} Invoice Note.pdf`); // Specify the file name for the download
+        const imgData = canvas.toDataURL("image/jpeg", 0.6); // Convert to JPEG and set quality (0 to 1)
+        const pdf = new jsPDF("p", "pt", "a4", true); // Enable compression
+        const imgProps = pdf.getImageProperties(imgData);
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+        // Add image to PDF
+        pdf.addImage(
+          imgData,
+          "JPEG",
+          0,
+          0,
+          pdfWidth,
+          pdfHeight,
+          undefined,
+          "FAST"
+        );
+        pdf.save(
+          `${invoiceNoteData.note_type} Invoice Note Number ${invoiceNoteData.id}.pdf`
+        ); // Specify the file name for the download
       })
       .catch((err) => {
         console.error("Error generating PDF", err);
       })
       .finally(() => {
-        setOpen(false); // Update state to hide loader or indicate completion
+        setOpen(false);
       });
   };
-
-  const handlePrint = useReactToPrint({
-    content: () => componentRef.current,
-    documentTitle: `${invoiceNoteData.id} ${invoiceNoteData.note_type} Note`,
-  });
 
   const TOTAL_GST_DATA = invoiceNoteData.total_amount - invoiceNoteData.amount;
   const TOTAL_GST = TOTAL_GST_DATA.toFixed(2);
@@ -86,14 +92,11 @@ export const DebitCreditInvoiceNote = (props) => {
             >
               DownLoad
             </Button>
-            <Button variant="contained" color="secondary" onClick={handlePrint}>
-              Print
-            </Button>
           </div>
         </div>
       </div>
       <div
-        className="container-fluid m-0 p-0"
+        className="container-fluid m-0 p-3"
         style={{ border: "1px Solid #000000" }}
         ref={componentRef}
       >
@@ -273,7 +276,7 @@ export const DebitCreditInvoiceNote = (props) => {
                           </td>
                         </tr>
                         <tr>
-                          <td colspan="2.5" className="text-right ">
+                          <td colSpan="2.5" className="text-right ">
                             <div
                               style={{
                                 textAlign: "end",
@@ -289,7 +292,7 @@ export const DebitCreditInvoiceNote = (props) => {
                               </strong>
                             </div>
                           </td>
-                          <td colspan=".5" className="text-right">
+                          <td colSpan=".5" className="text-right">
                             <div
                               style={{
                                 textAlign: "center",
@@ -302,7 +305,7 @@ export const DebitCreditInvoiceNote = (props) => {
                           </td>
                         </tr>
                         <tr>
-                          <td colspan="2.5" className="text-right ">
+                          <td colSpan="2.5" className="text-right ">
                             <div
                               style={{
                                 textAlign: "end",
@@ -318,7 +321,7 @@ export const DebitCreditInvoiceNote = (props) => {
                               </strong>
                             </div>
                           </td>
-                          <td colspan=".5" className="text-right">
+                          <td colSpan=".5" className="text-right">
                             <div
                               style={{
                                 textAlign: "center",
@@ -342,14 +345,14 @@ export const DebitCreditInvoiceNote = (props) => {
                     borderBottom: "1px Solid #000000",
                   }}
                 >
-                  <div className="col-md-8" style={{ fontSize: "11px" }}>
+                  <div className="col-md-6" style={{ fontSize: "11px" }}>
                     <strong>Amount Chargeable (in words) :-</strong>
                     <br />
                     <strong>Company's PAN : </strong>
                     <span>{invoiceNoteData.seller_details.pan}</span>
                     <br />
                   </div>
-                  <div className="col-md-4 text-right">
+                  <div className="col-md-6 text-end px-5">
                     <ul style={{ listStyle: "none", fontSize: "10px" }}>
                       <strong style={{ fontSize: "12px" }}>
                         Company's Bank Details
