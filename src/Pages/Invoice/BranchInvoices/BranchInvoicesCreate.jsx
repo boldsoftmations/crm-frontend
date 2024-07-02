@@ -102,7 +102,7 @@ const BranchInvoicesCreate = ({ getSalesInvoiceDetails, setOpenPopup }) => {
       to_unit: inputValue.to_unit,
       from_unit: inputValue.from_unit,
       transporter_name: inputValue.transporter_name,
-      transport_cost: inputValue.transport_cost,
+      transport_cost: inputValue.transport_cost || 0,
       products: formattedProducts, // Now only sending product and quantity
     };
 
@@ -191,7 +191,7 @@ const BranchInvoicesCreate = ({ getSalesInvoiceDetails, setOpenPopup }) => {
               size="small"
               label="Transport Cost"
               variant="outlined"
-              value={inputValue.transport_cost || 0}
+              value={inputValue.transport_cost}
               onChange={handleInputChange}
             />
           </Grid>
