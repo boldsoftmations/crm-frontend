@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Grid, Button, Paper, Box } from "@mui/material";
 import ProductService from "../../services/ProductService";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
@@ -11,6 +11,7 @@ import { CustomPagination } from "../../Components/CustomPagination";
 import { Popup } from "../../Components/Popup";
 import { UpdatePriceList } from "./UpdatePriceList";
 import { CreatePriceList } from "./CreatePriceList";
+import { CSVLink } from "react-csv";
 
 export const PriceList = () => {
   const [priceListData, setPriceListData] = useState([]);
@@ -23,9 +24,14 @@ export const PriceList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [product, setProduct] = useState([]);
-  const { handleError, handleCloseSnackbar, alertInfo } =
-    useNotificationHandling();
+  const [exportData, setExportData] = useState([]);
+  const [file, setFile] = useState(null);
+  const [hideButton, setHideButton] = useState(true);
+  const [hideUploadBtn, setHideUploadBtn] = useState(false);
 
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
+  const csvLinkRef = useRef(null);
   const getProduct = async () => {
     try {
       setOpen(true);
@@ -41,6 +47,38 @@ export const PriceList = () => {
   useEffect(() => {
     getProduct();
   }, []);
+
+  const handleExport = async () => {
+    try {
+      setOpen(true);
+      const response = await ProductService.getAllPriceList(
+        currentPage,
+        filterQuery,
+        searchQuery
+      );
+      const data = response.data.results.map((row) => {
+        return {
+          id: row.id,
+          product: row.product,
+          slab1: row.slab1,
+          slab1_price: row.slab1_price,
+          slab2: row.slab2,
+          slab2_price: row.slab2_price,
+          slab3_price: row.slab3_price,
+          validity: row.validity,
+          discontinued: row.discontinued,
+        };
+      });
+      console.log("data", data);
+      setOpen(false);
+      return data;
+    } catch (error) {
+      handleError(error);
+      console.log("while downloading Price list", error);
+    } finally {
+      setOpen(false);
+    }
+  };
 
   const getPriceList = useCallback(async () => {
     try {
@@ -111,6 +149,72 @@ export const PriceList = () => {
     "Discontinued",
     "Action",
   ];
+  const headers = [
+    { label: "ID", key: "id" },
+    { label: "Product", key: "product" },
+    { label: "Slab1", key: "slab1" },
+    { label: "Slab1 Price", key: "slab1_price" },
+    { label: "Slab2", key: "slab2" },
+    { label: "Slab2 Price", key: "slab2_price" },
+    { label: "Slab3 Price", key: "slab3_price" },
+    { label: "Validity", key: "validity" },
+    { label: "Discontinued", key: "discontinued" },
+  ];
+  const handleDownload = async () => {
+    try {
+      const data = await handleExport();
+      setExportData(data);
+      setTimeout(() => {
+        csvLinkRef.current.link.click();
+      });
+    } catch (error) {
+      console.log("CSVLink Download error", error);
+    }
+  };
+  //upload CSV file
+  const fileInputRef = useRef();
+  //function for handling file change
+  const handleFileChange = (event) => {
+    setFile(event.target.files[0]);
+    console.log(event.target.files[0]);
+    setHideButton(false);
+    setHideUploadBtn(true);
+  };
+  //function for choosing file
+  const handleButtonClick = () => {
+    fileInputRef.current.click();
+  };
+  //function for submitting files
+  const UploadCSVfile = async (e) => {
+    e.preventDefault();
+    if (!file) {
+      handleError("Please select a csv file");
+      setHideUploadBtn(false);
+      setHideButton(true);
+      return false;
+    }
+    if (file.name !== "Price List.csv") {
+      return handleError("Please select a only Price List.csv file");
+    }
+    const formData = new FormData();
+    formData.append("file", file);
+    try {
+      setOpen(true);
+      const response = await ProductService.uploadCSVFile(formData);
+      if (response.data.status == "success") {
+        handleSuccess("File uploaded successfully");
+      } else {
+        handleError("File upload failed");
+      }
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      handleError(error);
+    } finally {
+      setOpen(false);
+      setHideButton(true);
+      setHideUploadBtn(false);
+    }
+  };
 
   return (
     <>
@@ -132,7 +236,7 @@ export const PriceList = () => {
               justifyContent="space-between"
             >
               {/* Search Component and Filter */}
-              <Grid item xs={12} sm={6} md={4} lg={4}>
+              <Grid item xs={12} sm={4} md={4} lg={4}>
                 <Box
                   sx={{
                     display: "flex",
@@ -162,10 +266,12 @@ export const PriceList = () => {
               <Grid
                 item
                 xs={12}
-                sm={12}
-                md={4}
-                lg={4}
-                sx={{ textAlign: "center" }}
+                sm={2}
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
               >
                 <h3
                   style={{
@@ -184,14 +290,66 @@ export const PriceList = () => {
                 item
                 xs={12}
                 sm={6}
-                md={4}
-                lg={4}
-                sx={{ display: "flex", justifyContent: "flex-end" }}
+                sx={{
+                  display: "flex",
+                  justifyContent: "end",
+                  alignItems: "center",
+                  gap: "10px",
+                }}
               >
+                <form onSubmit={UploadCSVfile}>
+                  {hideButton && (
+                    <Button
+                      type="button"
+                      variant="contained"
+                      color="info"
+                      onClick={handleButtonClick}
+                      style={{ marginRight: "10px" }}
+                    >
+                      Choose CSV File
+                    </Button>
+                  )}
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    accept=".csv"
+                    style={{ display: "none" }}
+                  />
+                  {hideUploadBtn && (
+                    <Button variant="contained" type="submit" color="info">
+                      Please Upload
+                    </Button>
+                  )}
+                </form>
                 <Button
-                  onClick={() => setOpenPopup2(true)}
+                  variant="contained"
+                  color="secondary"
+                  className="mx-3"
+                  onClick={handleDownload}
+                >
+                  DownLoad CSV
+                </Button>
+
+                {exportData.length > 0 && (
+                  <CSVLink
+                    data={exportData}
+                    headers={headers}
+                    ref={csvLinkRef}
+                    filename="Price List.csv"
+                    target="_blank"
+                    style={{
+                      textDecoration: "none",
+                      outline: "none",
+                      visibility: "hidden",
+                    }}
+                  />
+                )}
+
+                <Button
                   variant="contained"
                   color="success"
+                  onClick={() => setOpenPopup2(true)}
                 >
                   Add
                 </Button>
