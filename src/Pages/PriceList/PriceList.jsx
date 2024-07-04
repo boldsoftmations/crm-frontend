@@ -12,6 +12,7 @@ import { Popup } from "../../Components/Popup";
 import { UpdatePriceList } from "./UpdatePriceList";
 import { CreatePriceList } from "./CreatePriceList";
 import { CSVLink } from "react-csv";
+import UploadCSV from "./UploadCSV";
 
 export const PriceList = () => {
   const [priceListData, setPriceListData] = useState([]);
@@ -25,11 +26,9 @@ export const PriceList = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [product, setProduct] = useState([]);
   const [exportData, setExportData] = useState([]);
-  const [file, setFile] = useState(null);
-  const [hideButton, setHideButton] = useState(true);
-  const [hideUploadBtn, setHideUploadBtn] = useState(false);
+  const [openCSVFile, setOpenCSVFile] = useState(false);
 
-  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+  const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
   const csvLinkRef = useRef(null);
   const getProduct = async () => {
@@ -171,50 +170,6 @@ export const PriceList = () => {
       console.log("CSVLink Download error", error);
     }
   };
-  //upload CSV file
-  const fileInputRef = useRef();
-  //function for handling file change
-  const handleFileChange = (event) => {
-    setFile(event.target.files[0]);
-    console.log(event.target.files[0]);
-    setHideButton(false);
-    setHideUploadBtn(true);
-  };
-  //function for choosing file
-  const handleButtonClick = () => {
-    fileInputRef.current.click();
-  };
-  //function for submitting files
-  const UploadCSVfile = async (e) => {
-    e.preventDefault();
-    if (!file) {
-      handleError("Please select a csv file");
-      setHideUploadBtn(false);
-      setHideButton(true);
-      return false;
-    }
-    if (file.name !== "Price List.csv") {
-      return handleError("Please select a only Price List.csv file");
-    }
-    const formData = new FormData();
-    formData.append("file", file);
-    try {
-      setOpen(true);
-      const response = await ProductService.uploadCSVFile(formData);
-      if (response.data.status == "success") {
-        handleSuccess("File uploaded successfully");
-      } else {
-        handleError("File upload failed");
-      }
-    } catch (error) {
-      console.error("Error uploading file:", error);
-      handleError(error);
-    } finally {
-      setOpen(false);
-      setHideButton(true);
-      setHideUploadBtn(false);
-    }
-  };
 
   return (
     <>
@@ -297,31 +252,16 @@ export const PriceList = () => {
                   gap: "10px",
                 }}
               >
-                <form onSubmit={UploadCSVfile}>
-                  {hideButton && (
-                    <Button
-                      type="button"
-                      variant="contained"
-                      color="info"
-                      onClick={handleButtonClick}
-                      style={{ marginRight: "10px" }}
-                    >
-                      Choose CSV File
-                    </Button>
-                  )}
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleFileChange}
-                    accept=".csv"
-                    style={{ display: "none" }}
-                  />
-                  {hideUploadBtn && (
-                    <Button variant="contained" type="submit" color="info">
-                      Please Upload
-                    </Button>
-                  )}
-                </form>
+                <Button
+                  type="button"
+                  variant="contained"
+                  color="info"
+                  onClick={() => setOpenCSVFile(true)}
+                  style={{ marginRight: "10px" }}
+                >
+                  Upload CSV File
+                </Button>
+
                 <Button
                   variant="contained"
                   color="secondary"
@@ -399,6 +339,16 @@ export const PriceList = () => {
           filterQuery={filterQuery}
           searchQuery={searchQuery}
         />
+      </Popup>
+      <Popup
+        title={"Upload Price List CSV file"}
+        openPopup={openCSVFile}
+        setOpenPopup={setOpenCSVFile}
+      >
+        <UploadCSV
+          setOpenCSVFile={setOpenCSVFile}
+          getProduct={getProduct}
+        ></UploadCSV>
       </Popup>
     </>
   );
