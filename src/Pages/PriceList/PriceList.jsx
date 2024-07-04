@@ -56,7 +56,6 @@ export const PriceList = () => {
         filterQuery,
         searchQuery
       );
-      console.log(response.data);
       const data = response.data.map((row) => {
         return {
           id: row.id,
