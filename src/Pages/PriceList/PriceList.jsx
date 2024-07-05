@@ -66,6 +66,7 @@ export const PriceList = () => {
           slab3_price: row.slab3_price,
           validity: row.validity,
           discontinued: row.discontinued,
+          description: row.description,
         };
       });
       console.log("data", data);
@@ -134,6 +135,7 @@ export const PriceList = () => {
     slab3_price: row.slab3_price,
     validity: row.validity,
     discontinued: row.discontinued,
+    description: row.description,
   }));
 
   const Tableheaders = [
@@ -146,6 +148,7 @@ export const PriceList = () => {
     "Slab3 Price",
     "Validity",
     "Discontinued",
+    "Description",
     "Action",
   ];
   const headers = [
@@ -158,6 +161,7 @@ export const PriceList = () => {
     { label: "Slab3 Price", key: "slab3_price" },
     { label: "Validity", key: "validity" },
     { label: "Discontinued", key: "discontinued" },
+    { label: "Description", key: "description" },
   ];
   const handleDownload = async () => {
     try {
