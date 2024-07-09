@@ -352,6 +352,33 @@ const EDC_List = () => {
   return CustomAxios.get("/api/customer/edc/");
 };
 
+const RemoveEdc = (data) => {
+  return CustomAxios.post("/api/customer/edc/", data);
+};
+
+const AllLeadEDC = (name) => {
+  return CustomAxios.get(`/api/customer/lead-edc/?name=${name}`);
+};
+const AllEdcCustomer = (name) => {
+  return CustomAxios.get(`/api/customer/customer-edc/?name=${name}`);
+};
+//CCF API starts here
+const createComplaintpes = (data) => {
+  return CustomAxios.post("/api/customer/ccf-choice/", data);
+};
+
+const getAllComplaintsList = (page, searchQuery) => {
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+  if (searchQuery) {
+    params.append("department", searchQuery);
+  }
+
+  return CustomAxios.get(`/api/customer/ccf-choice/?${params.toString()}`);
+};
+
 const CustomerServices = {
   getAllCustomerData,
   getIncompleteKycCustomerData,
@@ -405,6 +432,11 @@ const CustomerServices = {
   getAllEdc,
   CreateEDC_Customer,
   EDC_List,
+  RemoveEdc,
+  AllLeadEDC,
+  AllEdcCustomer,
+  createComplaintpes,
+  getAllComplaintsList,
 };
 
 export default CustomerServices;
