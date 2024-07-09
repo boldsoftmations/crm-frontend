@@ -13,20 +13,16 @@ import {
   Table,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
-import { Popup } from "../../../Components/Popup";
-import { CreateEDC } from "./CreateEDC";
-import CustomerServices from "../../../services/CustomerService";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
 import { CustomLoader } from "../../../Components/CustomLoader";
-import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
-
-export const ViewAssignCustomers = (props) => {
+import { Popup } from "../../../Components/Popup";
+import CustomerServices from "../../../services/CustomerService";
+export const ViewLeadCustomer = (props) => {
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
-  const [openEDC, setOpenEDC] = useState(false);
   const [open, setOpen] = useState(false);
-  const { assignCustomerData, getAllEDC, closeModal, assignViewData } = props;
-  console.log(assignViewData);
+  const { leadCustomerData, getAllEDC, closeModal, assignCustomerData } = props;
 
   const RemoveEdc = async (name) => {
     if (!name) {
@@ -77,20 +73,6 @@ export const ViewAssignCustomers = (props) => {
                   Customer Name : <strong> {assignCustomerData.name}</strong>
                 </h3>
               </Grid>
-              <Grid
-                item
-                xs={12}
-                md={6}
-                sx={{ textAlign: { xs: "right", md: "right" } }}
-              >
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => setOpenEDC(true)}
-                >
-                  Add
-                </Button>
-              </Grid>
             </Grid>
           </Box>
 
@@ -115,32 +97,32 @@ export const ViewAssignCustomers = (props) => {
             >
               <TableHead>
                 <TableRow>
-                  <StyledTableCell align="center">NAME</StyledTableCell>
-                  <StyledTableCell align="center">PAN NO.</StyledTableCell>
-                  <StyledTableCell align="center">GST</StyledTableCell>
+                  <StyledTableCell align="center">LEAD ID</StyledTableCell>
+                  <StyledTableCell align="center">COMPANY</StyledTableCell>
+                  <StyledTableCell align="center">GST NO.</StyledTableCell>
+                  <StyledTableCell align="center">PAN NUMBER</StyledTableCell>
                   <StyledTableCell align="center">STATE</StyledTableCell>
-                  <StyledTableCell align="center">STATUS</StyledTableCell>
                   <StyledTableCell align="center">ACTION</StyledTableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {assignViewData &&
-                  assignViewData.map((row, i) => (
+                {leadCustomerData &&
+                  leadCustomerData.map((row, i) => (
                     <StyledTableRow key={row.id}>
                       <StyledTableCell align="center">
-                        {row.name}
+                        {row.lead_id}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {row.pan_number}
+                        {row.company}
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         {row.gst_number}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {row.state}
+                        {row.pan_number}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {row.status}
+                        {row.state}
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         <Button
@@ -153,7 +135,7 @@ export const ViewAssignCustomers = (props) => {
                       </StyledTableCell>
                     </StyledTableRow>
                   ))}
-                {assignViewData.length == 0 && (
+                {leadCustomerData.length == 0 && (
                   <StyledTableRow>
                     <StyledTableCell colSpan={6} align="center">
                       No Exclusive Distrubution Customers assigned yet.
@@ -165,17 +147,6 @@ export const ViewAssignCustomers = (props) => {
           </TableContainer>
         </Paper>
       </Grid>
-      <Popup
-        title={"Assign to Exclusive Distrubution Customer"}
-        openPopup={openEDC}
-        setOpenPopup={setOpenEDC}
-      >
-        <CreateEDC
-          assignCustomerData={assignCustomerData}
-          getAllEDC={getAllEDC}
-          closeModal={closeModal}
-        />
-      </Popup>
     </>
   );
 };

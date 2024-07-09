@@ -22,6 +22,7 @@ import CustomerServices from "../../../services/CustomerService";
 import { Popup } from "../../../Components/Popup";
 import { useSelector } from "react-redux";
 import { ViewAssignCustomers } from "./ViewAssignCustomer";
+import { ViewLeadCustomer } from "./ViewLeadCustomer";
 
 export const ExclusiveDistributionCustomer = () => {
   const [open, setOpen] = useState(false);
@@ -30,7 +31,10 @@ export const ExclusiveDistributionCustomer = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [openEDC, setOpenEDC] = useState(false);
+  const [openLeadCustomer, setOpenLeadCustomer] = useState(false);
   const [assignCustomerData, setAssignCustomerData] = useState([]);
+  const [leadCustomerData, setLeadCustomerData] = useState([]);
+  const [assignViewData, setAssignViewData] = useState([]);
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
@@ -49,10 +53,37 @@ export const ExclusiveDistributionCustomer = () => {
     }
   };
 
+  const handleLeadCustomer = async (name) => {
+    try {
+      setOpen(true);
+      setAssignCustomerData(name);
+      const response = await CustomerServices.AllLeadEDC(name.name);
+      setLeadCustomerData(response.data);
+      setOpenLeadCustomer(true);
+    } catch (e) {
+      handleError(e);
+    } finally {
+      setOpen(false);
+    }
+  };
+
+  const handleViewAssignCustomer = async (data) => {
+    try {
+      setOpen(true);
+      setAssignCustomerData(data);
+      const response = await CustomerServices.AllEdcCustomer(data.name);
+      setAssignViewData(response.data);
+      setOpenEDC(true);
+    } catch (e) {
+      handleError(e);
+    } finally {
+      setOpen(false);
+    }
+  };
+
   useEffect(() => {
     getAllEDC();
   }, []);
-
   const handleSearch = (query) => {
     setSearchQuery(query);
     setCurrentPage(1); // Reset to first page with new search
@@ -65,11 +96,6 @@ export const ExclusiveDistributionCustomer = () => {
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
-  };
-
-  const handleOpenEDC = (data) => {
-    setAssignCustomerData(data);
-    setOpenEDC(true);
   };
 
   return (
@@ -167,13 +193,23 @@ export const ExclusiveDistributionCustomer = () => {
                     <StyledTableCell align="center">
                       {userData.groups.includes("Accounts") ||
                         (userData.groups.includes("Director") && (
-                          <Button
-                            color="success"
-                            variant="contained"
-                            onClick={() => handleOpenEDC(row)}
-                          >
-                            View Assign Customer
-                          </Button>
+                          <>
+                            <Button
+                              color="success"
+                              variant="contained"
+                              className="mx-3"
+                              onClick={() => handleViewAssignCustomer(row)}
+                            >
+                              View Assign Customer
+                            </Button>
+                            <Button
+                              color="secondary"
+                              variant="outlined"
+                              onClick={() => handleLeadCustomer(row)}
+                            >
+                              View lead
+                            </Button>
+                          </>
                         ))}
                     </StyledTableCell>
                   </StyledTableRow>
@@ -199,6 +235,21 @@ export const ExclusiveDistributionCustomer = () => {
           assignCustomerData={assignCustomerData}
           getAllEDC={getAllEDC}
           closeModal={setOpenEDC}
+          assignViewData={assignViewData}
+        />
+      </Popup>
+
+      <Popup
+        fullScreen={true}
+        openPopup={openLeadCustomer}
+        setOpenPopup={setOpenLeadCustomer}
+        title="View Lead Customer"
+      >
+        <ViewLeadCustomer
+          leadCustomerData={leadCustomerData}
+          assignCustomerData={assignCustomerData}
+          getAllEDC={getAllEDC}
+          closeModal={setOpenLeadCustomer}
         />
       </Popup>
     </>
