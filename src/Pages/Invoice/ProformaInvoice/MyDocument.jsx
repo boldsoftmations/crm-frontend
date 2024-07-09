@@ -763,14 +763,14 @@ export const MyDocument = (props) => {
                 </View>
                 <View style={{ ...cellStyle, ...borderRightStyle }}>
                   <Text style={{ ...outerTextStyle }}>
-                    {invoiceData.igst | "-"}
+                    {invoiceData.igst || "-"}
                   </Text>
                 </View>
                 <View style={{ ...cellStyle, ...borderRightStyle }}>
                   <Text style={{ ...outerTextStyle }}>-</Text>
                 </View>
                 <View style={cellStyle}>
-                  <Text style={{ ...outerTextStyle }}>{TOTAL_GST | "-"}</Text>
+                  <Text style={{ ...outerTextStyle }}>{TOTAL_GST || "-"}</Text>
                 </View>
               </View>
               <View>
