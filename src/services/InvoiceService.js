@@ -289,7 +289,7 @@ const getAllSaleRegisterData = (startDate, endDate, page, searchValue) => {
   );
 };
 
-const getDispatchData = (dispatchedValue, page, unitFilter, searchValue) => {
+const getDispatchData = (dispatchedValue, page, searchValue) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
 
@@ -298,10 +298,6 @@ const getDispatchData = (dispatchedValue, page, unitFilter, searchValue) => {
   }
   if (page) {
     params.append("page", page);
-  }
-
-  if (unitFilter !== undefined) {
-    params.append("unit", unitFilter);
   }
 
   if (searchValue) {

@@ -41,10 +41,14 @@ export const Dispatched = () => {
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
-  const getAllDispatchDetails = useCallback(async (page, query) => {
+  const getAllDispatchDetails = useCallback(async () => {
     try {
       setOpen(true);
-      const response = await InvoiceServices.getDispatchData(true, page, query);
+      const response = await InvoiceServices.getDispatchData(
+        true,
+        currentPage,
+        searchQuery
+      );
       setDispatchData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
     } catch (error) {
@@ -52,10 +56,10 @@ export const Dispatched = () => {
     } finally {
       setOpen(false);
     }
-  }, []);
+  }, [currentPage, searchQuery]);
 
   useEffect(() => {
-    getAllDispatchDetails(currentPage, searchQuery);
+    getAllDispatchDetails();
   }, [currentPage, searchQuery]);
 
   const handleSearch = (query) => {
