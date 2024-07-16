@@ -6,6 +6,7 @@ import { UnassignedCustomer } from "./UnassignedCustomer";
 import { InActiveCustomer } from "./InActiveCustomer";
 import { IncompleteKycDetails } from "./IncompleteKycDetails";
 import { ExclusiveDistributionCustomer } from "../Exclusive Distribution Customer/ExclusiveDistributionCustomer";
+import { ProductBaseCustomerView } from "../ProductBaseCustomer/ProductBaseCustomerView";
 
 export const AllCustomerTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
@@ -14,6 +15,7 @@ export const AllCustomerTabView = () => {
     groups.some((group) => userData.groups.includes(group));
 
   const allCustomerTabs = isInGroups("Director", "Sales Manager", "Accounts");
+  const isDirectorandSalesManager = isInGroups("Director", "Sales Manager");
 
   const isSalesDManager = isInGroups("Sales Deputy Manager");
   const isSalesADManager = isInGroups("Sales Assistant Deputy Manager");
@@ -68,10 +70,17 @@ export const AllCustomerTabView = () => {
         index: 4,
         component: <ExclusiveDistributionCustomer />,
       },
+      {
+        label: "Product Base Customers",
+        visible: isDirectorandSalesManager,
+        index: 5,
+        component: <ProductBaseCustomerView />,
+      },
     ],
     [
       allCustomerTabs,
       allCustomerTabs,
+      isDirectorandSalesManager,
       isSalesDManager,
       isSalesADManager,
       isSalesExecutive,

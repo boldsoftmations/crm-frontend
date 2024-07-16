@@ -367,18 +367,28 @@ const createComplaintpes = (data) => {
   return CustomAxios.post("/api/customer/ccf-choice/", data);
 };
 
-const getAllComplaintsList = (page, searchQuery) => {
+const getAllComplaintsList = (page, department) => {
   const params = new URLSearchParams();
   if (page) {
     params.append("page", page);
   }
-  if (searchQuery) {
-    params.append("department", searchQuery);
+  if (department) {
+    params.append("department", department);
   }
 
   return CustomAxios.get(`/api/customer/ccf-choice/?${params.toString()}`);
 };
 
+const getProductBaseCustomer = (product) => {
+  const params = new URLSearchParams();
+  if (product) {
+    params.append("product", product);
+  }
+
+  return CustomAxios.get(
+    `/api/customer/product-customer/?${params.toString()}`
+  );
+};
 const CustomerServices = {
   getAllCustomerData,
   getIncompleteKycCustomerData,
@@ -437,6 +447,7 @@ const CustomerServices = {
   AllEdcCustomer,
   createComplaintpes,
   getAllComplaintsList,
+  getProductBaseCustomer,
 };
 
 export default CustomerServices;
