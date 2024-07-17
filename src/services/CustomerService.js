@@ -389,6 +389,10 @@ const getProductBaseCustomer = (product) => {
     `/api/customer/product-customer/?${params.toString()}`
   );
 };
+
+const getAllDescription = () => {
+  return CustomAxios.get("/api/customer/description-product/");
+};
 const CustomerServices = {
   getAllCustomerData,
   getIncompleteKycCustomerData,
@@ -448,6 +452,7 @@ const CustomerServices = {
   createComplaintpes,
   getAllComplaintsList,
   getProductBaseCustomer,
+  getAllDescription,
 };
 
 export default CustomerServices;

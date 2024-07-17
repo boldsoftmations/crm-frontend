@@ -13,25 +13,22 @@ import {
   Button,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
-import { useSelector } from "react-redux";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import CustomerServices from "../../../services/CustomerService";
 import { MessageAlert } from "../../../Components/MessageAlert";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { CSVLink } from "react-csv";
-import ProductService from "../../../services/ProductService";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 export const ProductBaseCustomerView = () => {
   const [open, setOpen] = useState(false);
-  const data = useSelector((state) => state.auth);
   const [productBaseCustomer, setProductBaseCustomer] = useState([]);
   const [exportData, setExportData] = useState([]);
-  const [productOption, setProductOption] = useState([]);
+  const [descriptionOption, setDescriptionOption] = useState([]);
+  const [filterDescription, setFilterDescription] = useState(null);
   const [filterValue, setFilterValue] = useState(null);
   const csvLinkRef = useRef(null);
-  const userData = data.profile;
-  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+  const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
   const handleProductChange = async (event, value) => {
@@ -49,8 +46,11 @@ export const ProductBaseCustomerView = () => {
 
   const getProduct = useCallback(async () => {
     try {
-      const res = await ProductService.getAllValidPriceList("all");
-      setProductOption(res.data);
+      setOpen(true);
+      const res = await CustomerServices.getAllDescription();
+      console.log(res.data);
+      setDescriptionOption(res.data);
+      setOpen(false);
     } catch (err) {
       console.error("error potential", err);
     }
@@ -58,13 +58,18 @@ export const ProductBaseCustomerView = () => {
 
   useEffect(() => {
     getProduct();
-  }, []);
+  }, [getProduct]);
+
+  const filterProductbyDescription = descriptionOption.find(
+    (option) => option.description === filterDescription
+  );
 
   const DownloadData = () => {
     const CSVDATA = productBaseCustomer.map((row) => {
       setOpen(true);
       return {
         Name: row.sales_invoice__order_book__company__name,
+        Description: row.product__description__name,
         Brand: row.product__brand__name,
         Product: row.product__name,
         Unit: row.product__unit__name,
@@ -75,12 +80,14 @@ export const ProductBaseCustomerView = () => {
     setOpen(false);
     return CSVDATA;
   };
+
   const headers = [
     { label: "Customer Name", key: "Name" },
+    { label: "Description", key: "Description" },
     { label: "Brand", key: "Brand" },
     { label: "Product", key: "Product" },
     { label: "Unit", key: "Unit" },
-    { label: "Quntity", key: "quantity" },
+    { label: "Quantity", key: "quantity" },
     { label: "Date", key: "Date" },
   ];
 
@@ -95,6 +102,7 @@ export const ProductBaseCustomerView = () => {
       console.log("CSVLink Download error", error);
     }
   };
+
   return (
     <>
       <MessageAlert
@@ -107,30 +115,49 @@ export const ProductBaseCustomerView = () => {
 
       <Grid item xs={12}>
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
-          <Box
-            sx={{
-              p: 2,
-            }}
-          >
+          <Box sx={{ p: 2 }}>
             <Grid container spacing={2} alignItems="center">
-              {/* Title Text centered */}
-              <Grid item xs={12} sm={4}>
+              <Grid item xs={12} sm={2}>
                 <CustomAutocomplete
-                  name="product"
+                  name="Description"
                   size="small"
                   disablePortal
-                  id="combo-box-demo"
-                  onChange={handleProductChange}
-                  options={productOption.map((option) => option.product)}
+                  id="combo-box-description"
+                  onChange={(_, value) => setFilterDescription(value)}
+                  options={descriptionOption.map(
+                    (option) => option.description
+                  )}
                   getOptionLabel={(option) => option}
-                  label="Product Name"
+                  label="Description"
                 />
               </Grid>
+
+              <Grid item xs={12} sm={3}>
+                {filterDescription && (
+                  <CustomAutocomplete
+                    name="product"
+                    size="small"
+                    disablePortal
+                    id="combo-box-product"
+                    onChange={handleProductChange}
+                    options={
+                      filterProductbyDescription
+                        ? filterProductbyDescription.product_list.map(
+                            (option) => option
+                          )
+                        : []
+                    }
+                    getOptionLabel={(option) => option}
+                    label="Product"
+                  />
+                )}
+              </Grid>
+
               <Grid
                 item
                 xs={12}
-                md={4}
-                sx={{ textAlign: { xs: "center", md: "end" } }}
+                md={5}
+                sx={{ textAlign: { xs: "center", md: "start" } }}
               >
                 <h3
                   style={{
@@ -143,14 +170,13 @@ export const ProductBaseCustomerView = () => {
                   Product Base Customers
                 </h3>
               </Grid>
-              <Grid item xs={12} md={4} style={{ textAlign: "end" }}>
+              <Grid item xs={12} md={2} style={{ textAlign: "end" }}>
                 <Button
                   variant="contained"
                   color="info"
-                  className="mx-3"
                   onClick={handleDownload}
                 >
-                  DownLoad CSV
+                  Download CSV
                 </Button>
                 {exportData.length > 0 && (
                   <CSVLink
@@ -203,7 +229,6 @@ export const ProductBaseCustomerView = () => {
                   <StyledTableCell align="center">
                     Last Invoice Date
                   </StyledTableCell>
-                  {/* <StyledTableCell align="center">ACTION</StyledTableCell> */}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -230,13 +255,11 @@ export const ProductBaseCustomerView = () => {
                   </StyledTableRow>
                 ))}
                 {filterValue && productBaseCustomer.length === 0 && (
-                  <>
-                    <TableRow>
-                      <StyledTableCell colSpan={6} align="center">
-                        No Data Available
-                      </StyledTableCell>
-                    </TableRow>
-                  </>
+                  <TableRow>
+                    <StyledTableCell colSpan={6} align="center">
+                      No Data Available
+                    </StyledTableCell>
+                  </TableRow>
                 )}
               </TableBody>
             </Table>
