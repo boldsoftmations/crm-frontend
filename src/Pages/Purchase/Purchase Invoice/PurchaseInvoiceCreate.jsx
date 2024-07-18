@@ -59,7 +59,7 @@ export const PurchaseInvoiceCreate = memo(
         const req = {
           grn: recordForEdit.grn_no,
           products_data: products,
-          sales_invoice_no: [],
+          invoice_type: "Purchase",
         };
         await InventoryServices.createPurchaseInvoiceData(req);
         console.log("createing Packing list");
