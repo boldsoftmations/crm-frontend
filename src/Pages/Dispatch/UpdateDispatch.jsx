@@ -6,17 +6,22 @@ import InvoiceServices from "../../services/InvoiceService";
 import { CustomLoader } from "./../../Components/CustomLoader";
 import { useSelector } from "react-redux";
 import CustomTextField from "../../Components/CustomTextField";
+import { PreviewImage } from "./PreviewImage";
+import { Popup } from "../../Components/Popup";
 
 export const UpdateDispatch = (props) => {
   const [open, setOpen] = useState(false);
+  const [close, setClose] = useState(false);
   const { idData, getAllDispatchDetails, setOpenPopup, userData } = props;
   const [lrCopy, setLrCopy] = useState("");
   const [lrCopyImage, setLrCopyImage] = useState("");
+  const [hideImage, setHideImage] = useState(false);
   const [podCopy, setPodCopy] = useState("");
   const [podCopyImage, setPodCopyImage] = useState("");
   const [inputValue, setInputValue] = useState([]);
   const data = useSelector((state) => state.auth);
   const users = data.profile;
+  console.log(close);
   const handleImageLRCopy = (event) => {
     setLrCopy(event.target.files[0]);
     setLrCopyImage(URL.createObjectURL(event.target.files[0]));
@@ -122,6 +127,10 @@ export const UpdateDispatch = (props) => {
     }
   };
 
+  const handleImageView = () => {
+    setClose(true);
+    setHideImage(!hideImage);
+  };
   return (
     <div>
       <CustomLoader open={open} />
@@ -189,7 +198,8 @@ export const UpdateDispatch = (props) => {
             />
           </Grid>
           {(users.groups.includes("Factory-Mumbai-Dispatch") ||
-            users.groups.includes("Factory-Delhi-Dispatch")) && (
+            users.groups.includes("Factory-Delhi-Dispatch") ||
+            users.groups.includes("Director")) && (
             <Grid item xs={12}>
               <label>LR Copy : </label>
               <input
@@ -201,28 +211,34 @@ export const UpdateDispatch = (props) => {
               <img
                 src={lrCopyImage ? lrCopyImage : idData.lr_copy}
                 alt="lrcopy"
-                height="50px"
-                width="50px"
+                height="80px"
+                width="75px"
+                style={{
+                  cursor: "pointer",
+                }}
+                onClick={handleImageView}
               />
             </Grid>
           )}
-          {userData.groups.toString() === "Customer Service" && (
-            <Grid item xs={12}>
-              <label>POD Copy : </label>
-              <input
-                type={"file"}
-                name="file"
-                // value={podCopy ? podCopy : idData.pod_copy}
-                onChange={handleImagePODCopy}
-              />
-              <img
-                src={podCopyImage ? podCopyImage : idData.pod_copy}
-                alt="podcopy"
-                height="50px"
-                width="50px"
-              />
-            </Grid>
-          )}
+          {userData.groups.toString() === "Customer Service" ||
+            (userData.groups.toString() === "Director" && (
+              <Grid item xs={12}>
+                <label>POD Copy : </label>
+                <input
+                  type={"file"}
+                  name="file"
+                  // value={podCopy ? podCopy : idData.pod_copy}
+                  onChange={handleImagePODCopy}
+                />
+                <img
+                  src={podCopyImage ? podCopyImage : idData.pod_copy}
+                  alt="podcopy"
+                  height="80px"
+                  width="70px"
+                  onClick={handleImageView}
+                />
+              </Grid>
+            ))}
         </Grid>
         <CustomButton
           sx={{ marginTop: "1rem" }}
@@ -232,6 +248,19 @@ export const UpdateDispatch = (props) => {
           text={"Submit"}
         />
       </Box>
+      <Popup
+        fullScreen={true}
+        title={"Previw Image"}
+        openPopup={close}
+        setOpenPopup={setClose}
+      >
+        <PreviewImage
+          lrCopyImage={lrCopyImage}
+          podCopyImage={podCopyImage}
+          setClose={setClose}
+          hideImage={hideImage}
+        />
+      </Popup>
     </div>
   );
 };
