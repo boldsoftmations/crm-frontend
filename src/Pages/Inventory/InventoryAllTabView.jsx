@@ -20,7 +20,7 @@ export const InventoryAllTabView = () => {
   const tabs = [
     {
       label: "Pending GRN",
-      roles: ["Director", "Accounts", "Stores", "Stores Delhi"],
+      roles: ["Director", "Accounts", "Stores", "Stores Delhi", "Production"],
       component: <PackingListView />,
     },
     {
@@ -37,6 +37,7 @@ export const InventoryAllTabView = () => {
         "Stores",
         "Stores Delhi",
         "Accounts Executive",
+        "Production",
       ],
       component: <GRNRegisterView />,
     },
