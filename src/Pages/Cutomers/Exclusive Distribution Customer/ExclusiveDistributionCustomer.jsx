@@ -200,16 +200,19 @@ export const ExclusiveDistributionCustomer = () => {
                             className="mx-3"
                             onClick={() => handleViewAssignCustomer(row)}
                           >
-                            View Assign Customer
-                          </Button>
-                          <Button
-                            color="secondary"
-                            variant="outlined"
-                            onClick={() => handleLeadCustomer(row)}
-                          >
-                            View lead
+                            Assign Customer
                           </Button>
                         </>
+                      )}
+                      {(userData.groups.includes("Sales Manager") ||
+                        userData.groups.includes("Director")) && (
+                        <Button
+                          color="secondary"
+                          variant="outlined"
+                          onClick={() => handleLeadCustomer(row)}
+                        >
+                          Assign Lead
+                        </Button>
                       )}
                     </StyledTableCell>
                   </StyledTableRow>

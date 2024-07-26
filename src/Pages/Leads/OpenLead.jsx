@@ -41,6 +41,7 @@ import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../Components/MessageAlert";
 import SearchComponent from "../../Components/SearchComponent ";
+import { CreateEDCByLeads } from "./CreateEDByLeads";
 
 export const OpenLead = () => {
   const [leads, setLeads] = useState([]);
@@ -57,6 +58,8 @@ export const OpenLead = () => {
   const [pinnedRows, setPinnedRows] = useState([]);
   const [openModalPI, setOpenModalPI] = useState(false);
   const [openModalForecast, setOpenModalForecast] = useState(false);
+  const [openEDCModal, setOpenEDCModal] = useState(false);
+  const [editforedc, setEditforedc] = useState();
   const [leadsByID, setLeadsByID] = useState(null);
   const [referenceData, setReferenceData] = useState([]);
   const [descriptionMenuData, setDescriptionMenuData] = useState([]);
@@ -256,7 +259,10 @@ export const OpenLead = () => {
     "PIN",
     "ACTION",
   ];
-
+  const handleopenEDCmodal = (data) => {
+    setEditforedc(data);
+    setOpenEDCModal(true);
+  };
   return (
     <>
       <MessageAlert
@@ -485,6 +491,16 @@ export const OpenLead = () => {
                       <Button onClick={() => openInPopup5(row)}>
                         Forecast
                       </Button>
+                      {(userData.groups.includes("Sales Manager") ||
+                        userData.groups.includes("Director")) && (
+                        <Button
+                          color="secondary"
+                          variant="text"
+                          onClick={() => handleopenEDCmodal(row)}
+                        >
+                          Assign EDC
+                        </Button>
+                      )}
                     </StyledTableCell>
                   </StyledTableRow>
                 ))}
@@ -598,6 +614,17 @@ export const OpenLead = () => {
         setOpenPopup={setOpenModal}
       >
         <BulkLeadAssign setOpenPopup={setOpenModal} />
+      </Popup>
+      <Popup
+        maxWidth="lg"
+        title={"Assign to Exclusive Distribution Customer"}
+        openPopup={openEDCModal}
+        setOpenPopup={setOpenEDCModal}
+      >
+        <CreateEDCByLeads
+          setOpenPopup={setOpenEDCModal}
+          editforedc={editforedc}
+        />
       </Popup>
     </>
   );
