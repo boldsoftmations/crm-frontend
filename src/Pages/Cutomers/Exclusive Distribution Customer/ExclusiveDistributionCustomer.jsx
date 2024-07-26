@@ -191,26 +191,26 @@ export const ExclusiveDistributionCustomer = () => {
                       {row.status}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {userData.groups.includes("Accounts") ||
-                        (userData.groups.includes("Director") && (
-                          <>
-                            <Button
-                              color="success"
-                              variant="contained"
-                              className="mx-3"
-                              onClick={() => handleViewAssignCustomer(row)}
-                            >
-                              View Assign Customer
-                            </Button>
-                            <Button
-                              color="secondary"
-                              variant="outlined"
-                              onClick={() => handleLeadCustomer(row)}
-                            >
-                              View lead
-                            </Button>
-                          </>
-                        ))}
+                      {(userData.groups.includes("Accounts") ||
+                        userData.groups.includes("Director")) && (
+                        <>
+                          <Button
+                            color="success"
+                            variant="contained"
+                            className="mx-3"
+                            onClick={() => handleViewAssignCustomer(row)}
+                          >
+                            View Assign Customer
+                          </Button>
+                          <Button
+                            color="secondary"
+                            variant="outlined"
+                            onClick={() => handleLeadCustomer(row)}
+                          >
+                            View lead
+                          </Button>
+                        </>
+                      )}
                     </StyledTableCell>
                   </StyledTableRow>
                 ))}
