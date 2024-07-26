@@ -1,11 +1,10 @@
 import { Box, Button, Grid } from "@mui/material";
 import React, { useCallback, useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
-import { MessageAlert } from "../../Components/MessageAlert";
 import { CustomLoader } from "../../Components/CustomLoader";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import CustomerServices from "../../services/CustomerService";
-import { useNotificationHandling } from "../../Components/useNotificationHandling ";
+import CustomSnackbar from "../../Components/CustomerSnackbar";
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -16,9 +15,14 @@ const Root = styled("div")(({ theme }) => ({
 }));
 
 export const CreateEDCByLeads = (props) => {
-  const { editforedc, setOpenPopup } = props;
+  const { editforedc, setLoaderPopup } = props;
   console.log("editforEdc", editforedc);
-  const [open, setOpen] = useState(false);
+  const [loader, setLoader] = useState(false);
+  const [alertmsg, setAlertMsg] = useState({
+    message: "",
+    severity: "",
+    open: false,
+  });
   const [edcData, setEdcData] = useState([]);
 
   const [inputValue, setInputValue] = useState({
@@ -27,18 +31,15 @@ export const CreateEDCByLeads = (props) => {
     edc_customer: "",
   });
 
-  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
-    useNotificationHandling();
-
   const GetEdcData = useCallback(async () => {
     try {
-      setOpen(true);
+      setLoader(true);
       const res = await CustomerServices.getAllEdc();
       setEdcData(res.data);
     } catch (error) {
-      handleError(error);
+      alertmsg({ severity: "error", message: "Failed", open: true });
     } finally {
-      setOpen(false);
+      setLoader(false);
     }
   }, []);
 
@@ -57,30 +58,40 @@ export const CreateEDCByLeads = (props) => {
     try {
       e.preventDefault();
       const payload = { ...inputValue };
-      setOpen(true);
+      setLoader(true);
       const response = await CustomerServices.CreateEDC_Customer(payload);
-      const successMessage = response.data.message || "Assign EDC successfully";
-      handleSuccess(successMessage);
-
+      setAlertMsg({
+        message: response.data.message || "Assign EDC successfully",
+        severity: "success",
+        open: true,
+      });
       setTimeout(() => {
-        setOpenPopup(false);
+        setLoaderPopup(false);
       }, 300);
     } catch (error) {
-      handleError(error); // Handle errors from the API call
+      let errmesg = error.response.data.message || "Assign EDC failed";
+      setAlertMsg({
+        message: errmesg,
+        severity: "error",
+        open: true,
+      });
     } finally {
-      setOpen(false); // Always close the loader
+      setLoader(false); // Always close the loader
     }
+  };
+  const handleClose = () => {
+    setAlertMsg({ open: false });
   };
 
   return (
     <>
-      <MessageAlert
-        open={alertInfo.open}
-        onClose={handleCloseSnackbar}
-        severity={alertInfo.severity}
-        message={alertInfo.message}
+      <CustomSnackbar
+        open={alertmsg.open}
+        message={alertmsg.message}
+        severity={alertmsg.severity}
+        onClose={handleClose}
       />
-      <CustomLoader open={open} />
+      <CustomLoader loader={loader} />
       <Box
         component="form"
         noValidate

@@ -6,6 +6,7 @@ import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import CustomerServices from "../../../services/CustomerService";
+import CustomSnackbar from "../../../Components/CustomerSnackbar";
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
   ...theme.typography.body2,
@@ -16,10 +17,13 @@ const Root = styled("div")(({ theme }) => ({
 
 export const CreateEDC = (props) => {
   const { assignCustomerData, getAllEDC, closeModal } = props;
-  console.log(getAllEDC);
-  const [open, setOpen] = useState(false);
+  const [loader, setLoader] = useState(false);
+  const [alertmsg, setAlertMsg] = useState({
+    message: "",
+    severity: "",
+    open: false,
+  });
   const [Edc_List, setEdc_List] = useState([]);
-
   const [inputValue, setInputValue] = useState({
     type: "Customer",
     edc_customer: assignCustomerData.name,
@@ -31,14 +35,14 @@ export const CreateEDC = (props) => {
 
   const GetEdcData = useCallback(async () => {
     try {
-      setOpen(true);
+      setLoader(true);
       const res = await CustomerServices.EDC_List();
       console.log(res.data);
       setEdc_List(res.data.data);
     } catch (error) {
       handleError(error);
     } finally {
-      setOpen(false);
+      setLoader(false);
     }
   }, []);
 
@@ -59,29 +63,40 @@ export const CreateEDC = (props) => {
     try {
       e.preventDefault();
       const payload = { ...inputValue };
-      setOpen(true);
+      setLoader(true);
       const response = await CustomerServices.CreateEDC_Customer(payload);
-      const successMessage = response.data.message || "Assign EDC successfully";
-      handleSuccess(successMessage);
-
+      setAlertMsg({
+        message:
+          response.data.message || "Exclusive Customer created successfully",
+        severity: "success",
+        open: true,
+      });
       getAllEDC();
       closeModal(false);
     } catch (error) {
-      handleError(error); // Handle errors from the API call
+      let errmesg = error.response.data.message || "Assign EDC failed";
+      setAlertMsg({
+        message: errmesg,
+        severity: "error",
+        open: true,
+      });
     } finally {
-      setOpen(false); // Always close the loader
+      setLoader(false); // Always close the loader
     }
   };
 
+  const handleClose = () => {
+    setAlertMsg({ open: false });
+  };
   return (
     <>
-      <MessageAlert
-        open={alertInfo.open}
-        onClose={handleCloseSnackbar}
-        severity={alertInfo.severity}
-        message={alertInfo.message}
+      <CustomSnackbar
+        open={alertmsg.open}
+        message={alertmsg.message}
+        severity={alertmsg.severity}
+        onClose={handleClose}
       />
-      <CustomLoader open={open} />
+      <CustomLoader loader={loader} />
       <Box
         component="form"
         noValidate
