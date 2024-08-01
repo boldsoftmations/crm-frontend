@@ -25,13 +25,12 @@ export const ProductBaseCustomerView = () => {
   const [productBaseCustomer, setProductBaseCustomer] = useState([]);
   const [exportData, setExportData] = useState([]);
   const [descriptionOption, setDescriptionOption] = useState([]);
-  const [filterDescription, setFilterDescription] = useState(null);
   const [filterValue, setFilterValue] = useState(null);
   const csvLinkRef = useRef(null);
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
-  const handleProductChange = async (event, value) => {
+  const handleDescriptionChange = async (event, value) => {
     try {
       setOpen(true);
       const response = await CustomerServices.getProductBaseCustomer(value);
@@ -59,10 +58,6 @@ export const ProductBaseCustomerView = () => {
   useEffect(() => {
     getProduct();
   }, [getProduct]);
-
-  const filterProductbyDescription = descriptionOption.find(
-    (option) => option.description === filterDescription
-  );
 
   const DownloadData = () => {
     const CSVDATA = productBaseCustomer.map((row) => {
@@ -117,40 +112,19 @@ export const ProductBaseCustomerView = () => {
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
           <Box sx={{ p: 2 }}>
             <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} sm={2}>
+              <Grid item xs={12} sm={4}>
                 <CustomAutocomplete
                   name="Description"
                   size="small"
                   disablePortal
                   id="combo-box-description"
-                  onChange={(_, value) => setFilterDescription(value)}
+                  onChange={handleDescriptionChange}
                   options={descriptionOption.map(
                     (option) => option.description
                   )}
                   getOptionLabel={(option) => option}
                   label="Description"
                 />
-              </Grid>
-
-              <Grid item xs={12} sm={3}>
-                {filterDescription && (
-                  <CustomAutocomplete
-                    name="product"
-                    size="small"
-                    disablePortal
-                    id="combo-box-product"
-                    onChange={handleProductChange}
-                    options={
-                      filterProductbyDescription
-                        ? filterProductbyDescription.product_list.map(
-                            (option) => option
-                          )
-                        : []
-                    }
-                    getOptionLabel={(option) => option}
-                    label="Product"
-                  />
-                )}
               </Grid>
 
               <Grid
