@@ -7,10 +7,9 @@ import {
   MenuItem,
   Select,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomerServices from "../../../services/CustomerService";
-// import { month, year } from "./DateAndYear";
 import CustomTextField from "../../../Components/CustomTextField";
 
 const months = [
@@ -33,9 +32,21 @@ export const ForecastUpdate = (props) => {
   const [open, setOpen] = useState(false);
   const [selectedMonthForecast, setSelectedMonthForecast] = useState([]);
   const [forecast, setForecast] = useState(null);
-  console.log("forecast", forecast);
-  console.log("forecastDataByID", forecastDataByID);
-  console.log("selectedMonthForecast", selectedMonthForecast);
+
+  // Get current month and next two months
+  const currentMonth = new Date().getMonth(); // 0-indexed (0 = January)
+  const nextTwoMonths = [
+    currentMonth,
+    (currentMonth + 1) % 12,
+    (currentMonth + 2) % 12,
+  ];
+
+  useEffect(() => {
+    console.log("forecast", forecast);
+    console.log("forecastDataByID", forecastDataByID);
+    console.log("selectedMonthForecast", selectedMonthForecast);
+  }, [forecast, forecastDataByID, selectedMonthForecast]);
+
   const handleFormChange = (event) => {
     setSelectedMonthForecast(event.target.value);
   };
@@ -59,14 +70,14 @@ export const ForecastUpdate = (props) => {
         req
       );
       setOpenPopup(false);
-      // setOpenPopup(false);s
       getAllCompanyDetailsByID();
       setOpen(false);
     } catch (error) {
-      console.log("createing company detail error", error);
+      console.log("creating company detail error", error);
       setOpen(false);
     }
   };
+
   return (
     <div>
       <CustomLoader open={open} />
@@ -85,17 +96,15 @@ export const ForecastUpdate = (props) => {
                 id="demo-simple-select"
                 name="month"
                 label="Month"
-                onChange={(event) => handleFormChange(event)}
+                onChange={handleFormChange}
               >
-                {forecastDataByID.product_forecast.map((option, i) => {
-                  return (
-                    option.index_position >= 3 && (
-                      <MenuItem key={i} value={option}>
-                        {months[option.month - 1]}
-                      </MenuItem>
-                    )
-                  );
-                })}
+                {forecastDataByID.product_forecast
+                  .filter((option) => nextTwoMonths.includes(option.month - 1))
+                  .map((option, i) => (
+                    <MenuItem key={i} value={option}>
+                      {months[option.month - 1]}
+                    </MenuItem>
+                  ))}
               </Select>
             </FormControl>
           </Grid>
@@ -117,28 +126,6 @@ export const ForecastUpdate = (props) => {
               onChange={(event) => setForecast(event.target.value)}
             />
           </Grid>
-
-          {/* <Grid item xs={12} sm={8} alignContent="right">
-                  <Button
-                    onClick={addFields}
-                    variant="contained"
-                    sx={{ marginRight: "1em" }}
-                  >
-                    Add More...
-                  </Button>
-                  {index !== 0 && (
-                    <Button
-                      disabled={index === 0}
-                      onClick={() => removeFields(index)}
-                      variant="contained"
-                    >
-                      Remove
-                    </Button>
-                  )}
-                </Grid> */}
-          {/* </>
-            );
-          })} */}
         </Grid>
         <Button
           type="submit"
