@@ -27,7 +27,7 @@ export const CreateDebitCreditNote = (props) => {
     seller_account: "",
     note_type: "",
     reason: "",
-    invoices: [],
+    sales_invoices: [],
     gst_percentage: "",
     amount: null,
     total_amount: null,
@@ -63,7 +63,7 @@ export const CreateDebitCreditNote = (props) => {
     console.log(invoiceNumbers);
     setInputValue((prev) => ({
       ...prev,
-      invoices: invoiceNumbers,
+      sales_invoices: invoiceNumbers,
     }));
   };
 
