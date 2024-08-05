@@ -216,6 +216,7 @@ export const ProductionEntryCreate = memo((props) => {
                   checked={checked}
                   onChange={(e) => setChecked(e.target.checked)}
                   inputProps={{ "aria-label": "controlled" }}
+                  disabled={checked}
                 />
               }
             />
