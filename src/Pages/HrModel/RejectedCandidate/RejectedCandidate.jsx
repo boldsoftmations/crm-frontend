@@ -6,28 +6,49 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
+  styled,
+  TableCell,
+  Button,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TableBody,
+  Table,
+  tableCellClasses,
+  Typography,
 } from "@mui/material";
-import { CustomTable } from "../../../Components/CustomTable";
 import Hr from "./../../../services/Hr";
 import { RejectedCandidateUpdate } from "./RejectedCandidateUpdate";
+import { CustomPagination } from "../../../Components/CustomPagination";
+import SearchComponent from "../../../Components/SearchComponent ";
+import { CustomLoader } from "../../../Components/CustomLoader";
 
 export const RejectedCandidate = () => {
   const [rejectedCandidates, setRejectedCandidates] = useState([]);
   const [selectedRow, setSelectedRow] = useState(null);
   const [open, setOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [loader, setLoader] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
 
   const fetchRejectedCandidates = async () => {
     try {
-      const response = await Hr.getRejectedCandidates();
-      setRejectedCandidates(response.data);
+      setLoader(true);
+      const response = await Hr.getRejectedCandidates(currentPage, searchQuery);
+      setRejectedCandidates(response.data.results);
+      const total = response.data.count;
+      setTotalPages(Math.ceil(total / 25));
     } catch (error) {
       console.error("Error fetching rejected candidates:", error);
+    } finally {
+      setLoader(false);
     }
   };
 
   useEffect(() => {
     fetchRejectedCandidates();
-  }, []);
+  }, [currentPage, searchQuery]);
 
   const handleClickOpen = (row) => {
     setSelectedRow(row);
@@ -37,47 +58,105 @@ export const RejectedCandidate = () => {
   const handleClose = () => {
     setOpen(false);
   };
-  const TableHeader = [
-    "Id",
-    "Candidate Name",
-    "Contact",
-    "Email",
-    "Designation",
-    "Rejection Reason",
-    "Action",
-  ];
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    setCurrentPage(1); // Reset to first page with new search
+  };
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
 
-  const TableData = rejectedCandidates.map((candidate) => ({
-    id: candidate.id,
-    name: candidate.name,
-    contact: candidate.contact,
-    email: candidate.applicant,
-    designation: candidate.designation,
-    rejection_reason: candidate.rejection_reason,
-  }));
-
+  const handleReset = () => {
+    setSearchQuery("");
+    setCurrentPage(1); // Reset to first page with no search query
+  };
   return (
     <Grid item xs={12}>
-      <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
-        <Box sx={{ p: 4 }}>
-          <h3
-            style={{
-              marginBottom: "1em",
-              fontSize: "24px",
-              color: "rgb(34, 34, 34)",
-              fontWeight: 800,
-              textAlign: "center",
+      <CustomLoader open={loader} />
+      <Paper sx={{ m: 3, p: 3, display: "flex", flexDirection: "column" }}>
+        <Grid container spacing={2} alignItems="center">
+          <Grid item xs={12} md={4}>
+            <SearchComponent onSearch={handleSearch} onReset={handleReset} />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <Typography
+              variant="h5"
+              component="div"
+              sx={{ textAlign: "center" }}
+            >
+              Competency Attributes
+            </Typography>
+          </Grid>
+        </Grid>
+        <Box style={{ marginTop: "20px" }}>
+          <TableContainer
+            sx={{
+              maxHeight: 440,
+              "&::-webkit-scrollbar": {
+                width: 15,
+              },
+              "&::-webkit-scrollbar-track": {
+                backgroundColor: "#f2f2f2",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: "#aaa9ac",
+              },
             }}
           >
-            Rejected Candidate List
-          </h3>
-
-          <CustomTable
-            headers={TableHeader}
-            data={TableData}
-            openInPopup={handleClickOpen}
+            <Table
+              sx={{ minWidth: 1200 }}
+              stickyHeader
+              aria-label="sticky table"
+            >
+              <TableHead>
+                <TableRow>
+                  <StyledTableCell align="center">Name</StyledTableCell>
+                  <StyledTableCell align="center">Contact</StyledTableCell>
+                  <StyledTableCell align="center">Email</StyledTableCell>
+                  <StyledTableCell align="center">Designation </StyledTableCell>
+                  <StyledTableCell align="center">Stage</StyledTableCell>
+                  <StyledTableCell align="center">Status</StyledTableCell>
+                  <StyledTableCell align="center">
+                    Rejection Reason
+                  </StyledTableCell>
+                  <StyledTableCell align="center">Action</StyledTableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {rejectedCandidates.map((row, i) => (
+                  <StyledTableRow key={i}>
+                    <StyledTableCell align="center">{row.name}</StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.contact}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.email}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.designation}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.stage}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.status}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.rejection_reason}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      <Button onClick={() => handleClickOpen(row)}>View</Button>
+                    </StyledTableCell>
+                  </StyledTableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <CustomPagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            handlePageChange={handlePageChange}
           />
-
           <Dialog
             open={open}
             onClose={handleClose}
@@ -99,3 +178,22 @@ export const RejectedCandidate = () => {
     </Grid>
   );
 };
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  "&:nth-of-type(odd)": {
+    backgroundColor: theme.palette.action.hover,
+  },
+  // hide last border
+  "&:last-child td, &:last-child th": {
+    border: 0,
+  },
+}));

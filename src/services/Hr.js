@@ -109,7 +109,12 @@ const updateJobOpening = (id, updatedJobData) => {
 };
 
 // Applicant API
-const getApplicants = (page, searchValue) => {
+const getApplicants = (
+  page,
+  searchValue,
+  job__designation__designation,
+  job__department__department
+) => {
   const params = new URLSearchParams();
 
   if (page) {
@@ -119,10 +124,24 @@ const getApplicants = (page, searchValue) => {
   if (searchValue) {
     params.append("search", searchValue);
   }
+  if (job__designation__designation) {
+    params.append(
+      "job__designation__designation",
+      job__designation__designation
+    );
+  }
+  if (job__department__department) {
+    params.append("job__department__department", job__department__department);
+  }
 
-  return CustomAxios.get(`api/hr/applicant/?${params.toString()}`);
+  return CustomAxios.get(
+    `api/hr/applicant/?stage=Screening&status=Open&${params.toString()}`
+  );
 };
 
+const getCandidateProfile = (id) => {
+  return CustomAxios.get(`/api/hr/applicant/${id}/`);
+};
 const addApplicant = (newApplicantData) => {
   return CustomAxios.post(`/api/hr/applicant/`, newApplicantData);
 };
@@ -133,11 +152,21 @@ const updateApplicant = (id, updatedApplicantData) => {
 
 //Shortlisted Cnadidate API
 const getInterviewStatus = () => {
-  return CustomAxios.get(`/api/hr/applicant/?is_shortlisted=True`);
+  return CustomAxios.get(`/api/hr/applicant/?status=Shortlisted`);
 };
 
-const getInterviewDate = () => {
-  return CustomAxios.get(`/api/hr/interview-details/`);
+const getInterviewDate = (page, stage, status) => {
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+  if (stage) {
+    params.append("stage", stage);
+  }
+  if (status) {
+    params.append("status", status);
+  }
+  return CustomAxios.get(`/api/hr/interview-details/?${params.toString()}`);
 };
 
 const addInterviewDate = (newInterviewDate) => {
@@ -152,8 +181,18 @@ const updateInterviewDate = (id, updatedInterviewDate) => {
 
 //Offer Status API
 
-const getOfferStatus = () => {
-  return CustomAxios.get(`/api/hr/interview-details/?stage=Selected`);
+const getOfferStatus = (page, searchValue) => {
+  const params = new URLSearchParams();
+
+  if (page) {
+    params.append("page", page);
+  }
+
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+
+  return CustomAxios.get(`api/hr/applicant/?stage=Offer${params.toString()}`);
 };
 
 const updateOfferStatus = (id, updatedOfferStatus) => {
@@ -171,15 +210,97 @@ const getMisReport = () => {
 
 //Rejected Candaiate List API
 
-const getRejectedCandidates = () => {
-  return CustomAxios.get(`/api/hr/interview-details/?stage=Rejected`);
+const getRejectedCandidates = (page, searchValue) => {
+  const params = new URLSearchParams();
+
+  if (page) {
+    params.append("page", page);
+  }
+
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+
+  return CustomAxios.get(
+    `api/hr/applicant/?status=Rejected&${params.toString()}`
+  );
 };
 
-const updateRejectedCandidates = (id, updatedRejectedCandidates) => {
-  return CustomAxios.patch(
-    `/api/hr/interview-details/${id}/?stage=Rejected`,
+const updateRejectedCandidates = (updatedRejectedCandidates) => {
+  return CustomAxios.post(
+    `/api/hr/interview-details/`,
     updatedRejectedCandidates
   );
+};
+
+// Hr attributes
+const createAttribute = (data) => {
+  return CustomAxios.post(`/api/hr/attribute/`, data);
+};
+
+const getAttribute = (page, searchValue) => {
+  const params = new URLSearchParams();
+
+  if (page) {
+    params.append("page", page);
+  }
+
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+  return CustomAxios.get(`/api/hr/attribute/?${params.toString()}`);
+};
+
+const getAttributeList = () => {
+  return CustomAxios.get(`/api/hr/attribute/attibute_list/`);
+};
+
+// competency attributes
+const getUserGroupList = () => {
+  return CustomAxios.get(`/api/user/groups/group_list/`);
+};
+
+const createCompetancyAttribute = (data) => {
+  return CustomAxios.post(`/api/hr/competency-attribute/`, data);
+};
+
+const getCompentancyAttribute = () => {
+  return CustomAxios.get(`/api/hr/competency-attribute/`);
+};
+
+// role clarity
+const createRoleClarity = (data) => {
+  return CustomAxios.post(`/api/hr/role/`, data);
+};
+
+const getRoleClarity = (page, searchValue) => {
+  const params = new URLSearchParams();
+
+  if (page) {
+    params.append("page", page);
+  }
+
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+  return CustomAxios.get(`/api/hr/role/?${params.toString()}`);
+};
+//job description api
+const createJobDescription = (data) => {
+  return CustomAxios.post(`/api/hr/job-description/`, data);
+};
+
+const getJobDescription = (page, searchValue) => {
+  const params = new URLSearchParams();
+
+  if (page) {
+    params.append("page", page);
+  }
+
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+  return CustomAxios.get(`/api/hr/job-description/?${params.toString()}`);
 };
 
 const Hr = {
@@ -201,6 +322,7 @@ const Hr = {
   addJobOpening,
   updateJobOpening,
   getApplicants,
+  getCandidateProfile,
   addApplicant,
   updateApplicant,
   getInterviewStatus,
@@ -212,6 +334,16 @@ const Hr = {
   getMisReport,
   getRejectedCandidates,
   updateRejectedCandidates,
+  createAttribute,
+  getAttribute,
+  getAttributeList,
+  getUserGroupList,
+  createCompetancyAttribute,
+  getCompentancyAttribute,
+  createRoleClarity,
+  getRoleClarity,
+  createJobDescription,
+  getJobDescription,
 };
 
 export default Hr;

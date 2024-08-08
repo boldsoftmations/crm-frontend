@@ -9,6 +9,10 @@ import { ShortListedCandidateView } from "./ShortlistedCandidate/ShortListedCand
 import { HrDashboard } from "./HrDashboard.jsx";
 import { RejectedCandidate } from "./RejectedCandidate/RejectedCandidate.jsx";
 import { useSelector } from "react-redux";
+import ViewAttribute from "./Attribute/ViewAttribute.jsx";
+import { ViewCompentancyAttribute } from "./CompentancyAttribute/ViewCompentacyAttribute.jsx";
+import { ViewRoleClarity } from "./RoleClarity/ViewRoleClarity.jsx";
+import { ViewJobDescription } from "./JobDescription/ViewJobDescription.jsx";
 export const HrModelTabs = () => {
   const [activeTab, setActiveTab] = useState(0);
   const data = useSelector((state) => state.auth);
@@ -31,6 +35,10 @@ export const HrModelTabs = () => {
         { label: "MIS Report" },
         { label: "Dashboard" },
         { label: "Rejected Candidate" },
+        { label: "Attribute" },
+        { label: "Competency Attribute" },
+        { label: "Role Clarity" },
+        { label: "Job Description" },
       ];
 
   return (
@@ -82,6 +90,26 @@ export const HrModelTabs = () => {
               {activeTab === 7 && (
                 <div>
                   <RejectedCandidate />
+                </div>
+              )}
+              {activeTab === 8 && (
+                <div>
+                  <ViewAttribute />
+                </div>
+              )}
+              {activeTab === 9 && (
+                <div>
+                  <ViewCompentancyAttribute />
+                </div>
+              )}
+              {activeTab === 10 && (
+                <div>
+                  <ViewRoleClarity />
+                </div>
+              )}
+              {activeTab === 11 && (
+                <div>
+                  <ViewJobDescription />
                 </div>
               )}
             </>

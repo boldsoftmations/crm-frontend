@@ -5,8 +5,8 @@ import {
   Button,
   TextField,
   Container,
-  FormControlLabel,
-  Switch,
+  Typography,
+  IconButton,
 } from "@mui/material";
 import Hr from "../../../services/Hr";
 import CustomAxios from "../../../services/api";
@@ -14,10 +14,16 @@ import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
 
-export const ApplicantListCreate = ({ jobOpeningId }) => {
+import CloseIcon from "@mui/icons-material/Close";
+import { CustomLoader } from "../../../Components/CustomLoader";
+
+export const ApplicantListCreate = ({
+  jobOpeningId,
+  setOpenApplicantListPopup,
+}) => {
   console.log("jobOpeningId:", jobOpeningId);
   const [formData, setFormData] = useState({
-    job: jobOpeningId,
+    job: jobOpeningId.job_id,
     name: "",
     contact: "",
     email: "",
@@ -28,11 +34,13 @@ export const ApplicantListCreate = ({ jobOpeningId }) => {
     spoken_english: "",
     source: "",
     interested: "",
-    shortlisted: false,
+    cv: null,
   });
+  const [loader, setLoader] = useState(false);
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
   const [source, setSource] = useState([]);
+  const [cvPreview, setCvPreview] = useState(null);
 
   useEffect(() => {
     const fetchSource = async () => {
@@ -68,16 +76,57 @@ export const ApplicantListCreate = ({ jobOpeningId }) => {
     }
   };
 
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    console.log("file", file);
+    const validFileTypes = [
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ];
+    if (file && validFileTypes.includes(file.type)) {
+      setFormData((prevData) => ({
+        ...prevData,
+        cv: file,
+      }));
+      if (file.type === "application/pdf") {
+        const fileURL = URL.createObjectURL(file);
+        setCvPreview(fileURL);
+      } else {
+        setCvPreview(null); // Clear preview if not a PDF
+      }
+    } else {
+      handleError("Invalid file type. Please upload a PDF or DOC file.");
+      event.target.value = null; // Reset file input
+    }
+  };
+
+  const handleRemoveCv = () => {
+    setFormData((prevData) => ({
+      ...prevData,
+      cv: null,
+    }));
+    setCvPreview(null);
+  };
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setLoader(true);
+    const formDataToSend = new FormData();
+    Object.keys(formData).forEach((key) => {
+      formDataToSend.append(key, formData[key]);
+    });
+
     try {
-      const response = await Hr.addApplicant(formData);
-      console.log("Applicant created:", response.data);
+      await Hr.addApplicant(formDataToSend);
       handleSuccess("Applicant created successfully");
-      setTimeout(() => {}, 300);
+      setTimeout(() => {
+        setOpenApplicantListPopup(false);
+      }, 300);
     } catch (error) {
       handleError(error);
       console.error("Error creating applicant:", error);
+    } finally {
+      setLoader(false);
     }
   };
   const spokenEnglishOptions = ["Bad", "Average", "Good"];
@@ -100,6 +149,7 @@ export const ApplicantListCreate = ({ jobOpeningId }) => {
   ];
   return (
     <>
+      <CustomLoader open={loader}></CustomLoader>
       <MessageAlert
         open={alertInfo.open}
         onClose={handleCloseSnackbar}
@@ -253,21 +303,44 @@ export const ApplicantListCreate = ({ jobOpeningId }) => {
               />
             </Grid>
             <Grid item xs={12} sm={6}>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={formData.shortlisted}
-                    onChange={(event) => {
-                      setFormData({
-                        ...formData,
-                        shortlisted: event.target.checked,
-                      });
+              <Button
+                variant="outlined"
+                color="secondary"
+                component="label"
+                fullWidth
+                size="small"
+              >
+                Upload CV
+                <input
+                  type="file"
+                  hidden
+                  accept=".pdf,.doc,.docx"
+                  onChange={handleFileChange}
+                />
+              </Button>
+              {cvPreview && (
+                <Box mt={2} position="relative">
+                  <Typography variant="body1">CV Preview:</Typography>
+                  <IconButton
+                    aria-label="close"
+                    size="small"
+                    onClick={handleRemoveCv}
+                    style={{
+                      position: "absolute",
+                      right: 0,
+                      top: 0,
                     }}
-                    name="shortlisted"
+                  >
+                    <CloseIcon />
+                  </IconButton>
+                  <embed
+                    src={cvPreview}
+                    width="100%"
+                    height="150px"
+                    type="application/pdf"
                   />
-                }
-                label="Shortlisted"
-              />
+                </Box>
+              )}
             </Grid>
           </Grid>
           <Box display="flex" justifyContent="flex-end" mt={2}>

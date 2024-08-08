@@ -1,13 +1,28 @@
 import React, { useState, useEffect } from "react";
-import { Box, Grid, Paper } from "@mui/material";
+import {
+  Box,
+  Grid,
+  Paper,
+  styled,
+  TableCell,
+  Button,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TableBody,
+  Table,
+  tableCellClasses,
+} from "@mui/material";
 import { Popup } from "../../../Components/Popup";
 import { ApplicantListCreate } from "./ApplicantListCreate";
-import { ApplicantListUpdate } from "./ApplicantListUpdate";
 import { CustomTable } from "../../../Components/CustomTable";
 import { CustomPagination } from "../../../Components/CustomPagination";
 import Hr from "./../../../services/Hr";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import SearchComponent from "../../../Components/SearchComponent ";
+import CandidateProfile from "./CandidateProfile";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import CustomAxios from "../../../services/api";
 
 export const ApplicantListView = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -18,7 +33,38 @@ export const ApplicantListView = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [designations, setDesignations] = useState([]);
+  const [department, setDepartment] = useState([]);
+  const [filters, setFilters] = useState({ designations: "", department: "" });
 
+  useEffect(() => {
+    const fetchDesignations = async () => {
+      try {
+        const response = await CustomAxios.get(
+          "/api/hr/designation/?type=list"
+        );
+        console.log("API Response:", response.data);
+        setDesignations(response.data);
+      } catch (error) {
+        console.error("Error fetching designations:", error);
+      }
+    };
+
+    const fetchDepartments = async () => {
+      try {
+        const response = await CustomAxios.get("/api/hr/department/");
+        const validDepartments = response.data.filter(
+          (d) => d.department != null
+        );
+        setDepartment(validDepartments);
+      } catch (error) {
+        console.error("Error fetching departments:", error);
+      }
+    };
+
+    fetchDesignations();
+    fetchDepartments();
+  }, []);
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
@@ -28,20 +74,27 @@ export const ApplicantListView = () => {
     setOpenUpdatePopup(true);
   };
 
-  const fetchApplicants = async (page = 0, searchValue = "") => {
+  const fetchApplicants = async () => {
     try {
-      const response = await Hr.getApplicants(page, searchValue);
+      setIsLoading(true);
+      const response = await Hr.getApplicants(
+        currentPage,
+        searchQuery,
+        filters.designations,
+        filters.department
+      );
       setApplicants(response.data.results);
       const total = response.data.count;
       setTotalPages(Math.ceil(total / 25));
+      setIsLoading(false);
     } catch (error) {
       console.error("Error fetching applicants:", error);
     }
   };
 
   useEffect(() => {
-    fetchApplicants(currentPage, searchQuery);
-  }, [currentPage, searchQuery]);
+    fetchApplicants();
+  }, [currentPage, searchQuery, filters.designations, filters.department]);
 
   const filteredApplicants = applicants.filter((applicant) => {
     const name = applicant.name ? applicant.name.toLowerCase() : "";
@@ -70,20 +123,6 @@ export const ApplicantListView = () => {
     }
   };
 
-  const updateApplicant = async (id, updates) => {
-    try {
-      setIsLoading(true);
-      await Hr.updateApplicant(id, updates);
-      fetchApplicants();
-      setOpenUpdatePopup(false);
-      setIsLoading(false);
-    } catch (error) {
-      console.error("Error updating applicant:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const handleSearch = (query) => {
     setSearchQuery(query);
     setCurrentPage(1);
@@ -98,22 +137,6 @@ export const ApplicantListView = () => {
     fetchApplicants();
     setOpenCreatePopup(false);
   };
-  const handleApplicantUpdated = () => {
-    fetchApplicants();
-    setOpenUpdatePopup(false);
-  };
-
-  const TableHeader = [
-    "ID",
-    "Job ID",
-    "Candidate Name",
-    "Phone Number",
-    "Email",
-    "Designation",
-    "Source",
-    "Shortlisted",
-    "Action",
-  ];
 
   const TableData = filteredApplicants.map((applicant) => ({
     id: applicant.id,
@@ -122,10 +145,18 @@ export const ApplicantListView = () => {
     contact: applicant.contact,
     email: applicant.email,
     designation: applicant.designation,
+    department: applicant.department,
+    stage: applicant.stage,
+    status: applicant.status,
     source: applicant.source,
-    shortlisted: applicant.shortlisted,
   }));
 
+  const handleFilterChange = (event, value, name) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [name]: value,
+    }));
+  };
   return (
     <>
       <CustomLoader open={isLoading} />
@@ -138,11 +169,41 @@ export const ApplicantListView = () => {
               alignItems="center"
               sx={{ marginRight: 5, marginLeft: 5 }}
             >
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={4}>
                 <SearchComponent
                   onSearch={handleSearch}
                   onReset={handleReset}
                 />
+              </Grid>
+              <Grid item xs={12} sm={8}>
+                <Box display="flex" width="600px" gap="2rem">
+                  <CustomAutocomplete
+                    fullWidth
+                    name="designations"
+                    size="small"
+                    disablePortal
+                    id="combo-box-stage"
+                    onChange={(e, value) =>
+                      handleFilterChange(e, value, "designations")
+                    }
+                    options={designations.map((option) => option.designation)}
+                    getOptionLabel={(option) => option}
+                    label="Filter By Designation"
+                  />
+                  <CustomAutocomplete
+                    fullWidth
+                    name="status"
+                    size="small"
+                    disablePortal
+                    id="combo-box-status"
+                    onChange={(e, value) =>
+                      handleFilterChange(e, value, "department")
+                    }
+                    options={department.map((option) => option.department)}
+                    getOptionLabel={(option) => option}
+                    label="Filter By Department"
+                  />
+                </Box>
               </Grid>
             </Grid>
           </Box>
@@ -160,11 +221,83 @@ export const ApplicantListView = () => {
             </h3>
           </Box>
 
-          <CustomTable
-            headers={TableHeader}
-            data={TableData}
-            openInPopup={openInPopup}
-          />
+          <TableContainer
+            sx={{
+              maxHeight: 440,
+              "&::-webkit-scrollbar": {
+                width: 15,
+              },
+              "&::-webkit-scrollbar-track": {
+                backgroundColor: "#f2f2f2",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: "#aaa9ac",
+              },
+            }}
+          >
+            <Table
+              sx={{ minWidth: 1200 }}
+              stickyHeader
+              aria-label="sticky table"
+            >
+              <TableHead>
+                <TableRow>
+                  <StyledTableCell align="center">Job ID</StyledTableCell>
+                  <StyledTableCell align="center">
+                    Candidate Name
+                  </StyledTableCell>
+                  <StyledTableCell align="center">Phone Number</StyledTableCell>
+                  <StyledTableCell align="center">Email</StyledTableCell>
+                  <StyledTableCell align="center">Designation</StyledTableCell>
+                  <StyledTableCell align="center">Department</StyledTableCell>
+                  <StyledTableCell align="center">Stage</StyledTableCell>
+                  <StyledTableCell align="center">Status</StyledTableCell>
+                  <StyledTableCell align="center">Source</StyledTableCell>
+                  <StyledTableCell align="center">Action</StyledTableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {applicants.map((row, i) => (
+                  <StyledTableRow key={i}>
+                    <StyledTableCell align="center">{row.job}</StyledTableCell>
+                    <StyledTableCell align="center">{row.name}</StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.contact}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.email}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.designation}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.department}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.stage}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.status}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.source}
+                    </StyledTableCell>
+
+                    <StyledTableCell align="center">
+                      <Button
+                        variant="outlined"
+                        color="info"
+                        size="small"
+                        onClick={() => openInPopup(row)}
+                      >
+                        View
+                      </Button>
+                    </StyledTableCell>
+                  </StyledTableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
           <CustomPagination
             currentPage={currentPage}
             totalPages={totalPages}
@@ -181,18 +314,35 @@ export const ApplicantListView = () => {
             />
           </Popup>
           <Popup
-            title="Edit Applicant"
+            fullScreen={true}
+            title="Candidate Details"
             openPopup={openUpdatePopup}
             setOpenPopup={setOpenUpdatePopup}
           >
-            <ApplicantListUpdate
-              recordForEdit={recordForEdit}
-              updateApplicant={updateApplicant}
-              onApplicantUpdated={handleApplicantUpdated}
-            />
+            <CandidateProfile candidateData={recordForEdit} />
           </Popup>
         </Paper>
       </Grid>
     </>
   );
 };
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  "&:nth-of-type(odd)": {
+    backgroundColor: theme.palette.action.hover,
+  },
+  // hide last border
+  "&:last-child td, &:last-child th": {
+    border: 0,
+  },
+}));

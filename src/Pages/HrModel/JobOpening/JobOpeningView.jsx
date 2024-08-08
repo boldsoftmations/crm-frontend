@@ -1,9 +1,21 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Box, Grid, Button, Paper } from "@mui/material";
+import {
+  Box,
+  Grid,
+  Button,
+  Paper,
+  styled,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TableBody,
+  Table,
+  tableCellClasses,
+} from "@mui/material";
 import { Popup } from "../../../Components/Popup";
 import { JobOpeningCreate } from "./JobOpeningCreate";
 import { JobOpeningUpdate } from "./JobOpeningUpdate";
-import { CustomTable } from "../../../Components/CustomTable";
 import Hr from "./../../../services/Hr";
 import { ApplicantListCreate } from "../ApplicantList/ApplicantListCreate";
 import { useSelector } from "react-redux";
@@ -18,7 +30,8 @@ export const JobOpeningView = () => {
   const [jobOpenings, setJobOpenings] = useState([]);
   const [openCreatePopup, setOpenCreatePopup] = useState(false);
   const [openUpdatePopup, setOpenUpdatePopup] = useState(false);
-  const [recordForEdit, setRecordForEdit] = useState(false);
+  const [recordForEdit, setRecordForEdit] = useState(null);
+  const [jobId, setJobId] = useState(null);
   const [openApplicantListPopup, setOpenApplicantListPopup] = useState(false);
   const data = useSelector((state) => state.auth);
   const users = data.profile;
@@ -31,14 +44,6 @@ export const JobOpeningView = () => {
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
-  };
-
-  const openInPopup = (item) => {
-    setRecordForEdit(item);
-    setOpenUpdatePopup(true);
-  };
-  const openInPopup7 = (item) => {
-    handleAddApplicantClick(item);
   };
 
   const fetchJobOpenings = useCallback(
@@ -113,39 +118,16 @@ export const JobOpeningView = () => {
 
   const handleAddJobOpeningClick = () => setOpenCreatePopup(true);
 
-  const handleAddApplicantClick = (job) => {
-    setRecordForEdit(job);
+  const handleAddApplicantClick = (data) => {
+    setJobId(data);
     setOpenApplicantListPopup(true);
   };
 
-  const TableHeader = [
-    "Sr.No",
-    "Job Id",
-    "Date of Opening",
-    "Designation",
-    "Location",
-    "Salary Range",
-    "Date of Closing",
-    "Open Duration",
-    "No Of Vacancies",
-    // "Position",
-    "Action",
-  ];
+  const handleOpenUpdate = (data) => {
+    setRecordForEdit(data);
+    setOpenUpdatePopup(true);
+  };
 
-  const TableData = Array.isArray(jobOpenings)
-    ? jobOpenings.map((job) => ({
-        id: job.id,
-        job: job.job_id,
-        opening_date: job.opening_date,
-        designation: job.designation,
-        location: job.location,
-        salary_ranges: job.salary_ranges,
-        closing_date: job.closing_date,
-        days_open: job.days_open,
-        no_of_openings: job.no_of_openings,
-        // position: job.position,
-      }))
-    : [];
   return (
     <>
       <MessageAlert
@@ -195,12 +177,99 @@ export const JobOpeningView = () => {
             </h3>
           </Box>
 
-          <CustomTable
-            headers={TableHeader}
-            data={TableData}
-            openInPopup={openInPopup}
-            openInPopup7={!isSalesManager ? openInPopup7 : null}
-          />
+          <TableContainer
+            sx={{
+              maxHeight: 440,
+              "&::-webkit-scrollbar": {
+                width: 15,
+              },
+              "&::-webkit-scrollbar-track": {
+                backgroundColor: "#f2f2f2",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: "#aaa9ac",
+              },
+            }}
+          >
+            <Table
+              sx={{ minWidth: 1200 }}
+              stickyHeader
+              aria-label="sticky table"
+            >
+              <TableHead>
+                <TableRow>
+                  <StyledTableCell align="center">Job ID</StyledTableCell>
+                  <StyledTableCell align="center">
+                    Date of Opening
+                  </StyledTableCell>
+                  <StyledTableCell align="center">Designation</StyledTableCell>
+                  <StyledTableCell align="center">Location</StyledTableCell>
+                  <StyledTableCell align="center">Salary Range</StyledTableCell>
+                  <StyledTableCell align="center">
+                    Date of Closing
+                  </StyledTableCell>
+                  <StyledTableCell align="center">Days Open</StyledTableCell>
+                  <StyledTableCell align="center">
+                    No Of Vacancies
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    Pending Vacancies{" "}
+                  </StyledTableCell>
+                  <StyledTableCell align="center">Action </StyledTableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {jobOpenings.map((row, i) => (
+                  <StyledTableRow key={i}>
+                    <StyledTableCell align="center">
+                      {row.job_id}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.opening_date}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.designation}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.location}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.salary_ranges}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.closing_date}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.days_open}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.no_of_openings}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.pending_openings}
+                    </StyledTableCell>
+
+                    <StyledTableCell align="center">
+                      <Button
+                        color="success"
+                        size="small"
+                        onClick={() => handleOpenUpdate(row)}
+                      >
+                        View
+                      </Button>
+                      <Button
+                        color="info"
+                        size="small"
+                        onClick={() => handleAddApplicantClick(row)}
+                      >
+                        Add New Applicant
+                      </Button>
+                    </StyledTableCell>
+                  </StyledTableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
           <CustomPagination
             currentPage={currentPage}
             totalPages={totalPages}
@@ -213,7 +282,10 @@ export const JobOpeningView = () => {
               openPopup={openApplicantListPopup}
               setOpenPopup={setOpenApplicantListPopup}
             >
-              <ApplicantListCreate jobOpeningId={recordForEdit.job} />
+              <ApplicantListCreate
+                jobOpeningId={jobId}
+                setOpenApplicantListPopup={setOpenApplicantListPopup}
+              />
             </Popup>
           )}
 
@@ -242,3 +314,23 @@ export const JobOpeningView = () => {
     </>
   );
 };
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  "&:nth-of-type(odd)": {
+    backgroundColor: theme.palette.action.hover,
+  },
+  // hide last border
+  "&:last-child td, &:last-child th": {
+    border: 0,
+  },
+}));

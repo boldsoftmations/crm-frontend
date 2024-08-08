@@ -11,44 +11,40 @@ export const RejectedCandidateUpdate = ({
   fetchRejectedCandidates,
 }) => {
   const [email, setEmail] = useState([]);
-  const [id, setId] = useState(row.id || "");
   const [isLoading, setIsLoading] = useState(false);
   const [interviewDate, setInterviewDate] = useState(row.interview_date || "");
   const [interviewTime, setInterviewTime] = useState(row.interview_time || "");
   const [interviewerName, setInterviewerName] = useState(
     row.interviewer_name || ""
   );
-  const [stage, setStage] = useState(row.stage || "");
+  const [stage, setStage] = useState("");
 
   useEffect(() => {
-    setId(row.id || "");
     setInterviewDate(row.interview_date || "");
     setInterviewTime(row.interview_time || "");
     setInterviewerName(row.interviewer_name || "");
-    setStage(row.stage || "");
   }, [row]);
-  console.log("row", row);
 
   const handleUpdate = async () => {
     const updateInterviewDate = {
-      id: id,
       date: interviewDate,
       time: interviewTime,
-      interviewer_name: interviewerName,
+      interviewer: interviewerName,
       stage: stage,
-      offer_status: row.status || null,
+      status: "Reschedule",
+      applicant: row.email,
     };
 
     try {
       setIsLoading(true);
-      await Hr.updateRejectedCandidates(row.id, updateInterviewDate);
-
+      await Hr.updateRejectedCandidates(updateInterviewDate);
       closeDialog();
       fetchRejectedCandidates();
-      setIsLoading(true);
     } catch (error) {
-      setIsLoading(true);
+      setIsLoading(false);
       console.error("Error updating interview details:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -72,7 +68,7 @@ export const RejectedCandidateUpdate = ({
 
     fetchEmail();
   }, []);
-  const stageOptions = ["Scheduled"];
+  const stageOptions = ["Round1", "Round2"];
 
   const handleInputChange = (event, newValue) => {
     setInterviewerName(newValue);
@@ -96,12 +92,13 @@ export const RejectedCandidateUpdate = ({
         </Grid>
         <Grid item xs={12}>
           <TextField
-            margin="dense"
+            size="small"
             label="Interview Date"
             type="date"
             fullWidth
             value={interviewDate}
             onChange={(e) => setInterviewDate(e.target.value)}
+            InputLabelProps={{ shrink: true }}
           />
         </Grid>
         <Grid item xs={12}>

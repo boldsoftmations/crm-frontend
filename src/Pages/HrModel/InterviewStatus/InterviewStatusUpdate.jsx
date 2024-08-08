@@ -3,13 +3,22 @@ import { TextField, Button, Grid, Box } from "@mui/material";
 import Hr from "../../../services/Hr";
 import CustomAxios from "../../../services/api";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import { CustomLoader } from "../../../Components/CustomLoader";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../../Components/MessageAlert";
 
-export const InterviewStatusCreate = ({ row, closeDialog }) => {
+export const InterviewStatusCreate = ({
+  row,
+  closeDialog,
+  getInterviewData,
+}) => {
   const [interviewDate, setInterviewDate] = useState("");
   const [interviewTime, setInterviewTime] = useState("");
   const [interviewerName, setInterviewerName] = useState("");
+  const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState([]);
-  console.log("row", row);
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -18,14 +27,22 @@ export const InterviewStatusCreate = ({ row, closeDialog }) => {
       date: interviewDate,
       time: interviewTime,
       interviewer: interviewerName,
+      status: "Schedule",
+      stage: "Round1",
     };
 
     try {
+      setLoading(true);
       await Hr.addInterviewDate(newInterviewDetails);
-      closeDialog();
-      alert("Interview Scheduled Successfully");
+      handleSuccess("Interview Scheduled Successfully");
+      setTimeout(() => {
+        closeDialog();
+        getInterviewData();
+      }, 500);
+      setLoading(false);
     } catch (error) {
-      alert("Error scheduling interview");
+      setLoading(false);
+      handleError("Error scheduling interview");
       console.error("Error scheduling interview:", error);
     }
   };
@@ -58,6 +75,13 @@ export const InterviewStatusCreate = ({ row, closeDialog }) => {
 
   return (
     <form onSubmit={handleSubmit} style={{ width: "100%", marginTop: "20px" }}>
+      <CustomLoader open={loading} />
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <TextField
@@ -100,3 +124,5 @@ export const InterviewStatusCreate = ({ row, closeDialog }) => {
     </form>
   );
 };
+
+const shortList = ["Round1", "Round2"];

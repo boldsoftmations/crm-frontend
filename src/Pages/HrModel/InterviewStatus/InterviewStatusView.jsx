@@ -6,8 +6,16 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
+  styled,
+  TableCell,
+  Button,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TableBody,
+  Table,
+  tableCellClasses,
 } from "@mui/material";
-import { CustomTable } from "../../../Components/CustomTable";
 import { InterviewStatusCreate } from "./InterviewStatusUpdate";
 import Hr from "../../../services/Hr";
 import { CustomPagination } from "../../../Components/CustomPagination";
@@ -53,22 +61,14 @@ export const InterviewStatusView = () => {
     setOpen(false);
   };
 
-  const TableHeader = [
-    "Id",
-    "Candidate Name",
-    "Email",
-    "Designation",
-    "Contact",
-    "Location",
-    // "Interview Schedule",
-    "Interview Schedule",
-  ];
   const TableData = Array.isArray(interviews)
     ? interviews.map((interview) => ({
         id: interview.id,
         name: interview.name,
         email: interview.email,
         designation: interview.designation,
+        stage: interview.stage,
+        status: interview.status,
         contact: interview.contact,
         location: interview.location,
       }))
@@ -91,30 +91,93 @@ export const InterviewStatusView = () => {
               Shortlisted Candidate
             </h3>
           </Box>
+          <TableContainer
+            sx={{
+              maxHeight: 440,
+              "&::-webkit-scrollbar": {
+                width: 15,
+              },
+              "&::-webkit-scrollbar-track": {
+                backgroundColor: "#f2f2f2",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: "#aaa9ac",
+              },
+            }}
+          >
+            <Table
+              sx={{ minWidth: 1200 }}
+              stickyHeader
+              aria-label="sticky table"
+            >
+              <TableHead>
+                <TableRow>
+                  <StyledTableCell align="center">
+                    Candidate Name
+                  </StyledTableCell>
+                  <StyledTableCell align="center">Email</StyledTableCell>
+                  <StyledTableCell align="center">Phone Number</StyledTableCell>
+                  <StyledTableCell align="center">Designation</StyledTableCell>
+                  <StyledTableCell align="center">Location</StyledTableCell>
+                  <StyledTableCell align="center">Stage</StyledTableCell>
+                  <StyledTableCell align="center">Status</StyledTableCell>
+                  <StyledTableCell align="center">Action</StyledTableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {interviews.map((row, i) => (
+                  <StyledTableRow key={i}>
+                    <StyledTableCell align="center">{row.name}</StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.email}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.contact}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.designation}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.location}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.stage}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.status}
+                    </StyledTableCell>
 
-          <CustomTable
-            headers={TableHeader}
-            data={TableData}
-            openInPopup={handleClickOpen}
-          />
+                    <StyledTableCell align="center">
+                      <Button
+                        variant="outlined"
+                        color="info"
+                        size="small"
+                        onClick={() => handleClickOpen(row)}
+                      >
+                        View
+                      </Button>
+                    </StyledTableCell>
+                  </StyledTableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
           <CustomPagination
             currentPage={currentPage}
             totalPages={totalPages}
             handlePageChange={handlePageChange}
           />
-
           <Dialog
             open={open}
             onClose={handleClose}
             aria-labelledby="form-dialog-title"
           >
-            <DialogTitle id="form-dialog-title">
-              Interview Status Update
-            </DialogTitle>
+            <DialogTitle id="form-dialog-title">Schedule Interview</DialogTitle>
             <DialogContent>
               <InterviewStatusCreate
                 row={selectedRow}
                 closeDialog={handleClose}
+                getInterviewData={getInterviewData}
               />
             </DialogContent>
           </Dialog>
@@ -123,3 +186,23 @@ export const InterviewStatusView = () => {
     </>
   );
 };
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  "&:nth-of-type(odd)": {
+    backgroundColor: theme.palette.action.hover,
+  },
+  // hide last border
+  "&:last-child td, &:last-child th": {
+    border: 0,
+  },
+}));

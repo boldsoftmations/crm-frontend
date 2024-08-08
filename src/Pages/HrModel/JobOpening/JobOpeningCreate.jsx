@@ -4,13 +4,15 @@ import CustomAxios from "../../../services/api";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import Hr from "../../../services/Hr";
 
-export const JobOpeningCreate = ({ addNewJobOpening }) => {
+export const JobOpeningCreate = ({ addNewJobOpening, setOpenCreatePopup }) => {
   const [newJobOpening, setNewJobOpening] = useState({
     closing_date: null,
     designation: "",
     department: "",
     location: "",
     position: "",
+    no_of_openings: 0,
+    pending_openings: 0,
     salary_ranges: "",
     notes: "",
   });
@@ -92,7 +94,11 @@ export const JobOpeningCreate = ({ addNewJobOpening }) => {
   const handleInputChange = (event, newValue) => {
     const value = newValue || event.target.value;
     const name = event.target.name || event.target.id.split("-")[0];
-    setNewJobOpening({ ...newJobOpening, [name]: value });
+    setNewJobOpening({
+      ...newJobOpening,
+      [name]: value,
+      pending_openings: newJobOpening.no_of_openings,
+    });
   };
 
   const handleSubmit = () => {
@@ -183,6 +189,7 @@ export const JobOpeningCreate = ({ addNewJobOpening }) => {
         <Grid item xs={12}>
           <TextField
             size="small"
+            type="number"
             name="no_of_openings"
             label="No Of Vacancies"
             value={newJobOpening.no_of_openings || ""}

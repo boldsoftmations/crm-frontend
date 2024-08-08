@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from "react";
-import {
-  DialogActions,
-  Button,
-  TextField,
-  Grid,
-} from "@mui/material";
+import { DialogActions, Button, TextField, Grid } from "@mui/material";
 import Hr from "../../../services/Hr";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import { CustomLoader } from "./../../../Components/CustomLoader";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../../Components/MessageAlert";
 
 export const OfferStatusUpdate = ({ row, closeDialog, onUpdateComplete }) => {
   const [status, setStatus] = useState(row ? row.status : "");
   const [joiningDate, setJoiningDate] = useState(
     row && row.joining_date ? row.joining_date : null
   );
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   const [rejectionReason, setRejectionReason] = useState("");
-
-  const offerStatusOptions = ["Accepted", "Rejected", "Sent"];
+  const [loading, setLoading] = useState(false);
+  const offerStatusOptions = ["Sent", "Accepted", "Rejected", "Joined"];
 
   const rejectionReasonOptions = [
     "Candidate is not interested in the offer want higher offer.",
@@ -44,22 +44,38 @@ export const OfferStatusUpdate = ({ row, closeDialog, onUpdateComplete }) => {
 
   const handleUpdate = async () => {
     const updatedOfferStatus = {
-      offer_status: status,
-      joining_date: joiningDate || null,
+      status: status,
+      email: row.email,
+      contact: row.contact,
+      doj: joiningDate || null,
+      stage: "Offer",
       rejection_reason: status === "Rejected" ? rejectionReason : null,
     };
     try {
-      await Hr.updateOfferStatus(row.id, updatedOfferStatus);
-      onUpdateComplete();
-      closeDialog();
-      alert("Offer status updated successfully!");
+      setLoading(true);
+      await Hr.updateApplicant(row.id, updatedOfferStatus);
+      handleSuccess("Offer status updated successfully!");
+      setTimeout(() => {
+        closeDialog();
+        onUpdateComplete();
+      }, 500);
     } catch (error) {
-      console.error("Error updating offer status:", error);
+      handleError("Error updating offer status:" || error);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <Grid container spacing={2}>
+    <Grid container spacing={2} sx={{ padding: "20px" }}>
+      <CustomLoader open={loading} />
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
+
       <Grid item xs={12}>
         <CustomAutocomplete
           value={status}

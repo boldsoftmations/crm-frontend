@@ -2,133 +2,112 @@ import React, { useEffect, useState } from "react";
 import { Button, TextField, DialogActions } from "@mui/material";
 import Hr from "../../../services/Hr";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import { CustomLoader } from "../../../Components/CustomLoader";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../../Components/MessageAlert";
+
+const statusOptions = ["Selected", "Rejected"];
+const rejectedReasonOptions = [
+  "Insufficient Technical Knowledge",
+  "Poor Problem-Solving Skills",
+  "Lack of Practical Experience",
+  "Poor Communication Skills",
+  "Cultural Mismatch",
+  "Lack of Enthusiasm or Interest",
+  "Inadequate Responses to Behavioral Questions",
+  "Inconsistent Career Goals",
+  "Negative Team Feedback",
+  "Poor Performance in Team Exercises",
+  "Unprofessional Behavior",
+  "Overconfidence or Arrogance",
+  "Failed Technical Assessments",
+  "Background Check Issues",
+  "Better Fit Found",
+];
 
 export const ShortListedCandidateUpdate = ({
   row,
   closeDialog,
   fetchCandidates,
 }) => {
-  const [interviewDate, setInterviewDate] = useState(row.interview_date || "");
-  const [interviewTime, setInterviewTime] = useState(row.interview_time || "");
-  const [rejectedReason, setRejectedReason] = useState(
-    row.rejection_reason || ""
-  );
-
-  const [interviewerName, setInterviewerName] = useState(
-    row.interviewer_name || ""
-  );
-  const [stage, setStage] = useState(row.stage || "");
-
+  const [formData, setFormData] = useState({
+    rejection_reason: row.rejection_reason || "",
+    status: row.status || "",
+    stage: row.stage,
+    applicant: row.applicant,
+  });
+  const [loader, setLoader] = useState(false);
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
   useEffect(() => {
-    setInterviewDate(row.interview_date || "");
-    setInterviewTime(row.interview_time || "");
-    setRejectedReason(row.rejection_reason || "");
-    setInterviewerName(row.interviewer_name || "");
-    setStage(row.stage || "");
+    setFormData({
+      rejection_reason: row.rejection_reason || "",
+      status: row.status || "",
+      stage: row.stage,
+      applicant: row.applicant,
+    });
   }, [row]);
-  console.log("row", row);
+  console.log(row);
+
+  const handleInputChange = (name, value) => {
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
 
   const handleUpdate = async () => {
+    const { status, rejection_reason, stage, applicant } = formData;
     const updatedInterviewDetails = {
-      date: interviewDate,
-      time: interviewTime,
-      interviewer_name: interviewerName,
+      status: status,
       stage: stage,
-      ...(stage === "Rejected" && { rejection_reason: rejectedReason }),
+      applicant: applicant,
+      ...(status === "Rejected" && { rejection_reason: rejection_reason }),
     };
 
     try {
+      setLoader(true);
       await Hr.updateInterviewDate(row.id, updatedInterviewDetails);
 
-      closeDialog();
-      fetchCandidates();
+      handleSuccess("Interviews status updated successfully");
+      setTimeout(() => {
+        closeDialog();
+        fetchCandidates();
+      }, 500);
     } catch (error) {
       console.error("Error updating interview details:", error);
+      handleError(error || "Error updating interview details");
+    } finally {
+      setLoader(false);
     }
   };
 
-  const handleTimeChange = (event, newValue) => {
-    setInterviewTime(newValue);
-  };
-
-  const disableFields =
-    stage === "Rejected" ||
-    stage === "On Hold" ||
-    stage === "Not Interested" ||
-    stage === "Selected";
-
-  const stageOptions = [
-    "Selected",
-    "Scheduled",
-    "On Hold",
-    "Rejected",
-    // "Not Interested",
-    "Postponed",
-  ];
-
-  const timeOptions = ["11 AM to 1 PM", "1 PM to 3 PM", "3 PM TO 5 PM"];
   return (
     <>
+      <MessageAlert
+        open={alertInfo.open}
+        onClose={handleCloseSnackbar}
+        severity={alertInfo.severity}
+        message={alertInfo.message}
+      />
+      <CustomLoader open={loader} />
       <CustomAutocomplete
-        value={stage}
-        onChange={(event, newValue) => {
-          setStage(newValue);
-        }}
-        options={stageOptions}
-        label="Stage"
+        value={formData.status}
+        onChange={(event, newValue) => handleInputChange("status", newValue)}
+        options={statusOptions}
+        getOptionLabel={(option) => option}
+        label="Status"
         fullWidth
       />
-      {stage === "Rejected" && (
+      {formData.status === "Rejected" && (
         <CustomAutocomplete
-          value={rejectedReason}
-          onChange={(event, newValue) => {
-            setRejectedReason(newValue);
-          }}
-          options={[
-            "Salary",
-            "Technical",
-            "Experience",
-            "Language",
-            "Not Interested",
-            "Travelling Issue",
-            "Got other Opportunity",
-            "Others",
-          ]}
+          value={formData.rejection_reason}
+          onChange={(event, newValue) =>
+            handleInputChange("rejection_reason", newValue)
+          }
+          options={rejectedReasonOptions}
           label="Rejected Reason"
           fullWidth
         />
       )}
-      <TextField
-        margin="dense"
-        label="Interview Date"
-        type="date"
-        fullWidth
-        value={interviewDate}
-        onChange={(e) => setInterviewDate(e.target.value)}
-        disabled={disableFields}
-      />
-      <CustomAutocomplete
-        style={{ minWidth: 220 }}
-        size="small"
-        value={interviewTime}
-        onChange={handleTimeChange}
-        options={timeOptions}
-        disabled={disableFields}
-        label="Interview Time"
-      />
-      <TextField
-        margin="dense"
-        label="Interviewer Name"
-        type="text"
-        fullWidth
-        value={interviewerName}
-        onChange={(e) => setInterviewerName(e.target.value)}
-        disabled={disableFields}
-      />
       <DialogActions>
-        <Button onClick={closeDialog} color="primary">
-          Cancel
-        </Button>
         <Button onClick={handleUpdate} color="primary">
           Update
         </Button>
