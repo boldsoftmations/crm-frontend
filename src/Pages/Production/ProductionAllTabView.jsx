@@ -9,6 +9,7 @@ import { ProductionInventoryGAndLView } from "./Production Entry/ProductionInven
 import { ProductionShortFallView } from "./ProductionShortFall/ProductionShortFallView";
 import { DailyProductionReport } from "./ProductionReport/DailyProductionReport";
 import { WeeklyProductionReport } from "./ProductionReport/WeeklyProductionReport";
+import { ViewMRFProduct } from "./MRFProduct/ViewMRFProduct";
 
 export const ProductionAllTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
@@ -28,6 +29,11 @@ export const ProductionAllTabView = () => {
         "Production",
       ],
       component: <MaterialRequisitionFormView />,
+    },
+    {
+      label: "MRF Products",
+      roles: ["Director", "Accounts"],
+      component: <ViewMRFProduct />,
     },
     {
       label: "Production Entry",

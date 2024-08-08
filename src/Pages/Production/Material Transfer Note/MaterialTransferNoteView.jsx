@@ -11,11 +11,6 @@ import {
   TableCell,
   Switch,
   Button,
-  IconButton,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
   Paper,
   styled,
 } from "@mui/material";
@@ -25,7 +20,6 @@ import { pdf } from "@react-pdf/renderer";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { Popup } from "../../../Components/Popup";
 import InventoryServices from "../../../services/InventoryService";
-import ClearIcon from "@mui/icons-material/Clear";
 import { useSelector } from "react-redux";
 import { MaterialTransferNoteCreate } from "./MaterialTransferNoteCreate";
 import InvoiceServices from "../../../services/InvoiceService";
@@ -47,6 +41,7 @@ export const MaterialTransferNoteView = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [acceptedFilter, setAcceptedFilter] = useState("");
+  const [filterByDays, setFilterByDays] = useState("");
   const [sellerOption, setSellerOption] = useState(null);
   const userData = useSelector((state) => state.auth.profile);
   const [exportData, setExportData] = useState([]);
@@ -84,7 +79,8 @@ export const MaterialTransferNoteView = () => {
       const response = await InventoryServices.getAllMaterialTransferNoteData(
         "all",
         acceptedFilter,
-        searchQuery
+        searchQuery,
+        filterByDays
       );
 
       const data = response.data.map((row) => {
@@ -107,7 +103,6 @@ export const MaterialTransferNoteView = () => {
       setOpen(false);
     }
   };
-
   const handlePrint = async (data) => {
     try {
       setOpen(true);
@@ -177,7 +172,8 @@ export const MaterialTransferNoteView = () => {
       const response = await InventoryServices.getAllMaterialTransferNoteData(
         currentPage,
         acceptedFilter,
-        searchQuery
+        searchQuery,
+        filterByDays
       );
 
       setMaterialTransferNote(response.data.results);
@@ -188,11 +184,11 @@ export const MaterialTransferNoteView = () => {
     } finally {
       setOpen(false);
     }
-  }, [currentPage, acceptedFilter, searchQuery]);
+  }, [currentPage, acceptedFilter, searchQuery, filterByDays]);
 
   useEffect(() => {
     getAllMaterialTransferNoteDetails();
-  }, [currentPage, acceptedFilter, searchQuery]);
+  }, [currentPage, acceptedFilter, searchQuery, filterByDays]);
 
   const handleSearch = (query) => {
     setSearchQuery(query);
@@ -204,10 +200,17 @@ export const MaterialTransferNoteView = () => {
     setCurrentPage(1);
   };
 
-  const clearAcceptedFilter = () => setAcceptedFilter("");
+  const clearAcceptedFilter = () => {
+    setAcceptedFilter("");
+  };
+  const cleardaysFilter = () => setFilterByDays("");
 
   const handleAcceptedFilter = (event) => {
     setAcceptedFilter(event.target.value);
+    setCurrentPage(1);
+  };
+  const handleDaysFilter = (event) => {
+    setFilterByDays(event.target.value);
     setCurrentPage(1);
   };
 
@@ -257,13 +260,27 @@ export const MaterialTransferNoteView = () => {
               justifyContent="space-between"
             >
               {/* Left Section: Filter and Search */}
-              <Grid item xs={12} sm={6} display="flex" alignItems="center">
+              <Grid
+                item
+                xs={12}
+                sm={9}
+                display="flex"
+                alignItems="center"
+                gap="5px"
+              >
                 <CustomSelect
                   label="Filter By Accepted"
                   options={AcceptedOption}
                   value={acceptedFilter}
                   onChange={handleAcceptedFilter}
                   onClear={clearAcceptedFilter}
+                />
+                <CustomSelect
+                  label="Filter By Days"
+                  options={filterDays}
+                  value={filterByDays}
+                  onChange={handleDaysFilter}
+                  onClear={cleardaysFilter}
                 />
                 <SearchComponent
                   onSearch={handleSearch}
@@ -272,18 +289,6 @@ export const MaterialTransferNoteView = () => {
               </Grid>
 
               {/* Center Section: Title */}
-              <Grid item xs={12} sm={3} display="flex" justifyContent="center">
-                <h3
-                  style={{
-                    fontSize: "24px",
-                    color: "rgb(34, 34, 34)",
-                    fontWeight: 800,
-                    textAlign: "center",
-                  }}
-                >
-                  Material Transfer Note
-                </h3>
-              </Grid>
 
               {/* Right Section: Add and Download Buttons */}
               <Grid
@@ -322,6 +327,18 @@ export const MaterialTransferNoteView = () => {
                     }}
                   />
                 )}
+              </Grid>
+              <Grid item xs={12} sm={12} display="flex" justifyContent="center">
+                <h3
+                  style={{
+                    fontSize: "24px",
+                    color: "rgb(34, 34, 34)",
+                    fontWeight: 800,
+                    textAlign: "center",
+                  }}
+                >
+                  Material Transfer Note
+                </h3>
               </Grid>
             </Grid>
           </Box>
@@ -449,6 +466,10 @@ export const MaterialTransferNoteView = () => {
 const AcceptedOption = [
   { label: "Accepted", value: "true" },
   { label: "Not Accepted", value: "false" },
+];
+const filterDays = [
+  { label: "Today", value: "today" },
+  { label: "This Month", value: "this_month" },
 ];
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({

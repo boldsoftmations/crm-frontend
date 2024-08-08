@@ -359,7 +359,8 @@ const createProductionEntryData = (data) => {
 const getAllMaterialTransferNoteData = (
   page,
   acceptedToFilter,
-  searchValue
+  searchValue,
+  date
 ) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
@@ -375,11 +376,22 @@ const getAllMaterialTransferNoteData = (
   if (searchValue) {
     params.append("search", searchValue);
   }
+  if (date) {
+    params.append("date", date);
+  }
 
   // Sending a GET request with query parameters
   return CustomAxios.get(
     `/api/inventory/list-material-transfer-note/?${params.toString()}`
   );
+};
+
+const getAllMrfProducts = (date) => {
+  const params = new URLSearchParams();
+  if (date) {
+    params.append("date", date);
+  }
+  return CustomAxios.get(`api/inventory/mrf-product/?${params.toString()}`);
 };
 
 const createMaterialTransferNoteData = (data) => {
@@ -657,6 +669,7 @@ const InventoryServices = {
   getAllProductionEntryData,
   createProductionEntryData,
   getAllMaterialTransferNoteData,
+  getAllMrfProducts,
   createMaterialTransferNoteData,
   updateMaterialTransferNoteData,
   getProductionInventoryData,
@@ -687,7 +700,7 @@ const InventoryServices = {
   updateSalesReturnInventoryData,
   createReworkinvoiceData,
   getReworkinvoiceData,
-  updateReworkInvoiceData
+  updateReworkInvoiceData,
 };
 
 export default InventoryServices;
