@@ -35,7 +35,12 @@ export const ApplicantListView = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [designations, setDesignations] = useState([]);
   const [department, setDepartment] = useState([]);
-  const [filters, setFilters] = useState({ designations: "", department: "" });
+  const [filters, setFilters] = useState({
+    designations: "",
+    department: "",
+    stage: "",
+    status: "",
+  });
 
   useEffect(() => {
     const fetchDesignations = async () => {
@@ -81,7 +86,9 @@ export const ApplicantListView = () => {
         currentPage,
         searchQuery,
         filters.designations,
-        filters.department
+        filters.department,
+        filters.stage,
+        filters.status
       );
       setApplicants(response.data.results);
       const total = response.data.count;
@@ -94,7 +101,14 @@ export const ApplicantListView = () => {
 
   useEffect(() => {
     fetchApplicants();
-  }, [currentPage, searchQuery, filters.designations, filters.department]);
+  }, [
+    currentPage,
+    searchQuery,
+    filters.designations,
+    filters.department,
+    filters.stage,
+    filters.status,
+  ]);
 
   const filteredApplicants = applicants.filter((applicant) => {
     const name = applicant.name ? applicant.name.toLowerCase() : "";
@@ -163,20 +177,15 @@ export const ApplicantListView = () => {
       <Grid item xs={12}>
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
           <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
-            <Grid
-              container
-              spacing={2}
-              alignItems="center"
-              sx={{ marginRight: 5, marginLeft: 5 }}
-            >
-              <Grid item xs={12} sm={4}>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={12} sm={2}>
                 <SearchComponent
                   onSearch={handleSearch}
                   onReset={handleReset}
                 />
               </Grid>
-              <Grid item xs={12} sm={8}>
-                <Box display="flex" width="600px" gap="2rem">
+              <Grid item xs={12} sm={10}>
+                <Box display="flex" gap="2rem">
                   <CustomAutocomplete
                     fullWidth
                     name="designations"
@@ -192,7 +201,7 @@ export const ApplicantListView = () => {
                   />
                   <CustomAutocomplete
                     fullWidth
-                    name="status"
+                    name="department"
                     size="small"
                     disablePortal
                     id="combo-box-status"
@@ -202,6 +211,32 @@ export const ApplicantListView = () => {
                     options={department.map((option) => option.department)}
                     getOptionLabel={(option) => option}
                     label="Filter By Department"
+                  />
+                  <CustomAutocomplete
+                    fullWidth
+                    name="stage"
+                    size="small"
+                    disablePortal
+                    id="combo-box-status"
+                    onChange={(e, value) =>
+                      handleFilterChange(e, value, "stage")
+                    }
+                    options={shortList}
+                    getOptionLabel={(option) => option}
+                    label="Filter By Stage"
+                  />
+                  <CustomAutocomplete
+                    fullWidth
+                    name="status"
+                    size="small"
+                    disablePortal
+                    id="combo-box-status"
+                    onChange={(e, value) =>
+                      handleFilterChange(e, value, "status")
+                    }
+                    options={status}
+                    getOptionLabel={(option) => option}
+                    label="Filter By Status"
                   />
                 </Box>
               </Grid>
@@ -217,7 +252,7 @@ export const ApplicantListView = () => {
                 textAlign: "center",
               }}
             >
-              Applicant List
+              Candidate List
             </h3>
           </Box>
 
@@ -346,3 +381,12 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     border: 0,
   },
 }));
+
+const shortList = ["Screening", "Round1", "Round2"];
+const status = [
+  "Shortlisted",
+  "Selected",
+  "Schedule",
+  "Reschedule",
+  "Rejected",
+];

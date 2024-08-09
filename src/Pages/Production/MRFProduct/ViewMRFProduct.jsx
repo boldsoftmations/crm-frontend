@@ -24,7 +24,7 @@ export const ViewMRFProduct = () => {
   const [open, setOpen] = useState(false);
   const [mrfData, setMRFData] = useState([]);
 
-  const [filterByDays, setFilterByDays] = useState("");
+  const [filterByDays, setFilterByDays] = useState("today");
   const [exportData, setExportData] = useState([]);
   const csvLinkRef = useRef(null);
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
@@ -45,6 +45,7 @@ export const ViewMRFProduct = () => {
   };
 
   const headers = [
+    { label: "ID", key: "id" },
     { label: "DATE", key: "date" },
     { label: "PRODUCT", key: "product" },
     { label: "UNIT", key: "unit" },
@@ -59,6 +60,7 @@ export const ViewMRFProduct = () => {
 
       const data = response.data.map((row) => {
         return {
+          id: row.id,
           date: row.date,
           product: row.product,
           unit: row.unit,
@@ -194,6 +196,7 @@ export const ViewMRFProduct = () => {
             >
               <TableHead>
                 <StyledTableRow>
+                  <StyledTableCell align="center">ID</StyledTableCell>
                   <StyledTableCell align="center">Date</StyledTableCell>
                   <StyledTableCell align="center">Product</StyledTableCell>
                   <StyledTableCell align="center">Unit</StyledTableCell>
@@ -205,6 +208,9 @@ export const ViewMRFProduct = () => {
                 {mrfData.map((mtnData) => (
                   <React.Fragment key={mtnData.id}>
                     <StyledTableRow sx={{ "& > *": { borderBottom: "unset" } }}>
+                      <StyledTableCell align="center">
+                        {mtnData.id}
+                      </StyledTableCell>
                       <StyledTableCell align="center">
                         {mtnData.date}
                       </StyledTableCell>
@@ -234,6 +240,7 @@ export const ViewMRFProduct = () => {
 
 const filterDays = [
   { label: "Today", value: "today" },
+  { label: "Yesterday", value: "yesterday" },
   { label: "This Month", value: "this_month" },
 ];
 

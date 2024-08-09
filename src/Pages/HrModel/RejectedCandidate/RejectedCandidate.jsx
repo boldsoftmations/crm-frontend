@@ -22,20 +22,28 @@ import { RejectedCandidateUpdate } from "./RejectedCandidateUpdate";
 import { CustomPagination } from "../../../Components/CustomPagination";
 import SearchComponent from "../../../Components/SearchComponent ";
 import { CustomLoader } from "../../../Components/CustomLoader";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import CustomAxios from "../../../services/api";
 
 export const RejectedCandidate = () => {
   const [rejectedCandidates, setRejectedCandidates] = useState([]);
+  const [designations, setDesignations] = useState([]);
   const [selectedRow, setSelectedRow] = useState(null);
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [loader, setLoader] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [filters, setFilters] = useState("");
 
   const fetchRejectedCandidates = async () => {
     try {
       setLoader(true);
-      const response = await Hr.getRejectedCandidates(currentPage, searchQuery);
+      const response = await Hr.getRejectedCandidates(
+        currentPage,
+        searchQuery,
+        filters
+      );
       setRejectedCandidates(response.data.results);
       const total = response.data.count;
       setTotalPages(Math.ceil(total / 25));
@@ -45,10 +53,25 @@ export const RejectedCandidate = () => {
       setLoader(false);
     }
   };
+  useEffect(() => {
+    const fetchDesignations = async () => {
+      try {
+        const response = await CustomAxios.get(
+          "/api/hr/designation/?type=list"
+        );
+        console.log("API Response:", response.data);
+        setDesignations(response.data);
+      } catch (error) {
+        console.error("Error fetching designations:", error);
+      }
+    };
+
+    fetchDesignations();
+  }, []);
 
   useEffect(() => {
     fetchRejectedCandidates();
-  }, [currentPage, searchQuery]);
+  }, [currentPage, searchQuery, filters]);
 
   const handleClickOpen = (row) => {
     setSelectedRow(row);
@@ -70,6 +93,9 @@ export const RejectedCandidate = () => {
     setSearchQuery("");
     setCurrentPage(1); // Reset to first page with no search query
   };
+  const handleFilterChange = (event, value) => {
+    setFilters(value);
+  };
   return (
     <Grid item xs={12}>
       <CustomLoader open={loader} />
@@ -84,8 +110,21 @@ export const RejectedCandidate = () => {
               component="div"
               sx={{ textAlign: "center" }}
             >
-              Competency Attributes
+              Rejected Candidates
             </Typography>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <CustomAutocomplete
+              fullWidth
+              name="designations"
+              size="small"
+              disablePortal
+              id="combo-box-stage"
+              onChange={(e, value) => handleFilterChange(e, value)}
+              options={designations.map((option) => option.designation)}
+              getOptionLabel={(option) => option}
+              label="Filter By Designation"
+            />
           </Grid>
         </Grid>
         <Box style={{ marginTop: "20px" }}>

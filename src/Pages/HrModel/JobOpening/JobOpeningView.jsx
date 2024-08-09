@@ -262,7 +262,7 @@ export const JobOpeningView = () => {
                         size="small"
                         onClick={() => handleAddApplicantClick(row)}
                       >
-                        Add New Applicant
+                        Add Candidate
                       </Button>
                     </StyledTableCell>
                   </StyledTableRow>

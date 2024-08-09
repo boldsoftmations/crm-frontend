@@ -21,6 +21,7 @@ import { CustomLoader } from "../../../Components/CustomLoader";
 import { Popup } from "../../../Components/Popup";
 import { ApplicantListUpdate } from "./ApplicantListUpdate";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
+import UploadCv from "../CandidateSource/UploadCV";
 
 const CandidateProfile = ({ candidateData }) => {
   const [openCandidatePopup, setOpenCandidatePopup] = useState(false);
@@ -152,17 +153,28 @@ const CandidateProfile = ({ candidateData }) => {
             <Typography variant="body2" sx={{ mb: 1 }}>
               <strong>Created By:</strong> {candidate.created_by}
             </Typography>
+            <Box display="flex" gap="20px">
+              <Box>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  startIcon={<DownloadIcon />}
+                  onClick={handleDownload}
+                  style={{ marginTop: "20px" }}
+                  target="_blank"
+                  size="small"
+                >
+                  View CV
+                </Button>
+              </Box>
 
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<DownloadIcon />}
-              onClick={handleDownload}
-              style={{ marginTop: "20px" }}
-              target="_blank"
-            >
-              View CV
-            </Button>
+              <Box style={{ marginTop: "20px" }}>
+                <UploadCv
+                  candidate={candidate}
+                  onUploadSuccess={getCandidateProfile}
+                />
+              </Box>
+            </Box>
           </Box>
         </CardContent>
       </Card>

@@ -113,7 +113,9 @@ const getApplicants = (
   page,
   searchValue,
   job__designation__designation,
-  job__department__department
+  job__department__department,
+  stage,
+  status
 ) => {
   const params = new URLSearchParams();
 
@@ -132,6 +134,12 @@ const getApplicants = (
   }
   if (job__department__department) {
     params.append("job__department__department", job__department__department);
+  }
+  if (stage) {
+    params.append("stage", stage);
+  }
+  if (status) {
+    params.append("status", status);
   }
 
   return CustomAxios.get(
@@ -210,7 +218,7 @@ const getMisReport = () => {
 
 //Rejected Candaiate List API
 
-const getRejectedCandidates = (page, searchValue) => {
+const getRejectedCandidates = (page, searchValue, filterValue) => {
   const params = new URLSearchParams();
 
   if (page) {
@@ -219,6 +227,9 @@ const getRejectedCandidates = (page, searchValue) => {
 
   if (searchValue) {
     params.append("search", searchValue);
+  }
+  if (filterValue) {
+    params.append("job__designation__designation", filterValue);
   }
 
   return CustomAxios.get(

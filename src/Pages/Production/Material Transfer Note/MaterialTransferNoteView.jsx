@@ -41,7 +41,7 @@ export const MaterialTransferNoteView = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [acceptedFilter, setAcceptedFilter] = useState("");
-  const [filterByDays, setFilterByDays] = useState("");
+  const [filterByDays, setFilterByDays] = useState("today");
   const [sellerOption, setSellerOption] = useState(null);
   const userData = useSelector((state) => state.auth.profile);
   const [exportData, setExportData] = useState([]);
@@ -469,6 +469,7 @@ const AcceptedOption = [
 ];
 const filterDays = [
   { label: "Today", value: "today" },
+  { label: "Yesterday", value: "yesterday" },
   { label: "This Month", value: "this_month" },
 ];
 
