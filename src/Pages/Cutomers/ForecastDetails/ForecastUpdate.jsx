@@ -33,12 +33,12 @@ export const ForecastUpdate = (props) => {
   const [selectedMonthForecast, setSelectedMonthForecast] = useState([]);
   const [forecast, setForecast] = useState(null);
 
-  // Get current month and next two months
+  // Get current month and next two months (exclude current month)
   const currentMonth = new Date().getMonth(); // 0-indexed (0 = January)
   const nextTwoMonths = [
-    currentMonth,
     (currentMonth + 1) % 12,
     (currentMonth + 2) % 12,
+    (currentMonth + 3) % 12,
   ];
 
   useEffect(() => {
