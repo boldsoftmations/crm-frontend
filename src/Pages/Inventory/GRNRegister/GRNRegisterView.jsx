@@ -24,11 +24,13 @@ import CustomTextField from "../../../Components/CustomTextField";
 import { GRNPDFDownload } from "./GRNPDFDownload";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
+import SearchComponent from "../../../Components/SearchComponent ";
 
 export const GRNRegisterView = () => {
   const [open, setOpen] = useState(false);
   const [grnRegisterData, setGRNRegisterData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
   const [totalPages, setTotalPages] = useState(0);
   const [exportData, setExportData] = useState([]);
   const csvLinkRef = useRef(null);
@@ -70,7 +72,8 @@ export const GRNRegisterView = () => {
       setOpen(true);
       const response = await InventoryServices.getAllGRNRegisterDetails(
         selectedYearMonth,
-        "all"
+        "all",
+        searchQuery
       );
       const formattedData = response.data.map((row) => ({
         invoice_date: row.invoice_date,
@@ -140,32 +143,40 @@ export const GRNRegisterView = () => {
     }
   };
 
-  const getAllGRNRegisterDetails = useCallback(
-    async (page, filter = selectedYearMonth) => {
-      try {
-        setOpen(true);
-        const response = await InventoryServices.getAllGRNRegisterDetails(
-          filter,
-          page
-        );
-        setGRNRegisterData(response.data.results);
-        setTotalPages(Math.ceil(response.data.count / 25));
-        setOpen(false);
-      } catch (error) {
-        handleError(error);
-      } finally {
-        setOpen(false);
-      }
-    },
-    [selectedYearMonth]
-  );
+  const getAllGRNRegisterDetails = useCallback(async () => {
+    try {
+      setOpen(true);
+      const response = await InventoryServices.getAllGRNRegisterDetails(
+        selectedYearMonth,
+        currentPage,
+        searchQuery
+      );
+      setGRNRegisterData(response.data.results);
+      setTotalPages(Math.ceil(response.data.count / 25));
+      setOpen(false);
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setOpen(false);
+    }
+  }, [selectedYearMonth, currentPage, searchQuery]);
 
   useEffect(() => {
-    getAllGRNRegisterDetails(currentPage);
-  }, [currentPage, getAllGRNRegisterDetails]);
+    getAllGRNRegisterDetails();
+  }, [selectedYearMonth, currentPage, searchQuery, getAllGRNRegisterDetails]);
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
+  };
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    setCurrentPage(1);
+  };
+
+  const handleReset = () => {
+    setSearchQuery("");
+    setCurrentPage(1);
   };
 
   const Tableheaders = [
@@ -193,7 +204,10 @@ export const GRNRegisterView = () => {
       <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
         <Box display="flex" marginBottom="10px">
           <Grid container alignItems="center" spacing={2} sx={{ mb: 2, mx: 3 }}>
-            <Grid item xs={12} sm={4} md={4}>
+            <Grid item xs={12} sm={3}>
+              <SearchComponent onSearch={handleSearch} onReset={handleReset} />
+            </Grid>
+            <Grid item xs={12} sm={2} md={2}>
               <CustomTextField
                 size="small"
                 type="month"
@@ -209,7 +223,7 @@ export const GRNRegisterView = () => {
             </Grid>
 
             {/* Typography in the Center */}
-            <Grid item xs={12} sm={4} md={4}>
+            <Grid item xs={12} sm={3} md={3}>
               <Typography
                 variant="h5"
                 sx={{

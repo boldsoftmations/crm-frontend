@@ -150,7 +150,7 @@ const updateGRNData = (id, data) => {
 };
 
 // GRN Register
-const getAllGRNRegisterDetails = (yearMonthFilter, page) => {
+const getAllGRNRegisterDetails = (yearMonthFilter, page, searchValue) => {
   const params = new URLSearchParams();
 
   if (yearMonthFilter) {
@@ -161,9 +161,9 @@ const getAllGRNRegisterDetails = (yearMonthFilter, page) => {
     params.append("page", page);
   }
 
-  // if (searchValue) {
-  //   params.append("search", searchValue);
-  // }
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
 
   return CustomAxios.get(`api/inventory/grn-register/?${params.toString()}`);
 };
