@@ -8,6 +8,9 @@ import { ViewUnit } from "./Unit/ViewUnit";
 import { ViewPackingUnit } from "./PackingUnit/ViewPackingUnit";
 import { ViewDescription } from "./Description/ViewDescription";
 import { ViewProductCode } from "./ProductCode/ViewProductCode";
+import { ViewRawMaterials } from "../SKU Codes/RawMaterials/ViewRawMaterials";
+import { ViewFinishGoods } from "../SKU Codes/FinishGoods/ViewFinishGoods";
+import { ViewConsumable } from "../SKU Codes/Consumable/ViewConsumable";
 
 export const AllProductsTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
@@ -30,32 +33,47 @@ export const AllProductsTabView = () => {
   // Define all possible tabs with visibility conditions
   const tabs = [
     {
-      label: "Colours",
+      label: "Raw Materials",
       visible: isAdmin,
       index: 0,
     },
     {
-      label: "Brand",
+      label: "Finish Goods",
       visible: isAdmin,
       index: 1,
     },
     {
-      label: "Basic Unit",
+      label: "Consumable",
       visible: isAdmin,
       index: 2,
-    },
-    { label: "Unit", visible: isAdmin, index: 3 },
-    {
-      label: "Packing Unit",
-      visible: isAdmin,
-      index: 4,
     },
     {
       label: "Description",
       visible: isAdmin,
+      index: 3,
+    },
+    { label: "Product Code", visible: isAdmin, index: 4 },
+    {
+      label: "Brand",
+      visible: isAdmin,
       index: 5,
     },
-    { label: "Product Code", visible: isAdmin, index: 6 },
+    {
+      label: "Color",
+      visible: isAdmin,
+      index: 6,
+    },
+    { label: "Unit", visible: isAdmin, index: 7 },
+    {
+      label: "Packing Unit",
+      visible: isAdmin,
+      index: 8,
+    },
+    {
+      label: "Basic Unit",
+      visible: isAdmin,
+      index: 9,
+    },
   ];
 
   // Filter tabs based on visibility
@@ -64,13 +82,16 @@ export const AllProductsTabView = () => {
 
   // Tab components mapping
   const tabComponents = {
-    0: <ViewColors />,
-    1: <ViewBrand />,
-    2: <ViewBasicUnit />,
-    3: <ViewUnit />,
-    4: <ViewPackingUnit />,
-    5: <ViewDescription />,
-    6: <ViewProductCode />,
+    0: <ViewRawMaterials />,
+    1: <ViewFinishGoods />,
+    2: <ViewConsumable />,
+    3: <ViewDescription />,
+    4: <ViewProductCode />,
+    5: <ViewBrand />,
+    6: <ViewColors />,
+    7: <ViewUnit />,
+    8: <ViewPackingUnit />,
+    9: <ViewBasicUnit />,
   };
 
   return (

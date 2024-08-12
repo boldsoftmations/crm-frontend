@@ -23,7 +23,6 @@ import { PhysicalInventoryView } from "../Pages/Physcical Inventory/PhysicalInve
 import { AllLeadsTabView } from "../Pages/Leads/AllLeadsTabView";
 import { AllProductsTabView } from "../Pages/Products/AllProductsTabView";
 import { PriceList } from "../Pages/PriceList/PriceList";
-import { AllSKUCodesTabView } from "../Pages/SKU Codes/AllSKUCodesTabView";
 import { AllCustomerTabView } from "../Pages/Cutomers/CompanyDetails/AllCustomerTabView";
 import { AllPerformaInvoiceTabView } from "../Pages/Invoice/ProformaInvoice/AllPerformaInvoiceTabView";
 import { PurchaseAllTabView } from "../Pages/Purchase/PurchaseAllTabView";
@@ -38,6 +37,7 @@ import { AllDispatchTabView } from "../Pages/Dispatch/AllDispatchTabView";
 import { AllProfileTabView } from "../Pages/Users/AllProfileTabView";
 import { SalesReturnAllTabView } from "../Pages/SalesReturn/SalesReturnAllTabView";
 import { DebitCreditAllTabView } from "../Pages/DebitCredit/DebitCreditAllTabView";
+import { AllCCFtab } from "../Pages/CCF/AllCCFtab";
 
 const PrivateRoute = ({ children, redirectTo = "/" }) => {
   const tokenData = useSelector((state) => state.auth);
@@ -105,14 +105,7 @@ export const RouteScreen = () => {
               </PrivateRoute>
             }
           />
-          <Route
-            path="/products/all-sku-codes"
-            element={
-              <PrivateRoute>
-                <AllSKUCodesTabView />
-              </PrivateRoute>
-            }
-          />
+
           <Route
             path="/products/view-price-list"
             element={
@@ -262,6 +255,14 @@ export const RouteScreen = () => {
             element={
               <PrivateRoute>
                 <DebitCreditAllTabView />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/customer/complaints/ccp-capa"
+            element={
+              <PrivateRoute>
+                <AllCCFtab />
               </PrivateRoute>
             }
           />
