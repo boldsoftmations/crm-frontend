@@ -85,7 +85,7 @@ const getLocationList = () => {
 };
 
 //Job-Opening API
-const getJobOpening = (page, search) => {
+const getJobOpening = (page, search, stage) => {
   const params = new URLSearchParams();
   if (page) {
     params.append("page", page);
@@ -93,7 +93,12 @@ const getJobOpening = (page, search) => {
   if (search) {
     params.append("search", search);
   }
-  return CustomAxios.get(`/api/hr/job-opening/?${params.toString()}`);
+  if (stage) {
+    params.append("stage", stage);
+  }
+  return CustomAxios.get(
+    `/api/hr/job-opening/?stage=Open&${params.toString()}`
+  );
 };
 
 const getJobOpeningById = (id) => {

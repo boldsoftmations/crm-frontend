@@ -24,6 +24,7 @@ import { CustomLoader } from "../../../Components/CustomLoader";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
 import SearchComponent from "../../../Components/SearchComponent ";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 export const JobOpeningView = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -39,6 +40,7 @@ export const JobOpeningView = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [totalPages, setTotalPages] = useState(0);
+  const [filterValue, setFilterValue] = useState("");
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
@@ -50,7 +52,7 @@ export const JobOpeningView = () => {
     async (page, query = searchQuery) => {
       try {
         setIsLoading(true);
-        const response = await Hr.getJobOpening(page, query);
+        const response = await Hr.getJobOpening(page, query, filterValue);
         console.log(response.data);
         setJobOpenings(response.data.results);
         const total = response.data.count;
@@ -63,12 +65,12 @@ export const JobOpeningView = () => {
         setIsLoading(false);
       }
     },
-    [searchQuery]
+    [searchQuery, filterValue]
   );
 
   useEffect(() => {
     fetchJobOpenings(currentPage, searchQuery);
-  }, [currentPage, searchQuery, fetchJobOpenings]);
+  }, [currentPage, searchQuery, filterValue, fetchJobOpenings]);
 
   const addNewJobOpening = async (newJob) => {
     try {
@@ -146,10 +148,23 @@ export const JobOpeningView = () => {
               alignItems="center"
               sx={{ marginRight: 5, marginLeft: 5 }}
             >
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={4}>
                 <SearchComponent
                   onSearch={handleSearch}
                   onReset={handleReset}
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <CustomAutocomplete
+                  fullWidth
+                  name="stage"
+                  size="small"
+                  disablePortal
+                  id="combo-box-stage"
+                  onChange={(e, value) => setFilterValue(value)}
+                  options={["Open", "Closed"]}
+                  getOptionLabel={(option) => option}
+                  label="Filter By Stage"
                 />
               </Grid>
               <Grid item xs={12} sm={2}>
@@ -205,6 +220,7 @@ export const JobOpeningView = () => {
                   <StyledTableCell align="center">Designation</StyledTableCell>
                   <StyledTableCell align="center">Location</StyledTableCell>
                   <StyledTableCell align="center">Salary Range</StyledTableCell>
+                  <StyledTableCell align="center">Stage</StyledTableCell>
                   <StyledTableCell align="center">
                     Date of Closing
                   </StyledTableCell>
@@ -235,6 +251,9 @@ export const JobOpeningView = () => {
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.salary_ranges}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.stage}
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.closing_date}
