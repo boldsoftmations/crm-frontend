@@ -185,6 +185,17 @@ export const ListItems = ({ setOpen }) => {
       ],
     },
     {
+      condition: userData.groups.includes("Production"),
+      items: [
+        renderSubmenu("inventory", <InventoryIcon />, "Inventory", [
+          { to: "/inventory/view-inventory", text: "Inventory" },
+        ]),
+        renderSubmenu("production", <FactoryIcon />, "Production", [
+          { to: "/inventory/view-production", text: "Production" },
+        ]),
+      ],
+    },
+    {
       condition:
         userData.groups.includes("Factory-Delhi-OrderBook") ||
         userData.groups.includes("Factory-Mumbai-OrderBook"),
@@ -395,6 +406,72 @@ export const ListItems = ({ setOpen }) => {
         renderListItem("/task/view-task", <AssignmentTurnedInIcon />, "Task"),
         renderListItem("/user/faq", <HelpOutlineIcon />, "Script"),
         renderListItem("/hr-model", <WorkIcon />, "Recruitment"),
+      ],
+    },
+    {
+      condition: userData.groups.includes("Sales Deputy Manager"),
+      items: [
+        renderListItem("/user/report", <AssessmentIcon />, "Report"),
+        renderListItem("/user/analytics", <DashboardIcon />, "Analytics"),
+        renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
+          { to: "/invoice/performa-invoice-tab", text: "Performa Invoice" },
+        ]),
+        renderSubmenu("sales", <TrendingUpIcon />, "Sales", [
+          { to: "/leads/all-lead", text: "Leads" },
+          { to: "/customers/all-customer", text: "Customer" },
+          { to: "/followp/view-followup", text: "Followup" },
+          { to: "/forecast/view-product-forecast", text: "Forecast" },
+          { to: "/market-analysis/competitor", text: "Market Analysis" },
+        ]),
+        renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
+        renderListItem("/task/view-task", <AssignmentTurnedInIcon />, "Task"),
+        renderListItem("/user/faq", <HelpOutlineIcon />, "Script"),
+      ],
+    },
+    {
+      condition: userData.groups.includes("Sales Manager withouth Leads"),
+      items: [
+        renderListItem("/user/report", <AssessmentIcon />, "Report"),
+        renderListItem("/user/analytics", <DashboardIcon />, "Analytics"),
+        renderSubmenu("master", <BusinessIcon />, "Master", [
+          { to: "/products/all-product", text: "Inventory Master" },
+          { to: "/invoice/seller-account", text: "Company Master" },
+        ]),
+        renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
+          { to: "/invoice/performa-invoice-tab", text: "Performa Invoice" },
+          { to: "/invoice/sales-invoice", text: "Sales Invoice" },
+        ]),
+        renderSubmenu("accounts", <AttachMoneyIcon />, "Accounts", [
+          { to: "/invoice/credit-debit-note", text: "Debit-Credit" },
+        ]),
+        renderSubmenu("inventory", <InventoryIcon />, "Inventory", [
+          { to: "/inventory/view-inventory", text: "Inventory" },
+        ]),
+        renderSubmenu(
+          "customer_complaint",
+          <ComplaintIcon />,
+          "Customer Complaint",
+          [{ to: "/customer/complaints/ccp-capa", text: "CCF-CAPA" }]
+        ),
+        renderSubmenu("production", <FactoryIcon />, "Production", [
+          { to: "/inventory/view-production", text: "Production" },
+        ]),
+        renderSubmenu("sales", <TrendingUpIcon />, "Sales", [
+          { to: "/customers/all-customer", text: "Customer" },
+          { to: "/forecast/view-product-forecast", text: "Forecast" },
+        ]),
+        renderSubmenu("purchase", <PurchaseIcon />, "Purchase", [
+          { to: "/inventory/view-vendor", text: "Vendor" },
+          { to: "/inventory/view-purchase", text: "Purchase" },
+        ]),
+        renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
+        renderListItem("/dispatch/tab-view", <LocalShippingIcon />, "Dispatch"),
+        renderListItem(
+          "/inventory/sales-return",
+          <DescriptionIcon />,
+          "Sales Return"
+        ),
+        renderListItem("/task/view-task", <AssignmentTurnedInIcon />, "Task"),
       ],
     },
     {
