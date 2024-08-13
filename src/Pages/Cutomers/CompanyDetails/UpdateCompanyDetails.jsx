@@ -412,8 +412,7 @@ export const UpdateCompanyDetails = (props) => {
           </Grid>
         </Grid>
         {(userData.groups.includes("Director") ||
-          userData.groups.includes("Accounts") ||
-          userData.groups.includes("Sales Manager")) && (
+          userData.groups.includes("Accounts")) && (
           <Button
             type="submit"
             fullWidth
