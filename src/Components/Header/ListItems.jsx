@@ -354,6 +354,29 @@ export const ListItems = ({ setOpen }) => {
       ],
     },
     {
+      condition: userData.groups.includes("Accounts Billing Department"),
+      items: [
+        renderListItem("/user/report", <AssessmentIcon />, "Report"),
+        renderListItem("/user/analytics", <DashboardIcon />, "Analytics"),
+        renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
+          { to: "/invoice/performa-invoice-tab", text: "Performa Invoice" },
+          { to: "/invoice/sales-invoice", text: "Sales Invoice" },
+        ]),
+        renderSubmenu("inventory", <InventoryIcon />, "Inventory", [
+          { to: "/inventory/view-inventory", text: "Inventory" },
+        ]),
+
+        renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
+        renderListItem("/dispatch/tab-view", <LocalShippingIcon />, "Dispatch"),
+        renderListItem(
+          "/inventory/sales-return",
+          <DescriptionIcon />,
+          "Sales Return"
+        ),
+        renderListItem("/task/view-task", <AssignmentTurnedInIcon />, "Task"),
+      ],
+    },
+    {
       condition: userData.groups.includes("Sales Manager"),
       items: [
         renderListItem("/user/report", <AssessmentIcon />, "Report"),
@@ -372,6 +395,25 @@ export const ListItems = ({ setOpen }) => {
         renderListItem("/task/view-task", <AssignmentTurnedInIcon />, "Task"),
         renderListItem("/user/faq", <HelpOutlineIcon />, "Script"),
         renderListItem("/hr-model", <WorkIcon />, "Recruitment"),
+      ],
+    },
+    {
+      condition: userData.groups.includes("Sales Executive"),
+      items: [
+        renderListItem("/user/report", <AssessmentIcon />, "Report"),
+        renderListItem("/user/analytics", <DashboardIcon />, "Analytics"),
+        renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
+          { to: "/invoice/performa-invoice-tab", text: "Performa Invoice" },
+        ]),
+        renderSubmenu("sales", <TrendingUpIcon />, "Sales", [
+          { to: "/leads/all-lead", text: "Leads" },
+          { to: "/customers/all-customer", text: "Customer" },
+          { to: "/followp/view-followup", text: "Followup" },
+          { to: "/forecast/view-product-forecast", text: "Forecast" },
+        ]),
+        renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
+        renderListItem("/task/view-task", <AssignmentTurnedInIcon />, "Task"),
+        renderListItem("/user/faq", <HelpOutlineIcon />, "Script"),
       ],
     },
   ];

@@ -363,14 +363,44 @@ const AllEdcCustomer = (name) => {
   return CustomAxios.get(`/api/customer/customer-edc/?name=${name}`);
 };
 //CCF API starts here
+const createCCF = (data) => {
+  return CustomAxios.post("/api/customer/ccf/", data);
+};
 const createComplaintpes = (data) => {
   return CustomAxios.post("/api/customer/ccf-choice/", data);
 };
 
-const getAllComplaintsList = (page, department) => {
+const uploadCCFdocument = (data) => {
+  return CustomAxios.post("/api/customer/ccf-document/", data);
+};
+
+const createCCFComplaintForm = (data) => {
+  return CustomAxios.post("/api/customer/ccf/", data);
+};
+
+const getAllCCFData = (page, searchValue) => {
   const params = new URLSearchParams();
+
   if (page) {
     params.append("page", page);
+  }
+
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+
+  return CustomAxios.get(
+    `/api/customer/ccf/?is_closed=false&${params.toString()}`
+  );
+};
+
+const getAllClosedCCF = () => {
+  return CustomAxios.get(`/api/customer/ccf/?is_closed=true`);
+};
+const getAllComplaintsList = (type, department) => {
+  const params = new URLSearchParams();
+  if (type) {
+    params.append("type", type);
   }
   if (department) {
     params.append("department", department);
@@ -379,10 +409,10 @@ const getAllComplaintsList = (page, department) => {
   return CustomAxios.get(`/api/customer/ccf-choice/?${params.toString()}`);
 };
 
-const getProductBaseCustomer = (product) => {
+const getProductBaseCustomer = (description) => {
   const params = new URLSearchParams();
-  if (product) {
-    params.append("product", product);
+  if (description) {
+    params.append("description", description);
   }
 
   return CustomAxios.get(
@@ -392,6 +422,22 @@ const getProductBaseCustomer = (product) => {
 
 const getAllDescription = () => {
   return CustomAxios.get("/api/customer/description-product/");
+};
+
+//capa api
+
+const CreateCapa = (data) => {
+  return CustomAxios.post("/api/customer/cpa/", data);
+};
+const getAllCapaData = (page, search) => {
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+  if (search) {
+    params.append("search", search);
+  }
+  return CustomAxios.get(`/api/customer/cpa/?${params.toString()}`);
 };
 const CustomerServices = {
   getAllCustomerData,
@@ -449,10 +495,17 @@ const CustomerServices = {
   RemoveEdc,
   AllLeadEDC,
   AllEdcCustomer,
+  createCCF,
+  uploadCCFdocument,
+  createCCFComplaintForm,
+  getAllCCFData,
+  getAllClosedCCF,
   createComplaintpes,
   getAllComplaintsList,
   getProductBaseCustomer,
   getAllDescription,
+  CreateCapa,
+  getAllCapaData,
 };
 
 export default CustomerServices;
