@@ -32,13 +32,13 @@ export const HrModelTabs = () => {
         { label: "Shortlisted Candidate" },
         { label: "Interview Status" },
         { label: "Offer Status" },
-        { label: "MIS Report" },
-        { label: "Dashboard" },
+        // { label: "MIS Report" },
+        // { label: "Dashboard" },
         { label: "Rejected Candidate" },
-        { label: "Attribute" },
-        { label: "Competency Attribute" },
-        { label: "Role Clarity" },
-        { label: "Job Description" },
+        // { label: "Attribute" },
+        // { label: "Competency Attribute" },
+        // { label: "Role Clarity" },
+        // { label: "Job Description" },
       ];
 
   return (
@@ -77,7 +77,7 @@ export const HrModelTabs = () => {
                   <OfferStatusView />
                 </div>
               )}
-              {activeTab === 5 && (
+              {/* {activeTab === 5 && (
                 <div>
                   <MisReportView />
                 </div>
@@ -86,13 +86,13 @@ export const HrModelTabs = () => {
                 <div>
                   <HrDashboard />
                 </div>
-              )}
+              )} */}
               {activeTab === 7 && (
                 <div>
                   <RejectedCandidate />
                 </div>
               )}
-              {activeTab === 8 && (
+              {/* {activeTab === 8 && (
                 <div>
                   <ViewAttribute />
                 </div>
@@ -111,7 +111,7 @@ export const HrModelTabs = () => {
                 <div>
                   <ViewJobDescription />
                 </div>
-              )}
+              )} */}
             </>
           )}
         </div>
