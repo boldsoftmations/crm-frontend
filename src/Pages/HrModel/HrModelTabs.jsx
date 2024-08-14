@@ -77,6 +77,11 @@ export const HrModelTabs = () => {
                   <OfferStatusView />
                 </div>
               )}
+              {activeTab === 5 && (
+                <div>
+                  <RejectedCandidate />
+                </div>
+              )}
               {/* {activeTab === 5 && (
                 <div>
                   <MisReportView />
@@ -87,11 +92,7 @@ export const HrModelTabs = () => {
                   <HrDashboard />
                 </div>
               )} */}
-              {activeTab === 7 && (
-                <div>
-                  <RejectedCandidate />
-                </div>
-              )}
+
               {/* {activeTab === 8 && (
                 <div>
                   <ViewAttribute />
