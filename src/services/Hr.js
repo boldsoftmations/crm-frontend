@@ -143,11 +143,15 @@ const getApplicants = (
     params.append("job__department__department", job__department__department);
   }
 
-  // Add stage with default value "Screening" if not provided
-  params.append("stage", stage);
+  // Only append stage if it's not null or undefined
+  if (stage !== null && stage !== undefined) {
+    params.append("stage", stage);
+  }
 
-  // Add status with default value "Open" if not provided
-  params.append("status", status);
+  // Only append status if it's not null or undefined
+  if (status !== null && status !== undefined) {
+    params.append("status", status);
+  }
 
   return CustomAxios.get(`api/hr/applicant/?${params.toString()}`);
 };

@@ -376,7 +376,9 @@ export const ListItems = ({ setOpen }) => {
         renderSubmenu("inventory", <InventoryIcon />, "Inventory", [
           { to: "/inventory/view-inventory", text: "Inventory" },
         ]),
-
+        renderSubmenu("sales", <TrendingUpIcon />, "Sales", [
+          { to: "/customers/all-customer", text: "Customer" },
+        ]),
         renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
         renderListItem("/dispatch/tab-view", <LocalShippingIcon />, "Dispatch"),
         renderListItem(
