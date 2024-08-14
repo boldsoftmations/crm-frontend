@@ -74,7 +74,7 @@ const CandidateProfile = ({ candidateData }) => {
   }, [candidateData.id]);
 
   return (
-    <Container maxWidth="md" sx={{ mt: 5 }}>
+    <Container maxWidth="md">
       <CustomSnackbar
         open={alertmsg.open}
         message={alertmsg.message}
