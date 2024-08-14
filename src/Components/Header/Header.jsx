@@ -146,7 +146,7 @@ export const Header = () => {
                 fontSize: { xs: "0.75rem", sm: "1rem" }, // Adjust font size for responsiveness
               }}
             >
-              Bold-SoftMation
+              Bold ERP
             </Typography>
             <>
               {/* Other Icons */}
