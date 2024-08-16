@@ -11,7 +11,7 @@ export const AllDispatchTabView = () => {
   const isInGroups = (...groups) =>
     groups.some((group) => userData.groups.includes(group));
 
-  const allTabs = isInGroups("Director", "Accounts");
+  const allTabs = isInGroups("Director", "Accounts","Accounts Billing Department");
 
   const twoTabs = isInGroups(
     "Factory-Delhi-Dispatch",
