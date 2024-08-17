@@ -5,6 +5,11 @@ import { DepartmentView } from "./Department/DepartmentView";
 import { SourceView } from "./CandidateSource/SourceView";
 import { CustomTabs } from "../../Components/CustomTabs";
 import { LocationView } from "./Location/LocationView";
+import ViewMCQs from "./InterviewAssessment/ViewMCQ";
+import ViewAttribute from "./Attribute/ViewAttribute";
+import { ViewCompentancyAttribute } from "./CompentancyAttribute/ViewCompentacyAttribute";
+import { ViewRoleClarity } from "./RoleClarity/ViewRoleClarity";
+import { ViewJobDescription } from "./JobDescription/ViewJobDescription";
 
 export const HrMasterTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
@@ -36,6 +41,15 @@ export const HrMasterTabView = () => {
       visible: allTabs,
       index: 3,
     },
+    {
+      label: "Interview Question",
+      visible: allTabs,
+      index: 4,
+    },
+    { label: "Attribute", visible: allTabs, index: 5 },
+    { label: "Competency Attribute", visible: allTabs, index: 6 },
+    { label: "Role Clarity", visible: allTabs, index: 7 },
+    { label: "Job Description", visible: allTabs, index: 8 },
   ];
 
   const visibleTabs = tabs.filter((tab) => tab.visible);
@@ -46,6 +60,11 @@ export const HrMasterTabView = () => {
     1: <DepartmentView />,
     2: <SourceView />,
     3: <LocationView />,
+    4: <ViewMCQs />,
+    5: <ViewAttribute />,
+    6: <ViewCompentancyAttribute />,
+    7: <ViewRoleClarity />,
+    8: <ViewJobDescription />,
   };
 
   return (

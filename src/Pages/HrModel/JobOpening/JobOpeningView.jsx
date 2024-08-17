@@ -53,7 +53,6 @@ export const JobOpeningView = () => {
       try {
         setIsLoading(true);
         const response = await Hr.getJobOpening(page, query, filterValue);
-        console.log(response.data);
         setJobOpenings(response.data.results);
         const total = response.data.count;
         setTotalPages(Math.ceil(total / 25));

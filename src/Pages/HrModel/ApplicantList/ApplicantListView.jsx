@@ -389,5 +389,4 @@ const status = [
   "Schedule",
   "Reschedule",
   "Rejected",
-  "Joined",
 ];
