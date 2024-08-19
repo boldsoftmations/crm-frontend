@@ -17,12 +17,12 @@ export const AllProfileTabView = () => {
 
   const tabs = [
     {
-      label: "Active Users",
+      label: "Active Employees",
       visible: allTabs,
       index: 0,
     },
     {
-      label: "InActive Users",
+      label: "InActive Employees",
       visible: allTabs,
       index: 1,
     },

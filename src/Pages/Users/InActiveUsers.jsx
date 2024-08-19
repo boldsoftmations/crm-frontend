@@ -209,7 +209,7 @@ export const InActiveUsers = () => {
                     fontWeight: 800,
                   }}
                 >
-                  InActive User
+                  InActive Employees
                 </h3>
               </Grid>
               <Grid item xs={12} sm={4}></Grid>
