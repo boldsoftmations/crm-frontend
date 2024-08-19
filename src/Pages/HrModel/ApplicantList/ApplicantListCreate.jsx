@@ -111,9 +111,14 @@ export const ApplicantListCreate = ({
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoader(true);
+
     const formDataToSend = new FormData();
+
+    // Append all fields except 'cv' if it's not selected
     Object.keys(formData).forEach((key) => {
-      formDataToSend.append(key, formData[key]);
+      if (key !== "cv" || formData[key]) {
+        formDataToSend.append(key, formData[key]);
+      }
     });
 
     try {
@@ -129,6 +134,7 @@ export const ApplicantListCreate = ({
       setLoader(false);
     }
   };
+
   const spokenEnglishOptions = ["Bad", "Average", "Good"];
 
   const salaryRange = [
@@ -270,9 +276,9 @@ export const ApplicantListCreate = ({
                 renderInput={(params) => (
                   <TextField {...params} label="Interested" />
                 )}
-                value={formData.is_interested}
+                value={formData.interested}
                 onChange={(event, newValue) => {
-                  handleInputChange(event, newValue);
+                  handleInputChange(event, newValue, "interested");
                   if (newValue === "No") {
                     setFormData({
                       ...formData,
