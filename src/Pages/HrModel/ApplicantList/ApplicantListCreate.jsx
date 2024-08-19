@@ -114,9 +114,9 @@ export const ApplicantListCreate = ({
 
     const formDataToSend = new FormData();
 
-    // Append all fields except 'cv' if it's not selected
+    // Append only fields with values to 'formDataToSend'
     Object.keys(formData).forEach((key) => {
-      if (key !== "cv" || formData[key]) {
+      if (formData[key]) {
         formDataToSend.append(key, formData[key]);
       }
     });
