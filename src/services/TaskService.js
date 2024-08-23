@@ -37,6 +37,10 @@ const getAllUsers = (users) => {
   return CustomAxios.get(`/api/user/users/?is_active=${users}`);
 };
 
+const getAllGroupsUser = () => {
+  return CustomAxios.get(`/api/user/user-group/`);
+};
+
 const createUsers = (id, data) => {
   return CustomAxios.patch(`/api/user/users/${id}/`, data);
 };
@@ -47,6 +51,7 @@ const TaskService = {
   createActivityTask,
   getAllUsers,
   createUsers,
+  getAllGroupsUser,
 };
 
 export default TaskService;

@@ -25,31 +25,15 @@ export const ActiveUsers = () => {
   const [activeUsersByIDData, setActiveUsersByIDData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [openPopup, setOpenPopup] = useState(false);
-  const [refUserList, setRefUserList] = useState([]);
-  const [showRefUserList, setShowRefUserList] = useState(false);
+  const [manageGroup, setManageGroup] = useState([]);
+  const [selectedGrp, setSelectedGrp] = useState("");
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
-
   const handleSelectChange = (name, value) => {
     setActiveUsersByIDData({
       ...activeUsersByIDData,
       [name]: value,
     });
-
-    const desiredRoles = [
-      "Sales Executive",
-      "Sales Assistant Deputy Manager",
-      "Sales Deputy Manager",
-      "Sales",
-    ];
-
-    // Check if the selected options include any of the desired roles
-    if (
-      name === "groups" &&
-      value.some((role) => desiredRoles.includes(role))
-    ) {
-      setShowRefUserList(true);
-    }
   };
 
   const handleSearch = (query) => {
@@ -65,40 +49,13 @@ export const ActiveUsers = () => {
     setActiveUsersByIDData(data);
     setOpenPopup(true);
   };
-
+  console.log(activeUsersByIDData);
   const getAllUsersDetails = async () => {
     try {
       setOpen(true);
       const response = await TaskService.getAllUsers("True");
       setGroupsData(response.data.groups);
       setActiveUsersData(response.data.users);
-      // Filter the data based on the specified roles
-      const filteredData = response.data.users.filter((employee) => {
-        // Check if the user is part of "Sales Deputy Manager" or "Sales Assistant Deputy Manager"
-        const isManagerRole =
-          employee.groups.includes("Sales Deputy Manager") ||
-          employee.groups.includes("Sales Assistant Deputy Manager") ||
-          employee.groups.includes("Sales Manager");
-
-        return isManagerRole;
-      });
-
-      // Set the refUserList state with the filtered data
-      setRefUserList(filteredData);
-      const desiredRoles = [
-        "Sales Executive",
-        "Sales Assistant Deputy Manager",
-        "Sales Deputy Manager",
-        "Sales",
-      ];
-      // Check if any of the users in response.data.users have a role in the desiredRoles array
-      const hasDesiredRole = response.data.users.some((user) =>
-        user.groups.some((role) => desiredRoles.includes(role))
-      );
-
-      if (hasDesiredRole) {
-        setShowRefUserList(true);
-      }
       setOpen(false);
     } catch (error) {
       handleError(error);
@@ -111,59 +68,6 @@ export const ActiveUsers = () => {
     getAllUsersDetails();
   }, []);
 
-  // Helper function to preprocess the refUserList
-  const preprocessRefUserList = (list, group) => {
-    if (!group) return [];
-
-    let filteredList = [];
-
-    if (group.includes("Sales Executive")) {
-      filteredList = list.filter(
-        (user) =>
-          user.groups.includes("Sales Deputy Manager") ||
-          user.groups.includes("Sales Assistant Deputy Manager")
-      );
-    } else if (group.includes("Sales Assistant Deputy Manager")) {
-      filteredList = list.filter((user) =>
-        user.groups.includes("Sales Deputy Manager")
-      );
-    } else if (group.includes("Sales Deputy Manager")) {
-      filteredList = list.filter((user) =>
-        user.groups.includes("Sales Manager")
-      );
-    }
-
-    return filteredList.reduce((acc, user) => {
-      if (
-        user.groups.includes("Sales Deputy Manager") &&
-        !acc.some((u) => u.email === user.email)
-      ) {
-        acc.push({ ...user, primaryGroup: "Sales Deputy Manager" });
-      } else if (
-        user.groups.includes("Sales Assistant Deputy Manager") &&
-        !acc.some((u) => u.email === user.email)
-      ) {
-        acc.push({ ...user, primaryGroup: "Sales Assistant Deputy Manager" });
-      } else if (
-        user.groups.includes("Sales Manager") &&
-        !acc.some((u) => u.email === user.email)
-      ) {
-        acc.push({ ...user, primaryGroup: "Sales Manager" });
-      }
-      return acc;
-    }, []);
-  };
-
-  // Preprocess the refUserList
-  const processedRefUserList = preprocessRefUserList(
-    refUserList,
-    activeUsersByIDData.groups
-  );
-
-  const selectedRefUser = processedRefUserList.find(
-    (user) => user.email === activeUsersByIDData.ref_user
-  );
-
   const createUsersDetails = async (e) => {
     try {
       e.preventDefault();
@@ -175,9 +79,7 @@ export const ActiveUsers = () => {
         email: activeUsersByIDData.email,
         is_active: activeUsersByIDData.is_active,
         group_names: activeUsersByIDData.groups,
-        ref_user: activeUsersByIDData.ref_user
-          ? activeUsersByIDData.ref_user.email
-          : null,
+        ref_user: activeUsersByIDData.ref_user,
       };
       const response = await TaskService.createUsers(
         activeUsersByIDData.emp_id,
@@ -198,6 +100,32 @@ export const ActiveUsers = () => {
       setOpen(false);
     }
   };
+
+  const getAllGroupsUser = async () => {
+    try {
+      setOpen(true);
+      const response = await TaskService.getAllGroupsUser();
+
+      // Convert response data to a key-value structure
+      const groupData = response.data.data.map((group) => {
+        const key = Object.keys(group)[0];
+        const value = group[key];
+        return { key, value };
+      });
+
+      setManageGroup(groupData);
+      setOpen(false);
+    } catch (error) {
+      handleError(error);
+      setOpen(false);
+    }
+  };
+  useEffect(() => {
+    getAllGroupsUser();
+  }, []);
+
+  // Get the selected group from manageGroup
+  const filterGroup = manageGroup.find((group) => group.key === selectedGrp);
 
   // Filter the productionInventoryData based on the search query
   const filteredData = activeUsersData.filter((user) =>
@@ -228,6 +156,12 @@ export const ActiveUsers = () => {
     };
   });
 
+  const groups = [
+    "Sales Assistant Deputy Manager",
+    "Sales Deputy Manager",
+    "Sales Manager",
+    "Customer Relationship Manager",
+  ];
   return (
     <>
       <MessageAlert
@@ -357,29 +291,30 @@ export const ActiveUsers = () => {
                 )}
               />
             </Grid>
-            {selectedRefUser && (
-              <Grid item xs={12} sm={6}>
-                <CustomTextField
-                  fullWidth
-                  size="small"
-                  label="Reporting Groups"
-                  variant="outlined"
-                  value={selectedRefUser.primaryGroup || ""}
-                />
-              </Grid>
-            )}
-            {showRefUserList && (
+
+            <Grid item xs={12} sm={6}>
+              <CustomAutocomplete
+                id="grouped-demo"
+                size="small"
+                onChange={(event, value) => {
+                  setSelectedGrp(value);
+                }}
+                options={groups} // Now contains all keys
+                renderInput={(params) => (
+                  <CustomTextField {...params} label="Reports" />
+                )}
+              />
+            </Grid>
+
+            {selectedGrp && (
               <Grid item xs={12} sm={6}>
                 <CustomAutocomplete
                   id="grouped-demo"
                   size="small"
-                  value={selectedRefUser}
                   onChange={(event, value) => {
                     handleSelectChange("ref_user", value);
                   }}
-                  options={processedRefUserList}
-                  groupBy={(option) => option.primaryGroup || null}
-                  getOptionLabel={(option) => option.email}
+                  options={filterGroup.value} // Display associated emails
                   renderInput={(params) => (
                     <CustomTextField {...params} label="Reports" />
                   )}
