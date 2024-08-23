@@ -26,7 +26,8 @@ export const ProductForecastViewAll = () => {
   const isPurchase =
     userData.groups.includes("Director") ||
     userData.groups.includes("Accounts") ||
-    userData.groups.includes("Purchase");
+    userData.groups.includes("Purchase") ||
+    userData.groups.includes("Customer Relationship Executive");
 
   const [activeTab, setActiveTab] = useState(isAdmin ? 0 : 4);
 

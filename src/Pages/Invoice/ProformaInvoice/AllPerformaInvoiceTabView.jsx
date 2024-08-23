@@ -15,7 +15,10 @@ export const AllPerformaInvoiceTabView = () => {
   const isSalesManager = isInGroups("Sales Manager");
   const isSalesDManager = isInGroups("Sales Deputy Manager");
   const isSalesADManager = isInGroups("Sales Assistant Deputy Manager");
-  const isSalesExecutive = isInGroups("Sales Executive");
+  const isSalesExecutive = isInGroups(
+    "Sales Executive",
+    "Customer Relationship Executive"
+  );
   const isSalesManagerWithoutLeads = isInGroups("Sales Manager without Leads");
   const isSalesManagerWithLeads = isInGroups("Sales Manager with Leads");
   const isCustomerService = isInGroups("Customer Service");
