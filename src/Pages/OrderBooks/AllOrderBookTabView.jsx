@@ -21,12 +21,13 @@ export const AllOrderBookTabView = () => {
     "Sales Deputy Manager",
     "Sales Assistant Deputy Manager",
     "Sales Executive",
+    "Customer Relationship Executive",
+    "Customer Relationship Manager",
     "Sales Manager without Leads",
     "Sales Manager with Lead",
     "Accounts",
     "Accounts Billing Department",
-    "Production",
-    "Customer Relationship Executive"
+    "Production"
   );
 
   const customerServiceTabs = isInGroups("Customer Service");

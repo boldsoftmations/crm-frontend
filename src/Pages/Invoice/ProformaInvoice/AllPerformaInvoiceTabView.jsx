@@ -12,7 +12,10 @@ export const AllPerformaInvoiceTabView = () => {
     groups.some((group) => userData.groups.includes(group));
 
   const allTabs = isInGroups("Director", "Accounts");
-  const isSalesManager = isInGroups("Sales Manager");
+  const isSalesManager = isInGroups(
+    "Sales Manager",
+    "Customer Relationship Manager"
+  );
   const isSalesDManager = isInGroups("Sales Deputy Manager");
   const isSalesADManager = isInGroups("Sales Assistant Deputy Manager");
   const isSalesExecutive = isInGroups(

@@ -21,13 +21,14 @@ export const ProductForecastViewAll = () => {
     userData.groups.includes("Sales Manager") ||
     userData.groups.includes("Sales Deputy Manager") ||
     userData.groups.includes("Sales Assistant Deputy Manager") ||
-    userData.groups.includes("Customer Service");
+    userData.groups.includes("Customer Service") ||
+    userData.groups.includes("Customer Relationship Executive") ||
+    userData.groups.includes("Customer Relationship Manager");
 
   const isPurchase =
     userData.groups.includes("Director") ||
     userData.groups.includes("Accounts") ||
-    userData.groups.includes("Purchase") ||
-    userData.groups.includes("Customer Relationship Executive");
+    userData.groups.includes("Purchase");
 
   const [activeTab, setActiveTab] = useState(isAdmin ? 0 : 4);
 

@@ -14,7 +14,12 @@ export const AllCustomerTabView = () => {
   const isInGroups = (...groups) =>
     groups.some((group) => userData.groups.includes(group));
 
-  const allCustomerTabs = isInGroups("Director", "Sales Manager", "Accounts");
+  const allCustomerTabs = isInGroups(
+    "Director",
+    "Sales Manager",
+    "Accounts",
+    "Customer Relationship Manager"
+  );
   const isDirectorandSalesManager = isInGroups("Director", "Sales Manager");
 
   const isSalesDManager = isInGroups("Sales Deputy Manager");

@@ -411,6 +411,23 @@ export const ListItems = ({ setOpen }) => {
       ],
     },
     {
+      condition: userData.groups.includes("Customer Relationship Manager"),
+      items: [
+        renderListItem("/user/analytics", <DashboardIcon />, "Analytics"),
+        renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
+          { to: "/invoice/performa-invoice-tab", text: "Performa Invoice" },
+        ]),
+        renderSubmenu("sales", <TrendingUpIcon />, "Sales", [
+          { to: "/customers/all-customer", text: "Customer" },
+          { to: "/followp/view-followup", text: "Followup" },
+          { to: "/forecast/view-product-forecast", text: "Forecast" },
+        ]),
+        renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
+        renderListItem("/task/view-task", <AssignmentTurnedInIcon />, "Task"),
+        renderListItem("/user/faq", <HelpOutlineIcon />, "Script"),
+      ],
+    },
+    {
       condition: userData.groups.includes("Customer Relationship Executive"),
       items: [
         renderListItem("/user/analytics", <DashboardIcon />, "Analytics"),
