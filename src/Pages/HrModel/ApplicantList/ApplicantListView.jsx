@@ -15,7 +15,6 @@ import {
 } from "@mui/material";
 import { Popup } from "../../../Components/Popup";
 import { ApplicantListCreate } from "./ApplicantListCreate";
-import { CustomTable } from "../../../Components/CustomTable";
 import { CustomPagination } from "../../../Components/CustomPagination";
 import Hr from "./../../../services/Hr";
 import { CustomLoader } from "../../../Components/CustomLoader";
@@ -110,19 +109,6 @@ export const ApplicantListView = () => {
     filters.status,
   ]);
 
-  const filteredApplicants = applicants.filter((applicant) => {
-    const name = applicant.name ? applicant.name.toLowerCase() : "";
-    const job = applicant.job ? applicant.job.toLowerCase() : "";
-    const email = applicant.email ? applicant.email.toLowerCase() : "";
-    const searchLower = searchQuery.toLowerCase();
-
-    return (
-      job.includes(searchLower) ||
-      email.includes(searchLower) ||
-      name.includes(searchLower)
-    );
-  });
-
   const addNewApplicant = async (newApplicant) => {
     try {
       setIsLoading(true);
@@ -151,19 +137,6 @@ export const ApplicantListView = () => {
     fetchApplicants();
     setOpenCreatePopup(false);
   };
-
-  const TableData = filteredApplicants.map((applicant) => ({
-    id: applicant.id,
-    job: applicant.job,
-    name: applicant.name,
-    contact: applicant.contact,
-    email: applicant.email,
-    designation: applicant.designation,
-    department: applicant.department,
-    stage: applicant.stage,
-    status: applicant.status,
-    source: applicant.source,
-  }));
 
   const handleFilterChange = (event, value, name) => {
     setFilters((prevFilters) => ({

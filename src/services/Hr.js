@@ -171,7 +171,18 @@ const updateApplicant = (id, updatedApplicantData) => {
 const getInterviewStatus = () => {
   return CustomAxios.get(`/api/hr/applicant/?status=Shortlisted`);
 };
-
+const getCompetitorCandidates = (page, search) => {
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+  if (search) {
+    params.append("search", search);
+  }
+  return CustomAxios.get(
+    `/api/hr/applicant/?is_competitor=true&${params.toString()}`
+  );
+};
 const getInterviewDate = (page, stage, status) => {
   const params = new URLSearchParams();
   if (page) {
@@ -383,6 +394,7 @@ const Hr = {
   getJobDescription,
   createMCQQuetion,
   getMCQQuetion,
+  getCompetitorCandidates,
 };
 
 export default Hr;

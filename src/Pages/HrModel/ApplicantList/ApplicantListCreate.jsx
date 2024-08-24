@@ -7,6 +7,8 @@ import {
   Container,
   Typography,
   IconButton,
+  Checkbox,
+  FormControlLabel,
 } from "@mui/material";
 import Hr from "../../../services/Hr";
 import CustomAxios from "../../../services/api";
@@ -34,6 +36,7 @@ export const ApplicantListCreate = ({
     spoken_english: "",
     source: "",
     interested: "",
+    is_competitor: false,
     cv: null,
   });
   const [loader, setLoader] = useState(false);
@@ -308,6 +311,23 @@ export const ApplicantListCreate = ({
                 label="Spoken English"
               />
             </Grid>
+            <Grid item xs={12} sm={6}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={setFormData.is_competitor}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        is_competitor: e.target.checked,
+                      }))
+                    }
+                  />
+                }
+                label="Is Competitor"
+              />
+            </Grid>
+
             <Grid item xs={12} sm={6}>
               <Button
                 variant="outlined"

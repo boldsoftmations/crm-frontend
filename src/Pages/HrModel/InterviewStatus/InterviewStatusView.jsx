@@ -60,20 +60,6 @@ export const InterviewStatusView = () => {
   const handleClose = () => {
     setOpen(false);
   };
-
-  const TableData = Array.isArray(interviews)
-    ? interviews.map((interview) => ({
-        id: interview.id,
-        name: interview.name,
-        email: interview.email,
-        designation: interview.designation,
-        stage: interview.stage,
-        status: interview.status,
-        contact: interview.contact,
-        location: interview.location,
-      }))
-    : [];
-
   return (
     <>
       <CustomLoader open={isLoading} />
