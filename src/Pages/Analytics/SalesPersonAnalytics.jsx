@@ -75,7 +75,9 @@ export const SalesPersonAnalytics = (props) => {
       !userData.groups.includes("Sales Deputy Manager") &&
       !userData.groups.includes("Sales Assistant Deputy Manager") &&
       !userData.groups.includes("Sales Executive") &&
-      !userData.groups.includes("Sales Manager without Leads")
+      !userData.groups.includes("Sales Manager without Leads") &&
+      !userData.groups.includes("Customer Relationship Executive") &&
+      !userData.groups.includes("Customer Relationship Manager")
   );
   // Filtering sales users based on the team
   let SALES_PERSON_OPTIONS = assigned;
