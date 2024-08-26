@@ -482,31 +482,36 @@ export const SalesPersonAnalytics = (props) => {
               </Card>
             </Grid>
             <Grid item xs={12} lg={6}>
-              <Card>
-                <CardContent>
-                  <Typography variant="h6" color="primary">
-                    New Customer Data
-                  </Typography>
-                  <Divider />
-                  <CustomChart
-                    chartType="LineChart"
-                    data={[
-                      ["Combination", "Count"],
-                      ...newCustomerData.map((item) => [
-                        item.combination,
-                        item.count,
-                      ]),
-                    ]}
-                    options={{
-                      // title: "New Customer Data",
-                      width: "100%",
-                      height: "300px",
-                    }}
-                    widthStyle={"100%"}
-                    heightStyle={"300px"}
-                  />
-                </CardContent>
-              </Card>
+              {!(
+                userData.groups.includes("Customer Relationship Manager") ||
+                userData.groups.includes("Customer Relationship Executive")
+              ) && (
+                <Card>
+                  <CardContent>
+                    <Typography variant="h6" color="primary">
+                      New Customer Data
+                    </Typography>
+                    <Divider />
+                    <CustomChart
+                      chartType="LineChart"
+                      data={[
+                        ["Combination", "Count"],
+                        ...newCustomerData.map((item) => [
+                          item.combination,
+                          item.count,
+                        ]),
+                      ]}
+                      options={{
+                        // title: "New Customer Data",
+                        width: "100%",
+                        height: "300px",
+                      }}
+                      widthStyle={"100%"}
+                      heightStyle={"300px"}
+                    />
+                  </CardContent>
+                </Card>
+              )}
             </Grid>
           </Grid>
           <Grid container spacing={2}>
@@ -564,8 +569,12 @@ export const SalesPersonAnalytics = (props) => {
               </Card>
             </Grid>
           </Grid>
-          {(!userData.groups.includes("Sales Executive") ||
-            !userData.groups.includes("Sales Assistant Deputy Manager")) && (
+          {!(
+            userData.groups.includes("Sales Executive") ||
+            userData.groups.includes("Sales Assistant Deputy Manager") ||
+            userData.groups.includes("Customer Relationship Manager") ||
+            userData.groups.includes("Customer Relationship Executive")
+          ) && (
             <Grid container spacing={2}>
               <Grid item xs={12} sx={{ marginTop: "20px" }}>
                 <Card>
