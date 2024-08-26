@@ -427,7 +427,11 @@ export const SalesPersonAnalytics = (props) => {
 
           {/* Filter By Sales Person */}
           <Grid container spacing={1} sx={{ my: "20px" }}>
-            {!userData.groups.includes("Sales Executive") && (
+            {/* Check if userData.groups does NOT include "Sales Executive" AND does NOT include "Customer Relationship Executive" */}
+            {!(
+              userData.groups.includes("Sales Executive") ||
+              userData.groups.includes("Customer Relationship Executive")
+            ) && (
               <Paper sx={{ width: "100%", padding: "20px" }}>
                 <Grid container alignItems="center" spacing={1}>
                   <Grid item xs={9} sm={9} md={9} lg={9}>
@@ -447,6 +451,7 @@ export const SalesPersonAnalytics = (props) => {
               </Paper>
             )}
           </Grid>
+
           <Grid container spacing={2}>
             <Grid item xs={12} lg={6}>
               <Card>
