@@ -5,6 +5,7 @@ import { TeamWiseDashboard } from "./TeamWiseDashboard";
 import { RetailCustomerData } from "./RetailCustomerData";
 import { DashboardLeadData } from "./DashboardLeadData";
 import { CustomTabs } from "../../Components/CustomTabs";
+import { TopCustomerView } from "./TopCustomerView";
 
 export const AnalyticsAllTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
@@ -38,6 +39,7 @@ export const AnalyticsAllTabView = () => {
         "Accounts Billing Department",
         "Accounts Executive",
         "Customer Relationship Executive",
+        "Customer Relationship Manager",
       ],
       component: <SalesPersonDashboard />,
     },
@@ -62,6 +64,15 @@ export const AnalyticsAllTabView = () => {
       label: "Lead",
       roles: ["Director"],
       component: <DashboardLeadData />,
+    },
+    {
+      label: "Top Customer",
+      roles: [
+        "Director",
+        "Customer Relationship Manager",
+        "Customer Relationship Executive",
+      ],
+      component: <TopCustomerView />,
     },
   ];
 

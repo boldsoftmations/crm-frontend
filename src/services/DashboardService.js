@@ -364,13 +364,17 @@ const getConsDailyOrderBookQuantityDataByFilter = (filter) => {
   );
 };
 
-const getRetailerCustomerData =() => {
+const getRetailerCustomerData = () => {
   return CustomAxios.get("/api/customer/customer-summary/");
-}
+};
 
 const getLeadRetailData = () => {
   return CustomAxios.get("/api/lead/lead-summary/");
-}
+};
+
+const getTopCustomersMonthwise = (number = 25) => {
+  return CustomAxios.get(`/api/dashboard/top-customer/?number=${number}`);
+};
 
 const DashboardService = {
   getLastThreeMonthForecastData,
@@ -446,7 +450,8 @@ const DashboardService = {
   getConsDailyOrderBookQuantityData,
   getConsDailyOrderBookQuantityDataByFilter,
   getRetailerCustomerData,
-  getLeadRetailData
+  getLeadRetailData,
+  getTopCustomersMonthwise,
 };
 
 export default DashboardService;
