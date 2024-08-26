@@ -32,7 +32,7 @@ export const RejectedCandidateUpdate = ({
       interviewer: interviewerName,
       stage: stage,
       status: "Reschedule",
-      applicant: row.email,
+      applicant: row.contact,
     };
 
     try {

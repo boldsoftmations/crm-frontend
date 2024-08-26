@@ -23,7 +23,7 @@ export const InterviewStatusCreate = ({
     e.preventDefault();
 
     const newInterviewDetails = {
-      applicant: row.email,
+      applicant: row.contact,
       date: interviewDate,
       time: interviewTime,
       interviewer: interviewerName,

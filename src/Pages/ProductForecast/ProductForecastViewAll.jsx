@@ -30,6 +30,16 @@ export const ProductForecastViewAll = () => {
     userData.groups.includes("Accounts") ||
     userData.groups.includes("Purchase");
 
+  const isVisible =
+    userData.groups.includes("Director") ||
+    userData.groups.includes("Accounts") ||
+    userData.groups.includes("Sales Executive") ||
+    userData.groups.includes("Sales Manager without Leads") ||
+    userData.groups.includes("Sales Manager") ||
+    userData.groups.includes("Sales Deputy Manager") ||
+    userData.groups.includes("Sales Assistant Deputy Manager") ||
+    userData.groups.includes("Customer Service");
+
   const [activeTab, setActiveTab] = useState(isAdmin ? 0 : 4);
 
   const tabs = [
@@ -39,7 +49,7 @@ export const ProductForecastViewAll = () => {
     { label: "Dead Customers", visible: isAdmin, index: 3 }, // Used "Inactive" as a clearer term for "Dead"
     { label: "Prod. Forecast", visible: isPurchase, index: 4 }, // Shortened "Product" to "Prod."
     { label: "Desc. Forecast", visible: isPurchase, index: 5 }, // Shortened "Description" to "Desc."
-    { label: "Lead Forecast", visible: isAdmin, index: 6 },
+    { label: "Lead Forecast", visible: isVisible, index: 6 },
   ];
 
   const visibleTabs = tabs.filter((tab) => tab.visible);

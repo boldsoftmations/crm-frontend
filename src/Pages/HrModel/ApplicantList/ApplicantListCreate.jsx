@@ -13,11 +13,9 @@ import {
 import Hr from "../../../services/Hr";
 import CustomAxios from "../../../services/api";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
-import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
-import { MessageAlert } from "../../../Components/MessageAlert";
-
 import CloseIcon from "@mui/icons-material/Close";
 import { CustomLoader } from "../../../Components/CustomLoader";
+import CustomSnackbar from "../../../Components/CustomerSnackbar";
 
 export const ApplicantListCreate = ({
   jobOpeningId,
@@ -40,10 +38,17 @@ export const ApplicantListCreate = ({
     cv: null,
   });
   const [loader, setLoader] = useState(false);
-  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
-    useNotificationHandling();
+
   const [source, setSource] = useState([]);
   const [cvPreview, setCvPreview] = useState(null);
+  const [alertmsg, setAlertMsg] = useState({
+    message: "",
+    severity: "",
+    open: false,
+  });
+  const handleClose = () => {
+    setAlertMsg({ open: false });
+  };
 
   useEffect(() => {
     const fetchSource = async () => {
@@ -53,7 +58,11 @@ export const ApplicantListCreate = ({
           setSource(response.data);
         }
       } catch (error) {
-        handleError("error");
+        setAlertMsg({
+          open: true,
+          message: error.message || "Error fetching designations",
+          severity: "error",
+        });
         console.error("Error fetching designations:", error);
       }
     };
@@ -99,7 +108,11 @@ export const ApplicantListCreate = ({
         setCvPreview(null); // Clear preview if not a PDF
       }
     } else {
-      handleError("Invalid file type. Please upload a PDF or DOC file.");
+      setAlertMsg({
+        open: true,
+        message: "Invalid file type. Please upload a PDF or DOC file",
+        severity: "error",
+      });
       event.target.value = null; // Reset file input
     }
   };
@@ -126,12 +139,20 @@ export const ApplicantListCreate = ({
 
     try {
       await Hr.addApplicant(formDataToSend);
-      handleSuccess("Applicant created successfully");
+      setAlertMsg({
+        open: true,
+        message: "Applicant created successfully",
+        severity: "success",
+      });
       setTimeout(() => {
         setOpenApplicantListPopup(false);
       }, 300);
     } catch (error) {
-      handleError(error);
+      setAlertMsg({
+        open: true,
+        message: error.response.data.message || "Error creating applicant",
+        severity: "error",
+      });
       console.error("Error creating applicant:", error);
     } finally {
       setLoader(false);
@@ -158,14 +179,13 @@ export const ApplicantListCreate = ({
   ];
   return (
     <>
-      <CustomLoader open={loader}></CustomLoader>
-      <MessageAlert
-        open={alertInfo.open}
-        onClose={handleCloseSnackbar}
-        severity={alertInfo.severity}
-        message={alertInfo.message}
+      <CustomSnackbar
+        open={alertmsg.open}
+        message={alertmsg.message}
+        severity={alertmsg.severity}
+        onClose={handleClose}
       />
-
+      <CustomLoader open={loader}></CustomLoader>
       <Container
         component="form"
         onSubmit={handleSubmit}
