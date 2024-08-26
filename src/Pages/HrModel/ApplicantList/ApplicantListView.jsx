@@ -251,10 +251,9 @@ export const ApplicantListView = () => {
               <TableHead>
                 <TableRow>
                   <StyledTableCell align="center">Job ID</StyledTableCell>
-                  <StyledTableCell align="center">
-                    Candidate Name
-                  </StyledTableCell>
-                  <StyledTableCell align="center">Phone Number</StyledTableCell>
+                  <StyledTableCell align="center">Date</StyledTableCell>
+                  <StyledTableCell align="center">Name</StyledTableCell>
+                  <StyledTableCell align="center">Phone</StyledTableCell>
                   <StyledTableCell align="center">Email</StyledTableCell>
                   <StyledTableCell align="center">Designation</StyledTableCell>
                   <StyledTableCell align="center">Department</StyledTableCell>
@@ -268,6 +267,9 @@ export const ApplicantListView = () => {
                 {applicants.map((row, i) => (
                   <StyledTableRow key={i}>
                     <StyledTableCell align="center">{row.job}</StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.creation_date}
+                    </StyledTableCell>
                     <StyledTableCell align="center">{row.name}</StyledTableCell>
                     <StyledTableCell align="center">
                       {row.contact}
