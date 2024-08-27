@@ -100,6 +100,7 @@ export const ListItems = ({ setOpen }) => {
   );
 
   const menuItems = [
+    // Director menus
     {
       condition: userData.groups.includes("Director"),
       items: [
@@ -162,6 +163,7 @@ export const ListItems = ({ setOpen }) => {
         renderListItem("/hr-model", <WorkIcon />, "Recruitment"),
       ],
     },
+    // Hr menus
     {
       condition: userData.groups.includes("HR"),
       items: [
@@ -173,8 +175,13 @@ export const ListItems = ({ setOpen }) => {
         renderListItem("/hr-model", <WorkIcon />, "Recruitment"),
       ],
     },
+    // Store and Production menus
     {
-      condition: userData.groups.includes("Stores"),
+      condition:
+        userData.groups.includes("Stores") ||
+        userData.groups.includes("Production") ||
+        userData.groups.includes("Stores Delhi") ||
+        userData.groups.includes("Production Delhi"),
       items: [
         renderSubmenu("inventory", <InventoryIcon />, "Inventory", [
           { to: "/inventory/view-inventory", text: "Inventory" },
@@ -184,17 +191,7 @@ export const ListItems = ({ setOpen }) => {
         ]),
       ],
     },
-    {
-      condition: userData.groups.includes("Production"),
-      items: [
-        renderSubmenu("inventory", <InventoryIcon />, "Inventory", [
-          { to: "/inventory/view-inventory", text: "Inventory" },
-        ]),
-        renderSubmenu("production", <FactoryIcon />, "Production", [
-          { to: "/inventory/view-production", text: "Production" },
-        ]),
-      ],
-    },
+    //Factory Menus
     {
       condition:
         userData.groups.includes("Factory-Delhi-OrderBook") ||
@@ -211,6 +208,9 @@ export const ListItems = ({ setOpen }) => {
         renderListItem("/dispatch/tab-view", <LocalShippingIcon />, "Dispatch"),
       ],
     },
+
+    //Customer Service Menus
+
     {
       condition: userData.groups.includes("Customer Service"),
       items: [
@@ -243,6 +243,9 @@ export const ListItems = ({ setOpen }) => {
         ),
       ],
     },
+
+    // Purchase Menus
+
     {
       condition: userData.groups.includes("Purchase"),
       items: [
@@ -268,6 +271,7 @@ export const ListItems = ({ setOpen }) => {
         renderListItem("/task/view-task", <AssignmentTurnedInIcon />, "Task"),
       ],
     },
+    // Accounts Menus
     {
       condition: userData.groups.includes("Accounts"),
       items: [
@@ -318,6 +322,9 @@ export const ListItems = ({ setOpen }) => {
         renderListItem("/task/view-task", <AssignmentTurnedInIcon />, "Task"),
       ],
     },
+
+    // Accounts Executive Menus
+
     {
       condition: userData.groups.includes("Accounts Executive"),
       items: [
@@ -364,6 +371,7 @@ export const ListItems = ({ setOpen }) => {
         renderListItem("/task/view-task", <AssignmentTurnedInIcon />, "Task"),
       ],
     },
+    // Accounts Billing Department Menus
     {
       condition: userData.groups.includes("Accounts Billing Department"),
       items: [
@@ -389,6 +397,7 @@ export const ListItems = ({ setOpen }) => {
         renderListItem("/task/view-task", <AssignmentTurnedInIcon />, "Task"),
       ],
     },
+    // Sales Manager
     {
       condition: userData.groups.includes("Sales Manager"),
       items: [
@@ -410,6 +419,7 @@ export const ListItems = ({ setOpen }) => {
         renderListItem("/hr-model", <WorkIcon />, "Recruitment"),
       ],
     },
+    //Customer Relationship Manager
     {
       condition: userData.groups.includes("Customer Relationship Manager"),
       items: [
@@ -427,6 +437,7 @@ export const ListItems = ({ setOpen }) => {
         renderListItem("/user/faq", <HelpOutlineIcon />, "Script"),
       ],
     },
+    //Customer Relationship Executive
     {
       condition: userData.groups.includes("Customer Relationship Executive"),
       items: [
@@ -444,6 +455,7 @@ export const ListItems = ({ setOpen }) => {
         renderListItem("/user/faq", <HelpOutlineIcon />, "Script"),
       ],
     },
+    //Sales Deputy Manager"
     {
       condition: userData.groups.includes("Sales Deputy Manager"),
       items: [
@@ -464,6 +476,7 @@ export const ListItems = ({ setOpen }) => {
         renderListItem("/user/faq", <HelpOutlineIcon />, "Script"),
       ],
     },
+    //Sales Manager withouth Leads
     {
       condition: userData.groups.includes("Sales Manager withouth Leads"),
       items: [
@@ -510,6 +523,7 @@ export const ListItems = ({ setOpen }) => {
         renderListItem("/task/view-task", <AssignmentTurnedInIcon />, "Task"),
       ],
     },
+    //Sales Executive
     {
       condition: userData.groups.includes("Sales Executive"),
       items: [
