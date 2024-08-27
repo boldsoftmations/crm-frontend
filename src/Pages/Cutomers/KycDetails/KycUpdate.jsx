@@ -554,23 +554,22 @@ const KycUpdate = ({
             </Grid>
           )}
 
-          {inputValue.type_of_customer === "Distribution Customer" && (
-            <Grid item xs={12} sm={6}>
-              <CustomTextField
-                fullWidth
-                name="whatsapp_group"
-                size="small"
-                label="Whatsapp Group"
-                value={inputValue.whatsapp_group || ""}
-                onChange={(e) => {
-                  handleInputChange("whatsapp_group", e.target.value);
-                  resetErrorMessage();
-                }}
-                error={!!errorMessage}
-                helperText={errorMessage}
-              />
-            </Grid>
-          )}
+          <Grid item xs={12} sm={6}>
+            <CustomTextField
+              fullWidth
+              name="whatsapp_group"
+              size="small"
+              label="Whatsapp Group"
+              value={inputValue.whatsapp_group || ""}
+              onChange={(e) => {
+                handleInputChange("whatsapp_group", e.target.value);
+                resetErrorMessage();
+              }}
+              error={!!errorMessage}
+              helperText={errorMessage}
+            />
+          </Grid>
+
           {inputValue.type_of_customer === "Distribution Customer" && (
             <Grid item xs={12} sm={6}>
               <CustomAutocomplete

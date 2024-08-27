@@ -13,9 +13,12 @@ import {
 import CustomTextField from "../../Components/CustomTextField";
 import { CustomLoader } from "../../Components/CustomLoader";
 import CustomerServices from "../../services/CustomerService";
+import CustomAutocomplete from "../../Components/CustomAutocomplete";
 
 export const WhatsappGroupCreate = ({ setOpenPopup, refreshData }) => {
-  const [whatsappGroup, setWhatsappGroup] = useState([]);
+  const [whatsappGroup, setWhatsappGroup] = useState({
+    type_of_customer: "",
+  });
   const [open, setOpen] = useState(false);
   const [allWhatsappGroupMenu, setAllWhatsappGroupMenu] = useState([]);
   const [uploadedFile, setUploadedFile] = useState(null);
@@ -36,13 +39,10 @@ export const WhatsappGroupCreate = ({ setOpenPopup, refreshData }) => {
       console.error(err);
     }
   };
-  console.log("allWhatsappGroupMenu", allWhatsappGroupMenu);
 
-  // Updated handleFileChange function
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
 
-    // Reset error message each time a file is selected
     setErrorMessage("");
     if (file.type.startsWith("video/") && file.size > 15728640) {
       setErrorMessage("Error: Video size must be less than or equal to 15MB.");
@@ -71,9 +71,7 @@ export const WhatsappGroupCreate = ({ setOpenPopup, refreshData }) => {
     }
   };
 
-  // Effect for cleanup
   useEffect(() => {
-    // Cleanup the object URL on unmount or when file changes
     return () => {
       if (filePreview) {
         URL.revokeObjectURL(filePreview);
@@ -81,17 +79,29 @@ export const WhatsappGroupCreate = ({ setOpenPopup, refreshData }) => {
     };
   }, [filePreview]);
 
+  const handleInputChange = (event, newValue, name) => {
+    if (name) {
+      setWhatsappGroup((prevData) => ({
+        ...prevData,
+        [name]: newValue,
+      }));
+    } else {
+      const { name, value } = event.target;
+      setWhatsappGroup((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
+  };
+
   const createWhatsappGroup = async (e) => {
     e.preventDefault();
     setOpen(true);
 
     try {
       const formData = new FormData();
+      formData.append("type_of_customer", whatsappGroup.type_of_customer || "");
 
-      // Append each group ID as an individual entry to formData
-      // formData.append("groups", JSON.stringify(selectedGroupIds.join(", ")));
-
-      // Handle the file upload and associated data
       if (uploadedFile) {
         const fileKey = "file";
         const fileName = uploadedFile.name;
@@ -99,11 +109,9 @@ export const WhatsappGroupCreate = ({ setOpenPopup, refreshData }) => {
         formData.append("filename", fileName);
         formData.append("caption", whatsappGroup.caption || "");
       } else {
-        // For text-only messages
         formData.append("message", whatsappGroup.message || "");
       }
 
-      // Select the appropriate API call
       let apiCall;
       if (uploadedFile) {
         apiCall = CustomerServices.createWhatsappImageData;
@@ -111,7 +119,6 @@ export const WhatsappGroupCreate = ({ setOpenPopup, refreshData }) => {
         apiCall = CustomerServices.createWhatsappImageData;
       }
 
-      // Make the API call
       await apiCall(formData);
       setOpenPopup(false);
       await refreshData();
@@ -134,12 +141,7 @@ export const WhatsappGroupCreate = ({ setOpenPopup, refreshData }) => {
             label="Message"
             variant="outlined"
             value={whatsappGroup["message"] || ""}
-            onChange={(event) =>
-              setWhatsappGroup({
-                ...whatsappGroup,
-                [event.target.name]: event.target.value,
-              })
-            }
+            onChange={(event) => handleInputChange(event)}
           />
         );
       case "image":
@@ -186,12 +188,7 @@ export const WhatsappGroupCreate = ({ setOpenPopup, refreshData }) => {
               label="Caption"
               variant="outlined"
               value={whatsappGroup["caption"] || ""}
-              onChange={(event) =>
-                setWhatsappGroup({
-                  ...whatsappGroup,
-                  [event.target.name]: event.target.value,
-                })
-              }
+              onChange={(event) => handleInputChange(event)}
             />
           </>
         );
@@ -204,6 +201,27 @@ export const WhatsappGroupCreate = ({ setOpenPopup, refreshData }) => {
     <>
       <CustomLoader open={open} />
       <Box component="form" noValidate onSubmit={(e) => createWhatsappGroup(e)}>
+        <Grid xs={12} mb={3}>
+          <CustomAutocomplete
+            fullWidth
+            name="type_of_customer"
+            size="small"
+            disablePortal
+            id="combo-box-status"
+            onChange={(event, value) =>
+              handleInputChange(event, value, "type_of_customer")
+            }
+            options={[
+              "Distribution",
+              "Exclusive",
+              "Distribution+Exclusive",
+              "Industrial",
+            ]}
+            getOptionLabel={(option) => option}
+            label="Type Of Customer"
+            value={whatsappGroup.type_of_customer}
+          />
+        </Grid>
         <FormControl component="fieldset">
           <FormLabel component="legend">Type</FormLabel>
           <RadioGroup
