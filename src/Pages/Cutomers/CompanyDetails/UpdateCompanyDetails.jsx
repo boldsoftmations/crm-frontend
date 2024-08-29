@@ -27,6 +27,7 @@ import { ViewCustomerFollowUp } from "../../FollowUp/ViewCustomerFollowUp";
 import Option from "../../../Options/Options";
 import CustomTextField from "../../../Components/CustomTextField";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import UserProfileService from "../../../services/UserProfileService";
 
 export const UpdateCompanyDetails = (props) => {
   const { setOpenPopup, getAllCompanyDetails, recordForEdit } = props;
@@ -63,21 +64,8 @@ export const UpdateCompanyDetails = (props) => {
   const getAssignedData = async (id) => {
     try {
       setOpen(true);
-      const ALLOWED_ROLES = [
-        "Director",
-        "Customer Service",
-        "Sales Manager",
-        "Sales Deputy Manager",
-        "Sales Assistant Deputy Manager",
-        "Sales Executive",
-        "Sales Manager without Leads",
-      ];
-      const res = await LeadServices.getAllAssignedUser();
-      // Filter the data based on the ALLOWED_ROLES
-      const filteredData = res.data.filter((employee) =>
-        employee.groups.some((group) => ALLOWED_ROLES.includes(group))
-      );
-      setAssigned(filteredData);
+      const res = await UserProfileService.getProfile();
+      setAssigned(res.data.sales_users);
       setOpen(false);
     } catch (error) {
       console.log("error", error);
@@ -412,7 +400,8 @@ export const UpdateCompanyDetails = (props) => {
           </Grid>
         </Grid>
         {(userData.groups.includes("Director") ||
-          userData.groups.includes("Accounts")) && (
+          userData.groups.includes("Accounts") ||
+          userData.groups.includes("Sales Manager")) && (
           <Button
             type="submit"
             fullWidth
