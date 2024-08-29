@@ -1,9 +1,20 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Box, Paper, Grid } from "@mui/material";
+import {
+  Box,
+  Grid,
+  Paper,
+  styled,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TableBody,
+  Table,
+  tableCellClasses,
+} from "@mui/material";
 import ProductForecastService from "../../../services/ProductForecastService";
 import LeadServices from "../../../services/LeadService";
 import { CustomLoader } from "../../../Components/CustomLoader";
-import { CustomTable } from "../../../Components/CustomTable";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
 import CustomSelect from "../../../Components/CustomSelect";
@@ -103,22 +114,25 @@ export const ProductWiseTurnover = () => {
       brand: row.product__brand__name,
     };
 
-    // Initialize the columns for the next months with zero or empty string
-    tableRow[`total_turnover_monthly_${currentMonth}`] = 0;
-    tableRow[`total_turnover_monthly_${nextMonth1}`] = 0;
-    tableRow[`total_turnover_monthly_${nextMonth2}`] = 0;
-    tableRow[`total_turnover_monthly_${nextMonth3}`] = 0;
+    // Initialize raw values to store numeric data
+    const rawValues = {
+      [`total_turnover_monthly_${currentMonth}`]: 0,
+      [`total_turnover_monthly_${nextMonth1}`]: 0,
+      [`total_turnover_monthly_${nextMonth2}`]: 0,
+      [`total_turnover_monthly_${nextMonth3}`]: 0,
+    };
 
     row.total_turnover_monthly.forEach((rowData) => {
       const month = parseInt(rowData.month, 10) - 1; // Adjust for 0-based index
       const key = `total_turnover_monthly_${month}`;
-      tableRow[key] = numberFormat(rowData.total_turnover_monthly);
+      rawValues[key] = rowData.total_turnover_monthly; // Store raw value
+      tableRow[key] = numberFormat(rowData.total_turnover_monthly); // Store formatted value
     });
 
-    return tableRow;
+    return { ...tableRow, rawValues }; // Include rawValues for later use
   });
 
-  // Calculate the total for each column
+  // Calculate the total for each column using raw values
   const columnTotals = {
     sales_person: "Total",
     description: "-",
@@ -126,14 +140,12 @@ export const ProductWiseTurnover = () => {
   };
 
   for (let i = 0; i < 4; i++) {
-    const columnKey = `total_turnover_monthly_${i}`;
+    const columnKey = `total_turnover_monthly_${(currentMonth + i) % 12}`;
     const total = Tabledata.reduce((sum, row) => {
-      // Check if the columnKey exists and if its value can be parsed as a number
-      const value = parseFloat(row[columnKey]);
-      return sum + (isNaN(value) ? 0 : value);
+      return sum + (row.rawValues[columnKey] || 0); // Sum raw values
     }, 0);
 
-    columnTotals[columnKey] = numberFormat(total);
+    columnTotals[columnKey] = numberFormat(total); // Format the total
   }
 
   // Add the column totals row to the Tabledata
@@ -141,11 +153,13 @@ export const ProductWiseTurnover = () => {
     Tabledata.push(columnTotals);
   }
 
+  console.log("tableRow", Tabledata);
+
   const Tableheaders = [
     "Sales Person",
     "Description",
     "Brand",
-    `${months[currentMonth]} -- ${currentYear} Total TurnOver`,
+    `${months[currentMonth]} - ${currentYear} Total TurnOver`,
     `${months[nextMonth1]} - ${
       nextMonth1 > currentMonth ? currentYear : currentYear + 1
     } Total TurnOver`,
@@ -178,10 +192,11 @@ export const ProductWiseTurnover = () => {
                 onClear={clearFilterValue}
               />
             </Box>
-            <Box flexGrow={2}>
+            <Box flexGrow={2} marginLeft={2}>
               <h3
                 style={{
                   textAlign: "left",
+
                   marginBottom: "1em",
                   fontSize: "24px",
                   color: "rgb(34, 34, 34)",
@@ -193,25 +208,92 @@ export const ProductWiseTurnover = () => {
             </Box>
             <Box flexGrow={0.5}></Box>
           </Box>
-          <CustomTable
-            headers={Tableheaders}
-            data={Tabledata}
-            Styles={{ paddingLeft: "10px", paddingRight: "10px" }}
-            isLastRow={columnTotals ? true : false}
-            openInPopup={null}
-            openInPopup2={null}
-            openInPopup3={null}
-            openInPopup4={null}
-          />
+          <TableContainer
+            sx={{
+              maxHeight: 440,
+              "&::-webkit-scrollbar": {
+                width: 15,
+              },
+              "&::-webkit-scrollbar-track": {
+                backgroundColor: "#f2f2f2",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: "#aaa9ac",
+              },
+            }}
+          >
+            <Table
+              sx={{ minWidth: 1200 }}
+              stickyHeader
+              aria-label="sticky table"
+            >
+              <TableHead>
+                <TableRow>
+                  {Tableheaders.map((header, index) => (
+                    <StyledTableCell align="center" key={index}>
+                      {header}
+                    </StyledTableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {Tabledata.map((row, index) => (
+                  <StyledTableRow key={index}>
+                    <StyledTableCell align="center">
+                      {row.sales_person}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.description}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.brand}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row[`total_turnover_monthly_${currentMonth}`]
+                        ? row[`total_turnover_monthly_${currentMonth}`]
+                        : 0}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row[`total_turnover_monthly_${nextMonth1}`]
+                        ? row[`total_turnover_monthly_${nextMonth1}`]
+                        : 0}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row[`total_turnover_monthly_${nextMonth2}`]
+                        ? row[`total_turnover_monthly_${nextMonth2}`]
+                        : 0}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row[`total_turnover_monthly_${nextMonth3}`]
+                        ? row[`total_turnover_monthly_${nextMonth3}`]
+                        : 0}
+                    </StyledTableCell>
+                  </StyledTableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Paper>
       </Grid>
     </>
   );
 };
 
-const filterOption = [
-  {
-    label: "Sales Person",
-    value: "sales_person__email",
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
   },
-];
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  "&:nth-of-type(odd)": {
+    backgroundColor: theme.palette.action.hover,
+  },
+  "&:last-child td, &:last-child th": {
+    border: 0,
+  },
+}));
