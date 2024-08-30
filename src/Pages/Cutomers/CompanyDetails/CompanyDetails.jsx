@@ -176,11 +176,6 @@ export const CompanyDetails = () => {
     setOpenPopupActivity(true);
   };
 
-  const openInPopupPotential = (item) => {
-    setRecordForEdit(item.id);
-    setOpenPopupPotential(true);
-  };
-
   const handleSnackbarClose = () => {
     setOpenSnackbar(false);
   };
@@ -293,7 +288,10 @@ export const CompanyDetails = () => {
                   label="Filter By Status" // Passed directly to CustomAutocomplete
                 />
               </Grid>
-              {!userData.groups.includes("Sales Executive") && (
+              {(!userData.groups.includes("Sales Executive") ||
+                !userData.groups.includes(
+                  "Customer Relationship Executive"
+                )) && (
                 <Grid item xs={12} sm={3}>
                   <CustomAutocomplete
                     size="small"
@@ -508,14 +506,6 @@ export const CompanyDetails = () => {
                       >
                         Activity,
                       </Button>
-                      {row.is_potential_completed === false && (
-                        <Button
-                          sx={{ color: "#eb5042" }}
-                          onClick={() => openInPopupPotential(row)}
-                        >
-                          Potential
-                        </Button>
-                      )}
                     </StyledTableCell>
                   </StyledTableRow>
                 ))}
