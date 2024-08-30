@@ -159,7 +159,7 @@ export const ProductWiseTurnover = () => {
     "Sales Person",
     "Description",
     "Brand",
-    `${months[currentMonth]} - ${currentYear} Total TurnOver`,
+    `${months[currentMonth]} - ${currentYear} Total Turnover`,
     `${months[nextMonth1]} - ${
       nextMonth1 > currentMonth ? currentYear : currentYear + 1
     } Total TurnOver`,
