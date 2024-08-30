@@ -24,6 +24,7 @@ import { useSelector } from "react-redux";
 import { Popup } from "../../Components/Popup";
 import { DescriptionWiseTurnover } from "./DescriptionWiseTurnover/DescriptionWiseTurnover";
 import CustomTextField from "../../Components/CustomTextField";
+import { PotentialTurnover } from "./Potential Turnover/PotentialTurnover";
 
 export function Report() {
   const [open, setOpen] = useState(false);
@@ -120,6 +121,9 @@ export function Report() {
     userData.groups.some((group) =>
       ["Accounts", "Accounts Executive", "Director"].includes(group)
     );
+  const SpecialAccess =
+    specialAccessEmails.has(userData.email) ||
+    userData.groups.some((group) => ["Director"].includes(group));
 
   const tabs = [
     { label: "OrderBook Summary" },
@@ -129,7 +133,9 @@ export function Report() {
     { label: "Sales RM" }, // Current Month Sales (Raw Material)
     { label: "Sales P. Summary" }, // Previously Sales Person Summary
     { label: "Forecast T." }, // Forecast Turnover
+
     ...(hasSpecialAccess ? [{ label: "Profit Report" }] : []), // Daily Profitability Report
+    ...(SpecialAccess ? [{ label: "Potential Turnover" }] : []), // Potential Turnover
   ];
 
   useEffect(() => {
@@ -350,6 +356,11 @@ export function Report() {
                   dailyProfitableReportsFilterData
                 }
               />
+            </div>
+          )}
+          {activeTab === 8 && (
+            <div>
+              <PotentialTurnover />
             </div>
           )}
         </div>

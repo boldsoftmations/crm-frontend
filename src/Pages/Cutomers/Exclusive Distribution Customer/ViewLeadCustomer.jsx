@@ -16,11 +16,13 @@ import { tableCellClasses } from "@mui/material/TableCell";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
 import { CustomLoader } from "../../../Components/CustomLoader";
-import { Popup } from "../../../Components/Popup";
 import CustomerServices from "../../../services/CustomerService";
+import { useSelector } from "react-redux";
 export const ViewLeadCustomer = (props) => {
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
+  const data = useSelector((state) => state.auth);
+  const userData = data.profile;
   const [open, setOpen] = useState(false);
   const { leadCustomerData, getAllEDC, closeModal, assignCustomerData } = props;
 
@@ -125,13 +127,18 @@ export const ViewLeadCustomer = (props) => {
                         {row.state}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        <Button
-                          variant="contained"
-                          style={{ backgroundColor: "red" }}
-                          onClick={() => RemoveEdc(row.name)}
-                        >
-                          Remove
-                        </Button>
+                        {(userData.groups.includes("Sales Manager") ||
+                          userData.groups.includes("Director")) && (
+                          <>
+                            <Button
+                              variant="contained"
+                              style={{ backgroundColor: "red" }}
+                              onClick={() => RemoveEdc(row.name)}
+                            >
+                              Remove
+                            </Button>
+                          </>
+                        )}
                       </StyledTableCell>
                     </StyledTableRow>
                   ))}

@@ -19,10 +19,13 @@ import CustomerServices from "../../../services/CustomerService";
 import { MessageAlert } from "../../../Components/MessageAlert";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
+import { useSelector } from "react-redux";
 
 export const ViewAssignCustomers = (props) => {
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
+  const data = useSelector((state) => state.auth);
+  const userData = data.profile;
   const [openEDC, setOpenEDC] = useState(false);
   const [open, setOpen] = useState(false);
   const { assignCustomerData, getAllEDC, closeModal, assignViewData } = props;
@@ -83,13 +86,18 @@ export const ViewAssignCustomers = (props) => {
                 md={6}
                 sx={{ textAlign: { xs: "right", md: "right" } }}
               >
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => setOpenEDC(true)}
-                >
-                  Add
-                </Button>
+                {(userData.groups.includes("Accounts") ||
+                  userData.groups.includes("Director")) && (
+                  <>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => setOpenEDC(true)}
+                    >
+                      Add
+                    </Button>
+                  </>
+                )}
               </Grid>
             </Grid>
           </Box>
@@ -143,20 +151,25 @@ export const ViewAssignCustomers = (props) => {
                         {row.status}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        <Button
-                          variant="contained"
-                          style={{ backgroundColor: "red" }}
-                          onClick={() => RemoveEdc(row.name)}
-                        >
-                          Remove
-                        </Button>
+                        {(userData.groups.includes("Accounts") ||
+                          userData.groups.includes("Director")) && (
+                          <>
+                            <Button
+                              variant="contained"
+                              style={{ backgroundColor: "red" }}
+                              onClick={() => RemoveEdc(row.name)}
+                            >
+                              Remove
+                            </Button>
+                          </>
+                        )}
                       </StyledTableCell>
                     </StyledTableRow>
                   ))}
                 {assignViewData.length == 0 && (
                   <StyledTableRow>
                     <StyledTableCell colSpan={6} align="center">
-                      No Exclusive Distrubution Customers assigned yet.
+                      No Customers assigned yet.
                     </StyledTableCell>
                   </StyledTableRow>
                 )}

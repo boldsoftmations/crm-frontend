@@ -20,6 +20,7 @@ export const AllCustomerTabView = () => {
     "Accounts",
     "Customer Relationship Manager"
   );
+
   const isDirectorandSalesManager = isInGroups("Director", "Sales Manager");
 
   const isSalesDManager = isInGroups("Sales Deputy Manager");
@@ -74,7 +75,11 @@ export const AllCustomerTabView = () => {
       },
       {
         label: "Exclusive Distribution Customers",
-        visible: allCustomerTabs,
+        visible:
+          allCustomerTabs ||
+          isSalesExecutive ||
+          isSalesDManager ||
+          isSalesManagerWithLeads,
         index: 4,
         component: <ExclusiveDistributionCustomer />,
       },

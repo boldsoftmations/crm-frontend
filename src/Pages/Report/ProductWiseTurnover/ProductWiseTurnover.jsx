@@ -13,11 +13,11 @@ import {
   tableCellClasses,
 } from "@mui/material";
 import ProductForecastService from "../../../services/ProductForecastService";
-import LeadServices from "../../../services/LeadService";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
 import CustomSelect from "../../../Components/CustomSelect";
+import UserProfileService from "../../../services/UserProfileService";
 
 export const ProductWiseTurnover = () => {
   const [open, setOpen] = useState(false);
@@ -66,9 +66,9 @@ export const ProductWiseTurnover = () => {
   const getAssignedData = async (id) => {
     try {
       setOpen(true);
-      const response = await LeadServices.getAllAssignedUser();
-      const AssignedOptions = response.data.map((user) => ({
-        label: `${user.first_name} ${user.last_name}`,
+      const response = await UserProfileService.getProfile();
+      const AssignedOptions = response.data.sales_users.map((user) => ({
+        label: `${user.name}`,
         value: user.email,
       }));
       setAssigned(AssignedOptions);
@@ -78,7 +78,7 @@ export const ProductWiseTurnover = () => {
       setOpen(false);
     }
   };
-
+  console.log(assigned);
   useEffect(() => {
     getAssignedData();
   }, []);

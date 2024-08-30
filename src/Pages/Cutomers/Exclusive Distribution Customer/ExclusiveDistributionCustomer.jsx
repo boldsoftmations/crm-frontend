@@ -35,8 +35,7 @@ export const ExclusiveDistributionCustomer = () => {
   const [assignCustomerData, setAssignCustomerData] = useState([]);
   const [leadCustomerData, setLeadCustomerData] = useState([]);
   const [assignViewData, setAssignViewData] = useState([]);
-  const data = useSelector((state) => state.auth);
-  const userData = data.profile;
+
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
@@ -191,29 +190,24 @@ export const ExclusiveDistributionCustomer = () => {
                       {row.status}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {(userData.groups.includes("Accounts") ||
-                        userData.groups.includes("Director")) && (
-                        <>
-                          <Button
-                            color="success"
-                            variant="contained"
-                            className="mx-3"
-                            onClick={() => handleViewAssignCustomer(row)}
-                          >
-                            Assign Customer
-                          </Button>
-                        </>
-                      )}
-                      {(userData.groups.includes("Sales Manager") ||
-                        userData.groups.includes("Director")) && (
+                      <>
                         <Button
-                          color="secondary"
-                          variant="outlined"
-                          onClick={() => handleLeadCustomer(row)}
+                          color="success"
+                          variant="contained"
+                          className="mx-3"
+                          onClick={() => handleViewAssignCustomer(row)}
                         >
-                          Assign Lead
+                          Assign Customer
                         </Button>
-                      )}
+                      </>
+
+                      <Button
+                        color="secondary"
+                        variant="outlined"
+                        onClick={() => handleLeadCustomer(row)}
+                      >
+                        Assign Lead
+                      </Button>
                     </StyledTableCell>
                   </StyledTableRow>
                 ))}

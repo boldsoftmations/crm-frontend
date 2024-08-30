@@ -5,6 +5,7 @@ import CustomTextField from "../../../Components/CustomTextField";
 import ProductService from "../../../services/ProductService";
 import CustomerServices from "../../../services/CustomerService";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import CustomSnackbar from "../../../Components/CustomerSnackbar";
 
 export const CustomerPotentialCreate = ({
   recordForEdit,
@@ -14,7 +15,14 @@ export const CustomerPotentialCreate = ({
   const [open, setOpen] = useState(false);
   const [potential, setPotential] = useState({});
   const [product, setProduct] = useState([]);
-  console.log("potential", potential);
+  const [alertmsg, setAlertMsg] = useState({
+    message: "",
+    severity: "",
+    open: false,
+  });
+  const handleClose = () => {
+    setAlertMsg({ open: false });
+  };
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -36,7 +44,7 @@ export const CustomerPotentialCreate = ({
     setPotential({ ...potential, [name]: value });
   };
 
-  const handleAutocompleteChange = (event,value) => {
+  const handleAutocompleteChange = (event, value) => {
     setPotential({ ...potential, product: value });
   };
 
@@ -49,9 +57,23 @@ export const CustomerPotentialCreate = ({
         ...potential,
       };
       await CustomerServices.createPotentialCustomer(data);
+
+      // Success message
+      setAlertMsg({
+        message: "Potential customer created successfully!",
+        severity: "success",
+        open: true,
+      });
+
       setOpenModal(false);
       await getCompanyDetailsByID();
     } catch (error) {
+      setAlertMsg({
+        message:
+          error.response.data.message || "Error creating potential customer",
+        severity: "error",
+        open: true,
+      });
       console.error("error:", error);
     } finally {
       setOpen(false);
@@ -60,6 +82,12 @@ export const CustomerPotentialCreate = ({
 
   return (
     <>
+      <CustomSnackbar
+        open={alertmsg.open}
+        message={alertmsg.message}
+        severity={alertmsg.severity}
+        onClose={handleClose}
+      />
       <CustomLoader open={open} />
       <Box component="form" noValidate onSubmit={handleSubmit}>
         <Grid container spacing={2}>
@@ -67,7 +95,7 @@ export const CustomerPotentialCreate = ({
             <CustomAutocomplete
               sx={{ minWidth: 180 }}
               size="small"
-              onChange={ handleAutocompleteChange}
+              onChange={handleAutocompleteChange}
               value={potential.product}
               options={product.map((option) => option.name)}
               getOptionLabel={(option) => `${option ? option : "No Options"}`}
