@@ -13,66 +13,112 @@ import {
   Button,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
-import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import CustomerServices from "../../../services/CustomerService";
 import { MessageAlert } from "../../../Components/MessageAlert";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { CSVLink } from "react-csv";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import { useNotificationHandling } from "./../../../Components/useNotificationHandling ";
 
 export const ProductBaseCustomerView = () => {
   const [open, setOpen] = useState(false);
   const [productBaseCustomer, setProductBaseCustomer] = useState([]);
   const [exportData, setExportData] = useState([]);
   const [descriptionOption, setDescriptionOption] = useState([]);
-  const [filterValue, setFilterValue] = useState(null);
+  const [customerList, setCustomerList] = useState([]);
+  const [productList, setProductList] = useState([]);
+  const [filterValue, setFilterValue] = useState("");
   const csvLinkRef = useRef(null);
+  const [filters, setFilters] = useState({
+    customerFilterValue: "",
+    productFilterValue: "",
+    choice: "",
+  });
+
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
-  const handleDescriptionChange = async (event, value) => {
+  // Function to get product base customer data
+  const getProductBaseCustomer = async () => {
     try {
       setOpen(true);
-      const response = await CustomerServices.getProductBaseCustomer(value);
-      setFilterValue(value);
-      setProductBaseCustomer(response.data.data);
+      const response = await CustomerServices.getProductBaseCustomer(
+        filterValue,
+        filters.customerFilterValue,
+        filters.productFilterValue
+      );
+      console.log("API Response:", response.data); // Debugging log
+      setProductBaseCustomer(response.data);
       setOpen(false);
     } catch (err) {
-      console.error("error potential", err);
+      console.error("Error fetching product base customer data", err);
       handleError("Failed to get product base customer data" || err);
+      setOpen(false);
     }
   };
 
+  // Trigger API call when filters or filterValue changes
+  useEffect(() => {
+    getProductBaseCustomer();
+  }, [filterValue, filters.customerFilterValue, filters.productFilterValue]);
+
+  // Function to get all product descriptions
   const getProduct = useCallback(async () => {
     try {
       setOpen(true);
       const res = await CustomerServices.getAllDescription();
-      console.log(res.data);
       setDescriptionOption(res.data);
+      console.log("Product descriptions fetched:", res.data); // Debugging log
       setOpen(false);
     } catch (err) {
-      console.error("error potential", err);
+      console.error("Error fetching product descriptions", err);
+      handleError("Failed to get product descriptions");
+      setOpen(false);
     }
   }, []);
 
+  // Fetch product descriptions on component mount
   useEffect(() => {
     getProduct();
   }, [getProduct]);
 
+  // Handle description selection change
+  const handleDescriptionChange = (event, value) => {
+    console.log("Description changed:", value); // Debugging log
+    setFilterValue(value);
+
+    const selectedDescription = descriptionOption.find(
+      (list) => list.description === value
+    );
+
+    if (selectedDescription) {
+      setCustomerList(selectedDescription.customer_list || []);
+      setProductList(selectedDescription.product_list || []);
+    } else {
+      setCustomerList([]);
+      setProductList([]);
+    }
+  };
+
+  // Handle filter change for customer or product
+  const handleFilterChange = (event, value, name) => {
+    console.log("Filter changed:", name, value); // Debugging log
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [name]: value || "",
+    }));
+  };
+
   const DownloadData = () => {
-    const CSVDATA = productBaseCustomer.map((row) => {
-      setOpen(true);
-      return {
-        Name: row.sales_invoice__order_book__company__name,
-        Description: row.product__description__name,
-        Brand: row.product__brand__name,
-        Product: row.product__name,
-        Unit: row.product__unit__name,
-        quantity: row.quantity,
-        Date: row.sales_invoice__generation_date,
-      };
-    });
-    setOpen(false);
+    const CSVDATA = productBaseCustomer.map((row) => ({
+      Name: row.customer,
+      Description: row.description,
+      Brand: row.brand,
+      Product: row.product,
+      Unit: row.unit,
+      quantity: row.quantity,
+      Date: row.date,
+    }));
     return CSVDATA;
   };
 
@@ -109,42 +155,78 @@ export const ProductBaseCustomerView = () => {
       <CustomLoader open={open} />
 
       <Grid item xs={12}>
-        <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
-          <Box sx={{ p: 2 }}>
+        <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
+          <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
             <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} sm={4}>
-                <CustomAutocomplete
-                  name="Description"
-                  size="small"
-                  disablePortal
-                  id="combo-box-description"
-                  onChange={handleDescriptionChange}
-                  options={descriptionOption.map(
-                    (option) => option.description
+              <Grid item xs={12} sm={filterValue ? 8 : 4}>
+                <Box display="flex" gap="2rem">
+                  <CustomAutocomplete
+                    fullWidth
+                    name="Description"
+                    size="small"
+                    disablePortal
+                    id="combo-box-description"
+                    onChange={handleDescriptionChange}
+                    options={descriptionOption.map(
+                      (option) => option.description
+                    )}
+                    getOptionLabel={(option) => option}
+                    label="Description"
+                  />
+                  {filterValue && productBaseCustomer.length > 0 && (
+                    <CustomAutocomplete
+                      fullWidth
+                      name="choice"
+                      size="small"
+                      disablePortal
+                      id="combo-box-description"
+                      onChange={(e, value) =>
+                        handleFilterChange(e, value, "choice")
+                      }
+                      options={["Customer", "Product"]}
+                      getOptionLabel={(option) => option}
+                      label="Filter By"
+                    />
                   )}
-                  getOptionLabel={(option) => option}
-                  label="Description"
-                />
-              </Grid>
 
+                  {filters.choice === "Customer" && (
+                    <CustomAutocomplete
+                      fullWidth
+                      name="customer"
+                      size="small"
+                      disablePortal
+                      id="combo-box-customer"
+                      onChange={(e, value) =>
+                        handleFilterChange(e, value, "customerFilterValue")
+                      }
+                      options={customerList}
+                      getOptionLabel={(option) => option}
+                      label="Customer"
+                    />
+                  )}
+                  {filters.choice === "Product" && (
+                    <CustomAutocomplete
+                      fullWidth
+                      name="product"
+                      size="small"
+                      disablePortal
+                      id="combo-box-product"
+                      onChange={(e, value) =>
+                        handleFilterChange(e, value, "productFilterValue")
+                      }
+                      options={productList}
+                      getOptionLabel={(option) => option}
+                      label="Product"
+                    />
+                  )}
+                </Box>
+              </Grid>
               <Grid
                 item
                 xs={12}
-                md={5}
-                sx={{ textAlign: { xs: "center", md: "start" } }}
+                md={filterValue ? 2 : 8}
+                style={{ textAlign: "end" }}
               >
-                <h3
-                  style={{
-                    margin: 0,
-                    fontSize: "24px",
-                    color: "rgb(34, 34, 34)",
-                    fontWeight: 800,
-                  }}
-                >
-                  Product Base Customers
-                </h3>
-              </Grid>
-              <Grid item xs={12} md={2} style={{ textAlign: "end" }}>
                 <Button
                   variant="contained"
                   color="info"
@@ -169,6 +251,23 @@ export const ProductBaseCustomerView = () => {
               </Grid>
             </Grid>
           </Box>
+          <Grid container spacing={2} alignItems="center" mb={3}>
+            <Grid item xs={12} sm={4}></Grid>
+            <Grid item xs={12} sm={4}>
+              <Box display="flex" justifyContent="center" marginBottom="10px">
+                <h3
+                  style={{
+                    fontSize: "24px",
+                    color: "rgb(34, 34, 34)",
+                    fontWeight: 800,
+                    textAlign: "center",
+                  }}
+                >
+                  Customer List
+                </h3>
+              </Box>
+            </Grid>
+          </Grid>
 
           <TableContainer
             sx={{
@@ -206,29 +305,30 @@ export const ProductBaseCustomerView = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {productBaseCustomer.map((row, i) => (
-                  <StyledTableRow key={i}>
-                    <StyledTableCell align="center">
-                      {row.sales_invoice__order_book__company__name}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.product__brand__name}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.product__name}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.product__unit__name}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.quantity}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.sales_invoice__generation_date}
-                    </StyledTableCell>
-                  </StyledTableRow>
-                ))}
-                {filterValue && productBaseCustomer.length === 0 && (
+                {productBaseCustomer.length > 0 &&
+                  productBaseCustomer.map((row, i) => (
+                    <StyledTableRow key={i}>
+                      <StyledTableCell align="center">
+                        {row.customer}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.brand}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.product}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.unit}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.quantity}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.date}
+                      </StyledTableCell>
+                    </StyledTableRow>
+                  ))}
+                {productBaseCustomer.length === 0 && (
                   <TableRow>
                     <StyledTableCell colSpan={6} align="center">
                       No Data Available
