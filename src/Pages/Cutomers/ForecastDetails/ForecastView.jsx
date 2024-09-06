@@ -160,7 +160,9 @@ export const ForecastView = ({ recordForEdit }) => {
           <Table sx={{ minWidth: 700 }} stickyHeader aria-label="sticky table">
             <TableHead>
               <StyledTableRow>
-                <StyledTableCell align="center">SALES PERSON</StyledTableCell>
+                <StyledTableCell align="center">
+                  LAST UPDATED BY{" "}
+                </StyledTableCell>
                 <StyledTableCell align="center">PRODUCT</StyledTableCell>
                 <StyledTableCell align="center">
                   {` ${months[lastMonth1]} - ${

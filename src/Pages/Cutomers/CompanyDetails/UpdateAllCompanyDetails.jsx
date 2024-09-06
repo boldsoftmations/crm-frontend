@@ -12,7 +12,12 @@ import { SalesHistoryView } from "../SalesHistory/SalesHistoryView";
 import { CustomerPotentialView } from "../CustomerPotential/CustomerPotentialView";
 
 export const UpdateAllCompanyDetails = (props) => {
-  const { setOpenPopup, getAllCompanyDetails, recordForEdit, product } = props;
+  const {
+    setOpenPopup,
+    getAllCompanyDetails,
+    recordForEdit,
+    selectedCustomers,
+  } = props;
   const [activeTab, setActiveTab] = useState(0);
 
   const handleTabChange = (index) => {
@@ -47,6 +52,7 @@ export const UpdateAllCompanyDetails = (props) => {
                 setOpenPopup={setOpenPopup}
                 getAllCompanyDetails={getAllCompanyDetails}
                 recordForEdit={recordForEdit}
+                selectedCustomers={selectedCustomers}
               />
             </div>
           )}

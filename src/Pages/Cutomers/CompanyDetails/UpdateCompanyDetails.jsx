@@ -15,12 +15,13 @@ import {
   Radio,
   Snackbar,
   Alert,
+  Typography,
+  Paper,
 } from "@mui/material";
 import CustomerServices from "../../../services/CustomerService";
 import { useDispatch, useSelector } from "react-redux";
 import { getCompanyName } from "../../../Redux/Action/Action";
 import axios from "axios";
-import LeadServices from "../../../services/LeadService";
 import { styled } from "@mui/material/styles";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { ViewCustomerFollowUp } from "../../FollowUp/ViewCustomerFollowUp";
@@ -30,7 +31,12 @@ import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import UserProfileService from "../../../services/UserProfileService";
 
 export const UpdateCompanyDetails = (props) => {
-  const { setOpenPopup, getAllCompanyDetails, recordForEdit } = props;
+  const {
+    setOpenPopup,
+    getAllCompanyDetails,
+    recordForEdit,
+    selectedCustomers,
+  } = props;
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState([]);
   const [assigned, setAssigned] = useState([]);
@@ -412,6 +418,26 @@ export const UpdateCompanyDetails = (props) => {
           </Button>
         )}
       </Box>
+
+      {selectedCustomers.message && (
+        <Grid container spacing={1} alignItems="center" justifyContent="center">
+          <Grid item xs={12} sm={8} md={6}>
+            <Paper elevation={1}>
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                flexDirection="column"
+                style={{ minHeight: "60px" }}
+              >
+                <Typography variant="h6" align="center">
+                  {selectedCustomers.message}
+                </Typography>
+              </Box>
+            </Paper>
+          </Grid>
+        </Grid>
+      )}
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <ViewCustomerFollowUp recordForEdit={recordForEdit} />

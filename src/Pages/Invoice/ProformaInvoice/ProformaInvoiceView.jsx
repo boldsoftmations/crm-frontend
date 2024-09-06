@@ -21,6 +21,7 @@ import { MessageAlert } from "../../../Components/MessageAlert";
 
 export const ProformaInvoiceView = (props) => {
   const { idForEdit, setOpenPopup, getProformaInvoiceData } = props;
+  console.log("idForEdit", idForEdit);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [invoiceData, setInvoiceData] = useState([]);
   const [productData, setProductData] = useState([]);
@@ -578,7 +579,7 @@ export const ProformaInvoiceView = (props) => {
                           <strong style={{ ...typographyStyling }}>
                             Company :{" "}
                           </strong>
-                          {invoiceData.company_name},
+                          {invoiceData.name_of_party},
                         </div>
                         <div>
                           <strong style={{ ...typographyStyling }}>
@@ -680,7 +681,10 @@ export const ProformaInvoiceView = (props) => {
                           <strong style={{ ...typographyStyling }}>
                             Contact Person Name:{" "}
                           </strong>
-                          {invoiceData.contact_person_name}
+                          {invoiceData.type_of_customer ===
+                          "Exclusive Distribution Customer"
+                            ? invoiceData.warehouse_person_name
+                            : invoiceData.contact_person_name}
                         </div>
                       </address>
                     </div>

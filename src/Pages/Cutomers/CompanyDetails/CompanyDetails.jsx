@@ -43,6 +43,8 @@ export const CompanyDetails = () => {
   const [open, setOpen] = useState(false);
   const [companyData, setCompanyData] = useState([]);
   const [recordForEdit, setRecordForEdit] = useState();
+  const [rowData, setRowData] = useState();
+  const [selectedCustomers, setSelectedCustomers] = useState();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
@@ -139,15 +141,6 @@ export const CompanyDetails = () => {
           total_sales_turnover: row.total_sales_turnover,
           type: row.type,
           status: row.status,
-          // contact_name: row.contacts.map((contact) => contact.name).join(", "),
-          // contact: row.contacts.map((contact) => contact.contact).join(", "),
-          // alternate_contact: row.contacts
-          //   .map((contact) => contact.alternate_contact)
-          //   .join(", "),
-          // email: row.contacts.map((contact) => contact.email).join(", "),
-          // alternate_email: row.contacts
-          //   .map((contact) => contact.alternate_email)
-          //   .join(", "),
         };
       });
       console.log("data", data);
@@ -163,11 +156,13 @@ export const CompanyDetails = () => {
 
   const openInPopupOfUpdateCustomer = (item) => {
     setRecordForEdit(item.id);
+    setSelectedCustomers(item);
     setOpenPopupOfUpdateCustomer(true);
   };
 
   const openInPopupInvoice = (item) => {
     setRecordForEdit(item.id);
+    setRowData(item);
     setOpenPopupInvoice(true);
   };
 
@@ -288,10 +283,7 @@ export const CompanyDetails = () => {
                   label="Filter By Status" // Passed directly to CustomAutocomplete
                 />
               </Grid>
-              {(!userData.groups.includes("Sales Executive") ||
-                !userData.groups.includes(
-                  "Customer Relationship Executive"
-                )) && (
+              {!userData.groups.includes("Sales Executive") && (
                 <Grid item xs={12} sm={3}>
                   <CustomAutocomplete
                     size="small"
@@ -550,6 +542,7 @@ export const CompanyDetails = () => {
           setOpenPopup={setOpenPopupOfUpdateCustomer}
           getAllCompanyDetails={getAllCompanyDetails}
           recordForEdit={recordForEdit}
+          selectedCustomers={selectedCustomers}
         />
       </Popup>
       <Popup
@@ -560,6 +553,7 @@ export const CompanyDetails = () => {
       >
         <CreateCustomerProformaInvoice
           recordForEdit={recordForEdit}
+          rowData={rowData}
           setOpenPopup={setOpenPopupInvoice}
         />
       </Popup>

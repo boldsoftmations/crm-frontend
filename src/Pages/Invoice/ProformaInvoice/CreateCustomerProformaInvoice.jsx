@@ -49,7 +49,8 @@ const values = {
 };
 
 export const CreateCustomerProformaInvoice = (props) => {
-  const { recordForEdit } = props;
+  const { recordForEdit, rowData } = props;
+  console.log("rowData", rowData);
   const [productOption, setProductOption] = useState([]);
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
@@ -89,6 +90,7 @@ export const CreateCustomerProformaInvoice = (props) => {
   const [checked, setChecked] = useState(true);
   const [priceApproval, setPriceApproval] = useState(false);
   const [sellerData, setSellerData] = useState([]);
+  const [edcData, setEdcData] = useState([]);
   const { profile: users } = useSelector((state) => state.auth);
 
   const handleInputChange = (event) => {
@@ -120,6 +122,22 @@ export const CreateCustomerProformaInvoice = (props) => {
       console.log("Error fetching seller account data:", error);
     }
   };
+  const getBillingAddressbyCustomer = async () => {
+    console.log("function called");
+    try {
+      const response = await InvoiceServices.getBillingAddressbyCustomer(
+        rowData.name
+      );
+      setEdcData(response.data);
+      console.log("data", response.data);
+      console.log("Data from api", response.data);
+    } catch (error) {
+      console.log("Error fetching customer billing address data:", error);
+    }
+  };
+  useEffect(() => {
+    getBillingAddressbyCustomer();
+  }, [rowData]);
 
   useEffect(() => {
     getAllSellerAccountsDetails();
@@ -144,6 +162,7 @@ export const CreateCustomerProformaInvoice = (props) => {
     try {
       const response = await CustomerServices.getCompanyDataById(recordForEdit);
       setCustomerData(response.data);
+      console.log("customerData", response.data);
     } catch (err) {
       console.log("company data by id error", err);
     }
@@ -185,7 +204,10 @@ export const CreateCustomerProformaInvoice = (props) => {
       seller_ifsc_code: selectedSellerData.ifsc_code,
       seller_branch: selectedSellerData.branch,
       company: customerData.id,
-      company_name: customerData.name,
+      company_name:
+        rowData.type_of_customer === "Exclusive Distribution Customer"
+          ? warehouseData.company
+          : customerData.name,
       contact: contactData.contact,
       contact_person_name: contactData.name,
       alternate_contact: contactData.alternate_contact,
@@ -195,7 +217,10 @@ export const CreateCustomerProformaInvoice = (props) => {
       billing_state: customerData.state,
       billing_city: customerData.city,
       billing_pincode: customerData.pincode,
-      address: warehouseData.address,
+      address:
+        rowData.type_of_customer === "Exclusive Distribution Customer"
+          ? warehouseData.customer_address
+          : warehouseData.address,
       pincode: warehouseData.pincode,
       state: warehouseData.state,
       city: warehouseData.city,
@@ -365,9 +390,9 @@ export const CreateCustomerProformaInvoice = (props) => {
               label="Alt. Contact"
               variant="outlined"
               value={
-                contactData
-                  ? contactData.alternate_contact
-                    ? contactData.alternate_contact
+                warehouseData
+                  ? warehouseData.contact_number
+                    ? warehouseData.contact_number
                     : ""
                   : ""
               }
@@ -429,19 +454,39 @@ export const CreateCustomerProformaInvoice = (props) => {
               <InputLabel id="demo-simple-select-label">
                 Shipping Address
               </InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                label="Shipping Address"
-                onChange={(e, value) => setWarehouseData(e.target.value)}
-              >
-                {warehouseOptions &&
-                  warehouseOptions.map((option, i) => (
-                    <MenuItem key={i} value={option}>
-                      {option ? option.address : "Please First Select Contact"}
-                    </MenuItem>
-                  ))}
-              </Select>
+              {rowData.type_of_customer == "Exclusive Distribution Customer" ? (
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  label="Shipping Address"
+                  onChange={(e, value) => setWarehouseData(e.target.value)}
+                >
+                  {warehouseOptions &&
+                    edcData.map((option, i) => (
+                      <MenuItem key={i} value={option}>
+                        {option
+                          ? option.customer_address
+                          : "Please First Select Contact"}
+                      </MenuItem>
+                    ))}
+                </Select>
+              ) : (
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  label="Shipping Address"
+                  onChange={(e, value) => setWarehouseData(e.target.value)}
+                >
+                  {warehouseOptions &&
+                    warehouseOptions.map((option, i) => (
+                      <MenuItem key={i} value={option}>
+                        {option
+                          ? option.address
+                          : "Please First Select Contact"}
+                      </MenuItem>
+                    ))}
+                </Select>
+              )}
               <HelperText>first select Contact</HelperText>
             </FormControl>
           </Grid>
