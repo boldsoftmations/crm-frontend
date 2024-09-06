@@ -233,6 +233,7 @@ export const CreateCustomerProformaInvoice = (props) => {
       status: priceApproval ? "Price Approval" : "Approved",
       price_approval: priceApproval,
       products: products,
+      warehouse_person_name: warehouseData.contact_name,
     };
 
     try {

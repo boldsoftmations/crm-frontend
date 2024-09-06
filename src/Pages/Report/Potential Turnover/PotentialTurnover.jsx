@@ -15,9 +15,12 @@ import {
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import DashboardService from "../../../services/DashboardService";
+import { CustomPagination } from "../../../Components/CustomPagination";
 
 export const PotentialTurnover = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const [potentialData, setPotentialData] = useState([]);
   const [alertmsg, setAlertMsg] = useState({
     message: "",
@@ -32,8 +35,18 @@ export const PotentialTurnover = () => {
   const getPotentialTurnover = async () => {
     setIsLoading(true);
     try {
-      const response = await DashboardService.getPotentialTurnover();
-      setPotentialData(response.data.data);
+      const response = await DashboardService.potentialTurnoverReport(
+        currentPage
+      );
+
+      // Log the response to debug
+      console.log("API Response:", response);
+
+      setTotalPages(Math.ceil(response.data.count / 25));
+      setPotentialData(response.data.results);
+
+      // Log the potentialData to confirm structure
+      console.log("Potential Data:", response.data.results);
     } catch (error) {
       setAlertMsg({
         message: "Failed to fetch potential customers",
@@ -47,7 +60,7 @@ export const PotentialTurnover = () => {
 
   useEffect(() => {
     getPotentialTurnover();
-  }, []);
+  }, [currentPage]);
 
   // Create a number formatter to add commas to the total values
   const numberFormatter = new Intl.NumberFormat("en-IN", {
@@ -58,7 +71,7 @@ export const PotentialTurnover = () => {
     let approx_turnover_total = 0;
 
     potentialData.forEach((row) => {
-      approx_turnover_total += row.third_last_month_total || 0;
+      approx_turnover_total += row.amount || 0;
     });
 
     return {
@@ -67,6 +80,10 @@ export const PotentialTurnover = () => {
   };
 
   const totals = calculateTotals();
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
 
   return (
     <>
@@ -117,7 +134,7 @@ export const PotentialTurnover = () => {
                   <StyledTableCell align="center">Customer</StyledTableCell>
                   <StyledTableCell align="center">Product</StyledTableCell>
                   <StyledTableCell align="center">
-                    Potential Quatity
+                    Potential Quantity
                   </StyledTableCell>
                   <StyledTableCell align="center">Last Updated</StyledTableCell>
                   <StyledTableCell align="center">Created By</StyledTableCell>
@@ -127,45 +144,63 @@ export const PotentialTurnover = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {(potentialData.length > 0) &
+                {potentialData.length > 0 ? (
                   potentialData.map((row, i) => (
                     <StyledTableRow key={i}>
                       <StyledTableCell align="center">
-                        {row.order_book__company__name}
+                        {row.customer || "N/A"}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {numberFormatter.format(row.third_last_month_total)}
+                        {row.product || "N/A"}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {numberFormatter.format(row.second_last_month_total)}
+                        {numberFormatter.format(row.quantity || 0)}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {numberFormatter.format(row.last_month_total)}
+                        {row.updated_date
+                          ? new Date(row.updated_date).toLocaleDateString(
+                              "en-IN"
+                            )
+                          : "N/A"}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {numberFormatter.format(row.total)}
+                        {row.updated_by || "N/A"}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {numberFormatter.format(row.this_month_total)}
+                        {numberFormatter.format(row.amount || 0)}
                       </StyledTableCell>
                     </StyledTableRow>
-                  ))}
-                {/* Add the totals row */}
-                <StyledTableRow>
-                  <StyledTableCell align="center">
-                    <strong>Total</strong>
-                  </StyledTableCell>
-                  <StyledTableCell align="center"></StyledTableCell>
-                  <StyledTableCell align="center"></StyledTableCell>
-                  <StyledTableCell align="center"></StyledTableCell>
-                  <StyledTableCell align="center"></StyledTableCell>
-                  <StyledTableCell align="center">
-                    {totals.approx_turnover_total}
-                  </StyledTableCell>
-                </StyledTableRow>
+                  ))
+                ) : (
+                  <StyledTableRow>
+                    <StyledTableCell align="center" colSpan={6}>
+                      No Data Available
+                    </StyledTableCell>
+                  </StyledTableRow>
+                )}
+
+                {potentialData.length > 0 && (
+                  <StyledTableRow>
+                    <StyledTableCell align="center">
+                      <strong>Total</strong>
+                    </StyledTableCell>
+                    <StyledTableCell align="center"></StyledTableCell>
+                    <StyledTableCell align="center"></StyledTableCell>
+                    <StyledTableCell align="center"></StyledTableCell>
+                    <StyledTableCell align="center"></StyledTableCell>
+                    <StyledTableCell align="center">
+                      {totals.approx_turnover_total}
+                    </StyledTableCell>
+                  </StyledTableRow>
+                )}
               </TableBody>
             </Table>
           </TableContainer>
+          <CustomPagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            handlePageChange={handlePageChange}
+          />
         </Paper>
       </Grid>
     </>

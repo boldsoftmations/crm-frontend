@@ -376,6 +376,10 @@ const getTopCustomersMonthwise = (number = 25) => {
   return CustomAxios.get(`/api/dashboard/top-customer/?number=${number}`);
 };
 
+const potentialTurnoverReport = (page) => {
+  return CustomAxios.get(`/api/dashboard/potential-turnover/?page=${page}`);
+};
+
 const DashboardService = {
   getLastThreeMonthForecastData,
   getLastThreeMonthForecastDataByFilter,
@@ -452,6 +456,7 @@ const DashboardService = {
   getRetailerCustomerData,
   getLeadRetailData,
   getTopCustomersMonthwise,
+  potentialTurnoverReport,
 };
 
 export default DashboardService;
