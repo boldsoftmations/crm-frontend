@@ -100,7 +100,7 @@ export const UpdateCompanyDetails = (props) => {
 
   useEffect(() => {
     getAllCompanyDetailsByID();
-  }, []);
+  }, [recordForEdit]);
 
   const getAllCompanyDetailsByID = async () => {
     try {
@@ -419,8 +419,8 @@ export const UpdateCompanyDetails = (props) => {
         )}
       </Box>
 
-      {selectedCustomers.message && (
-        <Grid container spacing={1} alignItems="center" justifyContent="center">
+      {selectedCustomers && selectedCustomers.message && (
+        <Grid container spacing={1} justifyContent="center">
           <Grid item xs={12} sm={8} md={6}>
             <Paper elevation={1}>
               <Box
@@ -428,7 +428,7 @@ export const UpdateCompanyDetails = (props) => {
                 justifyContent="center"
                 alignItems="center"
                 flexDirection="column"
-                style={{ minHeight: "60px" }}
+                minHeight="60px"
               >
                 <Typography variant="h6" align="center">
                   {selectedCustomers.message}

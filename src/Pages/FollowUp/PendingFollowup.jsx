@@ -23,6 +23,7 @@ export const PendingFollowup = () => {
   const [popupLead, setPopupLead] = useState(false);
   const [popupCustomer, setPopupCustomer] = useState(false);
   const [leadsByID, setLeadsByID] = useState(null);
+  const [customerId, setCustomerId] = useState(null);
   const [isPrinting, setIsPrinting] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -82,20 +83,21 @@ export const PendingFollowup = () => {
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
-
   const openInPopup = async (item) => {
     try {
       setOpen(true);
-      if (item.type === "lead") {
-        setLeadsByID(item.lead);
-        setPopupLead(true);
+      if (item.type === "lead" && item.lead) {
+        setLeadsByID(item.lead); // Set lead data
+        setPopupLead(true); // Open the leads popup
+      } else if (item.type === "customer" && item.company) {
+        setCustomerId(item.company); // Set company data
+        setPopupCustomer(true); // Open the company popup
       } else {
-        setLeadsByID(item.company);
-        setPopupCustomer(true);
+        console.warn("Unhandled item type or missing ID:", item.type);
       }
-      setOpen(false);
     } catch (err) {
-      console.log("err", err);
+      console.error("Error in openInPopup:", err);
+    } finally {
       setOpen(false);
     }
   };
@@ -229,7 +231,7 @@ export const PendingFollowup = () => {
         <UpdateCompanyDetails
           setOpenPopup={setPopupCustomer}
           getAllCompanyDetails={getFollowUp}
-          recordForEdit={leadsByID}
+          recordForEdit={customerId}
         />
       </Popup>
       <Popup
