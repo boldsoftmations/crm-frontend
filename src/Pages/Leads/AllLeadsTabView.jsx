@@ -8,6 +8,7 @@ import { ClosedLead } from "./ClosedLead";
 import { DuplicateLead } from "./DuplicateLead";
 import { UnassignedLead } from "./UnassignedLead";
 import { IndiaMartLeads } from "./IndiaMartLeads";
+import CreateJustDialLead from "./CreateJustDialLead";
 
 export const AllLeadsTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
@@ -25,7 +26,7 @@ export const AllLeadsTabView = () => {
   const isSalesManagerWithoutLeads = isInGroups("Sales Manager without Leads");
   const isSalesManagerWithLeads = isInGroups("Sales Manager with Leads");
   const isCustomerService = isInGroups("Customer Service");
-
+  const isAdminAndDM = isInGroups("Director", "Digital Marketing");
   const tabs = useMemo(
     () => [
       {
@@ -88,6 +89,12 @@ export const AllLeadsTabView = () => {
         index: 6,
         component: <IndiaMartLeads />,
       },
+      {
+        label: "Just Dial Leads",
+        visible: isAdminAndDM,
+        index: 7,
+        component: <CreateJustDialLead />,
+      },
     ],
     [
       isAdmin,
@@ -96,6 +103,7 @@ export const AllLeadsTabView = () => {
       isSalesManagerWithoutLeads,
       isSalesManagerWithLeads,
       isCustomerService,
+      isAdminAndDM,
     ]
   );
 

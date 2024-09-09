@@ -46,20 +46,31 @@ export const ProductionInventoryConsView = () => {
     row.product__name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const Tableheaders = ["PRODUCT", "SELLER UNIT", "UNIT", "QUANTITY"];
+  const Tableheaders = [
+    "PRODUCT",
+    "DESCRIPTION",
+    "SELLER UNIT",
+    "UNIT",
+    "SIZE",
+    "QUANTITY",
+  ];
 
   const headers = [
     { label: "PRODUCT", key: "product" },
+    { label: "DESCRIPTION", key: "description" },
     { label: "SELLER UNIT", key: "seller_account" },
     { label: "UNIT", key: "unit" },
+    { label: "SIZE", key: "size" },
     { label: "QUANTITY", key: "quantity" },
   ];
 
   const data = filteredData.map((row) => {
     return {
       product: row.product__name,
+      description: row.description,
       seller_account: row.seller_account,
       unit: row.product__unit,
+      size: row.size,
       quantity: row.quantity,
     };
   });
@@ -100,7 +111,7 @@ export const ProductionInventoryConsView = () => {
                 <CSVLink
                   data={data}
                   headers={headers}
-                  filename={"my-file.csv"}
+                  filename={"Production Inventory Cons.csv"}
                   target="_blank"
                   style={{
                     textDecoration: "none",
@@ -115,12 +126,7 @@ export const ProductionInventoryConsView = () => {
               </Grid>
             </Grid>
           </Box>
-          <CustomTable
-            headers={Tableheaders}
-            data={data}
-            openInPopup={null}
-            openInPopup2={null}
-          />
+          <CustomTable headers={Tableheaders} data={data} />
         </Paper>
       </Grid>
     </>

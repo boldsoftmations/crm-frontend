@@ -60,7 +60,12 @@ export const ProductBaseCustomerView = () => {
   // Trigger API call when filters or filterValue changes
   useEffect(() => {
     getProductBaseCustomer();
-  }, [filterValue, filters.customerFilterValue, filters.productFilterValue]);
+  }, [
+    filterValue,
+    filters.customerFilterValue,
+    filters.productFilterValue,
+    filters.choice,
+  ]);
 
   // Function to get all product descriptions
   const getProduct = useCallback(async () => {

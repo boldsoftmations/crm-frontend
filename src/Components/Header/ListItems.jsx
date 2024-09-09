@@ -543,6 +543,15 @@ export const ListItems = ({ setOpen }) => {
         renderListItem("/user/faq", <HelpOutlineIcon />, "Script"),
       ],
     },
+    //Digital marketing menus
+    {
+      condition: userData.groups.includes("Digital Marketing"),
+      items: [
+        renderSubmenu("sales", <TrendingUpIcon />, "Sales", [
+          { to: "/leads/all-lead", text: "Leads" },
+        ]),
+      ],
+    },
   ];
 
   return (
