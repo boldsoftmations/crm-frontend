@@ -445,6 +445,18 @@ const getAllCapaData = (page, search) => {
   }
   return CustomAxios.get(`/api/customer/cpa/?${params.toString()}`);
 };
+
+const getCustomerLastPi = (company, seller_account) => {
+  return CustomAxios.get(
+    `/api/invoice/customer-last-pi/?company=${company}&seller_account=${seller_account}`
+  );
+};
+
+const getProductLastPi = (company, unit, product) => {
+  return CustomAxios.get(
+    `/api/invoice/pi-products/?company=${company}&seller_account=${unit}&product=${product}`
+  );
+};
 const CustomerServices = {
   getAllCustomerData,
   getIncompleteKycCustomerData,
@@ -512,6 +524,8 @@ const CustomerServices = {
   getAllDescription,
   CreateCapa,
   getAllCapaData,
+  getCustomerLastPi,
+  getProductLastPi,
 };
 
 export default CustomerServices;

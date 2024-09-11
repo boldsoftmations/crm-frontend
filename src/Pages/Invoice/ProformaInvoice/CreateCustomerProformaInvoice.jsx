@@ -50,8 +50,8 @@ const values = {
 
 export const CreateCustomerProformaInvoice = (props) => {
   const { recordForEdit, rowData } = props;
-  console.log("rowData", rowData);
   const [productOption, setProductOption] = useState([]);
+  const [productDetails, setProductDetails] = useState(null);
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
   const {
@@ -66,36 +66,42 @@ export const CreateCustomerProformaInvoice = (props) => {
         product: "",
         unit: "",
         quantity: "",
-        rate: "",
+        rate: (productDetails && productDetails.rate) || "",
         requested_date: values.someDate,
-        special_instructions: "",
+        special_instructions:
+          (productDetails && productDetails.special_instructions) || "",
       },
     ],
     productOption,
     true
   );
+
   const navigate = useNavigate();
   const [openPopup2, setOpenPopup2] = useState(false);
   const [openPopup3, setOpenPopup3] = useState(false);
   const [open, setOpen] = useState(false);
-  const [inputValue, setInputValue] = useState([]);
+  const [inputValue, setInputValue] = useState({});
   const [selectedSellerData, setSelectedSellerData] = useState("");
-  const [paymentTermData, setPaymentTermData] = useState([]);
-  const [deliveryTermData, setDeliveryTermData] = useState([]);
+  const [paymentTermData, setPaymentTermData] = useState("");
+  const [deliveryTermData, setDeliveryTermData] = useState("");
+  const [contactData, setContactData] = useState("");
   const [customerData, setCustomerData] = useState([]);
   const [contactOptions, setContactOptions] = useState([]);
   const [warehouseOptions, setWarehouseOptions] = useState([]);
-  const [contactData, setContactData] = useState([]);
   const [warehouseData, setWarehouseData] = useState([]);
   const [checked, setChecked] = useState(true);
   const [priceApproval, setPriceApproval] = useState(false);
   const [sellerData, setSellerData] = useState([]);
   const [edcData, setEdcData] = useState([]);
+  const [customerLastPiData, setCustomerLastPiData] = useState(null);
   const { profile: users } = useSelector((state) => state.auth);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setInputValue({ ...inputValue, [name]: value });
+    setCustomerLastPiData((prev) => {
+      return { ...prev, [name]: value };
+    });
   };
 
   const openInPopup = () => {
@@ -123,14 +129,11 @@ export const CreateCustomerProformaInvoice = (props) => {
     }
   };
   const getBillingAddressbyCustomer = async () => {
-    console.log("function called");
     try {
       const response = await InvoiceServices.getBillingAddressbyCustomer(
         rowData.name
       );
       setEdcData(response.data);
-      console.log("data", response.data);
-      console.log("Data from api", response.data);
     } catch (error) {
       console.log("Error fetching customer billing address data:", error);
     }
@@ -162,12 +165,30 @@ export const CreateCustomerProformaInvoice = (props) => {
     try {
       const response = await CustomerServices.getCompanyDataById(recordForEdit);
       setCustomerData(response.data);
-      console.log("customerData", response.data);
     } catch (err) {
       console.log("company data by id error", err);
     }
   };
+  const handleSellerAccountChange = async (e, value, name) => {
+    setSelectedSellerData(value);
 
+    try {
+      setOpen(true);
+      const response = await CustomerServices.getCustomerLastPi(
+        rowData && rowData.name,
+        value.unit
+      );
+      const res = await CustomerServices.getProductLastPi(
+        rowData && rowData.name,
+        value.unit
+      );
+      setCustomerLastPiData(response.data || {});
+    } catch (err) {
+      console.error("error getting last pi", err);
+    } finally {
+      setOpen(false);
+    }
+  };
   useEffect(() => {
     getAllCompanyDetailsByID();
     getContactsDetailsByID();
@@ -224,12 +245,20 @@ export const CreateCustomerProformaInvoice = (props) => {
       pincode: warehouseData.pincode,
       state: warehouseData.state,
       city: warehouseData.city,
-      place_of_supply: inputValue.place_of_supply,
-      transporter_name: inputValue.transporter_name,
+      place_of_supply:
+        inputValue.place_of_supply ||
+        (customerLastPiData && customerLastPiData.place_of_supply),
+      transporter_name:
+        inputValue.transporter_name ||
+        (customerLastPiData && customerLastPiData.place_of_supply),
       buyer_order_no: checked === true ? "verbal" : inputValue.buyer_order_no,
       buyer_order_date: inputValue.buyer_order_date,
-      payment_terms: paymentTermData,
-      delivery_terms: deliveryTermData,
+      payment_terms:
+        paymentTermData ||
+        (customerLastPiData && customerLastPiData.payment_terms),
+      delivery_terms:
+        deliveryTermData ||
+        (customerLastPiData && customerLastPiData.delivery_terms),
       status: priceApproval ? "Price Approval" : "Approved",
       price_approval: priceApproval,
       products: products,
@@ -283,12 +312,11 @@ export const CreateCustomerProformaInvoice = (props) => {
               size="small"
               disablePortal
               id="combo-box-demo"
-              onChange={(event, value) => setSelectedSellerData(value)}
+              onChange={handleSellerAccountChange}
               options={sellerData.map((option) => option)}
               getOptionLabel={(option) => option.unit}
               sx={{ minWidth: 300 }}
               label="Seller Account"
-              // value={selectedSellerData}
               style={tfStyle}
             />
           </Grid>
@@ -303,7 +331,11 @@ export const CreateCustomerProformaInvoice = (props) => {
               getOptionLabel={(option) => option}
               sx={{ minWidth: 300 }}
               label="Payment Terms"
-              value={paymentTermData}
+              value={
+                paymentTermData === ""
+                  ? customerLastPiData && customerLastPiData.payment_terms
+                  : paymentTermData
+              }
               style={tfStyle}
             />
           </Grid>
@@ -318,7 +350,11 @@ export const CreateCustomerProformaInvoice = (props) => {
               getOptionLabel={(option) => option}
               sx={{ minWidth: 300 }}
               label="Delivery Terms"
-              value={deliveryTermData}
+              value={
+                deliveryTermData == ""
+                  ? customerLastPiData && customerLastPiData.delivery_terms
+                  : deliveryTermData
+              }
               style={tfStyle}
             />
           </Grid>
@@ -353,18 +389,27 @@ export const CreateCustomerProformaInvoice = (props) => {
                 labelId="demo-simple-select-required-label"
                 id="demo-simple-select-required"
                 label="Contact Name"
-                onChange={(e, value) => setContactData(e.target.value)}
+                value={
+                  contactData || // Use the selected contactData
+                  contactOptions.find(
+                    (option) =>
+                      option.name === customerLastPiData &&
+                      customerLastPiData.contact_person_name
+                  ) // Default to customerLastPiData if contactData is not set
+                }
+                onChange={(e) => setContactData(e.target.value)} // Handle changes to update contactData
+                renderValue={(selected) => (selected ? selected.name : "")} // Display contact name as value
               >
-                {contactOptions &&
-                  contactOptions.map((option, i) => (
-                    <MenuItem key={i} value={option}>
-                      {option ? option.name : "Please First Select Company"}
-                    </MenuItem>
-                  ))}
+                {contactOptions.map((option, i) => (
+                  <MenuItem key={i} value={option}>
+                    {option.name || "Please First Select Company"}
+                  </MenuItem>
+                ))}
               </Select>
-              <HelperText>first select Company Name</HelperText>
+              <FormHelperText>First select Company Name</FormHelperText>
             </FormControl>
           </Grid>
+
           <Grid item xs={12} sm={2}>
             <CustomTextField
               fullWidth
@@ -374,14 +419,18 @@ export const CreateCustomerProformaInvoice = (props) => {
               label="Contact"
               variant="outlined"
               value={
-                contactData
+                contactData && contactData.contact
                   ? contactData.contact
-                    ? contactData.contact
-                    : ""
+                  : customerLastPiData && customerLastPiData.contact
+                  ? customerLastPiData.contact
                   : ""
               }
+              InputLabelProps={{
+                shrink: true, // This will ensure the label stays above the field
+              }}
             />
           </Grid>
+
           <Grid item xs={12} sm={2}>
             <CustomTextField
               fullWidth
@@ -604,7 +653,14 @@ export const CreateCustomerProformaInvoice = (props) => {
               size="small"
               label="Place of Supply"
               variant="outlined"
-              value={inputValue.place_of_supply}
+              InputLabelProps={{
+                shrink: true, // This will ensure the label stays above the field
+              }}
+              value={
+                inputValue.place_of_supply
+                  ? inputValue.place_of_supply
+                  : customerLastPiData && customerLastPiData.place_of_supply
+              }
               onChange={handleInputChange}
             />
           </Grid>
@@ -615,7 +671,14 @@ export const CreateCustomerProformaInvoice = (props) => {
               size="small"
               label="Transporter Name"
               variant="outlined"
-              value={inputValue.transporter_name}
+              InputLabelProps={{
+                shrink: true, // This will ensure the label stays above the field
+              }}
+              value={
+                inputValue.transporter_name
+                  ? inputValue.transporter_name
+                  : customerLastPiData && customerLastPiData.transporter_name
+              }
               onChange={handleInputChange}
             />
           </Grid>
@@ -646,9 +709,23 @@ export const CreateCustomerProformaInvoice = (props) => {
                     size="small"
                     disablePortal
                     id="combo-box-demo"
-                    onChange={(event, value) =>
-                      handleAutocompleteChange(index, event, value)
-                    }
+                    onChange={async (event, value) => {
+                      // Handle product change
+                      handleAutocompleteChange(index, event, value); // Update product state
+                      if (value) {
+                        try {
+                          const response =
+                            await CustomerServices.getProductLastPi(
+                              rowData && rowData.name,
+                              selectedSellerData.unit,
+                              value
+                            );
+                          setProductDetails(response.data);
+                        } catch (err) {
+                          console.error("Error fetching product details:", err);
+                        }
+                      }
+                    }}
                     options={productOption.map((option) => option.product)}
                     getOptionLabel={(option) => option}
                     sx={{ minWidth: 300 }}
@@ -656,6 +733,7 @@ export const CreateCustomerProformaInvoice = (props) => {
                     style={tfStyle}
                   />
                 </Grid>
+
                 <Grid item xs={12} sm={3}>
                   <CustomTextField
                     fullWidth
@@ -673,7 +751,7 @@ export const CreateCustomerProformaInvoice = (props) => {
                     size="small"
                     label="Unit"
                     variant="outlined"
-                    value={input.unit || ""}
+                    value={input.unit}
                   />
                 </Grid>
                 <Grid item xs={12} sm={3}>
@@ -683,20 +761,40 @@ export const CreateCustomerProformaInvoice = (props) => {
                     name="rate"
                     size="small"
                     label="Rate"
+                    value={
+                      input.rate || (productDetails && productDetails.rate)
+                    }
                     variant="outlined"
-                    onChange={(event) => handleFormChange(index, event)}
+                    onChange={(event) => {
+                      handleFormChange(index, event);
+                      setProductDetails((prev) => {
+                        return {
+                          ...prev,
+                          rate: event.target.value,
+                        };
+                      });
+                    }}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={4}>
                   <CustomTextField
                     fullWidth
-                    type={"number"}
+                    type="number"
                     name="amount"
                     size="small"
                     label="Amount"
                     variant="outlined"
-                    value={(input.quantity * input.rate).toFixed(2)}
-                    // onChange={(event) => handleFormChange(index, event)}
+                    value={
+                      input.quantity && input.rate
+                        ? (input.quantity * input.rate).toFixed(2)
+                        : input.quantity && productDetails.rate
+                        ? (input.quantity * productDetails.rate).toFixed(2)
+                        : "0.00"
+                    }
+                    disabled // The amount is calculated, so it should not be manually editable.
                   />
                 </Grid>
                 <Grid item xs={12} sm={2}>
@@ -725,14 +823,25 @@ export const CreateCustomerProformaInvoice = (props) => {
                     size="small"
                     label="Special Instructions"
                     variant="outlined"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
                     value={
-                      input.special_instructions
-                        ? input.special_instructions
-                        : ""
+                      input.special_instructions ||
+                      (productDetails && productDetails.special_instructions)
                     }
-                    onChange={(event) => handleFormChange(index, event)}
+                    onChange={(event) => {
+                      handleFormChange(index, event);
+                      setProductDetails((prev) => {
+                        return {
+                          ...prev,
+                          special_instructions: event.target.value,
+                        };
+                      });
+                    }}
                   />
                 </Grid>
+
                 <Grid item xs={12} sm={4} alignContent="right">
                   {index !== 0 && (
                     <Button
