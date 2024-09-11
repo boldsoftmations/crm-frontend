@@ -66,16 +66,26 @@ export const CreateCustomerProformaInvoice = (props) => {
         product: "",
         unit: "",
         quantity: "",
-        rate: (productDetails && productDetails.rate) || "",
+        rate: "",
         requested_date: values.someDate,
-        special_instructions:
-          (productDetails && productDetails.special_instructions) || "",
+        special_instructions: "",
       },
     ],
     productOption,
     true
   );
-
+  const constructPayload = () => {
+    return products.map((input, index) => {
+      return {
+        ...input,
+        rate:
+          input.rate || (productDetails[index] && productDetails[index].rate),
+        special_instructions:
+          input.special_instructions ||
+          (productDetails[index] && productDetails[index].special_instructions),
+      };
+    });
+  };
   const navigate = useNavigate();
   const [openPopup2, setOpenPopup2] = useState(false);
   const [openPopup3, setOpenPopup3] = useState(false);
@@ -261,7 +271,7 @@ export const CreateCustomerProformaInvoice = (props) => {
         (customerLastPiData && customerLastPiData.delivery_terms),
       status: priceApproval ? "Price Approval" : "Approved",
       price_approval: priceApproval,
-      products: products,
+      products: constructPayload(),
       warehouse_person_name: warehouseData.contact_name,
     };
 
@@ -708,7 +718,7 @@ export const CreateCustomerProformaInvoice = (props) => {
                     name="product"
                     size="small"
                     disablePortal
-                    id="combo-box-demo"
+                    id={`combo-box-${index}`}
                     onChange={async (event, value) => {
                       // Handle product change
                       handleAutocompleteChange(index, event, value); // Update product state
@@ -720,7 +730,11 @@ export const CreateCustomerProformaInvoice = (props) => {
                               selectedSellerData.unit,
                               value
                             );
-                          setProductDetails(response.data);
+
+                          setProductDetails((prev) => ({
+                            ...prev,
+                            [index]: response.data, // Store product details by index
+                          }));
                         } catch (err) {
                           console.error("Error fetching product details:", err);
                         }
@@ -756,29 +770,36 @@ export const CreateCustomerProformaInvoice = (props) => {
                 </Grid>
                 <Grid item xs={12} sm={3}>
                   <CustomTextField
-                    type={"number"}
                     fullWidth
                     name="rate"
                     size="small"
                     label="Rate"
                     value={
-                      input.rate || (productDetails && productDetails.rate)
+                      input.rate // Use the rate if the user edited it
+                        ? input.rate
+                        : productDetails &&
+                          productDetails[index] &&
+                          productDetails[index].rate
+                        ? parseFloat(productDetails[index].rate).toFixed(2) // Use productDetails if not edited
+                        : ""
                     }
                     variant="outlined"
                     onChange={(event) => {
-                      handleFormChange(index, event);
-                      setProductDetails((prev) => {
-                        return {
-                          ...prev,
+                      handleFormChange(index, event); // Track changes for user input
+                      setProductDetails((prev) => ({
+                        ...prev,
+                        [index]: {
+                          ...prev[index],
                           rate: event.target.value,
-                        };
-                      });
+                        },
+                      }));
                     }}
                     InputLabelProps={{
                       shrink: true,
                     }}
                   />
                 </Grid>
+
                 <Grid item xs={12} sm={4}>
                   <CustomTextField
                     fullWidth
@@ -790,8 +811,12 @@ export const CreateCustomerProformaInvoice = (props) => {
                     value={
                       input.quantity && input.rate
                         ? (input.quantity * input.rate).toFixed(2)
-                        : input.quantity && productDetails.rate
-                        ? (input.quantity * productDetails.rate).toFixed(2)
+                        : input.quantity &&
+                          productDetails[index] &&
+                          productDetails[index].rate
+                        ? (input.quantity * productDetails[index].rate).toFixed(
+                            2
+                          )
                         : "0.00"
                     }
                     disabled // The amount is calculated, so it should not be manually editable.
@@ -828,16 +853,19 @@ export const CreateCustomerProformaInvoice = (props) => {
                     }}
                     value={
                       input.special_instructions ||
-                      (productDetails && productDetails.special_instructions)
+                      (productDetails &&
+                        productDetails[index] &&
+                        productDetails[index].special_instructions)
                     }
                     onChange={(event) => {
                       handleFormChange(index, event);
-                      setProductDetails((prev) => {
-                        return {
-                          ...prev,
+                      setProductDetails((prev) => ({
+                        ...prev,
+                        [index]: {
+                          ...prev[index],
                           special_instructions: event.target.value,
-                        };
-                      });
+                        },
+                      }));
                     }}
                   />
                 </Grid>
@@ -856,6 +884,7 @@ export const CreateCustomerProformaInvoice = (props) => {
               </>
             );
           })}
+
           <Grid item xs={12} sm={4} alignContent="right">
             <Button
               onClick={addFields}

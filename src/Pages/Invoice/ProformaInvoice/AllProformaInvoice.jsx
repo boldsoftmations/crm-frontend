@@ -176,7 +176,7 @@ export const AllProformaInvoice = () => {
     pi_number: row.pi_number,
     generation_date: row.generation_date,
     raised_by: row.raised_by,
-    customer: row.company_name,
+    customer: row.name_of_party,
     billing_city: row.billing_city,
     contact: row.contact,
     status: row.status,
