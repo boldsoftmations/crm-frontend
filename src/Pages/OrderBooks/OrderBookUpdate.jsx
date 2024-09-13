@@ -25,6 +25,7 @@ export const OrderBookUpdate = (props) => {
       const data = {
         orderbook: recordForEdit.orderbook,
         product: recordForEdit.product,
+        pending_quantity: recordForEdit.pending_quantity,
         quantity: recordForEdit.quantity,
         rate: recordForEdit.rate,
         amount: recordForEdit.amount,
@@ -121,6 +122,7 @@ export const OrderBookUpdate = (props) => {
           </Grid>
         </Grid>
         {(users.groups.includes("Production") ||
+          users.groups.includes("Director") ||
           users.groups.includes("Production Delhi")) && (
           <Button
             fullWidth
@@ -248,7 +250,8 @@ export const OrderBookPeningQuantityUpdate = (props) => {
             />
           </Grid>
         </Grid>
-        {users.groups.includes("Accounts") && (
+        {(users.groups.includes("Accounts") ||
+          users.groups.includes("Director")) && (
           <Button
             fullWidth
             type="submit"

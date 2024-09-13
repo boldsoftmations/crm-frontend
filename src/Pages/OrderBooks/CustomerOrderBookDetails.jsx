@@ -46,7 +46,8 @@ export const CustomerOrderBookDetails = () => {
       }
       if (
         userData.groups.includes("Production") ||
-        userData.groups.includes("Production Delhi")
+        userData.groups.includes("Production Delhi") ||
+        userData.groups.includes("Director")
       ) {
         setOpenModal(true);
       }
@@ -92,6 +93,7 @@ export const CustomerOrderBookDetails = () => {
             pending_amount: item.pending_amount,
             seller_state: item.seller_state,
             estimated_date: item.estimated_date,
+            requested_date: item.requested_date,
             special_instructions: item.special_instructions,
           };
         } else if (userData.groups.includes("Customer Service")) {
@@ -118,6 +120,7 @@ export const CustomerOrderBookDetails = () => {
             buyer_order_no: item.buyer_order_no,
             buyer_order_date: item.buyer_order_date,
             estimated_date: item.estimated_date,
+            requested_date: item.requested_date,
             special_instructions: item.special_instructions,
           };
         } else {
@@ -137,6 +140,7 @@ export const CustomerOrderBookDetails = () => {
             seller_state: item.seller_state,
             pending_amount: item.pending_amount,
             estimated_date: item.estimated_date,
+            requested_date: item.requested_date,
             special_instructions: item.special_instructions,
           };
         }
@@ -202,6 +206,7 @@ export const CustomerOrderBookDetails = () => {
     "Amount",
     "Pending Amount",
     "EST DATE",
+    "Requested Date",
     "Special Instructions",
     "Revision",
     "ACTION",
@@ -221,7 +226,8 @@ export const CustomerOrderBookDetails = () => {
     pending_quantity: row.pending_quantity,
     amount: row.amount,
     pending_amount: row.pending_amount,
-    est_date: row.est_date,
+    estimated_date: row.estimated_date,
+    requested_date: row.requested_date,
     special_instruction: row.special_instruction,
     revision: row.revision,
   }));
@@ -240,6 +246,7 @@ export const CustomerOrderBookDetails = () => {
     "Pending Quantity",
     "Pending Amount",
     "EST DATE",
+    "Request Date",
     "Special Instructions",
     "Revision",
     "ACTION",
@@ -258,7 +265,8 @@ export const CustomerOrderBookDetails = () => {
     quantity: row.quantity,
     pending_quantity: row.pending_quantity,
     pending_amount: row.pending_amount,
-    est_date: row.est_date,
+    estimated_date: row.estimated_date,
+    requested_date: row.requested_date,
     special_instruction: row.special_instruction,
     revision: row.revision,
   }));
@@ -345,22 +353,24 @@ export const CustomerOrderBookDetails = () => {
 
           <CustomTable
             headers={
-              userData.groups.includes("Factory-Mumbai-OrderBook") &&
+              userData.groups.includes("Factory-Mumbai-OrderBook") ||
               userData.groups.includes("Factory-Delhi-OrderBook")
                 ? Tableheaders
                 : Tableheaders2
             }
             data={
-              userData.groups.includes("Factory-Mumbai-OrderBook") &&
+              userData.groups.includes("Factory-Mumbai-OrderBook") ||
               userData.groups.includes("Factory-Delhi-OrderBook")
                 ? Tabledata
                 : Tabledata2
             }
             openInPopup={
-              (userData.groups.includes("Production") ||
-                userData.groups.includes("Production Delhi") ||
-                userData.groups.includes("Accounts")) &&
-              openInPopup
+              userData.groups.includes("Director") ||
+              userData.groups.includes("Production") ||
+              userData.groups.includes("Production Delhi") ||
+              userData.groups.includes("Accounts")
+                ? openInPopup
+                : openInPopup
             }
             openInPopup2={null}
           />
@@ -460,6 +470,7 @@ const headers = [
     label: "Estimated Date",
     key: "estimated_date",
   },
+  { label: "Requested Date", key: "requested_date" },
   {
     label: "Special Instruction",
     key: "special_instructions",
@@ -503,6 +514,7 @@ const headers2 = [
     label: "Estimated Date",
     key: "estimated_date",
   },
+  { label: "Requested Date", key: "requested_date" },
   {
     label: "Special Instruction",
     key: "special_instructions",

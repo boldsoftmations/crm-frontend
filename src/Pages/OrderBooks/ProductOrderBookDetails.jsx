@@ -74,6 +74,7 @@ export const ProductOrderBookDetails = () => {
             shipping_city: item.shipping_city,
             seller_state: item.seller_state,
             estimated_date: item.estimated_date,
+            requested_date: item.requested_date,
             special_instructions: item.special_instructions,
           };
         } else if (userData.groups.includes("Customer Service")) {
@@ -92,6 +93,7 @@ export const ProductOrderBookDetails = () => {
             shipping_pincode: item.shipping_pincode,
             seller_state: item.seller_state,
             estimated_date: item.estimated_date,
+            requested_date: item.requested_date,
             special_instructions: item.special_instructions,
           };
         } else {
@@ -111,6 +113,7 @@ export const ProductOrderBookDetails = () => {
             shipping_pincode: item.shipping_pincode,
             seller_state: item.seller_state,
             estimated_date: item.estimated_date,
+            requested_date: item.requested_date,
             special_instructions: item.special_instructions,
           };
         }
@@ -130,12 +133,16 @@ export const ProductOrderBookDetails = () => {
         (ODBData) => ODBData.id === item.id
       );
       setRecordForEdit(matchedODBData);
-      if (userData.groups.includes("Accounts")) {
+      if (
+        userData.groups.includes("Accounts") ||
+        userData.groups.includes("Director")
+      ) {
         setOpenModal3(true);
       }
       if (
         userData.groups.includes("Production") ||
-        userData.groups.includes("Production Delhi")
+        userData.groups.includes("Production Delhi") ||
+        userData.groups.includes("Director")
       ) {
         setOpenModal2(true);
       }
@@ -193,6 +200,7 @@ export const ProductOrderBookDetails = () => {
     "Amount",
     "Pending Amount",
     "EST DATE",
+    "Requested Date",
     "Special Instructions",
     "Company",
     "Billing City",
@@ -212,7 +220,8 @@ export const ProductOrderBookDetails = () => {
     pending_quantity: row.pending_quantity,
     amount: row.amount,
     pending_amount: row.pending_amount,
-    est_date: row.est_date,
+    estimated_date: row.estimated_date,
+    requested_date: row.requested_date,
     special_instruction: row.special_instruction,
     company: row.company,
     billing_city: row.billing_city,
@@ -231,6 +240,8 @@ export const ProductOrderBookDetails = () => {
     "Pending Quantity",
     "Pending Amount",
     "EST DATE",
+    "Requested Date",
+
     "Special Instructions",
     "Company",
     "Billing City",
@@ -250,7 +261,8 @@ export const ProductOrderBookDetails = () => {
     pending_quantity: row.pending_quantity,
 
     pending_amount: row.pending_amount,
-    est_date: row.est_date,
+    estimated_date: row.estimated_date,
+    requested_date: row.requested_date,
     special_instruction: row.special_instruction,
     company: row.company,
     billing_city: row.billing_city,
@@ -343,19 +355,20 @@ export const ProductOrderBookDetails = () => {
           </Box>
           <CustomTable
             headers={
-              userData.groups.includes("Factory-Mumbai-OrderBook") &&
+              userData.groups.includes("Factory-Mumbai-OrderBook") ||
               userData.groups.includes("Factory-Delhi-OrderBook")
                 ? Tableheaders
                 : Tableheaders2
             }
             data={
-              userData.groups.includes("Factory-Mumbai-OrderBook") &&
+              userData.groups.includes("Factory-Mumbai-OrderBook") ||
               userData.groups.includes("Factory-Delhi-OrderBook")
                 ? Tabledata
                 : Tabledata2
             }
             openInPopup={
               (userData.groups.includes("Production") ||
+                userData.groups.includes("Director") ||
                 userData.groups.includes("Production Delhi") ||
                 userData.groups.includes("Accounts")) &&
               openInPopup

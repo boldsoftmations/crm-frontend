@@ -1,7 +1,14 @@
 import { useState, useCallback, useMemo } from "react";
 
+const getNextFiveDates = () => {
+  const today = new Date();
+  const futureDate = new Date();
+  futureDate.setDate(today.getDate() + 5); // Add i days to today's date
+  return futureDate.toISOString().substring(0, 10);
+};
+
 const values = {
-  someDate: new Date().toISOString().substring(0, 10),
+  someDate: getNextFiveDates(),
 };
 
 const useDynamicFormFields = (

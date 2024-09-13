@@ -44,8 +44,15 @@ const tfStyle = {
   },
 };
 
+const getNextFiveDates = () => {
+  const today = new Date();
+  const futureDate = new Date();
+  futureDate.setDate(today.getDate() + 5); // Add i days to today's date
+  return futureDate.toISOString().substring(0, 10);
+};
+
 const values = {
-  someDate: new Date().toISOString().substring(0, 10),
+  someDate: getNextFiveDates(),
 };
 
 export const CreateCustomerProformaInvoice = (props) => {
@@ -724,6 +731,7 @@ export const CreateCustomerProformaInvoice = (props) => {
                       handleAutocompleteChange(index, event, value); // Update product state
                       if (value) {
                         try {
+                          setOpen(true);
                           const response =
                             await CustomerServices.getProductLastPi(
                               rowData && rowData.name,
@@ -737,6 +745,8 @@ export const CreateCustomerProformaInvoice = (props) => {
                           }));
                         } catch (err) {
                           console.error("Error fetching product details:", err);
+                        } finally {
+                          setOpen(false);
                         }
                       }
                     }}
@@ -837,7 +847,10 @@ export const CreateCustomerProformaInvoice = (props) => {
                     }
                     onChange={(event) => handleFormChange(index, event)}
                     InputLabelProps={{
-                      shrink: true,
+                      shrink: true, // Ensures the label stays visible
+                    }}
+                    inputProps={{
+                      min: new Date().toISOString().substring(0, 10), // Prevent selecting past dates
                     }}
                   />
                 </Grid>

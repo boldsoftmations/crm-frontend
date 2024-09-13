@@ -72,6 +72,7 @@ export const PIOrderBookDetails = () => {
             pending_quantity: item.pending_quantity,
             seller_state: item.seller_state,
             estimated_date: item.estimated_date,
+            requested_date: item.requested_date,
             special_instructions: item.special_instructions,
           };
         } else {
@@ -91,6 +92,7 @@ export const PIOrderBookDetails = () => {
             pending_quantity: item.pending_quantity,
             seller_state: item.seller_state,
             estimated_date: item.estimated_date,
+            requested_date: item.requested_date,
             special_instructions: item.special_instructions,
           };
         }
@@ -176,6 +178,7 @@ export const PIOrderBookDetails = () => {
     "Amount",
     "Pending Amount",
     "EST DATE",
+    "Requested Date",
     "Special Instructions",
     "Revision",
     "ACTION",
@@ -195,7 +198,8 @@ export const PIOrderBookDetails = () => {
     pending_quantity: row.pending_quantity,
     amount: row.amount,
     pending_amount: row.pending_amount,
-    est_date: row.est_date,
+    estimated_date: row.estimated_date,
+    requested_date: row.requested_date,
     special_instruction: row.special_instruction,
     revision: row.revision,
   }));
@@ -214,6 +218,7 @@ export const PIOrderBookDetails = () => {
     "Pending Quantity",
     "Pending Amount",
     "EST DATE",
+    "Requested Date",
     "Special Instructions",
     "Revision",
     "ACTION",
@@ -232,7 +237,8 @@ export const PIOrderBookDetails = () => {
     quantity: row.quantity,
     pending_quantity: row.pending_quantity,
     pending_amount: row.pending_amount,
-    est_date: row.est_date,
+    estimated_date: row.estimated_date,
+    requested_date: row.requested_date,
     special_instruction: row.special_instruction,
     revision: row.revision,
   }));
@@ -408,6 +414,10 @@ const headers = [
   {
     label: "Estimated Date",
     key: "estimated_date",
+  },
+  {
+    label: "Requested Date",
+    key: "requested_date",
   },
   {
     label: "Special Instruction",

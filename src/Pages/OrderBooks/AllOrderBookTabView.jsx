@@ -13,8 +13,6 @@ export const AllOrderBookTabView = () => {
 
   const allTabs = isInGroups(
     "Director",
-    "Factory-Delhi-Orderbook",
-    "Factory-Mumbai-Orderbook",
     "Stores Delhi",
     "Production Delhi",
     "Sales Manager",
@@ -29,24 +27,28 @@ export const AllOrderBookTabView = () => {
     "Accounts Billing Department",
     "Production"
   );
+  const orderBookUsers = isInGroups(
+    "Factory-Mumbai-OrderBook",
+    "Factory-Delhi-OrderBook"
+  );
 
   const customerServiceTabs = isInGroups("Customer Service");
-  const [activeTab, setActiveTab] = useState(allTabs ? 0 : 4);
+  const [activeTab, setActiveTab] = useState(allTabs || orderBookUsers ? 0 : 4);
 
   const tabs = [
     {
       label: "Customer Wise Orderbook",
-      visible: allTabs || customerServiceTabs,
+      visible: orderBookUsers || allTabs || customerServiceTabs,
       index: 0,
     },
     {
       label: "Product Wise Orderbook",
-      visible: allTabs || customerServiceTabs,
+      visible: orderBookUsers || allTabs || customerServiceTabs,
       index: 1,
     },
     {
       label: "PI Wise Orderbook",
-      visible: allTabs,
+      visible: orderBookUsers || allTabs,
       index: 2,
     },
   ];
