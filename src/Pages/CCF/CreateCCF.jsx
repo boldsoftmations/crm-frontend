@@ -197,16 +197,26 @@ const CreateCCF = ({ getAllCCFData, setOpenCCF }) => {
         alert("No files selected for upload.");
         return;
       }
+
       setOpen(true);
       const formData = new FormData();
 
-      // Append each file to the FormData object with the same key
+      // Append each file to the FormData object
       files.forEach((file) => {
         formData.append("file", file);
-      });
 
-      // Add media type
-      formData.append("media_type", "Photo"); // You can change this value based on your requirements
+        // Determine media type based on the file MIME type or extension
+        const fileType = file.type.split("/")[0]; // This gives either "image" or "video"
+        const mediaType =
+          fileType === "image"
+            ? "Photo"
+            : fileType === "video"
+            ? "Video"
+            : "Other";
+
+        // Append media type for each file
+        formData.append("media_type", mediaType);
+      });
 
       const response = await CustomerServices.uploadCCFdocument(formData);
 
@@ -222,6 +232,7 @@ const CreateCCF = ({ getAllCCFData, setOpenCCF }) => {
           ...prev,
           document: documentIds ? documentIds : [],
         }));
+
         setFiles([]); // Clear files after successful upload
       } else {
         handleError("Failed to upload documents");
