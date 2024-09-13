@@ -647,5 +647,10 @@ const CreateCCF = ({ getAllCCFData, setOpenCCF }) => {
 
 export default CreateCCF;
 
-const ComplaintsOptions = ["Factory", "Account"];
+const ComplaintsOptions = [
+  "Account",
+  "Product",
+  "Dispatch & Logistic",
+  "Sales Person",
+];
 const ComplaintsTypes = ["Claim", "Warning"];

@@ -189,7 +189,7 @@ export const CapaView = () => {
 
       <Popup
         fullScreen={true}
-        title="Images Preview"
+        title="Document Preview"
         openPopup={imageShow}
         setOpenPopup={setImageShow}
       >

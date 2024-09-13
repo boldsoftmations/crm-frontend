@@ -6,19 +6,30 @@ const StyledTableCell = styled.td`
   text-align: center;
 `;
 
-const ImageContainer = styled.div`
+const MediaContainer = styled.div`
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
 `;
 
-const ImageWrapper = styled.div`
+const MediaWrapper = styled.div`
   margin: 10px;
   text-align: center;
 `;
 
-const Image = styled.img`
-  width: ${(props) => (props.isEnlarged ? "500px" : "200px")}; // Updated size
+const Media = styled.img`
+  width: ${(props) => (props.isEnlarged ? "500px" : "200px")};
+  height: auto;
+  cursor: pointer;
+  transition: width 0.5s ease-in-out, box-shadow 0.3s ease-in-out;
+  box-shadow: ${(props) =>
+    props.isEnlarged
+      ? "0px 2px 10px rgba(0, 0, 0, 0.3)"
+      : "0px 2px 10px rgba(0, 0, 0, 0.3)"};
+`;
+
+const Video = styled.video`
+  width: ${(props) => (props.isEnlarged ? "500px" : "200px")};
   height: auto;
   cursor: pointer;
   transition: width 0.5s ease-in-out, box-shadow 0.3s ease-in-out;
@@ -40,11 +51,11 @@ const Heading = styled.div`
 `;
 
 const ImageView = ({ imagesData }) => {
-  const [enlargedImage, setEnlargedImage] = useState(null);
+  console.log(imagesData);
+  const [enlargedMedia, setEnlargedMedia] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate a loading time
     const timer = setTimeout(() => {
       setLoading(false);
     }, 500); // Adjust the time as needed
@@ -52,8 +63,37 @@ const ImageView = ({ imagesData }) => {
     return () => clearTimeout(timer);
   }, [imagesData]);
 
-  const handleImageClick = (image) => {
-    setEnlargedImage(enlargedImage === image ? null : image);
+  const handleMediaClick = (media) => {
+    setEnlargedMedia(enlargedMedia === media ? null : media);
+  };
+
+  const renderMedia = (media, index) => {
+    console.log(media);
+    const isVideo = media.media_type && media.media_type.startsWith("Video");
+
+    if (isVideo) {
+      return (
+        <Video
+          key={index}
+          src={media.file}
+          controls
+          isEnlarged={enlargedMedia === media}
+          onClick={() => handleMediaClick(media)}
+          onLoadedData={() => setLoading(false)} // Ensure loading state is updated for videos
+        />
+      );
+    } else {
+      return (
+        <Media
+          key={index}
+          src={media.file}
+          alt={`Media ${index + 1}`}
+          isEnlarged={enlargedMedia === media}
+          onClick={() => handleMediaClick(media)}
+          onLoad={() => setLoading(false)} // Ensure loading state is updated for images
+        />
+      );
+    }
   };
 
   return (
@@ -61,22 +101,16 @@ const ImageView = ({ imagesData }) => {
       {loading ? (
         <CustomLoader open={loading} />
       ) : imagesData.length === 0 ? (
-        <Message>No images available</Message>
+        <Message>No media available</Message>
       ) : (
-        <ImageContainer>
-          {imagesData.map((image, index) => (
-            <ImageWrapper key={index}>
-              <Heading>Image {index + 1}</Heading>
-              <Image
-                src={image.file}
-                alt={`Image ${index + 1}`}
-                isEnlarged={enlargedImage === image}
-                onClick={() => handleImageClick(image)}
-                onLoad={() => setLoading(false)} // Ensure loading state is updated
-              />
-            </ImageWrapper>
+        <MediaContainer>
+          {imagesData.map((media, index) => (
+            <MediaWrapper key={index}>
+              <Heading>Media {index + 1}</Heading>
+              {renderMedia(media, index)}
+            </MediaWrapper>
           ))}
-        </ImageContainer>
+        </MediaContainer>
       )}
     </StyledTableCell>
   );

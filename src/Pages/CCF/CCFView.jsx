@@ -262,7 +262,7 @@ export const CCFView = () => {
 
         <Popup
           fullScreen={true}
-          title="Images Preview"
+          title="Document Preview"
           openPopup={imageShow}
           setOpenPopup={setImageShow}
         >

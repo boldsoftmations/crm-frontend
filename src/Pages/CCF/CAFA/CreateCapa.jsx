@@ -79,19 +79,25 @@ const CreateCapa = ({ recordForEdit, setOpenCapa }) => {
       setOpen(true);
       const formData = new FormData();
 
-      // Append each file to the FormData object with the same key
+      // Append each file to the FormData object and detect file type (image or video)
       files.forEach((file) => {
         formData.append("file", file);
-      });
 
-      // Add media type
-      formData.append("media_type", "Photo"); // You can change this value based on your requirements
+        // Detect media type based on file type
+        if (file.type.startsWith("image")) {
+          formData.append("media_type", "Photo");
+        } else if (file.type.startsWith("video")) {
+          formData.append("media_type", "Video");
+        }
+      });
 
       const response = await CustomerServices.uploadCCFdocument(formData);
 
       if (response.status === 200) {
-        setMessage(response.data.message || "Document submitted successfully");
-        setSeverity("error");
+        setMessage(
+          response.data.message || "Document(s) submitted successfully"
+        );
+        setSeverity("success"); // Change severity to success
         setOpen(true);
 
         // Extract IDs from the response and update state
@@ -118,11 +124,10 @@ const CreateCapa = ({ recordForEdit, setOpenCapa }) => {
       setOpen(false);
     }
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // if (!validate()) {
-    //   return;
-    // }
+
     try {
       setLoader(true);
       const response = await CustomerServices.CreateCapa(formData);
@@ -133,7 +138,7 @@ const CreateCapa = ({ recordForEdit, setOpenCapa }) => {
       setOpenCapa(false); // Close the form dialog if submission is successful
     } catch (error) {
       console.log(error);
-      setMessage(error.message || "Error creating CPA");
+      setMessage(error.response.data.message || "Error creating CPA");
       setSeverity("error");
       setOpen(true);
     } finally {
