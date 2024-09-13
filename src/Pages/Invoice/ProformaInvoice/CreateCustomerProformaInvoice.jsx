@@ -150,15 +150,15 @@ export const CreateCustomerProformaInvoice = (props) => {
   };
   const getBillingAddressbyCustomer = async () => {
     try {
-      setOpen(true)
+      setOpen(true);
       const response = await InvoiceServices.getBillingAddressbyCustomer(
         rowData.name
       );
       setEdcData(response.data);
     } catch (error) {
       console.log("Error fetching customer billing address data:", error);
-    }finally{
-      setOpen(false)
+    } finally {
+      setOpen(false);
     }
   };
   useEffect(() => {
@@ -191,7 +191,7 @@ export const CreateCustomerProformaInvoice = (props) => {
       setCustomerData(response.data);
     } catch (err) {
       console.log("company data by id error", err);
-    }finally{
+    } finally {
       setOpen(false);
     }
   };
@@ -276,7 +276,7 @@ export const CreateCustomerProformaInvoice = (props) => {
         (customerLastPiData && customerLastPiData.place_of_supply),
       transporter_name:
         inputValue.transporter_name ||
-        (customerLastPiData && customerLastPiData.place_of_supply),
+        (customerLastPiData && customerLastPiData.transporter_name),
       buyer_order_no: checked === true ? "verbal" : inputValue.buyer_order_no,
       buyer_order_date: inputValue.buyer_order_date,
       payment_terms:

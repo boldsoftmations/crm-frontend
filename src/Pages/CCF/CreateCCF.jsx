@@ -322,7 +322,41 @@ const CreateCCF = ({ getAllCCFData, setOpenCCF }) => {
                   />
                 </Grid>
               )}
-              {inputValue.department === "Factory" && (
+              {inputValue.department === "Product" && (
+                <Grid item xs={12} sm={4}>
+                  <CustomAutocomplete
+                    name="problem"
+                    size="small"
+                    disablePortal
+                    id="combo-box-demo"
+                    options={departmentData.map((option) => option.name)}
+                    onChange={(event, value) => {
+                      setInputValue((prev) => ({ ...prev, problem: value }));
+                    }}
+                    getOptionLabel={(option) => option}
+                    fullWidth
+                    label="Complaint Problem"
+                  />
+                </Grid>
+              )}
+              {inputValue.department === "Sales Person" && (
+                <Grid item xs={12} sm={4}>
+                  <CustomAutocomplete
+                    name="problem"
+                    size="small"
+                    disablePortal
+                    id="combo-box-demo"
+                    options={departmentData.map((option) => option.name)}
+                    onChange={(event, value) => {
+                      setInputValue((prev) => ({ ...prev, problem: value }));
+                    }}
+                    getOptionLabel={(option) => option}
+                    fullWidth
+                    label="Complaint Problem"
+                  />
+                </Grid>
+              )}
+              {inputValue.department === "Dispatch and Logistic" && (
                 <Grid item xs={12} sm={4}>
                   <CustomAutocomplete
                     name="problem"
@@ -650,7 +684,7 @@ export default CreateCCF;
 const ComplaintsOptions = [
   "Account",
   "Product",
-  "Dispatch & Logistic",
+  "Dispatch and Logistic",
   "Sales Person",
 ];
 const ComplaintsTypes = ["Claim", "Warning"];

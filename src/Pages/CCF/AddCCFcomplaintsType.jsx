@@ -112,4 +112,9 @@ const AddCCFcomplaintsType = ({
 };
 
 export default AddCCFcomplaintsType;
-const ComplaintsOptions = ["Factory", "Account"];
+const ComplaintsOptions = [
+  "Account",
+  "Product",
+  "Dispatch and Logistic",
+  "Sales Person",
+];

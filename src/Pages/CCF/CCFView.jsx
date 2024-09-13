@@ -290,11 +290,6 @@ export const CCFView = () => {
   );
 };
 
-const filterValues = [
-  { name: "Is closed", value: true },
-  { name: "Is open", value: false },
-];
-
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.common.black,
