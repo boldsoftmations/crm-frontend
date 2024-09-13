@@ -397,10 +397,10 @@ const getAllCCFData = (page, searchValue) => {
 const getAllClosedCCF = () => {
   return CustomAxios.get(`/api/customer/ccf/?is_closed=true`);
 };
-const getAllComplaintsList = (type, department) => {
+const getAllComplaintsList = (page, department) => {
   const params = new URLSearchParams();
-  if (type) {
-    params.append("type", type);
+  if (page) {
+    params.append("page", page);
   }
   if (department) {
     params.append("department", department);
