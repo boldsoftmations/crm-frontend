@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { CustomTabs } from "../../Components/CustomTabs";
-import { AllComplaintListView } from "./AllComplaintListView";
 import { CCFView } from "./CCFView";
 import { CapaView } from "./CAFA/CapaView";
 import { ClosedComplaint } from "./ClosedComplaint";
@@ -16,11 +15,6 @@ export const AllCCFtab = () => {
       label: "Customer Complaint Form",
       roles: ["Director", "Sales", "Customer Service"],
       component: <CCFView />,
-    },
-    {
-      label: "Complaint List",
-      roles: ["Director", "Sales", "Customer Service"],
-      component: <AllComplaintListView />,
     },
     {
       label: "CAPA",

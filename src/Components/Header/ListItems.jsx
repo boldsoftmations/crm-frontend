@@ -201,6 +201,12 @@ export const ListItems = ({ setOpen }) => {
         userData.groups.includes("Factory-Delhi-OrderBook") ||
         userData.groups.includes("Factory-Mumbai-OrderBook"),
       items: [
+        renderSubmenu("master", <BusinessIcon />, "Master", [
+          {
+            to: "/customer/complaints/ccp-capa/master",
+            text: "CCF Complaint Master",
+          },
+        ]),
         renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
       ],
     },
@@ -209,6 +215,12 @@ export const ListItems = ({ setOpen }) => {
         userData.groups.includes("Factory-Mumbai-Dispatch") ||
         userData.groups.includes("Factory-Delhi-Dispatch"),
       items: [
+        renderSubmenu("master", <BusinessIcon />, "Master", [
+          {
+            to: "/customer/complaints/ccp-capa/master",
+            text: "CCF Complaint Master",
+          },
+        ]),
         renderListItem("/dispatch/tab-view", <LocalShippingIcon />, "Dispatch"),
       ],
     },
@@ -219,7 +231,10 @@ export const ListItems = ({ setOpen }) => {
       condition: userData.groups.includes("Customer Service"),
       items: [
         renderSubmenu("master", <BusinessIcon />, "Master", [
-          { to: "/customer/complaints/ccp-capa", text: "CCF Complaint Master" },
+          {
+            to: "/customer/complaints/ccp-capa/master",
+            text: "CCF Complaint Master",
+          },
         ]),
         renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
           { to: "/invoice/performa-invoice-tab", text: "Performa Invoice" },
@@ -285,7 +300,10 @@ export const ListItems = ({ setOpen }) => {
           { to: "/products/all-product", text: "Inventory Master" },
           { to: "/invoice/seller-account", text: "Company Master" },
           { to: "/inventory/view-currency", text: "Currency Master" },
-          { to: "/customer/complaints/ccp-capa", text: "CCF Complaint Master" },
+          {
+            to: "/customer/complaints/ccp-capa/master",
+            text: "CCF Complaint Master",
+          },
         ]),
         renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
           { to: "/invoice/performa-invoice-tab", text: "Performa Invoice" },
