@@ -112,7 +112,10 @@ export const ListItems = ({ setOpen }) => {
           { to: "/inventory/view-currency", text: "Currency Master" },
           { to: "/user/profile-tab", text: "Employees Master" },
           { to: "/hr-model/hr-master", text: "HR Master" },
-          { to: "/customer/complaints/ccp-capa", text: "CCF Complaint Master" },
+          {
+            to: "/customer/complaints/ccp-capa/master",
+            text: "CCF Complaint Master",
+          },
         ]),
         renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
           { to: "/invoice/performa-invoice-tab", text: "Performa Invoice" },
@@ -189,6 +192,7 @@ export const ListItems = ({ setOpen }) => {
         renderSubmenu("production", <FactoryIcon />, "Production", [
           { to: "/inventory/view-production", text: "Production" },
         ]),
+        renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
       ],
     },
     //Factory Menus
