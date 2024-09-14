@@ -137,7 +137,7 @@ const CreateCCF = ({ getAllCCFData, setOpenCCF }) => {
     setInputValue((prev) => ({ ...prev, department: value }));
     try {
       setOpen(true);
-      const response = await CustomerServices.getAllComplaintsList(
+      const response = await CustomerServices.getAllComplaintsListData(
         "list",
         value
       );
