@@ -17,12 +17,14 @@ import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import SearchComponent from "../../Components/SearchComponent ";
 import { MessageAlert } from "../../Components/MessageAlert";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
+import CustomerServices from "../../services/CustomerService";
 
 export const ActiveUsers = () => {
   const [open, setOpen] = useState(false);
   const [activeUsersData, setActiveUsersData] = useState([]);
   const [groupsData, setGroupsData] = useState([]);
   const [activeUsersByIDData, setActiveUsersByIDData] = useState([]);
+  const [state, setState] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [openPopup, setOpenPopup] = useState(false);
   const [manageGroup, setManageGroup] = useState([]);
@@ -49,7 +51,6 @@ export const ActiveUsers = () => {
     setActiveUsersByIDData(data);
     setOpenPopup(true);
   };
-  console.log(activeUsersByIDData);
   const getAllUsersDetails = async () => {
     try {
       setOpen(true);
@@ -63,11 +64,29 @@ export const ActiveUsers = () => {
       setOpen(false);
     }
   };
-
+  const getAllStatesList = async () => {
+    try {
+      setOpen(true);
+      const response = await CustomerServices.getAllStatesList();
+      setState(response.data.data);
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setOpen(false);
+    }
+  };
   useEffect(() => {
     getAllUsersDetails();
   }, []);
-
+  useEffect(() => {
+    if (
+      activeUsersByIDData &&
+      activeUsersByIDData.groups &&
+      activeUsersByIDData.groups.includes("Customer Relationship Executive")
+    ) {
+      getAllStatesList();
+    }
+  }, [activeUsersByIDData.groups]);
   const createUsersDetails = async (e) => {
     try {
       e.preventDefault();
@@ -80,6 +99,7 @@ export const ActiveUsers = () => {
         is_active: activeUsersByIDData.is_active,
         group_names: activeUsersByIDData.groups,
         ref_user: activeUsersByIDData.ref_user,
+        ...(activeUsersByIDData.state && { state: activeUsersByIDData.state }),
       };
       const response = await TaskService.createUsers(
         activeUsersByIDData.emp_id,
@@ -162,6 +182,7 @@ export const ActiveUsers = () => {
     "Sales Manager",
     "Customer Relationship Manager",
   ];
+
   return (
     <>
       <MessageAlert
@@ -261,7 +282,7 @@ export const ActiveUsers = () => {
               />
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid item xs={12} sm={12}>
               <CustomAutocomplete
                 size="small"
                 value={activeUsersByIDData.groups}
@@ -291,6 +312,43 @@ export const ActiveUsers = () => {
                 )}
               />
             </Grid>
+
+            {activeUsersByIDData &&
+              activeUsersByIDData.groups &&
+              activeUsersByIDData.groups.includes(
+                "Customer Relationship Executive"
+              ) && (
+                <Grid item xs={12}>
+                  <CustomAutocomplete
+                    size="small"
+                    value={activeUsersByIDData.state || []}
+                    onChange={(event, newValue) => {
+                      handleSelectChange("state", newValue);
+                    }}
+                    multiple
+                    limitTags={3}
+                    id="multiple-limit-tags"
+                    options={state}
+                    freeSolo
+                    renderTags={(value, getTagProps) =>
+                      value.map((option, index) => (
+                        <Chip
+                          variant="outlined"
+                          label={option}
+                          {...getTagProps({ index })}
+                        />
+                      ))
+                    }
+                    renderInput={(params) => (
+                      <CustomTextField
+                        {...params}
+                        label="States"
+                        placeholder="Select a State"
+                      />
+                    )}
+                  />
+                </Grid>
+              )}
 
             <Grid item xs={12} sm={6}>
               <CustomAutocomplete
