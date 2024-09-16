@@ -407,6 +407,7 @@ export const UpdateCompanyDetails = (props) => {
         </Grid>
         {(userData.groups.includes("Director") ||
           userData.groups.includes("Accounts") ||
+          userData.groups.includes("Accounts Billing Department") ||
           userData.groups.includes("Sales Manager")) && (
           <Button
             type="submit"
