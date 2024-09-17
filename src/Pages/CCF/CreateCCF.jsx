@@ -31,6 +31,7 @@ const Root = styled("div")(({ theme }) => ({
     marginTop: theme.spacing(2),
   },
 }));
+
 const CreateCCF = ({ getAllCCFData, setOpenCCF }) => {
   const [open, setOpen] = useState(false);
   const [files, setFiles] = useState([]);
@@ -41,8 +42,10 @@ const CreateCCF = ({ getAllCCFData, setOpenCCF }) => {
   const [batch_no, setBatch_no] = useState([]);
   const [documentId, setDocumentId] = useState([]);
   const [products, setProducts] = useState(null);
+  const [documents, setDocuments] = useState([]);
   const [inputValue, setInputValue] = useState({
     department: "",
+    complain_for: "",
     complain_type: "",
     customer: "",
     unit: "",
@@ -84,12 +87,12 @@ const CreateCCF = ({ getAllCCFData, setOpenCCF }) => {
     } finally {
       setOpen(false);
     }
-  }, [handleError]);
+  }, []);
 
   useEffect(() => {
     getAllSellerAccountsDetails();
     GetCustomerData();
-  }, [GetCustomerData]);
+  }, []);
 
   const handleFileChange = (e) => {
     const newFiles = Array.from(e.target.files);
@@ -134,7 +137,7 @@ const CreateCCF = ({ getAllCCFData, setOpenCCF }) => {
     }
   };
   const handleDepartmentChange = async (e, value) => {
-    setInputValue((prev) => ({ ...prev, department: value }));
+    setInputValue((prev) => ({ ...prev, complain_for: value }));
     try {
       setOpen(true);
       const response = await CustomerServices.getAllComplaintsListData(
@@ -219,10 +222,10 @@ const CreateCCF = ({ getAllCCFData, setOpenCCF }) => {
       });
 
       const response = await CustomerServices.uploadCCFdocument(formData);
-
+      console.log("response", response.data.data);
       if (response.status === 200) {
         handleSuccess("Documents uploaded successfully");
-
+        setDocuments(response.data.data);
         // Extract IDs from the response and update state
         const documentIds = response.data.data.map((doc) => doc.id);
         setDocumentId(documentIds);
@@ -243,6 +246,10 @@ const CreateCCF = ({ getAllCCFData, setOpenCCF }) => {
     } finally {
       setOpen(false);
     }
+  };
+
+  const isImage = (file) => {
+    return file.match(/\.(jpeg|jpg|gif|png)$/) != null;
   };
 
   return (
@@ -298,14 +305,29 @@ const CreateCCF = ({ getAllCCFData, setOpenCCF }) => {
                   size="small"
                   disablePortal
                   id="combo-box-demo"
-                  options={ComplaintsOptions}
-                  onChange={handleDepartmentChange}
+                  options={complaintType}
+                  onChange={(e, value) => {
+                    setInputValue((prev) => ({ ...prev, department: value }));
+                  }}
                   getOptionLabel={(option) => option}
                   fullWidth
                   label="Complaint to"
                 />
               </Grid>
-              {inputValue.department === "Account" && (
+              <Grid item xs={12} sm={4}>
+                <CustomAutocomplete
+                  name="complain_for"
+                  size="small"
+                  disablePortal
+                  id="combo-box-demo"
+                  options={ComplaintsFor}
+                  onChange={handleDepartmentChange}
+                  getOptionLabel={(option) => option}
+                  fullWidth
+                  label="Complaint for"
+                />
+              </Grid>
+              {inputValue.complain_for === "Account" && (
                 <Grid item xs={12} sm={4}>
                   <CustomAutocomplete
                     name="problem"
@@ -322,7 +344,7 @@ const CreateCCF = ({ getAllCCFData, setOpenCCF }) => {
                   />
                 </Grid>
               )}
-              {inputValue.department === "Product" && (
+              {inputValue.complain_for === "Product" && (
                 <Grid item xs={12} sm={4}>
                   <CustomAutocomplete
                     name="problem"
@@ -339,7 +361,7 @@ const CreateCCF = ({ getAllCCFData, setOpenCCF }) => {
                   />
                 </Grid>
               )}
-              {inputValue.department === "Sales Person" && (
+              {inputValue.complain_for === "Sales Person" && (
                 <Grid item xs={12} sm={4}>
                   <CustomAutocomplete
                     name="problem"
@@ -356,7 +378,7 @@ const CreateCCF = ({ getAllCCFData, setOpenCCF }) => {
                   />
                 </Grid>
               )}
-              {inputValue.department === "Dispatch and Logistic" && (
+              {inputValue.complain_for === "Dispatch and Logistic" && (
                 <Grid item xs={12} sm={4}>
                   <CustomAutocomplete
                     name="problem"
@@ -391,7 +413,7 @@ const CreateCCF = ({ getAllCCFData, setOpenCCF }) => {
                   label="Complaint Type"
                 />
               </Grid>
-              <Grid item xs={12} sm={invoiceNoOption.length > 0 ? 3 : 4}>
+              <Grid item xs={12} sm={4}>
                 <CustomAutocomplete
                   name="customer"
                   size="small"
@@ -406,7 +428,7 @@ const CreateCCF = ({ getAllCCFData, setOpenCCF }) => {
                   label="Customer"
                 />
               </Grid>
-              <Grid item xs={12} sm={invoiceNoOption.length > 0 ? 2 : 4}>
+              <Grid item xs={12} sm={4}>
                 <CustomAutocomplete
                   name="unit"
                   size="small"
@@ -420,7 +442,7 @@ const CreateCCF = ({ getAllCCFData, setOpenCCF }) => {
                 />
               </Grid>
               {invoiceNoOption && invoiceNoOption.length > 0 && (
-                <Grid item xs={12} sm={invoiceNoOption.length > 0 ? 4 : 4}>
+                <Grid item xs={12} sm={6}>
                   <Autocomplete
                     fullWidth
                     multiple
@@ -436,7 +458,7 @@ const CreateCCF = ({ getAllCCFData, setOpenCCF }) => {
                   />
                 </Grid>
               )}
-              <Grid item xs={12} sm={invoiceNoOption.length > 0 ? 3 : 4}>
+              <Grid item xs={12} sm={6}>
                 <Autocomplete
                   fullWidth
                   multiple
@@ -453,6 +475,7 @@ const CreateCCF = ({ getAllCCFData, setOpenCCF }) => {
                   )}
                 />
               </Grid>
+              <Grid item xs={12} sm={12}></Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
@@ -535,7 +558,7 @@ const CreateCCF = ({ getAllCCFData, setOpenCCF }) => {
                         Selected Files:
                       </Typography>
                     )}
-                    {files.length > 0 && (
+                    {files.length > 0 ? (
                       <List style={{ display: "flex", flexWrap: "wrap" }}>
                         {files.map((file, index) => (
                           <ListItem
@@ -585,6 +608,37 @@ const CreateCCF = ({ getAllCCFData, setOpenCCF }) => {
                           </ListItem>
                         ))}
                       </List>
+                    ) : (
+                      <Grid>
+                        <div
+                          style={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: "20px",
+                          }}
+                        >
+                          {documents &&
+                            documents.map((doc, index) => (
+                              <div
+                                key={index}
+                                style={{
+                                  width: "200px", // Set a fixed width for each media item
+                                  textAlign: "center",
+                                }}
+                              >
+                                <img
+                                  src={doc.file}
+                                  alt={`Media ${index + 1}`}
+                                  style={{
+                                    width: "100%",
+                                    height: "auto",
+                                    cursor: "pointer",
+                                  }}
+                                />
+                              </div>
+                            ))}
+                        </div>
+                      </Grid>
                     )}
                   </div>
                 </div>
@@ -680,8 +734,8 @@ const CreateCCF = ({ getAllCCFData, setOpenCCF }) => {
 };
 
 export default CreateCCF;
-
-const ComplaintsOptions = [
+const complaintType = ["Account", "Factory"];
+const ComplaintsFor = [
   "Account",
   "Product",
   "Dispatch and Logistic",

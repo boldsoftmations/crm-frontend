@@ -408,6 +408,17 @@ const getAllComplaintsList = (page, department) => {
 
   return CustomAxios.get(`/api/customer/ccf-choice/?${params.toString()}`);
 };
+const getAllComplaintsListData = (type, department) => {
+  const params = new URLSearchParams();
+  if (type) {
+    params.append("type", type);
+  }
+  if (department) {
+    params.append("department", department);
+  }
+
+  return CustomAxios.get(`/api/customer/ccf-choice/?${params.toString()}`);
+};
 
 const getProductBaseCustomer = (description, customerName, product) => {
   const params = new URLSearchParams();
@@ -525,6 +536,7 @@ const CustomerServices = {
   getAllClosedCCF,
   createComplaintpes,
   getAllComplaintsList,
+  getAllComplaintsListData,
   getProductBaseCustomer,
   getAllDescription,
   CreateCapa,

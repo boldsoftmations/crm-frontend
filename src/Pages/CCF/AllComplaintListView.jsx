@@ -21,6 +21,7 @@ import { Popup } from "../../Components/Popup";
 import AddCCFcomplaintsType from "./AddCCFcomplaintsType";
 import { CustomPagination } from "../../Components/CustomPagination";
 import CustomerServices from "../../services/CustomerService";
+import CustomAutocomplete from "../../Components/CustomAutocomplete";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -105,7 +106,7 @@ export const AllComplaintListView = () => {
           >
             <Grid container spacing={2} alignItems="center">
               {/* Search Component on the left */}
-              <Grid item xs={12} md={4}>
+              <Grid item xs={12} md={3}>
                 <SearchComponent
                   onSearch={handleSearch}
                   onReset={handleReset}
@@ -130,10 +131,27 @@ export const AllComplaintListView = () => {
                   Complaints Choice
                 </h3>
               </Grid>
+              <Grid item xs={12} md={3}>
+                <CustomAutocomplete
+                  fullWidth
+                  size="small"
+                  disablePortal
+                  id="combo-box-stage"
+                  onChange={(e, value) => setSearchQuery(value)}
+                  options={[
+                    "Account",
+                    "Product",
+                    "Dispatch and Logistic",
+                    "Sales Person",
+                  ]}
+                  getOptionLabel={(option) => option}
+                  label="Filter By "
+                />
+              </Grid>
               <Grid
                 item
                 xs={12}
-                md={4}
+                md={2}
                 sx={{
                   display: "flex",
                   justifyContent: { xs: "center", md: "flex-end" },

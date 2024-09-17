@@ -98,15 +98,27 @@ const ComplainPdf = ({ pdfData }) => {
             </Box>
           </Box>
           <Divider></Divider>
+
           <Box
             sx={{
               textAlign: "center",
-              paddingTop: 2,
+              padding: 2,
               paddingBottom: 0,
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: "1.5rem",
+              backgroundColor: "rgba(255, 255, 255, 1)", // Corrected the backgroundColor value
+              display: "flex",
             }}
           >
-            <p> Complaint to: {pdfData.department}</p>
+            <p>
+              Complaint to: <strong>{pdfData.department}</strong>
+            </p>
+            <p>
+              Complaint Type: <strong>{pdfData.complain_type}</strong>
+            </p>
           </Box>
+
           <Divider></Divider>
           <Box sx={{ padding: 2 }}>
             <Grid container spacing={2}>
@@ -153,9 +165,9 @@ const ComplainPdf = ({ pdfData }) => {
                   fontWeight="bold"
                   color="textSecondary"
                 >
-                  Complaint Type:
+                  Complaint For:
                 </Typography>
-                <Typography variant="body1">{pdfData.complain_type}</Typography>
+                <Typography variant="body1">{pdfData.complain_for}</Typography>
                 <Typography
                   variant="body1"
                   fontWeight="bold"

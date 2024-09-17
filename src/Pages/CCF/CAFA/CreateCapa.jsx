@@ -12,17 +12,22 @@ import {
   IconButton,
   ListItemText,
   Typography,
+  Chip,
+  Divider,
 } from "@mui/material";
 
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
 import CustomerServices from "../../../services/CustomerService";
 import { CustomLoader } from "../../../Components/CustomLoader";
-import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import DeleteIcon from "@mui/icons-material/Delete";
+import CustomTextField from "../../../Components/CustomTextField";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+
 const CreateCapa = ({ recordForEdit, setOpenCapa }) => {
+  console.log("recordForEdit", recordForEdit);
   const [formData, setFormData] = useState({
     ccf: recordForEdit && recordForEdit.id,
-    complaint: "",
+    complaint: (recordForEdit && recordForEdit.complaint) || "",
     root_cause: "",
     cap: "",
     pap: "",
@@ -44,16 +49,6 @@ const CreateCapa = ({ recordForEdit, setOpenCapa }) => {
     }
   };
 
-  const validate = () => {
-    let tempErrors = {};
-    if (!formData.complaint) tempErrors.complaint = "Complaint is required.";
-    if (!formData.root_cause) tempErrors.root_cause = "Root Cause is required.";
-    if (!formData.cap) tempErrors.cap = "Corrective Action Plan is required.";
-    if (!formData.pap) tempErrors.pap = "Preventive Action Plan is required.";
-    if (!formData.ev) tempErrors.ev = "Effectiveness Verified is required.";
-    setErrors(tempErrors);
-    return Object.keys(tempErrors).length === 0;
-  };
   const handleFileChange = (e) => {
     const newFiles = Array.from(e.target.files);
     const existingFiles = files.map((file) => file.name);
@@ -151,7 +146,7 @@ const CreateCapa = ({ recordForEdit, setOpenCapa }) => {
   };
   console.log(formData);
   return (
-    <Container maxWidth="md">
+    <Container maxWidth="lg">
       <CustomSnackbar
         open={open}
         message={message}
@@ -163,7 +158,7 @@ const CreateCapa = ({ recordForEdit, setOpenCapa }) => {
         <CardContent>
           <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
             <Grid container spacing={2}>
-              <Grid item xs={12}>
+              <Grid item xs={6}>
                 <TextField
                   fullWidth
                   size="small"
@@ -174,8 +169,109 @@ const CreateCapa = ({ recordForEdit, setOpenCapa }) => {
                   inputProps={{ readOnly: true }}
                   error={!!errors.ccf}
                   helperText={errors.ccf}
+                  disabled
                 />
               </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  size="small"
+                  label="Customer Name."
+                  value={recordForEdit && recordForEdit.customer}
+                  inputProps={{ readOnly: true }}
+                  disabled
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <CustomAutocomplete
+                  fullWidth
+                  multiple
+                  inputProps={{ readOnly: true }}
+                  disabled
+                  size="small"
+                  disablePortal
+                  id="combo-box-demo"
+                  options={
+                    recordForEdit && recordForEdit.batch_nos
+                      ? recordForEdit.batch_nos
+                      : []
+                  } // Ensure options are set properly
+                  value={
+                    recordForEdit && recordForEdit.batch_nos
+                      ? recordForEdit.batch_nos
+                      : []
+                  } // Set the value to all options
+                  getOptionLabel={(option) => option} // Adjusted to get the label correctly
+                  renderInput={(params) => (
+                    <CustomTextField {...params} label="Batch No" />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <CustomAutocomplete
+                  fullWidth
+                  multiple
+                  inputProps={{ readOnly: true }}
+                  disabled
+                  size="small"
+                  disablePortal
+                  id="combo-box-demo"
+                  options={
+                    recordForEdit && recordForEdit.invoices
+                      ? recordForEdit.invoices
+                      : []
+                  } // Ensure options are set properly
+                  value={
+                    recordForEdit && recordForEdit.invoices
+                      ? recordForEdit.invoices
+                      : []
+                  } // Set the value to all options
+                  getOptionLabel={(option) => option} // Adjusted to get the label correctly
+                  renderInput={(params) => (
+                    <CustomTextField {...params} label="Invoice No" />
+                  )}
+                />
+              </Grid>
+
+              <Grid item xs={12}>
+                <Divider>
+                  <Chip label="PRODUCT" />
+                </Divider>
+              </Grid>
+              {recordForEdit &&
+                recordForEdit.products &&
+                recordForEdit.products.map((input, index) => {
+                  return (
+                    <React.Fragment key={index}>
+                      {" "}
+                      {/* Use React.Fragment with a key for each item */}
+                      <Grid item xs={12} sm={6}>
+                        <CustomTextField
+                          fullWidth
+                          name="product"
+                          size="small"
+                          label="Product"
+                          variant="outlined"
+                          value={input.product}
+                          inputProps={{ readOnly: true }}
+                          disabled
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <CustomTextField
+                          fullWidth
+                          name="quantity"
+                          size="small"
+                          label="Quantity"
+                          variant="outlined"
+                          value={input.quantity}
+                          inputProps={{ readOnly: true }}
+                          disabled
+                        />
+                      </Grid>
+                    </React.Fragment>
+                  );
+                })}
               <Grid item xs={12}>
                 <TextField
                   fullWidth
@@ -196,7 +292,7 @@ const CreateCapa = ({ recordForEdit, setOpenCapa }) => {
                   multiline
                   rows={4}
                   size="small"
-                  label="Root Cause"
+                  label="Root Cause (5 Whys)"
                   name="root_cause"
                   value={formData.root_cause}
                   onChange={handleChange}
