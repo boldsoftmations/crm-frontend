@@ -15,7 +15,7 @@ export const DesignationView = () => {
   const [designations, setDesignations] = useState([]);
   const [openCreatePopup, setOpenCreatePopup] = useState(false);
   const [openUpdatePopup, setOpenUpdatePopup] = useState(false);
-  const [recordForEdit, setRecordForEdit] = useState(false);
+  const [recordForEdit, setRecordForEdit] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
 
@@ -53,12 +53,13 @@ export const DesignationView = () => {
     setOpenUpdatePopup(true);
   };
 
-  const TableHeader = ["ID", "Designation", "Action"];
+  const TableHeader = ["ID", "Department", "Designation", "Action"];
   let TableData = [];
 
   if (Array.isArray(designations)) {
     TableData = designations.map((designation) => ({
       id: designation.id,
+      department: designation.department,
       name: designation.designation,
     }));
   }

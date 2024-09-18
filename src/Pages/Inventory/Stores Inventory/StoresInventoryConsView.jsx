@@ -44,10 +44,19 @@ export const StoresInventoryConsView = () => {
     row.product__name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const Tableheaders = ["PRODUCT", "SELLER UNIT", "UNIT", "QUANTITY"];
+  const Tableheaders = [
+    "PRODUCT",
+    "DESCRIPTION",
+    "SIZE",
+    "SELLER UNIT",
+    "UNIT",
+    "QUANTITY",
+  ];
 
   const headers = [
     { label: "PRODUCT", key: "product" },
+    { label: "DESCRIPTION", key: "description" },
+    { label: "SIZE", key: "size" },
     { label: "SELLER UNIT", key: "seller_account" },
     { label: "UNIT", key: "unit" },
     { label: "QUANTITY", key: "quantity" },
@@ -56,6 +65,8 @@ export const StoresInventoryConsView = () => {
   const data = filteredData.map((row) => {
     return {
       product: row.product__name,
+      description: row.description,
+      size: row.size,
       seller_account: row.seller_account,
       unit: row.product__unit,
       quantity: row.quantity,

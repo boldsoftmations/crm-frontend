@@ -120,7 +120,8 @@ const getApplicants = (
   job__designation__designation,
   job__department__department,
   stage = "Screening", // Default stage
-  status = "Open" // Default status
+  status = "Open", // Default status
+  date
 ) => {
   const params = new URLSearchParams();
 
@@ -151,6 +152,10 @@ const getApplicants = (
   // Only append status if it's not null or undefined
   if (status !== null && status !== undefined) {
     params.append("status", status);
+  }
+
+  if (date) {
+    params.append("date", date);
   }
 
   return CustomAxios.get(`api/hr/applicant/?${params.toString()}`);
@@ -350,6 +355,9 @@ const getMCQQuetion = (page, filterValue) => {
   }
   return CustomAxios.get(`/api/hr/mcq/?${params.toString()}`);
 };
+const getDepartmentList = () => {
+  return CustomAxios.get(`/api/hr/department/?type=list`);
+};
 
 const Hr = {
   getDesignationsData,
@@ -395,6 +403,7 @@ const Hr = {
   createMCQQuetion,
   getMCQQuetion,
   getCompetitorCandidates,
+  getDepartmentList,
 };
 
 export default Hr;
