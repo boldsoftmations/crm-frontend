@@ -250,6 +250,22 @@ const getSalesInvoiceData = (
   );
 };
 
+const getTallyInvoiceData = (startDate, endDate) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
+
+  if (startDate) {
+    params.append("start_date", startDate);
+  }
+
+  if (endDate) {
+    params.append("end_date", endDate);
+  }
+
+  // Sending a GET request with query parameters
+  return CustomAxios.get(`/api/invoice/tally-invoice/?${params.toString()}`);
+};
+
 const createSalesinvoiceData = (data) => {
   return CustomAxios.post("/api/invoice/list-sales-invoice/", data);
 };
@@ -435,6 +451,7 @@ const InvoiceServices = {
   getTotalPendingQuantity,
   getAllOrderBookDataWithSearch,
   getSalesInvoiceData,
+  getTallyInvoiceData,
   createSalesinvoiceData,
   cancelSalesInvoice,
   getSalesnvoiceDataById,

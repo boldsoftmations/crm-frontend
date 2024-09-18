@@ -4,7 +4,6 @@ import { useSelector } from "react-redux";
 import { ChangePassword } from "./../Pages/Auth/ChangePassword";
 import { ForgotPassword } from "./../Pages/Auth/ForgotPassword";
 import { SellerAccount } from "./../Pages/Invoice/Seller Account/SellerAccount";
-import { SalesInvoiceView } from "./../Pages/Invoice/SalesInvoice/SalesInvoiceView";
 import { Auths } from "../Pages/Auth/Auths";
 import { Profile } from "./../Pages/Profile/Profile";
 import { VendorView } from "../Pages/Vendor/VendorInventoryDetail/VendorView";
@@ -39,6 +38,7 @@ import { SalesReturnAllTabView } from "../Pages/SalesReturn/SalesReturnAllTabVie
 import { DebitCreditAllTabView } from "../Pages/DebitCredit/DebitCreditAllTabView";
 import { AllCCFtab } from "../Pages/CCF/AllCCFtab";
 import { AllComplaintListView } from "../Pages/CCF/AllComplaintListView";
+import { SalesInvoiceAllTab } from "../Pages/Invoice/SalesInvoice/SalesInvoiceAllTab";
 
 const PrivateRoute = ({ children, redirectTo = "/" }) => {
   const tokenData = useSelector((state) => state.auth);
@@ -175,7 +175,7 @@ export const RouteScreen = () => {
             path="/invoice/sales-invoice"
             element={
               <PrivateRoute>
-                <SalesInvoiceView />
+                <SalesInvoiceAllTab />
               </PrivateRoute>
             }
           />
