@@ -13,7 +13,7 @@ const DetailViewPage = ({ data }) => {
     <Container>
       <Paper sx={{ p: 3 }} style={{ width: "700px" }}>
         <Typography variant="h6" gutterBottom>
-          Role: {data.name}
+          Role: {data.designation}
         </Typography>
         <Divider sx={{ mb: 2 }} />
         <Grid container>

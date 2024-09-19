@@ -39,6 +39,7 @@ export const ApplicantListView = () => {
     department: "",
     stage: "",
     status: "",
+    date: "",
   });
 
   useEffect(() => {
@@ -87,7 +88,8 @@ export const ApplicantListView = () => {
         filters.designations,
         filters.department,
         filters.stage,
-        filters.status
+        filters.status,
+        filters.date
       );
       setApplicants(response.data.results);
       const total = response.data.count;
@@ -107,6 +109,7 @@ export const ApplicantListView = () => {
     filters.department,
     filters.stage,
     filters.status,
+    filters.date,
   ]);
 
   const addNewApplicant = async (newApplicant) => {
@@ -198,36 +201,52 @@ export const ApplicantListView = () => {
                     getOptionLabel={(option) => option}
                     label="Filter By Stage"
                   />
-                  <CustomAutocomplete
-                    fullWidth
-                    name="status"
-                    size="small"
-                    disablePortal
-                    id="combo-box-status"
-                    onChange={(e, value) =>
-                      handleFilterChange(e, value, "status")
-                    }
-                    options={status}
-                    getOptionLabel={(option) => option}
-                    label="Filter By Status"
-                  />
                 </Box>
               </Grid>
             </Grid>
           </Box>
-          <Box display="flex" justifyContent="center" marginBottom="10px">
-            <h3
-              style={{
-                marginBottom: "1em",
-                fontSize: "24px",
-                color: "rgb(34, 34, 34)",
-                fontWeight: 800,
-                textAlign: "center",
-              }}
-            >
-              Candidate List
-            </h3>
-          </Box>
+          <Grid container spacing={2} alignItems="center" mb={3}>
+            <Grid item xs={12} sm={4}>
+              <CustomAutocomplete
+                fullWidth
+                name="date"
+                size="small"
+                disablePortal
+                id="combo-box-date"
+                onChange={(e, value) => handleFilterChange(e, value, "date")}
+                options={filterDate}
+                getOptionLabel={(option) => option}
+                label="Filter By Date"
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <Box display="flex" justifyContent="center" marginBottom="10px">
+                <h3
+                  style={{
+                    fontSize: "24px",
+                    color: "rgb(34, 34, 34)",
+                    fontWeight: 800,
+                    textAlign: "center",
+                  }}
+                >
+                  Candidate List
+                </h3>
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <CustomAutocomplete
+                fullWidth
+                name="status"
+                size="small"
+                disablePortal
+                id="combo-box-status"
+                onChange={(e, value) => handleFilterChange(e, value, "status")}
+                options={status}
+                getOptionLabel={(option) => option}
+                label="Filter By Status"
+              />
+            </Grid>
+          </Grid>
 
           <TableContainer
             sx={{
@@ -358,6 +377,14 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 const shortList = ["Screening", "Round1", "Round2"];
+const filterDate = [
+  "Today",
+  "Yesterday",
+  "Last 10 days",
+  "Last 5 days",
+  "Last 15 days",
+  "Last 1 month",
+];
 const status = [
   "Shortlisted",
   "Selected",

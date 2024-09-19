@@ -20,6 +20,7 @@ import { CustomLoader } from "../../../Components/CustomLoader";
 import CreateCompetancyAttribute from "./CreateCompentancyAttribute";
 import { Popup } from "../../../Components/Popup";
 import DetailView from "./DetailView";
+import UpdateCompetancyAttribute from "./UpdateCompentencyAttribute";
 
 export const ViewCompentancyAttribute = () => {
   const [competancyData, setCompetancyData] = useState([]);
@@ -28,13 +29,14 @@ export const ViewCompentancyAttribute = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [openAttributePopUp, setOpenAttributePopUp] = useState(false);
+  const [openPopupUpdate, setOpenPopupUpdate] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
   const [openPopup, setOpenPopUp] = useState(false);
 
   const getCompetancyData = async () => {
     try {
       setLoader(true);
-      const response = await Hr.getCompentancyAttribute();
+      const response = await Hr.getCompentancyAttribute(currentPage);
       setCompetancyData(response.data.results);
       const total = response.data.count;
       setTotalPages(Math.ceil(total / 25));
@@ -47,7 +49,7 @@ export const ViewCompentancyAttribute = () => {
 
   useEffect(() => {
     getCompetancyData();
-  }, []);
+  }, [currentPage]);
 
   const handleSearch = (query) => {
     setSearchQuery(query);
@@ -64,6 +66,10 @@ export const ViewCompentancyAttribute = () => {
 
   const handleView = (data) => {
     setOpenPopUp(true);
+    setSelectedRow(data);
+  };
+  const handleUpdate = (data) => {
+    setOpenPopupUpdate(true);
     setSelectedRow(data);
   };
 
@@ -113,7 +119,7 @@ export const ViewCompentancyAttribute = () => {
           <Table sx={{ minWidth: 1200 }} stickyHeader aria-label="sticky table">
             <TableHead>
               <TableRow>
-                <StyledTableCell align="center">Role</StyledTableCell>
+                <StyledTableCell align="center">Designation</StyledTableCell>
                 <StyledTableCell align="center">Skill</StyledTableCell>
                 <StyledTableCell align="center">Knowledge</StyledTableCell>
                 <StyledTableCell align="center">Self-Image </StyledTableCell>
@@ -125,7 +131,9 @@ export const ViewCompentancyAttribute = () => {
             <TableBody>
               {competancyData.map((row, i) => (
                 <StyledTableRow key={i}>
-                  <StyledTableCell align="center">{row.role}</StyledTableCell>
+                  <StyledTableCell align="center">
+                    {row.designation}
+                  </StyledTableCell>
                   <StyledTableCell align="center">
                     {row.skill[0]}
                   </StyledTableCell>
@@ -142,7 +150,20 @@ export const ViewCompentancyAttribute = () => {
                     {row.motive[0]}
                   </StyledTableCell>
                   <StyledTableCell align="center">
-                    <Button onClick={() => handleView(row)}>View</Button>
+                    <Button
+                      variant="text"
+                      color="info"
+                      onClick={() => handleView(row)}
+                    >
+                      View
+                    </Button>
+                    <Button
+                      variant="text"
+                      color="success"
+                      onClick={() => handleUpdate(row)}
+                    >
+                      Edit
+                    </Button>
                   </StyledTableCell>
                 </StyledTableRow>
               ))}
@@ -164,6 +185,19 @@ export const ViewCompentancyAttribute = () => {
           <CreateCompetancyAttribute
             setOpenAttributePopUp={setOpenAttributePopUp}
             getCompetancyData={getCompetancyData}
+          />
+        </Popup>
+        <Popup
+          maxWidth="md"
+          title="Update Competency
+ Attribute"
+          openPopup={openPopupUpdate}
+          setOpenPopup={setOpenPopupUpdate}
+        >
+          <UpdateCompetancyAttribute
+            setOpenAttributePopUp={setOpenPopupUpdate}
+            getCompetancyData={getCompetancyData}
+            data={selectedRow}
           />
         </Popup>
         <Popup

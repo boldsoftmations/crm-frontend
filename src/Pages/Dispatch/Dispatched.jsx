@@ -29,6 +29,8 @@ import moment from "moment";
 import SearchComponent from "../../Components/SearchComponent ";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../Components/MessageAlert";
+import CustomAutocomplete from "../../Components/CustomAutocomplete";
+import UserProfileService from "../../services/UserProfileService";
 
 export const Dispatched = () => {
   const [dispatchData, setDispatchData] = useState([]);
@@ -36,18 +38,35 @@ export const Dispatched = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [totalPages, setTotalPages] = useState(0);
+  const [userList, setUserList] = useState([]);
+  const [unitFilter, setUnitFilter] = useState("");
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
+  const getuserProfile = async () => {
+    try {
+      setOpen(true);
+      const response = await UserProfileService.getProfile();
+      setUserList(response.data.sales_users);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setOpen(false);
+    }
+  };
+  useEffect(() => {
+    getuserProfile();
+  }, []);
   const getAllDispatchDetails = useCallback(async () => {
     try {
       setOpen(true);
       const response = await InvoiceServices.getDispatchData(
         true,
         currentPage,
-        searchQuery
+        searchQuery,
+        unitFilter
       );
       setDispatchData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -56,11 +75,11 @@ export const Dispatched = () => {
     } finally {
       setOpen(false);
     }
-  }, [currentPage, searchQuery]);
+  }, [currentPage, searchQuery, unitFilter]);
 
   useEffect(() => {
     getAllDispatchDetails();
-  }, [currentPage, searchQuery]);
+  }, [currentPage, searchQuery, unitFilter]);
 
   const handleSearch = (query) => {
     setSearchQuery(query);
@@ -90,6 +109,17 @@ export const Dispatched = () => {
           <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
             <Grid container spacing={2} alignItems="center">
               <Grid item xs={12} sm={3}>
+                <CustomAutocomplete
+                  sx={{ flexGrow: 1, mr: 1 }}
+                  size="small"
+                  value={unitFilter}
+                  onChange={(event, newValue) => setUnitFilter(newValue)}
+                  options={userList.map((option) => option.email)}
+                  getOptionLabel={(option) => option}
+                  label="Filter By Person"
+                />
+              </Grid>
+              <Grid item xs={12} sm={3}>
                 <SearchComponent
                   onSearch={handleSearch}
                   onReset={handleReset}
@@ -103,7 +133,7 @@ export const Dispatched = () => {
                     fontWeight: 800,
                   }}
                 >
-                  Pending Dispatch
+                  Dispatched
                 </h3>
               </Grid>
             </Grid>
@@ -133,6 +163,8 @@ export const Dispatched = () => {
                   <StyledTableCell align="center">
                     Sales Invoice
                   </StyledTableCell>
+                  <StyledTableCell align="center">User</StyledTableCell>
+                  <StyledTableCell align="center">PI No</StyledTableCell>
                   <StyledTableCell align="center">Customer</StyledTableCell>
                   <StyledTableCell align="center">Date</StyledTableCell>
                   <StyledTableCell align="center">
@@ -204,6 +236,12 @@ function Row(props) {
           </IconButton>
         </TableCell>
         <TableCell align="center">{row.sales_invoice}</TableCell>
+        <TableCell align="center">{row.user}</TableCell>
+        <TableCell align="center">
+          {row.pi_list && row.pi_list.length > 0
+            ? row.pi_list.join(", ")
+            : "NA"}
+        </TableCell>
         <TableCell align="center">{row.customer}</TableCell>
         <TableCell align="center">
           {moment(row.date).format("DD-MM-YYYY")}
@@ -220,25 +258,20 @@ function Row(props) {
             </Button>
           </TableCell>
         )}
-        {/* {userData.groups.toString() === "Customer Service" && (
+        {(userData.groups.includes("Factory-Delhi-Dispatch") ||
+          userData.groups.includes("Factory-Mumbai-Dispatch") ||
+          userData.groups.includes("Director") ||
+          userData.groups.includes("Account")) && (
           <TableCell align="center">
-          <Button
-              variant="outlined"
-              onClick={() => handleClickPODCOPY(row)}
+            <button
+              type="button"
+              class="btn btn-primary"
+              onClick={() => handleChange(row)}
             >
-              Download
-            </Button>
+              View
+            </button>
           </TableCell>
-        )} */}
-        <TableCell align="center">
-          <button
-            type="button"
-            class="btn btn-primary"
-            onClick={() => handleChange(row)}
-          >
-            View
-          </button>
-        </TableCell>
+        )}
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>

@@ -18,6 +18,7 @@ import { Popup } from "../../../Components/Popup";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import { CustomPagination } from "../../../Components/CustomPagination";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
+import UpdateInterviewQuestion from "./UpdateInterviewQuestion";
 
 const ViewMCQs = () => {
   const [mcqData, setMcqData] = useState([]);
@@ -26,7 +27,8 @@ const ViewMCQs = () => {
   const [filterValue, setFilterValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const [department, setDepartment] = useState([]);
+  const [designation, setDesignation] = useState([]);
+  const [selectedRow, setSelectedRow] = useState(null);
   const [alertMsg, setAlertMsg] = useState({
     message: "",
     severity: "",
@@ -53,25 +55,27 @@ const ViewMCQs = () => {
     }
   }, [currentPage, filterValue]);
 
-  const getUserRoleList = useCallback(async () => {
-    try {
-      const response = await Hr.getDepartment();
-      setDepartment(response.data);
-    } catch (error) {
-      console.error("Error fetching department list:", error);
-      setDepartment([]); // Ensure department is always an array
-    }
-  }, []);
-
   useEffect(() => {
-    getUserRoleList();
-  }, [getUserRoleList]);
+    const fetchDepartmentList = async () => {
+      try {
+        const response = await Hr.getDesginationList();
+        setDesignation(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchDepartmentList();
+  }, []);
 
   useEffect(() => {
     getMCQQuetion();
   }, [getMCQQuetion]);
 
   const handleAddQuestion = () => setOpenQuestionPopUp(true);
+  const handleEdit = (data) => {
+    setSelectedRow(data);
+    setOpenQuestionPopUp(true);
+  };
 
   const handlePageChange = (_, value) => setCurrentPage(value);
 
@@ -102,14 +106,14 @@ const ViewMCQs = () => {
             <Grid item xs={12} sm={4}>
               <CustomAutocomplete
                 fullWidth
-                name="department"
+                name="designation"
                 size="small"
                 disablePortal
                 id="combo-box-stage"
                 onChange={(e, value) => setFilterValue(value)}
-                options={department.map((option) => option.department)}
+                options={designation.map((option) => option.designation)}
                 getOptionLabel={(option) => option}
-                label="Filter By Department"
+                label="Filter By Designation"
               />
             </Grid>
             <Grid item xs={12} sm={4}>
@@ -143,7 +147,7 @@ const ViewMCQs = () => {
                 <TableHead>
                   <TableRow>
                     <TableCell>
-                      <strong>Department</strong>
+                      <strong>Designation</strong>
                     </TableCell>
                     <TableCell>
                       <strong>Question</strong>
@@ -154,12 +158,13 @@ const ViewMCQs = () => {
                     <TableCell>
                       <strong>Correct Answer</strong>
                     </TableCell>
+                    <TableCell>Action</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {mcqData.map((mcq) => (
                     <TableRow key={mcq.id}>
-                      <TableCell>{mcq.department}</TableCell>
+                      <TableCell>{mcq.designation}</TableCell>
                       <TableCell>{mcq.question}</TableCell>
                       <TableCell>
                         <ul>
@@ -169,6 +174,17 @@ const ViewMCQs = () => {
                         </ul>
                       </TableCell>
                       <TableCell>{mcq.answer}</TableCell>
+                      <TableCell>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          onClick={() => {
+                            handleEdit(mcq);
+                          }}
+                        >
+                          Edit
+                        </Button>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -195,6 +211,18 @@ const ViewMCQs = () => {
         <CreateInterviewQuestion
           getMCQQuetion={getMCQQuetion}
           setOpenQuestionPopUp={setOpenQuestionPopUp}
+        />
+      </Popup>
+      <Popup
+        fullScreen={true}
+        title="Update Interview Question"
+        openPopup={openQuestionPopUp}
+        setOpenPopup={setOpenQuestionPopUp}
+      >
+        <UpdateInterviewQuestion
+          getMCQQuetion={getMCQQuetion}
+          setOpenQuestionPopUp={setOpenQuestionPopUp}
+          data={selectedRow}
         />
       </Popup>
     </>

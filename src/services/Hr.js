@@ -15,10 +15,8 @@ const getDesignationsData = (page, searchQuery) => {
   return CustomAxios.get(`api/hr/designation/?${params.toString()}`);
 };
 
-const addDesignation = (designationName) => {
-  return CustomAxios.post("/api/hr/designation/", {
-    designation: designationName,
-  });
+const addDesignation = (data) => {
+  return CustomAxios.post("/api/hr/designation/", data);
 };
 
 const updateDesignations = (id, data) => {
@@ -299,14 +297,25 @@ const getUserGroupList = () => {
 const createCompetancyAttribute = (data) => {
   return CustomAxios.post(`/api/hr/competency-attribute/`, data);
 };
+const UpdateCompetancyAttribute = (id, data) => {
+  return CustomAxios.patch(`/api/hr/competency-attribute/${id}/`, data);
+};
 
-const getCompentancyAttribute = () => {
-  return CustomAxios.get(`/api/hr/competency-attribute/`);
+const getCompentancyAttribute = (page) => {
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+  return CustomAxios.get(`/api/hr/competency-attribute/?${params.toString()}`);
 };
 
 // role clarity
 const createRoleClarity = (data) => {
   return CustomAxios.post(`/api/hr/role/`, data);
+};
+
+const UpdateRoleClarity = (id, data) => {
+  return CustomAxios.patch(`/api/hr/role/${id}/`, data);
 };
 
 const getRoleClarity = (page, searchValue) => {
@@ -326,6 +335,10 @@ const createJobDescription = (data) => {
   return CustomAxios.post(`/api/hr/job-description/`, data);
 };
 
+const UpdateJobDescription = (id, data) => {
+  return CustomAxios.patch(`/api/hr/job-description/${id}/`, data);
+};
+
 const getJobDescription = (page, searchValue) => {
   const params = new URLSearchParams();
 
@@ -342,6 +355,9 @@ const getJobDescription = (page, searchValue) => {
 const createMCQQuetion = (data) => {
   return CustomAxios.post(`api/hr/mcq/`, data);
 };
+const UpdateMCQQuetion = (id, data) => {
+  return CustomAxios.patch(`api/hr/mcq/${id}/`, data);
+};
 
 const getMCQQuetion = (page, filterValue) => {
   const params = new URLSearchParams();
@@ -357,6 +373,9 @@ const getMCQQuetion = (page, filterValue) => {
 };
 const getDepartmentList = () => {
   return CustomAxios.get(`/api/hr/department/?type=list`);
+};
+const getDesginationList = () => {
+  return CustomAxios.get(`/api/hr/designation/?type=list`);
 };
 
 const Hr = {
@@ -395,15 +414,20 @@ const Hr = {
   getAttributeList,
   getUserGroupList,
   createCompetancyAttribute,
+  UpdateCompetancyAttribute,
   getCompentancyAttribute,
   createRoleClarity,
+  UpdateRoleClarity,
   getRoleClarity,
   createJobDescription,
+  UpdateJobDescription,
   getJobDescription,
   createMCQQuetion,
+  UpdateMCQQuetion,
   getMCQQuetion,
   getCompetitorCandidates,
   getDepartmentList,
+  getDesginationList,
 };
 
 export default Hr;

@@ -34,6 +34,7 @@ import { useNotificationHandling } from "../../Components/useNotificationHandlin
 import { MessageAlert } from "../../Components/MessageAlert";
 import SearchComponent from "../../Components/SearchComponent ";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
+import UserProfileService from "../../services/UserProfileService";
 
 export const ViewDispatch = () => {
   const [dispatchData, setDispatchData] = useState([]);
@@ -41,20 +42,36 @@ export const ViewDispatch = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
+  const [userList, setUserList] = useState([]);
   const [unitFilter, setUnitFilter] = useState("");
   const data = useSelector((state) => state.auth);
   const users = data.profile;
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
-  const getAllDispatchDetails = useCallback(async (page, filter, query) => {
+  const getuserProfile = async () => {
+    try {
+      setOpen(true);
+      const response = await UserProfileService.getProfile();
+      setUserList(response.data.sales_users);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setOpen(false);
+    }
+  };
+  useEffect(() => {
+    getuserProfile();
+  }, []);
+
+  const getAllDispatchDetails = useCallback(async () => {
     try {
       setOpen(true);
       const response = await InvoiceServices.getDispatchData(
         "false",
-        page,
-        filter,
-        query
+        currentPage,
+        searchQuery,
+        unitFilter
       );
       setDispatchData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -63,19 +80,14 @@ export const ViewDispatch = () => {
     } finally {
       setOpen(false);
     }
-  }, []);
+  }, [currentPage, searchQuery, unitFilter]);
 
   useEffect(() => {
-    getAllDispatchDetails(currentPage, unitFilter, searchQuery);
+    getAllDispatchDetails();
   }, [currentPage, unitFilter, searchQuery]);
 
   const handleSearch = (query) => {
     setSearchQuery(query);
-    setCurrentPage(1);
-  };
-
-  const handleFilter = (query) => {
-    setUnitFilter(query);
     setCurrentPage(1);
   };
 
@@ -106,10 +118,10 @@ export const ViewDispatch = () => {
                   sx={{ flexGrow: 1, mr: 1 }}
                   size="small"
                   value={unitFilter}
-                  onChange={(event, newValue) => handleFilter(newValue)}
-                  options={UnitOption}
+                  onChange={(event, newValue) => setUnitFilter(newValue)}
+                  options={userList.map((option) => option.email)}
                   getOptionLabel={(option) => option}
-                  label="Filter By Accepted"
+                  label="Filter By Person"
                 />
               </Grid>
               <Grid item xs={12} sm={3}>
@@ -160,6 +172,8 @@ export const ViewDispatch = () => {
                   <StyledTableCell align="center">
                     Sales Invoice
                   </StyledTableCell>
+                  <StyledTableCell align="center">User</StyledTableCell>
+                  <StyledTableCell align="center">PI No</StyledTableCell>
                   <StyledTableCell align="center">Customer</StyledTableCell>
                   <StyledTableCell align="center">Date</StyledTableCell>
                   <StyledTableCell align="center">
@@ -243,6 +257,12 @@ function Row(props) {
           </IconButton>
         </TableCell>
         <TableCell align="center">{row.sales_invoice}</TableCell>
+        <TableCell align="center">{row.user}</TableCell>
+        <TableCell align="center">
+          {row.pi_list && row.pi_list.length > 0
+            ? row.pi_list.join(", ")
+            : "NA"}
+        </TableCell>
         <TableCell align="center">{row.customer}</TableCell>
         <TableCell align="center">
           {moment(row.date).format("DD-MM-YYYY")}
@@ -342,8 +362,6 @@ function Row(props) {
     </React.Fragment>
   );
 }
-
-const UnitOption = ["customer", "invoice"];
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {

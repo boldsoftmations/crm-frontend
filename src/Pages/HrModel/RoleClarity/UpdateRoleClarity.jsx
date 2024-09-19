@@ -4,13 +4,13 @@ import Hr from "../../../services/Hr";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
-const CreateRoleForm = ({ setOpenPopupRoleClarity, getRoleClarityData }) => {
+const UpdateRoleForm = ({ setOpenPopupUpdate, getRoleClarityData, data }) => {
   const [formData, setFormData] = useState({
-    designation: "",
-    role_definition: "",
-    responsibility_deliverable: "",
-    tasks_activities: "",
-    measurement_metrics: "",
+    designation: data.designation || "",
+    role_definition: data.role_definition || "",
+    responsibility_deliverable: data.responsibility_deliverable || "",
+    tasks_activities: data.tasks_activities || "",
+    measurement_metrics: data.measurement_metrics || "",
   });
   const [loading, setLoading] = useState(false);
   const [role, setRole] = useState([]);
@@ -40,15 +40,15 @@ const CreateRoleForm = ({ setOpenPopupRoleClarity, getRoleClarityData }) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await Hr.createRoleClarity(formData);
+      const response = await Hr.UpdateRoleClarity(data.id, formData);
       setAlertMsg({
         open: true,
-        message: response.message || "Role created successfully",
+        message: response.message || "Role updated successfully",
         severity: "success",
       });
       setTimeout(() => {
         getRoleClarityData();
-        setOpenPopupRoleClarity(false);
+        setOpenPopupUpdate(false);
       }, 1000);
     } catch (error) {
       setAlertMsg({
@@ -160,4 +160,4 @@ const CreateRoleForm = ({ setOpenPopupRoleClarity, getRoleClarityData }) => {
   );
 };
 
-export default CreateRoleForm;
+export default UpdateRoleForm;

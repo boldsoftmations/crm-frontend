@@ -14,7 +14,12 @@ export const AllDispatchTabView = () => {
   const allTabs = isInGroups(
     "Director",
     "Accounts",
-    "Accounts Billing Department"
+    "Sales Manager",
+    "Sales Executive",
+    "Customer Relationship Manager",
+    "Customer Relationship Executive",
+    "Sales Deputy Manager",
+    "Sales Assistant Deputy Manager"
   );
 
   const twoTabs = isInGroups(

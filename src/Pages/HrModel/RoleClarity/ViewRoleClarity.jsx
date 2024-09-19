@@ -20,6 +20,7 @@ import { CustomLoader } from "../../../Components/CustomLoader";
 import { Popup } from "../../../Components/Popup";
 import CreateRoleForm from "./CreateRoleClarity";
 import DetailViewPage from "./DetailViewPage";
+import UpdateRoleForm from "./UpdateRoleClarity";
 
 export const ViewRoleClarity = () => {
   const [roleClarity, setRoleClarity] = useState([]);
@@ -28,6 +29,7 @@ export const ViewRoleClarity = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [openPopup, setOpenPopUp] = useState(false);
+  const [openPopupUpdate, setOpenPopupUpdate] = useState(false);
   const [openPopupRoleClarity, setOpenPopupRoleClarity] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
 
@@ -65,6 +67,10 @@ export const ViewRoleClarity = () => {
   const handleView = (data) => {
     setSelectedRow(data);
     setOpenPopUp(true);
+  };
+  const handleEdit = (data) => {
+    setSelectedRow(data);
+    setOpenPopupUpdate(true);
   };
 
   return (
@@ -132,7 +138,9 @@ export const ViewRoleClarity = () => {
             <TableBody>
               {roleClarity.map((row, i) => (
                 <StyledTableRow key={i}>
-                  <StyledTableCell align="center">{row.name}</StyledTableCell>
+                  <StyledTableCell align="center">
+                    {row.designation}
+                  </StyledTableCell>
                   <StyledTableCell align="center">
                     {row.role_definition}
                   </StyledTableCell>
@@ -146,8 +154,19 @@ export const ViewRoleClarity = () => {
                     {row.measurement_metrics}
                   </StyledTableCell>
                   <StyledTableCell align="center">
-                    <Button variant="outlined" onClick={() => handleView(row)}>
+                    <Button
+                      variant="text"
+                      color="info"
+                      onClick={() => handleView(row)}
+                    >
                       View
+                    </Button>
+                    <Button
+                      variant="text"
+                      color="success"
+                      onClick={() => handleEdit(row)}
+                    >
+                      Edit
                     </Button>
                   </StyledTableCell>
                 </StyledTableRow>
@@ -179,6 +198,18 @@ export const ViewRoleClarity = () => {
             setOpenPopupRoleClarity={setOpenPopupRoleClarity}
             getRoleClarityData={getRoleClarityData}
           ></CreateRoleForm>
+        </Popup>
+        <Popup
+          fullScreen={true}
+          title={"Update Role Clarity"}
+          openPopup={openPopupUpdate}
+          setOpenPopup={setOpenPopupUpdate}
+        >
+          <UpdateRoleForm
+            setOpenPopupUpdate={setOpenPopupUpdate}
+            getRoleClarityData={getRoleClarityData}
+            data={selectedRow}
+          />
         </Popup>
       </Paper>
     </Grid>

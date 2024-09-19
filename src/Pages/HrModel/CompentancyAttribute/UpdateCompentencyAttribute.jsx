@@ -12,9 +12,10 @@ import Hr from "../../../services/Hr";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
-const CreateCompetancyAttribute = ({
+const UpdateCompetancyAttribute = ({
   getCompetancyData,
   setOpenAttributePopUp,
+  data,
 }) => {
   const [loading, setLoading] = useState(false);
   const [role, setRole] = useState([]);
@@ -26,12 +27,12 @@ const CreateCompetancyAttribute = ({
     Motive: [],
   });
   const [formData, setFormData] = useState({
-    designation: "",
-    skill: [],
-    knowledge: [],
-    self_image: [],
-    trait: [],
-    motive: [],
+    designation: data.designation,
+    skill: data.skill || [],
+    knowledge: data.knowledge || [],
+    self_image: data["self_image"] || [],
+    trait: data.trait || [],
+    motive: data.motive || [],
   });
   const [alertMsg, setAlertMsg] = useState({
     message: "",
@@ -42,7 +43,7 @@ const CreateCompetancyAttribute = ({
   const handleClose = () => {
     setAlertMsg({ open: false });
   };
-
+  console.log("formdata", formData);
   const getAttributeCompetencyList = async () => {
     try {
       const response = await Hr.getAttributeList();
@@ -85,7 +86,7 @@ const CreateCompetancyAttribute = ({
     event.preventDefault();
     setLoading(true);
     try {
-      const response = await Hr.createCompetancyAttribute(formData);
+      const response = await Hr.UpdateCompetancyAttribute(data.id, formData);
       setAlertMsg({
         open: true,
         message: response.message || "Attribute Created Successfully",
@@ -121,7 +122,7 @@ const CreateCompetancyAttribute = ({
             <Grid item xs={12}>
               <CustomAutocomplete
                 options={role.map((option) => option.designation)}
-                value={formData.role}
+                value={formData.designation}
                 onChange={(e, value) =>
                   setFormData((prev) => ({ ...prev, designation: value }))
                 }
@@ -244,4 +245,4 @@ const CreateCompetancyAttribute = ({
   );
 };
 
-export default CreateCompetancyAttribute;
+export default UpdateCompetancyAttribute;

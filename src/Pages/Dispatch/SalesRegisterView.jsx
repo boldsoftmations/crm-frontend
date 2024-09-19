@@ -28,6 +28,8 @@ import CustomTextField from "../../Components/CustomTextField";
 import SearchComponent from "../../Components/SearchComponent ";
 import { MessageAlert } from "../../Components/MessageAlert";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
+import CustomAutocomplete from "../../Components/CustomAutocomplete";
+import UserProfileService from "../../services/UserProfileService";
 
 export const SalesRegisterView = () => {
   const [open, setOpen] = useState(false);
@@ -35,6 +37,8 @@ export const SalesRegisterView = () => {
   const [salesRegisterData, setsalesRegisterData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [totalPages, setTotalPages] = useState(0);
+  const [userList, setUserList] = useState([]);
+  const [unitFilter, setUnitFilter] = useState("");
   const [endDate, setEndDate] = useState(new Date()); // set endDate as one week ahead of startDate
   const [startDate, setStartDate] = useState(
     new Date(endDate.getTime() - 7 * 24 * 60 * 60 * 1000)
@@ -49,6 +53,20 @@ export const SalesRegisterView = () => {
     setStartDate(date);
     setEndDate(new Date(date.getTime() + 7 * 24 * 60 * 60 * 1000));
   };
+  const getuserProfile = async () => {
+    try {
+      setOpen(true);
+      const response = await UserProfileService.getProfile();
+      setUserList(response.data.sales_users);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setOpen(false);
+    }
+  };
+  useEffect(() => {
+    getuserProfile();
+  }, []);
 
   const getSalesRegisterData = useCallback(async () => {
     try {
@@ -59,7 +77,8 @@ export const SalesRegisterView = () => {
         StartDate,
         EndDate,
         currentPage,
-        searchQuery
+        searchQuery,
+        unitFilter
       );
       setsalesRegisterData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -68,11 +87,11 @@ export const SalesRegisterView = () => {
     } finally {
       setOpen(false);
     }
-  }, [startDate, currentPage, searchQuery]); // Ensure dependencies are correctly listed
+  }, [startDate, currentPage, searchQuery, unitFilter]); // Ensure dependencies are correctly listed
 
   useEffect(() => {
     getSalesRegisterData();
-  }, [startDate, currentPage, searchQuery]);
+  }, [startDate, currentPage, searchQuery, unitFilter]);
 
   const handleSearch = (query) => {
     setSearchQuery(query);
@@ -150,17 +169,28 @@ export const SalesRegisterView = () => {
                   disabled={!startDate}
                 />
               </Grid>
-              <Grid item xs={12} sm={3}>
+              <Grid item xs={12} sm={4}>
+                <CustomAutocomplete
+                  sx={{ flexGrow: 1, mr: 1 }}
+                  size="small"
+                  value={unitFilter}
+                  onChange={(event, newValue) => setUnitFilter(newValue)}
+                  options={userList.map((option) => option.email)}
+                  getOptionLabel={(option) => option}
+                  label="Filter By Person"
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
                 <SearchComponent
                   onSearch={handleSearch}
                   onReset={handleReset}
                 />
               </Grid>
 
-              <Grid item xs={12} sm={3}>
+              <Grid item xs={12} sm={7}>
                 <h3
                   style={{
-                    textAlign: "left",
+                    textAlign: "right",
                     marginBottom: "1em",
                     fontSize: "24px",
                     color: "rgb(34, 34, 34)",
@@ -170,7 +200,14 @@ export const SalesRegisterView = () => {
                   Sales Register
                 </h3>
               </Grid>
-              <Grid item xs={12} sm={2}>
+              <Grid
+                item
+                xs={12}
+                sm={5}
+                style={{
+                  textAlign: "right",
+                }}
+              >
                 <CSVLink
                   data={data}
                   headers={headers}
@@ -180,6 +217,7 @@ export const SalesRegisterView = () => {
                     textDecoration: "none",
                     outline: "none",
                     height: "5vh",
+                    textAlign: "right",
                   }}
                 >
                   <Button variant="contained" color="success">
@@ -212,6 +250,8 @@ export const SalesRegisterView = () => {
                 <StyledTableRow>
                   <StyledTableCell align="center"></StyledTableCell>
                   <StyledTableCell align="center">Date</StyledTableCell>
+                  <StyledTableCell align="center">User</StyledTableCell>
+                  <StyledTableCell align="center">PI No</StyledTableCell>
                   <StyledTableCell align="center">
                     Sales Invoice
                   </StyledTableCell>
@@ -280,6 +320,12 @@ function Row(props) {
         </TableCell>
         <TableCell align="center">
           {moment(row.date).format("DD-MM-YYYY")}
+        </TableCell>
+        <TableCell align="center">{row.user}</TableCell>
+        <TableCell align="center">
+          {row.pi_list && row.pi_list.length > 0
+            ? row.pi_list.join(", ")
+            : "NA"}
         </TableCell>
         <TableCell align="center">{row.sales_invoice}</TableCell>
         <TableCell align="center">{row.customer}</TableCell>

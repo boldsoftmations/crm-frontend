@@ -279,7 +279,13 @@ const getSalesnvoiceDataById = (id) => {
 };
 
 // sales register api endpooint
-const getAllSaleRegisterData = (startDate, endDate, page, searchValue) => {
+const getAllSaleRegisterData = (
+  startDate,
+  endDate,
+  page,
+  searchValue,
+  filterByperson
+) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
 
@@ -298,6 +304,12 @@ const getAllSaleRegisterData = (startDate, endDate, page, searchValue) => {
   if (searchValue) {
     params.append("search", searchValue);
   }
+  if (filterByperson) {
+    params.append(
+      "sales_invoice__order_book__proforma_invoice__raised_by__email",
+      filterByperson
+    );
+  }
 
   // Sending a GET request with query parameters
   return CustomAxios.get(
@@ -305,7 +317,12 @@ const getAllSaleRegisterData = (startDate, endDate, page, searchValue) => {
   );
 };
 
-const getDispatchData = (dispatchedValue, page, searchValue) => {
+const getDispatchData = (
+  dispatchedValue,
+  page,
+  searchValue,
+  filterByperson
+) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
 
@@ -318,6 +335,12 @@ const getDispatchData = (dispatchedValue, page, searchValue) => {
 
   if (searchValue) {
     params.append("search", searchValue);
+  }
+  if (filterByperson) {
+    params.append(
+      "sales_invoice__order_book__proforma_invoice__raised_by__email",
+      filterByperson
+    );
   }
 
   // Sending a GET request with query parameters

@@ -6,7 +6,7 @@ import CustomSnackbar from "../../../Components/CustomerSnackbar";
 import Hr from "../../../services/Hr";
 import { CustomLoader } from "../../../Components/CustomLoader";
 
-const JobDescriptionForm = ({ fetchJobDescriptions }) => {
+const UpdateJobDescription = ({ getJobDescription, setOpenPopup, data }) => {
   const [role, setRole] = useState([]);
   const [alertMsg, setAlertMsg] = useState({
     message: "",
@@ -15,17 +15,17 @@ const JobDescriptionForm = ({ fetchJobDescriptions }) => {
   });
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    designation: "",
-    job_purpose: "",
-    report_line: "",
-    reports_to: "",
-    directs_report: [""],
-    kra: [""],
-    mtr: [""],
-    occasional_duties: "",
-    min_education_level: "",
-    work_experience: "",
-    ssa: [""],
+    designation: data.designation || "",
+    job_purpose: data.job_purpose || "",
+    report_line: data.report_line || "",
+    reports_to: data.reports_to || "",
+    directs_report: data.directs_report || [],
+    kra: data.kra || [],
+    mtr: data.mtr || [],
+    occasional_duties: data.occasional_duties || "",
+    min_education_level: data.min_education_level || "",
+    work_experience: data.work_experience || "",
+    ssa: data.ssa || [""],
   });
 
   useEffect(() => {
@@ -56,7 +56,7 @@ const JobDescriptionForm = ({ fetchJobDescriptions }) => {
     });
   };
   const validateForm = () => {
-    if (!formData.job_title) return "Job title is required";
+    if (!formData.designation) return "Job title is required";
     if (!formData.job_purpose) return "Job purpose is required";
     if (!formData.report_line) return "Report line is required";
     if (!formData.reports_to) return "Reports to is required";
@@ -84,12 +84,16 @@ const JobDescriptionForm = ({ fetchJobDescriptions }) => {
     }
     try {
       setLoading(true);
-      const response = await Hr.createJobDescription(formData);
+      const response = await Hr.UpdateJobDescription(data.id, formData);
       setAlertMsg({
         open: true,
-        message: response.message || "Job description created successfully",
+        message: response.message || "Job description updated successfully",
         severity: "success",
       });
+      setTimeout(() => {
+        getJobDescription();
+        setOpenPopup(false);
+      }, 500);
     } catch (error) {
       console.error("Error creating job description:", error);
       setAlertMsg({
@@ -233,4 +237,4 @@ const JobDescriptionForm = ({ fetchJobDescriptions }) => {
   );
 };
 
-export default JobDescriptionForm;
+export default UpdateJobDescription;

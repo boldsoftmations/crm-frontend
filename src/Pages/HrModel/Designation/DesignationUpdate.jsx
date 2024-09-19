@@ -11,7 +11,7 @@ export const DesignationUpdate = ({
   const [designation, setDesignation] = useState(designationId.name);
   const [departmentList, setDepartmentList] = useState([]);
   const [department, setDepartment] = useState(designationId.department);
-  console.log(designationId);
+
   useEffect(() => {
     const fetchDepartmentList = async () => {
       try {

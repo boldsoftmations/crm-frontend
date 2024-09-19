@@ -22,6 +22,7 @@ import JobDescriptionForm from "./CreateJobDescription";
 import SearchComponent from "../../../Components/SearchComponent ";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import JobDescriptionDetail from "./ViewJdpdf";
+import UpdateJobDescription from "./UpdateJobDescription";
 
 const colors = {
   section1: "#f0f0f0",
@@ -74,6 +75,10 @@ export const ViewJobDescription = () => {
   const handleView = (data) => {
     setSelectedRow(data);
     setOpenPopup2(true);
+  };
+  const handleEdit = (data) => {
+    setSelectedRow(data);
+    setOpenPopup(true);
   };
 
   return (
@@ -142,7 +147,7 @@ export const ViewJobDescription = () => {
               {jobDescription.map((row, i) => (
                 <StyledTableRow key={i}>
                   <StyledTableCell align="center">
-                    {row.job_title}
+                    {row.designation}
                   </StyledTableCell>
                   <StyledTableCell align="center">
                     {row.occasional_duties}
@@ -157,8 +162,15 @@ export const ViewJobDescription = () => {
                     {row.ssa.join(" | ")}
                   </StyledTableCell>
                   <StyledTableCell align="center">
-                    <Button variant="outlined" onClick={() => handleView(row)}>
+                    <Button variant="text" onClick={() => handleView(row)}>
                       View
+                    </Button>
+                    <Button
+                      variant="text"
+                      color="success"
+                      onClick={() => handleEdit(row)}
+                    >
+                      Edit
                     </Button>
                   </StyledTableCell>
                 </StyledTableRow>
@@ -179,6 +191,18 @@ export const ViewJobDescription = () => {
           setOpenPopup={setOpenPopup}
         >
           <JobDescriptionForm
+            getJobDescription={getJobDescription}
+            setOpenPopup={setOpenPopup}
+          />
+        </Popup>
+        <Popup
+          fullScreen={true}
+          title={"Update Job Description"}
+          openPopup={openPopup}
+          setOpenPopup={setOpenPopup}
+        >
+          <UpdateJobDescription
+            data={selectedRow}
             getJobDescription={getJobDescription}
             setOpenPopup={setOpenPopup}
           />

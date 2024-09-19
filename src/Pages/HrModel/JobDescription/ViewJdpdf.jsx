@@ -63,7 +63,7 @@ const JobDescriptionDetail = ({ job }) => {
           undefined,
           "FAST"
         );
-        pdf.save(`${job.job_title}_Job_Description.pdf`); // Specify the file name for the download
+        pdf.save(`${job.designation}_Job_Description.pdf`); // Specify the file name for the download
       })
       .catch((err) => {
         console.error("Error generating PDF", err);
@@ -77,7 +77,7 @@ const JobDescriptionDetail = ({ job }) => {
       <CustomLoader open={loader} />
       <Paper sx={{ p: 6, mb: 2 }} ref={printRef}>
         <Typography variant="h5" gutterBottom align="center">
-          GLUTAPE - JOB DESCRIPTION <br /> {job.job_title}
+          GLUTAPE - JOB DESCRIPTION <br /> {job.designation}
         </Typography>
         <Divider sx={{ mb: 3 }} />
         <Grid container spacing={2}>

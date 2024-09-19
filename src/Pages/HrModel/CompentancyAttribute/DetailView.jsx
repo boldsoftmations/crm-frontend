@@ -18,7 +18,7 @@ const DetailView = ({ data }) => {
     <Container>
       <Paper sx={{ p: 3 }}>
         <Typography variant="h6" gutterBottom>
-          Role : {data.role}
+          Role : {data.designation}
         </Typography>
         <Divider sx={{ mb: 2 }} />
         <Grid container spacing={2}>

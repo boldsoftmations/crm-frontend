@@ -15,12 +15,16 @@ import Hr from "../../../services/Hr";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import { CustomLoader } from "../../../Components/CustomLoader";
 
-const CreateInterviewQuestion = ({ getMCQQuetion, setOpenQuestionPopUp }) => {
+const UpdateInterviewQuestion = ({
+  getMCQQuetion,
+  setOpenQuestionPopUp,
+  data,
+}) => {
   const [formData, setFormData] = useState({
-    designation: "",
-    question: "",
-    options: [],
-    answer: "",
+    designation: data.designation || "",
+    question: data.question || "",
+    options: data.options || [],
+    answer: data.answer || "",
   });
   const [loading, setLoading] = useState(false);
   const [role, setRole] = useState([]);
@@ -86,10 +90,10 @@ const CreateInterviewQuestion = ({ getMCQQuetion, setOpenQuestionPopUp }) => {
     try {
       setLoading(true);
 
-      const response = await Hr.createMCQQuetion(formData);
+      const response = await Hr.UpdateMCQQuetion(data.id, formData);
       setAlertMsg({
         open: true,
-        message: response.message || "MCQ created successfully",
+        message: response.message || "MCQ updated successfully",
         severity: "success",
       });
       setTimeout(() => {
@@ -198,4 +202,4 @@ const CreateInterviewQuestion = ({ getMCQQuetion, setOpenQuestionPopUp }) => {
   );
 };
 
-export default CreateInterviewQuestion;
+export default UpdateInterviewQuestion;
