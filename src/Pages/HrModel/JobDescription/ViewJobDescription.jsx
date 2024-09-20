@@ -38,6 +38,7 @@ export const ViewJobDescription = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [openPopup, setOpenPopup] = useState(false);
+  const [addOpenPopup, setAddOpenPopup] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
   const [openPopup2, setOpenPopup2] = useState(false);
 
@@ -102,7 +103,7 @@ export const ViewJobDescription = () => {
             <Button
               variant="contained"
               color="primary"
-              onClick={() => setOpenPopup(true)}
+              onClick={() => setAddOpenPopup(true)}
             >
               Add
             </Button>
@@ -187,12 +188,12 @@ export const ViewJobDescription = () => {
         <Popup
           fullScreen={true}
           title={"Create Job Description"}
-          openPopup={openPopup}
-          setOpenPopup={setOpenPopup}
+          openPopup={addOpenPopup}
+          setOpenPopup={setAddOpenPopup}
         >
           <JobDescriptionForm
             getJobDescription={getJobDescription}
-            setOpenPopup={setOpenPopup}
+            setOpenPopup={setAddOpenPopup}
           />
         </Popup>
         <Popup

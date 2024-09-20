@@ -6,7 +6,7 @@ import CustomSnackbar from "../../../Components/CustomerSnackbar";
 import Hr from "../../../services/Hr";
 import { CustomLoader } from "../../../Components/CustomLoader";
 
-const JobDescriptionForm = ({ fetchJobDescriptions }) => {
+const JobDescriptionForm = ({ getJobDescription }) => {
   const [role, setRole] = useState([]);
   const [alertMsg, setAlertMsg] = useState({
     message: "",
@@ -115,7 +115,7 @@ const JobDescriptionForm = ({ fetchJobDescriptions }) => {
           <Grid item xs={12}>
             <CustomAutocomplete
               options={role.map((option) => option.designation)}
-              value={formData.role}
+              value={formData.designation}
               onChange={(e, value) =>
                 setFormData((prev) => ({ ...prev, designation: value }))
               }

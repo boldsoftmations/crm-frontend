@@ -24,6 +24,7 @@ const ViewMCQs = () => {
   const [mcqData, setMcqData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [openQuestionPopUp, setOpenQuestionPopUp] = useState(false);
+  const [openQuestionPopUp1, setOpenQuestionPopUp1] = useState(false);
   const [filterValue, setFilterValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -71,7 +72,7 @@ const ViewMCQs = () => {
     getMCQQuetion();
   }, [getMCQQuetion]);
 
-  const handleAddQuestion = () => setOpenQuestionPopUp(true);
+  const handleAddQuestion = () => setOpenQuestionPopUp1(true);
   const handleEdit = (data) => {
     setSelectedRow(data);
     setOpenQuestionPopUp(true);
@@ -205,12 +206,12 @@ const ViewMCQs = () => {
       <Popup
         fullScreen={true}
         title="Create Interview Question"
-        openPopup={openQuestionPopUp}
-        setOpenPopup={setOpenQuestionPopUp}
+        openPopup={openQuestionPopUp1}
+        setOpenPopup={setOpenQuestionPopUp1}
       >
         <CreateInterviewQuestion
           getMCQQuetion={getMCQQuetion}
-          setOpenQuestionPopUp={setOpenQuestionPopUp}
+          setOpenQuestionPopUp={setOpenQuestionPopUp1}
         />
       </Popup>
       <Popup
