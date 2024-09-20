@@ -268,6 +268,44 @@ export const ProformaInvoiceView = (props) => {
       setOpen(false);
     }
   };
+  const SendForDropPI = async (e) => {
+    e.preventDefault();
+    try {
+      setOpen(true);
+      const req = {
+        status: "Dropped",
+        type: invoiceData.type,
+        raised_by: invoiceData.raised_by,
+        raised_by_first_name: invoiceData.raised_by_first_name,
+        place_of_supply: invoiceData.place_of_supply,
+        seller_account: invoiceData.seller_account,
+        company: invoiceData.company,
+        address: invoiceData.address,
+        pincode: invoiceData.pincode,
+        state: invoiceData.state,
+        city: invoiceData.city,
+        buyer_order_no: invoiceData.buyer_order_no,
+        contact: invoiceData.contact,
+        payment_terms: invoiceData.payment_terms,
+        delivery_terms: invoiceData.delivery_terms,
+      };
+      const response = await InvoiceServices.sendForApprovalCompanyData(
+        invoiceData.pi_number,
+        req
+      );
+      const successMessage = response.data.message || "Pi Dropped successfully";
+      handleSuccess(successMessage);
+
+      setTimeout(() => {
+        setOpenPopup(false);
+        getProformaInvoiceData();
+      }, 300);
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setOpen(false);
+    }
+  };
   const TOTAL_GST_DATA = invoiceData.total - invoiceData.amount;
   const TOTAL_GST = TOTAL_GST_DATA.toFixed(2);
   return (
@@ -423,6 +461,26 @@ export const ProformaInvoiceView = (props) => {
                   onClick={() => setOpenPopup2(true)}
                 >
                   Confirmation Payment
+                </Button>
+              )}
+            {(users.groups.includes("Director") ||
+              users.groups.includes("Sales Manager") ||
+              users.groups.includes("Sales Executive") ||
+              users.groups.includes("Sales Deputy Manager") ||
+              users.groups.includes("Customer Service") ||
+              users.groups.includes("Customer Relationship Manager") ||
+              users.groups.includes("Customer Relationship Executive")) &&
+              (invoiceData.status === "Price Approval" ||
+                invoiceData.status === "Approved" ||
+                invoiceData.status === "Raised") && (
+                <Button
+                  variant="contained"
+                  color="error"
+                  onClick={(e) => {
+                    SendForDropPI(e);
+                  }}
+                >
+                  Drop
                 </Button>
               )}
           </div>

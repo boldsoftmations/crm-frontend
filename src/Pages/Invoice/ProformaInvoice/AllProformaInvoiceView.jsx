@@ -19,7 +19,7 @@ import { MessageAlert } from "../../../Components/MessageAlert";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 
 export const AllProformaInvoiceView = (props) => {
-  const { idForEdit } = props;
+  const { idForEdit, getProformaInvoiceData, setOpenPopup } = props;
   const [openPopup2, setOpenPopup2] = useState(false);
   const [invoiceData, setInvoiceData] = useState([]);
   const [productData, setProductData] = useState([]);
@@ -28,7 +28,7 @@ export const AllProformaInvoiceView = (props) => {
   const data = useSelector((state) => state.auth);
   const users = data.profile;
   const componentRef = useRef();
-  const { handleError, handleCloseSnackbar, alertInfo } =
+  const { handleError, handleSuccess, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
   const handlePrint = useReactToPrint({
@@ -101,6 +101,44 @@ export const AllProformaInvoiceView = (props) => {
     getAllProformaInvoiceDetails();
   }, []);
 
+  const SendForDropPI = async (e) => {
+    e.preventDefault();
+    try {
+      setOpen(true);
+      const req = {
+        status: "Dropped",
+        type: invoiceData.type,
+        raised_by: invoiceData.raised_by,
+        raised_by_first_name: invoiceData.raised_by_first_name,
+        place_of_supply: invoiceData.place_of_supply,
+        seller_account: invoiceData.seller_account,
+        company: invoiceData.company,
+        address: invoiceData.address,
+        pincode: invoiceData.pincode,
+        state: invoiceData.state,
+        city: invoiceData.city,
+        buyer_order_no: invoiceData.buyer_order_no,
+        contact: invoiceData.contact,
+        payment_terms: invoiceData.payment_terms,
+        delivery_terms: invoiceData.delivery_terms,
+      };
+      const response = await InvoiceServices.sendForApprovalCompanyData(
+        invoiceData.pi_number,
+        req
+      );
+      const successMessage = response.data.message || "Pi Dropped successfully";
+      handleSuccess(successMessage);
+      setTimeout(() => {
+        setOpenPopup(false);
+        getProformaInvoiceData();
+      }, 300);
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setOpen(false);
+    }
+  };
+
   const str = invoiceData.amount_in_words ? invoiceData.amount_in_words : "";
   const arr = str.split(" ");
   for (var i = 0; i < arr.length; i++) {
@@ -119,34 +157,58 @@ export const AllProformaInvoiceView = (props) => {
         message={alertInfo.message}
       />
       <CustomLoader open={open} />
-      {invoiceData.status !== "Pending Approval" &&
-        invoiceData.status !== "Raised" && (
-          <div
-            className="container-fluid mb-4"
-            style={{ border: "1px Solid #000000" }}
-          >
-            <div className="row p-4">
-              <div className="col-xs-6 ">
+
+      <div
+        className="container-fluid mb-4"
+        style={{ border: "1px Solid #000000" }}
+      >
+        <div className="row p-4">
+          <div className="col-xs-6 ">
+            {invoiceData.status !== "Pending Approval" &&
+              invoiceData.status !== "Raised" && (
+                <div>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={(e) => handleDownload(e)}
+                    startIcon={<DownloadIcon />}
+                  >
+                    Download
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={handlePrint}
+                    startIcon={<PrintIcon />}
+                  >
+                    Print
+                  </Button>
+                </div>
+              )}
+            {(users.groups.includes("Director") ||
+              users.groups.includes("Sales Manager") ||
+              users.groups.includes("Sales Executive") ||
+              users.groups.includes("Sales Deputy Manager") ||
+              users.groups.includes("Customer Service") ||
+              users.groups.includes("Customer Relationship Manager") ||
+              users.groups.includes("Customer Relationship Executive")) &&
+              (invoiceData.status === "Price Approval" ||
+                invoiceData.status === "Approved" ||
+                invoiceData.status === "Raised") && (
                 <Button
                   variant="contained"
-                  color="primary"
-                  onClick={(e) => handleDownload(e)}
-                  startIcon={<DownloadIcon />}
+                  color="error"
+                  onClick={(e) => {
+                    SendForDropPI(e);
+                  }}
                 >
-                  Download
+                  Drop
                 </Button>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  onClick={handlePrint}
-                  startIcon={<PrintIcon />}
-                >
-                  Print
-                </Button>
-              </div>
-            </div>
+              )}
           </div>
-        )}
+        </div>
+      </div>
+
       <div
         id="invoice"
         style={{ border: "1px Solid #000000" }}

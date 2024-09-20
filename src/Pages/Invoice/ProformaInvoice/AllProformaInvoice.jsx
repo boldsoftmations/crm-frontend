@@ -319,7 +319,11 @@ export const AllProformaInvoice = () => {
         openPopup={openPopup2}
         setOpenPopup={setOpenPopup2}
       >
-        <AllProformaInvoiceView idForEdit={idForEdit} />
+        <AllProformaInvoiceView
+          idForEdit={idForEdit}
+          getProformaInvoiceData={getProformaInvoiceData}
+          setOpenPopup={setOpenPopup2}
+        />
       </Popup>
     </>
   );
@@ -327,11 +331,13 @@ export const AllProformaInvoice = () => {
 
 const StatusOptions = [
   { label: "Raised", value: "raised" },
+  { label: "Price Approval", value: "price_approval" },
   { label: "Pending Approval", value: "pending_approval" },
   { label: "Approved", value: "approved" },
   { label: "Partially Paid", value: "partially_paid" },
   { label: "Fully Paid", value: "fully_paid" },
   { label: "Credit", value: "credit" },
+  { label: "Dropped", value: "dropped" },
 ];
 
 const TypeOptions = [
