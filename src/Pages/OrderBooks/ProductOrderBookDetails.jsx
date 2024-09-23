@@ -24,7 +24,6 @@ import {
   OrderBookUpdate,
 } from "./OrderBookUpdate";
 import { TotalPendingQuantity } from "./TotalPendingQuantity";
-import { CustomTable } from "../../Components/CustomTable";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../Components/MessageAlert";
@@ -42,6 +41,7 @@ export const ProductOrderBookDetails = () => {
   const [exportData, setExportData] = useState([]);
   const [filterSellerUnit, setFilterSellerUnit] = useState("");
   const [filterRaisedByEmail, setFilterRaisedByEmail] = useState("");
+  const [filterReadyDate, setFilterReadyDate] = useState("");
   const [recordForEdit, setRecordForEdit] = useState(null);
   const csvLinkRef = useRef(null);
   const dataList = useSelector((state) => state.auth);
@@ -66,7 +66,8 @@ export const ProductOrderBookDetails = () => {
         "all",
         filterSellerUnit,
         filterRaisedByEmail,
-        searchQuery
+        searchQuery,
+        filterReadyDate
       );
       let data = response.data.map((item) => {
         if (
@@ -172,7 +173,8 @@ export const ProductOrderBookDetails = () => {
         currentPage,
         filterSellerUnit,
         filterRaisedByEmail,
-        searchQuery
+        searchQuery,
+        filterReadyDate
       );
       setOrderBookData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -181,11 +183,23 @@ export const ProductOrderBookDetails = () => {
     } finally {
       setOpen(false);
     }
-  }, [currentPage, filterSellerUnit, filterRaisedByEmail, searchQuery]);
+  }, [
+    currentPage,
+    filterSellerUnit,
+    filterRaisedByEmail,
+    searchQuery,
+    filterReadyDate,
+  ]);
 
   useEffect(() => {
     getAllProductDataOrderBook();
-  }, [currentPage, filterSellerUnit, filterRaisedByEmail, searchQuery]);
+  }, [
+    currentPage,
+    filterSellerUnit,
+    filterRaisedByEmail,
+    searchQuery,
+    filterReadyDate,
+  ]);
 
   const handleSearch = (query) => {
     setSearchQuery(query);
@@ -212,6 +226,7 @@ export const ProductOrderBookDetails = () => {
     "Quantity",
     "Pending Quantity",
     "EST DATE",
+    "Ready Date",
     "Request Date",
     "Special Instructions",
     "Revision",
@@ -240,6 +255,23 @@ export const ProductOrderBookDetails = () => {
                   options={StateOption.map((option) => option)}
                   getOptionLabel={(option) => option}
                   label="Filter By State"
+                />
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <CustomAutocomplete
+                  size="small"
+                  fullWidth
+                  value={
+                    readyDateOption.find(
+                      (option) => option.value === filterReadyDate
+                    ) || null
+                  }
+                  onChange={(event, value) =>
+                    setFilterReadyDate(value ? value.value : null)
+                  }
+                  options={readyDateOption}
+                  getOptionLabel={(option) => option.label}
+                  label="Filter By Ready Date"
                 />
               </Grid>
               <Grid item xs={12} sm={3}>
@@ -342,6 +374,7 @@ export const ProductOrderBookDetails = () => {
                     <StyledTableCell>{row.quantity}</StyledTableCell>
                     <StyledTableCell>{row.pending_quantity}</StyledTableCell>
                     <StyledTableCell>{row.estimated_date}</StyledTableCell>
+                    <StyledTableCell>{row.ready_date}</StyledTableCell>
                     <StyledTableCell>{row.requested_date}</StyledTableCell>
                     <StyledTableCell>{row.special_instruction}</StyledTableCell>
                     <StyledTableCell>{row.revision}</StyledTableCell>
@@ -479,6 +512,16 @@ const Customerheaders = [
   {
     label: "Special Instruction",
     key: "special_instructions",
+  },
+];
+const readyDateOption = [
+  {
+    label: "Ready",
+    value: true,
+  },
+  {
+    label: "Not Ready",
+    value: false,
   },
 ];
 

@@ -152,7 +152,8 @@ const getOrderBookData = (
   page,
   filterBySellerUnit,
   filterBySellerEmail,
-  searchValue
+  searchValue,
+  isReady
 ) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
@@ -180,6 +181,10 @@ const getOrderBookData = (
 
   if (searchValue) {
     params.append("search", searchValue);
+  }
+
+  if (isReady) {
+    params.append("is_ready", isReady);
   }
 
   // Sending a GET request with query parameters

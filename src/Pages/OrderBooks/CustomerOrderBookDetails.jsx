@@ -39,6 +39,7 @@ export const CustomerOrderBookDetails = () => {
   const [exportData, setExportData] = useState([]);
   const [filterSellerUnit, setFilterSellerUnit] = useState("");
   const [filterRaisedByEmail, setFilterRaisedByEmail] = useState("");
+  const [filterReadyDate, setFilterReadyDate] = useState("");
   const [recordForEdit, setRecordForEdit] = useState(null);
   const csvLinkRef = useRef(null);
   const dataList = useSelector((state) => state.auth);
@@ -75,6 +76,7 @@ export const CustomerOrderBookDetails = () => {
       csvLinkRef.current.link.click();
     });
   };
+  console.log(filterReadyDate);
 
   const handleExport = async () => {
     try {
@@ -84,7 +86,8 @@ export const CustomerOrderBookDetails = () => {
         "all",
         filterSellerUnit,
         filterRaisedByEmail,
-        searchQuery
+        searchQuery,
+        filterReadyDate
       );
       let data = response.data.map((item) => {
         if (
@@ -173,7 +176,8 @@ export const CustomerOrderBookDetails = () => {
         currentPage,
         filterSellerUnit,
         filterRaisedByEmail,
-        searchQuery
+        searchQuery,
+        filterReadyDate
       );
       setOrderBookData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -182,11 +186,23 @@ export const CustomerOrderBookDetails = () => {
     } finally {
       setOpen(false);
     }
-  }, [currentPage, filterSellerUnit, filterRaisedByEmail, searchQuery]);
+  }, [
+    currentPage,
+    filterSellerUnit,
+    filterRaisedByEmail,
+    searchQuery,
+    filterReadyDate,
+  ]);
 
   useEffect(() => {
     getAllCustomerWiseOrderBook();
-  }, [currentPage, filterSellerUnit, filterRaisedByEmail, searchQuery]);
+  }, [
+    currentPage,
+    filterSellerUnit,
+    filterRaisedByEmail,
+    searchQuery,
+    filterReadyDate,
+  ]);
 
   const handleSearch = (query) => {
     setSearchQuery(query);
@@ -202,26 +218,6 @@ export const CustomerOrderBookDetails = () => {
     setCurrentPage(value);
   };
 
-  const Tableheaders = [
-    "Pi No",
-    "Pi Date",
-    "Approval Date",
-    "Company",
-    "Raised By",
-    "Billing City",
-    "Shipping City",
-    "Product",
-    "Quantity",
-    "Pending Quantity",
-    "Amount",
-    "Pending Amount",
-    "EST DATE",
-    "Requested Date",
-    "Special Instructions",
-    "Revision",
-    "ACTION",
-  ];
-
   const Tableheaders2 = [
     "Pi No",
     "Pi Date",
@@ -234,6 +230,7 @@ export const CustomerOrderBookDetails = () => {
     "Quantity",
     "Pending Quantity",
     "EST DATE",
+    "Ready Date",
     "Request Date",
     "Special Instructions",
     "Revision",
@@ -264,6 +261,24 @@ export const CustomerOrderBookDetails = () => {
                   label="Filter By State"
                 />
               </Grid>
+              <Grid item xs={12} sm={3}>
+                <CustomAutocomplete
+                  size="small"
+                  fullWidth
+                  value={
+                    readyDateOption.find(
+                      (option) => option.value === filterReadyDate
+                    ) || null
+                  }
+                  onChange={(event, value) =>
+                    setFilterReadyDate(value ? value.value : null)
+                  }
+                  options={readyDateOption}
+                  getOptionLabel={(option) => option.label}
+                  label="Filter By Ready Date"
+                />
+              </Grid>
+
               <Grid item xs={12} sm={3}>
                 <CustomAutocomplete
                   size="small"
@@ -320,134 +335,67 @@ export const CustomerOrderBookDetails = () => {
               Customer Order Book Details
             </h3>
           </Box>
-          {userData.groups.includes("Factory-Mumbai-OrderBook") ||
-          userData.groups.includes("Factory-Delhi-OrderBook") ? (
-            <TableContainer
-              sx={{
-                maxHeight: 440,
-                "&::-webkit-scrollbar": {
-                  width: 15,
-                },
-                "&::-webkit-scrollbar-track": {
-                  backgroundColor: "#f2f2f2",
-                },
-                "&::-webkit-scrollbar-thumb": {
-                  backgroundColor: "#aaa9ac",
-                },
-              }}
+
+          <TableContainer
+            sx={{
+              maxHeight: 440,
+              "&::-webkit-scrollbar": {
+                width: 15,
+              },
+              "&::-webkit-scrollbar-track": {
+                backgroundColor: "#f2f2f2",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: "#aaa9ac",
+              },
+            }}
+          >
+            <Table
+              sx={{ minWidth: 1200 }}
+              stickyHeader
+              aria-label="sticky table"
             >
-              <Table
-                sx={{ minWidth: 1200 }}
-                stickyHeader
-                aria-label="sticky table"
-              >
-                <TableHead>
-                  <TableRow>
-                    {Tableheaders.map((header, i) => {
-                      return (
-                        <StyledTableCell key={i}>{header}</StyledTableCell>
-                      );
-                    })}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {orderBookData.map((row, i) => (
-                    <StyledTableRow key={i}>
-                      <StyledTableCell>{row.proforma_invoice}</StyledTableCell>
-                      <StyledTableCell>{row.pi_date}</StyledTableCell>
-                      <StyledTableCell>{row.order_book_date}</StyledTableCell>
-                      <StyledTableCell>{row.company}</StyledTableCell>
-                      <StyledTableCell>{row.raised_by}</StyledTableCell>
-                      <StyledTableCell>{row.billing_city}</StyledTableCell>
-                      <StyledTableCell>{row.shipping_city}</StyledTableCell>
-                      <StyledTableCell>{row.product}</StyledTableCell>
-                      <StyledTableCell>{row.quantity}</StyledTableCell>
-                      <StyledTableCell>{row.pending_quantity}</StyledTableCell>
-                      <StyledTableCell>{row.estimated_date}</StyledTableCell>
-                      <StyledTableCell>{row.requested_date}</StyledTableCell>
-                      <StyledTableCell>
-                        {row.special_instruction}
-                      </StyledTableCell>
-                      <StyledTableCell>{row.revision}</StyledTableCell>
-                      <StyledTableCell>
-                        <Button
-                          variant="outlined"
-                          color="info"
-                          size="small"
-                          onClick={() => openInPopup(row)}
-                        >
-                          View
-                        </Button>
-                      </StyledTableCell>
-                    </StyledTableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          ) : (
-            <TableContainer
-              sx={{
-                maxHeight: 440,
-                "&::-webkit-scrollbar": {
-                  width: 15,
-                },
-                "&::-webkit-scrollbar-track": {
-                  backgroundColor: "#f2f2f2",
-                },
-                "&::-webkit-scrollbar-thumb": {
-                  backgroundColor: "#aaa9ac",
-                },
-              }}
-            >
-              <Table
-                sx={{ minWidth: 1200 }}
-                stickyHeader
-                aria-label="sticky table"
-              >
-                <TableHead>
-                  <TableRow>
-                    {Tableheaders2.map((header, i) => {
-                      return (
-                        <StyledTableCell key={i}>{header}</StyledTableCell>
-                      );
-                    })}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {orderBookData.map((row, i) => (
-                    <StyledTableRow key={i}>
-                      <StyledTableCell>{row.proforma_invoice}</StyledTableCell>
-                      <StyledTableCell>{row.pi_date}</StyledTableCell>
-                      <StyledTableCell>{row.order_book_date}</StyledTableCell>
-                      <StyledTableCell>{row.company}</StyledTableCell>
-                      <StyledTableCell>{row.raised_by}</StyledTableCell>
-                      <StyledTableCell>{row.billing_city}</StyledTableCell>
-                      <StyledTableCell>{row.shipping_city}</StyledTableCell>
-                      <StyledTableCell>{row.product}</StyledTableCell>
-                      <StyledTableCell>{row.quantity}</StyledTableCell>
-                      <StyledTableCell>{row.pending_quantity}</StyledTableCell>
-                      <StyledTableCell>{row.estimated_date}</StyledTableCell>
-                      <StyledTableCell>{row.requested_date}</StyledTableCell>
-                      <StyledTableCell>
-                        {row.special_instruction}
-                      </StyledTableCell>
-                      <StyledTableCell>{row.revision}</StyledTableCell>
-                      <StyledTableCell>
-                        <Button
-                          variant="outlined"
-                          color="info"
-                          size="small"
-                          onClick={() => openInPopup(row)}
-                        >
-                          View
-                        </Button>
-                      </StyledTableCell>
-                    </StyledTableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          )}
+              <TableHead>
+                <TableRow>
+                  {Tableheaders2.map((header, i) => {
+                    return <StyledTableCell key={i}>{header}</StyledTableCell>;
+                  })}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {orderBookData.map((row, i) => (
+                  <StyledTableRow key={i}>
+                    <StyledTableCell>{row.proforma_invoice}</StyledTableCell>
+                    <StyledTableCell>{row.pi_date}</StyledTableCell>
+                    <StyledTableCell>{row.order_book_date}</StyledTableCell>
+                    <StyledTableCell>{row.company}</StyledTableCell>
+                    <StyledTableCell>{row.raised_by}</StyledTableCell>
+                    <StyledTableCell>{row.billing_city}</StyledTableCell>
+                    <StyledTableCell>{row.shipping_city}</StyledTableCell>
+                    <StyledTableCell>{row.product}</StyledTableCell>
+                    <StyledTableCell>{row.quantity}</StyledTableCell>
+                    <StyledTableCell>{row.pending_quantity}</StyledTableCell>
+                    <StyledTableCell>{row.estimated_date}</StyledTableCell>
+                    <StyledTableCell>{row.ready_date}</StyledTableCell>
+                    <StyledTableCell>{row.requested_date}</StyledTableCell>
+                    <StyledTableCell>{row.special_instruction}</StyledTableCell>
+                    <StyledTableCell>{row.revision}</StyledTableCell>
+                    <StyledTableCell>
+                      <Button
+                        variant="outlined"
+                        color="info"
+                        size="small"
+                        onClick={() => openInPopup(row)}
+                      >
+                        View
+                      </Button>
+                    </StyledTableCell>
+                  </StyledTableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+
           <CustomPagination
             totalPages={totalPages}
             currentPage={currentPage}
@@ -482,6 +430,16 @@ export const CustomerOrderBookDetails = () => {
 };
 
 const StateOption = ["Delhi", "Maharashtra"];
+const readyDateOption = [
+  {
+    label: "Ready",
+    value: true,
+  },
+  {
+    label: "Not Ready",
+    value: false,
+  },
+];
 const headers = [
   {
     label: "Seller State",

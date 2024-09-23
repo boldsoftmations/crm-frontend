@@ -13,6 +13,7 @@ export const OrderBookUpdate = (props) => {
   const [estimateDate, setEstimateDate] = useState(
     recordForEdit.estimated_date
   );
+  const [readyDate, setReadyDate] = useState(recordForEdit.ready_date);
   const data = useSelector((state) => state.auth);
   const users = data.profile;
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
@@ -32,6 +33,7 @@ export const OrderBookUpdate = (props) => {
         gst: recordForEdit.gst,
         total: recordForEdit.total,
         estimated_date: estimateDate,
+        ready_date: readyDate ? readyDate : null,
       };
 
       const response = await InvoiceServices.updateOrderBookData(
@@ -97,7 +99,7 @@ export const OrderBookUpdate = (props) => {
               fullWidth
               disabled
               size="small"
-              label="Requested Date"
+              label="Request Dispatch Date"
               variant="outlined"
               value={
                 recordForEdit.requested_date ? recordForEdit.requested_date : ""
@@ -115,6 +117,21 @@ export const OrderBookUpdate = (props) => {
               variant="outlined"
               value={estimateDate ? estimateDate : ""}
               onChange={(event) => setEstimateDate(event.target.value)}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <CustomTextField
+              fullWidth
+              type="date"
+              name="ready_date"
+              size="small"
+              label="Ready Date"
+              variant="outlined"
+              value={readyDate ? readyDate : ""}
+              onChange={(event) => setReadyDate(event.target.value)}
               InputLabelProps={{
                 shrink: true,
               }}
