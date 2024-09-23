@@ -1,6 +1,19 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import InvoiceServices from "../../services/InvoiceService";
-import { Button, Box, Paper, Grid } from "@mui/material";
+import {
+  Button,
+  Box,
+  Paper,
+  Grid,
+  TableContainer,
+  TableHead,
+  TableCell,
+  TableRow,
+  TableBody,
+  styled,
+  Table,
+  tableCellClasses,
+} from "@mui/material";
 import { CSVLink } from "react-csv";
 import { CustomLoader } from "../../Components/CustomLoader";
 import { CustomPagination } from "./../../Components/CustomPagination";
@@ -67,7 +80,6 @@ export const PIOrderBookDetails = () => {
             shipping_city: item.shipping_city,
             product: item.product,
             quantity: item.quantity,
-            // amount: item.amount,
             pending_amount: item.pending_amount,
             pending_quantity: item.pending_quantity,
             seller_state: item.seller_state,
@@ -112,12 +124,16 @@ export const PIOrderBookDetails = () => {
         (ODBData) => ODBData.id === item.id
       );
       setRecordForEdit(matchedODBData);
-      if (userData.groups.includes("Accounts")) {
+      if (
+        userData.groups.includes("Accounts") ||
+        userData.groups.includes("Director")
+      ) {
         setOpenModal2(true);
       }
       if (
         userData.groups.includes("Production") ||
-        userData.groups.includes("Production Delhi")
+        userData.groups.includes("Production Delhi") ||
+        userData.groups.includes("Director")
       ) {
         setOpenModal(true);
       }
@@ -163,11 +179,10 @@ export const PIOrderBookDetails = () => {
     setCurrentPage(value);
   };
 
-  const Tableheaders = [
-    "Id",
-    "Approval Date",
+  const Tableheaders2 = [
     "Pi No",
     "Pi Date",
+    "Approval Date",
     "Company",
     "Raised By",
     "Billing City",
@@ -175,73 +190,13 @@ export const PIOrderBookDetails = () => {
     "Product",
     "Quantity",
     "Pending Quantity",
-    "Amount",
-    "Pending Amount",
     "EST DATE",
-    "Requested Date",
+    "Request Date",
     "Special Instructions",
     "Revision",
     "ACTION",
   ];
 
-  const Tabledata = orderBookData.map((row, i) => ({
-    id: row.id,
-    approval_data: row.order_book_date,
-    pi_no: row.proforma_invoice,
-    pi_date: row.pi_date,
-    company: row.company,
-    raised_by: row.raised_by,
-    billing_city: row.billing_city,
-    shipping_city: row.shipping_city,
-    product: row.product,
-    quantity: row.quantity,
-    pending_quantity: row.pending_quantity,
-    amount: row.amount,
-    pending_amount: row.pending_amount,
-    estimated_date: row.estimated_date,
-    requested_date: row.requested_date,
-    special_instruction: row.special_instruction,
-    revision: row.revision,
-  }));
-
-  const Tableheaders2 = [
-    "ID",
-    "Approval Date",
-    "Pi No",
-    "Pi Date",
-    "Company",
-    "Raised_by",
-    "Billing City",
-    "Shipping City",
-    "Product",
-    "Quantity",
-    "Pending Quantity",
-    "Pending Amount",
-    "EST DATE",
-    "Requested Date",
-    "Special Instructions",
-    "Revision",
-    "ACTION",
-  ];
-
-  const Tabledata2 = orderBookData.map((row, i) => ({
-    id: row.id,
-    approval_data: row.order_book_date,
-    pi_no: row.proforma_invoice,
-    pi_date: row.pi_date,
-    company: row.company,
-    raised_by: row.raised_by,
-    billing_city: row.billing_city,
-    shipping_city: row.shipping_city,
-    product: row.product,
-    quantity: row.quantity,
-    pending_quantity: row.pending_quantity,
-    pending_amount: row.pending_amount,
-    estimated_date: row.estimated_date,
-    requested_date: row.requested_date,
-    special_instruction: row.special_instruction,
-    revision: row.revision,
-  }));
   return (
     <>
       <MessageAlert
@@ -322,27 +277,65 @@ export const PIOrderBookDetails = () => {
               PI Order Book Details
             </h3>
           </Box>
-          <CustomTable
-            headers={
-              userData.groups.includes("Factory-Mumbai-OrderBook") &&
-              userData.groups.includes("Factory-Delhi-OrderBook")
-                ? Tableheaders
-                : Tableheaders2
-            }
-            data={
-              userData.groups.includes("Factory-Mumbai-OrderBook") &&
-              userData.groups.includes("Factory-Delhi-OrderBook")
-                ? Tabledata
-                : Tabledata2
-            }
-            openInPopup={
-              (userData.groups.includes("Production") ||
-                userData.groups.includes("Production Delhi") ||
-                userData.groups.includes("Accounts")) &&
-              openInPopup
-            }
-            openInPopup2={null}
-          />
+
+          <TableContainer
+            sx={{
+              maxHeight: 440,
+              "&::-webkit-scrollbar": {
+                width: 15,
+              },
+              "&::-webkit-scrollbar-track": {
+                backgroundColor: "#f2f2f2",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: "#aaa9ac",
+              },
+            }}
+          >
+            <Table
+              sx={{ minWidth: 1200 }}
+              stickyHeader
+              aria-label="sticky table"
+            >
+              <TableHead>
+                <TableRow>
+                  {Tableheaders2.map((header, i) => {
+                    return <StyledTableCell key={i}>{header}</StyledTableCell>;
+                  })}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {orderBookData.map((row, i) => (
+                  <StyledTableRow key={i}>
+                    <StyledTableCell>{row.proforma_invoice}</StyledTableCell>
+                    <StyledTableCell>{row.pi_date}</StyledTableCell>
+                    <StyledTableCell>{row.order_book_date}</StyledTableCell>
+                    <StyledTableCell>{row.company}</StyledTableCell>
+                    <StyledTableCell>{row.raised_by}</StyledTableCell>
+                    <StyledTableCell>{row.billing_city}</StyledTableCell>
+                    <StyledTableCell>{row.shipping_city}</StyledTableCell>
+                    <StyledTableCell>{row.product}</StyledTableCell>
+                    <StyledTableCell>{row.quantity}</StyledTableCell>
+                    <StyledTableCell>{row.pending_quantity}</StyledTableCell>
+                    <StyledTableCell>{row.estimated_date}</StyledTableCell>
+                    <StyledTableCell>{row.requested_date}</StyledTableCell>
+                    <StyledTableCell>{row.special_instruction}</StyledTableCell>
+                    <StyledTableCell>{row.revision}</StyledTableCell>
+                    <StyledTableCell>
+                      <Button
+                        variant="outlined"
+                        color="info"
+                        size="small"
+                        onClick={() => openInPopup(row)}
+                      >
+                        View
+                      </Button>
+                    </StyledTableCell>
+                  </StyledTableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
           <CustomPagination
             totalPages={totalPages}
             currentPage={currentPage}
@@ -424,3 +417,23 @@ const headers = [
     key: "special_instructions",
   },
 ];
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  "&:nth-of-type(odd)": {
+    backgroundColor: theme.palette.action.hover,
+  },
+  // hide last border
+  "&:last-child td, &:last-child th": {
+    border: 0,
+  },
+}));

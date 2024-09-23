@@ -214,10 +214,17 @@ export const OrderBookPeningQuantityUpdate = (props) => {
             <CustomTextField
               fullWidth
               size="small"
-              label="Pending Quantity"
+              label="Pending Quantity by Product"
               variant="outlined"
               value={pendingQuantity || ""}
-              onChange={(event) => setPendingQuantity(event.target.value)}
+              onChange={(event) => {
+                const newValue = event.target.value;
+
+                if (newValue <= recordForEdit.pending_quantity) {
+                  setPendingQuantity(newValue);
+                }
+              }}
+              disabled={pendingQuantity > recordForEdit.pending_quantity}
             />
           </Grid>
           <Grid item xs={12} sm={6}>

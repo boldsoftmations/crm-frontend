@@ -176,17 +176,18 @@ const UpdateInterviewQuestion = ({
         >
           Add More Option
         </Button>
-
-        <TextField
-          label="Correct Answer"
-          type="text"
-          size="small"
-          name="answer"
-          value={formData.answer}
-          onChange={handleInputChange}
-          fullWidth
-          margin="normal"
-        />
+        <Grid item xs={12} style={{ margin: "1rem" }}>
+          <CustomAutocomplete
+            options={formData.options}
+            onChange={(e, value) =>
+              setFormData((prev) => ({ ...prev, answer: value }))
+            }
+            label="Correct Answer"
+            margin="dense"
+            fullWidth
+            value={formData.answer}
+          />
+        </Grid>
 
         <Button
           variant="contained"

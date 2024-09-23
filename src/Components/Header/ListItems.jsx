@@ -195,18 +195,13 @@ export const ListItems = ({ setOpen }) => {
         renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
       ],
     },
+
     //Factory Menus
     {
       condition:
         userData.groups.includes("Factory-Delhi-OrderBook") ||
         userData.groups.includes("Factory-Mumbai-OrderBook"),
       items: [
-        renderSubmenu("master", <BusinessIcon />, "Master", [
-          {
-            to: "/customer/complaints/ccp-capa/master",
-            text: "CCF Complaint Master",
-          },
-        ]),
         renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
       ],
     },
@@ -215,17 +210,11 @@ export const ListItems = ({ setOpen }) => {
         userData.groups.includes("Factory-Mumbai-Dispatch") ||
         userData.groups.includes("Factory-Delhi-Dispatch"),
       items: [
-        renderSubmenu("master", <BusinessIcon />, "Master", [
-          {
-            to: "/customer/complaints/ccp-capa/master",
-            text: "CCF Complaint Master",
-          },
-        ]),
         renderListItem("/dispatch/tab-view", <LocalShippingIcon />, "Dispatch"),
       ],
     },
 
-    //Customer Service Menus
+    // Service Menus
 
     {
       condition: userData.groups.includes("Customer Service"),

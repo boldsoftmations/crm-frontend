@@ -1,13 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  TextField,
-  Button,
-  MenuItem,
-  IconButton,
-  Box,
-  Paper,
-  Grid,
-} from "@mui/material";
+import { TextField, Button, IconButton, Box, Paper, Grid } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
@@ -84,8 +76,22 @@ const CreateInterviewQuestion = ({ getMCQQuetion, setOpenQuestionPopUp }) => {
 
   const handleSubmit = async () => {
     try {
-      setLoading(true);
+      if (
+        !formData.designation ||
+        !formData.question ||
+        formData.options.length !== 4 ||
+        !formData.answer
+      ) {
+        setAlertMsg({
+          open: true,
+          message:
+            "Please fill all the fields and ensure you have exactly 4 options.",
+          severity: "warning",
+        });
+        return;
+      }
 
+      setLoading(true);
       const response = await Hr.createMCQQuetion(formData);
       setAlertMsg({
         open: true,
@@ -121,7 +127,7 @@ const CreateInterviewQuestion = ({ getMCQQuetion, setOpenQuestionPopUp }) => {
         <Grid item xs={12}>
           <CustomAutocomplete
             options={role.map((option) => option.designation)}
-            value={formData.role}
+            value={formData.designation}
             onChange={(e, value) =>
               setFormData((prev) => ({ ...prev, designation: value }))
             }
@@ -172,17 +178,18 @@ const CreateInterviewQuestion = ({ getMCQQuetion, setOpenQuestionPopUp }) => {
         >
           Add More Option
         </Button>
-
-        <TextField
-          label="Correct Answer"
-          type="text"
-          size="small"
-          name="answer"
-          value={formData.answer}
-          onChange={handleInputChange}
-          fullWidth
-          margin="normal"
-        />
+        <Grid item xs={12} style={{ margin: "1rem" }}>
+          <CustomAutocomplete
+            options={formData.options}
+            onChange={(e, value) =>
+              setFormData((prev) => ({ ...prev, answer: value }))
+            }
+            label="Correct Answer"
+            margin="dense"
+            fullWidth
+            value={formData.answer}
+          />
+        </Grid>
 
         <Button
           variant="contained"
