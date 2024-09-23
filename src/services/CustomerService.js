@@ -244,7 +244,11 @@ const getAllWhatsappGroupData = (page = 1, searchValue) => {
   );
 };
 
-const getCustomerNotHavingWhatsappGroup = (page, searchValue) => {
+const getCustomerNotHavingWhatsappGroup = (
+  page,
+  searchValue,
+  customerFilter
+) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
 
@@ -257,6 +261,9 @@ const getCustomerNotHavingWhatsappGroup = (page, searchValue) => {
   if (searchValue) {
     params.append("search", searchValue);
   }
+  if (customerFilter) {
+    params.append("type_of_customer", customerFilter);
+  }
 
   // Sending a GET request with query parameters
   return CustomAxios.get(
@@ -264,7 +271,7 @@ const getCustomerNotHavingWhatsappGroup = (page, searchValue) => {
   );
 };
 
-const getCustomerNotInGroupData = (page, searchValue) => {
+const getCustomerNotInGroupData = (page, searchValue, customerFilter) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
 
@@ -276,13 +283,17 @@ const getCustomerNotInGroupData = (page, searchValue) => {
     params.append("search", searchValue);
   }
 
+  if (customerFilter) {
+    params.append("type_of_customer", customerFilter);
+  }
+
   // Sending a GET request with query parameters
   return CustomAxios.get(
     `api/customer/whatsapp-customer/?${params.toString()}`
   );
 };
 
-const getSalesPersonNotInGroupData = (page, searchValue) => {
+const getSalesPersonNotInGroupData = (page, searchValue, customerFilter) => {
   const params = new URLSearchParams();
 
   if (page) {
@@ -291,6 +302,9 @@ const getSalesPersonNotInGroupData = (page, searchValue) => {
 
   if (searchValue) {
     params.append("search", searchValue);
+  }
+  if (customerFilter) {
+    params.append("type_of_customer", customerFilter);
   }
 
   return CustomAxios.get(`api/customer/sales-person/?${params.toString()}`);

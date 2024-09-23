@@ -9,6 +9,7 @@ import { Popup } from "../../Components/Popup";
 import SearchComponent from "../../Components/SearchComponent ";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../Components/MessageAlert";
+import CustomAutocomplete from "../../Components/CustomAutocomplete";
 
 export const CustomerNoWhatsappGroup = () => {
   const [open, setOpen] = useState(false);
@@ -21,6 +22,7 @@ export const CustomerNoWhatsappGroup = () => {
   const [openPopupKycUpdate, setOpenPopupKycUpdate] = useState(false);
   const [selectedCustomerData, setSelectedCustomerData] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
+  const [filterCustomer, setFilterCustomer] = useState("");
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
@@ -30,7 +32,8 @@ export const CustomerNoWhatsappGroup = () => {
         setOpen(true);
         const res = await CustomerServices.getCustomerNotHavingWhatsappGroup(
           page,
-          searchValue
+          searchValue,
+          filterCustomer
         );
         setCustomerNotHavingWhatsappGroupData(res.data.results);
         setTotalPages(Math.ceil(res.data.count / 25));
@@ -44,12 +47,17 @@ export const CustomerNoWhatsappGroup = () => {
         setOpen(false);
       }
     },
-    [searchQuery]
+    [searchQuery, filterCustomer]
   );
 
   useEffect(() => {
     getAllCustomerNotHavingWhatsappGroup(currentPage);
-  }, [currentPage, searchQuery, getAllCustomerNotHavingWhatsappGroup]);
+  }, [
+    currentPage,
+    searchQuery,
+    filterCustomer,
+    getAllCustomerNotHavingWhatsappGroup,
+  ]);
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
@@ -115,6 +123,23 @@ export const CustomerNoWhatsappGroup = () => {
                   Customer Not Having Whatsapp Group
                 </h3>
               </Grid>
+              <Grid item xs={12} sm={3}>
+                <CustomAutocomplete
+                  size="small"
+                  fullWidth
+                  value={
+                    FilterOptions.find(
+                      (option) => option.value === filterCustomer
+                    ) || null
+                  }
+                  onChange={(event, value) =>
+                    setFilterCustomer(value ? value.value : null)
+                  }
+                  options={FilterOptions}
+                  getOptionLabel={(option) => option.label}
+                  label="Filter By Type of Customer"
+                />
+              </Grid>
             </Grid>
           </Box>
           <CustomTable
@@ -144,3 +169,18 @@ export const CustomerNoWhatsappGroup = () => {
     </>
   );
 };
+
+const FilterOptions = [
+  {
+    label: "Industrial Customer",
+    value: "industrial_customer",
+  },
+  {
+    label: "Distribution Customer",
+    value: "distribution_customer",
+  },
+  {
+    label: "Exclusive Distribution Customer",
+    value: "Exclusive Distribution Customer",
+  },
+];

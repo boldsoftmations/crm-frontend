@@ -5,6 +5,7 @@ import CustomerServices from "../../services/CustomerService";
 import { CustomPagination } from "../../Components/CustomPagination";
 import { CustomLoader } from "../../Components/CustomLoader";
 import SearchComponent from "../../Components/SearchComponent ";
+import CustomAutocomplete from "../../Components/CustomAutocomplete";
 
 export const CustomerNotInGroup = () => {
   const [open, setOpen] = useState(false);
@@ -12,17 +13,19 @@ export const CustomerNotInGroup = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
+  const [filterCustomer, setFilterCustomer] = useState("");
 
   useEffect(() => {
     getAllCustomerNotInGroupData();
-  }, [currentPage, searchQuery]);
+  }, [currentPage, searchQuery, filterCustomer]);
 
   const getAllCustomerNotInGroupData = async () => {
     try {
       setOpen(true);
       const res = await CustomerServices.getCustomerNotInGroupData(
         currentPage,
-        searchQuery
+        searchQuery,
+        filterCustomer
       );
       setWhatsappGroupData(res.data.results);
       setTotalPages(Math.ceil(res.data.count / 25));
@@ -107,6 +110,23 @@ export const CustomerNotInGroup = () => {
                   Customer Not In Group
                 </h3>
               </Grid>
+              <Grid item xs={12} sm={3}>
+                <CustomAutocomplete
+                  size="small"
+                  fullWidth
+                  value={
+                    FilterOptions.find(
+                      (option) => option.value === filterCustomer
+                    ) || null
+                  }
+                  onChange={(event, value) =>
+                    setFilterCustomer(value ? value.value : null)
+                  }
+                  options={FilterOptions}
+                  getOptionLabel={(option) => option.label}
+                  label="Filter By Type of Customer"
+                />
+              </Grid>
             </Grid>
           </Box>
           <CustomTable headers={Tableheaders} data={Tabledata} />
@@ -120,3 +140,18 @@ export const CustomerNotInGroup = () => {
     </>
   );
 };
+
+const FilterOptions = [
+  {
+    label: "Industrial Customer",
+    value: "industrial_customer",
+  },
+  {
+    label: "Distribution Customer",
+    value: "distribution_customer",
+  },
+  {
+    label: "Exclusive Distribution Customer",
+    value: "Exclusive Distribution Customer",
+  },
+];
