@@ -126,7 +126,7 @@ const ViewMCQs = () => {
                   textAlign: "center",
                 }}
               >
-                Interview Question List
+                Interview MCQs Questions
               </Typography>
             </Grid>
             <Grid item xs={12} sm={4} textAlign="end">
@@ -178,7 +178,8 @@ const ViewMCQs = () => {
                       <TableCell>
                         <Button
                           variant="contained"
-                          color="primary"
+                          color="success"
+                          size="small"
                           onClick={() => {
                             handleEdit(mcq);
                           }}

@@ -178,7 +178,7 @@ const CreateInterviewQuestion = ({ getMCQQuetion, setOpenQuestionPopUp }) => {
         >
           Add More Option
         </Button>
-        <Grid item xs={12} style={{ margin: "1rem" }}>
+        <Grid item xs={12}>
           <CustomAutocomplete
             options={formData.options}
             onChange={(e, value) =>
@@ -192,6 +192,7 @@ const CreateInterviewQuestion = ({ getMCQQuetion, setOpenQuestionPopUp }) => {
         </Grid>
 
         <Button
+         style={{ marginTop: 12 }}
           variant="contained"
           color="primary"
           onClick={handleSubmit}

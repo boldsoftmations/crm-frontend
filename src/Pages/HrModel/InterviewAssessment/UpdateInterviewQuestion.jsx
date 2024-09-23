@@ -125,7 +125,7 @@ const UpdateInterviewQuestion = ({
         <Grid item xs={12}>
           <CustomAutocomplete
             options={role.map((option) => option.designation)}
-            value={formData.role}
+            value={formData.designation}
             onChange={(e, value) =>
               setFormData((prev) => ({ ...prev, designation: value }))
             }
@@ -190,6 +190,7 @@ const UpdateInterviewQuestion = ({
         </Grid>
 
         <Button
+          style={{ marginTop: 12 }}
           variant="contained"
           color="primary"
           onClick={handleSubmit}
