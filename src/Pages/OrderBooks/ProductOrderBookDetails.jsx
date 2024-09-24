@@ -153,6 +153,17 @@ export const ProductOrderBookDetails = () => {
       ) {
         setOpenModal3(true);
       }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const openInPopup2 = (item) => {
+    try {
+      const matchedODBData = orderBookData.find(
+        (ODBData) => ODBData.id === item.id
+      );
+      setRecordForEdit(matchedODBData);
       if (
         userData.groups.includes("Production") ||
         userData.groups.includes("Production Delhi") ||
@@ -379,14 +390,29 @@ export const ProductOrderBookDetails = () => {
                     <StyledTableCell>{row.special_instruction}</StyledTableCell>
                     <StyledTableCell>{row.revision}</StyledTableCell>
                     <StyledTableCell>
-                      <Button
-                        variant="outlined"
-                        color="info"
-                        size="small"
-                        onClick={() => openInPopup(row)}
-                      >
-                        View
-                      </Button>
+                      {(userData.groups.includes("Accounts") ||
+                        userData.groups.includes("Director")) && (
+                        <Button
+                          variant="text"
+                          color="info"
+                          size="small"
+                          onClick={() => openInPopup(row)}
+                        >
+                          Account View
+                        </Button>
+                      )}
+                      {(userData.groups.includes("Production") ||
+                        userData.groups.includes("Production Delhi") ||
+                        userData.groups.includes("Director")) && (
+                        <Button
+                          variant="text"
+                          color="secondary"
+                          size="small"
+                          onClick={() => openInPopup2(row)}
+                        >
+                          Production View
+                        </Button>
+                      )}
                     </StyledTableCell>
                   </StyledTableRow>
                 ))}

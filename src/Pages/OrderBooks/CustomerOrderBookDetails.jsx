@@ -382,12 +382,12 @@ export const CustomerOrderBookDetails = () => {
                     <StyledTableCell>{row.revision}</StyledTableCell>
                     <StyledTableCell>
                       <Button
-                        variant="outlined"
+                        variant="text"
                         color="info"
                         size="small"
                         onClick={() => openInPopup(row)}
                       >
-                        View
+                        Production View
                       </Button>
                     </StyledTableCell>
                   </StyledTableRow>
