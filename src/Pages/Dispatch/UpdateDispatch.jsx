@@ -43,7 +43,10 @@ export const UpdateDispatch = (props) => {
       e.preventDefault();
 
       const data = new FormData();
-      if (userData.groups.toString() === "Customer Service") {
+      if (
+        userData.groups.toString() === "Customer Service" ||
+        userData.groups.toString() === "Director"
+      ) {
         data.append("sales_invoice", idData.sales_invoice);
         data.append(
           "transporter",
@@ -98,7 +101,8 @@ export const UpdateDispatch = (props) => {
         (LRDATE !== null &&
           LRNUMBER !== null &&
           TRANSPORTER !== null &&
-          userData.groups.toString() === "Customer Service")
+          userData.groups.toString() === "Customer Service") ||
+        userData.groups.toString() === "Director"
       ) {
         setOpen(true);
         await InvoiceServices.updateDispatched(idData.id, data);
@@ -220,25 +224,25 @@ export const UpdateDispatch = (props) => {
               />
             </Grid>
           )}
-          {userData.groups.toString() === "Customer Service" ||
-            (userData.groups.toString() === "Director" && (
-              <Grid item xs={12}>
-                <label>POD Copy : </label>
-                <input
-                  type={"file"}
-                  name="file"
-                  // value={podCopy ? podCopy : idData.pod_copy}
-                  onChange={handleImagePODCopy}
-                />
-                <img
-                  src={podCopyImage ? podCopyImage : idData.pod_copy}
-                  alt="podcopy"
-                  height="80px"
-                  width="70px"
-                  onClick={handleImageView}
-                />
-              </Grid>
-            ))}
+          {(userData.groups.toString() === "Customer Service" ||
+            userData.groups.toString() === "Director") && (
+            <Grid item xs={12}>
+              <label>POD Copy : </label>
+              <input
+                type={"file"}
+                name="file"
+                // value={podCopy ? podCopy : idData.pod_copy}
+                onChange={handleImagePODCopy}
+              />
+              <img
+                src={podCopyImage ? podCopyImage : idData.pod_copy}
+                alt="podcopy"
+                height="80px"
+                width="70px"
+                onClick={handleImageView}
+              />
+            </Grid>
+          )}
         </Grid>
         <CustomButton
           sx={{ marginTop: "1rem" }}

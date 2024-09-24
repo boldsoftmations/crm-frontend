@@ -34,7 +34,7 @@ export const AllDispatchTabView = () => {
   const tabs = [
     {
       label: "Pending Dispatch",
-      visible: allTabs || twoTabs,
+      visible: allTabs || twoTabs || customerServiceTab,
       index: 0,
     },
 

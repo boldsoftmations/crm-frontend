@@ -261,7 +261,8 @@ function Row(props) {
         {(userData.groups.includes("Factory-Delhi-Dispatch") ||
           userData.groups.includes("Factory-Mumbai-Dispatch") ||
           userData.groups.includes("Director") ||
-          userData.groups.includes("Account")) && (
+          userData.groups.includes("Customer Service") ||
+          userData.groups.includes("Accounts")) && (
           <TableCell align="center">
             <button
               type="button"
