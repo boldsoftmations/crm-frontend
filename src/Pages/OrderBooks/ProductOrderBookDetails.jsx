@@ -88,6 +88,7 @@ export const ProductOrderBookDetails = () => {
             shipping_city: item.shipping_city,
             seller_state: item.seller_state,
             estimated_date: item.estimated_date,
+            ready_date: item.ready_date,
             requested_date: item.requested_date,
             special_instructions: item.special_instructions,
           };
@@ -107,6 +108,7 @@ export const ProductOrderBookDetails = () => {
             shipping_pincode: item.shipping_pincode,
             seller_state: item.seller_state,
             estimated_date: item.estimated_date,
+            ready_date: item.ready_date,
             requested_date: item.requested_date,
             special_instructions: item.special_instructions,
           };
@@ -127,6 +129,7 @@ export const ProductOrderBookDetails = () => {
             shipping_pincode: item.shipping_pincode,
             seller_state: item.seller_state,
             estimated_date: item.estimated_date,
+            ready_date: item.ready_date,
             requested_date: item.requested_date,
             special_instructions: item.special_instructions,
           };
@@ -501,6 +504,7 @@ const headers = [
     label: "Estimated Date",
     key: "estimated_date",
   },
+  { label: "Ready Date", key: "ready_date" },
   {
     label: "Special Instruction",
     key: "special_instructions",

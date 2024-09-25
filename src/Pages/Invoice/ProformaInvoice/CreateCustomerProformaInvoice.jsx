@@ -120,7 +120,7 @@ export const CreateCustomerProformaInvoice = (props) => {
       return { ...prev, [name]: value };
     });
   };
-
+  let buyer_date = new Date().toISOString().slice(0, 10);
   const openInPopup = () => {
     setOpenPopup3(true);
     setOpenPopup2(false);
@@ -128,13 +128,10 @@ export const CreateCustomerProformaInvoice = (props) => {
 
   const getProduct = useCallback(async () => {
     try {
-      setOpen(true);
       const res = await ProductService.getAllValidPriceList("all");
       setProductOption(res.data);
     } catch (err) {
       console.error("error potential", err);
-    } finally {
-      setOpen(false);
     }
   }, []);
 
@@ -150,15 +147,12 @@ export const CreateCustomerProformaInvoice = (props) => {
   };
   const getBillingAddressbyCustomer = async () => {
     try {
-      setOpen(true);
       const response = await InvoiceServices.getBillingAddressbyCustomer(
         rowData.name
       );
       setEdcData(response.data);
     } catch (error) {
       console.log("Error fetching customer billing address data:", error);
-    } finally {
-      setOpen(false);
     }
   };
   useEffect(() => {
@@ -186,13 +180,10 @@ export const CreateCustomerProformaInvoice = (props) => {
 
   const getAllCompanyDetailsByID = async () => {
     try {
-      setOpen(true);
       const response = await CustomerServices.getCompanyDataById(recordForEdit);
       setCustomerData(response.data);
     } catch (err) {
       console.log("company data by id error", err);
-    } finally {
-      setOpen(false);
     }
   };
   const handleSellerAccountChange = async (e, value, name) => {
@@ -664,7 +655,7 @@ export const CreateCustomerProformaInvoice = (props) => {
               value={
                 inputValue.buyer_order_date
                   ? inputValue.buyer_order_date
-                  : values.someDate
+                  : buyer_date
               }
               onChange={handleInputChange}
               InputLabelProps={{

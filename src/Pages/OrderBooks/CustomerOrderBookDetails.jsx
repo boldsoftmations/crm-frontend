@@ -107,6 +107,7 @@ export const CustomerOrderBookDetails = () => {
             pending_amount: item.pending_amount,
             seller_state: item.seller_state,
             estimated_date: item.estimated_date,
+            ready_date: item.ready_date,
             requested_date: item.requested_date,
             special_instructions: item.special_instructions,
           };
@@ -134,6 +135,7 @@ export const CustomerOrderBookDetails = () => {
             buyer_order_no: item.buyer_order_no,
             buyer_order_date: item.buyer_order_date,
             estimated_date: item.estimated_date,
+            ready_date: item.ready_date,
             requested_date: item.requested_date,
             special_instructions: item.special_instructions,
           };
@@ -154,6 +156,7 @@ export const CustomerOrderBookDetails = () => {
             seller_state: item.seller_state,
             pending_amount: item.pending_amount,
             estimated_date: item.estimated_date,
+            ready_date: item.ready_date,
             requested_date: item.requested_date,
             special_instructions: item.special_instructions,
           };
@@ -504,6 +507,8 @@ const headers = [
     label: "Estimated Date",
     key: "estimated_date",
   },
+  { label: "Ready Date", key: "ready_date" },
+
   { label: "Requested Date", key: "requested_date" },
   {
     label: "Special Instruction",
@@ -548,6 +553,8 @@ const headers2 = [
     label: "Estimated Date",
     key: "estimated_date",
   },
+  { label: "Ready Date", key: "ready_date" },
+
   { label: "Requested Date", key: "requested_date" },
   {
     label: "Special Instruction",

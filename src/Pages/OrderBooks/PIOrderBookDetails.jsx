@@ -85,6 +85,7 @@ export const PIOrderBookDetails = () => {
             pending_quantity: item.pending_quantity,
             seller_state: item.seller_state,
             estimated_date: item.estimated_date,
+            ready_date: item.ready_date,
             requested_date: item.requested_date,
             special_instructions: item.special_instructions,
           };
@@ -105,6 +106,7 @@ export const PIOrderBookDetails = () => {
             pending_quantity: item.pending_quantity,
             seller_state: item.seller_state,
             estimated_date: item.estimated_date,
+            ready_date: item.ready_date,
             requested_date: item.requested_date,
             special_instructions: item.special_instructions,
           };
@@ -362,7 +364,9 @@ export const PIOrderBookDetails = () => {
                     <StyledTableCell>{row.estimated_date}</StyledTableCell>
                     <StyledTableCell>{row.ready_date}</StyledTableCell>
                     <StyledTableCell>{row.requested_date}</StyledTableCell>
-                    <StyledTableCell>{row.special_instructions}</StyledTableCell>
+                    <StyledTableCell>
+                      {row.special_instructions}
+                    </StyledTableCell>
                     <StyledTableCell>{row.revision}</StyledTableCell>
                     <StyledTableCell>
                       {(userData.groups.includes("Accounts") ||
@@ -475,6 +479,7 @@ const headers = [
     label: "Estimated Date",
     key: "estimated_date",
   },
+  { label: "Ready Date", key: "ready_date" },
   {
     label: "Requested Date",
     key: "requested_date",
