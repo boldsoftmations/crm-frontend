@@ -378,7 +378,9 @@ export const CustomerOrderBookDetails = () => {
                     <StyledTableCell>{row.estimated_date}</StyledTableCell>
                     <StyledTableCell>{row.ready_date}</StyledTableCell>
                     <StyledTableCell>{row.requested_date}</StyledTableCell>
-                    <StyledTableCell>{row.special_instruction}</StyledTableCell>
+                    <StyledTableCell>
+                      {row.special_instructions}
+                    </StyledTableCell>
                     <StyledTableCell>{row.revision}</StyledTableCell>
                     <StyledTableCell>
                       <Button
