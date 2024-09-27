@@ -208,7 +208,7 @@ export const ProductionEntryCreate = memo((props) => {
               label="Bill of Material"
             />
           </Grid>
-          {(users.email == "amol@glutatape.com" ||
+          {(users.email == "amol@glutape.com" ||
             users.groups.includes("Director")) && (
             <Grid item xs={12} sm={4}>
               <FormControlLabel
