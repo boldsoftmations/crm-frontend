@@ -208,19 +208,22 @@ export const ProductionEntryCreate = memo((props) => {
               label="Bill of Material"
             />
           </Grid>
-          <Grid item xs={12} sm={4}>
-            <FormControlLabel
-              label={"Gain And Loss"}
-              control={
-                <Checkbox
-                  checked={checked}
-                  onChange={(e) => setChecked(e.target.checked)}
-                  inputProps={{ "aria-label": "controlled" }}
-                  disabled={checked}
-                />
-              }
-            />
-          </Grid>
+          {(users.email == "amol@glutatape.com" ||
+            users.groups.includes("Director")) && (
+            <Grid item xs={12} sm={4}>
+              <FormControlLabel
+                label={"Gain And Loss"}
+                control={
+                  <Checkbox
+                    checked={checked}
+                    onChange={(e) => setChecked(e.target.checked)}
+                    inputProps={{ "aria-label": "controlled" }}
+                    disabled={checked}
+                  />
+                }
+              />
+            </Grid>
+          )}
           <Grid item xs={12} sm={4}>
             <CustomTextField
               fullWidth
