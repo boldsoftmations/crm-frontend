@@ -431,6 +431,30 @@ export const ListItems = ({ setOpen }) => {
         renderListItem("/hr-model", <WorkIcon />, "Recruitment"),
       ],
     },
+
+    //Business Development Manager Menus and Excutive Menus
+    {
+      condition:
+        userData.groups.includes("Business Development Manager") ||
+        userData.groups.includes("Business Development Executive"),
+      items: [
+        renderListItem("/user/analytics", <DashboardIcon />, "Analytics"),
+        renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
+          { to: "/invoice/performa-invoice-tab", text: "Performa Invoice" },
+        ]),
+        renderSubmenu("sales", <TrendingUpIcon />, "Sales", [
+          { to: "/leads/all-lead", text: "Leads" },
+          { to: "/customers/all-customer", text: "Customer" },
+          { to: "/followp/view-followup", text: "Followup" },
+          { to: "/forecast/view-product-forecast", text: "Forecast" },
+          { to: "/market-analysis/competitor", text: "Market Analysis" },
+        ]),
+        renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
+        renderListItem("/dispatch/tab-view", <LocalShippingIcon />, "Dispatch"),
+        renderListItem("/task/view-task", <AssignmentTurnedInIcon />, "Task"),
+        renderListItem("/user/faq", <HelpOutlineIcon />, "Script"),
+      ],
+    },
     //Customer Relationship Manager
     {
       condition: userData.groups.includes("Customer Relationship Manager"),

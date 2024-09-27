@@ -96,7 +96,12 @@ export const Followup = () => {
   ];
 
   const visibleTabs = isUserInGroups(
-    ["Director", "Sales Manager", "Sales Deputy Manager"],
+    [
+      "Director",
+      "Sales Manager",
+      "Sales Deputy Manager",
+      "Business Development Manager",
+    ],
     userData.groups
   )
     ? StaffTabs

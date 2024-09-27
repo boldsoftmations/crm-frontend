@@ -255,7 +255,7 @@ const getSalesInvoiceData = (
   );
 };
 
-const getTallyInvoiceData = (startDate, endDate) => {
+const getTallyInvoiceData = (startDate, endDate, filterValue) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
 
@@ -265,6 +265,12 @@ const getTallyInvoiceData = (startDate, endDate) => {
 
   if (endDate) {
     params.append("end_date", endDate);
+  }
+  if (filterValue) {
+    params.append(
+      "sales_invoice__order_book__proforma_invoice__seller_account__unit",
+      filterValue
+    );
   }
 
   // Sending a GET request with query parameters

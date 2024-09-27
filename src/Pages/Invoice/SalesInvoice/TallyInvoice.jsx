@@ -33,6 +33,8 @@ export const TallyInvoice = () => {
   const maxDate = new Date("2030-12-31").toISOString().split("T")[0]; // set default value as current date
   const [customDataPopup, setCustomDataPopup] = useState(false);
   const csvLinkRef = useRef(null);
+  const [sellerAccountOption, setSellerAccountOption] = useState([]);
+  const [filterByUnit, setFilterByUnit] = useState("");
 
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
@@ -45,7 +47,8 @@ export const TallyInvoice = () => {
       const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
       const response = await InvoiceServices.getTallyInvoiceData(
         StartDate,
-        EndDate
+        EndDate,
+        filterByUnit
       );
       setTallyData(response.data);
     } catch (error) {
@@ -53,11 +56,11 @@ export const TallyInvoice = () => {
     } finally {
       setOpen(false);
     }
-  }, [startDate, endDate]); // Ensure dependencies are correctly listed
+  }, [startDate, endDate, filterByUnit]); // Ensure dependencies are correctly listed
 
   useEffect(() => {
     getSalesInvoiceDetails();
-  }, [startDate, endDate]);
+  }, [startDate, endDate, filterByUnit]);
 
   const handleChange = (value) => {
     const selectedValue = value;
@@ -88,6 +91,7 @@ export const TallyInvoice = () => {
     "INVOICE NO",
     "INVOICE DT",
     "PI NO",
+    "UNIT",
     "CUSTOMER NAME",
     "PRODUCT CODE",
     "QTY",
@@ -106,6 +110,7 @@ export const TallyInvoice = () => {
       order_no: row.order_no,
       payment_term: row.payment_term,
       delivery_term: row.delivery_term,
+      shipping_customer: row.shipping_customer,
       address1: row.address.address1,
       address2: row.address.address2,
       address3: row.address.address3,
@@ -139,6 +144,7 @@ export const TallyInvoice = () => {
     { label: "ORDER NO", key: "order_no" },
     { label: "PAYMENT TERMS", key: "payment_term" },
     { label: "TERMS OF DELIVERY", key: "delivery_term" },
+    { label: "SHIP TO", key: "shipping_customer" },
     { label: "ADDRESS 1", key: "address1" },
     { label: "ADDRESS 2", key: "address2" },
     { label: "ADDRESS 3", key: "address3" },
@@ -171,6 +177,23 @@ export const TallyInvoice = () => {
       setOpen(false);
     }
   };
+  const getAllSellerAccountsDetails = async () => {
+    try {
+      setOpen(true);
+      const response = await InvoiceServices.getAllPaginateSellerAccountData(
+        "all"
+      );
+      setSellerAccountOption(response.data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    getAllSellerAccountsDetails();
+  }, []);
 
   return (
     <>
@@ -186,13 +209,27 @@ export const TallyInvoice = () => {
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
           <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
             <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} sm={4} md={4}>
+              <Grid item xs={12} sm={4} md={2}>
                 <CustomAutocomplete
                   size="small"
                   onChange={(event, newValue) => handleChange(newValue)}
                   options={DateOptions.map((option) => option.value)}
                   getOptionLabel={(option) => option}
                   label="Filter By Date" // Passed directly to CustomAutocomplete
+                />
+              </Grid>
+              <Grid item xs={12} sm={2}>
+                <CustomAutocomplete
+                  name="seller_unit"
+                  size="small"
+                  disablePortal
+                  id="combo-box-demo"
+                  value={filterByUnit}
+                  onChange={(event, value) => setFilterByUnit(value)}
+                  options={sellerAccountOption.map((option) => option.unit)}
+                  getOptionLabel={(option) => option}
+                  fullWidth
+                  label="Filter By Seller Unit"
                 />
               </Grid>
               <Grid item xs={12} sm={4} md={4}>
@@ -277,6 +314,9 @@ export const TallyInvoice = () => {
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         {row.pi_no}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.unit}
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         {row.customer}

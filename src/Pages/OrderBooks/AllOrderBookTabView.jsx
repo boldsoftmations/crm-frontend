@@ -25,7 +25,9 @@ export const AllOrderBookTabView = () => {
     "Sales Manager with Lead",
     "Accounts",
     "Accounts Billing Department",
-    "Production"
+    "Production",
+    "Business Development Manager",
+    "Business Development Executive"
   );
   const orderBookUsers = isInGroups(
     "Factory-Mumbai-OrderBook",
