@@ -181,6 +181,7 @@ export const ActiveUsers = () => {
     "Sales Deputy Manager",
     "Sales Manager",
     "Customer Relationship Manager",
+    "Business Development Manager",
   ];
 
   return (
