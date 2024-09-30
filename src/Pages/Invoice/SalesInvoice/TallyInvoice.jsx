@@ -128,6 +128,7 @@ export const TallyInvoice = () => {
       sales_invoice: row.sales_invoice,
       billing_state: row.billing_state,
       shipping_city: row.shipping_city,
+      sales_ledger: "GST Sales",
     }));
     return CSVDATA;
   };
@@ -161,6 +162,7 @@ export const TallyInvoice = () => {
     { label: "REF NO", key: "sales_invoice" },
     { label: "BILL TO PLACE", key: "billing_state" },
     { label: "SHIP TO PLACE", key: "shipping_city" },
+    { label: "Sales Ledger", key: "sales_ledger" },
   ];
 
   const handleDownload = () => {
