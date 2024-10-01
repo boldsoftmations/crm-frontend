@@ -6,6 +6,7 @@ export const CustomTable = ({
   data,
   PriorityColor,
   openInPopup,
+  ScheduleInterviewPopup,
   openDeletePopup,
   openInPopup7,
   hideViewForStatus = [],
@@ -162,7 +163,11 @@ export const CustomTable = ({
                     zIndex: 0,
                   }}
                 >
-                  {openInPopup && !hideViewForStatus.includes(row.status) && (
+                  {openInPopup &&
+                  row.status === "Selected" &&
+                  row.stage === "Round1" ? (
+                    ""
+                  ) : (
                     <div
                       style={{
                         display: "inline-block",
@@ -178,6 +183,24 @@ export const CustomTable = ({
                       View
                     </div>
                   )}
+                  {ScheduleInterviewPopup &&
+                    row.status === "Selected" &&
+                    row.stage === "Round1" && (
+                      <div
+                        style={{
+                          display: "inline-block",
+                          // padding: "6px 12px",
+                          // border: "1px solid #1976d2",
+                          // borderRadius: "4px",
+                          color: "#1976d2",
+                          cursor: "pointer",
+                          marginRight: "8px",
+                        }}
+                        onClick={() => ScheduleInterviewPopup(row)}
+                      >
+                        Schedule Interview
+                      </div>
+                    )}
                   {openDeletePopup &&
                     !hideViewForStatus.includes(row.status) && (
                       <div

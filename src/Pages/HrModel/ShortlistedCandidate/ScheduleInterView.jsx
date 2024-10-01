@@ -19,7 +19,7 @@ export const ScheduleInterview = ({ row, closeDialog, fetchCandidates }) => {
     e.preventDefault();
 
     const newInterviewDetails = {
-      applicant: row.contact,
+      applicant: row.applicant,
       date: interviewDate,
       time: interviewTime,
       interviewer: interviewerName,
