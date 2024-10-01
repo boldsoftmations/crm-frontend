@@ -34,6 +34,8 @@ import SearchComponent from "../../../Components/SearchComponent ";
 import { MessageAlert } from "../../../Components/MessageAlert";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import { SourceViewList } from "./SourceViewList";
+import UploadSalesInvoice from "./uploadSaleInvoice";
+import CustomSnackbar from "../../../Components/CustomerSnackbar";
 
 export const SalesInvoiceView = () => {
   const [open, setOpen] = useState(false);
@@ -43,6 +45,7 @@ export const SalesInvoiceView = () => {
   const [openPopup2, setOpenPopup2] = useState(false);
   const [openPopup3, setOpenPopup3] = useState(false);
   const [openPopup4, setOpenPopup4] = useState(false);
+  const [openSalesPopUpFile, setOpenSalesPopUpFile] = useState(false);
   const [idForEdit, setIDForEdit] = useState();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -273,6 +276,11 @@ export const SalesInvoiceView = () => {
     setOpenPopup3(true);
   };
 
+  const setOpenSalesFile = (row) => {
+    setIDForEdit(row);
+    setOpenSalesPopUpFile(true);
+  };
+
   return (
     <>
       <MessageAlert
@@ -281,6 +289,7 @@ export const SalesInvoiceView = () => {
         severity={alertInfo.severity}
         message={alertInfo.message}
       />
+
       <CustomLoader open={open} />
 
       <Grid item xs={12}>
@@ -434,6 +443,7 @@ export const SalesInvoiceView = () => {
                     row={row}
                     openInPopup={openInPopup}
                     openInPopup2={openInPopup2}
+                    setOpenSalesFile={setOpenSalesFile}
                   />
                 ))}
               </TableBody>
@@ -491,6 +501,17 @@ export const SalesInvoiceView = () => {
           getSalesInvoiceDetails={getSalesInvoiceDetails}
           setOpenPopup={setOpenPopup3}
         />
+      </Popup>
+      <Popup
+        title={"Upload Sales Invoice "}
+        openPopup={openSalesPopUpFile}
+        setOpenPopup={setOpenSalesPopUpFile}
+      >
+        <UploadSalesInvoice
+          setOpenSalesPopUpFile={setOpenSalesPopUpFile}
+          getProduct={getSalesInvoiceDetails}
+          idForEdit={idForEdit}
+        ></UploadSalesInvoice>
       </Popup>
       <Popup
         openPopup={openPopup4}
@@ -556,7 +577,7 @@ export const SalesInvoiceView = () => {
 };
 
 function Row(props) {
-  const { row, openInPopup, openInPopup2 } = props;
+  const { row, openInPopup, openInPopup2, setOpenSalesFile } = props;
   const [tableExpand, setTableExpand] = useState(false);
   const [openPopupProductViewList, setOpenPopupProductViewList] =
     useState(false);
@@ -612,6 +633,19 @@ function Row(props) {
           <Button variant="text" onClick={() => openInPopup(row.invoice_no)}>
             View
           </Button>
+          {row.is_upload === false &&
+            (userData.groups.includes("Director") ||
+              userData.groups.includes("Accounts") ||
+              userData.groups.includes("Accounts Billing Department")) && (
+              <Button
+                type="button"
+                variant="text"
+                color="secondary"
+                onClick={() => setOpenSalesFile(row)}
+              >
+                Upload SI
+              </Button>
+            )}
           {(userData.groups.includes("Accounts") ||
             userData.groups.includes("Accounts Billing Department")) && (
             <Button

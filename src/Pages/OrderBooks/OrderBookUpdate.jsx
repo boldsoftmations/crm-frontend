@@ -120,6 +120,12 @@ export const OrderBookUpdate = (props) => {
               InputLabelProps={{
                 shrink: true,
               }}
+              inputProps={{
+                min: new Date(new Date().setDate(new Date().getDate() + 1))
+                  .toISOString()
+                  .split("T")[0], // Converts the date to YYYY-MM-DD format
+              }}
+              disabled={estimateDate}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -135,6 +141,11 @@ export const OrderBookUpdate = (props) => {
               InputLabelProps={{
                 shrink: true,
               }}
+              inputProps={{
+                min: new Date().toLocaleDateString("en-CA"), // Set the minimum to today
+                max: new Date().toLocaleDateString("en-CA"), // Set the maximum to today
+              }}
+              disabled={readyDate}
             />
           </Grid>
         </Grid>

@@ -457,6 +457,10 @@ const getInvoiceByCustomerAndSellerUnit = (customer, unit) => {
 const getBillingAddressbyCustomer = (data) => {
   return CustomAxios.get(`api/customer/warehouse/?customer=${data}`);
 };
+
+const uploadSalesinvoice = (data) => {
+  return CustomAxios.post(`/api/invoice/invoice-upload/`, data);
+};
 const InvoiceServices = {
   getAllSellerAccountData,
   getfilterSellerAccountData,
@@ -505,6 +509,7 @@ const InvoiceServices = {
   getDebitCreditNoteById,
   getInvoiceByCustomerAndSellerUnit,
   getBillingAddressbyCustomer,
+  uploadSalesinvoice,
 };
 
 export default InvoiceServices;
