@@ -10,6 +10,7 @@ import ViewAttribute from "./Attribute/ViewAttribute";
 import { ViewCompentancyAttribute } from "./CompentancyAttribute/ViewCompentacyAttribute";
 import { ViewRoleClarity } from "./RoleClarity/ViewRoleClarity";
 import { ViewJobDescription } from "./JobDescription/ViewJobDescription";
+import InterviewQuestionView from "./InterviewQuestion/InterviewQuestionView";
 
 export const HrMasterTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
@@ -42,14 +43,19 @@ export const HrMasterTabView = () => {
       index: 3,
     },
     {
-      label: "Interview Question",
+      label: "MCQ Question",
       visible: allTabs,
       index: 4,
     },
-    { label: "Attribute", visible: allTabs, index: 5 },
-    { label: "Competency Attribute", visible: allTabs, index: 6 },
-    { label: "Role Clarity", visible: allTabs, index: 7 },
-    { label: "Job Description", visible: allTabs, index: 8 },
+    {
+      label: "Interview Question",
+      visible: allTabs,
+      index: 5,
+    },
+    { label: "Attribute", visible: allTabs, index: 6 },
+    { label: "Competency Attribute", visible: allTabs, index: 7 },
+    { label: "Role Clarity", visible: allTabs, index: 8 },
+    { label: "Job Description", visible: allTabs, index: 9 },
   ];
 
   const visibleTabs = tabs.filter((tab) => tab.visible);
@@ -61,10 +67,11 @@ export const HrMasterTabView = () => {
     2: <SourceView />,
     3: <LocationView />,
     4: <ViewMCQs />,
-    5: <ViewAttribute />,
-    6: <ViewCompentancyAttribute />,
-    7: <ViewRoleClarity />,
-    8: <ViewJobDescription />,
+    5: <InterviewQuestionView />,
+    6: <ViewAttribute />,
+    7: <ViewCompentancyAttribute />,
+    8: <ViewRoleClarity />,
+    9: <ViewJobDescription />,
   };
 
   return (
