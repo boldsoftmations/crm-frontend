@@ -31,7 +31,7 @@ export const PriceApprovalPI = () => {
   const [totalPages, setTotalPages] = useState(0);
   const data = useSelector((state) => state.auth);
   const users = data.profile;
-  const assigned = users.sales_users || [];
+  const assigned = users.active_sales_user || [];
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
@@ -44,7 +44,7 @@ export const PriceApprovalPI = () => {
   ];
 
   const AssignedOptions = assigned.map((user) => ({
-    label: user.email,
+    label: user.name,
     value: user.email,
   }));
 

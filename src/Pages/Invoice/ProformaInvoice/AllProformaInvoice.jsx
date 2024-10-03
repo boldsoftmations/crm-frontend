@@ -27,7 +27,7 @@ export const AllProformaInvoice = () => {
   const [totalPages, setTotalPages] = useState(0);
   const data = useSelector((state) => state.auth);
   const users = data.profile;
-  const assigned = users.sales_users || [];
+  const assigned = users.active_sales_user || [];
   const [endDate, setEndDate] = useState(new Date()); // set endDate as one week ahead of startDate
   const getFirstDayOfMonth = (date) => {
     return new Date(date.getFullYear(), date.getMonth(), 1);
@@ -49,7 +49,7 @@ export const AllProformaInvoice = () => {
   ];
 
   const AssignedOptions = assigned.map((user) => ({
-    label: user.email,
+    label: user.name,
     value: user.email,
   }));
 

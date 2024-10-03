@@ -44,7 +44,7 @@ export const ActivePI = () => {
   const [totalPages, setTotalPages] = useState(0);
   const data = useSelector((state) => state.auth);
   const users = data.profile;
-  const assigned = users.sales_users || [];
+  const assigned = users.active_sales_user || [];
   const [isPrinting, setIsPrinting] = useState(false);
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
@@ -61,7 +61,7 @@ export const ActivePI = () => {
   ];
 
   const AssignedOptions = assigned.map((user) => ({
-    label: user.email,
+    label: user.name,
     value: user.email,
   }));
 
