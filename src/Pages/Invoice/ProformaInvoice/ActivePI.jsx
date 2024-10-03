@@ -315,9 +315,8 @@ export const ActivePI = () => {
                         {row.status}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {row.total}
+                        {row.round_off_total}
                       </StyledTableCell>
-
                       <StyledTableCell align="center">
                         {row.balance_amount}
                       </StyledTableCell>

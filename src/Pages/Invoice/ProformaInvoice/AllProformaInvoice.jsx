@@ -180,7 +180,7 @@ export const AllProformaInvoice = () => {
     billing_city: row.billing_city,
     contact: row.contact,
     status: row.status,
-    total: row.total,
+    round_off_total: row.round_off_total,
     balance_amount: row.balance_amount,
     payment_terms: row.payment_terms,
   }));
