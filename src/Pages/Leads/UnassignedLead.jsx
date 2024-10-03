@@ -68,11 +68,6 @@ export const UnassignedLead = () => {
     });
   };
 
-  useEffect(() => {
-    FetchData();
-    getAssignedData();
-  }, []);
-
   const FetchData = async (value) => {
     try {
       setOpen(true);
@@ -100,6 +95,11 @@ export const UnassignedLead = () => {
   };
 
   useEffect(() => {
+    FetchData();
+    getAssignedData();
+  }, []);
+
+  useEffect(() => {
     getUnassigned();
   }, [currentPage, filterQuery, filterSelectedQuery]);
 
@@ -119,11 +119,6 @@ export const UnassignedLead = () => {
       setOpen(false);
     }
   }, [currentPage, filterQuery, filterSelectedQuery]);
-
-  const handleFilter = (event) => {
-    setFilterQuery(event.target.value);
-    setCurrentPage(1);
-  };
 
   const handleSearch = (query) => {
     setFilterSelectedQuery(query);
@@ -205,7 +200,7 @@ export const UnassignedLead = () => {
                 <CustomAutocomplete
                   size="small"
                   value={filterQuery}
-                  onChange={(event, value) => handleFilter(value)}
+                  onChange={(event, value) => setFilterQuery(value)}
                   options={referenceData.map((option) => option.source)}
                   getOptionLabel={(option) => option}
                   label="Filter By References"
