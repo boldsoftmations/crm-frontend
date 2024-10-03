@@ -1,4 +1,5 @@
 import CustomAxios from "./api";
+import UpdateInterviewQuestion from "./../Pages/HrModel/InterviewAssessment/UpdateInterviewQuestion";
 
 //Designation API
 const getDesignationsData = (page, searchQuery) => {
@@ -359,15 +360,14 @@ const UpdateMCQQuetion = (id, data) => {
   return CustomAxios.patch(`api/hr/mcq/${id}/`, data);
 };
 
-const getMCQQuetion = (page, filterValue) => {
+const getMCQQuetion = (page, designation) => {
   const params = new URLSearchParams();
 
   if (page) {
     params.append("page", page);
   }
-
-  if (filterValue) {
-    params.append("department__department", filterValue);
+  if (designation) {
+    params.append("designation__designation", designation);
   }
   return CustomAxios.get(`/api/hr/mcq/?${params.toString()}`);
 };
@@ -376,6 +376,29 @@ const getDepartmentList = () => {
 };
 const getDesginationList = () => {
   return CustomAxios.get(`/api/hr/designation/?type=list`);
+};
+
+const createInterviewQuestionAndanswwer = (data) => {
+  return CustomAxios.post(`/api/hr/interview-question/`, data);
+};
+const getInterviewQuestionAndAnswer = (page, designation, typeofinterview) => {
+  const params = new URLSearchParams();
+
+  if (page) {
+    params.append("page", page);
+  }
+
+  if (designation) {
+    params.append("designation__designation", designation);
+  }
+
+  if (typeofinterview) {
+    params.append("interview_type", typeofinterview);
+  }
+  return CustomAxios.get(`/api/hr/interview-question/?${params.toString()}`);
+};
+const UpdateInterviewQuestionandanswwer = (id, data) => {
+  return CustomAxios.patch(`/api/hr/interview-question/${id}/`, data);
 };
 
 const Hr = {
@@ -428,6 +451,9 @@ const Hr = {
   getCompetitorCandidates,
   getDepartmentList,
   getDesginationList,
+  createInterviewQuestionAndanswwer,
+  getInterviewQuestionAndAnswer,
+  UpdateInterviewQuestionandanswwer,
 };
 
 export default Hr;

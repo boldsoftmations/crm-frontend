@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { TextField, Button, IconButton, Box, Paper, Grid } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import RemoveIcon from "@mui/icons-material/Remove";
+import { TextField, Button, Box, Paper, Grid } from "@mui/material";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
 import Hr from "../../../services/Hr";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import { CustomLoader } from "../../../Components/CustomLoader";
 
-const CreateInterviewQuestion = ({ getMCQQuetion, setOpenQuestionPopUp }) => {
+const CreateInterviewQuestionAndAnswer = ({
+  getMCQQuetion,
+  setOpenQuestionPopUp,
+}) => {
   const [formData, setFormData] = useState({
     designation: "",
+    interview_type: "",
     question: "",
-    options: [],
-    answer: "",
+    expected_answer: "",
   });
   const [loading, setLoading] = useState(false);
   const [role, setRole] = useState([]);
@@ -45,57 +46,27 @@ const CreateInterviewQuestion = ({ getMCQQuetion, setOpenQuestionPopUp }) => {
     }));
   };
 
-  const handleOptionChange = (index, event) => {
-    const newOptions = [...formData.options];
-    newOptions[index] = event.target.value;
-    setFormData((prevData) => ({
-      ...prevData,
-      options: newOptions,
-    }));
-  };
-
-  const handleAddOption = () => {
-    if (formData.options.length < 4) {
-      setFormData((prevData) => ({
-        ...prevData,
-        options: [...prevData.options, ""],
-      }));
-    }
-  };
-
-  const handleRemoveOption = (index) => {
-    if (formData.options.length > 1) {
-      const newOptions = [...formData.options];
-      newOptions.splice(index, 1);
-      setFormData((prevData) => ({
-        ...prevData,
-        options: newOptions,
-      }));
-    }
-  };
-
   const handleSubmit = async () => {
     try {
       if (
         !formData.designation ||
+        !formData.expected_answer ||
         !formData.question ||
-        formData.options.length !== 4 ||
-        !formData.answer
+        !formData.interview_type
       ) {
         setAlertMsg({
           open: true,
-          message:
-            "Please fill all the fields and ensure you have exactly 4 options.",
+          message: "Please fill all the fields.",
           severity: "warning",
         });
         return;
       }
 
       setLoading(true);
-      const response = await Hr.createMCQQuetion(formData);
+      const response = await Hr.createInterviewQuestionAndanswwer(formData);
       setAlertMsg({
         open: true,
-        message: response.message || "MCQ created successfully",
+        message: response.message || "Interview question created successfully",
         severity: "success",
       });
       setTimeout(() => {
@@ -106,7 +77,7 @@ const CreateInterviewQuestion = ({ getMCQQuetion, setOpenQuestionPopUp }) => {
       console.error("Error creating MCQ:", error);
       setAlertMsg({
         open: true,
-        message: error.message || "Error creating MCQ",
+        message: error.message || "Error creating interview question",
         severity: "error",
       });
     } finally {
@@ -115,7 +86,7 @@ const CreateInterviewQuestion = ({ getMCQQuetion, setOpenQuestionPopUp }) => {
   };
 
   return (
-    <Paper sx={{ maxWidth: 700, margin: "auto" }}>
+    <Paper sx={{ maxWidth: 1000, margin: "auto" }}>
       <CustomLoader open={loading} />
       <CustomSnackbar
         open={alertMsg.open}
@@ -136,6 +107,18 @@ const CreateInterviewQuestion = ({ getMCQQuetion, setOpenQuestionPopUp }) => {
             fullWidth
           />
         </Grid>
+        <Grid item xs={12} marginTop={"13px"}>
+          <CustomAutocomplete
+            options={["Screening", "Face to Face"]}
+            value={formData.interview_type}
+            onChange={(e, value) =>
+              setFormData((prev) => ({ ...prev, interview_type: value }))
+            }
+            label="Interview Question Type"
+            margin="dense"
+            fullWidth
+          />
+        </Grid>
 
         <TextField
           label="Question"
@@ -146,58 +129,23 @@ const CreateInterviewQuestion = ({ getMCQQuetion, setOpenQuestionPopUp }) => {
           fullWidth
           margin="normal"
         />
-
-        {formData.options.map((option, index) => (
-          <Box
-            key={index}
-            sx={{ display: "flex", alignItems: "center", mb: 3, mt: 2 }}
-          >
-            <TextField
-              label={`Option ${index + 1}`}
-              size="small"
-              value={option}
-              onChange={(e) => handleOptionChange(index, e)}
-              fullWidth
-            />
-            <IconButton
-              onClick={() => handleRemoveOption(index)}
-              disabled={formData.options.length <= 1}
-            >
-              <RemoveIcon />
-            </IconButton>
-          </Box>
-        ))}
-
-        <Button
-          variant="outlined"
-          onClick={handleAddOption}
-          startIcon={<AddIcon />}
+        <TextField
           fullWidth
-          sx={{ mb: 2 }}
-          disabled={formData.options.length >= 4}
-        >
-          Add More Option
-        </Button>
-        <Grid item xs={12}>
-          <CustomAutocomplete
-            options={formData.options}
-            onChange={(e, value) =>
-              setFormData((prev) => ({ ...prev, answer: value }))
-            }
-            label="Correct Answer"
-            margin="dense"
-            fullWidth
-            value={formData.answer}
-          />
-        </Grid>
-
+          multiline
+          rows={4}
+          size="small"
+          label="Expected Answer"
+          name="expected_answer"
+          style={{ marginTop: 11 }}
+          value={formData.expected_answer}
+          onChange={handleInputChange}
+        />
         <Button
-          style={{ marginTop: 12 }}
+          style={{ marginTop: 16 }}
           variant="contained"
           color="primary"
           onClick={handleSubmit}
           fullWidth
-          disabled={formData.options.length !== 4}
         >
           Submit
         </Button>
@@ -206,4 +154,4 @@ const CreateInterviewQuestion = ({ getMCQQuetion, setOpenQuestionPopUp }) => {
   );
 };
 
-export default CreateInterviewQuestion;
+export default CreateInterviewQuestionAndAnswer;

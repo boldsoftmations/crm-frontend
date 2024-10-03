@@ -176,7 +176,7 @@ const UpdateInterviewQuestion = ({
         >
           Add More Option
         </Button>
-        <Grid item xs={12} style={{ margin: "1rem" }}>
+        <Grid item xs={12}>
           <CustomAutocomplete
             options={formData.options}
             onChange={(e, value) =>

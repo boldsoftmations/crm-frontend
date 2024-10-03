@@ -13,19 +13,20 @@ import {
   Grid,
 } from "@mui/material";
 import Hr from "../../../services/Hr";
-import CreateInterviewQuestion from "./CreateInterviewQuestion";
 import { Popup } from "../../../Components/Popup";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import { CustomPagination } from "../../../Components/CustomPagination";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
-import UpdateInterviewQuestion from "./UpdateInterviewQuestion";
+import CreateInterviewQuestionAndAnswer from "./CreateInterviewQuestionAndAnswer";
+import UpdateQuestion from "./UpdateQuestion";
 
-const ViewMCQs = () => {
+const InterviewQuestionView = () => {
   const [mcqData, setMcqData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [openQuestionPopUp, setOpenQuestionPopUp] = useState(false);
   const [openQuestionPopUp1, setOpenQuestionPopUp1] = useState(false);
   const [filterValue, setFilterValue] = useState("");
+  const [typefilter, setTypeFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [designation, setDesignation] = useState([]);
@@ -35,13 +36,19 @@ const ViewMCQs = () => {
     severity: "",
     open: false,
   });
+
   const handleClose = () => {
     setAlertMsg({ ...alertMsg, open: false });
   };
-  const getMCQQuetion = useCallback(async () => {
+
+  const getInterviewQuestionAndAnswer = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await Hr.getMCQQuetion(currentPage, filterValue);
+      const response = await Hr.getInterviewQuestionAndAnswer(
+        currentPage,
+        filterValue,
+        typefilter
+      );
       setMcqData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
     } catch (error) {
@@ -54,7 +61,7 @@ const ViewMCQs = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, filterValue]);
+  }, [currentPage, filterValue, typefilter]);
 
   useEffect(() => {
     const fetchDepartmentList = async () => {
@@ -69,8 +76,8 @@ const ViewMCQs = () => {
   }, []);
 
   useEffect(() => {
-    getMCQQuetion();
-  }, [getMCQQuetion]);
+    getInterviewQuestionAndAnswer();
+  }, [currentPage, filterValue, typefilter]);
 
   const handleAddQuestion = () => setOpenQuestionPopUp1(true);
   const handleEdit = (data) => {
@@ -96,20 +103,29 @@ const ViewMCQs = () => {
         severity={alertMsg.severity}
         onClose={handleClose}
       />
-      <Paper style={{ padding: "15px", margin: "1rem" }}>
-        <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
-          <Grid
-            container
-            spacing={2}
-            alignItems="center"
-            sx={{ marginRight: 1, marginLeft: 1 }}
-          >
-            <Grid item xs={12} sm={4}>
+      <Paper
+        style={{
+          padding: "20px",
+          margin: "1rem",
+          backgroundColor: "#f9f9f9",
+          borderRadius: "10px",
+        }}
+      >
+        <Box
+          sx={{
+            marginBottom: 2,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <Grid container spacing={2} alignItems="center">
+            <Grid item xs={12} sm={2}>
               <CustomAutocomplete
                 fullWidth
                 name="designation"
-                size="small"
                 value={filterValue}
+                size="small"
                 disablePortal
                 id="combo-box-stage"
                 onChange={(e, value) => setFilterValue(value)}
@@ -118,16 +134,29 @@ const ViewMCQs = () => {
                 label="Filter By Designation"
               />
             </Grid>
+            <Grid item xs={12} sm={2}>
+              <CustomAutocomplete
+                fullWidth
+                size="small"
+                value={typefilter}
+                disablePortal
+                id="combo-box-stage"
+                onChange={(e, value) => setTypeFilter(value)}
+                options={["Screening", "Face to Face"]}
+                getOptionLabel={(option) => option}
+                label="Type of question"
+              />
+            </Grid>
             <Grid item xs={12} sm={4}>
               <Typography
                 variant="h5"
                 sx={{
-                  color: "rgb(34, 34, 34)",
+                  color: "#222",
                   fontWeight: 800,
                   textAlign: "center",
                 }}
               >
-                Interview MCQs Questions
+                Interview Questions
               </Typography>
             </Grid>
             <Grid item xs={12} sm={4} textAlign="end">
@@ -135,6 +164,11 @@ const ViewMCQs = () => {
                 variant="contained"
                 color="primary"
                 onClick={handleAddQuestion}
+                sx={{
+                  padding: "10px 20px",
+                  borderRadius: "8px",
+                  boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+                }}
               >
                 Add Question
               </Button>
@@ -144,45 +178,61 @@ const ViewMCQs = () => {
 
         <Box sx={{ maxWidth: 1300, margin: "auto", padding: 1 }}>
           {mcqData.length > 0 ? (
-            <TableContainer component={Paper}>
+            <TableContainer
+              component={Paper}
+              sx={{
+                borderRadius: "8px",
+                boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.1)",
+              }}
+            >
               <Table>
                 <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
                   <TableRow>
-                    <TableCell>
+                    <TableCell align="center">
                       <strong>Designation</strong>
                     </TableCell>
-                    <TableCell>
+                    <TableCell align="center">
+                      <strong>Interview Type</strong>
+                    </TableCell>
+                    <TableCell align="center">
                       <strong>Question</strong>
                     </TableCell>
-                    <TableCell>
-                      <strong>Options</strong>
+                    <TableCell align="center">
+                      <strong>Expected Answer</strong>
                     </TableCell>
-                    <TableCell>
-                      <strong>Correct Answer</strong>
+                    <TableCell align="center">
+                      <strong>Action</strong>
                     </TableCell>
-                    <TableCell>Action</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {mcqData.map((mcq) => (
-                    <TableRow key={mcq.id}>
-                      <TableCell>{mcq.designation}</TableCell>
-                      <TableCell>{mcq.question}</TableCell>
-                      <TableCell>
-                        <ul>
-                          {mcq.options.map((option, idx) => (
-                            <li key={idx}>{option}</li>
-                          ))}
-                        </ul>
+                  {mcqData.map((question) => (
+                    <TableRow key={question.id}>
+                      <TableCell align="center">
+                        {question.designation}
                       </TableCell>
-                      <TableCell>{mcq.answer}</TableCell>
-                      <TableCell>
+                      <TableCell align="center">
+                        {question.interview_type}
+                      </TableCell>
+                      <TableCell align="center">{question.question}</TableCell>
+                      <TableCell align="center">
+                        {question.expected_answer}
+                      </TableCell>
+                      <TableCell align="center">
                         <Button
                           variant="contained"
                           color="success"
                           size="small"
                           onClick={() => {
-                            handleEdit(mcq);
+                            handleEdit(question);
+                          }}
+                          sx={{
+                            padding: "5px 10px",
+                            borderRadius: "6px",
+                            backgroundColor: "#28a745",
+                            "&:hover": {
+                              backgroundColor: "#218838",
+                            },
                           }}
                         >
                           Edit
@@ -195,35 +245,38 @@ const ViewMCQs = () => {
             </TableContainer>
           ) : (
             <Typography variant="h6" align="center">
-              No MCQs found.
+              No Questions found.
             </Typography>
           )}
         </Box>
+
         <CustomPagination
           currentPage={currentPage}
           totalPages={totalPages}
           handlePageChange={handlePageChange}
         />
       </Paper>
+
       <Popup
         fullScreen={true}
         title="Create Interview Question"
         openPopup={openQuestionPopUp1}
         setOpenPopup={setOpenQuestionPopUp1}
       >
-        <CreateInterviewQuestion
-          getMCQQuetion={getMCQQuetion}
+        <CreateInterviewQuestionAndAnswer
+          getMCQQuetion={getInterviewQuestionAndAnswer}
           setOpenQuestionPopUp={setOpenQuestionPopUp1}
         />
       </Popup>
+
       <Popup
         fullScreen={true}
         title="Update Interview Question"
         openPopup={openQuestionPopUp}
         setOpenPopup={setOpenQuestionPopUp}
       >
-        <UpdateInterviewQuestion
-          getMCQQuetion={getMCQQuetion}
+        <UpdateQuestion
+          getMCQQuetion={getInterviewQuestionAndAnswer}
           setOpenQuestionPopUp={setOpenQuestionPopUp}
           data={selectedRow}
         />
@@ -232,4 +285,4 @@ const ViewMCQs = () => {
   );
 };
 
-export default ViewMCQs;
+export default InterviewQuestionView;
