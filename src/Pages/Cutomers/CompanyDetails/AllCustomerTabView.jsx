@@ -28,6 +28,11 @@ export const AllCustomerTabView = () => {
     "Customer Relationship Manager",
     "Business Development Manager"
   );
+  const isDirectorandCRMandCRE = isInGroups(
+    "Director",
+    "Customer Relationship Manager",
+    "Customer Relationship Executive"
+  );
 
   const isSalesDManager = isInGroups("Sales Deputy Manager");
   const isSalesADManager = isInGroups("Sales Assistant Deputy Manager");
@@ -92,7 +97,7 @@ export const AllCustomerTabView = () => {
       },
       {
         label: "Product Base Customers",
-        visible: isDirectorandSalesManager,
+        visible: isDirectorandCRMandCRE,
         index: 5,
         component: <ProductBaseCustomerView />,
       },
