@@ -30,6 +30,7 @@ import { useNotificationHandling } from "../../../Components/useNotificationHand
 import { MessageAlert } from "../../../Components/MessageAlert";
 import SearchComponent from "../../../Components/SearchComponent ";
 import CustomSelect from "../../../Components/CustomSelect";
+import CustomDate from "../../../Components/CustomDate";
 
 export const MaterialTransferNoteView = () => {
   const [openCreatePopup, setOpenCreatePopup] = useState(false);
@@ -45,6 +46,11 @@ export const MaterialTransferNoteView = () => {
   const [sellerOption, setSellerOption] = useState(null);
   const userData = useSelector((state) => state.auth.profile);
   const [exportData, setExportData] = useState([]);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const minDate = new Date().toISOString().split("T")[0];
+  const maxDate = new Date("2030-12-31").toISOString().split("T")[0];
+  const [customDataPopup, setCustomDataPopup] = useState(false);
   const csvLinkRef = useRef(null);
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
@@ -75,12 +81,16 @@ export const MaterialTransferNoteView = () => {
 
   const handleExport = async () => {
     try {
+      const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
+      const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
       setOpen(true);
       const response = await InventoryServices.getAllMaterialTransferNoteData(
         "all",
         acceptedFilter,
         searchQuery,
-        filterByDays
+        filterByDays,
+        StartDate,
+        EndDate
       );
 
       const data = response.data.map((row) => {
@@ -167,13 +177,17 @@ export const MaterialTransferNoteView = () => {
 
   const getAllMaterialTransferNoteDetails = useCallback(async () => {
     try {
+      const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
+      const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
       setOpen(true);
 
       const response = await InventoryServices.getAllMaterialTransferNoteData(
         currentPage,
         acceptedFilter,
         searchQuery,
-        filterByDays
+        filterByDays,
+        StartDate,
+        EndDate
       );
 
       setMaterialTransferNote(response.data.results);
@@ -184,11 +198,25 @@ export const MaterialTransferNoteView = () => {
     } finally {
       setOpen(false);
     }
-  }, [currentPage, acceptedFilter, searchQuery, filterByDays]);
+  }, [
+    currentPage,
+    acceptedFilter,
+    searchQuery,
+    filterByDays,
+    startDate,
+    endDate,
+  ]);
 
   useEffect(() => {
     getAllMaterialTransferNoteDetails();
-  }, [currentPage, acceptedFilter, searchQuery, filterByDays]);
+  }, [
+    currentPage,
+    acceptedFilter,
+    searchQuery,
+    filterByDays,
+    startDate,
+    endDate,
+  ]);
 
   const handleSearch = (query) => {
     setSearchQuery(query);
@@ -210,8 +238,19 @@ export const MaterialTransferNoteView = () => {
     setCurrentPage(1);
   };
   const handleDaysFilter = (event) => {
-    setFilterByDays(event.target.value);
-    setCurrentPage(1);
+    let selectValue = event.target.value;
+    if (selectValue === "custom_date") {
+      setStartDate(new Date());
+      setEndDate(new Date());
+      setFilterByDays("");
+      setCustomDataPopup(true);
+      setCurrentPage(1);
+    } else {
+      setFilterByDays(selectValue);
+      setCurrentPage(1);
+      setStartDate(null);
+      setEndDate(null);
+    }
   };
 
   const handleAccept = (item) => {
@@ -223,24 +262,24 @@ export const MaterialTransferNoteView = () => {
     setCurrentPage(value);
   };
 
-  // Usage
-  // const isAcceptedEdit =
-  //   userData.groups.includes("Accounts") ||
-  //   userData.groups.includes("Production") ||
-  //   userData.groups.includes("Production Delhi");
+  const handleEndDateChange = (event) => {
+    const date = new Date(event.target.value);
+    setEndDate(date);
+  };
+  const getResetDate = () => {
+    setStartDate(new Date());
+    setEndDate(new Date());
+  };
+  const handleStartDateChange = (event) => {
+    const date = new Date(event.target.value);
+    setStartDate(date);
+    setEndDate(new Date());
+  };
 
   const isAcceptedView =
     userData.groups.includes("Director") ||
     userData.groups.includes("Stores") ||
     userData.groups.includes("Stores Delhi");
-
-  // const filteredMaterialTransferNote = Object.keys(materialTransferNote)
-  //   .filter((key) => !materialTransferNote[key].accepted)
-  //   .reduce((obj, key) => {
-  //     obj[key] = materialTransferNote[key];
-  //     return obj;
-  //   }, {});
-
   return (
     <>
       <MessageAlert
@@ -431,6 +470,22 @@ export const MaterialTransferNoteView = () => {
             totalPages={totalPages}
             handlePageChange={handlePageChange}
           />
+          <Popup
+            openPopup={customDataPopup}
+            setOpenPopup={setCustomDataPopup}
+            title="Date Filter"
+            maxWidth="md"
+          >
+            <CustomDate
+              startDate={startDate}
+              endDate={endDate}
+              minDate={minDate}
+              maxDate={maxDate}
+              handleStartDateChange={handleStartDateChange}
+              handleEndDateChange={handleEndDateChange}
+              resetDate={getResetDate}
+            />
+          </Popup>
         </Paper>
       </Grid>
 
@@ -471,6 +526,7 @@ const filterDays = [
   { label: "Today", value: "today" },
   { label: "Yesterday", value: "yesterday" },
   { label: "This Month", value: "this_month" },
+  { label: "Custom Date", value: "custom_date" },
 ];
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({

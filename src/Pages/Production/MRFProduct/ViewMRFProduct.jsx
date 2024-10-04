@@ -18,13 +18,19 @@ import { CustomLoader } from "../../../Components/CustomLoader";
 import InventoryServices from "../../../services/InventoryService";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
-import CustomSelect from "../../../Components/CustomSelect";
+import { Popup } from "../../../Components/Popup";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import CustomDate from "../../../Components/CustomDate";
 
 export const ViewMRFProduct = () => {
   const [open, setOpen] = useState(false);
   const [mrfData, setMRFData] = useState([]);
-
-  const [filterByDays, setFilterByDays] = useState("today");
+  const [endDate, setEndDate] = useState(null);
+  const [startDate, setStartDate] = useState(null);
+  const minDate = new Date().toISOString().split("T")[0];
+  const maxDate = new Date("2030-12-31").toISOString().split("T")[0];
+  const [customDataPopup, setCustomDataPopup] = useState(false);
+  const [filterByDays, setFilterByDays] = useState();
   const [exportData, setExportData] = useState([]);
   const csvLinkRef = useRef(null);
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
@@ -55,8 +61,14 @@ export const ViewMRFProduct = () => {
 
   const handleExport = async () => {
     try {
+      const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
+      const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
       setOpen(true);
-      const response = await InventoryServices.getAllMrfProducts(filterByDays);
+      const response = await InventoryServices.getAllMrfProducts(
+        filterByDays,
+        StartDate,
+        EndDate
+      );
 
       const data = response.data.map((row) => {
         return {
@@ -81,8 +93,13 @@ export const ViewMRFProduct = () => {
   const getAllMrfProducts = useCallback(async () => {
     try {
       setOpen(true);
-
-      const response = await InventoryServices.getAllMrfProducts(filterByDays);
+      const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
+      const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
+      const response = await InventoryServices.getAllMrfProducts(
+        filterByDays,
+        StartDate,
+        EndDate
+      );
 
       setMRFData(response.data);
     } catch (error) {
@@ -90,16 +107,36 @@ export const ViewMRFProduct = () => {
     } finally {
       setOpen(false);
     }
-  }, [filterByDays]);
+  }, [filterByDays, startDate, endDate]);
 
   useEffect(() => {
     getAllMrfProducts();
-  }, [filterByDays]);
+  }, [filterByDays, startDate, endDate]);
 
-  const cleardaysFilter = () => setFilterByDays("");
+  const handleChange = (value) => {
+    if (value === "custom_date") {
+      setStartDate(new Date());
+      setEndDate(new Date());
+      setCustomDataPopup(true);
+    } else {
+      setFilterByDays(value);
+      setStartDate(null);
+      setEndDate(null);
+    }
+  };
 
-  const handleDaysFilter = (event) => {
-    setFilterByDays(event.target.value);
+  const handleEndDateChange = (event) => {
+    const date = new Date(event.target.value);
+    setEndDate(date);
+  };
+  const getResetDate = () => {
+    setStartDate(new Date());
+    setEndDate(new Date());
+  };
+  const handleStartDateChange = (event) => {
+    const date = new Date(event.target.value);
+    setStartDate(date);
+    setEndDate(new Date());
   };
 
   return (
@@ -121,13 +158,19 @@ export const ViewMRFProduct = () => {
               justifyContent="space-between"
             >
               {/* Left Section: Filter and Search */}
-              <Grid item xs={12} sm={3} display="flex" alignItems="center">
-                <CustomSelect
-                  label="Filter By Days"
+              <Grid item xs={12} sm={4} display="flex" alignItems="center">
+                <CustomAutocomplete
+                  size="small"
+                  fullWidth
+                  onChange={(event, newValue) =>
+                    handleChange(newValue ? newValue.value : "")
+                  } // Passes the value to handleChange
                   options={filterDays}
-                  value={filterByDays}
-                  onChange={handleDaysFilter}
-                  onClear={cleardaysFilter}
+                  getOptionLabel={(option) => option.label} // Displays the label in the dropdown
+                  isOptionEqualToValue={(option, value) =>
+                    option.value === value.value
+                  } // Ensures correct selection
+                  label="Filter By Date"
                 />
               </Grid>
               <Grid item xs={12} sm={4} display="flex" justifyContent="center">
@@ -232,6 +275,22 @@ export const ViewMRFProduct = () => {
               </TableBody>
             </Table>
           </TableContainer>
+          <Popup
+            openPopup={customDataPopup}
+            setOpenPopup={setCustomDataPopup}
+            title="Date Filter"
+            maxWidth="md"
+          >
+            <CustomDate
+              startDate={startDate}
+              endDate={endDate}
+              minDate={minDate}
+              maxDate={maxDate}
+              handleStartDateChange={handleStartDateChange}
+              handleEndDateChange={handleEndDateChange}
+              resetDate={getResetDate}
+            />
+          </Popup>
         </Paper>
       </Grid>
     </>
@@ -242,6 +301,7 @@ const filterDays = [
   { label: "Today", value: "today" },
   { label: "Yesterday", value: "yesterday" },
   { label: "This Month", value: "this_month" },
+  { label: "Custom Date", value: "custom_date" },
 ];
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
