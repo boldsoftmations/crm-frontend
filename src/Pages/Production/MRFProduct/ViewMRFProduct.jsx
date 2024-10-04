@@ -30,7 +30,7 @@ export const ViewMRFProduct = () => {
   const minDate = new Date().toISOString().split("T")[0];
   const maxDate = new Date("2030-12-31").toISOString().split("T")[0];
   const [customDataPopup, setCustomDataPopup] = useState(false);
-  const [filterByDays, setFilterByDays] = useState();
+  const [filterByDays, setFilterByDays] = useState("today");
   const [exportData, setExportData] = useState([]);
   const csvLinkRef = useRef(null);
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
@@ -117,6 +117,7 @@ export const ViewMRFProduct = () => {
     if (value === "custom_date") {
       setStartDate(new Date());
       setEndDate(new Date());
+      setFilterByDays("");
       setCustomDataPopup(true);
     } else {
       setFilterByDays(value);
@@ -164,12 +165,12 @@ export const ViewMRFProduct = () => {
                   fullWidth
                   onChange={(event, newValue) =>
                     handleChange(newValue ? newValue.value : "")
-                  } // Passes the value to handleChange
+                  }
                   options={filterDays}
-                  getOptionLabel={(option) => option.label} // Displays the label in the dropdown
+                  getOptionLabel={(option) => option.label}
                   isOptionEqualToValue={(option, value) =>
                     option.value === value.value
-                  } // Ensures correct selection
+                  }
                   label="Filter By Date"
                 />
               </Grid>
