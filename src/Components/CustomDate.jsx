@@ -37,10 +37,8 @@ const CustomDate = ({
             type="date"
             id="start-date"
             value={startDate ? startDate.toISOString().split("T")[0] : ""}
-            inputProps={{
-              min: minDate,
-              max: maxDate,
-            }}
+            min={minDate}
+            max={maxDate}
             onChange={handleStartDateChange}
           />
         </Grid>
@@ -54,10 +52,8 @@ const CustomDate = ({
             type="date"
             id="end-date"
             value={endDate ? endDate.toISOString().split("T")[0] : ""}
-            inputProps={{
-              min: startDate ? startDate.toISOString().split("T")[0] : minDate,
-              max: maxDate,
-            }}
+            min={startDate ? startDate.toISOString().split("T")[0] : minDate}
+            max={maxDate}
             onChange={handleEndDateChange}
             disabled={!startDate}
           />
