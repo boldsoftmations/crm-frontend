@@ -301,7 +301,12 @@ const updateMaterialRequisitionFormData = (id, data) => {
 
 // Bill of Materials List Api
 
-const getAllBillofMaterialsData = (page, approvedToFilter, searchValue) => {
+const getAllBillofMaterialsData = (
+  page,
+  approvedToFilter,
+  is_deactivated,
+  searchValue
+) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
 
@@ -311,6 +316,10 @@ const getAllBillofMaterialsData = (page, approvedToFilter, searchValue) => {
 
   if (approvedToFilter !== undefined) {
     params.append("approved", approvedToFilter);
+  }
+
+  if (is_deactivated !== undefined) {
+    params.append("is_deactivated", is_deactivated);
   }
 
   if (searchValue) {

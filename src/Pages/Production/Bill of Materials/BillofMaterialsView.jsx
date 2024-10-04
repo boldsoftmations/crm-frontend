@@ -178,6 +178,27 @@ export const BillofMaterialsView = () => {
     }
   };
 
+  const DeactivateBillofMaterialsDetails = async (data) => {
+    try {
+      setOpen(true);
+      const req = {
+        is_deactivated: true,
+        product: data.product,
+      };
+      await InventoryServices.updateBillofMaterialsData(data.id, req);
+      handleSuccess("BOM deactivated  Successfully");
+      setTimeout(() => {
+        setOpenPopup(false);
+      }, 300);
+      getAllBillofMaterialsDetails(currentPage, filterApproved, searchQuery);
+      setOpen(false);
+    } catch (error) {
+      handleError(error);
+      console.log("error Store Accepting", error);
+      setOpen(false);
+    }
+  };
+
   const openInPopup = (item) => {
     setIDForEdit(item);
     setOpenPopup(true);
@@ -321,7 +342,15 @@ export const BillofMaterialsView = () => {
                   <StyledTableCell align="center">QUANTITY</StyledTableCell>
                   <StyledTableCell align="center">DATE</StyledTableCell>
                   <StyledTableCell align="center">APPROVED</StyledTableCell>
-                  <StyledTableCell align="center">Action</StyledTableCell>
+                  {(users.groups.includes("Accounts") ||
+                    users.groups.includes("Director") ||
+                    users.groups.includes("Production")) && (
+                    <StyledTableCell align="center">
+                      DEACTIVATED
+                    </StyledTableCell>
+                  )}
+
+                  <StyledTableCell align="center">ACTION</StyledTableCell>
                 </StyledTableRow>
               </TableHead>
               <TableBody>
@@ -332,6 +361,9 @@ export const BillofMaterialsView = () => {
                     openInPopup={openInPopup}
                     users={users}
                     updateBillofMaterialsDetails={updateBillofMaterialsDetails}
+                    DeactivateBillofMaterialsDetails={
+                      DeactivateBillofMaterialsDetails
+                    }
                   />
                 ))}
               </TableBody>{" "}
@@ -382,7 +414,13 @@ export const BillofMaterialsView = () => {
 };
 
 function Row(props) {
-  const { row, openInPopup, users, updateBillofMaterialsDetails } = props;
+  const {
+    row,
+    openInPopup,
+    users,
+    updateBillofMaterialsDetails,
+    DeactivateBillofMaterialsDetails,
+  } = props;
   const [open, setOpen] = useState(false);
 
   return (
@@ -411,6 +449,22 @@ function Row(props) {
             inputProps={{ "aria-label": "controlled" }}
           />
         </StyledTableCell>
+        {(users.groups.includes("Accounts") ||
+          users.groups.includes("Director") ||
+          users.groups.includes("Production")) && (
+          <StyledTableCell align="center">
+            <Switch
+              checked={row.is_deactivated}
+              inputProps={{ "aria-label": "controlled" }}
+              onClick={() => {
+                if (!row.is_deactivated) {
+                  DeactivateBillofMaterialsDetails(row);
+                }
+              }}
+            />
+          </StyledTableCell>
+        )}
+
         <StyledTableCell align="center">
           {(users.groups.includes("Accounts") ||
             users.groups.includes("Director")) &&

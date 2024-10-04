@@ -3,22 +3,16 @@ import { CustomTabs } from "../../Components/CustomTabs.jsx";
 import { JobOpeningView } from "./../HrModel/JobOpening/JobOpeningView.jsx";
 import { InterviewStatusView } from "./InterviewStatus/InterviewStatusView.jsx";
 import { OfferStatusView } from "./OfferStatus/OfferStatusView.jsx";
-import { MisReportView } from "./MisReport/MisReportView.jsx";
 import { ApplicantListView } from "./ApplicantList/ApplicantListView.jsx";
 import { ShortListedCandidateView } from "./ShortlistedCandidate/ShortListedCandidateView.jsx";
-import { HrDashboard } from "./HrDashboard.jsx";
 import { RejectedCandidate } from "./RejectedCandidate/RejectedCandidate.jsx";
 import { useSelector } from "react-redux";
-import ViewAttribute from "./Attribute/ViewAttribute.jsx";
-import { ViewCompentancyAttribute } from "./CompentancyAttribute/ViewCompentacyAttribute.jsx";
-import { ViewRoleClarity } from "./RoleClarity/ViewRoleClarity.jsx";
-import { ViewJobDescription } from "./JobDescription/ViewJobDescription.jsx";
 import { ViewCompetitorCandidates } from "./CompetitorCandidates/ViewCompetitorCandidates.jsx";
 export const HrModelTabs = () => {
   const [activeTab, setActiveTab] = useState(0);
   const data = useSelector((state) => state.auth);
   const users = data.profile;
-  const assigned = users.sales_users || [];
+  // const assigned = users.sales_users || [];
   const isSalesManager = users.groups.includes("Sales Manager");
 
   const handleTabChange = (index) => {
@@ -33,8 +27,8 @@ export const HrModelTabs = () => {
         { label: "Shortlisted Candidate" },
         { label: "Interview Status" },
         { label: "Offer Status" },
-        { label: "MIS Report" },
-        { label: "Dashboard" },
+        // { label: "MIS Report" },
+        // { label: "Dashboard" },
         { label: "Rejected Candidate" },
         { label: "Competitor" },
       ];
@@ -75,7 +69,7 @@ export const HrModelTabs = () => {
                   <OfferStatusView />
                 </div>
               )}
-              {activeTab === 5 && (
+              {/* {activeTab === 5 && (
                 <div>
                   <MisReportView />
                 </div>
@@ -84,13 +78,13 @@ export const HrModelTabs = () => {
                 <div>
                   <HrDashboard />
                 </div>
-              )}
-              {activeTab === 7 && (
+              )} */}
+              {activeTab === 5 && (
                 <div>
                   <RejectedCandidate />
                 </div>
               )}
-              {activeTab === 8 && (
+              {activeTab === 6 && (
                 <div>
                   <ViewCompetitorCandidates />
                 </div>

@@ -73,6 +73,7 @@ export const ProductionEntryCreate = memo((props) => {
       const response = await InventoryServices.getAllBillofMaterialsData(
         "all",
         "true",
+        false,
         value
       );
       setSelectedProduct(response.data);
