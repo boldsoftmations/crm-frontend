@@ -123,6 +123,9 @@ const createContactData = (data) => {
 const getContactDataById = (id) => {
   return CustomAxios.get(`/api/customer/list-contact/${id}`);
 };
+const deleteCustomerContact = (id) => {
+  return CustomAxios.delete(`/api/customer/list-contact/${id}`);
+};
 
 const updateContactData = (id, data) => {
   return CustomAxios.patch(`/api/customer/list-contact/${id}`, data);
@@ -558,6 +561,7 @@ const CustomerServices = {
   getCustomerLastPi,
   getProductLastPi,
   getAllStatesList,
+  deleteCustomerContact,
 };
 
 export default CustomerServices;

@@ -20,6 +20,7 @@ import { UpdateContactDetails } from "./UpdateContactDetails";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { useSelector } from "react-redux";
 import CustomerServices from "../../../services/CustomerService";
+import DeleteConfirmation from "./DeletePopup";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -47,6 +48,7 @@ export const ContactDetails = ({ recordForEdit }) => {
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [IDForEdit, setIDForEdit] = useState();
+  const [opendeletePopup, setOpendletePopup] = useState(false);
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
 
@@ -78,59 +80,16 @@ export const ContactDetails = ({ recordForEdit }) => {
     setOpenPopup(true);
   };
 
+  const openDelete = (item) => {
+    setIDForEdit(item);
+    setOpendletePopup(true);
+  };
   return (
     <>
       <CustomLoader open={open} />
-
       <Grid item xs={12}>
-        {/* <p
-          style={{
-            width: "100%",
-            padding: 10,
-            marginBottom: 10,
-            borderRadius: 4,
-            backgroundColor: errMsg ? "red" : "offscreen",
-            textAlign: "center",
-            color: "white",
-            textTransform: "capitalize",
-          }}
-          ref={errRef}
-          className={errMsg ? "errmsg" : "offscreen"}
-          aria-live="assertive"
-        >
-          {errMsg}
-        </p> */}
-        {/* <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}> */}
         <Box display="flex">
-          <Box flexGrow={2}>
-            {/* <TextField
-              // value={searchQuery}
-              // onChange={(e) => setSearchQuery(e.target.value)}
-              name="search"
-              size="small"
-              label="Search"
-              variant="outlined"
-              sx={{ backgroundColor: "#ffffff" }}
-            />
-
-            <Button
-              // onClick={getSearchData}
-              size="medium"
-              sx={{ marginLeft: "1em" }}
-              variant="contained"
-              // startIcon={<SearchIcon />}
-            >
-              Search
-            </Button>
-            <Button
-              // onClick={getResetData}
-              sx={{ marginLeft: "1em" }}
-              size="medium"
-              variant="contained"
-            >
-              Reset
-            </Button> */}
-          </Box>
+          <Box flexGrow={2}></Box>
           <Box flexGrow={2}>
             <h3
               style={{
@@ -210,10 +169,23 @@ export const ContactDetails = ({ recordForEdit }) => {
                           userData.groups.includes("Customer Service") ||
                           userData.groups.includes("Director")) && (
                           <Button
-                            variant="contained"
+                            size="small"
+                            variant="outlined"
                             onClick={() => openInPopup(row.id)}
                           >
                             View
+                          </Button>
+                        )}
+                        {(userData.groups.includes("Accounts") ||
+                          userData.groups.includes("Director")) && (
+                          <Button
+                            size="small"
+                            color="error"
+                            variant="contained"
+                            onClick={() => openDelete(row)}
+                            style={{ marginLeft: 12 }}
+                          >
+                            Delete
                           </Button>
                         )}
                       </StyledTableCell>
@@ -235,6 +207,18 @@ export const ContactDetails = ({ recordForEdit }) => {
           setOpenPopup={setOpenPopup2}
         />
       </Popup>
+      <Popup
+        title={"Are you sure you want to delete ?"}
+        openPopup={opendeletePopup}
+        setOpenPopup={setOpendletePopup}
+      >
+        <DeleteConfirmation
+          data={IDForEdit}
+          getAllCompanyDetailsByID={getAllCompanyDetailsByID}
+          setOpendletePopup={setOpendletePopup}
+        />
+      </Popup>
+
       <Popup
         title={"Update Contact Details"}
         openPopup={openPopup}
