@@ -181,20 +181,27 @@ export const BillofMaterialsView = () => {
   const DeactivateBillofMaterialsDetails = async (data) => {
     try {
       setOpen(true);
+      const newDeactivatedStatus = !data.is_deactivated;
       const req = {
-        is_deactivated: true,
+        is_deactivated: newDeactivatedStatus,
         product: data.product,
       };
+
       await InventoryServices.updateBillofMaterialsData(data.id, req);
-      handleSuccess("BOM deactivated  Successfully");
+
+      handleSuccess(
+        `BOM ${newDeactivatedStatus ? "Deactivated" : "Activated"} Successfully`
+      );
+
       setTimeout(() => {
         setOpenPopup(false);
       }, 300);
+
       getAllBillofMaterialsDetails(currentPage, filterApproved, searchQuery);
-      setOpen(false);
     } catch (error) {
       handleError(error);
-      console.log("error Store Accepting", error);
+      console.log("Error in toggling BOM status:", error);
+    } finally {
       setOpen(false);
     }
   };
@@ -451,15 +458,13 @@ function Row(props) {
         </StyledTableCell>
         {(users.groups.includes("Accounts") ||
           users.groups.includes("Director") ||
-          users.groups.includes("Production")) && (
+          users.groups.includes("Factory-Mumbai-OrderBook")) && (
           <StyledTableCell align="center">
             <Switch
               checked={row.is_deactivated}
               inputProps={{ "aria-label": "controlled" }}
               onClick={() => {
-                if (!row.is_deactivated) {
-                  DeactivateBillofMaterialsDetails(row);
-                }
+                DeactivateBillofMaterialsDetails(row);
               }}
             />
           </StyledTableCell>
