@@ -123,6 +123,7 @@ export const BillofMaterialsView = () => {
         const response = await InventoryServices.getAllBillofMaterialsData(
           page,
           filter,
+          null,
           search
         );
         setBillofMaterials(response.data.results);
