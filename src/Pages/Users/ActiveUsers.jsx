@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import TaskService from "../../services/TaskService";
 import { CustomTable } from "../../Components/CustomTable";
 import { CustomLoader } from "../../Components/CustomLoader";
+import { TreeView, TreeItem } from "@mui/lab";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import {
   Box,
   Button,
@@ -24,13 +27,15 @@ export const ActiveUsers = () => {
   const [activeUsersData, setActiveUsersData] = useState([]);
   const [groupsData, setGroupsData] = useState([]);
   const [activeUsersByIDData, setActiveUsersByIDData] = useState([]);
-  const [state, setState] = useState([]);
+  const [state, setState] = useState(selectedStateCities || []);
   const [searchQuery, setSearchQuery] = useState("");
   const [openPopup, setOpenPopup] = useState(false);
   const [manageGroup, setManageGroup] = useState([]);
   const [selectedGrp, setSelectedGrp] = useState("");
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
+  const [selectedStateCities, setSelectedStateCities] = useState({});
+
   const handleSelectChange = (name, value) => {
     setActiveUsersByIDData({
       ...activeUsersByIDData,
@@ -51,6 +56,7 @@ export const ActiveUsers = () => {
     setActiveUsersByIDData(data);
     setOpenPopup(true);
   };
+
   const getAllUsersDetails = async () => {
     try {
       setOpen(true);
@@ -64,20 +70,25 @@ export const ActiveUsers = () => {
       setOpen(false);
     }
   };
+
   const getAllStatesList = async () => {
     try {
       setOpen(true);
       const response = await CustomerServices.getAllStatesList();
-      setState(response.data.data);
+      setState(response.data);
     } catch (error) {
       handleError(error);
     } finally {
       setOpen(false);
     }
   };
+
+  console.log("selectedStateCities");
+
   useEffect(() => {
     getAllUsersDetails();
   }, []);
+
   useEffect(() => {
     if (
       activeUsersByIDData &&
@@ -87,6 +98,7 @@ export const ActiveUsers = () => {
       getAllStatesList();
     }
   }, [activeUsersByIDData.groups]);
+
   const createUsersDetails = async (e) => {
     try {
       e.preventDefault();
@@ -99,8 +111,11 @@ export const ActiveUsers = () => {
         is_active: activeUsersByIDData.is_active,
         group_names: activeUsersByIDData.groups,
         ref_user: activeUsersByIDData.ref_user,
-        ...(activeUsersByIDData.state && { state: activeUsersByIDData.state }),
+        ...(Object.keys(selectedStateCities).length > 0 && {
+          state: selectedStateCities,
+        }), // Conditionally include the state only if it's not empty
       };
+
       const response = await TaskService.createUsers(
         activeUsersByIDData.emp_id,
         req
@@ -126,7 +141,6 @@ export const ActiveUsers = () => {
       setOpen(true);
       const response = await TaskService.getAllGroupsUser();
 
-      // Convert response data to a key-value structure
       const groupData = response.data.data.map((group) => {
         const key = Object.keys(group)[0];
         const value = group[key];
@@ -140,19 +154,19 @@ export const ActiveUsers = () => {
       setOpen(false);
     }
   };
+
   useEffect(() => {
     getAllGroupsUser();
   }, []);
 
-  // Get the selected group from manageGroup
   const filterGroup = manageGroup.find((group) => group.key === selectedGrp);
 
-  // Filter the productionInventoryData based on the search query
   const filteredData = activeUsersData.filter((user) =>
     Object.values(user || {}).some((value) =>
       String(value).toLowerCase().includes(searchQuery.toLowerCase())
     )
   );
+
   const Tableheaders = [
     "EMP ID",
     "FirstName",
@@ -183,6 +197,67 @@ export const ActiveUsers = () => {
     "Customer Relationship Manager",
     "Business Development Manager",
   ];
+
+  useEffect(() => {
+    if (activeUsersByIDData && activeUsersByIDData.state) {
+      setSelectedStateCities(activeUsersByIDData.state);
+    }
+  }, [activeUsersByIDData]);
+
+  const handleCheck = (event, state, cities = []) => {
+    setSelectedStateCities((prev) => {
+      const newSelectedStateCities = { ...prev };
+
+      if (event.target.checked) {
+        // Select the state and all its cities
+        newSelectedStateCities[state] = cities;
+      } else {
+        // Deselect the state and remove it from the object
+        delete newSelectedStateCities[state];
+      }
+
+      return newSelectedStateCities;
+    });
+  };
+
+  const handleCityCheck = (event, state, city) => {
+    setSelectedStateCities((prev) => {
+      const newSelectedStateCities = { ...prev };
+
+      // If the state is already present in the object
+      if (newSelectedStateCities[state]) {
+        if (event.target.checked) {
+          // Add the city to the array
+          newSelectedStateCities[state] = [
+            ...newSelectedStateCities[state],
+            city,
+          ];
+        } else {
+          // Remove the city from the array
+          newSelectedStateCities[state] = newSelectedStateCities[state].filter(
+            (c) => c !== city
+          );
+
+          // If no cities are left, remove the state from the object
+          if (newSelectedStateCities[state].length === 0) {
+            delete newSelectedStateCities[state];
+          }
+        }
+      } else if (event.target.checked) {
+        // If the state is not in the object, add the city under the state
+        newSelectedStateCities[state] = [city];
+      }
+
+      return newSelectedStateCities;
+    });
+  };
+
+  const isStateHighlighted = (state) =>
+    selectedStateCities[state] && selectedStateCities[state].length > 0;
+
+  const isChecked = (state, city) =>
+    (selectedStateCities[state] && selectedStateCities[state].includes(city)) ||
+    false;
 
   return (
     <>
@@ -320,34 +395,75 @@ export const ActiveUsers = () => {
                 "Customer Relationship Executive"
               ) && (
                 <Grid item xs={12}>
-                  <CustomAutocomplete
-                    size="small"
-                    value={activeUsersByIDData.state || []}
-                    onChange={(event, newValue) => {
-                      handleSelectChange("state", newValue);
+                  <TreeView
+                    aria-label="checkbox tree"
+                    defaultCollapseIcon={<ExpandMoreIcon />}
+                    defaultExpandIcon={<ChevronRightIcon />}
+                    sx={{
+                      flexGrow: 1,
+                      overflowY: "auto",
+                      maxHeight: 400,
+                      mx: "10px",
                     }}
-                    multiple
-                    limitTags={3}
-                    id="multiple-limit-tags"
-                    options={state}
-                    freeSolo
-                    renderTags={(value, getTagProps) =>
-                      value.map((option, index) => (
-                        <Chip
-                          variant="outlined"
-                          label={option}
-                          {...getTagProps({ index })}
-                        />
-                      ))
-                    }
-                    renderInput={(params) => (
-                      <CustomTextField
-                        {...params}
-                        label="States"
-                        placeholder="Select a State"
-                      />
+                  >
+                    {Object.entries(state).map(
+                      ([state, cities], stateIndex) => {
+                        const stateId = `state-${stateIndex}`;
+
+                        return (
+                          <TreeItem
+                            key={stateId}
+                            nodeId={stateId}
+                            label={
+                              <FormControlLabel
+                                control={
+                                  <Checkbox
+                                    checked={isStateHighlighted(state)}
+                                    onChange={(event) =>
+                                      handleCheck(event, state, cities)
+                                    }
+                                  />
+                                }
+                                label={state}
+                                sx={{
+                                  color: isStateHighlighted(state)
+                                    ? "blue"
+                                    : "inherit",
+                                  fontWeight: isStateHighlighted(state)
+                                    ? "bold"
+                                    : "normal",
+                                }}
+                              />
+                            }
+                          >
+                            {cities.map((city, cityIndex) => {
+                              const cityId = `city-${stateIndex}-${cityIndex}`;
+
+                              return (
+                                <TreeItem
+                                  key={cityId}
+                                  nodeId={cityId}
+                                  label={
+                                    <FormControlLabel
+                                      control={
+                                        <Checkbox
+                                          checked={isChecked(state, city)}
+                                          onChange={(event) =>
+                                            handleCityCheck(event, state, city)
+                                          }
+                                        />
+                                      }
+                                      label={city}
+                                    />
+                                  }
+                                />
+                              );
+                            })}
+                          </TreeItem>
+                        );
+                      }
                     )}
-                  />
+                  </TreeView>
                 </Grid>
               )}
 
