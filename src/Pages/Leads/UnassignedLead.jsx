@@ -25,6 +25,7 @@ import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
 import SearchComponent from "../../Components/SearchComponent ";
 import { MessageAlert } from "../../Components/MessageAlert";
+import { useSelector } from "react-redux";
 
 export const UnassignedLead = () => {
   const [leads, setLeads] = useState([]);
@@ -43,7 +44,10 @@ export const UnassignedLead = () => {
   const [selectedRows, setSelectedRows] = useState([]);
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
-
+  const data = useSelector((state) => state.auth);
+  const users = data.profile;
+  const assigned_to_users = users.active_sales_user || [];
+  console.log("assigned_to_users", assigned_to_users);
   const openInPopup = (item) => {
     setLeadsByID(item.lead_id);
     setOpenPopup(true);
@@ -78,29 +82,13 @@ export const UnassignedLead = () => {
     }
   };
 
-  const getAssignedData = async () => {
-    try {
-      setOpen(true);
-      const res = await LeadServices.getAllAssignedUser();
-      // Filter the data based on the ALLOWED_ROLES
-      const filteredData = res.data.filter((employee) =>
-        employee.groups.some((group) => Option.ALLOWED_ROLES.includes(group))
-      );
-      setAssigned(filteredData);
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
-  };
-
   useEffect(() => {
     FetchData();
-    getAssignedData();
   }, []);
 
   useEffect(() => {
     getUnassigned();
+    setCurrentPage(1);
   }, [currentPage, filterQuery, filterSelectedQuery]);
 
   const getUnassigned = useCallback(async () => {
@@ -377,7 +365,7 @@ export const UnassignedLead = () => {
               size="small"
               value={recordForEdit ? recordForEdit.assigned_to : "-"}
               onChange={(e, value) => setAssign(value)}
-              options={assigned.map((option) => option.email)}
+              options={assigned_to_users.map((option) => option.email)}
               getOptionLabel={(option) => `${option}`}
               label={"Assign To"}
             />
