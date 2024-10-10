@@ -75,11 +75,9 @@ export const ActiveUsers = () => {
     try {
       setOpen(true);
       const response = await CustomerServices.getAllStatesList();
-      setState((prev) => ({
-        ...prev, // Keep previous state data in the component's state
-        ...(activeUsersByIDData.state || {}), // Add previous data from activeUsersByIDData.state (if it exists)
-        ...response.data, // Append new state data from the API response
-      }));
+      setState(
+        response.data // Append new state data from the API response
+      );
     } catch (error) {
       handleError(error);
     } finally {
@@ -92,14 +90,8 @@ export const ActiveUsers = () => {
   }, []);
 
   useEffect(() => {
-    if (
-      activeUsersByIDData &&
-      activeUsersByIDData.groups &&
-      activeUsersByIDData.groups.includes("Customer Relationship Executive")
-    ) {
-      getAllStatesList();
-    }
-  }, [activeUsersByIDData.groups]);
+    getAllStatesList();
+  }, [activeUsersByIDData]);
 
   const createUsersDetails = async (e) => {
     try {
@@ -113,9 +105,7 @@ export const ActiveUsers = () => {
         is_active: activeUsersByIDData.is_active,
         group_names: activeUsersByIDData.groups,
         ref_user: activeUsersByIDData.ref_user,
-        ...(Object.keys(selectedStateCities).length > 0 && {
-          state: selectedStateCities,
-        }), // Conditionally include the state only if it's not empty
+        state: selectedStateCities || [],
       };
 
       const response = await TaskService.createUsers(
@@ -223,11 +213,10 @@ export const ActiveUsers = () => {
       return newSelectedStateCities;
     });
   };
-
   const handleCityCheck = (event, state, city) => {
     setSelectedStateCities((prev) => {
       const newSelectedStateCities = { ...prev };
-
+      console.log("newSelectedStateCities", newSelectedStateCities);
       // If the state is already present in the object
       if (newSelectedStateCities[state]) {
         if (event.target.checked) {
@@ -412,115 +401,113 @@ export const ActiveUsers = () => {
               activeUsersByIDData.groups.includes(
                 "Customer Relationship Executive"
               ) && (
-                <Grid item xs={12}>
-                  <TreeView
-                    aria-label="checkbox tree"
-                    defaultCollapseIcon={<ExpandMoreIcon />}
-                    defaultExpandIcon={<ChevronRightIcon />}
-                    sx={{
-                      flexGrow: 1,
-                      overflowY: "auto",
-                      maxHeight: 400,
-                      mx: "10px",
-                    }}
-                  >
-                    {state && Object.keys(state).length > 0 ? (
-                      Object.entries(state).map(
-                        ([stateName, cities], stateIndex) => {
-                          const stateId = `state-${stateIndex}`;
+                <>
+                  <Grid item xs={12}>
+                    <TreeView
+                      aria-label="checkbox tree"
+                      defaultCollapseIcon={<ExpandMoreIcon />}
+                      defaultExpandIcon={<ChevronRightIcon />}
+                      sx={{
+                        flexGrow: 1,
+                        overflowY: "auto",
+                        maxHeight: 400,
+                        mx: "10px",
+                      }}
+                    >
+                      {state &&
+                        Object.keys(state).length > 0 &&
+                        Object.entries(state).map(
+                          ([stateName, cities], stateIndex) => {
+                            const stateId = `state-${stateIndex}`;
 
-                          return (
-                            <TreeItem
-                              key={stateId}
-                              nodeId={stateId}
-                              label={
-                                <FormControlLabel
-                                  control={
-                                    <Checkbox
-                                      // The checkbox is checked when all cities are selected
-                                      checked={isStateFullySelected(
+                            return (
+                              <TreeItem
+                                key={stateId}
+                                nodeId={stateId}
+                                label={
+                                  <FormControlLabel
+                                    control={
+                                      <Checkbox
+                                        // The checkbox is checked when all cities are selected
+                                        checked={isStateFullySelected(
+                                          stateName,
+                                          cities
+                                        )}
+                                        // The checkbox is indeterminate (dash) when some but not all cities are selected
+                                        indeterminate={isStatePartiallySelected(
+                                          stateName,
+                                          cities
+                                        )}
+                                        // Handle the change when the checkbox is clicked
+                                        onChange={(event) =>
+                                          handleCheck(event, stateName, cities)
+                                        }
+                                        // Style changes based on selection
+                                        sx={{
+                                          "&.Mui-checked": { color: "blue" }, // Green tick when fully selected
+                                          "&.MuiCheckbox-indeterminate": {
+                                            color: "black",
+                                          }, // Black dash when partially selected
+                                        }}
+                                      />
+                                    }
+                                    label={stateName}
+                                    sx={{
+                                      color: isStatePartiallySelected(
                                         stateName,
                                         cities
-                                      )}
-                                      // The checkbox is indeterminate (dash) when some but not all cities are selected
-                                      indeterminate={isStatePartiallySelected(
+                                      )
+                                        ? "blue" // Blue label when partially selected
+                                        : "inherit",
+                                      fontWeight: isStateFullySelected(
                                         stateName,
                                         cities
-                                      )}
-                                      // Handle the change when the checkbox is clicked
-                                      onChange={(event) =>
-                                        handleCheck(event, stateName, cities)
-                                      }
-                                      // Style changes based on selection
-                                      sx={{
-                                        "&.Mui-checked": { color: "blue" }, // Green tick when fully selected
-                                        "&.MuiCheckbox-indeterminate": {
-                                          color: "black",
-                                        }, // Black dash when partially selected
-                                      }}
-                                    />
-                                  }
-                                  label={stateName}
-                                  sx={{
-                                    color: isStatePartiallySelected(
-                                      stateName,
-                                      cities
-                                    )
-                                      ? "blue" // Blue label when partially selected
-                                      : "inherit",
-                                    fontWeight: isStateFullySelected(
-                                      stateName,
-                                      cities
-                                    )
-                                      ? "bold" // Bold label when fully selected
-                                      : "normal",
-                                  }}
-                                />
-                              }
-                            >
-                              {Array.isArray(cities) && cities.length > 0 ? (
-                                cities.map((city, cityIndex) => {
-                                  const cityId = `city-${stateIndex}-${cityIndex}`;
+                                      )
+                                        ? "bold" // Bold label when fully selected
+                                        : "normal",
+                                    }}
+                                  />
+                                }
+                              >
+                                {cities &&
+                                  cities.length > 0 &&
+                                  cities.map((city, cityIndex) => {
+                                    const cityId = `city-${stateIndex}-${cityIndex}`;
 
-                                  return (
-                                    <TreeItem
-                                      key={cityId}
-                                      nodeId={cityId}
-                                      label={
-                                        <FormControlLabel
-                                          control={
-                                            <Checkbox
-                                              checked={isChecked(
-                                                stateName,
-                                                city
-                                              )}
-                                              onChange={(event) =>
-                                                handleCityCheck(
-                                                  event,
+                                    return (
+                                      <TreeItem
+                                        key={cityId}
+                                        nodeId={cityId}
+                                        label={
+                                          <FormControlLabel
+                                            control={
+                                              <Checkbox
+                                                checked={isChecked(
                                                   stateName,
                                                   city
-                                                )
-                                              }
-                                            />
-                                          }
-                                          label={city}
-                                        />
-                                      }
-                                    />
-                                  );
-                                })
-                              ) : (
-                                <p>No cities available</p>
-                              )}
-                            </TreeItem>
-                          );
-                        }
-                      )
-                    ) : (
-                      <p>No states available</p>
-                    )}
-                  </TreeView>
-                </Grid>
+                                                )}
+                                                onChange={(event) =>
+                                                  handleCityCheck(
+                                                    event,
+                                                    stateName,
+                                                    city
+                                                  )
+                                                }
+                                              />
+                                            }
+                                            label={city}
+                                          />
+                                        }
+                                      />
+                                    );
+                                  })}
+                              </TreeItem>
+                            );
+                          }
+                        )}
+                    </TreeView>
+                  </Grid>
+                </>
               )}
 
             <Grid item xs={12} sm={6}>
