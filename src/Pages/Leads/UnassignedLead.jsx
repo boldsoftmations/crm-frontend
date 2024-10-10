@@ -20,7 +20,6 @@ import { Popup } from "../../Components/Popup";
 import { UpdateLeads } from "./UpdateLeads";
 import { CustomLoader } from "../../Components/CustomLoader";
 import { CustomPagination } from "../../Components/CustomPagination";
-import Option from "../../Options/Options";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
 import SearchComponent from "../../Components/SearchComponent ";
@@ -34,7 +33,6 @@ export const UnassignedLead = () => {
   const [filterQuery, setFilterQuery] = useState("");
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const [assign, setAssign] = useState("");
-  const [assigned, setAssigned] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [openPopup, setOpenPopup] = useState(false);
@@ -47,7 +45,6 @@ export const UnassignedLead = () => {
   const data = useSelector((state) => state.auth);
   const users = data.profile;
   const assigned_to_users = users.active_sales_user || [];
-  console.log("assigned_to_users", assigned_to_users);
   const openInPopup = (item) => {
     setLeadsByID(item.lead_id);
     setOpenPopup(true);

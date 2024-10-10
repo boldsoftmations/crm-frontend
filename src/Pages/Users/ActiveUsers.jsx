@@ -27,7 +27,7 @@ export const ActiveUsers = () => {
   const [activeUsersData, setActiveUsersData] = useState([]);
   const [groupsData, setGroupsData] = useState([]);
   const [activeUsersByIDData, setActiveUsersByIDData] = useState([]);
-  const [state, setState] = useState(selectedStateCities || []);
+  const [state, setState] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [openPopup, setOpenPopup] = useState(false);
   const [manageGroup, setManageGroup] = useState([]);
@@ -75,15 +75,17 @@ export const ActiveUsers = () => {
     try {
       setOpen(true);
       const response = await CustomerServices.getAllStatesList();
-      setState(response.data);
+      setState((prevLocationData) => ({
+        ...prevLocationData, // Keep previous state data in the component's state
+        ...(activeUsersByIDData.state || {}), // Add previous data from activeUsersByIDData.state (if it exists)
+        ...response.data, // Append new state data from the API response
+      }));
     } catch (error) {
       handleError(error);
     } finally {
       setOpen(false);
     }
   };
-
-  console.log("selectedStateCities");
 
   useEffect(() => {
     getAllUsersDetails();
@@ -197,10 +199,12 @@ export const ActiveUsers = () => {
     "Customer Relationship Manager",
     "Business Development Manager",
   ];
-
   useEffect(() => {
     if (activeUsersByIDData && activeUsersByIDData.state) {
-      setSelectedStateCities(activeUsersByIDData.state);
+      setSelectedStateCities((prev) => ({
+        ...prev,
+        ...activeUsersByIDData.state, // Merge existing states with new activeUsersByIDData.state
+      }));
     }
   }, [activeUsersByIDData]);
 
