@@ -10,13 +10,18 @@ import {
   TableRow,
   Table,
   tableCellClasses,
+  TableBody,
 } from "@mui/material";
 import { CustomLoader } from "../../Components/CustomLoader";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import CustomSnackbar from "../../Components/CustomerSnackbar";
 import DashboardService from "../../services/DashboardService";
+import { useSelector } from "react-redux";
 
 export const CRReport = () => {
+  const data = useSelector((state) => state.auth);
+  const users = data.profile;
+  const assigned_to_users = users.active_sales_user || [];
   const [isLoading, setIsLoading] = useState(false);
   const [CRReportDatas, setCRReportDatas] = useState([]);
 
@@ -35,7 +40,7 @@ export const CRReport = () => {
     setIsLoading(true);
     try {
       const response = await DashboardService.getCRReportData(filterValue);
-      setCRReportDatas(response.data.data);
+      setCRReportDatas(response.data);
     } catch (error) {
       setAlertMsg({
         message: "Failed to fetch top customers",
@@ -51,9 +56,6 @@ export const CRReport = () => {
     getCRReportData();
   }, [filterValue]);
 
-  const handleFilterChange = (event, value) => {
-    setFilterValue(value.value);
-  };
   return (
     <>
       <CustomSnackbar
@@ -72,11 +74,11 @@ export const CRReport = () => {
                   <CustomAutocomplete
                     fullWidth
                     size="small"
-                    disablePortal
-                    id="combo-box-status"
-                    onChange={handleFilterChange}
-                    getOptionLabel={(option) => option.label}
-                    label="Filter By Employee"
+                    value={filterValue}
+                    onChange={(e, value) => setFilterValue(value)}
+                    options={assigned_to_users.map((option) => option.email)}
+                    getOptionLabel={(option) => `${option}`}
+                    label={"Filter By Employee"}
                   />
                 </Box>
               </Grid>
@@ -132,15 +134,34 @@ export const CRReport = () => {
                   </StyledTableCell>
                 </TableRow>
               </TableHead>
-              {/* <TableBody>
-                {CRReportDatas.map((row, i) => (
-                  <StyledTableRow key={i}>
-                    <StyledTableCell align="center">
-                      {row.decription}
-                    </StyledTableCell>
-                  </StyledTableRow>
-                ))}
-              </TableBody> */}
+              <TableBody>
+                {CRReportDatas &&
+                  CRReportDatas.map((row, i) => (
+                    <StyledTableRow key={i}>
+                      <StyledTableCell align="center">
+                        {row.product__description__name}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.product__brand__name}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.product__unit__name}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.forecast}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.potential}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.last_month}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.this_month}
+                      </StyledTableCell>
+                    </StyledTableRow>
+                  ))}
+              </TableBody>
             </Table>
           </TableContainer>
         </Paper>

@@ -380,6 +380,10 @@ const potentialTurnoverReport = (page) => {
   return CustomAxios.get(`/api/dashboard/potential-turnover/?page=${page}`);
 };
 
+const getCRReportData = (email) => {
+  return CustomAxios.get(`/api/dashboard/cr-report/?email=${email}`);
+};
+
 const DashboardService = {
   getLastThreeMonthForecastData,
   getLastThreeMonthForecastDataByFilter,
@@ -457,6 +461,7 @@ const DashboardService = {
   getLeadRetailData,
   getTopCustomersMonthwise,
   potentialTurnoverReport,
+  getCRReportData,
 };
 
 export default DashboardService;
