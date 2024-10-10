@@ -75,8 +75,8 @@ export const ActiveUsers = () => {
     try {
       setOpen(true);
       const response = await CustomerServices.getAllStatesList();
-      setState((prevLocationData) => ({
-        ...prevLocationData, // Keep previous state data in the component's state
+      setState((prev) => ({
+        ...prev, // Keep previous state data in the component's state
         ...(activeUsersByIDData.state || {}), // Add previous data from activeUsersByIDData.state (if it exists)
         ...response.data, // Append new state data from the API response
       }));
@@ -256,8 +256,22 @@ export const ActiveUsers = () => {
     });
   };
 
-  const isStateHighlighted = (state) =>
-    selectedStateCities[state] && selectedStateCities[state].length > 0;
+  // Check if all cities are selected for the state
+  const isStateFullySelected = (stateName, cities) => {
+    return (
+      selectedStateCities[stateName] &&
+      selectedStateCities[stateName].length === cities.length
+    );
+  };
+
+  // Check if some but not all cities are selected for the state
+  const isStatePartiallySelected = (stateName, cities) => {
+    return (
+      selectedStateCities[stateName] &&
+      selectedStateCities[stateName].length > 0 &&
+      selectedStateCities[stateName].length < cities.length
+    );
+  };
 
   const isChecked = (state, city) =>
     (selectedStateCities[state] && selectedStateCities[state].includes(city)) ||
@@ -410,62 +424,100 @@ export const ActiveUsers = () => {
                       mx: "10px",
                     }}
                   >
-                    {Object.entries(state).map(
-                      ([state, cities], stateIndex) => {
-                        const stateId = `state-${stateIndex}`;
+                    {state && Object.keys(state).length > 0 ? (
+                      Object.entries(state).map(
+                        ([stateName, cities], stateIndex) => {
+                          const stateId = `state-${stateIndex}`;
 
-                        return (
-                          <TreeItem
-                            key={stateId}
-                            nodeId={stateId}
-                            label={
-                              <FormControlLabel
-                                control={
-                                  <Checkbox
-                                    checked={isStateHighlighted(state)}
-                                    onChange={(event) =>
-                                      handleCheck(event, state, cities)
-                                    }
-                                  />
-                                }
-                                label={state}
-                                sx={{
-                                  color: isStateHighlighted(state)
-                                    ? "blue"
-                                    : "inherit",
-                                  fontWeight: isStateHighlighted(state)
-                                    ? "bold"
-                                    : "normal",
-                                }}
-                              />
-                            }
-                          >
-                            {cities.map((city, cityIndex) => {
-                              const cityId = `city-${stateIndex}-${cityIndex}`;
-
-                              return (
-                                <TreeItem
-                                  key={cityId}
-                                  nodeId={cityId}
-                                  label={
-                                    <FormControlLabel
-                                      control={
-                                        <Checkbox
-                                          checked={isChecked(state, city)}
-                                          onChange={(event) =>
-                                            handleCityCheck(event, state, city)
-                                          }
-                                        />
+                          return (
+                            <TreeItem
+                              key={stateId}
+                              nodeId={stateId}
+                              label={
+                                <FormControlLabel
+                                  control={
+                                    <Checkbox
+                                      // The checkbox is checked when all cities are selected
+                                      checked={isStateFullySelected(
+                                        stateName,
+                                        cities
+                                      )}
+                                      // The checkbox is indeterminate (dash) when some but not all cities are selected
+                                      indeterminate={isStatePartiallySelected(
+                                        stateName,
+                                        cities
+                                      )}
+                                      // Handle the change when the checkbox is clicked
+                                      onChange={(event) =>
+                                        handleCheck(event, stateName, cities)
                                       }
-                                      label={city}
+                                      // Style changes based on selection
+                                      sx={{
+                                        "&.Mui-checked": { color: "blue" }, // Green tick when fully selected
+                                        "&.MuiCheckbox-indeterminate": {
+                                          color: "black",
+                                        }, // Black dash when partially selected
+                                      }}
                                     />
                                   }
+                                  label={stateName}
+                                  sx={{
+                                    color: isStatePartiallySelected(
+                                      stateName,
+                                      cities
+                                    )
+                                      ? "blue" // Blue label when partially selected
+                                      : "inherit",
+                                    fontWeight: isStateFullySelected(
+                                      stateName,
+                                      cities
+                                    )
+                                      ? "bold" // Bold label when fully selected
+                                      : "normal",
+                                  }}
                                 />
-                              );
-                            })}
-                          </TreeItem>
-                        );
-                      }
+                              }
+                            >
+                              {Array.isArray(cities) && cities.length > 0 ? (
+                                cities.map((city, cityIndex) => {
+                                  const cityId = `city-${stateIndex}-${cityIndex}`;
+
+                                  return (
+                                    <TreeItem
+                                      key={cityId}
+                                      nodeId={cityId}
+                                      label={
+                                        <FormControlLabel
+                                          control={
+                                            <Checkbox
+                                              checked={isChecked(
+                                                stateName,
+                                                city
+                                              )}
+                                              onChange={(event) =>
+                                                handleCityCheck(
+                                                  event,
+                                                  stateName,
+                                                  city
+                                                )
+                                              }
+                                            />
+                                          }
+                                          label={city}
+                                        />
+                                      }
+                                    />
+                                  );
+                                })
+                              ) : (
+                                <p>No cities available</p>
+                              )}
+                            </TreeItem>
+                          );
+                        }
+                      )
+                    ) : (
+                      <p>No states available</p>
                     )}
                   </TreeView>
                 </Grid>
