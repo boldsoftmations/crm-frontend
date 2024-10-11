@@ -6,6 +6,7 @@ import { RetailCustomerData } from "./RetailCustomerData";
 import { DashboardLeadData } from "./DashboardLeadData";
 import { CustomTabs } from "../../Components/CustomTabs";
 import { TopCustomerView } from "./TopCustomerView";
+import { CRReport } from "./CRreport";
 
 export const AnalyticsAllTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
@@ -77,6 +78,15 @@ export const AnalyticsAllTabView = () => {
         "Customer Relationship Executive",
       ],
       component: <TopCustomerView />,
+    },
+    {
+      label: "CR Report",
+      roles: [
+        "Director",
+        "Customer Relationship Manager",
+        "Customer Relationship Executive",
+      ],
+      component: <CRReport />,
     },
   ];
 
