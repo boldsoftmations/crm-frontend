@@ -340,6 +340,7 @@ export const BillofMaterialsView = () => {
                   <StyledTableCell align="center"></StyledTableCell>
                   <StyledTableCell align="center">ID</StyledTableCell>
                   <StyledTableCell align="center">BOM TYPE</StyledTableCell>
+                  <StyledTableCell align="center">Remark</StyledTableCell>
                   <StyledTableCell align="center">PRODUCT</StyledTableCell>
                   <StyledTableCell align="center">QUANTITY</StyledTableCell>
                   <StyledTableCell align="center">DATE</StyledTableCell>
@@ -442,6 +443,7 @@ function Row(props) {
 
         <StyledTableCell align="center">{row.bom_id}</StyledTableCell>
         <StyledTableCell align="center">{row.bom_type}</StyledTableCell>
+        <StyledTableCell align="center">{row.remark}</StyledTableCell>
         <StyledTableCell align="center">{row.product}</StyledTableCell>
         <StyledTableCell align="center">{row.quantity}</StyledTableCell>
         <StyledTableCell align="center">{row.created_on}</StyledTableCell>
@@ -453,7 +455,7 @@ function Row(props) {
         </StyledTableCell>
         {(users.groups.includes("Accounts") ||
           users.groups.includes("Director") ||
-          users.email === "amol@glutape.com") && (
+          users.groups.includes("Factory-Mumbai-OrderBook")) && (
           <StyledTableCell align="center">
             <Switch
               checked={row.is_deactivated}

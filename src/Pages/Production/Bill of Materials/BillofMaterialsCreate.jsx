@@ -25,7 +25,7 @@ export const BillofMaterialsCreate = memo((props) => {
     filterApproved,
   } = props;
   const [open, setOpen] = useState(false);
-  const [inputChange, setInputChange] = useState([]);
+  const [inputChange, setInputChange] = useState({ remark: "" });
   const data = useSelector((state) => state.auth);
   const FinishGoodsProduct = data.finishgoodsProduct;
   const ConsumableProduct = data.consumableProduct;
@@ -64,10 +64,10 @@ export const BillofMaterialsCreate = memo((props) => {
   );
 
   const handleSelectChanges = (name, value) => {
-    setInputChange({
-      ...inputChange,
+    setInputChange((prev) => ({
+      ...prev,
       [name]: value,
-    });
+    }));
   };
 
   const createMaterialRequisitionFormDetails = async (e) => {
@@ -77,6 +77,7 @@ export const BillofMaterialsCreate = memo((props) => {
       const req = {
         product: inputChange.product,
         bom_type: inputChange.bom_type,
+        remark: inputChange.remark,
         products_data: products,
       };
       await InventoryServices.createBillofMaterialsData(req);
@@ -139,6 +140,21 @@ export const BillofMaterialsCreate = memo((props) => {
               label="Bom Type"
             />
           </Grid>
+          <Grid item xs={12} sm={4}>
+            <CustomTextField
+              fullWidth
+              name="remark"
+              size="small"
+              label="Add Remark"
+              variant="outlined"
+              inputProps={{ maxLength: 100 }}
+              value={inputChange.remark || ""}
+              onChange={(event) =>
+                handleSelectChanges("remark", event.target.value)
+              }
+            />
+          </Grid>
+
           <Grid item xs={12}>
             <Root>
               <Divider>
