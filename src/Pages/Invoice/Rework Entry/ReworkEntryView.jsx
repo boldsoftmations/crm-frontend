@@ -23,6 +23,7 @@ import InventoryServices from "../../../services/InventoryService";
 import { Popup } from "../../../Components/Popup";
 import { ReworkEntryRawMaterial } from "./ReworkEntryRawMaterial";
 import { ReworkEntryConsumable } from "./ReworkEntryConsumable";
+import { useSelector } from "react-redux";
 
 export const ReworkEntryView = () => {
   const [open, setOpen] = useState(false);
@@ -33,6 +34,7 @@ export const ReworkEntryView = () => {
   const [selectedRowData, setSelectedRowData] = useState();
   const [openConsumablePopUp, setOpenConsumablePopUp] = useState(false);
   const [openRawMaterialPopUp, setOpenRawmaterialPopUp] = useState(false);
+  const { profile: users } = useSelector((state) => state.auth);
 
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
@@ -211,7 +213,7 @@ export const ReworkEntryView = () => {
                       {row.seller_account}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {row.batch_no}
+                      {row.batch}
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.created_by}
@@ -222,10 +224,18 @@ export const ReworkEntryView = () => {
                     <StyledTableCell align="center">
                       {row.quantity}
                     </StyledTableCell>
-                    <StyledTableCell align="center">{row.rate}</StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.amount}
-                    </StyledTableCell>
+                    {(users.groups.includes("Director") ||
+                      users.groups.includes("Accounts")) && (
+                      <StyledTableCell align="center">
+                        {row.rate}
+                      </StyledTableCell>
+                    )}
+                    {(users.groups.includes("Director") ||
+                      users.groups.includes("Accounts")) && (
+                      <StyledTableCell align="center">
+                        {row.amount}
+                      </StyledTableCell>
+                    )}
                     <StyledTableCell align="center">
                       <Switch
                         checked={row.is_accepted}

@@ -193,6 +193,11 @@ export const ListItems = ({ setOpen }) => {
           { to: "/inventory/view-production", text: "Production" },
         ]),
         renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
+        renderListItem(
+          "/inventory/sales-return",
+          <DescriptionIcon />,
+          "Sales Return"
+        ),
       ],
     },
 

@@ -25,6 +25,7 @@ import { Popup } from "../../Components/Popup";
 import SupplierInvoicesCreate from "./../Invoice/SupplierInvoices/SupplierInvoicesCreate";
 import ScrapInvoicesCreate from "./../Invoice/ScrapInvoices/ScrapInvoicesCreate";
 import { ReworkEntryCreate } from "../Invoice/Rework Entry/ReworkEntryCreate";
+import { useSelector } from "react-redux";
 
 export const SaleReturnInventory = () => {
   const [open, setOpen] = useState(false);
@@ -36,6 +37,8 @@ export const SaleReturnInventory = () => {
     useState(false);
   const [openModalScrapInvoice, setOpenModalScrapInvoice] = useState(false);
   const [openModalReworkInvoice, setOpenModalReworkInvoice] = useState(false);
+  const { profile: users } = useSelector((state) => state.auth);
+
   const [selectedRow, setSelectedRow] = useState({
     unit: "",
     batch_no: [],
@@ -233,8 +236,14 @@ export const SaleReturnInventory = () => {
                   <StyledTableCell align="center">PRODUCT</StyledTableCell>
                   <StyledTableCell align="center">DESCRIPTION</StyledTableCell>
                   <StyledTableCell align="center">QUANTITY</StyledTableCell>
-                  <StyledTableCell align="center">RATE</StyledTableCell>
-                  <StyledTableCell align="center">AMOUNT</StyledTableCell>
+                  {(users.groups.includes("Director") ||
+                    users.groups.includes("Accounts")) && (
+                    <StyledTableCell align="center">RATE</StyledTableCell>
+                  )}
+                  {(users.groups.includes("Director") ||
+                    users.groups.includes("Accounts")) && (
+                    <StyledTableCell align="center">AMOUNT</StyledTableCell>
+                  )}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -262,10 +271,18 @@ export const SaleReturnInventory = () => {
                     <StyledTableCell align="center">
                       {row.quantity}
                     </StyledTableCell>
-                    <StyledTableCell align="center">{row.rate}</StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.amount}
-                    </StyledTableCell>
+                    {(users.groups.includes("Director") ||
+                      users.groups.includes("Accounts")) && (
+                      <StyledTableCell align="center">
+                        {row.rate}
+                      </StyledTableCell>
+                    )}
+                    {(users.groups.includes("Director") ||
+                      users.groups.includes("Accounts")) && (
+                      <StyledTableCell align="center">
+                        {row.amount}
+                      </StyledTableCell>
+                    )}
                   </StyledTableRow>
                 ))}
               </TableBody>

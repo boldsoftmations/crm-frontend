@@ -18,12 +18,12 @@ export const SalesReturnAllTabView = () => {
     },
     {
       label: "Sales Return Inventory",
-      roles: ["Director", "Accounts"],
+      roles: ["Director", "Accounts", "Production"],
       component: <SaleReturnInventory />,
     },
     {
       label: "Rework Entry",
-      roles: ["Director", "Accounts"],
+      roles: ["Director", "Accounts", "Production"],
       component: <ReworkEntryView />,
     },
   ];
