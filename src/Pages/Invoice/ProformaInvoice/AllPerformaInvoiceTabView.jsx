@@ -67,6 +67,7 @@ export const AllPerformaInvoiceTabView = () => {
           isSalesManagerWithoutLeads ||
           isSalesManagerWithLeads ||
           allTabs ||
+          isCustomerService ||
           isAccountBillingDepartment,
         index: 3,
         component: <AllProformaInvoice />,
