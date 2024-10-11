@@ -148,7 +148,10 @@ export const ContactDetails = ({ recordForEdit }) => {
                 contactData.map((row, i) => {
                   return (
                     <StyledTableRow key={i}>
-                      <StyledTableCell align="center">
+                      <StyledTableCell
+                        align="center"
+                        style={{ textTransform: "capitalize" }}
+                      >
                         {row.name}
                       </StyledTableCell>
                       <StyledTableCell align="center">
