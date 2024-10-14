@@ -38,7 +38,7 @@ export const CRReport = () => {
   const getCRReportData = async () => {
     setIsLoading(true);
     try {
-      const response = await DashboardService.getCRReportData();
+      const response = await DashboardService.getCRReportData(filterValue);
       setCRReportDatas(response.data);
     } catch (error) {
       setAlertMsg({
@@ -53,7 +53,7 @@ export const CRReport = () => {
 
   useEffect(() => {
     getCRReportData();
-  }, []);
+  }, [filterValue]);
 
   return (
     <>
