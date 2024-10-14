@@ -67,7 +67,7 @@ export const SalesPersonAnalytics = (props) => {
   const [dOBQdata, setDOBQData] = useState([]);
   const [selectedDOBQData, setSelectedDOBQData] = useState(null);
   const [activeButton, setActiveButton] = useState("monthly");
-  const assigned = userData.sales_users || [];
+  const assigned = userData.active_sales_user || [];
   // Determine if the user has limited privacy rights based on group membership
   const [privacy] = useState(
     !userData.groups.includes("Director") &&

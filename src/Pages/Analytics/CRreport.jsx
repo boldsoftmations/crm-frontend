@@ -15,11 +15,14 @@ import {
 import { CustomLoader } from "../../Components/CustomLoader";
 import CustomSnackbar from "../../Components/CustomerSnackbar";
 import DashboardService from "../../services/DashboardService";
+import { useSelector } from "react-redux";
+import CustomAutocomplete from "./../../Components/CustomAutocomplete";
 
 export const CRReport = () => {
-  // const data = useSelector((state) => state.auth);
-  // const users = data.profile;
-  // const assigned_to_users = users.active_sales_user || [];
+  const data = useSelector((state) => state.auth);
+  const users = data.profile;
+  const assigned_to_users = users.active_sales_user || [];
+  const [filterValue, setFilterValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [CRReportDatas, setCRReportDatas] = useState([]);
   const [alertmsg, setAlertMsg] = useState({
@@ -63,7 +66,7 @@ export const CRReport = () => {
       <CustomLoader open={isLoading} />
       <Grid item xs={12}>
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
-          {/* <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
+          <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
             <Grid container spacing={2} alignItems="center">
               <Grid item xs={12} sm={4}>
                 <Box display="flex" gap="2rem">
@@ -79,7 +82,7 @@ export const CRReport = () => {
                 </Box>
               </Grid>
             </Grid>
-          </Box> */}
+          </Box>
           <Box display="flex" justifyContent="center" marginBottom="10px">
             <h3
               style={{
@@ -90,7 +93,7 @@ export const CRReport = () => {
                 textAlign: "center",
               }}
             >
-              Customer Relationship Forecast Report
+              Sales Analysis Report - CR
             </h3>
           </Box>
 
