@@ -380,8 +380,8 @@ const potentialTurnoverReport = (page) => {
   return CustomAxios.get(`/api/dashboard/potential-turnover/?page=${page}`);
 };
 
-const getCRReportData = () => {
-  return CustomAxios.get(`/api/dashboard/cr-report/`);
+const getCRReportData = (email) => {
+  return CustomAxios.get(`/api/dashboard/cr-report/?email=${email}`);
 };
 
 const DashboardService = {
