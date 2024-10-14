@@ -327,23 +327,15 @@ export const ActivePI = () => {
                         <Button variant="text" onClick={() => openInPopup(row)}>
                           View
                         </Button>
-                        {(users.groups.toString() === "Sales Manager" ||
-                          users.groups.toString() === "Sales Deputy Manager" ||
-                          users.groups.toString() ===
-                            "Sales Assistant Deputy Manager" ||
-                          users.groups.toString() === "Sales Executive" ||
-                          users.groups.toString() ===
-                            "Sales Manager without Leads" ||
-                          users.groups.toString() === "Customer Service") &&
-                          row.status === "Raised" && (
-                            <Button
-                              variant="text"
-                              color="success"
-                              onClick={() => openInPopup2(row)}
-                            >
-                              PI Edit
-                            </Button>
-                          )}
+                        {row.status === "Raised" && (
+                          <Button
+                            variant="text"
+                            color="success"
+                            onClick={() => openInPopup2(row)}
+                          >
+                            PI Edit
+                          </Button>
+                        )}
                       </StyledTableCell>
                     </StyledTableRow>
                   );
