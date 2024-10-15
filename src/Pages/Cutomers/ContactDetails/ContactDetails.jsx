@@ -105,6 +105,7 @@ export const ContactDetails = ({ recordForEdit }) => {
           </Box>
           <Box flexGrow={0.5} align="right">
             {(userData.groups.includes("Accounts") ||
+              userData.groups.includes("Directory") ||
               userData.groups.includes("Customer Service") ||
               userData.groups.includes("Sales Deputy Manager") ||
               userData.groups.includes("Sales Manager") ||
