@@ -217,9 +217,8 @@ export const SalesPersonDashboard = () => {
       setOpen(true);
       const response = await DashboardService.getCustomerDashboard();
       const Total =
-        response.data.active_customers +
-        response.data.dead_customers +
-        response.data.new_customers;
+        parseInt(response.data.active_customers) +
+        parseInt(response.data.dead_customers);
       setTotal(Total);
       const Data = [
         {
@@ -895,9 +894,8 @@ export const SalesPersonDashboard = () => {
         FilterData
       );
       const Total =
-        response.data.active_customers +
-        response.data.dead_customers +
-        response.data.new_customers;
+        parseInt(response.data.active_customers) +
+        parseInt(response.data.dead_customers);
       setTotal(Total);
       const Data = [
         {
