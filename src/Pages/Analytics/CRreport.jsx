@@ -34,6 +34,12 @@ export const CRReport = () => {
   const handleClose = () => {
     setAlertMsg({ open: false });
   };
+  const isCRDepartment = assigned_to_users.filter((user) => {
+    return (
+      user.groups__name === "Customer Relationship Executive" ||
+      user.groups__name === "Customer Relationship Manager"
+    );
+  });
 
   const getCRReportData = async () => {
     setIsLoading(true);
@@ -75,7 +81,7 @@ export const CRReport = () => {
                     size="small"
                     value={filterValue}
                     onChange={(e, value) => setFilterValue(value)}
-                    options={assigned_to_users.map((option) => option.email)}
+                    options={isCRDepartment.map((option) => option.email)}
                     getOptionLabel={(option) => `${option}`}
                     label={"Filter By Employee"}
                   />
