@@ -103,7 +103,7 @@ export const ContactDetails = ({ recordForEdit }) => {
               Contact Details
             </h3>
           </Box>
-          <Box flexGrow={0.5} align="right">
+          <Box flexGrow={0.5} align="right" mx={{ marginRight: 10 }}>
             {(userData.groups.includes("Accounts") ||
               userData.groups.includes("Director") ||
               userData.groups.includes("Customer Service") ||
@@ -139,12 +139,12 @@ export const ContactDetails = ({ recordForEdit }) => {
           <Table sx={{ minWidth: 1200 }} stickyHeader aria-label="sticky table">
             <TableHead>
               <TableRow>
-                <StyledTableCell align="center">NAME</StyledTableCell>
-                <StyledTableCell align="center">EMAIL</StyledTableCell>
                 <StyledTableCell align="center">COMPANY NAME</StyledTableCell>
+                <StyledTableCell align="center">NAME</StyledTableCell>
                 <StyledTableCell align="center">DEPARTMENT</StyledTableCell>
                 <StyledTableCell align="center">CONTACT</StyledTableCell>
                 <StyledTableCell align="center">ALT. CONTACT</StyledTableCell>
+                <StyledTableCell align="center">EMAIL</StyledTableCell>
                 <StyledTableCell align="center">Action</StyledTableCell>
               </TableRow>
             </TableHead>
@@ -153,18 +153,16 @@ export const ContactDetails = ({ recordForEdit }) => {
                 contactData.map((row, i) => {
                   return (
                     <StyledTableRow key={i}>
+                      <StyledTableCell align="center">
+                        {row.company}
+                      </StyledTableCell>
                       <StyledTableCell
                         align="center"
                         style={{ textTransform: "capitalize" }}
                       >
                         {row.name}
                       </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.email}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.company}
-                      </StyledTableCell>
+
                       <StyledTableCell align="center">
                         {row.designation}
                       </StyledTableCell>
@@ -174,7 +172,9 @@ export const ContactDetails = ({ recordForEdit }) => {
                       <StyledTableCell align="center">
                         {row.alternate_contact}
                       </StyledTableCell>
-
+                      <StyledTableCell align="center">
+                        {row.email}
+                      </StyledTableCell>
                       <StyledTableCell align="center">
                         {(userData.groups.includes("Accounts") ||
                           userData.groups.includes("Customer Service") ||
