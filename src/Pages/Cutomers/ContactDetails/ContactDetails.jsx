@@ -106,7 +106,10 @@ export const ContactDetails = ({ recordForEdit }) => {
           <Box flexGrow={0.5} align="right">
             {(userData.groups.includes("Accounts") ||
               userData.groups.includes("Customer Service") ||
-              userData.groups.includes("Director")) && (
+              userData.groups.includes("Sales Deputy Manager") ||
+              userData.groups.includes("Sales Manager") ||
+              userData.groups.includes("Sales Executive") ||
+              userData.groups.includes("Sales Assistant Deputy Manager")) && (
               <Button
                 onClick={() => setOpenPopup2(true)}
                 variant="contained"
