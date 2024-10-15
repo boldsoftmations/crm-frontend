@@ -131,7 +131,7 @@ export const UpdateContactDetails = (props) => {
                 labelId="demo-select-small"
                 id="demo-select-small"
                 value={state.inputValue.designation}
-                label="Designation"
+                label="Department"
                 onChange={(event) =>
                   setState((prevState) => ({
                     ...prevState,

@@ -136,8 +136,9 @@ export const ContactDetails = ({ recordForEdit }) => {
             <TableHead>
               <TableRow>
                 <StyledTableCell align="center">NAME</StyledTableCell>
+                <StyledTableCell align="center">EMAIL</StyledTableCell>
                 <StyledTableCell align="center">COMPANY NAME</StyledTableCell>
-                <StyledTableCell align="center">DESIGNATION</StyledTableCell>
+                <StyledTableCell align="center">DEPARMENT</StyledTableCell>
                 <StyledTableCell align="center">CONTACT</StyledTableCell>
                 <StyledTableCell align="center">ALT. CONTACT</StyledTableCell>
                 <StyledTableCell align="center">Action</StyledTableCell>
@@ -153,6 +154,9 @@ export const ContactDetails = ({ recordForEdit }) => {
                         style={{ textTransform: "capitalize" }}
                       >
                         {row.name}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.email}
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         {row.company}

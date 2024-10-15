@@ -32,10 +32,16 @@ export const OrderBookUpdate = (props) => {
         amount: recordForEdit.amount,
         gst: recordForEdit.gst,
         total: recordForEdit.total,
-        estimated_date: estimateDate,
-        ready_date: readyDate ? readyDate : null,
       };
+      // Add estimated_date only if readyDate is not present and estimateDate is valid
+      if (!readyDate && estimateDate) {
+        data.estimated_date = estimateDate;
+      }
 
+      // Add ready_date if it exists
+      if (readyDate) {
+        data.ready_date = readyDate;
+      }
       const response = await InvoiceServices.updateOrderBookData(
         recordForEdit.id,
         data

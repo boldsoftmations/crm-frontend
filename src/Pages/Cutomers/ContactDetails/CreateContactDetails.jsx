@@ -132,7 +132,7 @@ export const CreateContactDetails = (props) => {
                 labelId="demo-select-small"
                 id="demo-select-small"
                 value={designation}
-                label="Designation"
+                label="Department"
                 onChange={(event) => setDesignation(event.target.value)}
               >
                 <MenuItem value={"Owner"}>Owner </MenuItem>
