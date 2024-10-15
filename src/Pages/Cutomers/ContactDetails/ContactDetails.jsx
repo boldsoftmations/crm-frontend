@@ -138,7 +138,7 @@ export const ContactDetails = ({ recordForEdit }) => {
                 <StyledTableCell align="center">NAME</StyledTableCell>
                 <StyledTableCell align="center">EMAIL</StyledTableCell>
                 <StyledTableCell align="center">COMPANY NAME</StyledTableCell>
-                <StyledTableCell align="center">DEPARMENT</StyledTableCell>
+                <StyledTableCell align="center">DEPARTMENT</StyledTableCell>
                 <StyledTableCell align="center">CONTACT</StyledTableCell>
                 <StyledTableCell align="center">ALT. CONTACT</StyledTableCell>
                 <StyledTableCell align="center">Action</StyledTableCell>
