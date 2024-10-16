@@ -85,7 +85,6 @@ export const UnassignedLead = () => {
 
   useEffect(() => {
     getUnassigned();
-    setCurrentPage(1);
   }, [currentPage, filterQuery, filterSelectedQuery]);
 
   const getUnassigned = useCallback(async () => {
