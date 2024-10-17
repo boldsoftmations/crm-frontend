@@ -33,7 +33,7 @@ export const CreateCountry = ({ setOpenPopup, getAllMasterCountries }) => {
 
     try {
       setOpen(true);
-      const response = await MasterService.createMasterState(inputValue);
+      const response = await MasterService.createMasterCountry(inputValue);
       if (response.status === 200) {
         setAlertMsg({
           message: response.message || "Country created successfully",
