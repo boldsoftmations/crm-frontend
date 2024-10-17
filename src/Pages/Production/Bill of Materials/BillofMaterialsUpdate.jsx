@@ -62,7 +62,7 @@ export const BillofMaterialsUpdate = memo((props) => {
     removeFields,
     products,
   } = useDynamicFormFields(initialFields, productOption);
-
+  const [remark, setRemark] = useState(idForEdit.remark);
   const updateBillofMaterialsDetails = async (e) => {
     try {
       e.preventDefault();
@@ -71,6 +71,7 @@ export const BillofMaterialsUpdate = memo((props) => {
         product: idForEdit.product,
         approved: idForEdit.approved,
         products_data: products,
+        remark: remark,
       };
       await InventoryServices.updateBillofMaterialsData(idForEdit.id, req);
       handleSuccess("BOM Updated Successfully");
@@ -108,6 +109,18 @@ export const BillofMaterialsUpdate = memo((props) => {
               label="Product"
               variant="outlined"
               value={idForEdit.product || ""}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <CustomTextField
+              fullWidth
+              name="remark"
+              size="small"
+              label="Add Remark"
+              variant="outlined"
+              inputProps={{ maxLength: 100 }}
+              value={remark || ""}
+              onChange={(event) => setRemark(event.target.value)}
             />
           </Grid>
           <Grid item xs={12}>

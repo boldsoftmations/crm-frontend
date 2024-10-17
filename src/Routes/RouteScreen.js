@@ -39,6 +39,7 @@ import { DebitCreditAllTabView } from "../Pages/DebitCredit/DebitCreditAllTabVie
 import { AllCCFtab } from "../Pages/CCF/AllCCFtab";
 import { AllComplaintListView } from "../Pages/CCF/AllComplaintListView";
 import { SalesInvoiceAllTab } from "../Pages/Invoice/SalesInvoice/SalesInvoiceAllTab";
+import { AllTabView } from "../Pages/StateAndCity/AllTAbView";
 
 const PrivateRoute = ({ children, redirectTo = "/" }) => {
   const tokenData = useSelector((state) => state.auth);
@@ -328,6 +329,15 @@ export const RouteScreen = () => {
             element={
               <PrivateRoute>
                 <HrMasterTabView />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/county-state-city/master-tab"
+            element={
+              <PrivateRoute>
+                <AllTabView />
               </PrivateRoute>
             }
           />
