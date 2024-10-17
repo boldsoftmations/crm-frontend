@@ -66,7 +66,7 @@ export const ViewCountry = () => {
         searchQuery
       );
       setCountry(response.data.results);
-      setTotalPages(Math.ceil(country.count / 25));
+      setTotalPages(Math.ceil(response.data.count / 25));
     } catch (e) {
       setAlertMsg({
         message: e.response.data.message || "Error fetching countries",

@@ -65,7 +65,7 @@ export const ViewPincode = () => {
         searchQuery
       );
       setPincode(response.data.results);
-      setTotalPages(Math.ceil(pincode.count / 25));
+      setTotalPages(Math.ceil(response.data.count / 25));
     } catch (e) {
       setAlertMsg({
         message: e.response.data.message || "Error fetching countries",
