@@ -5,6 +5,7 @@ import { CustomLoader } from "../../Components/CustomLoader";
 import { CustomButton } from "../../Components/CustomButton";
 import CustomTextField from "../../Components/CustomTextField";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
+import { useSelector } from "react-redux";
 
 export const BulkLeadAssign = (props) => {
   const { setOpenPopup } = props;
@@ -15,7 +16,9 @@ export const BulkLeadAssign = (props) => {
   const [touchedAssignFrom, setTouchedAssignFrom] = useState(false);
   const [touchedAssignTo, setTouchedAssignTo] = useState(false);
   const [selectedState, setSelectedState] = useState([]);
-
+  const data = useSelector((state) => state.auth);
+  const users = data.profile;
+  const assigned_to_users = users.active_sales_user || [];
   useEffect(() => {
     getAssignedData();
   }, []);
@@ -232,7 +235,7 @@ export const BulkLeadAssign = (props) => {
                 setAssignTo(value);
                 if (!touchedAssignTo) setTouchedAssignTo(true);
               }}
-              options={assigned.map((option) => option.email)}
+              options={assigned_to_users.map((option) => option.email)}
               getOptionLabel={(option) => option}
               label="Assign To"
               renderInput={(params) => (
