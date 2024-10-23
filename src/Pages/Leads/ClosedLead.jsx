@@ -45,7 +45,7 @@ export const ClosedLead = () => {
   const [openModal, setOpenModal] = useState(false);
   const tokenData = useSelector((state) => state.auth);
   const users = tokenData.profile;
-  const assigned = users.sales_users || [];
+  const assigned = users.active_sales_user || [];
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 

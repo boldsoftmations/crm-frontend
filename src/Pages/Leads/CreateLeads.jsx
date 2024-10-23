@@ -28,6 +28,7 @@ import ProductService from "../../services/ProductService";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import { MessageAlert } from "../../Components/MessageAlert";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
+import { useSelector } from "react-redux";
 
 export const CreateLeads = memo((props) => {
   const {
@@ -44,11 +45,12 @@ export const CreateLeads = memo((props) => {
     estd_year: new Date().getFullYear().toString(),
   });
   const [referenceData, setReferenceData] = useState([]);
-  const [assigned, setAssigned] = useState([]);
   const [descriptionMenuData, setDescriptionMenuData] = useState([]);
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
-
+  const data = useSelector((state) => state.auth);
+  const users = data.profile;
+  const assigned = users.active_sales_user || [];
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     let updatedValue = value;
@@ -86,22 +88,6 @@ export const CreateLeads = memo((props) => {
     }
   };
 
-  const getAssignedData = async () => {
-    try {
-      setOpen(true);
-      const res = await LeadServices.getAllAssignedUser();
-      // Filter the data based on the ALLOWED_ROLES
-      const filteredData = res.data.filter((employee) =>
-        employee.groups.some((group) => Option.ALLOWED_ROLES.includes(group))
-      );
-      setAssigned(filteredData);
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
-  };
-
   const getReference = async () => {
     try {
       const res = await LeadServices.getAllRefernces();
@@ -115,7 +101,6 @@ export const CreateLeads = memo((props) => {
   useEffect(() => {
     getDescriptionNoData();
     getReference();
-    getAssignedData();
   }, []);
 
   const createLeadsData = useCallback(

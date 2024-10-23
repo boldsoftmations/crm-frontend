@@ -53,7 +53,6 @@ export const UpdateLeads = memo((props) => {
   const [followup, setFollowup] = useState(null);
   const [potential, setPotential] = useState(null);
   const [allCompetitors, setAllCompetitors] = useState([]);
-  const [assigned, setAssigned] = useState([]);
   const [descriptionMenuData, setDescriptionMenuData] = useState([]);
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
@@ -63,7 +62,9 @@ export const UpdateLeads = memo((props) => {
     const targetDate = new Date(currentDate.setDate(currentDate.getDate() + 3));
     return targetDate.toISOString().split("T")[0]; // Format targetDate as YYYY-MM-DD
   };
-
+  const data = useSelector((state) => state.auth);
+  const users = data.profile;
+  const assigned = users.active_sales_user || [];
   // Event handlers
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -110,22 +111,6 @@ export const UpdateLeads = memo((props) => {
     }
   };
 
-  const getAssignedData = async () => {
-    try {
-      setOpen(true);
-      const res = await LeadServices.getAllAssignedUser();
-      // Filter the data based on the ALLOWED_ROLES
-      const filteredData = res.data.filter((employee) =>
-        employee.groups.some((group) => Option.ALLOWED_ROLES.includes(group))
-      );
-      setAssigned(filteredData);
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
-  };
-
   const getCompetitors = async () => {
     try {
       setOpen(true);
@@ -142,7 +127,6 @@ export const UpdateLeads = memo((props) => {
   useEffect(() => {
     getDescriptionNoData();
     getCompetitors();
-    getAssignedData();
   }, []);
 
   const getLeadsData = async (recordForEdit) => {
