@@ -67,7 +67,7 @@ export const HotLeads = () => {
   const tokenData = useSelector((state) => state.auth);
   const users = tokenData.profile;
   const [isPrinting, setIsPrinting] = useState(false);
-  const assigned = users.sales_users || [];
+  const assigned = users.active_sales_user || [];
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
