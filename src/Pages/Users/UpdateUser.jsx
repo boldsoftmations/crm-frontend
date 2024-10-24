@@ -247,6 +247,15 @@ const UpdateUser = ({
     "Customer Relationship Manager",
     "Business Development Manager",
   ];
+
+  // sorting state alphabetically
+  const sortedState = Object.keys(state)
+    .sort()
+    .reduce((acc, key) => {
+      acc[key] = state[key];
+      return acc;
+    }, {});
+
   return (
     <>
       <MessageAlert
@@ -346,7 +355,7 @@ const UpdateUser = ({
                   }}
                 >
                   {state &&
-                    Object.entries(state).map(
+                    Object.entries(sortedState).map(
                       ([stateName, cities], stateIndex) => {
                         const stateId = `state-${stateIndex}`;
                         return (
