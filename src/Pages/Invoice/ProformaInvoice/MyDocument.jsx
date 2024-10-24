@@ -196,7 +196,7 @@ export const MyDocument = (props) => {
                 </View>
                 <View style={{ ...cellStyle, ...borderRightStyle }}>
                   <Text style={{ ...innerTextStyle }}>
-                    {capitalizeFirstLetter(invoiceData.company_name)}
+                    {capitalizeFirstLetter(invoiceData.name_of_party)}
                   </Text>
                 </View>
                 <View style={{ ...cellStyle, ...borderRightStyle }}>
