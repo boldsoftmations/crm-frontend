@@ -49,7 +49,7 @@ const UpdateUser = ({
 
       // Prepare the merged state
       setState((prev) => {
-        const prevStateCities = activeUsersByIDData.state || {}; // Previous state and city data
+        const prevStateCities = activeUsersByIDData.assigned_state_city || {}; // Previous state and city data
         const newStateCities = response.data; // New state and city data from response
 
         // Create a new object to hold the merged data
@@ -111,10 +111,10 @@ const UpdateUser = ({
   const filterGroup = manageGroup.find((group) => group.key === selectedGrp);
 
   useEffect(() => {
-    if (activeUsersByIDData && activeUsersByIDData.state) {
+    if (activeUsersByIDData && activeUsersByIDData.assigned_state_city) {
       setSelectedStateCities((prev) => ({
         ...prev,
-        ...activeUsersByIDData.state, // Merge existing states with new activeUsersByIDData.state
+        ...activeUsersByIDData.assigned_state_city, // Merge existing states with new activeUsersByIDData.assigned_state_city
       }));
     }
   }, [activeUsersByIDData.first_name]);
