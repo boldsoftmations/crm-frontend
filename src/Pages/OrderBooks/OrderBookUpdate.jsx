@@ -18,10 +18,9 @@ export const OrderBookUpdate = (props) => {
   const users = data.profile;
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
-
   const updatesCustomerOrderBook = async (e) => {
+    e.preventDefault();
     try {
-      e.preventDefault();
       setOpen(true);
       const data = {
         orderbook: recordForEdit.orderbook,
@@ -34,12 +33,11 @@ export const OrderBookUpdate = (props) => {
         total: recordForEdit.total,
       };
       // Add estimated_date only if readyDate is not present and estimateDate is valid
-      if (!readyDate && estimateDate) {
+      if (!recordForEdit.estimated_date) {
         data.estimated_date = estimateDate;
       }
-
       // Add ready_date if it exists
-      if (readyDate) {
+      if (!recordForEdit.ready_date && readyDate) {
         data.ready_date = readyDate;
       }
       const response = await InvoiceServices.updateOrderBookData(
@@ -131,7 +129,7 @@ export const OrderBookUpdate = (props) => {
                   .toISOString()
                   .split("T")[0], // Converts the date to YYYY-MM-DD format
               }}
-              disabled={estimateDate}
+              disabled={recordForEdit && recordForEdit.estimated_date}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -151,7 +149,7 @@ export const OrderBookUpdate = (props) => {
                 min: new Date().toLocaleDateString("en-CA"), // Set the minimum to today
                 max: new Date().toLocaleDateString("en-CA"), // Set the maximum to today
               }}
-              disabled={readyDate}
+              disabled={recordForEdit && recordForEdit.ready_date}
             />
           </Grid>
         </Grid>
