@@ -63,7 +63,7 @@ export const AllCustomerTabView = () => {
       },
       {
         label: "Unassigned Customer",
-        visible: allCustomerTabs,
+        visible: allCustomerTabs || isCustomerService,
         index: 1,
         component: <UnassignedCustomer />,
       },

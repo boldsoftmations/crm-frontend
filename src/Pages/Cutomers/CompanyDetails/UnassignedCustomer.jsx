@@ -10,6 +10,7 @@ import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import SearchComponent from "../../../Components/SearchComponent ";
 import { MessageAlert } from "../../../Components/MessageAlert";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
+import { useSelector } from "react-redux";
 
 export const UnassignedCustomer = () => {
   const [openPopup, setOpenPopup] = useState(false);
@@ -20,10 +21,14 @@ export const UnassignedCustomer = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
-  const [assigned, setAssigned] = useState([]);
   const [assign, setAssign] = useState([]);
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
+
+  //asssign to user
+  const data = useSelector((state) => state.auth);
+  const users = data.profile;
+  const assigned = users.active_sales_user;
 
   const openInPopup = (item) => {
     const matchedCompany = companyData.find(
@@ -36,36 +41,6 @@ export const UnassignedCustomer = () => {
   const handleSnackbarClose = () => {
     setOpenSnackbar(false);
   };
-
-  const getAssignedData = async (id) => {
-    try {
-      setOpen(true);
-      const ALLOWED_ROLES = [
-        "Director",
-        "Customer Service",
-        "Sales Manager",
-        "Sales Deputy Manager",
-        "Sales Assistant Deputy Manager",
-        "Sales Executive",
-        "Sales Manager without Leads",
-      ];
-      const res = await LeadServices.getAllAssignedUser();
-      // Filter the data based on the ALLOWED_ROLES
-      const filteredData = res.data.filter((employee) =>
-        employee.groups.some((group) => ALLOWED_ROLES.includes(group))
-      );
-
-      setAssigned(filteredData);
-    } catch (error) {
-      handleError(error);
-    } finally {
-      setOpen(false);
-    }
-  };
-
-  useEffect(() => {
-    getAssignedData();
-  }, []);
 
   const getUnassignedCompanyDetails = useCallback(async () => {
     try {
