@@ -65,7 +65,23 @@ export const UpdateLeads = memo((props) => {
   };
   const data = useSelector((state) => state.auth);
   const users = data.profile;
-  const assigned = users.active_sales_user || [];
+  const [assigned, setAssigned] = useState([]);
+  useEffect(() => {
+    if (users && users.groups) {
+      if (
+        users.groups.includes("Sales Executive") ||
+        users.groups.includes("Business Development Execution")
+      ) {
+        setAssigned(
+          Array({
+            email: users.email,
+          })
+        );
+      } else {
+        setAssigned(users.active_sales_user);
+      }
+    }
+  }, [users.email]);
   // Event handlers
   const handleInputChange = (event) => {
     const { name, value } = event.target;
