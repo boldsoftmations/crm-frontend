@@ -28,6 +28,7 @@ import { MessageAlert } from "../../../Components/MessageAlert";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import useDynamicFormFields from "../../../Components/useDynamicFormFields ";
 import ProductService from "../../../services/ProductService";
+import InventoryServices from "../../../services/InventoryService";
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -110,6 +111,7 @@ export const CreateCustomerProformaInvoice = (props) => {
   const [priceApproval, setPriceApproval] = useState(false);
   const [sellerData, setSellerData] = useState([]);
   const [edcData, setEdcData] = useState([]);
+  const [currencyOption, setCurrencyOption] = useState([]);
   const [customerLastPiData, setCustomerLastPiData] = useState(null);
   const { profile: users } = useSelector((state) => state.auth);
 
@@ -206,9 +208,37 @@ export const CreateCustomerProformaInvoice = (props) => {
       setOpen(false);
     }
   };
+  const getCurrencyDetails = async () => {
+    setOpen(true);
+    try {
+      const response = await InventoryServices.getCurrencyData();
+
+      if (response && response.data) {
+        // Filter out INR for international vendors
+        const filteredCurrencyOptions =
+          rowData.origin_type === "International"
+            ? response.data.filter((option) => option.name !== "INR")
+            : response.data;
+
+        setCurrencyOption(filteredCurrencyOptions);
+
+        // Set default currency to INR if vendor is Domestic and no currency is selected
+        if (rowData.origin_type === "Domestic" && !inputValue.currency) {
+          setInputValue((prevValues) => ({ ...prevValues, currency: "INR" }));
+        }
+      }
+    } catch (err) {
+      handleError(err);
+      console.error("Error fetching currency data", err);
+    } finally {
+      setOpen(false);
+    }
+  };
+
   useEffect(() => {
     getAllCompanyDetailsByID();
     getContactsDetailsByID();
+    getCurrencyDetails();
   }, [openPopup3]);
 
   const createCustomerProformaInvoiceDetails = async (e) => {
@@ -281,6 +311,11 @@ export const CreateCustomerProformaInvoice = (props) => {
       products: constructPayload(),
       warehouse_person_name: warehouseData.contact_name,
     };
+    if (rowData.origin_type === "International") {
+      payload.currency = inputValue.currency;
+    } else {
+      payload.currency = "INR";
+    }
 
     try {
       setOpen(true);
@@ -375,6 +410,26 @@ export const CreateCustomerProformaInvoice = (props) => {
               style={tfStyle}
             />
           </Grid>
+          {rowData.origin_type === "International" && (
+            <Grid item xs={12} sm={3}>
+              <CustomAutocomplete
+                size="small"
+                disablePortal
+                id="currency-autocomplete"
+                value={
+                  currencyOption.find((c) => c.name === inputValue.currency) ||
+                  null
+                }
+                onChange={(event, value) =>
+                  setInputValue({ ...inputValue, currency: value.name })
+                }
+                options={currencyOption.map((option) => option)}
+                getOptionLabel={(option) => `${option.name} (${option.symbol})`}
+                sx={{ minWidth: 300 }}
+                label="Currency"
+              />
+            </Grid>
+          )}
           <Grid item xs={12}>
             <Root>
               <Divider>
