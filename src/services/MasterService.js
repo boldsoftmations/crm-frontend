@@ -92,6 +92,10 @@ const updateMasterPincode = (id, data) => {
   return CustomAxios.patch(`/api/master/pincode/${id}/`, data);
 };
 
+const getCountryDataByPincode = (pincode) => {
+  return CustomAxios.get(`/api/master/pincode/?page=all&search=${pincode}`);
+};
+
 const MasterService = {
   createMasterCountry,
   updateMasterCountry,
@@ -105,5 +109,6 @@ const MasterService = {
   getMasterPincode,
   createMasterPincode,
   updateMasterPincode,
+  getCountryDataByPincode,
 };
 export default MasterService;

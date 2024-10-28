@@ -332,7 +332,8 @@ const getDispatchData = (
   dispatchedValue,
   page,
   searchValue,
-  filterByperson
+  filterByperson,
+  notlr
 ) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
@@ -352,6 +353,9 @@ const getDispatchData = (
       "sales_invoice__order_book__proforma_invoice__raised_by__email",
       filterByperson
     );
+  }
+  if (notlr) {
+    params.append("dispatch_type", notlr);
   }
 
   // Sending a GET request with query parameters
