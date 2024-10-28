@@ -117,6 +117,7 @@ export const UpdateCompanyDetails = (props) => {
           state: response.data[0].state,
           city: response.data[0].city_name,
           country: response.data[0].country,
+          pin_code: response.data[0].pin_code,
         });
       }
     } catch (error) {
@@ -180,6 +181,7 @@ export const UpdateCompanyDetails = (props) => {
         country: inputValue.country || null,
         state: inputValue.state || null,
         city: inputValue.city || null,
+        pin_code: inputValue.pin_code,
         gst_number: inputValue.gst_number || null,
         pan_number: inputValue.pan_number || null,
         business_type: inputValue.business_type || null,

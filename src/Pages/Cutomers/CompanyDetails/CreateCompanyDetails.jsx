@@ -90,6 +90,7 @@ export const CreateCompanyDetails = (props) => {
           state: response.data[0].state,
           city: response.data[0].city_name,
           country: response.data[0].country,
+          pin_code: response.data[0].id,
         });
       }
     } catch (error) {
@@ -140,6 +141,7 @@ export const CreateCompanyDetails = (props) => {
         country: inputValue.country,
         state: inputValue.state,
         city: inputValue.city,
+        pin_code: inputValue.pin_code,
         gst_number: inputValue.gst_number || null,
         pan_number: inputValue.pan_number || null,
         business_type: inputValue.business_type,
@@ -153,6 +155,7 @@ export const CreateCompanyDetails = (props) => {
         distribution_type: inputValue.distribution_type || null,
         category: inputValue.category || [],
         main_distribution: inputValue.main_distribution || [],
+        origin_type: inputValue.origin_type || null,
       };
       const response = await CustomerServices.createCompanyData(req);
       setIdForEdit(response.data.company_id);
