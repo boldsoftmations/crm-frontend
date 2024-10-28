@@ -55,6 +55,7 @@ export const UpdateLeads = memo((props) => {
   const [potential, setPotential] = useState(null);
   const [allCompetitors, setAllCompetitors] = useState([]);
   const [descriptionMenuData, setDescriptionMenuData] = useState([]);
+  const [assigned, setAssigned] = useState([]);
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
@@ -65,12 +66,12 @@ export const UpdateLeads = memo((props) => {
   };
   const data = useSelector((state) => state.auth);
   const users = data.profile;
-  const [assigned, setAssigned] = useState([]);
+
   useEffect(() => {
     if (users && users.groups) {
       if (
         users.groups.includes("Sales Executive") ||
-        users.groups.includes("Business Development Executive")
+        users.groups.includes("Business Development Execution")
       ) {
         setAssigned(
           Array({
@@ -192,6 +193,7 @@ export const UpdateLeads = memo((props) => {
           gst_number: leads.gst_number || null,
           pan_number: leads.pan_number || null,
           address: leads.address,
+          origin_type: leads.origin_type || null,
           city: leads.city,
           state: leads.state,
           country: leads.country,
@@ -380,7 +382,7 @@ export const UpdateLeads = memo((props) => {
           <Grid item xs={12} sm={3}>
             <FormControl fullWidth size="small">
               <InputLabel id="demo-simple-select-label">
-                Busniess Type
+                Business Type
               </InputLabel>
               <Select
                 labelId="demo-simple-select-label"
@@ -722,6 +724,35 @@ export const UpdateLeads = memo((props) => {
                 <Chip label="KYC Details" />
               </Divider>
             </Root>
+          </Grid>
+          <Grid item xs={12}>
+            <>
+              <FormControl>
+                <FormLabel id="demo-row-radio-buttons-group-label">
+                  Customer Type
+                </FormLabel>
+                <RadioGroup
+                  row
+                  aria-labelledby="demo-row-radio-buttons-group-label"
+                  name="row-radio-buttons-group"
+                  value={leads.origin_type || ""}
+                  onChange={(event) =>
+                    handleSelectChange("origin_type", event.target.value)
+                  }
+                >
+                  <FormControlLabel
+                    value="Domestic"
+                    control={<Radio />}
+                    label="Domestic"
+                  />
+                  <FormControlLabel
+                    value="International"
+                    control={<Radio />}
+                    label="International"
+                  />
+                </RadioGroup>
+              </FormControl>
+            </>
           </Grid>
           <Grid item xs={12} sm={4}>
             <>
