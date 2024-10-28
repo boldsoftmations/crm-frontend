@@ -26,6 +26,8 @@ import CustomTextField from "../../../Components/CustomTextField";
 import { useDispatch } from "react-redux";
 import { getCompanyName } from "../../../Redux/Action/Action";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import MasterService from "../../../services/MasterService";
+import CustomSnackbar from "../../../Components/CustomerSnackbar";
 
 export const CreateCompanyDetails = (props) => {
   const { getAllCompanyDetails } = props;
@@ -34,6 +36,14 @@ export const CreateCompanyDetails = (props) => {
   const [inputValue, setInputValue] = useState([]);
   const [idForEdit, setIdForEdit] = useState("");
   const [assigned, setAssigned] = useState([]);
+  const [alertmsg, setAlertMsg] = useState({
+    message: "",
+    severity: "",
+    open: false,
+  });
+  const handleClose = () => {
+    setAlertMsg({ open: false });
+  };
   const dispatch = useDispatch();
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -55,18 +65,41 @@ export const CreateCompanyDetails = (props) => {
     try {
       setOpen(true);
       const PINCODE = inputValue.pin_code;
-      const response = await axios.get(
-        `https://api.postalpincode.in/pincode/${PINCODE}`
-      );
-
-      setInputValue({
-        ...inputValue,
-        state: response.data[0].PostOffice[0].State,
-        city: response.data[0].PostOffice[0].District,
-      });
-      setOpen(false);
+      const response = await MasterService.getCountryDataByPincode(PINCODE);
+      if (response.data.length === 0) {
+        setAlertMsg({
+          message:
+            "This Pin Code does not exist ! First Create the Pin code in the master country",
+          severity: "error",
+          open: true,
+        });
+        setInputValue({
+          ...inputValue,
+          state: "",
+          city: "",
+          country: "",
+        });
+      } else {
+        setAlertMsg({
+          message: "Pin code is valid",
+          severity: "success",
+          open: true,
+        });
+        setInputValue({
+          ...inputValue,
+          state: response.data[0].state,
+          city: response.data[0].city_name,
+          country: response.data[0].country,
+        });
+      }
     } catch (error) {
-      console.log("Creating Bank error ", error);
+      console.log("error", error);
+      setAlertMsg({
+        message: "Error fetching country data by pincode",
+        severity: "error",
+        open: true,
+      });
+    } finally {
       setOpen(false);
     }
   };
@@ -104,10 +137,11 @@ export const CreateCompanyDetails = (props) => {
         name: inputValue.name,
         address: inputValue.address,
         pincode: inputValue.pin_code,
+        country: inputValue.country,
         state: inputValue.state,
         city: inputValue.city,
         gst_number: inputValue.gst_number || null,
-        pan_number: inputValue.pan_number,
+        pan_number: inputValue.pan_number || null,
         business_type: inputValue.business_type,
         assigned_to: inputValue.assigned_to || [],
         type_of_customer: inputValue.type_of_customer,
@@ -123,7 +157,6 @@ export const CreateCompanyDetails = (props) => {
       const response = await CustomerServices.createCompanyData(req);
       setIdForEdit(response.data.company_id);
       getAllCompanyDetailsByID(response.data.company_id);
-      // setOpenPopup(false);
       setOpen(false);
       setOpenPopup2(true);
       // getAllCompanyDetails();
@@ -148,7 +181,12 @@ export const CreateCompanyDetails = (props) => {
   return (
     <div>
       <CustomLoader open={open} />
-
+      <CustomSnackbar
+        open={alertmsg.open}
+        message={alertmsg.message}
+        severity={alertmsg.severity}
+        onClose={handleClose}
+      />
       <Box
         component="form"
         noValidate
@@ -178,7 +216,7 @@ export const CreateCompanyDetails = (props) => {
           <Grid item xs={12} sm={4}>
             <FormControl fullWidth size="small">
               <InputLabel id="demo-simple-select-label">
-                Busniess Type
+                Business Type
               </InputLabel>
               <Select
                 labelId="demo-simple-select-label"
@@ -208,14 +246,24 @@ export const CreateCompanyDetails = (props) => {
               onChange={handleInputChange}
             />
             <Button
-              onClick={() => validatePinCode()}
+              onClick={validatePinCode}
               variant="contained"
               sx={{ marginLeft: "1rem" }}
             >
               Validate
             </Button>
           </Grid>
-
+          <Grid item xs={12} sm={4}>
+            <CustomTextField
+              fullWidth
+              size="small"
+              label="Country"
+              name="country"
+              variant="outlined"
+              value={inputValue.country || ""}
+              disabled
+            />
+          </Grid>
           <Grid item xs={12} sm={4}>
             <CustomTextField
               fullWidth
@@ -315,6 +363,35 @@ export const CreateCompanyDetails = (props) => {
                 <Chip label="KYC Details" />
               </Divider>
             </Root>
+          </Grid>
+          <Grid item xs={12}>
+            <>
+              <FormControl>
+                <FormLabel id="demo-row-radio-buttons-group-label">
+                  Customer Type
+                </FormLabel>
+                <RadioGroup
+                  row
+                  aria-labelledby="demo-row-radio-buttons-group-label"
+                  name="row-radio-buttons-group"
+                  value={inputValue.origin_type || ""}
+                  onChange={(event) =>
+                    handleSelectChange("origin_type", event.target.value)
+                  }
+                >
+                  <FormControlLabel
+                    value="Domestic"
+                    control={<Radio />}
+                    label="Domestic"
+                  />
+                  <FormControlLabel
+                    value="International"
+                    control={<Radio />}
+                    label="International"
+                  />
+                </RadioGroup>
+              </FormControl>
+            </>
           </Grid>
           <Grid item xs={12} sm={4}>
             <FormControl>

@@ -29,6 +29,8 @@ import Option from "../../../Options/Options";
 import CustomTextField from "../../../Components/CustomTextField";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import UserProfileService from "../../../services/UserProfileService";
+import MasterService from "../../../services/MasterService";
+import CustomSnackbar from "../../../Components/CustomerSnackbar";
 
 export const UpdateCompanyDetails = (props) => {
   const {
@@ -46,7 +48,14 @@ export const UpdateCompanyDetails = (props) => {
   const dispatch = useDispatch();
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
-
+  const [alertmsg, setAlertMsg] = useState({
+    message: "",
+    severity: "",
+    open: false,
+  });
+  const handleClose = () => {
+    setAlertMsg({ open: false });
+  };
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     const updatedValue =
@@ -83,17 +92,41 @@ export const UpdateCompanyDetails = (props) => {
     try {
       setOpen(true);
       const PINCODE = inputValue.pincode;
-      const response = await axios.get(
-        `https://api.postalpincode.in/pincode/${PINCODE}`
-      );
-      setInputValue({
-        ...inputValue,
-        state: response.data[0].PostOffice[0].State,
-        city: response.data[0].PostOffice[0].District,
-      });
-      setOpen(false);
+      const response = await MasterService.getCountryDataByPincode(PINCODE);
+      if (response.data.length === 0) {
+        setAlertMsg({
+          message:
+            "This Pin Code does not exist ! First Create the Pin code in the master country",
+          severity: "error",
+          open: true,
+        });
+        setInputValue({
+          ...inputValue,
+          state: "",
+          city: "",
+          country: "",
+        });
+      } else {
+        setAlertMsg({
+          message: "Pin code is valid",
+          severity: "success",
+          open: true,
+        });
+        setInputValue({
+          ...inputValue,
+          state: response.data[0].state,
+          city: response.data[0].city_name,
+          country: response.data[0].country,
+        });
+      }
     } catch (error) {
-      console.log("Creating Bank error ", error);
+      console.log("error", error);
+      setAlertMsg({
+        message: "Error fetching country data by pincode",
+        severity: "error",
+        open: true,
+      });
+    } finally {
       setOpen(false);
     }
   };
@@ -144,6 +177,7 @@ export const UpdateCompanyDetails = (props) => {
         name: inputValue.name || null,
         address: inputValue.address || null,
         pincode: inputValue.pincode || null,
+        country: inputValue.country || null,
         state: inputValue.state || null,
         city: inputValue.city || null,
         gst_number: inputValue.gst_number || null,
@@ -160,6 +194,7 @@ export const UpdateCompanyDetails = (props) => {
         distribution_type: inputValue.distribution_type || null,
         category: inputValue.category || [],
         main_distribution: inputValue.main_distribution || [],
+        origin_type: inputValue.origin_type || null,
       };
       await CustomerServices.updateCompanyData(recordForEdit, req);
       setOpenPopup(false);
@@ -187,6 +222,12 @@ export const UpdateCompanyDetails = (props) => {
 
   return (
     <>
+      <CustomSnackbar
+        open={alertmsg.open}
+        message={alertmsg.message}
+        severity={alertmsg.severity}
+        onClose={handleClose}
+      />
       <CustomLoader open={open} />
       {/* Display errors */}
       <Snackbar
@@ -212,6 +253,35 @@ export const UpdateCompanyDetails = (props) => {
                 <Chip label="Company Details" />
               </Divider>
             </Root>
+          </Grid>
+          <Grid item xs={12}>
+            <>
+              <FormControl>
+                <FormLabel id="demo-row-radio-buttons-group-label">
+                  Customer Type
+                </FormLabel>
+                <RadioGroup
+                  row
+                  aria-labelledby="demo-row-radio-buttons-group-label"
+                  name="row-radio-buttons-group"
+                  value={inputValue.origin_type || ""}
+                  onChange={(event) =>
+                    handleSelectChange("origin_type", event.target.value)
+                  }
+                >
+                  <FormControlLabel
+                    value="Domestic"
+                    control={<Radio />}
+                    label="Domestic"
+                  />
+                  <FormControlLabel
+                    value="International"
+                    control={<Radio />}
+                    label="International"
+                  />
+                </RadioGroup>
+              </FormControl>
+            </>
           </Grid>
           <Grid item xs={12}>
             <FormControl>
@@ -290,12 +360,23 @@ export const UpdateCompanyDetails = (props) => {
               onChange={handleInputChange}
             />
             <Button
-              onClick={() => validatePinCode()}
+              onClick={validatePinCode}
               variant="contained"
               sx={{ marginLeft: "1rem" }}
             >
               Validate
             </Button>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <CustomTextField
+              fullWidth
+              size="small"
+              label="Country"
+              name="country"
+              variant="outlined"
+              value={inputValue.country || ""}
+              disabled
+            />
           </Grid>
           <Grid item xs={12} sm={4}>
             <CustomTextField

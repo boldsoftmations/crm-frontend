@@ -53,20 +53,28 @@ export const CreateContactDetails = (props) => {
     try {
       e.preventDefault();
       setFormErrors(validate(formValues));
-      let contact = phone.length === 12 ? `+${phone}` : phone;
-      let contact2 = phone2.length === 12 ? `+${phone2}` : phone2;
+
+      // Ensure that phone numbers start with a '+' sign
+      const formatPhoneNumber = (phoneNumber) => {
+        return phoneNumber.startsWith("+") ? phoneNumber : `+${phoneNumber}`;
+      };
+
+      let contact = formatPhoneNumber(phone);
+      let contact2 = formatPhoneNumber(phone2);
+
       let panNumber = inputValue.pan_no;
       const req = {
         company: data ? data.companyName : "",
         name: inputValue.name,
         designation: designation,
-        contact: contact ? contact : "",
-        alternate_contact: contact2 ? contact2 : "",
+        contact: contact || "",
+        alternate_contact: contact2 || "",
         email: formValues.email,
         alternate_email: formValues.alternate_email,
         pan_number: panNumber,
         aadhaar: inputValue.aadhar_no,
       };
+
       setOpen(true);
       await CustomerServices.createContactData(req);
 

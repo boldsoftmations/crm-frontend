@@ -40,9 +40,16 @@ export const SalesInvoiceCreate = (props) => {
     return products
       .filter((product) => product.pending_quantity > 0)
       .reduce((acc, current) => {
-        const quantity = Number(current.quantity) || 0;
-        const rate = Number(current.rate) || 0;
-        return acc + quantity * rate;
+        if (customerorderBookData.origin_type === "international") {
+          const quantity = Number(current.quantity) || 0;
+          const rate = Number(current.rate) || 0;
+          const exchange_rate = Number(inputValue.exchange_rate) || 0;
+          return acc + exchange_rate * rate * quantity;
+        } else {
+          const quantity = Number(current.quantity) || 0;
+          const rate = Number(current.rate) || 0;
+          return acc + quantity * rate;
+        }
       }, 0);
   };
 
@@ -191,6 +198,7 @@ export const SalesInvoiceCreate = (props) => {
             : customerorderBookData
             ? customerorderBookData.transporter_name
             : "",
+        exchange_rate: inputValue.exchange_rate || null,
       };
 
       setOpen(true);
@@ -477,6 +485,26 @@ export const SalesInvoiceCreate = (props) => {
               inputProps={{ max: currentDate }}
             />
           </Grid>
+          {customerorderBookData &&
+            customerorderBookData.origin_type === "international" && (
+              <Grid item xs={12} sm={3}>
+                <CustomTextField
+                  fullWidth
+                  name="exchange_rate"
+                  size="small"
+                  label="Exchange Rate"
+                  variant="outlined"
+                  value={
+                    inputValue.exchange_rate !== undefined
+                      ? inputValue.exchange_rate
+                      : customerorderBookData
+                      ? customerorderBookData.exchange_rate
+                      : ""
+                  }
+                  onChange={handleInputChange}
+                />
+              </Grid>
+            )}
           <Grid item xs={12}>
             <Root>
               <Divider>
@@ -491,9 +519,16 @@ export const SalesInvoiceCreate = (props) => {
                 // If pending_quantity is not greater than 0, do not render this product
                 return null;
               }
-
-              const amount =
-                (Number(input.quantity) || 0) * (Number(input.rate) || 0);
+              let amount;
+              if (customerorderBookData.origin_type === "international") {
+                amount =
+                  Number(inputValue.exchange_rate) *
+                  Number(input.rate) *
+                  (Number(input.quantity) || 0);
+              } else {
+                amount =
+                  (Number(input.quantity) || 0) * (Number(input.rate) || 0);
+              }
 
               return (
                 <React.Fragment key={index}>
