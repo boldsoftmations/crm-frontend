@@ -312,7 +312,8 @@ export const CompanyDetails = () => {
               </Grid>
 
               {/* Add Button */}
-              {userData.groups.includes("Accounts") && (
+              {(userData.groups.includes("Accounts") ||
+                userData.groups.includes("Director")) && (
                 <Grid item xs={12} sm={1}>
                   <Button
                     variant="contained"
