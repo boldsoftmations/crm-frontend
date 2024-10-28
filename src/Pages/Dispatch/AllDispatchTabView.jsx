@@ -4,6 +4,7 @@ import { CustomTabs } from "../../Components/CustomTabs";
 import { ViewDispatch } from "./ViewDispatch";
 import { Dispatched } from "./Dispatched";
 import { SalesRegisterView } from "./SalesRegisterView";
+import { ExportView } from "./ExportView";
 
 export const AllDispatchTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
@@ -45,11 +46,16 @@ export const AllDispatchTabView = () => {
       visible: allTabs || twoTabs || customerServiceTab,
       index: 1,
     },
+    {
+      label: "Export Invoice",
+      visible: allTabs || twoTabs || customerServiceTab,
+      index: 2,
+    },
 
     {
       label: "Sales Register",
       visible: allTabs || customerServiceTab,
-      index: 2,
+      index: 3,
     },
   ];
 
@@ -59,7 +65,8 @@ export const AllDispatchTabView = () => {
   const tabComponents = {
     0: <ViewDispatch />,
     1: <Dispatched />,
-    2: <SalesRegisterView />,
+    2: <ExportView />,
+    3: <SalesRegisterView />,
   };
 
   return (

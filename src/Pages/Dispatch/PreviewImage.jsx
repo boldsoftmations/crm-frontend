@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Paper } from "@mui/material";
+import { Box, Grid, Paper } from "@mui/material";
 import React from "react";
 
 export const PreviewImage = ({ lrCopyImage, podCopyImage, hideImage }) => {

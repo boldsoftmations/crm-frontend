@@ -64,7 +64,15 @@ export const CreateCompanyDetails = (props) => {
   const validatePinCode = async () => {
     try {
       setOpen(true);
-      const PINCODE = inputValue.pin_code;
+      const PINCODE = inputValue.pincode;
+      if (PINCODE.length < 6) {
+        setAlertMsg({
+          message: "Pin Code should be of 6 digits",
+          severity: "error",
+          open: true,
+        });
+        return;
+      }
       const response = await MasterService.getCountryDataByPincode(PINCODE);
       if (response.data.length === 0) {
         setAlertMsg({
@@ -137,7 +145,7 @@ export const CreateCompanyDetails = (props) => {
       const req = {
         name: inputValue.name,
         address: inputValue.address,
-        pincode: inputValue.pin_code,
+        pincode: inputValue.pincode,
         country: inputValue.country,
         state: inputValue.state,
         city: inputValue.city,
@@ -240,12 +248,12 @@ export const CreateCompanyDetails = (props) => {
           <Grid item xs={12} sm={4}>
             <CustomTextField
               sx={{ minWidth: "200px" }}
-              name="pin_code"
+              name="pincode"
               size="small"
               type={"number"}
               label="Pin Code"
               variant="outlined"
-              value={inputValue.pin_code}
+              value={inputValue.pincode}
               onChange={handleInputChange}
             />
             <Button

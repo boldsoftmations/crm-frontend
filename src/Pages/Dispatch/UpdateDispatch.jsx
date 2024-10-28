@@ -178,7 +178,7 @@ export const UpdateDispatch = (props) => {
               fullWidth
               name="lr_number"
               size="small"
-              label="LR Number"
+              label="Dispatch Document Number"
               variant="outlined"
               value={
                 inputValue.lr_number ? inputValue.lr_number : idData.lr_number
@@ -192,7 +192,7 @@ export const UpdateDispatch = (props) => {
               type={"date"}
               name="lr_date"
               size="small"
-              label="LR Date"
+              label="Dispatch Document Date"
               variant="outlined"
               value={inputValue.lr_date ? inputValue.lr_date : idData.lr_date}
               onChange={handleInputChange}
@@ -214,7 +214,7 @@ export const UpdateDispatch = (props) => {
               />
               <img
                 src={lrCopyImage ? lrCopyImage : idData.lr_copy}
-                alt="lrcopy"
+                alt="Dispatch Document"
                 height="80px"
                 width="75px"
                 style={{

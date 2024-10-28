@@ -22,7 +22,6 @@ import { tableCellClasses } from "@mui/material/TableCell";
 import InvoiceServices from "../../services/InvoiceService";
 import { CustomLoader } from "./../../Components/CustomLoader";
 import { Popup } from "./../../Components/Popup";
-import { UpdateDispatch } from "./UpdateDispatch";
 import { CustomPagination } from "./../../Components/CustomPagination";
 import { useSelector } from "react-redux";
 import moment from "moment";
@@ -31,8 +30,9 @@ import { useNotificationHandling } from "../../Components/useNotificationHandlin
 import { MessageAlert } from "../../Components/MessageAlert";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import UserProfileService from "../../services/UserProfileService";
+import { UpdateExportInvoice } from "./UpdateExportInvoice";
 
-export const Dispatched = () => {
+export const ExportView = () => {
   const [dispatchData, setDispatchData] = useState([]);
   const [open, setOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -66,7 +66,8 @@ export const Dispatched = () => {
         true,
         currentPage,
         searchQuery,
-        unitFilter
+        unitFilter,
+        "not_lr"
       );
       setDispatchData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -127,7 +128,7 @@ export const Dispatched = () => {
                     fontWeight: 800,
                   }}
                 >
-                  Dispatched
+                  Export Invoice
                 </h3>
               </Grid>
               <Grid item xs={12} sm={3}>
@@ -306,7 +307,7 @@ function Row(props) {
         openPopup={openModal}
         setOpenPopup={setOpenModal}
       >
-        <UpdateDispatch
+        <UpdateExportInvoice
           idData={idData}
           getAllDispatchDetails={getAllDispatchDetails}
           setOpenPopup={setOpenModal}
