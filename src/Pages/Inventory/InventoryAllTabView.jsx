@@ -57,6 +57,7 @@ export const InventoryAllTabView = () => {
         "Production Delhi",
         "Production",
         "Accounts Executive",
+        "Accounts Billing Department",
       ],
       component: <StoresInventoryConsView />,
     },
