@@ -33,6 +33,8 @@ import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../Components/MessageAlert";
 import { useSelector } from "react-redux";
+import MasterService from "../../services/MasterService";
+import CustomSnackbar from "../../Components/CustomerSnackbar";
 
 export const UpdateLeads = memo((props) => {
   // Destructure props
@@ -58,7 +60,14 @@ export const UpdateLeads = memo((props) => {
   const [assigned, setAssigned] = useState([]);
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
-
+  const [alertmsg, setAlertMsg] = useState({
+    message: "",
+    severity: "",
+    open: false,
+  });
+  const handleClose = () => {
+    setAlertMsg({ open: false });
+  };
   const getTargetDate = () => {
     const currentDate = new Date();
     const targetDate = new Date(currentDate.setDate(currentDate.getDate() + 3));
@@ -84,6 +93,57 @@ export const UpdateLeads = memo((props) => {
     }
   }, [users.email]);
   // Event handlers
+  const validatePinCode = async () => {
+    try {
+      setOpen(true);
+      const PINCODE = leads.pincode;
+      if (PINCODE.length < 6) {
+        setAlertMsg({
+          message: "Pin Code should be of 6 digits",
+          severity: "error",
+          open: true,
+        });
+        return;
+      }
+      const response = await MasterService.getCountryDataByPincode(PINCODE);
+      if (response.data.length === 0) {
+        setAlertMsg({
+          message:
+            "This Pin Code does not exist ! First Create the Pin code in the master country",
+          severity: "error",
+          open: true,
+        });
+        setLeads({
+          ...leads,
+          state: "",
+          city: "",
+          country: "",
+        });
+      } else {
+        setAlertMsg({
+          message: "Pin code is valid",
+          severity: "success",
+          open: true,
+        });
+        setLeads({
+          ...leads,
+          state: response.data[0].state,
+          city: response.data[0].city_name,
+          country: response.data[0].country,
+        });
+      }
+    } catch (error) {
+      console.log("error", error);
+      setAlertMsg({
+        message: "Error fetching country data by pincode",
+        severity: "error",
+        open: true,
+      });
+    } finally {
+      setOpen(false);
+    }
+  };
+
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     let updatedValue = value;
@@ -264,6 +324,12 @@ export const UpdateLeads = memo((props) => {
 
   return (
     <>
+      <CustomSnackbar
+        open={alertmsg.open}
+        message={alertmsg.message}
+        severity={alertmsg.severity}
+        onClose={handleClose}
+      />
       <MessageAlert
         open={alertInfo.open}
         onClose={handleCloseSnackbar}
@@ -591,49 +657,57 @@ export const UpdateLeads = memo((props) => {
           <Grid item xs={12} sm={3}>
             <CustomTextField
               fullWidth
-              name="city"
-              size="small"
-              label="City"
-              variant="outlined"
-              value={leads.city || ""}
-              onChange={handleInputChange}
-            />
-          </Grid>
-          <Grid item xs={12} sm={3}>
-            <CustomAutocomplete
-              sx={{
-                minWidth: 220,
-              }}
-              size="small"
-              onChange={(event, value) => handleSelectChange("state", value)}
-              name="state"
-              value={leads.state || ""}
-              options={Option.StateOption.map((option) => option.label)}
-              getOptionLabel={(option) => option}
-              label="State"
-            />
-          </Grid>
-          <Grid item xs={12} sm={3}>
-            <CustomTextField
-              fullWidth
               name="country"
               size="small"
               label="Country"
               variant="outlined"
-              value={leads.country || ""}
-              onChange={handleInputChange}
+              value={leads.country || null}
+              InputLabelProps={{ shrink: true }}
+              disabled
             />
           </Grid>
           <Grid item xs={12} sm={3}>
             <CustomTextField
               fullWidth
+              name="city"
+              size="small"
+              label="State"
+              variant="outlined"
+              value={leads.state || null}
+              InputLabelProps={{ shrink: true }}
+              disabled
+            />
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <CustomTextField
+              fullWidth
+              name="city"
+              size="small"
+              label="City"
+              variant="outlined"
+              value={leads.city || null}
+              InputLabelProps={{ shrink: true }}
+              disabled
+            />
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <CustomTextField
+              sx={{ minWidth: "170px" }}
               name="pincode"
               size="small"
               label="Pin Code"
               variant="outlined"
-              value={leads.pincode || ""}
+              value={leads.pincode}
               onChange={handleInputChange}
             />
+            <Button
+              size="small"
+              onClick={validatePinCode}
+              variant="contained"
+              sx={{ marginLeft: "1rem" }}
+            >
+              Validate
+            </Button>
           </Grid>
 
           {/* Craete Shipping Details */}
