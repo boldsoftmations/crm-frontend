@@ -405,6 +405,9 @@ export const ListItems = ({ setOpen }) => {
           { to: "/invoice/performa-invoice-tab", text: "Performa Invoice" },
           { to: "/invoice/sales-invoice", text: "Sales Invoice" },
         ]),
+        renderSubmenu("production", <FactoryIcon />, "Production", [
+          { to: "/inventory/view-production", text: "Production" },
+        ]),
         renderSubmenu("inventory", <InventoryIcon />, "Inventory", [
           { to: "/inventory/view-inventory", text: "Inventory" },
         ]),
