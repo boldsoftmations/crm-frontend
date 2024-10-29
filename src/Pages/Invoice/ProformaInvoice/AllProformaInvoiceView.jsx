@@ -35,7 +35,6 @@ export const AllProformaInvoiceView = (props) => {
     content: () => componentRef.current,
     documentTitle: `PI Number ${invoiceData.pi_number}`,
   });
-
   const handleDownload = async (data) => {
     try {
       setOpen(true);
@@ -644,6 +643,7 @@ export const AllProformaInvoiceView = (props) => {
                       </table>
                     </div>
                   </div>
+
                   <div
                     className="row mb-4"
                     style={{
@@ -656,79 +656,81 @@ export const AllProformaInvoiceView = (props) => {
                       {AMOUNT_IN_WORDS}
                     </div>
                   </div>
-                  <div
-                    className="row mb-4"
-                    style={{
-                      ...typographyStyling,
-                      borderBottom: "1px Solid #000000",
-                    }}
-                  >
-                    <div className="col-md-8 text-right table-responsive">
-                      <table className="table table-bordered">
-                        <thead>
-                          <tr>
-                            <th>HSN</th>
-                            <th>TAXABLE AMOUNT</th>
-                            <th>CGST</th>
-                            <th>SGST</th>
-                            <th>IGST</th>
-                            <th>GST %</th>
-                            <th>TOTAL GST</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {hsnData.map((row, i) => (
-                            <tr key={i}>
-                              <td>{row.hsn_code}</td>
-                              <td>{row.amount}</td>
-                              <td>{row.cgst}</td>
-                              <td>{row.sgst}</td>
-                              <td>{row.igst}</td>
-                              <td>{row.gst_percentage}</td>
-                              <td>{row.total_gst}</td>
+                  {invoiceData.origin_type === "domestic" && (
+                    <div
+                      className="row mb-4"
+                      style={{
+                        ...typographyStyling,
+                        borderBottom: "1px Solid #000000",
+                      }}
+                    >
+                      <div className="col-md-8 text-right table-responsive">
+                        <table className="table table-bordered">
+                          <thead>
+                            <tr>
+                              <th>HSN</th>
+                              <th>TAXABLE AMOUNT</th>
+                              <th>CGST</th>
+                              <th>SGST</th>
+                              <th>IGST</th>
+                              <th>GST %</th>
+                              <th>TOTAL GST</th>
                             </tr>
-                          ))}
-                          <tr>
-                            <td colspan="1" className="text-end">
-                              <strong style={{ ...typographyStyling }}>
-                                Total :
-                              </strong>
-                            </td>
-                            <td colspan="1" className="text-start">
-                              <strong style={{ ...typographyStyling }}>
-                                {invoiceData.amount}
-                              </strong>
-                            </td>
-                            <td colspan="1" className="text-start">
-                              <strong style={{ ...typographyStyling }}>
-                                {invoiceData.cgst}
-                              </strong>
-                            </td>
-                            <td colspan="1" className="text-start">
-                              <strong style={{ ...typographyStyling }}>
-                                {invoiceData.sgst}
-                              </strong>
-                            </td>
-                            <td colspan="1" className="text-start">
-                              <strong style={{ ...typographyStyling }}>
-                                {invoiceData.igst}
-                              </strong>
-                            </td>
-                            <td colspan="1" className="text-start">
-                              <strong style={{ ...typographyStyling }}>
-                                {/* {invoiceData.igst} */}
-                              </strong>
-                            </td>
-                            <td colspan="1" className="text-start">
-                              <strong style={{ ...typographyStyling }}>
-                                {TOTAL_GST}
-                              </strong>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
+                          </thead>
+                          <tbody>
+                            {hsnData.map((row, i) => (
+                              <tr key={i}>
+                                <td>{row.hsn_code}</td>
+                                <td>{row.amount}</td>
+                                <td>{row.cgst}</td>
+                                <td>{row.sgst}</td>
+                                <td>{row.igst}</td>
+                                <td>{row.gst_percentage}</td>
+                                <td>{row.total_gst}</td>
+                              </tr>
+                            ))}
+                            <tr>
+                              <td colspan="1" className="text-end">
+                                <strong style={{ ...typographyStyling }}>
+                                  Total :
+                                </strong>
+                              </td>
+                              <td colspan="1" className="text-start">
+                                <strong style={{ ...typographyStyling }}>
+                                  {invoiceData.amount}
+                                </strong>
+                              </td>
+                              <td colspan="1" className="text-start">
+                                <strong style={{ ...typographyStyling }}>
+                                  {invoiceData.cgst}
+                                </strong>
+                              </td>
+                              <td colspan="1" className="text-start">
+                                <strong style={{ ...typographyStyling }}>
+                                  {invoiceData.sgst}
+                                </strong>
+                              </td>
+                              <td colspan="1" className="text-start">
+                                <strong style={{ ...typographyStyling }}>
+                                  {invoiceData.igst}
+                                </strong>
+                              </td>
+                              <td colspan="1" className="text-start">
+                                <strong style={{ ...typographyStyling }}>
+                                  {/* {invoiceData.igst} */}
+                                </strong>
+                              </td>
+                              <td colspan="1" className="text-start">
+                                <strong style={{ ...typographyStyling }}>
+                                  {TOTAL_GST}
+                                </strong>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
-                  </div>
+                  )}
                   <div
                     className="row mb-4"
                     style={{

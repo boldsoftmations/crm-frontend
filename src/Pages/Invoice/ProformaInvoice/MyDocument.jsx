@@ -10,6 +10,9 @@ import "../../../App.css";
 export const MyDocument = (props) => {
   const { productData, invoiceData, hsnData, AMOUNT_IN_WORDS, TOTAL_GST } =
     props;
+  console.log("TOTAL_GST", TOTAL_GST);
+  console.log(invoiceData);
+
   // Calculate the number of pages required to display all products
   const totalPages = Math.ceil(productData.length / 6);
 
@@ -677,102 +680,115 @@ export const MyDocument = (props) => {
                 <Text>{"\n"}</Text>
               </View>
               {/* HSN TABLE */}
-              <View style={{ ...rowStyle, ...headerStyle }}>
-                <View style={{ ...cellStyle, ...borderRightStyle }}>
-                  <Text style={{ ...outerTextStyle }}>HSN</Text>
-                </View>
-                <View style={{ ...cellStyle, ...borderRightStyle }}>
-                  <Text style={{ ...outerTextStyle }}>TAXABLE AMOUNT</Text>
-                </View>
-                <View style={{ ...cellStyle, ...borderRightStyle }}>
-                  <Text style={{ ...outerTextStyle }}>CGST</Text>
-                </View>
-                <View style={{ ...cellStyle, ...borderRightStyle }}>
-                  <Text style={{ ...outerTextStyle }}>SGST</Text>
-                </View>
-                <View style={{ ...cellStyle, ...borderRightStyle }}>
-                  <Text style={{ ...outerTextStyle }}>IGST</Text>
-                </View>
-                <View style={{ ...cellStyle, ...borderRightStyle }}>
-                  <Text style={{ ...outerTextStyle }}>GST</Text>
-                </View>
-                <View style={cellStyle}>
-                  <Text style={{ ...outerTextStyle }}>TOTAL GST</Text>
-                </View>
-              </View>
-              {/* HSN TABLE DATA*/}
-              {hsnData.map((historyRow, i) => (
-                <View style={rowStyle} key={i}>
+              {invoiceData.origin_type === "domestic" && (
+                <View style={{ ...rowStyle, ...headerStyle }}>
                   <View style={{ ...cellStyle, ...borderRightStyle }}>
-                    <Text style={{ ...innerTextStyle }}>
-                      {historyRow.hsn_code}
-                    </Text>
+                    <Text style={{ ...outerTextStyle }}>HSN</Text>
                   </View>
-
                   <View style={{ ...cellStyle, ...borderRightStyle }}>
-                    <Text style={{ ...innerTextStyle }}>
-                      {historyRow.amount}
-                    </Text>
+                    <Text style={{ ...outerTextStyle }}>TAXABLE AMOUNT</Text>
                   </View>
-
                   <View style={{ ...cellStyle, ...borderRightStyle }}>
-                    <Text style={{ ...innerTextStyle }}>{historyRow.cgst}</Text>
+                    <Text style={{ ...outerTextStyle }}>CGST</Text>
                   </View>
-
                   <View style={{ ...cellStyle, ...borderRightStyle }}>
-                    <Text style={{ ...innerTextStyle }}>{historyRow.sgst}</Text>
+                    <Text style={{ ...outerTextStyle }}>SGST</Text>
                   </View>
-
                   <View style={{ ...cellStyle, ...borderRightStyle }}>
-                    <Text style={{ ...innerTextStyle }}>{historyRow.igst}</Text>
+                    <Text style={{ ...outerTextStyle }}>IGST</Text>
                   </View>
-
                   <View style={{ ...cellStyle, ...borderRightStyle }}>
-                    <Text style={{ ...innerTextStyle }}>
-                      {historyRow.gst_percentage}
-                    </Text>
+                    <Text style={{ ...outerTextStyle }}>GST</Text>
                   </View>
-
                   <View style={cellStyle}>
-                    <Text style={{ ...innerTextStyle }}>
-                      {historyRow.total_gst}
-                    </Text>
+                    <Text style={{ ...outerTextStyle }}>TOTAL GST</Text>
                   </View>
                 </View>
-              ))}
+              )}
+              {/* HSN TABLE DATA*/}
+              {invoiceData.origin_type === "domestic" &&
+                hsnData.map((historyRow, i) => (
+                  <View style={rowStyle} key={i}>
+                    <View style={{ ...cellStyle, ...borderRightStyle }}>
+                      <Text style={{ ...innerTextStyle }}>
+                        {historyRow.hsn_code}
+                      </Text>
+                    </View>
+
+                    <View style={{ ...cellStyle, ...borderRightStyle }}>
+                      <Text style={{ ...innerTextStyle }}>
+                        {historyRow.amount}
+                      </Text>
+                    </View>
+
+                    <View style={{ ...cellStyle, ...borderRightStyle }}>
+                      <Text style={{ ...innerTextStyle }}>
+                        {historyRow.cgst}
+                      </Text>
+                    </View>
+
+                    <View style={{ ...cellStyle, ...borderRightStyle }}>
+                      <Text style={{ ...innerTextStyle }}>
+                        {historyRow.sgst}
+                      </Text>
+                    </View>
+
+                    <View style={{ ...cellStyle, ...borderRightStyle }}>
+                      <Text style={{ ...innerTextStyle }}>
+                        {historyRow.igst}
+                      </Text>
+                    </View>
+
+                    <View style={{ ...cellStyle, ...borderRightStyle }}>
+                      <Text style={{ ...innerTextStyle }}>
+                        {historyRow.gst_percentage}
+                      </Text>
+                    </View>
+
+                    <View style={cellStyle}>
+                      <Text style={{ ...innerTextStyle }}>
+                        {historyRow.total_gst}
+                      </Text>
+                    </View>
+                  </View>
+                ))}
 
               {/* HSN TABLE DATA TOTAL AND TAX*/}
-              <View style={rowStyle}>
-                <View style={{ ...cellStyle, ...borderRightStyle }}>
-                  <Text style={{ ...outerTextStyle }}>Total</Text>
+              {invoiceData.origin_type === "domestic" && (
+                <View style={rowStyle}>
+                  <View style={{ ...cellStyle, ...borderRightStyle }}>
+                    <Text style={{ ...outerTextStyle }}>Total</Text>
+                  </View>
+                  <View style={{ ...cellStyle, ...borderRightStyle }}>
+                    <Text style={{ ...outerTextStyle }}>
+                      {invoiceData.amount || "-"}
+                    </Text>
+                  </View>
+                  <View style={{ ...cellStyle, ...borderRightStyle }}>
+                    <Text style={{ ...outerTextStyle }}>
+                      {invoiceData.cgst || "-"}
+                    </Text>
+                  </View>
+                  <View style={{ ...cellStyle, ...borderRightStyle }}>
+                    <Text style={{ ...outerTextStyle }}>
+                      {invoiceData.sgst || "-"}
+                    </Text>
+                  </View>
+                  <View style={{ ...cellStyle, ...borderRightStyle }}>
+                    <Text style={{ ...outerTextStyle }}>
+                      {invoiceData.igst || "-"}
+                    </Text>
+                  </View>
+                  <View style={{ ...cellStyle, ...borderRightStyle }}>
+                    <Text style={{ ...outerTextStyle }}>-</Text>
+                  </View>
+                  <View style={cellStyle}>
+                    <Text style={{ ...outerTextStyle }}>
+                      {TOTAL_GST || "-"}
+                    </Text>
+                  </View>
                 </View>
-                <View style={{ ...cellStyle, ...borderRightStyle }}>
-                  <Text style={{ ...outerTextStyle }}>
-                    {invoiceData.amount || "-"}
-                  </Text>
-                </View>
-                <View style={{ ...cellStyle, ...borderRightStyle }}>
-                  <Text style={{ ...outerTextStyle }}>
-                    {invoiceData.cgst || "-"}
-                  </Text>
-                </View>
-                <View style={{ ...cellStyle, ...borderRightStyle }}>
-                  <Text style={{ ...outerTextStyle }}>
-                    {invoiceData.sgst || "-"}
-                  </Text>
-                </View>
-                <View style={{ ...cellStyle, ...borderRightStyle }}>
-                  <Text style={{ ...outerTextStyle }}>
-                    {invoiceData.igst || "-"}
-                  </Text>
-                </View>
-                <View style={{ ...cellStyle, ...borderRightStyle }}>
-                  <Text style={{ ...outerTextStyle }}>-</Text>
-                </View>
-                <View style={cellStyle}>
-                  <Text style={{ ...outerTextStyle }}>{TOTAL_GST || "-"}</Text>
-                </View>
-              </View>
+              )}
               <View>
                 <Text>{"\n"}</Text>
               </View>

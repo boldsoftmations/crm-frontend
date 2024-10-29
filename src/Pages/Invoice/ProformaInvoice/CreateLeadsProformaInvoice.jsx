@@ -23,6 +23,7 @@ import { useNotificationHandling } from "../../../Components/useNotificationHand
 import { MessageAlert } from "../../../Components/MessageAlert";
 import useDynamicFormFields from "../../../Components/useDynamicFormFields ";
 import ProductService from "../../../services/ProductService";
+import InventoryServices from "../../../services/InventoryService";
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -46,6 +47,7 @@ const values = {
 export const CreateLeadsProformaInvoice = (props) => {
   const { setOpenPopup, leadsByID } = props;
   const [productOption, setProductOption] = useState([]);
+  const [currencyOption, setCurrencyOption] = useState([]);
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
   const {
@@ -121,8 +123,35 @@ export const CreateLeadsProformaInvoice = (props) => {
       console.log("error", error);
     }
   };
+  const getCurrencyDetails = async () => {
+    setOpen(true);
+    try {
+      const response = await InventoryServices.getCurrencyData();
+
+      if (response && response.data) {
+        // Filter out INR for international vendors
+        const filteredCurrencyOptions =
+          leads.origin_type === "International"
+            ? response.data.filter((option) => option.name !== "INR")
+            : response.data;
+
+        setCurrencyOption(filteredCurrencyOptions);
+
+        // Set default currency to INR if vendor is Domestic and no currency is selected
+        if (leads.origin_type === "Domestic" && !leads.currency) {
+          setLeads((prevValues) => ({ ...prevValues, currency: "INR" }));
+        }
+      }
+    } catch (err) {
+      handleError(err);
+      console.error("Error fetching currency data", err);
+    } finally {
+      setOpen(false);
+    }
+  };
 
   useEffect(() => {
+    getCurrencyDetails();
     if (leadsByID) getLeadsData(leadsByID);
   }, []);
 
@@ -175,6 +204,12 @@ export const CreateLeadsProformaInvoice = (props) => {
       price_approval: priceApproval,
       products: products,
     };
+    if (leads.origin_type === "International") {
+      payload.currency = leads.currency;
+    } else {
+      payload.currency = "INR";
+    }
+
     try {
       setOpen(true);
       const isDataValid = validateLeadData(leads); // Custom validation function
@@ -203,8 +238,7 @@ export const CreateLeadsProformaInvoice = (props) => {
   };
 
   function validateLeadData(lead) {
-    return (
-      lead.contact !== null &&
+    return lead.contact !== null &&
       lead.address !== null &&
       lead.state !== null &&
       lead.city !== null &&
@@ -213,9 +247,10 @@ export const CreateLeadsProformaInvoice = (props) => {
       lead.shipping_state !== null &&
       lead.shipping_city !== null &&
       lead.shipping_pincode !== null &&
-      (lead.pan_number !== null || lead.gst_number !== null) &&
-      lead.company != null
-    );
+      lead.type_of_customer !== null &&
+      lead.origin_type === "Domestic"
+      ? lead.pan_number !== null || lead.gst_number !== null
+      : true && lead.company != null;
   }
 
   return (
@@ -276,6 +311,25 @@ export const CreateLeadsProformaInvoice = (props) => {
               style={tfStyle}
             />
           </Grid>
+          {leads.origin_type === "International" && (
+            <Grid item xs={12} sm={3}>
+              <CustomAutocomplete
+                size="small"
+                disablePortal
+                id="currency-autocomplete"
+                value={
+                  currencyOption.find((c) => c.name === leads.currency) || null
+                }
+                onChange={(event, value) =>
+                  setLeads({ ...leads, currency: value.name })
+                }
+                options={currencyOption.map((option) => option)}
+                getOptionLabel={(option) => `${option.name} (${option.symbol})`}
+                sx={{ minWidth: 300 }}
+                label="Currency"
+              />
+            </Grid>
+          )}
           <Grid item xs={12}>
             <Root>
               <Divider>
