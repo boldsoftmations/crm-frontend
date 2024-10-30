@@ -109,7 +109,6 @@ export const CreateLeadsProformaInvoice = (props) => {
       console.log("Error fetching seller account data:", error);
     }
   };
-
   useEffect(() => {
     getAllSellerAccountsDetails();
     getProduct();
@@ -130,11 +129,7 @@ export const CreateLeadsProformaInvoice = (props) => {
 
       if (response && response.data) {
         // Filter out INR for international vendors
-        const filteredCurrencyOptions =
-          leads.origin_type === "International"
-            ? response.data.filter((option) => option.name !== "INR")
-            : response.data;
-
+        const filteredCurrencyOptions = response.data;
         setCurrencyOption(filteredCurrencyOptions);
 
         // Set default currency to INR if vendor is Domestic and no currency is selected
