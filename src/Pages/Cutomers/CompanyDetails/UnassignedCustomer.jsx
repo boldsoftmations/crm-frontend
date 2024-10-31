@@ -1,30 +1,45 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Grid, Button, Chip, Paper, Box } from "@mui/material";
+import {
+  Grid,
+  Button,
+  Chip,
+  Paper,
+  Box,
+  styled,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TableBody,
+  Table,
+  tableCellClasses,
+} from "@mui/material";
 import { Popup } from "./../../../Components/Popup";
 import CustomerServices from "../../../services/CustomerService";
 import { CustomLoader } from "../../../Components/CustomLoader";
-import { CustomTable } from "./../../../Components/CustomTable";
 import { CustomPagination } from "../../../Components/CustomPagination";
-import LeadServices from "../../../services/LeadService";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import SearchComponent from "../../../Components/SearchComponent ";
 import { MessageAlert } from "../../../Components/MessageAlert";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { useSelector } from "react-redux";
+import { UpdateAllCompanyDetails } from "./UpdateAllCompanyDetails";
 
 export const UnassignedCustomer = () => {
   const [openPopup, setOpenPopup] = useState(false);
-  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [openPopupOfUpdateCustomer, setOpenPopupOfUpdateCustomer] =
+    useState(false);
+  const [selectedCustomers, setSelectedCustomers] = useState();
   const [open, setOpen] = useState(false);
   const [companyData, setCompanyData] = useState([]);
   const [recordForEdit, setRecordForEdit] = useState();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
+  const [FilterSearchvalue, setFilterSearchvalue] = useState("");
   const [assign, setAssign] = useState([]);
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
-
   //asssign to user
   const data = useSelector((state) => state.auth);
   const users = data.profile;
@@ -38,16 +53,13 @@ export const UnassignedCustomer = () => {
     setOpenPopup(true);
   };
 
-  const handleSnackbarClose = () => {
-    setOpenSnackbar(false);
-  };
-
   const getUnassignedCompanyDetails = useCallback(async () => {
     try {
       setOpen(true);
       const response = await CustomerServices.getUnassignedData(
         currentPage,
-        searchQuery
+        searchQuery,
+        FilterSearchvalue
       );
       setCompanyData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -56,11 +68,11 @@ export const UnassignedCustomer = () => {
     } finally {
       setOpen(false);
     }
-  }, [currentPage, searchQuery]); // Ensure dependencies are correctly listed
+  }, [currentPage, searchQuery, FilterSearchvalue]); // Ensure dependencies are correctly listed
 
   useEffect(() => {
     getUnassignedCompanyDetails();
-  }, [currentPage, searchQuery]);
+  }, [currentPage, searchQuery, FilterSearchvalue]);
 
   const handleSearch = (query) => {
     setSearchQuery(query);
@@ -115,7 +127,6 @@ export const UnassignedCustomer = () => {
     }
   };
   const Tableheaders = [
-    "ID",
     "NAME",
     "PAN NO.",
     "GST NO.",
@@ -124,14 +135,20 @@ export const UnassignedCustomer = () => {
     "ACTION",
   ];
 
-  const Tabledata = companyData.map((value) => ({
-    id: value.id,
-    name: value.name,
-    pan_number: value.pan_number,
-    gst_number: value.gst_number,
-    city: value.city,
-    state: value.state,
-  }));
+  const openInPopupOfUpdateCustomer = (item) => {
+    setRecordForEdit(item.id);
+    setSelectedCustomers(item);
+    setOpenPopupOfUpdateCustomer(true);
+  };
+
+  const handlFilterCustomer = (data) => {
+    if (data && data.value) {
+      setFilterSearchvalue(data.value);
+      setCurrentPage(1); // Reset to first page with new filter
+    } else {
+      setFilterSearchvalue("");
+    }
+  };
   return (
     <>
       <MessageAlert
@@ -176,67 +193,87 @@ export const UnassignedCustomer = () => {
                   Unassigned Customer
                 </h3>
               </Grid>
-
-              {/* Add Button on the right */}
-              <Grid
-                item
-                xs={12}
-                md={4}
-                sx={{
-                  display: "flex",
-                  justifyContent: { xs: "center", md: "flex-end" },
-                }}
-              ></Grid>
+              <Grid item xs={12} md={4}>
+                <CustomAutocomplete
+                  fullWidth
+                  size="small"
+                  disablePortal
+                  id="combo-box-status"
+                  options={TypeCustomer}
+                  onChange={(e, value) => handlFilterCustomer(value)}
+                  getOptionLabel={(option) => option.label}
+                  label="Filter By Customer"
+                />
+              </Grid>
             </Grid>
           </Box>
-
-          <div
-            style={{
-              position: "fixed",
-              top: "20px",
-              left: "50%",
-              transform: "translateX(-50%)",
-              backgroundColor: "green",
-              color: "white",
-              padding: "10px",
-              borderRadius: "4px",
-              display: openSnackbar ? "block" : "none",
-              zIndex: 9999,
+          <TableContainer
+            sx={{
+              maxHeight: 440,
+              "&::-webkit-scrollbar": {
+                width: 15,
+              },
+              "&::-webkit-scrollbar-track": {
+                backgroundColor: "#f2f2f2",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: "#aaa9ac",
+              },
             }}
           >
-            <span style={{ marginRight: "10px" }}>
-              Bulk Customer Assigned Successfully!
-            </span>
-            <button
-              style={{
-                backgroundColor: "transparent",
-                border: "none",
-                color: "white",
-                cursor: "pointer",
-                padding: "0",
-              }}
-              onClick={handleSnackbarClose}
+            <Table
+              sx={{ minWidth: 1200 }}
+              stickyHeader
+              aria-label="sticky table"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                fill="currentColor"
-                viewBox="0 0 16 16"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M8 7.293l2.146-2.147a.5.5 0 11.708.708L8.707 8l2.147 2.146a.5.5 0 01-.708.708L8 8.707l-2.146 2.147a.5.5 0 01-.708-.708L7.293 8 5.146 5.854a.5.5 0 01.708-.708L8 7.293z"
-                />
-              </svg>
-            </button>
-          </div>
+              <TableHead>
+                <TableRow>
+                  {Tableheaders.map((header) => {
+                    return (
+                      <StyledTableCell align="center">{header}</StyledTableCell>
+                    );
+                  })}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {companyData.map((row, i) => (
+                  <StyledTableRow key={i}>
+                    <StyledTableCell align="center">{row.name}</StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.pan_number}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.gst_number}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">{row.city}</StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.state}
+                    </StyledTableCell>
 
-          <CustomTable
-            headers={Tableheaders}
-            data={Tabledata}
-            openInPopup={openInPopup}
-          />
+                    <StyledTableCell align="center">
+                      <Button
+                        style={{ marginRight: "10px" }}
+                        variant="outlined"
+                        color="info"
+                        size="small"
+                        onClick={() => openInPopupOfUpdateCustomer(row)}
+                      >
+                        View
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        color="secondary"
+                        size="small"
+                        onClick={() => openInPopup(row)}
+                      >
+                        Assign
+                      </Button>
+                    </StyledTableCell>
+                  </StyledTableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
 
           <CustomPagination
             currentPage={currentPage}
@@ -289,6 +326,54 @@ export const UnassignedCustomer = () => {
           </Grid>
         </Grid>
       </Popup>
+      <Popup
+        fullScreen={true}
+        title={"Update Customer"}
+        openPopup={openPopupOfUpdateCustomer}
+        setOpenPopup={setOpenPopupOfUpdateCustomer}
+      >
+        <UpdateAllCompanyDetails
+          setOpenPopup={setOpenPopupOfUpdateCustomer}
+          recordForEdit={recordForEdit}
+          getAllCompanyDetails={getUnassignedCompanyDetails}
+          selectedCustomers={selectedCustomers}
+        />
+      </Popup>
     </>
   );
 };
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  "&:nth-of-type(odd)": {
+    backgroundColor: theme.palette.action.hover,
+  },
+  // hide last border
+  "&:last-child td, &:last-child th": {
+    border: 0,
+  },
+}));
+
+const TypeCustomer = [
+  {
+    value: "industrial_customer",
+    label: "Industrial Customer",
+  },
+  {
+    value: "distribution_customer",
+    label: "Distribution Customer",
+  },
+  {
+    value: "Exclusive Distribution Customer",
+    label: "Exclusive Distribution Customer",
+  },
+];
