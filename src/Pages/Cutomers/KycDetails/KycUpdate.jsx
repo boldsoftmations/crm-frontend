@@ -99,6 +99,7 @@ const KycUpdate = ({
         state,
         type_of_customer,
         whatsapp_group,
+        origin_type,
       } = kycResponse.data;
       setInputValue({
         website,
@@ -120,6 +121,7 @@ const KycUpdate = ({
         state,
         type_of_customer,
         whatsapp_group,
+        origin_type,
       });
       // Extract only the required fields for setContactData
       const filteredContacts = contactResponse.data.contacts.map((contact) => ({
@@ -238,6 +240,7 @@ const KycUpdate = ({
         category: inputValue.category || [],
         main_distribution: inputValue.main_distribution || [],
         whatsapp_group: inputValue.whatsapp_group || null,
+        origin_type: inputValue.origin_type,
         ref_customer: inputValue.ref_customer
           ? inputValue.ref_customer.ref_customer
           : null,

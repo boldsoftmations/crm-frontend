@@ -633,7 +633,8 @@ function Row(props) {
           <Button variant="text" onClick={() => openInPopup(row.invoice_no)}>
             View
           </Button>
-          {row.is_upload === false &&
+          {row.is_whatsapp_group === true &&
+            row.is_upload === false &&
             (userData.groups.includes("Director") ||
               userData.groups.includes("Accounts") ||
               userData.groups.includes("Accounts Billing Department")) && (
