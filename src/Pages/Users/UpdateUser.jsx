@@ -29,7 +29,10 @@ const UpdateUser = ({
   const [activeUsersByIDData, setActiveUsersByIDData] = useState(editData);
   const [state, setState] = useState([]);
   const [manageGroup, setManageGroup] = useState([]);
-  const [selectedGrp, setSelectedGrp] = useState("");
+  const [filterGroup, setFilterGroup] = useState([]);
+  const [selectedGrp, setSelectedGrp] = useState(
+    activeUsersByIDData.ref_user_group
+  );
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
   const [selectedStateCities, setSelectedStateCities] = useState({});
@@ -108,7 +111,15 @@ const UpdateUser = ({
     getAllGroupsUser();
   }, []);
 
-  const filterGroup = manageGroup.find((group) => group.key === selectedGrp);
+  useEffect(() => {
+    const filterGroups = manageGroup.find((group) => {
+      const groupKey = selectedGrp;
+      return group.key === groupKey;
+    });
+    if (filterGroups && filterGroups.value.length > 0) {
+      setFilterGroup(filterGroups.value);
+    }
+  }, [selectedGrp]);
 
   useEffect(() => {
     if (activeUsersByIDData && activeUsersByIDData.assigned_state_city) {
@@ -256,6 +267,7 @@ const UpdateUser = ({
       return acc;
     }, {});
 
+  console.log(sortedState);
   return (
     <>
       <MessageAlert
@@ -447,6 +459,7 @@ const UpdateUser = ({
               onChange={(event, value) => {
                 setSelectedGrp(value);
               }}
+              value={selectedGrp}
               options={groups} // Now contains all keys
               renderInput={(params) => (
                 <CustomTextField {...params} label="Reports" />
@@ -462,7 +475,8 @@ const UpdateUser = ({
                 onChange={(event, value) => {
                   handleSelectChange("ref_user", value);
                 }}
-                options={filterGroup.value} // Display associated emails
+                value={activeUsersByIDData && activeUsersByIDData.ref_user}
+                options={filterGroup} // Display associated emails
                 renderInput={(params) => (
                   <CustomTextField {...params} label="Reports" />
                 )}
