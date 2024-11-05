@@ -92,8 +92,10 @@ const updateMasterPincode = (id, data) => {
   return CustomAxios.patch(`/api/master/pincode/${id}/`, data);
 };
 
-const getCountryDataByPincode = (pincode) => {
-  return CustomAxios.get(`/api/master/pincode/?page=all&search=${pincode}`);
+const getCountryDataByPincode = (country = "India", pincode) => {
+  return CustomAxios.get(
+    `/api/master/pincode/?page=all&city__state__country__name=${country}&search=${pincode}`
+  );
 };
 
 const MasterService = {

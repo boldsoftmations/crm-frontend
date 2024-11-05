@@ -34,6 +34,7 @@ export const CreateCompanyDetails = (props) => {
   const [openPopup2, setOpenPopup2] = useState(false);
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState([]);
+  const [countryList, setCountryList] = useState([]);
   const [idForEdit, setIdForEdit] = useState("");
   const [assigned, setAssigned] = useState([]);
   const [alertmsg, setAlertMsg] = useState({
@@ -54,18 +55,54 @@ export const CreateCompanyDetails = (props) => {
     setInputValue({ ...inputValue, [name]: updatedValue });
   };
 
-  const handleSelectChange = (name, value) => {
+  const handleSelectChange = async (name, value) => {
     setInputValue({
       ...inputValue,
       [name]: value,
     });
+    if (value === "International") {
+      try {
+        setOpen(true);
+        const response = await MasterService.getAllMasterCountries("all");
+        const RemoveIndia = response.data.filter((data) => {
+          return data.name !== "India";
+        });
+        setCountryList(RemoveIndia);
+      } catch {
+        console.log("Error in getting country data by pincode");
+      } finally {
+        setOpen(false);
+      }
+    }
   };
 
   const validatePinCode = async () => {
     try {
       setOpen(true);
+      if (!inputValue.origin_type) {
+        setAlertMsg({
+          message:
+            "Please select customer origin type before validating pincode",
+          severity: "error",
+          open: true,
+        });
+        return;
+      }
+      if (inputValue.origin_type === "International" && !inputValue.country) {
+        setAlertMsg({
+          message: "Please select country before validating pincode",
+          severity: "error",
+          open: true,
+        });
+        return;
+      }
+
       const PINCODE = inputValue.pincode;
-      const response = await MasterService.getCountryDataByPincode(PINCODE);
+      const Country = inputValue.country;
+      const response = await MasterService.getCountryDataByPincode(
+        Country,
+        PINCODE
+      );
       if (response.data.length === 0) {
         setAlertMsg({
           message:
@@ -256,17 +293,34 @@ export const CreateCompanyDetails = (props) => {
               Validate
             </Button>
           </Grid>
-          <Grid item xs={12} sm={4}>
-            <CustomTextField
-              fullWidth
-              size="small"
-              label="Country"
-              name="country"
-              variant="outlined"
-              value={inputValue.country || ""}
-              disabled
-            />
-          </Grid>
+          {inputValue.origin_type === "International" ? (
+            <Grid item xs={12} sm={4}>
+              <CustomAutocomplete
+                sx={{ minWidth: 220 }}
+                size="small"
+                onChange={(event, value) => {
+                  handleSelectChange("country", value);
+                }}
+                value={inputValue.country || ""}
+                options={
+                  countryList && countryList.map((option) => option.name)
+                }
+                label="Country"
+              />
+            </Grid>
+          ) : (
+            <Grid item xs={12} sm={4}>
+              <CustomTextField
+                fullWidth
+                size="small"
+                label="Country"
+                name="country"
+                variant="outlined"
+                value={inputValue.country || ""}
+                disabled
+              />
+            </Grid>
+          )}
           <Grid item xs={12} sm={4}>
             <CustomTextField
               fullWidth
