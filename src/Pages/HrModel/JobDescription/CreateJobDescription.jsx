@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { TextField, Button, Paper, Grid, Typography, Box } from "@mui/material";
+import { TextField, Button, Paper, Grid } from "@mui/material";
 import DynamiFileds from "./DynamicField";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
 import Hr from "../../../services/Hr";
 import { CustomLoader } from "../../../Components/CustomLoader";
 
-const JobDescriptionForm = ({ getJobDescription }) => {
+const JobDescriptionForm = ({ getJobDescription, setOpenPopup }) => {
   const [role, setRole] = useState([]);
   const [alertMsg, setAlertMsg] = useState({
     message: "",
@@ -56,7 +56,7 @@ const JobDescriptionForm = ({ getJobDescription }) => {
     });
   };
   const validateForm = () => {
-    if (!formData.job_title) return "Job title is required";
+    if (!formData.designation) return "Designation is required";
     if (!formData.job_purpose) return "Job purpose is required";
     if (!formData.report_line) return "Report line is required";
     if (!formData.reports_to) return "Reports to is required";
@@ -90,6 +90,10 @@ const JobDescriptionForm = ({ getJobDescription }) => {
         message: response.message || "Job description created successfully",
         severity: "success",
       });
+      setTimeout(() => {
+        getJobDescription();
+        setOpenPopup(false);
+      }, 500);
     } catch (error) {
       console.error("Error creating job description:", error);
       setAlertMsg({

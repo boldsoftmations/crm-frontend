@@ -56,7 +56,7 @@ const UpdateJobDescription = ({ getJobDescription, setOpenPopup, data }) => {
     });
   };
   const validateForm = () => {
-    if (!formData.designation) return "Job title is required";
+    if (!formData.designation) return "Designation is required";
     if (!formData.job_purpose) return "Job purpose is required";
     if (!formData.report_line) return "Report line is required";
     if (!formData.reports_to) return "Reports to is required";
@@ -119,7 +119,7 @@ const UpdateJobDescription = ({ getJobDescription, setOpenPopup, data }) => {
           <Grid item xs={12}>
             <CustomAutocomplete
               options={role.map((option) => option.designation)}
-              value={formData.role}
+              value={formData.designation}
               onChange={(e, value) =>
                 setFormData((prev) => ({ ...prev, designation: value }))
               }
