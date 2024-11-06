@@ -30,7 +30,7 @@ import MasterService from "../../../services/MasterService";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
 
 export const CreateCompanyDetails = (props) => {
-  const { getAllCompanyDetails } = props;
+  const { getAllCompanyDetails, setOpenPopup } = props;
   const [openPopup2, setOpenPopup2] = useState(false);
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState([]);
@@ -198,7 +198,14 @@ export const CreateCompanyDetails = (props) => {
       setIdForEdit(response.data.company_id);
       getAllCompanyDetailsByID(response.data.company_id);
       setOpen(false);
-      setOpenPopup2(true);
+      setAlertMsg({
+        message: "Company created successfully",
+        severity: "success",
+        open: true,
+      });
+      setTimeout(() => {
+        setOpenPopup2(true);
+      }, 700);
       // getAllCompanyDetails();
     } catch (error) {
       console.log("createing company detail error", error);
@@ -625,7 +632,7 @@ export const CreateCompanyDetails = (props) => {
         maxWidth={"lg"}
         title={"Create Customer"}
         openPopup={openPopup2}
-        setOpenPopup={setOpenPopup2}
+        setOpenPopup={setOpenPopup}
       >
         <CreateAllCompanyDetails
           setOpenPopup={setOpenPopup2}
