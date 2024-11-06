@@ -264,7 +264,14 @@ const getAllProductStoresInventoryDetails = (data) => {
 
 // Material Requisition Form List Api
 
-const getAllMaterialRequisitionFormData = (page, searchValue, filterValue) => {
+const getAllMaterialRequisitionFormData = (
+  page,
+  searchValue,
+  filterValue,
+  date,
+  start_date,
+  end_date
+) => {
   const params = new URLSearchParams();
 
   if (page) {
@@ -277,6 +284,15 @@ const getAllMaterialRequisitionFormData = (page, searchValue, filterValue) => {
 
   if (filterValue) {
     params.append("seller_account__unit", filterValue);
+  }
+  if (date) {
+    params.append("date", date);
+  }
+  if (start_date) {
+    params.append("start_date", start_date);
+  }
+  if (end_date) {
+    params.append("end_date", end_date);
   }
 
   // Sending a GET request with query parameters

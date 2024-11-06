@@ -45,6 +45,7 @@ import { MessageAlert } from "../../../Components/MessageAlert";
 import { CustomPagination } from "../../../Components/CustomPagination";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import InvoiceServices from "../../../services/InvoiceService";
+import CustomDate from "../../../Components/CustomDate";
 
 export const MaterialRequisitionFormView = () => {
   const [openPopup, setOpenPopup] = useState(false);
@@ -63,7 +64,12 @@ export const MaterialRequisitionFormView = () => {
   const [storesInventoryData, setStoresInventoryData] = useState([]);
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
-
+  const [endDate, setEndDate] = useState(null);
+  const [startDate, setStartDate] = useState(null);
+  const minDate = new Date().toISOString().split("T")[0];
+  const maxDate = new Date("2030-12-31").toISOString().split("T")[0];
+  const [customDataPopup, setCustomDataPopup] = useState(false);
+  const [filterByDays, setFilterByDays] = useState("today");
   const users = useSelector((state) => state.auth.profile);
   const [exportData, setExportData] = useState([]);
   const csvLinkRef = useRef(null);
@@ -168,11 +174,16 @@ export const MaterialRequisitionFormView = () => {
   const getAllMaterialRequisitionFormDetails = useCallback(async () => {
     try {
       setOpen(true);
+      const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
+      const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
       const response =
         await InventoryServices.getAllMaterialRequisitionFormData(
           currentPage,
           searchQuery,
-          filterByUnit
+          filterByUnit,
+          filterByDays,
+          StartDate,
+          EndDate
         );
       setMaterialRequisitionData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -182,11 +193,25 @@ export const MaterialRequisitionFormView = () => {
       setOpen(false);
       console.error("error", error);
     }
-  }, [currentPage, searchQuery, filterByUnit]);
+  }, [
+    currentPage,
+    searchQuery,
+    filterByUnit,
+    filterByDays,
+    startDate,
+    endDate,
+  ]);
 
   useEffect(() => {
     getAllMaterialRequisitionFormDetails();
-  }, [currentPage, searchQuery, filterByUnit]);
+  }, [
+    currentPage,
+    searchQuery,
+    filterByUnit,
+    filterByDays,
+    startDate,
+    endDate,
+  ]);
 
   const handleSearch = (query) => {
     setSearchQuery(query);
@@ -274,7 +299,31 @@ export const MaterialRequisitionFormView = () => {
       setOpen(false);
     }
   };
-
+  const handleEndDateChange = (event) => {
+    const date = new Date(event.target.value);
+    setEndDate(date);
+  };
+  const getResetDate = () => {
+    setStartDate(new Date());
+    setEndDate(new Date());
+  };
+  const handleStartDateChange = (event) => {
+    const date = new Date(event.target.value);
+    setStartDate(date);
+    setEndDate(new Date());
+  };
+  const handleChange = (value) => {
+    if (value === "custom_date") {
+      setStartDate(new Date());
+      setEndDate(new Date());
+      setFilterByDays("");
+      setCustomDataPopup(true);
+    } else {
+      setFilterByDays(value);
+      setStartDate(null);
+      setEndDate(null);
+    }
+  };
   return (
     <>
       <MessageAlert
@@ -301,21 +350,20 @@ export const MaterialRequisitionFormView = () => {
                   onReset={handleReset}
                 />
               </Grid>
-
+              {/* Left Section: Filter and Search */}
               <Grid item xs={12} sm={2}>
                 <CustomAutocomplete
-                  name="seller_unit"
                   size="small"
-                  disablePortal
-                  id="combo-box-demo"
-                  value={filterByUnit}
-                  onChange={(event, value) =>
-                    handleFilter("seller_unit", value)
-                  }
-                  options={sellerAccountOption.map((option) => option.unit)}
-                  getOptionLabel={(option) => option}
                   fullWidth
-                  label="Filter By Seller Unit"
+                  onChange={(event, newValue) =>
+                    handleChange(newValue ? newValue.value : "")
+                  }
+                  options={filterDays}
+                  getOptionLabel={(option) => option.label}
+                  isOptionEqualToValue={(option, value) =>
+                    option.value === value.value
+                  }
+                  label="Filter By Date"
                 />
               </Grid>
 
@@ -332,9 +380,31 @@ export const MaterialRequisitionFormView = () => {
                   Material Requisition Form
                 </h3>
               </Grid>
-
+              <Grid item xs={12} sm={2}>
+                <CustomAutocomplete
+                  name="seller_unit"
+                  size="small"
+                  disablePortal
+                  id="combo-box-demo"
+                  value={filterByUnit}
+                  onChange={(event, value) =>
+                    handleFilter("seller_unit", value)
+                  }
+                  options={sellerAccountOption.map((option) => option.unit)}
+                  getOptionLabel={(option) => option}
+                  fullWidth
+                  label="Filter By Seller Unit"
+                />
+              </Grid>
               {/* Right Section: Download and Add Buttons */}
-              <Grid item xs={12} sm={3} gap={2}>
+              <Grid
+                item
+                xs={12}
+                sm={12}
+                gap={2}
+                display="flex"
+                justifyContent="space-between"
+              >
                 {(users.groups.includes("Accounts") ||
                   users.groups.includes("Director")) && (
                   <>
@@ -434,6 +504,22 @@ export const MaterialRequisitionFormView = () => {
           </TableFooter>
         </Paper>
       </Grid>
+      <Popup
+        openPopup={customDataPopup}
+        setOpenPopup={setCustomDataPopup}
+        title="Date Filter"
+        maxWidth="md"
+      >
+        <CustomDate
+          startDate={startDate}
+          endDate={endDate}
+          minDate={minDate}
+          maxDate={maxDate}
+          handleStartDateChange={handleStartDateChange}
+          handleEndDateChange={handleEndDateChange}
+          resetDate={getResetDate}
+        />
+      </Popup>
       <Popup
         maxWidth="xl"
         title={"Create Material Requisition Details"}
@@ -656,6 +742,12 @@ function Row(props) {
     </>
   );
 }
+const filterDays = [
+  { label: "Today", value: "today" },
+  { label: "Yesterday", value: "yesterday" },
+  { label: "This Month", value: "this_month" },
+  { label: "Custom Date", value: "custom_date" },
+];
 
 const style = StyleSheet.create({
   container: {
