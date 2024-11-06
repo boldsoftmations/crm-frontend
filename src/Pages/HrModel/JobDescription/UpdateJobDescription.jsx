@@ -55,33 +55,8 @@ const UpdateJobDescription = ({ getJobDescription, setOpenPopup, data }) => {
       [arrayName]: values,
     });
   };
-  const validateForm = () => {
-    if (!formData.designation) return "Designation is required";
-    if (!formData.job_purpose) return "Job purpose is required";
-    if (!formData.report_line) return "Report line is required";
-    if (!formData.reports_to) return "Reports to is required";
-    if (formData.directs_report.length === 0)
-      return "Please add at least one direct report";
-    if (formData.kra.length === 0) return "Please add at least one KRA";
-    if (formData.mtr.length === 0) return "Please add at least one MTR";
-    if (!formData.min_education_level)
-      return "Minimum education level is required";
-    if (!formData.work_experience) return "Work experience is required";
-    if (formData.ssa.length === 0) return "Please add at least one SSA";
-    return null;
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const error = validateForm();
-    if (error) {
-      setAlertMsg({
-        open: true,
-        message: error,
-        severity: "error",
-      });
-      return;
-    }
     try {
       setLoading(true);
       const response = await Hr.UpdateJobDescription(data.id, formData);
@@ -136,7 +111,6 @@ const UpdateJobDescription = ({ getJobDescription, setOpenPopup, data }) => {
               value={formData.job_purpose}
               onChange={handleChange}
               fullWidth
-              required
               multiline
             />
           </Grid>
@@ -148,7 +122,6 @@ const UpdateJobDescription = ({ getJobDescription, setOpenPopup, data }) => {
               value={formData.report_line}
               onChange={handleChange}
               fullWidth
-              required
             />
           </Grid>
           <Grid item xs={12}>
@@ -159,7 +132,6 @@ const UpdateJobDescription = ({ getJobDescription, setOpenPopup, data }) => {
               value={formData.reports_to}
               onChange={handleChange}
               fullWidth
-              required
             />
           </Grid>
           <Grid item xs={12}>
@@ -203,7 +175,6 @@ const UpdateJobDescription = ({ getJobDescription, setOpenPopup, data }) => {
               value={formData.min_education_level}
               onChange={handleChange}
               fullWidth
-              required
             />
           </Grid>
           <Grid item xs={6}>
@@ -213,7 +184,6 @@ const UpdateJobDescription = ({ getJobDescription, setOpenPopup, data }) => {
               value={formData.work_experience}
               onChange={handleChange}
               fullWidth
-              required
               type="number"
               size="small"
             />

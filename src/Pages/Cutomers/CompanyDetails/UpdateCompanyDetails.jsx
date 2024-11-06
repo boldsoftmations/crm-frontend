@@ -92,7 +92,11 @@ export const UpdateCompanyDetails = (props) => {
     try {
       setOpen(true);
       const PINCODE = inputValue.pincode;
-      const response = await MasterService.getCountryDataByPincode(PINCODE);
+      const Country = inputValue.country;
+      const response = await MasterService.getCountryDataByPincode(
+        Country,
+        PINCODE
+      );
       if (response.data.length === 0) {
         setAlertMsg({
           message:
