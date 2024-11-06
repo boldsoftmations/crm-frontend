@@ -344,14 +344,18 @@ export const MaterialRequisitionFormView = () => {
               justifyContent="space-between"
             >
               {/* Left Section: Search Component */}
-              <Grid item xs={12} sm={3}>
+              <Grid
+                item
+                xs={12}
+                sm={5}
+                gap={2}
+                display="flex"
+                justifyContent="space-between"
+              >
                 <SearchComponent
                   onSearch={handleSearch}
                   onReset={handleReset}
                 />
-              </Grid>
-              {/* Left Section: Filter and Search */}
-              <Grid item xs={12} sm={2}>
                 <CustomAutocomplete
                   size="small"
                   fullWidth
@@ -368,19 +372,19 @@ export const MaterialRequisitionFormView = () => {
               </Grid>
 
               {/* Center Section: Title */}
-              <Grid item xs={12} sm={4} display="flex" justifyContent="center">
+              <Grid item xs={12} sm={4}>
                 <h3
                   style={{
                     fontSize: "24px",
                     color: "rgb(34, 34, 34)",
                     fontWeight: 800,
-                    textAlign: "center",
+                    textAlign: "start",
                   }}
                 >
                   Material Requisition Form
                 </h3>
               </Grid>
-              <Grid item xs={12} sm={2}>
+              <Grid item xs={12} sm={3}>
                 <CustomAutocomplete
                   name="seller_unit"
                   size="small"
