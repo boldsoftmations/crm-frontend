@@ -16,12 +16,12 @@ import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import CloseIcon from "@mui/icons-material/Close";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
+import TypoAnimation from "./TypoAnimation";
 
 export const ApplicantListCreate = ({
   jobOpeningId,
   setOpenApplicantListPopup,
 }) => {
-  console.log("jobOpeningId:", jobOpeningId);
   const [formData, setFormData] = useState({
     job: jobOpeningId.job_id,
     name: "",
@@ -38,7 +38,8 @@ export const ApplicantListCreate = ({
     cv: null,
   });
   const [loader, setLoader] = useState(false);
-
+  const [showAts, setShowAts] = useState(false);
+  const [missingKeyWords, setMissingKeyWords] = useState([]);
   const [source, setSource] = useState([]);
   const [cvPreview, setCvPreview] = useState(null);
   const [alertmsg, setAlertMsg] = useState({
@@ -158,6 +159,40 @@ export const ApplicantListCreate = ({
       setLoader(false);
     }
   };
+
+  const handleGetDataFromCVAndCheckATS = async () => {
+    try {
+      setLoader(true);
+      const formDataToSend = new FormData();
+      formDataToSend.append("job", formData.job);
+      formDataToSend.append("cv", formData.cv);
+
+      const response = await Hr.handleGetDataFromCVAndCheckATS(formDataToSend);
+      if (response.data) {
+        setFormData((prev) => ({
+          ...prev,
+          match_percentage:
+            response.data && !isNaN(parseFloat(response.data.match_percentage))
+              ? parseFloat(response.data.match_percentage)
+              : null,
+          keywords_missing: response.data.keywords_missing || [],
+          final_thoughts: response.data.final_thoughts || null,
+          name: response.data.name || "",
+          email: response.data.email || "",
+          contact: `+91${response.data.phone}` || "",
+          qualification: response.data.highest_education || "",
+        }));
+        setMissingKeyWords(JSON.parse(response.data.keywords_missing));
+        setShowAts(true);
+      }
+    } catch (error) {
+      console.error("Error getting data from CV", error);
+    } finally {
+      setLoader(false);
+    }
+  };
+
+  console.log("formData", formData);
 
   const spokenEnglishOptions = ["Bad", "Average", "Good"];
 
@@ -387,6 +422,29 @@ export const ApplicantListCreate = ({
                   />
                 </Box>
               )}
+            </Grid>
+
+            {showAts && (
+              <Grid item xs={12} sm={12}>
+                <TypoAnimation
+                  percent={formData.match_percentage}
+                  text={formData.final_thoughts}
+                  speed={5}
+                  misssingKeyWords={missingKeyWords}
+                />
+              </Grid>
+            )}
+            <Grid item xs={12} sm={12}>
+              <Button
+                variant="contained"
+                color="success"
+                component="label"
+                fullWidth
+                onClick={handleGetDataFromCVAndCheckATS}
+                disabled={showAts}
+              >
+                eluavate resume
+              </Button>
             </Grid>
           </Grid>
           <Box display="flex" justifyContent="flex-end" mt={2}>

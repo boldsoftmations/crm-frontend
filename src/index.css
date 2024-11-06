@@ -26,3 +26,95 @@ body {
   position: absolute;
   border-radius: 6px;
 }
+
+.typo-animation-container {
+  font-family: Arial, sans-serif;
+  padding: 1rem;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  max-width: 600px;
+  margin: 10px auto;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.percent-container {
+  font-size: 1em;
+  font-weight: bold;
+  color: #4caf50;
+  margin-bottom: 10px;
+}
+
+.percent-label {
+  font-weight: normal;
+  color: #333;
+}
+
+.percent-value {
+  color: #4caf50;
+  margin-left: 5px;
+}
+
+.keywords-container {
+  margin-top: 15px;
+}
+
+.keywords-label {
+  font-size: .9em;
+  font-weight: bold;
+  color: #e74c3c;
+}
+
+.keywords-list {
+  list-style-type: none;
+  padding-left: 0;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.keyword-item {
+  background-color: #ffe6e6;
+  color: #e74c3c;
+  padding: 5px 10px;
+  border-radius: 5px;
+  margin: 5px;
+  font-size: 0.9em;
+}
+
+.text-container {
+  margin-top: 15px;
+  font-size: 1.2em;
+  line-height: 1.5;
+  color: #333;
+}
+
+.final-thoughts-label {
+  font-weight: bold;
+  font-size: .9em;
+  margin-right: 5px;
+}
+
+.displayed-text {
+  display: inline;
+  white-space: pre;
+}
+
+.cursor {
+  display: inline;
+  animation: blink 0.8s steps(2, start) infinite;
+  color: #4caf50;
+  font-weight: bold;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}

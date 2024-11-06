@@ -401,6 +401,9 @@ const UpdateInterviewQuestionandanswwer = (id, data) => {
   return CustomAxios.patch(`/api/hr/interview-question/${id}/`, data);
 };
 
+const handleGetDataFromCVAndCheckATS = (data) => {
+  return CustomAxios.post("/api/hr/ats/", data);
+};
 const Hr = {
   getDesignationsData,
   addDesignation,
@@ -454,6 +457,7 @@ const Hr = {
   createInterviewQuestionAndanswwer,
   getInterviewQuestionAndAnswer,
   UpdateInterviewQuestionandanswwer,
+  handleGetDataFromCVAndCheckATS,
 };
 
 export default Hr;
