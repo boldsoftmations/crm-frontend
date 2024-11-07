@@ -5,7 +5,20 @@ import { CustomTable } from "../../../Components/CustomTable";
 import { Popup } from "../../../Components/Popup";
 import { UserProfileUpdate } from "./UserProfileUpdate";
 import { CSVLink } from "react-csv";
-import { Box, Button, Grid, Paper } from "@mui/material";
+import {
+  Box,
+  Button,
+  Grid,
+  Paper,
+  styled,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TableBody,
+  Table,
+  tableCellClasses,
+} from "@mui/material";
 import { MessageAlert } from "../../../Components/MessageAlert";
 import SearchComponent from "../../../Components/SearchComponent ";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
@@ -46,7 +59,7 @@ export const UserProfileView = () => {
   };
 
   const Tableheaders = [
-    "ID",
+    "EMP ID",
     "FIRST NAME",
     "LAST NAME",
     "PERSONAL CONTACT",
@@ -208,7 +221,7 @@ export const UserProfileView = () => {
   const csvData = getCsvData();
 
   const data = filteredUserProfiles.map((user) => ({
-    id: user.id,
+    employee_id: user.employee_id,
     first_name: user.personal.first_name || "-",
     last_name: user.personal.last_name || "-",
     phone_number: user.personal.contact || "-",
@@ -222,7 +235,6 @@ export const UserProfileView = () => {
   }));
 
   const openInPopup = (item) => {
-    console.log("item", item);
     setIDForEdit(item.id);
     setOpenPopup(true);
   };
@@ -250,7 +262,7 @@ export const UserProfileView = () => {
               <Grid item xs={12} sm={4}>
                 <h3
                   style={{
-                    textAlign: "left",
+                    textAlign: "center",
                     marginBottom: "1em",
                     fontSize: "24px",
                     color: "rgb(34, 34, 34)",
@@ -272,22 +284,84 @@ export const UserProfileView = () => {
                     height: "5vh",
                   }}
                 >
-                  <Button variant="contained" color="success">
-                    Export to Excel
+                  <Button variant="contained" color="secondary" textAlign="end">
+                    Export Information
                   </Button>
                 </CSVLink>
               </Grid>
             </Grid>
           </Box>
 
-          {filteredUserProfiles.length > 0 ? (
-            <CustomTable
-              headers={Tableheaders}
-              data={data}
-              openInPopup={openInPopup}
-            />
-          ) : (
-            <p>No results found for the search query.</p>
+          {filteredUserProfiles.length > 0 && (
+            <TableContainer
+              sx={{
+                maxHeight: 440,
+                "&::-webkit-scrollbar": {
+                  width: 15,
+                },
+                "&::-webkit-scrollbar-track": {
+                  backgroundColor: "#f2f2f2",
+                },
+                "&::-webkit-scrollbar-thumb": {
+                  backgroundColor: "#aaa9ac",
+                },
+              }}
+            >
+              <Table
+                sx={{ minWidth: 1200 }}
+                stickyHeader
+                aria-label="sticky table"
+              >
+                <TableHead>
+                  <TableRow>
+                    {Tableheaders.map((header, i) => {
+                      return (
+                        <StyledTableCell key={i} align="center">
+                          {header}
+                        </StyledTableCell>
+                      );
+                    })}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {data.map((row, i) => (
+                    <StyledTableRow key={i}>
+                      <StyledTableCell align="center">
+                        {row.employee_id}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.first_name}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.last_name}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.phone_number}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.personal_email}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.date_of_birth}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.date_of_joining}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        <Button
+                          variant="outlined"
+                          color="info"
+                          size="small"
+                          onClick={() => openInPopup(row)}
+                        >
+                          View
+                        </Button>
+                      </StyledTableCell>
+                    </StyledTableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
           )}
         </Paper>
       </Grid>
@@ -307,3 +381,23 @@ export const UserProfileView = () => {
     </>
   );
 };
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  "&:nth-of-type(odd)": {
+    backgroundColor: theme.palette.action.hover,
+  },
+  // hide last border
+  "&:last-child td, &:last-child th": {
+    border: 0,
+  },
+}));

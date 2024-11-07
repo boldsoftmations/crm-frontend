@@ -157,7 +157,7 @@ export const ViewJobDescription = () => {
                     {row.min_education_level}
                   </StyledTableCell>
                   <StyledTableCell align="center">
-                    {row.work_experience}
+                    {row.work_experience} Years
                   </StyledTableCell>
                   <StyledTableCell align="center">
                     {row.ssa.join(" | ")}

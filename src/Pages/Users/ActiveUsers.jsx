@@ -1,8 +1,20 @@
 import React, { useEffect, useState } from "react";
 import TaskService from "../../services/TaskService";
-import { CustomTable } from "../../Components/CustomTable";
 import { CustomLoader } from "../../Components/CustomLoader";
-import { Box, Grid, Paper } from "@mui/material";
+import {
+  Box,
+  Grid,
+  Paper,
+  styled,
+  TableCell,
+  Button,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TableBody,
+  Table,
+  tableCellClasses,
+} from "@mui/material";
 import { Popup } from "../../Components/Popup";
 import SearchComponent from "../../Components/SearchComponent ";
 import { MessageAlert } from "../../Components/MessageAlert";
@@ -48,7 +60,7 @@ export const ActiveUsers = () => {
   };
   useEffect(() => {
     getAllUsersDetails();
-  }, [openPopup]);
+  }, []);
 
   const filteredData = activeUsersData.filter((user) =>
     Object.values(user || {}).some((value) =>
@@ -58,27 +70,14 @@ export const ActiveUsers = () => {
 
   const Tableheaders = [
     "EMP ID",
-    "FirstName",
-    "LastName",
+    "Name",
+    "Lastname",
     "Email",
     "Contact",
-    "Designation",
-    "Reporting To",
+    "Profile",
+    "Report",
     "Action",
   ];
-
-  const data = filteredData.map((row) => {
-    return {
-      emp_id: row.emp_id,
-      first_name: row.first_name,
-      last_name: row.last_name,
-      email: row.email,
-      contact: row.contact,
-      groups: row.groups.map((row) => row).join(","),
-      name: row.name,
-    };
-  });
-
   return (
     <>
       <MessageAlert
@@ -101,7 +100,7 @@ export const ActiveUsers = () => {
               <Grid item xs={12} sm={4}>
                 <h3
                   style={{
-                    textAlign: "left",
+                    textAlign: "center",
                     marginBottom: "1em",
                     fontSize: "24px",
                     color: "rgb(34, 34, 34)",
@@ -114,13 +113,74 @@ export const ActiveUsers = () => {
               <Grid item xs={12} sm={4}></Grid>
             </Grid>
           </Box>
-          <CustomTable
-            headers={Tableheaders}
-            data={data}
-            openInPopup={openInPopup}
-            openInPopup2={null}
-            Styles={{ paddingLeft: "10px", paddingRight: "10px" }}
-          />
+
+          <TableContainer
+            sx={{
+              maxHeight: 440,
+              "&::-webkit-scrollbar": {
+                width: 15,
+              },
+              "&::-webkit-scrollbar-track": {
+                backgroundColor: "#f2f2f2",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: "#aaa9ac",
+              },
+            }}
+          >
+            <Table
+              sx={{ minWidth: 1200 }}
+              stickyHeader
+              aria-label="sticky table"
+            >
+              <TableHead>
+                <TableRow>
+                  {Tableheaders.map((header, i) => {
+                    return (
+                      <StyledTableCell key={i} align="center">
+                        {header}
+                      </StyledTableCell>
+                    );
+                  })}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {filteredData.map((row, i) => (
+                  <StyledTableRow key={i}>
+                    <StyledTableCell align="center">
+                      {row.employee_id}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.first_name}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.last_name}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.email}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.contact}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.groups.map((row) => row).join(",")}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">{row.name}</StyledTableCell>
+                    <StyledTableCell align="center">
+                      <Button
+                        variant="contained"
+                        color="info"
+                        size="small"
+                        onClick={() => openInPopup(row)}
+                      >
+                        View
+                      </Button>
+                    </StyledTableCell>
+                  </StyledTableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Paper>
       </Grid>
       <Popup
@@ -138,3 +198,23 @@ export const ActiveUsers = () => {
     </>
   );
 };
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  "&:nth-of-type(odd)": {
+    backgroundColor: theme.palette.action.hover,
+  },
+  // hide last border
+  "&:last-child td, &:last-child th": {
+    border: 0,
+  },
+}));

@@ -173,6 +173,7 @@ export const UserProfileUpdate = ({
 
   const getUserProfileData = async (ID) => {
     try {
+      setOpen(true);
       const response = await UserProfileService.getUserProfileDataById(ID);
       console.log("response", response);
 
@@ -183,6 +184,8 @@ export const UserProfileUpdate = ({
       }));
     } catch (err) {
       console.log("error profile", err);
+    } finally {
+      setOpen(false);
     }
   };
 
@@ -199,7 +202,6 @@ export const UserProfileUpdate = ({
         formDataWithoutUser.id,
         formDataWithoutUser
       );
-      console.log("Form Data Submitted (excluding user):", formDataWithoutUser);
       setOpenPopup(false);
       getAllUserProfileData();
       setOpen(false);

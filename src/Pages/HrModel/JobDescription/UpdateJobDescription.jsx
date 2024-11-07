@@ -22,10 +22,14 @@ const UpdateJobDescription = ({ getJobDescription, setOpenPopup, data }) => {
     directs_report: data.directs_report || [],
     kra: data.kra || [],
     mtr: data.mtr || [],
-    occasional_duties: data.occasional_duties || "",
+    occasional_duties: data.occasional_duties || [],
     min_education_level: data.min_education_level || "",
     work_experience: data.work_experience || "",
+    desc_work_exp: data.desc_work_exp || "",
     ssa: data.ssa || [""],
+    relevant_skill: data.relevant_skill || [],
+    preferred_background: data.preferred_background || [],
+    keywords: data.keywords || [],
   });
 
   useEffect(() => {
@@ -114,16 +118,7 @@ const UpdateJobDescription = ({ getJobDescription, setOpenPopup, data }) => {
               multiline
             />
           </Grid>
-          <Grid item xs={12}>
-            <TextField
-              label="Report Line"
-              name="report_line"
-              size="small"
-              value={formData.report_line}
-              onChange={handleChange}
-              fullWidth
-            />
-          </Grid>
+
           <Grid item xs={12}>
             <TextField
               label="Reports To"
@@ -158,13 +153,12 @@ const UpdateJobDescription = ({ getJobDescription, setOpenPopup, data }) => {
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField
-              size="small"
+            <DynamiFileds
               label="Occasional Duties"
-              name="occasional_duties"
-              value={formData.occasional_duties}
-              onChange={handleChange}
-              fullWidth
+              values={formData.occasional_duties}
+              onChange={(values) =>
+                handleArrayChange("occasional_duties", values)
+              }
             />
           </Grid>
           <Grid item xs={6}>
@@ -186,6 +180,21 @@ const UpdateJobDescription = ({ getJobDescription, setOpenPopup, data }) => {
               fullWidth
               type="number"
               size="small"
+              inputProps={{
+                step: "0.5",
+                min: "0",
+              }}
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextField
+              size="small"
+              label="Describe Work Experience"
+              name="desc_work_exp"
+              value={formData.desc_work_exp}
+              onChange={handleChange}
+              fullWidth
             />
           </Grid>
           <Grid item xs={12}>
@@ -194,6 +203,31 @@ const UpdateJobDescription = ({ getJobDescription, setOpenPopup, data }) => {
               size="small"
               values={formData.ssa}
               onChange={(values) => handleArrayChange("ssa", values)}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <DynamiFileds
+              label="Relevant Skills"
+              values={formData.relevant_skill}
+              onChange={(values) => handleArrayChange("relevant_skill", values)}
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <DynamiFileds
+              label="Preferred Background"
+              values={formData.preferred_background}
+              onChange={(values) =>
+                handleArrayChange("preferred_background", values)
+              }
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <DynamiFileds
+              label="Keywords"
+              values={formData.keywords}
+              onChange={(values) => handleArrayChange("keywords", values)}
             />
           </Grid>
           <Grid item xs={12}>

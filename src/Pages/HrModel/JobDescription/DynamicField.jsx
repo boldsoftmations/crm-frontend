@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { TextField, Button, Grid, IconButton, Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
@@ -24,19 +24,20 @@ const DynamiFileds = ({ label, values, onChange }) => {
         <Grid item xs={12}>
           <Typography variant="subtitle1">{label}</Typography>
         </Grid>
-        {values.map((value, index) => (
-          <Grid item xs={12} key={index}>
-            <TextField
-              size="small"
-              value={value}
-              onChange={(e) => handleChangeField(index, e.target.value)}
-              fullWidth
-            />
-            <IconButton onClick={() => handleRemoveField(index)}>
-              <RemoveIcon size="small" />
-            </IconButton>
-          </Grid>
-        ))}
+        {values &&
+          values.map((value, index) => (
+            <Grid item xs={12} key={index}>
+              <TextField
+                size="small"
+                value={value}
+                onChange={(e) => handleChangeField(index, e.target.value)}
+                fullWidth
+              />
+              <IconButton onClick={() => handleRemoveField(index)}>
+                <RemoveIcon size="small" />
+              </IconButton>
+            </Grid>
+          ))}
         <Grid item xs={12}>
           <Button variant="contained" size="small" onClick={handleAddField}>
             <AddIcon size="small" /> Add More

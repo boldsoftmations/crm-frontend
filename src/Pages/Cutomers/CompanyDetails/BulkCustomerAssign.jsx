@@ -6,6 +6,8 @@ import CustomerServices from "../../../services/CustomerService";
 import LeadServices from "../../../services/LeadService";
 import CustomTextField from "../../../Components/CustomTextField";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import { useSelector } from "react-redux";
+import MasterService from "../../../services/MasterService";
 
 export const BulkCustomerAssign = (props) => {
   const { setOpenPopup, setOpenSnackbar } = props;
@@ -16,7 +18,10 @@ export const BulkCustomerAssign = (props) => {
   const [touchedAssignFrom, setTouchedAssignFrom] = useState(false);
   const [touchedAssignTo, setTouchedAssignTo] = useState(false);
   const [selectedState, setSelectedState] = useState([]);
-
+  const [stateOption, setStateOption] = useState([]);
+  const data = useSelector((state) => state.auth);
+  const userData = data.profile;
+  const sales_customer_user = userData.sales_customer_user || [];
   useEffect(() => {
     getAssignedData();
   }, []);
@@ -62,102 +67,20 @@ export const BulkCustomerAssign = (props) => {
     return "";
   };
 
-  const StateOption = [
-    {
-      value: "Andhra Pradesh",
-    },
-
-    {
-      value: "Arunachal Pradesh",
-    },
-    {
-      value: "Assam",
-    },
-    {
-      value: "Bihar",
-    },
-    {
-      value: "Chhattisgarh",
-    },
-    {
-      value: "Goa",
-    },
-    {
-      value: "Gujarat",
-    },
-    {
-      value: "Haryana",
-    },
-    {
-      value: "Himachal Pradesh",
-    },
-    {
-      value: "Jharkhand",
-    },
-    {
-      value: "Karnataka",
-    },
-    {
-      value: "Kerala",
-    },
-    {
-      value: "Madhya Pradesh",
-    },
-    {
-      value: "Maharashtra",
-    },
-    {
-      value: "Manipur",
-    },
-    {
-      value: "Meghalaya",
-    },
-    {
-      value: "Mizoram",
-    },
-    {
-      value: "Nagaland",
-    },
-    {
-      value: "Odisha",
-    },
-    {
-      value: "Punjab",
-    },
-    {
-      value: "Rajasthan",
-    },
-    {
-      value: "Sikkim",
-    },
-    {
-      value: "Tamil Nadu",
-    },
-    {
-      value: "Telangana",
-    },
-    {
-      value: "Tripura",
-    },
-    {
-      value: "Uttar Pradesh",
-    },
-    {
-      value: "Uttarakhand",
-    },
-    {
-      value: "West Bengal",
-    },
-    {
-      value: "Delhi",
-    },
-    {
-      value: "Jammu & Kashmir",
-    },
-    {
-      value: "Ladakh",
-    },
-  ];
+  const getAllMasterStates = async () => {
+    try {
+      setOpen(true);
+      const response = await MasterService.getAllMasterStates("all");
+      setStateOption(response.data);
+    } catch (e) {
+      console.log("Error getting all states");
+    } finally {
+      setOpen(false);
+    }
+  };
+  useEffect(() => {
+    getAllMasterStates();
+  }, []);
 
   return (
     <>
@@ -174,8 +97,8 @@ export const BulkCustomerAssign = (props) => {
               onChange={(event, value) => {
                 setSelectedState(value);
               }}
-              options={StateOption}
-              getOptionLabel={(option) => option.value}
+              options={stateOption}
+              getOptionLabel={(option) => option.name}
               renderInput={(params) => (
                 <CustomTextField {...params} label="Select State(s)" />
               )}
@@ -222,7 +145,7 @@ export const BulkCustomerAssign = (props) => {
                 setAssignTo(value);
                 if (!touchedAssignTo) setTouchedAssignTo(true);
               }}
-              options={assigned.map((option) => option.email)}
+              options={sales_customer_user.map((option) => option.email)}
               getOptionLabel={(option) => option}
               label="Assign To"
               renderInput={(params) => (

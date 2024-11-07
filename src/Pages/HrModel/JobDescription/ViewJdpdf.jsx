@@ -75,11 +75,11 @@ const JobDescriptionDetail = ({ job }) => {
   return (
     <Container>
       <CustomLoader open={loader} />
-      <Paper sx={{ p: 6, mb: 2 }} ref={printRef}>
-        <Typography variant="h5" gutterBottom align="center">
+      <Paper sx={{ p: 2, mb: 1 }} ref={printRef}>
+        <Typography variant="h6" gutterBottom align="center">
           GLUTAPE - JOB DESCRIPTION <br /> {job.designation}
         </Typography>
-        <Divider sx={{ mb: 3 }} />
+        <Divider sx={{ mb: 1 }} />
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <Box
@@ -169,8 +169,8 @@ const JobDescriptionDetail = ({ job }) => {
           <Grid item xs={12}>
             <Box
               sx={{
-                backgroundColor: colors.section2,
-                p: 1,
+                backgroundColor: colors.section3,
+                padding: 1,
                 borderRadius: 1,
                 mb: 1,
               }}
@@ -178,12 +178,7 @@ const JobDescriptionDetail = ({ job }) => {
               <Typography variant="subtitle1" gutterBottom>
                 Occasional Duties:
               </Typography>
-              <Typography
-                variant="body1"
-                sx={{ fontSize: 14, fontWeight: 300 }}
-              >
-                {job.occasional_duties}
-              </Typography>
+              {renderListWithNumbers(job.occasional_duties)}
             </Box>
           </Grid>
           <Grid item xs={12}>
@@ -237,14 +232,64 @@ const JobDescriptionDetail = ({ job }) => {
               </Typography>
             </Box>
           </Grid>
+          <Grid item xs={6}>
+            <Box
+              sx={{
+                backgroundColor: colors.section1,
+                p: 2,
+                borderRadius: 1,
+                mb: 2,
+              }}
+            >
+              <Typography variant="subtitle1" gutterBottom>
+                Described Work Experience:
+              </Typography>
+              <Typography
+                variant="body1"
+                sx={{ fontSize: 14, fontWeight: 300 }}
+              >
+                {job.desc_work_exp}
+              </Typography>
+            </Box>
+          </Grid>
           <Grid item xs={12}>
             <Box
-              sx={{ backgroundColor: colors.section1, p: 1, borderRadius: 1 }}
+              sx={{ backgroundColor: colors.section2, p: 1, borderRadius: 1 }}
             >
               <Typography variant="subtitle1" gutterBottom>
                 Special Skills and Abilities:
               </Typography>
               {renderListWithNumbers(job.ssa)}
+            </Box>
+          </Grid>
+          <Grid item xs={12}>
+            <Box
+              sx={{ backgroundColor: colors.section3, p: 1, borderRadius: 1 }}
+            >
+              <Typography variant="subtitle1" gutterBottom>
+                Relevant Skills:
+              </Typography>
+              {renderListWithNumbers(job.relevant_skill)}
+            </Box>
+          </Grid>
+          <Grid item xs={12}>
+            <Box
+              sx={{ backgroundColor: colors.section4, p: 1, borderRadius: 1 }}
+            >
+              <Typography variant="subtitle1" gutterBottom>
+                Preferred Background:
+              </Typography>
+              {renderListWithNumbers(job.preferred_background)}
+            </Box>
+          </Grid>
+          <Grid item xs={12}>
+            <Box
+              sx={{ backgroundColor: colors.section2, p: 1, borderRadius: 1 }}
+            >
+              <Typography variant="subtitle1" gutterBottom>
+                Keywords:
+              </Typography>
+              {renderListWithNumbers(job.keywords)}
             </Box>
           </Grid>
         </Grid>
