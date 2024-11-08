@@ -49,6 +49,7 @@ export const CreateLeads = memo((props) => {
   const [referenceData, setReferenceData] = useState([]);
   const [descriptionMenuData, setDescriptionMenuData] = useState([]);
   const [assigned, setAssigned] = useState([]);
+  const [countryList, setCountryList] = useState([]);
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
   const [alertmsg, setAlertMsg] = useState({
@@ -80,17 +81,30 @@ export const CreateLeads = memo((props) => {
 
   const validatePinCode = async () => {
     try {
-      setOpen(true);
-      const PINCODE = leads.pincode;
-      if (PINCODE.length < 6) {
+      if (!leads.origin_type) {
         setAlertMsg({
-          message: "Pin Code should be of 6 digits",
+          message:
+            "Please select customer origin type before validating pincode",
           severity: "error",
           open: true,
         });
         return;
       }
-      const response = await MasterService.getCountryDataByPincode(PINCODE);
+      if (leads.origin_type === "International" && !leads.country) {
+        setAlertMsg({
+          message: "Please select country before validating pincode",
+          severity: "error",
+          open: true,
+        });
+        return;
+      }
+      setOpen(true);
+      const Country = leads.country;
+      const PINCODE = leads.pincode;
+      const response = await MasterService.getCountryDataByPincode(
+        Country,
+        PINCODE
+      );
       if (response.data.length === 0) {
         setAlertMsg({
           message:
@@ -146,11 +160,25 @@ export const CreateLeads = memo((props) => {
     }
   };
 
-  const handleSelectChange = (name, value) => {
+  const handleSelectChange = async (name, value) => {
     setLeads({
       ...leads,
       [name]: value,
     });
+    if (value === "International") {
+      try {
+        setOpen(true);
+        const response = await MasterService.getAllMasterCountries("all");
+        const RemoveIndia = response.data.filter((data) => {
+          return data.name !== "India";
+        });
+        setCountryList(RemoveIndia);
+      } catch {
+        console.log("Error in getting country data by pincode");
+      } finally {
+        setOpen(false);
+      }
+    }
   };
 
   const handleSameAsAddress = (event) => {
@@ -549,18 +577,34 @@ export const CreateLeads = memo((props) => {
             />
           </Grid>
 
-          <Grid item xs={12} sm={3}>
-            <CustomTextField
-              fullWidth
-              name="country"
-              size="small"
-              label="Country"
-              variant="outlined"
-              value={leads.country || null}
-              InputLabelProps={{ shrink: true }}
-              disabled
-            />
-          </Grid>
+          {leads.origin_type === "International" ? (
+            <Grid item xs={12} sm={4}>
+              <CustomAutocomplete
+                sx={{ minWidth: 220 }}
+                size="small"
+                onChange={(event, value) => {
+                  handleSelectChange("country", value);
+                }}
+                value={leads.country || ""}
+                options={
+                  countryList && countryList.map((option) => option.name)
+                }
+                label="Country"
+              />
+            </Grid>
+          ) : (
+            <Grid item xs={12} sm={4}>
+              <CustomTextField
+                fullWidth
+                size="small"
+                label="Country"
+                name="country"
+                variant="outlined"
+                value={leads.country || ""}
+                disabled
+              />
+            </Grid>
+          )}
           <Grid item xs={12} sm={3}>
             <CustomTextField
               fullWidth

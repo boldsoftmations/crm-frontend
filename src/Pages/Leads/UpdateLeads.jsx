@@ -96,16 +96,12 @@ export const UpdateLeads = memo((props) => {
   const validatePinCode = async () => {
     try {
       setOpen(true);
+      const Country = leads.country;
       const PINCODE = leads.pincode;
-      if (PINCODE.length < 6) {
-        setAlertMsg({
-          message: "Pin Code should be of 6 digits",
-          severity: "error",
-          open: true,
-        });
-        return;
-      }
-      const response = await MasterService.getCountryDataByPincode(PINCODE);
+      const response = await MasterService.getCountryDataByPincode(
+        Country,
+        PINCODE
+      );
       if (response.data.length === 0) {
         setAlertMsg({
           message:
