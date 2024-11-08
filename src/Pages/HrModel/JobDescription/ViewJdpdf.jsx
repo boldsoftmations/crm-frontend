@@ -11,9 +11,8 @@ import {
   ListItemText,
   Button,
 } from "@mui/material";
-import { jsPDF } from "jspdf";
-import html2canvas from "html2canvas";
 import { CustomLoader } from "../../../Components/CustomLoader";
+import html2pdf from "html2pdf.js";
 
 const colors = {
   section1: "#f0f0f0",
@@ -38,44 +37,32 @@ const JobDescriptionDetail = ({ job }) => {
       ))}
     </List>
   );
-  const downloadPDF = () => {
-    const input = printRef.current; // Reference to the component you want to print
-    setLoader(true);
-    html2canvas(input, {
-      scale: 4, // Adjust the scale for higher resolution, lower it to reduce file size
-      useCORS: true, // Ensures that external resources like images are loaded in the canvas
-    })
-      .then((canvas) => {
-        const imgData = canvas.toDataURL("image/jpeg", 0.8); // Convert to JPEG and set quality (0 to 1)
-        const pdf = new jsPDF("p", "pt", "a4", true); // Enable compression
-        const imgProps = pdf.getImageProperties(imgData);
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
-        // Add image to PDF
-        pdf.addImage(
-          imgData,
-          "JPEG",
-          0,
-          0,
-          pdfWidth,
-          pdfHeight,
-          undefined,
-          "FAST"
-        );
-        pdf.save(`${job.designation}_Job_Description.pdf`); // Specify the file name for the download
-      })
-      .catch((err) => {
-        console.error("Error generating PDF", err);
-      })
+  const downloadPDF = () => {
+    const input = printRef.current;
+    setLoader(true);
+
+    const opt = {
+      margin: 10,
+      filename: `${job.designation}_Job_Description.pdf`,
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 3, useCORS: true, backgroundColor: "#ffffff" }, // Set scale and background color
+      jsPDF: { unit: "pt", format: "a4", orientation: "portrait" },
+    };
+
+    html2pdf()
+      .set(opt)
+      .from(input)
+      .save()
       .finally(() => {
         setLoader(false);
       });
   };
+
   return (
     <Container>
       <CustomLoader open={loader} />
-      <Paper sx={{ p: 2, mb: 1 }} ref={printRef}>
+      <Paper sx={{ p: 2, mb: 1, backgroundColor: "white" }} ref={printRef}>
         <Typography variant="h6" gutterBottom align="center">
           GLUTAPE - JOB DESCRIPTION <br /> {job.designation}
         </Typography>
@@ -121,21 +108,23 @@ const JobDescriptionDetail = ({ job }) => {
               </Typography>
             </Box>
           </Grid>
-          <Grid item xs={12}>
-            <Box
-              sx={{
-                backgroundColor: colors.section3,
-                p: 1,
-                borderRadius: 1,
-                mb: 1,
-              }}
-            >
-              <Typography variant="subtitle1" gutterBottom>
-                Direct Reports:
-              </Typography>
-              {renderListWithNumbers(job.directs_report)}
-            </Box>
-          </Grid>
+          {job.directs_report.length > 0 && (
+            <Grid item xs={12}>
+              <Box
+                sx={{
+                  backgroundColor: colors.section3,
+                  p: 1,
+                  borderRadius: 1,
+                  mb: 1,
+                }}
+              >
+                <Typography variant="subtitle1" gutterBottom>
+                  Direct Reports:
+                </Typography>
+                {renderListWithNumbers(job.directs_report)}
+              </Box>
+            </Grid>
+          )}
           <Grid item xs={12}>
             <Box
               sx={{
@@ -166,7 +155,7 @@ const JobDescriptionDetail = ({ job }) => {
               {renderListWithNumbers(job.mtr)}
             </Box>
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={6}>
             <Box
               sx={{
                 backgroundColor: colors.section3,
@@ -179,6 +168,16 @@ const JobDescriptionDetail = ({ job }) => {
                 Occasional Duties:
               </Typography>
               {renderListWithNumbers(job.occasional_duties)}
+            </Box>
+          </Grid>
+          <Grid item xs={6}>
+            <Box
+              sx={{ backgroundColor: colors.section2, p: 1, borderRadius: 1 }}
+            >
+              <Typography variant="subtitle1" gutterBottom>
+                Relevant Skills:
+              </Typography>
+              {renderListWithNumbers(job.relevant_skill)}
             </Box>
           </Grid>
           <Grid item xs={12}>
@@ -232,7 +231,7 @@ const JobDescriptionDetail = ({ job }) => {
               </Typography>
             </Box>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12}>
             <Box
               sx={{
                 backgroundColor: colors.section1,
@@ -252,6 +251,7 @@ const JobDescriptionDetail = ({ job }) => {
               </Typography>
             </Box>
           </Grid>
+
           <Grid item xs={12}>
             <Box
               sx={{ backgroundColor: colors.section2, p: 1, borderRadius: 1 }}
@@ -262,16 +262,7 @@ const JobDescriptionDetail = ({ job }) => {
               {renderListWithNumbers(job.ssa)}
             </Box>
           </Grid>
-          <Grid item xs={12}>
-            <Box
-              sx={{ backgroundColor: colors.section3, p: 1, borderRadius: 1 }}
-            >
-              <Typography variant="subtitle1" gutterBottom>
-                Relevant Skills:
-              </Typography>
-              {renderListWithNumbers(job.relevant_skill)}
-            </Box>
-          </Grid>
+
           <Grid item xs={12}>
             <Box
               sx={{ backgroundColor: colors.section4, p: 1, borderRadius: 1 }}
@@ -280,16 +271,6 @@ const JobDescriptionDetail = ({ job }) => {
                 Preferred Background:
               </Typography>
               {renderListWithNumbers(job.preferred_background)}
-            </Box>
-          </Grid>
-          <Grid item xs={12}>
-            <Box
-              sx={{ backgroundColor: colors.section2, p: 1, borderRadius: 1 }}
-            >
-              <Typography variant="subtitle1" gutterBottom>
-                Keywords:
-              </Typography>
-              {renderListWithNumbers(job.keywords)}
             </Box>
           </Grid>
         </Grid>

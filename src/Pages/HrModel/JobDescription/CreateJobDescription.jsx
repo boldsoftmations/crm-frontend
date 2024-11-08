@@ -28,7 +28,7 @@ const JobDescriptionForm = ({ getJobDescription, setOpenPopup }) => {
     ssa: [""],
     relevant_skill: [""],
     preferred_background: [""],
-    keywords: [""],
+    keywords: "",
   });
 
   useEffect(() => {
@@ -226,10 +226,13 @@ const JobDescriptionForm = ({ getJobDescription, setOpenPopup }) => {
           </Grid>
 
           <Grid item xs={12}>
-            <DynamiFileds
+            <TextField
+              size="small"
               label="Keywords"
-              values={formData.keywords}
-              onChange={(values) => handleArrayChange("keywords", values)}
+              name="keywords"
+              value={formData.keywords}
+              onChange={handleChange}
+              fullWidth
             />
           </Grid>
 

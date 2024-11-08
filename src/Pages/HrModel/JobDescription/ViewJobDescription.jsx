@@ -129,17 +129,12 @@ export const ViewJobDescription = () => {
               <TableRow>
                 <StyledTableCell align="center">Job Title</StyledTableCell>
 
-                <StyledTableCell align="center">
-                  Occasional Duties
-                </StyledTableCell>
+                <StyledTableCell align="center">Report To</StyledTableCell>
                 <StyledTableCell align="center">
                   Min Education Level
                 </StyledTableCell>
                 <StyledTableCell align="center">
                   Work Experience
-                </StyledTableCell>
-                <StyledTableCell align="center">
-                  Special Skills and Abilities
                 </StyledTableCell>
                 <StyledTableCell align="center">Action</StyledTableCell>
               </TableRow>
@@ -151,16 +146,13 @@ export const ViewJobDescription = () => {
                     {row.designation}
                   </StyledTableCell>
                   <StyledTableCell align="center">
-                    {row.occasional_duties}
+                    {row.reports_to}
                   </StyledTableCell>
                   <StyledTableCell align="center">
                     {row.min_education_level}
                   </StyledTableCell>
                   <StyledTableCell align="center">
                     {row.work_experience} Years
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    {row.ssa.join(" | ")}
                   </StyledTableCell>
                   <StyledTableCell align="center">
                     <Button variant="text" onClick={() => handleView(row)}>
