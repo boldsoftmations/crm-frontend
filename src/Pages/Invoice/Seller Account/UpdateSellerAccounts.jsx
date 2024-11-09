@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Grid } from "@mui/material";
+import { Box, Button, Grid, IconButton, Typography } from "@mui/material";
 import axios from "axios";
 import InvoiceServices from "./../../../services/InvoiceService";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomTextField from "../../../Components/CustomTextField";
+import CloseIcon from "@mui/icons-material/Close";
+import CustomSnackbar from "../../../Components/CustomerSnackbar";
 
 export const UpdateSellerAccounts = (props) => {
   const { setOpenPopup, getAllSellerAccountsDetails, idForEdit } = props;
@@ -11,7 +13,15 @@ export const UpdateSellerAccounts = (props) => {
   const [inputValue, setInputValue] = useState([]);
   const [bankData, setBankData] = useState([]);
   const [errMsg, setErrMsg] = useState("");
-  // const data = useSelector((state) => state.auth);
+  const [cvPreview, setCvPreview] = useState(null);
+  const [alertmsg, setAlertMsg] = useState({
+    message: "",
+    severity: "",
+    open: false,
+  });
+  const handleClose = () => {
+    setAlertMsg({ open: false });
+  };
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -54,37 +64,79 @@ export const UpdateSellerAccounts = (props) => {
     }
   };
 
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    const validFileTypes = [
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ];
+    if (file && validFileTypes.includes(file.type)) {
+      setInputValue((prevData) => ({
+        ...prevData,
+        company_profile: file,
+      }));
+      if (file.type === "application/pdf") {
+        const fileURL = URL.createObjectURL(file);
+        setCvPreview(fileURL);
+      } else {
+        setCvPreview(null); // Clear preview if not a PDF
+      }
+    } else {
+      setAlertMsg({
+        open: true,
+        message: "Invalid file type. Please upload a PDF or DOC file",
+        severity: "error",
+      });
+      event.target.value = null; // Reset file input
+    }
+  };
+
+  const handleRemoveCv = () => {
+    setInputValue((prevData) => ({
+      ...prevData,
+      company_profile: null,
+    }));
+    setCvPreview(null);
+  };
+
   const updateBankDetails = async (e) => {
     try {
       e.preventDefault();
       setOpen(true);
-      const req = {
-        name: inputValue.name,
-        current_account_no: inputValue.current_account_no,
-        address: inputValue.address,
-        unit: inputValue.unit,
-        gst_number: inputValue.gst_number,
-        grn_prefix: inputValue.grn_prefix,
-        pincode: inputValue.pincode,
-        state: inputValue.state,
-        city: inputValue.city,
-        state_code: inputValue.state_code,
-        cin_number: inputValue.cin_number,
-        email: inputValue.email,
-        pan_number: inputValue.pan_number,
-        prefix: inputValue.prefix,
-        suffix: inputValue.suffix,
-        contact: inputValue.contact,
-        ifsc_code: inputValue.ifsc_code ? inputValue.ifsc_code : "",
-        bank_name: bankData.BANK ? bankData.BANK : inputValue.bank_name,
-        branch: bankData.BRANCH ? bankData.BRANCH : inputValue.branch,
-      };
-      await InvoiceServices.updateSellerAccountData(idForEdit, req);
+      const formDataToSend = new FormData();
+
+      // Append only fields with values to 'formDataToSend'
+      Object.keys(inputValue).forEach((key) => {
+        if (inputValue[key]) {
+          // Check if the key is 'company_profile' and not of file type
+          if (key === "company_profile" && !(inputValue[key] instanceof File)) {
+            // Skip adding 'company_profile' if it's not a file
+            return;
+          }
+          formDataToSend.append(key, inputValue[key]);
+        }
+      });
+
+      await InvoiceServices.updateSellerAccountData(idForEdit, formDataToSend);
+      setAlertMsg({
+        message: "Company details updated successfully",
+        severity: "success",
+        open: true,
+      });
+      getAllSellerAccountsDetails();
       setOpenPopup(false);
       setOpen(false);
-      getAllSellerAccountsDetails();
     } catch (error) {
-      console.log("createing company detail error", error);
+      console.log("updating company detail error", error);
+      setAlertMsg({
+        open: true,
+        message:
+          error.response.data.errors.company_profile[0] ||
+          "Failed to update company details",
+        severity: "error",
+        open: true,
+      });
       setOpen(false);
     }
   };
@@ -92,7 +144,12 @@ export const UpdateSellerAccounts = (props) => {
   return (
     <div>
       <CustomLoader open={open} />
-
+      <CustomSnackbar
+        open={alertmsg.open}
+        message={alertmsg.message}
+        severity={alertmsg.severity}
+        onClose={handleClose}
+      />
       <Box component="form" noValidate onSubmit={(e) => updateBankDetails(e)}>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={4}>
@@ -325,6 +382,45 @@ export const UpdateSellerAccounts = (props) => {
                 shrink: true,
               }}
             />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Button
+              variant="contained"
+              color="secondary"
+              component="label"
+              fullWidth
+            >
+              Choose file for company profile
+              <input
+                type="file"
+                hidden
+                accept=".pdf,.doc,.docx"
+                onChange={handleFileChange}
+              />
+            </Button>
+            {cvPreview && (
+              <Box mt={2} position="relative">
+                <Typography variant="body1">Preview:</Typography>
+                <IconButton
+                  aria-label="close"
+                  size="small"
+                  onClick={handleRemoveCv}
+                  style={{
+                    position: "absolute",
+                    right: 0,
+                    top: 0,
+                  }}
+                >
+                  <CloseIcon />
+                </IconButton>
+                <embed
+                  src={cvPreview}
+                  width="100%"
+                  height="150px"
+                  type="application/pdf"
+                />
+              </Box>
+            )}
           </Grid>
         </Grid>
         <Button

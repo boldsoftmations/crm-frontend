@@ -404,6 +404,10 @@ const UpdateInterviewQuestionandanswwer = (id, data) => {
 const handleGetDataFromCVAndCheckATS = (data) => {
   return CustomAxios.post("/api/hr/ats/", data);
 };
+
+const sendAutomatedMessage = (data) => {
+  return CustomAxios.post("/api/hr/whatsapp-email/", data);
+};
 const Hr = {
   getDesignationsData,
   addDesignation,
@@ -458,6 +462,7 @@ const Hr = {
   getInterviewQuestionAndAnswer,
   UpdateInterviewQuestionandanswwer,
   handleGetDataFromCVAndCheckATS,
+  sendAutomatedMessage,
 };
 
 export default Hr;

@@ -10,12 +10,13 @@ export const ApplicantListUpdate = ({
   candidateData,
   setOpenCandidatePopup,
   getCandidateProfile,
+  fetchApplicants,
 }) => {
   const [formData, setFormData] = useState({
     name: candidateData.name || "",
     contact: candidateData.contact || "",
     email: candidateData.email || "",
-    status: "",
+    status: candidateData.status || "",
   });
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
@@ -42,12 +43,14 @@ export const ApplicantListUpdate = ({
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      setLoader(false);
+      setLoader(true);
       await Hr.updateApplicant(candidateData.id, formData);
-      handleSuccess("Successfully updated");
+
       setTimeout(() => {
-        setOpenCandidatePopup(false);
+        handleSuccess("Successfully updated");
         getCandidateProfile();
+        fetchApplicants();
+        setOpenCandidatePopup(false);
       }, 500);
     } catch (error) {
       console.error("Error updating applicant:", error);
@@ -119,6 +122,7 @@ export const ApplicantListUpdate = ({
                 disablePortal
                 id="combo-box-description"
                 onChange={handleFilterChange}
+                value={formData.status || ""}
                 options={shortList}
                 getOptionLabel={(option) => option}
                 label="Status"

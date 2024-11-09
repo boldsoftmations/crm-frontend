@@ -1,11 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { TextField, Button, Paper, Grid, Typography, Box } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Paper,
+  Grid,
+  Typography,
+  Box,
+  IconButton,
+} from "@mui/material";
 import DynamiFileds from "./DynamicField";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
 import Hr from "../../../services/Hr";
 import { CustomLoader } from "../../../Components/CustomLoader";
-
+import CloseIcon from "@mui/icons-material/Close";
 const UpdateJobDescription = ({ getJobDescription, setOpenPopup, data }) => {
   const [role, setRole] = useState([]);
   const [alertMsg, setAlertMsg] = useState({
@@ -13,6 +21,7 @@ const UpdateJobDescription = ({ getJobDescription, setOpenPopup, data }) => {
     severity: "",
     open: false,
   });
+  const [cvPreview, setCvPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     designation: data.designation || "",
@@ -63,7 +72,15 @@ const UpdateJobDescription = ({ getJobDescription, setOpenPopup, data }) => {
     e.preventDefault();
     try {
       setLoading(true);
-      const response = await Hr.UpdateJobDescription(data.id, formData);
+      const formDataToSend = new FormData();
+
+      // Append only fields with values to 'formDataToSend'
+      Object.keys(formData).forEach((key) => {
+        if (formData[key]) {
+          formDataToSend.append(key, formData[key]);
+        }
+      });
+      const response = await Hr.UpdateJobDescription(data.id, formDataToSend);
       setAlertMsg({
         open: true,
         message: response.message || "Job description updated successfully",
@@ -84,6 +101,43 @@ const UpdateJobDescription = ({ getJobDescription, setOpenPopup, data }) => {
       setLoading(false);
     }
   };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    const validFileTypes = [
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ];
+    if (file && validFileTypes.includes(file.type)) {
+      setFormData((prevData) => ({
+        ...prevData,
+        jd: file,
+      }));
+      if (file.type === "application/pdf") {
+        const fileURL = URL.createObjectURL(file);
+        setCvPreview(fileURL);
+      } else {
+        setCvPreview(null); // Clear preview if not a PDF
+      }
+    } else {
+      setAlertMsg({
+        open: true,
+        message: "Invalid file type. Please upload a PDF or DOC file",
+        severity: "error",
+      });
+      event.target.value = null; // Reset file input
+    }
+  };
+
+  const handleRemoveCv = () => {
+    setFormData((prevData) => ({
+      ...prevData,
+      jd: null,
+    }));
+    setCvPreview(null);
+  };
+
   return (
     <Paper sx={{ p: 3, mb: 3 }}>
       <CustomLoader open={loading} />
@@ -235,6 +289,46 @@ const UpdateJobDescription = ({ getJobDescription, setOpenPopup, data }) => {
               />
             </Grid>
           </Grid>
+          <Grid item xs={12} sm={12} marginTop={4}>
+            <Button
+              variant="contained"
+              color="secondary"
+              component="label"
+              fullWidth
+            >
+              Upload JD
+              <input
+                type="file"
+                hidden
+                accept=".pdf,.doc,.docx"
+                onChange={handleFileChange}
+              />
+            </Button>
+            {cvPreview && (
+              <Box mt={2} position="relative">
+                <Typography variant="body1">JD Preview:</Typography>
+                <IconButton
+                  aria-label="close"
+                  size="small"
+                  onClick={handleRemoveCv}
+                  style={{
+                    position: "absolute",
+                    right: 0,
+                    top: 0,
+                  }}
+                >
+                  <CloseIcon />
+                </IconButton>
+                <embed
+                  src={cvPreview}
+                  width="100%"
+                  height="150px"
+                  type="application/pdf"
+                />
+              </Box>
+            )}
+          </Grid>
+
           <Grid item xs={12}>
             <Button variant="contained" color="primary" type="submit" fullWidth>
               Submit

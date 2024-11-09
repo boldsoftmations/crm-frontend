@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 
-const TypoAnimation = ({ percent, misssingKeyWords, text = "", speed = 5 }) => {
+const TypoAnimation = ({
+  percent,
+  misssingKeyWords,
+  text = "",
+  speed = 10,
+}) => {
   const [displayedText, setDisplayedText] = useState("");
   const [typingComplete, setTypingComplete] = useState(false);
 

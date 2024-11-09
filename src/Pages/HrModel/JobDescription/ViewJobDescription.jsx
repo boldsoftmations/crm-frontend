@@ -136,6 +136,7 @@ export const ViewJobDescription = () => {
                 <StyledTableCell align="center">
                   Work Experience
                 </StyledTableCell>
+                <StyledTableCell align="center">Is JD Uploaded</StyledTableCell>
                 <StyledTableCell align="center">Action</StyledTableCell>
               </TableRow>
             </TableHead>
@@ -153,6 +154,9 @@ export const ViewJobDescription = () => {
                   </StyledTableCell>
                   <StyledTableCell align="center">
                     {row.work_experience} Years
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    {row.jd ? "Yes" : "No"}
                   </StyledTableCell>
                   <StyledTableCell align="center">
                     <Button variant="text" onClick={() => handleView(row)}>

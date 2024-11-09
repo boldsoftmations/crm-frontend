@@ -24,7 +24,7 @@ import { ApplicantListUpdate } from "./ApplicantListUpdate";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
 import UploadCv from "../CandidateSource/UploadCV";
 
-const CandidateProfile = ({ candidateData }) => {
+const CandidateProfile = ({ candidateData, fetchApplicants }) => {
   const [openCandidatePopup, setOpenCandidatePopup] = useState(false);
   const [loader, setLoader] = useState(false);
   const [candidate, setCandidate] = useState({});
@@ -240,6 +240,7 @@ const CandidateProfile = ({ candidateData }) => {
         <ApplicantListUpdate
           getCandidateProfile={getCandidateProfile}
           candidateData={candidate}
+          fetchApplicants={fetchApplicants}
           setOpenCandidatePopup={setOpenCandidatePopup}
         />
       </Popup>

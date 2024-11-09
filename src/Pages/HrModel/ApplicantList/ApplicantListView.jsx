@@ -22,6 +22,7 @@ import SearchComponent from "../../../Components/SearchComponent ";
 import CandidateProfile from "./CandidateProfile";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import CustomAxios from "../../../services/api";
+import CustomSnackbar from "../../../Components/CustomerSnackbar";
 
 export const ApplicantListView = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -34,6 +35,15 @@ export const ApplicantListView = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [designations, setDesignations] = useState([]);
   const [department, setDepartment] = useState([]);
+  const [alertmsg, setAlertMsg] = useState({
+    message: "",
+    severity: "",
+    open: false,
+  });
+  const handleClose = () => {
+    setAlertMsg({ open: false });
+  };
+
   const [filters, setFilters] = useState({
     designations: "",
     department: "",
@@ -147,9 +157,82 @@ export const ApplicantListView = () => {
       [name]: value,
     }));
   };
+
+  const sendWhatsappMessage = async (data) => {
+    try {
+      setIsLoading(true);
+      const payload = {
+        contact: data.contact,
+        email: data.email,
+        designation: data.designation,
+        type: "whatsapp",
+        name: data.name,
+      };
+      const response = await Hr.sendAutomatedMessage(payload);
+      if (response.status === 200) {
+        setAlertMsg({
+          message: "Whatsapp message has been sent successfully",
+          severity: "success",
+          open: true,
+        });
+        fetchApplicants();
+      }
+    } catch (error) {
+      alertmsg({
+        message:
+          (error && error.response.data.message) ||
+          "Error sending Whatsapp Message",
+        severity: "error",
+        open: true,
+      });
+
+      console.error("Error sending Whatsapp Message:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // const sendEmailMessage = async (data) => {
+  //   try {
+  //     setIsLoading(true);
+  //     const payload = {
+  //       contact: data.contact,
+  //       email: data.email,
+  //       designation: data.designation,
+  //       type: "email",
+  //       name: data.name,
+  //     };
+  //     const response = await Hr.sendAutomatedMessage(payload);
+  //     if (response.status === 200) {
+  //       setAlertMsg({
+  //         message: "Email has been sent successfully",
+  //         severity: "success",
+  //         open: true,
+  //       });
+  //       fetchApplicants();
+  //     }
+  //   } catch (error) {
+  //     alertmsg({
+  //       message:
+  //         (error && error.response.data.message) ||
+  //         "Error sending Email Message",
+  //       severity: "error",
+  //       open: true,
+  //     });
+  //     console.error("Error sending Email Message:", error);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
   return (
     <>
       <CustomLoader open={isLoading} />
+      <CustomSnackbar
+        open={alertmsg.open}
+        message={alertmsg.message}
+        severity={alertmsg.severity}
+        onClose={handleClose}
+      />
       <Grid item xs={12}>
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
           <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
@@ -273,12 +356,10 @@ export const ApplicantListView = () => {
                   <StyledTableCell align="center">Date</StyledTableCell>
                   <StyledTableCell align="center">Name</StyledTableCell>
                   <StyledTableCell align="center">Phone</StyledTableCell>
-                  <StyledTableCell align="center">Email</StyledTableCell>
                   <StyledTableCell align="center">Designation</StyledTableCell>
-                  <StyledTableCell align="center">Department</StyledTableCell>
                   <StyledTableCell align="center">Stage</StyledTableCell>
                   <StyledTableCell align="center">Status</StyledTableCell>
-                  <StyledTableCell align="center">Source</StyledTableCell>
+                  <StyledTableCell align="center">Send Message</StyledTableCell>
                   <StyledTableCell align="center">Action</StyledTableCell>
                 </TableRow>
               </TableHead>
@@ -294,13 +375,7 @@ export const ApplicantListView = () => {
                       {row.contact}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {row.email}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
                       {row.designation}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.department}
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.stage}
@@ -308,10 +383,27 @@ export const ApplicantListView = () => {
                     <StyledTableCell align="center">
                       {row.status}
                     </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.source}
-                    </StyledTableCell>
 
+                    {/* <StyledTableCell align="center">
+                      <Button
+                        variant="text"
+                        color="success"
+                        size="small"
+                        onClick={() => sendWhatsappMessage(row)}
+                      >
+                        {row.is_whatsapp_sent
+                          ? "Resend Whatsapp"
+                          : "Send Whatsapp"}
+                      </Button>
+                      <Button
+                        variant="text"
+                        color="secondary"
+                        size="small"
+                        onClick={() => sendEmailMessage(row)}
+                      >
+                        {row.is_email_sent ? "Resend Email" : "Send Email"}
+                      </Button>
+                    </StyledTableCell> */}
                     <StyledTableCell align="center">
                       <Button
                         variant="outlined"
@@ -348,7 +440,10 @@ export const ApplicantListView = () => {
             openPopup={openUpdatePopup}
             setOpenPopup={setOpenUpdatePopup}
           >
-            <CandidateProfile candidateData={recordForEdit} />
+            <CandidateProfile
+              fetchApplicants={fetchApplicants}
+              candidateData={recordForEdit}
+            />
           </Popup>
         </Paper>
       </Grid>
