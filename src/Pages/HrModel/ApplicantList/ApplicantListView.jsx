@@ -384,7 +384,7 @@ export const ApplicantListView = () => {
                       {row.status}
                     </StyledTableCell>
 
-                    {/* <StyledTableCell align="center">
+                    <StyledTableCell align="center">
                       <Button
                         variant="text"
                         color="success"
@@ -395,15 +395,15 @@ export const ApplicantListView = () => {
                           ? "Resend Whatsapp"
                           : "Send Whatsapp"}
                       </Button>
-                      <Button
+                      {/* <Button
                         variant="text"
                         color="secondary"
                         size="small"
                         onClick={() => sendEmailMessage(row)}
                       >
                         {row.is_email_sent ? "Resend Email" : "Send Email"}
-                      </Button>
-                    </StyledTableCell> */}
+                      </Button> */}
+                    </StyledTableCell>
                     <StyledTableCell align="center">
                       <Button
                         variant="outlined"
