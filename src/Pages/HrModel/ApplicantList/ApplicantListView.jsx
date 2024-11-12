@@ -178,7 +178,7 @@ export const ApplicantListView = () => {
         fetchApplicants();
       }
     } catch (error) {
-      alertmsg({
+      setAlertMsg({
         message:
           (error && error.response.data.message) ||
           "Error sending Whatsapp Message",
@@ -192,38 +192,38 @@ export const ApplicantListView = () => {
     }
   };
 
-  // const sendEmailMessage = async (data) => {
-  //   try {
-  //     setIsLoading(true);
-  //     const payload = {
-  //       contact: data.contact,
-  //       email: data.email,
-  //       designation: data.designation,
-  //       type: "email",
-  //       name: data.name,
-  //     };
-  //     const response = await Hr.sendAutomatedMessage(payload);
-  //     if (response.status === 200) {
-  //       setAlertMsg({
-  //         message: "Email has been sent successfully",
-  //         severity: "success",
-  //         open: true,
-  //       });
-  //       fetchApplicants();
-  //     }
-  //   } catch (error) {
-  //     alertmsg({
-  //       message:
-  //         (error && error.response.data.message) ||
-  //         "Error sending Email Message",
-  //       severity: "error",
-  //       open: true,
-  //     });
-  //     console.error("Error sending Email Message:", error);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
+  const sendEmailMessage = async (data) => {
+    try {
+      setIsLoading(true);
+      const payload = {
+        contact: data.contact,
+        email: data.email,
+        designation: data.designation,
+        type: "email",
+        name: data.name,
+      };
+      const response = await Hr.sendAutomatedMessage(payload);
+      if (response.status === 200) {
+        setAlertMsg({
+          message: "Email has been sent successfully",
+          severity: "success",
+          open: true,
+        });
+        fetchApplicants();
+      }
+    } catch (error) {
+      setAlertMsg({
+        message:
+          (error && error.response.data.message) ||
+          "Error sending Email Message",
+        severity: "error",
+        open: true,
+      });
+      console.error("Error sending Email Message:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   return (
     <>
       <CustomLoader open={isLoading} />
@@ -395,14 +395,14 @@ export const ApplicantListView = () => {
                           ? "Resend Whatsapp"
                           : "Send Whatsapp"}
                       </Button>
-                      {/* <Button
+                      <Button
                         variant="text"
                         color="secondary"
                         size="small"
                         onClick={() => sendEmailMessage(row)}
                       >
                         {row.is_email_sent ? "Resend Email" : "Send Email"}
-                      </Button> */}
+                      </Button>
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       <Button

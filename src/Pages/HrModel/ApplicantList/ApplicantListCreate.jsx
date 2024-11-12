@@ -303,7 +303,7 @@ export const ApplicantListCreate = ({
             <Grid item xs={12} sm={6}>
               <TextField
                 size="small"
-                label="Current Salary"
+                label="Annual Salary"
                 name="current_salary"
                 fullWidth
                 value={formData.current_salary}
