@@ -72,24 +72,31 @@ const UpdateJobDescription = ({ getJobDescription, setOpenPopup, data }) => {
     e.preventDefault();
     try {
       setLoading(true);
-      const formDataToSend = new FormData();
 
-      // Append only fields with values to 'formDataToSend'
+      const formDataToSend = new FormData();
       Object.keys(formData).forEach((key) => {
-        if (formData[key]) {
+        if (Array.isArray(formData[key])) {
+          formDataToSend.append(key, JSON.stringify(formData[key]));
+        } else if (key === "jd" && formData[key]) {
+          formDataToSend.append(key, formData[key]);
+        } else if (formData[key] !== null && formData[key] !== undefined) {
           formDataToSend.append(key, formData[key]);
         }
       });
+
       const response = await Hr.UpdateJobDescription(data.id, formDataToSend);
-      setAlertMsg({
-        open: true,
-        message: response.message || "Job description updated successfully",
-        severity: "success",
-      });
-      setTimeout(() => {
-        getJobDescription();
-        setOpenPopup(false);
-      }, 500);
+
+      if (response.status === 200) {
+        setAlertMsg({
+          open: true,
+          message: response.message || "Job description updated successfully",
+          severity: "success",
+        });
+        setTimeout(() => {
+          getJobDescription();
+          setOpenPopup(false);
+        }, 500);
+      }
     } catch (error) {
       console.error("Error creating job description:", error);
       setAlertMsg({
