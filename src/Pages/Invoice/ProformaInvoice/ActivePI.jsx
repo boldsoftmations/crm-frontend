@@ -303,7 +303,7 @@ export const ActivePI = () => {
                         {row.raised_by}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {row.company_name}
+                        {row.name_of_party}
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         {row.billing_city}
