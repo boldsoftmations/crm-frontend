@@ -338,12 +338,6 @@ export const ApplicantListCreate = ({
                 value={formData.interested}
                 onChange={(event, newValue) => {
                   handleInputChange(event, newValue, "interested");
-                  if (newValue === "No") {
-                    setFormData({
-                      ...formData,
-                      noReason: "",
-                    });
-                  }
                 }}
                 label="Interested"
               />

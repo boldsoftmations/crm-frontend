@@ -17,7 +17,6 @@ export const JobOpeningCreate = ({ addNewJobOpening, setOpenCreatePopup }) => {
     notes: "",
   });
   const [designations, setDesignations] = useState([]);
-  const [department, setDepartment] = useState([]);
   const [emails, setEmails] = useState([]);
   const [location, setLocation] = useState([]);
 
@@ -44,18 +43,6 @@ export const JobOpeningCreate = ({ addNewJobOpening, setOpenCreatePopup }) => {
       }
     };
 
-    const fetchDepartments = async () => {
-      try {
-        const response = await CustomAxios.get("/api/hr/department/");
-        const validDepartments = response.data.filter(
-          (d) => d.department != null
-        );
-        setDepartment(validDepartments);
-      } catch (error) {
-        console.error("Error fetching departments:", error);
-      }
-    };
-
     const fetchEmails = async () => {
       try {
         const response = await CustomAxios.get(
@@ -69,7 +56,6 @@ export const JobOpeningCreate = ({ addNewJobOpening, setOpenCreatePopup }) => {
       }
     };
     fetchDesignations();
-    fetchDepartments();
     fetchLocationList();
     fetchEmails();
   }, []);
@@ -105,11 +91,29 @@ export const JobOpeningCreate = ({ addNewJobOpening, setOpenCreatePopup }) => {
     addNewJobOpening(newJobOpening);
   };
 
+  useEffect(() => {
+    if (!newJobOpening.designation) {
+      return;
+    }
+
+    const selectedDesignation = designations.find(
+      (designation) => designation.designation === newJobOpening.designation
+    );
+
+    if (
+      selectedDesignation &&
+      selectedDesignation.department !== newJobOpening.department
+    ) {
+      // Only update if department has changed
+      setNewJobOpening((prev) => ({
+        ...prev,
+        department: selectedDesignation.department,
+      }));
+    }
+  }, [newJobOpening.designation]);
+
   return (
     <Box>
-      {/* <Typography variant="h6" gutterBottom>
-        Add New Job Opening
-      </Typography> */}
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <CustomAutocomplete
@@ -127,20 +131,15 @@ export const JobOpeningCreate = ({ addNewJobOpening, setOpenCreatePopup }) => {
         </Grid>
 
         <Grid item xs={12}>
-          {Array.isArray(department) && (
-            <CustomAutocomplete
-              style={{ minWidth: 220 }}
-              size="small"
-              onChange={(event, value) => {
-                setNewJobOpening({ ...newJobOpening, department: value });
-              }}
-              name="department"
-              options={department.map((option) => option.department)}
-              getOptionLabel={(option) => option || ""}
-              label="Department"
-              value={newJobOpening.department}
-            />
-          )}
+          <TextField
+            size="small"
+            type="text"
+            name="department"
+            label="Department"
+            value={newJobOpening.department || ""}
+            onChange={handleInputChange}
+            fullWidth
+          />
         </Grid>
 
         <Grid item xs={12}>
