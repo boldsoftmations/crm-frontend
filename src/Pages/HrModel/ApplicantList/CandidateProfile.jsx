@@ -23,6 +23,8 @@ import { Popup } from "../../../Components/Popup";
 import { ApplicantListUpdate } from "./ApplicantListUpdate";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
 import UploadCv from "../CandidateSource/UploadCV";
+import SendIcon from "@mui/icons-material/Send";
+import ReplayIcon from "@mui/icons-material/Replay";
 
 const CandidateProfile = ({ candidateData, fetchApplicants }) => {
   const [openCandidatePopup, setOpenCandidatePopup] = useState(false);
@@ -74,6 +76,74 @@ const CandidateProfile = ({ candidateData, fetchApplicants }) => {
     getCandidateProfile();
   }, [candidateData.id]);
 
+  // functions for automated messages
+
+  const sendWhatsappMessage = async (data) => {
+    try {
+      setLoader(true);
+      const payload = {
+        contact: candidate.contact,
+        email: candidate.email,
+        designation: candidate.designation,
+        type: "whatsapp",
+        name: candidate.name,
+      };
+      const response = await Hr.sendAutomatedMessage(payload);
+      if (response.status === 200) {
+        setAlertMsg({
+          message: "Whatsapp message has been sent successfully",
+          severity: "success",
+          open: true,
+        });
+        fetchApplicants();
+      }
+    } catch (error) {
+      setAlertMsg({
+        message:
+          (error && error.response.data.message) ||
+          "Error sending Whatsapp Message",
+        severity: "error",
+        open: true,
+      });
+
+      console.error("Error sending Whatsapp Message:", error);
+    } finally {
+      setLoader(false);
+    }
+  };
+
+  const sendEmailMessage = async (data) => {
+    try {
+      setLoader(true);
+      const payload = {
+        contact: candidate.contact,
+        email: candidate.email,
+        designation: candidate.designation,
+        type: "email",
+        name: candidate.name,
+      };
+      const response = await Hr.sendAutomatedMessage(payload);
+      if (response.status === 200) {
+        setAlertMsg({
+          message: "Email has been sent successfully",
+          severity: "success",
+          open: true,
+        });
+        fetchApplicants();
+      }
+    } catch (error) {
+      setAlertMsg({
+        message:
+          (error && error.response.data.message) ||
+          "Error sending Email Message",
+        severity: "error",
+        open: true,
+      });
+      console.error("Error sending Email Message:", error);
+    } finally {
+      setLoader(false);
+    }
+  };
   return (
     <Container maxWidth="md">
       <CustomSnackbar
@@ -180,7 +250,7 @@ const CandidateProfile = ({ candidateData, fetchApplicants }) => {
                 {candidate.current_location || "N/A"}
               </Typography>
               <Typography variant="body2" sx={{ mb: 1 }}>
-                <strong>Current Salary:</strong>{" "}
+                <strong>Current LPA:</strong>{" "}
                 {candidate.current_salary || "N/A"}
               </Typography>
               <Typography variant="body2" sx={{ mb: 1 }}>
@@ -206,7 +276,68 @@ const CandidateProfile = ({ candidateData, fetchApplicants }) => {
                 <strong>Created By:</strong> {candidate.created_by || "N/A"}
               </Typography>
             </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                <strong>Resume Match:</strong>{" "}
+                {(candidate.match_percentage &&
+                  `${candidate.match_percentage} %`) ||
+                  "N/A"}
+              </Typography>
+
+              <Typography
+                variant="body2"
+                sx={{ display: "flex", alignItems: "center", mb: 1 }}
+              >
+                <strong>WhatsApp Send:</strong>
+                <Tooltip
+                  onClick={sendWhatsappMessage}
+                  title={
+                    candidate.is_whatsapp_sent
+                      ? "Resend WhatsApp"
+                      : "Send WhatsApp"
+                  }
+                >
+                  <Button
+                    size="small"
+                    variant={candidate.is_whatsapp_sent ? "outlined" : "text"}
+                    color={candidate.is_whatsapp_sent ? "success" : "primary"}
+                    startIcon={
+                      candidate.is_whatsapp_sent ? <ReplayIcon /> : <SendIcon />
+                    }
+                    sx={{ ml: 1 }}
+                  >
+                    {candidate.is_whatsapp_sent ? "Resend" : "Send"}
+                  </Button>
+                </Tooltip>
+              </Typography>
+
+              <Typography
+                variant="body2"
+                sx={{ display: "flex", alignItems: "center", mb: 1 }}
+              >
+                <strong>Email Send:</strong>
+                <Tooltip
+                  onClick={sendEmailMessage}
+                  title={
+                    candidate.is_email_sent ? "Resend Email" : "Send Email"
+                  }
+                >
+                  <Button
+                    size="small"
+                    variant={candidate.is_email_sent ? "outlined" : "text"}
+                    color={candidate.is_email_sent ? "success" : "secondary"}
+                    startIcon={
+                      candidate.is_email_sent ? <ReplayIcon /> : <SendIcon />
+                    }
+                    sx={{ ml: 1 }}
+                  >
+                    {candidate.is_email_sent ? "Resend" : "Send"}
+                  </Button>
+                </Tooltip>
+              </Typography>
+            </Grid>
           </Grid>
+
           <Box
             display="flex"
             justifyContent="flex-start"

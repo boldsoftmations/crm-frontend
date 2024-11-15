@@ -359,7 +359,9 @@ export const ApplicantListView = () => {
                   <StyledTableCell align="center">Designation</StyledTableCell>
                   <StyledTableCell align="center">Stage</StyledTableCell>
                   <StyledTableCell align="center">Status</StyledTableCell>
-                  <StyledTableCell align="center">Send Message</StyledTableCell>
+                  <StyledTableCell align="center">
+                    Send WhatsApp/Email
+                  </StyledTableCell>
                   <StyledTableCell align="center">Action</StyledTableCell>
                 </TableRow>
               </TableHead>
