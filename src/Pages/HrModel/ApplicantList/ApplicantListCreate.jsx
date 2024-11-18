@@ -39,7 +39,6 @@ export const ApplicantListCreate = ({
   });
   const [loader, setLoader] = useState(false);
   const [showAts, setShowAts] = useState(false);
-  const [missingKeyWords, setMissingKeyWords] = useState([]);
   const [source, setSource] = useState([]);
   const [cvPreview, setCvPreview] = useState(null);
   const [alertmsg, setAlertMsg] = useState({
@@ -47,6 +46,7 @@ export const ApplicantListCreate = ({
     severity: "",
     open: false,
   });
+
   const handleClose = () => {
     setAlertMsg({ open: false });
   };
@@ -124,6 +124,71 @@ export const ApplicantListCreate = ({
     }));
     setCvPreview(null);
   };
+
+  const handleGetDataFromCVAndCheckATS = async () => {
+    try {
+      setLoader(true);
+      const formDataToSend = new FormData();
+      formDataToSend.append("job", formData.job);
+      formDataToSend.append("cv", formData.cv);
+
+      const response = await Hr.handleGetDataFromCVAndCheckATS(formDataToSend);
+
+      if (response.status === 200) {
+        const data = response.data || {};
+
+        setFormData((prev) => ({
+          ...prev,
+          match_percentage:
+            data.match_percentage && !isNaN(parseFloat(data.match_percentage))
+              ? parseFloat(data.match_percentage)
+              : null,
+          keywords_missing: data.keywords_missing || [],
+          final_thoughts: data.final_thoughts || "",
+          name: data.name || "",
+          email: data.email || "",
+          contact: data.phone ? `+91${data.phone}` : "",
+          qualification: data.highest_education || "",
+        }));
+        setShowAts(true);
+      } else {
+        setAlertMsg({
+          open: true,
+          message: `Error: Received status ${response.status}`,
+          severity: "error",
+        });
+      }
+    } catch (error) {
+      setAlertMsg({
+        open: true,
+        message: error.response.data.message || "Error getting data from CV",
+        severity: "error",
+      });
+      console.error("Error getting data from CV", error);
+    } finally {
+      setLoader(false);
+    }
+  };
+
+  const spokenEnglishOptions = ["Bad", "Average", "Good"];
+
+  const salaryRange = [
+    "0.6 LPA - 1.2 LPA",
+    "1.2 LPA - 1.8 LPA",
+    "1.8 LPA - 2.4 LPA",
+    "2.4 LPA - 3.0 LPA",
+    "3.0 LPA - 3.6 LPA",
+    "3.6 LPA - 4.8 LPA",
+    "4.8 LPA - 6.0 LPA",
+    "7.2 LPA - 9.6 LPA",
+    "9.6 LPA - 12 LPA",
+    "12 LPA - 15 LPA",
+    "15 LPA - 18 LPA",
+    "18 LPA - 21 LPA",
+    "21 LPA - 24 LPA",
+    "24 LPA - Above",
+  ];
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoader(true);
@@ -132,8 +197,19 @@ export const ApplicantListCreate = ({
 
     // Append only fields with values to 'formDataToSend'
     Object.keys(formData).forEach((key) => {
-      if (formData[key]) {
-        formDataToSend.append(key, formData[key]);
+      let value = formData[key];
+
+      // Set `keywords_missing` to an empty array if it's null or undefined
+      if (key === "keywords_missing" && !value) {
+        value = [];
+      }
+
+      if (value) {
+        // Convert arrays to JSON strings for proper handling in FormData
+        formDataToSend.append(
+          key,
+          Array.isArray(value) ? JSON.stringify(value) : value
+        );
       }
     });
 
@@ -159,60 +235,6 @@ export const ApplicantListCreate = ({
     }
   };
 
-  const handleGetDataFromCVAndCheckATS = async () => {
-    try {
-      setLoader(true);
-      const formDataToSend = new FormData();
-      formDataToSend.append("job", formData.job);
-      formDataToSend.append("cv", formData.cv);
-
-      const response = await Hr.handleGetDataFromCVAndCheckATS(formDataToSend);
-      if (response.data) {
-        setFormData((prev) => ({
-          ...prev,
-          match_percentage:
-            response.data && !isNaN(parseFloat(response.data.match_percentage))
-              ? parseFloat(response.data.match_percentage)
-              : null,
-          keywords_missing: response.data.keywords_missing || [],
-          final_thoughts: response.data.final_thoughts || null,
-          name: response.data.name || "",
-          email: response.data.email || "",
-          contact: `+91${response.data.phone}` || "",
-          qualification: response.data.highest_education || "",
-        }));
-        setMissingKeyWords(JSON.parse(response.data.keywords_missing));
-        setShowAts(true);
-      }
-    } catch (error) {
-      setAlertMsg({
-        open: true,
-        message: error.response.data.message || "Error getting data from CV",
-        severity: "error",
-      });
-      console.error("Error getting data from CV", error);
-    } finally {
-      setLoader(false);
-    }
-  };
-  const spokenEnglishOptions = ["Bad", "Average", "Good"];
-
-  const salaryRange = [
-    "0.6 LPA - 1.2 LPA",
-    "1.2 LPA - 1.8 LPA",
-    "1.8 LPA - 2.4 LPA",
-    "2.4 LPA - 3.0 LPA",
-    "3.0 LPA - 3.6 LPA",
-    "3.6 LPA - 4.8 LPA",
-    "4.8 LPA - 6.0 LPA",
-    "7.2 LPA - 9.6 LPA",
-    "9.6 LPA - 12 LPA",
-    "12 LPA - 15 LPA",
-    "15 LPA - 18 LPA",
-    "18 LPA - 21 LPA",
-    "21 LPA - 24 LPA",
-    "24 LPA - Above",
-  ];
   return (
     <>
       <CustomSnackbar
@@ -310,7 +332,6 @@ export const ApplicantListCreate = ({
                 onChange={handleInputChange}
               />
             </Grid>
-
             <Grid item xs={12} sm={6}>
               <CustomAutocomplete
                 size="small"
@@ -326,7 +347,6 @@ export const ApplicantListCreate = ({
                 label="Expected Salary"
               />
             </Grid>
-
             <Grid item xs={12} sm={6}>
               <CustomAutocomplete
                 size="small"
@@ -342,7 +362,6 @@ export const ApplicantListCreate = ({
                 label="Interested"
               />
             </Grid>
-
             <Grid item xs={12} sm={6}>
               <CustomAutocomplete
                 size="small"
@@ -377,7 +396,6 @@ export const ApplicantListCreate = ({
                 label="Is Competitor"
               />
             </Grid>
-
             <Grid item xs={12} sm={6}>
               <Button
                 variant="outlined"
@@ -418,14 +436,13 @@ export const ApplicantListCreate = ({
                 </Box>
               )}
             </Grid>
-
             {showAts && (
               <Grid item xs={12} sm={12}>
                 <TypoAnimation
                   percent={formData.match_percentage}
                   text={formData.final_thoughts}
                   speed={10}
-                  misssingKeyWords={missingKeyWords}
+                  misssingKeyWords={formData.keywords_missing}
                 />
               </Grid>
             )}
