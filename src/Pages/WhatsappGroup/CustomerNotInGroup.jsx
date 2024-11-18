@@ -1,20 +1,37 @@
 import React, { useEffect, useState } from "react";
-import { CustomTable } from "../../Components/CustomTable";
-import { Box, Grid, Paper } from "@mui/material";
+import {
+  Box,
+  Grid,
+  Button,
+  Paper,
+  styled,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TableBody,
+  Table,
+  tableCellClasses,
+} from "@mui/material";
 import CustomerServices from "../../services/CustomerService";
 import { CustomPagination } from "../../Components/CustomPagination";
 import { CustomLoader } from "../../Components/CustomLoader";
 import SearchComponent from "../../Components/SearchComponent ";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
+import { Popup } from "../../Components/Popup";
+import { UpdateAllCompanyDetails } from "../Cutomers/CompanyDetails/UpdateAllCompanyDetails";
 
 export const CustomerNotInGroup = () => {
   const [open, setOpen] = useState(false);
+  const [openPopupOfUpdateCustomer, setOpenPopupOfUpdateCustomer] =
+    useState(false);
+  const [selectedCustomers, setSelectedCustomers] = useState();
+  const [recordForEdit, setRecordForEdit] = useState();
   const [whatsappGroupData, setWhatsappGroupData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterCustomer, setFilterCustomer] = useState("");
-
   useEffect(() => {
     getAllCustomerNotInGroupData();
   }, [currentPage, searchQuery, filterCustomer]);
@@ -51,9 +68,10 @@ export const CustomerNotInGroup = () => {
   };
   const Tabledata = Array.isArray(whatsappGroupData)
     ? whatsappGroupData.map(
-        ({ name, whatsapp_group, assigned_to, member_details }) => ({
+        ({ id, name, whatsapp_group, assigned_to, member_details }) => ({
           company: name,
           whatsapp_group,
+          id,
           assigned_to: Array.isArray(assigned_to) ? (
             assigned_to.map((assigned, id) => (
               <div
@@ -82,8 +100,13 @@ export const CustomerNotInGroup = () => {
       )
     : [];
 
-  const Tableheaders = ["Company ", "Group", "Assigned Sales Person"];
+  const Tableheaders = ["Company ", "Group", "Assigned Sales Person", "Action"];
 
+  const openInPopupOfUpdateCustomer = (item) => {
+    setRecordForEdit(item.id);
+    setSelectedCustomers(item);
+    setOpenPopupOfUpdateCustomer(true);
+  };
   return (
     <>
       <CustomLoader open={open} />
@@ -129,17 +152,105 @@ export const CustomerNotInGroup = () => {
               </Grid>
             </Grid>
           </Box>
-          <CustomTable headers={Tableheaders} data={Tabledata} />
+          <TableContainer
+            sx={{
+              maxHeight: 440,
+              "&::-webkit-scrollbar": {
+                width: 15,
+              },
+              "&::-webkit-scrollbar-track": {
+                backgroundColor: "#f2f2f2",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: "#aaa9ac",
+              },
+            }}
+          >
+            <Table
+              sx={{ minWidth: 1200 }}
+              stickyHeader
+              aria-label="sticky table"
+            >
+              <TableHead>
+                <TableRow>
+                  {Tableheaders.map((header) => {
+                    return (
+                      <StyledTableCell align="center">{header}</StyledTableCell>
+                    );
+                  })}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {Tabledata.map((row, i) => (
+                  <StyledTableRow key={i}>
+                    <StyledTableCell align="center">
+                      {row.company}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.whatsapp_group}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.assigned_to}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      <Button
+                        style={{ marginRight: "10px" }}
+                        variant="outlined"
+                        color="info"
+                        size="small"
+                        onClick={() => openInPopupOfUpdateCustomer(row)}
+                      >
+                        View
+                      </Button>
+                    </StyledTableCell>
+                  </StyledTableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
           <CustomPagination
             currentPage={currentPage}
             totalPages={totalPages}
             handlePageChange={handlePageChange}
           />
         </Paper>
+        <Popup
+          fullScreen={true}
+          title={"Update Customer"}
+          openPopup={openPopupOfUpdateCustomer}
+          setOpenPopup={setOpenPopupOfUpdateCustomer}
+        >
+          <UpdateAllCompanyDetails
+            setOpenPopup={setOpenPopupOfUpdateCustomer}
+            recordForEdit={recordForEdit}
+            getAllCompanyDetails={getAllCustomerNotInGroupData}
+            selectedCustomers={selectedCustomers}
+          />
+        </Popup>
       </Grid>
     </>
   );
 };
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  "&:nth-of-type(odd)": {
+    backgroundColor: theme.palette.action.hover,
+  },
+  // hide last border
+  "&:last-child td, &:last-child th": {
+    border: 0,
+  },
+}));
 
 const FilterOptions = [
   {
