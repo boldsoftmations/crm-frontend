@@ -80,7 +80,8 @@ export const UpdateLeads = memo((props) => {
     if (users && users.groups) {
       if (
         users.groups.includes("Sales Executive") ||
-        users.groups.includes("Business Development Execution")
+        users.groups.includes("Business Development Execution") ||
+        users.groups.includes("Customer Service")
       ) {
         setAssigned(
           Array({
