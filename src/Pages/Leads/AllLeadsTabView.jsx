@@ -25,7 +25,8 @@ export const AllLeadsTabView = () => {
   const isSalesADManager = isInGroups("Sales Assistant Deputy Manager");
   const isSalesExecutive = isInGroups(
     "Sales Executive",
-    "Business Development Executive"
+    "Business Development Executive",
+    "Customer Service"
   );
   const isSalesManagerWithoutLeads = isInGroups("Sales Manager without Leads");
   const isSalesManagerWithLeads = isInGroups("Sales Manager with Leads");

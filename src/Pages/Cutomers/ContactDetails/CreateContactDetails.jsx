@@ -41,14 +41,21 @@ export const CreateContactDetails = (props) => {
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
+
     if (name === "name") {
-      const formattedValue =
-        value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+      const formattedValue = value
+        .split(" ") // Split the input by spaces into an array of words
+        .map(
+          (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+        ) // Capitalize the first letter of each word
+        .join(" "); // Join the words back into a single string
+
       setInputValue({ ...inputValue, [name]: formattedValue });
     } else {
       setInputValue({ ...inputValue, [name]: value });
     }
   };
+
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
@@ -174,7 +181,6 @@ export const CreateContactDetails = (props) => {
               }}
               country={"in"}
               onChange={handlePhoneChange2}
-              // onChange={phone => console.log( phone )}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -186,8 +192,6 @@ export const CreateContactDetails = (props) => {
               variant="outlined"
               value={formValues.email}
               onChange={handleChange}
-              error={Boolean(formErrors.email)}
-              helperText={formErrors.email}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -199,8 +203,6 @@ export const CreateContactDetails = (props) => {
               variant="outlined"
               value={formValues.alternate_email}
               onChange={handleChange}
-              error={Boolean(formErrors.alternate_email)}
-              helperText={formErrors.alternate_email}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
