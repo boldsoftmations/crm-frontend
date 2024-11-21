@@ -113,9 +113,7 @@ export const ViewProductDetails = ({ rowData, startMonth, startYear }) => {
                   </StyledTableCell>
                   <StyledTableCell align="center">Brand</StyledTableCell>
                   <StyledTableCell align="center">Unit</StyledTableCell>
-                  <StyledTableCell align="center">
-                    Last Month QTY
-                  </StyledTableCell>
+                  <StyledTableCell align="center">Max QTY</StyledTableCell>
                   <StyledTableCell align="center">
                     This Month QTY
                   </StyledTableCell>
