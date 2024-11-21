@@ -61,6 +61,27 @@ export const ViewProductDetails = ({ rowData, startMonth, startYear }) => {
     getSalesQuatityAnalysisdetailsByproduct();
   }, [startMonth, startYear, rowData]);
 
+  // Create a number formatter to add commas to the total values
+  const numberFormatter = new Intl.NumberFormat("en-IN", {
+    maximumFractionDigits: 2,
+  });
+
+  const calculateTotals = () => {
+    let totalMaxQty = 0;
+    let totalCurrentMonthQty = 0;
+
+    salesQuantityAnalysis.forEach((row) => {
+      totalMaxQty += row.max_qty || 0;
+      totalCurrentMonthQty += row.current_month_qty;
+    });
+
+    return {
+      totalMaxQty: numberFormatter.format(totalMaxQty),
+      totalCurrentMonthQty: numberFormatter.format(totalCurrentMonthQty),
+    };
+  };
+
+  const totals = calculateTotals();
   return (
     <>
       <CustomSnackbar
@@ -113,7 +134,7 @@ export const ViewProductDetails = ({ rowData, startMonth, startYear }) => {
                   </StyledTableCell>
                   <StyledTableCell align="center">Brand</StyledTableCell>
                   <StyledTableCell align="center">Unit</StyledTableCell>
-                  <StyledTableCell align="center">Max QTY</StyledTableCell>
+                  <StyledTableCell align="center">Max Qty</StyledTableCell>
                   <StyledTableCell align="center">
                     This Month QTY
                   </StyledTableCell>
@@ -147,6 +168,22 @@ export const ViewProductDetails = ({ rowData, startMonth, startYear }) => {
                   <StyledTableRow>
                     <StyledTableCell align="center" colSpan={14}>
                       No Data Available
+                    </StyledTableCell>
+                  </StyledTableRow>
+                )}
+                {salesQuantityAnalysis.length > 0 && (
+                  <StyledTableRow>
+                    <StyledTableCell align="center">
+                      <strong>Total</strong>
+                    </StyledTableCell>
+                    <StyledTableCell align="center"></StyledTableCell>
+                    <StyledTableCell align="center"></StyledTableCell>
+                    <StyledTableCell align="center"></StyledTableCell>
+                    <StyledTableCell align="center">
+                      {totals.totalMaxQty}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {totals.totalCurrentMonthQty}
                     </StyledTableCell>
                   </StyledTableRow>
                 )}

@@ -24,7 +24,6 @@ import { useSelector } from "react-redux";
 import { Popup } from "../../Components/Popup";
 import CustomTextField from "../../Components/CustomTextField";
 import { PotentialTurnover } from "./Potential Turnover/PotentialTurnover";
-import { ViewSalesQuantityAnalysis } from "./Sales Quantity Analysis/ViewSalesQuantityAnalysis";
 
 export function Report() {
   const [open, setOpen] = useState(false);
@@ -45,8 +44,6 @@ export function Report() {
     currentSalesSummaryRM,
     salesPersonSummary,
     dailyProfitableReportsFilterData,
-    descriptionWiseTurnoverFilterData,
-    salesData,
   } = state;
 
   const handleStartDateChange = (event) => {
@@ -136,7 +133,6 @@ export function Report() {
 
     ...(hasSpecialAccess ? [{ label: "Profit Report" }] : []), // Daily Profitability Report
     ...(SpecialAccess ? [{ label: "Potential Turnover" }] : []), // Potential Turnover
-    { label: "Sales QTY Report" },
   ];
 
   useEffect(() => {
@@ -362,11 +358,6 @@ export function Report() {
           {activeTab === 8 && (
             <div>
               <PotentialTurnover />
-            </div>
-          )}
-          {activeTab === 9 && (
-            <div>
-              <ViewSalesQuantityAnalysis />
             </div>
           )}
         </div>

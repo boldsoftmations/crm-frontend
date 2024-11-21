@@ -7,6 +7,7 @@ import { DashboardLeadData } from "./DashboardLeadData";
 import { CustomTabs } from "../../Components/CustomTabs";
 import { TopCustomerView } from "./TopCustomerView";
 import { CRReport } from "./CRreport";
+import { ViewSalesQuantityAnalysis } from "./Sales Quantity Analysis/ViewSalesQuantityAnalysis";
 
 export const AnalyticsAllTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
@@ -87,6 +88,23 @@ export const AnalyticsAllTabView = () => {
         "Customer Relationship Executive",
       ],
       component: <CRReport />,
+    },
+    {
+      label: "Sales Qty Analysis",
+      roles: [
+        "Director",
+        "Customer Relationship Executive",
+        "Customer Relationship Manager",
+        "Business Development Manager",
+        "Business Development Executive",
+        "Sales Manager",
+        "Sales Deputy Manager",
+        "Sales Assistant Deputy Manager",
+        "Sales Executive",
+        "Sales Manager without Leads",
+        "Sales Manager with Lead",
+      ],
+      component: <ViewSalesQuantityAnalysis />,
     },
   ];
 
