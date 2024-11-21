@@ -384,6 +384,30 @@ const getCRReportData = (email) => {
   return CustomAxios.get(`/api/dashboard/cr-report/?email=${email}`);
 };
 
+const getSalesQuatityAnalysis = (month, year) => {
+  return CustomAxios.get(
+    `/api/dashboard/sales-qty/?start_month=${month}&start_year=${year}`
+  );
+};
+
+const getSalesQuatityAnalysisdetailsByproduct = (
+  description,
+  brand,
+  unit,
+  start_month,
+  year
+) => {
+  const params = new URLSearchParams({
+    description,
+    brand,
+    unit,
+    start_month,
+    year,
+  });
+  return CustomAxios.get(
+    `/api/dashboard/customers-sale-qty/?${params.toString()}`
+  );
+};
 const DashboardService = {
   getLastThreeMonthForecastData,
   getLastThreeMonthForecastDataByFilter,
@@ -462,6 +486,8 @@ const DashboardService = {
   getTopCustomersMonthwise,
   potentialTurnoverReport,
   getCRReportData,
+  getSalesQuatityAnalysis,
+  getSalesQuatityAnalysisdetailsByproduct,
 };
 
 export default DashboardService;

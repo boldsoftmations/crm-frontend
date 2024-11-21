@@ -37,12 +37,12 @@ export const PurchaseAllTabView = () => {
     },
     {
       label: "Challan Register",
-      roles: ["Director"],
+      roles: ["Director", "Accounts"],
       component: <ChallanRegisterView />,
     },
     {
       label: "Job Work Challan Invoice",
-      roles: ["Director"],
+      roles: ["Director", "Accounts"],
       component: <ChalanInvoiceView />,
     },
   ];
