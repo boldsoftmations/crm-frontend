@@ -10,11 +10,16 @@ import {
   TableRow,
   TableBody,
   Table,
+  Button,
   tableCellClasses,
 } from "@mui/material";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import DashboardService from "../../../services/DashboardService";
+import { UpdateAllCompanyDetails } from "../../Cutomers/CompanyDetails/UpdateAllCompanyDetails";
+import { Popup } from "../../../Components/Popup";
+import { CreateCustomerProformaInvoice } from "../../Invoice/ProformaInvoice/CreateCustomerProformaInvoice";
+import CustomerServices from "../../../services/CustomerService";
 
 export const ViewProductDetails = ({ rowData, startMonth, startYear }) => {
   const {
@@ -23,6 +28,12 @@ export const ViewProductDetails = ({ rowData, startMonth, startYear }) => {
     product__unit__name,
   } = rowData;
   const [isLoading, setIsLoading] = useState(false);
+  const [openPopupOfUpdateCustomer, setOpenPopupOfUpdateCustomer] =
+    useState(false);
+  const [openPopupInvoice, setOpenPopupInvoice] = useState(false);
+  const [rowdata, setRowdata] = useState();
+  const [recordForEdit, setRecordForEdit] = useState();
+  const [selectedCustomers, setSelectedCustomers] = useState();
   const [salesQuantityAnalysis, setSalesQuantityAnalysis] = useState([]);
   const [alertmsg, setAlertMsg] = useState({
     message: "",
@@ -85,6 +96,25 @@ export const ViewProductDetails = ({ rowData, startMonth, startYear }) => {
   };
 
   const totals = calculateTotals();
+
+  const openInPopupOfUpdateCustomer = (item) => {
+    setRecordForEdit(item.id);
+    setSelectedCustomers(item);
+    setOpenPopupOfUpdateCustomer(true);
+  };
+
+  const openInPopupInvoice = async (row) => {
+    try {
+      const response = await CustomerServices.getCompanyDataById(row.id);
+      const data = response.data;
+      setRecordForEdit(data.id);
+      setRowdata(data);
+      setOpenPopupInvoice(true);
+    } catch (err) {
+      console.log("company data by id error", err);
+    }
+  };
+
   return (
     <>
       <CustomSnackbar
@@ -142,6 +172,7 @@ export const ViewProductDetails = ({ rowData, startMonth, startYear }) => {
                     This Month QTY
                   </StyledTableCell>
                   <StyledTableCell align="center">Short QTY</StyledTableCell>
+                  <StyledTableCell align="center">Action</StyledTableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -168,6 +199,22 @@ export const ViewProductDetails = ({ rowData, startMonth, startYear }) => {
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         {row.short_qty}
+                      </StyledTableCell>
+
+                      <StyledTableCell align="center" display="flex" gap={2}>
+                        <Button
+                          sx={{ color: "#1976d2" }}
+                          onClick={() => openInPopupOfUpdateCustomer(row)}
+                        >
+                          View
+                        </Button>
+
+                        <Button
+                          sx={{ color: "#28a745" }}
+                          onClick={() => openInPopupInvoice(row)}
+                        >
+                          Create PI
+                        </Button>
                       </StyledTableCell>
                     </StyledTableRow>
                   ))
@@ -200,6 +247,31 @@ export const ViewProductDetails = ({ rowData, startMonth, startYear }) => {
               </TableBody>
             </Table>
           </TableContainer>
+          <Popup
+            fullScreen={true}
+            title={"Update Customer"}
+            openPopup={openPopupOfUpdateCustomer}
+            setOpenPopup={setOpenPopupOfUpdateCustomer}
+          >
+            <UpdateAllCompanyDetails
+              setOpenPopup={setOpenPopupOfUpdateCustomer}
+              getAllCompanyDetails={getSalesQuatityAnalysisdetailsByproduct}
+              recordForEdit={recordForEdit}
+              selectedCustomers={selectedCustomers}
+            />
+          </Popup>
+          <Popup
+            fullScreen={true}
+            title={"Create Customer Proforma Invoice"}
+            openPopup={openPopupInvoice}
+            setOpenPopup={setOpenPopupInvoice}
+          >
+            <CreateCustomerProformaInvoice
+              recordForEdit={recordForEdit}
+              rowData={rowdata}
+              setOpenPopup={setOpenPopupInvoice}
+            />
+          </Popup>
         </Paper>
       </Grid>
     </>
