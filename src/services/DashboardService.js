@@ -395,14 +395,14 @@ const getSalesQuatityAnalysisdetailsByproduct = (
   brand,
   unit,
   start_month,
-  star_year
+  start_year
 ) => {
   const params = new URLSearchParams({
     description,
     brand,
     unit,
     start_month,
-    star_year,
+    start_year,
   });
   return CustomAxios.get(
     `/api/dashboard/customers-sale-qty/?${params.toString()}`
