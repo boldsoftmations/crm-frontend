@@ -69,15 +69,18 @@ export const ViewProductDetails = ({ rowData, startMonth, startYear }) => {
   const calculateTotals = () => {
     let totalMaxQty = 0;
     let totalCurrentMonthQty = 0;
+    let totalshortQty = 0;
 
     salesQuantityAnalysis.forEach((row) => {
       totalMaxQty += row.max_qty || 0;
-      totalCurrentMonthQty += row.current_month_qty;
+      totalCurrentMonthQty += row.current_month_qty || 0;
+      totalshortQty += row.short_qty || 0;
     });
 
     return {
       totalMaxQty: numberFormatter.format(totalMaxQty),
       totalCurrentMonthQty: numberFormatter.format(totalCurrentMonthQty),
+      totalshortQty: numberFormatter.format(totalshortQty),
     };
   };
 
@@ -138,6 +141,7 @@ export const ViewProductDetails = ({ rowData, startMonth, startYear }) => {
                   <StyledTableCell align="center">
                     This Month QTY
                   </StyledTableCell>
+                  <StyledTableCell align="center">Short QTY</StyledTableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -162,6 +166,9 @@ export const ViewProductDetails = ({ rowData, startMonth, startYear }) => {
                       <StyledTableCell align="center">
                         {row.current_month_qty || 0}
                       </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.short_qty}
+                      </StyledTableCell>
                     </StyledTableRow>
                   ))
                 ) : (
@@ -184,6 +191,9 @@ export const ViewProductDetails = ({ rowData, startMonth, startYear }) => {
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {totals.totalCurrentMonthQty}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {totals.totalshortQty}
                     </StyledTableCell>
                   </StyledTableRow>
                 )}
