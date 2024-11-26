@@ -445,8 +445,6 @@ const DashboardService = {
   getDailyInvoiceQuantityDataByFilter,
   getDailyOrderBookQuantityData,
   getDailyOrderBookQuantityDataByFilter,
-  // consolidate
-
   getConsLastThreeMonthForecastData,
   getConsLastThreeMonthForecastDataByFilter,
   getConsNewCustomerData,

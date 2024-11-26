@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Box,
   Grid,
@@ -41,6 +41,7 @@ import { useNotificationHandling } from "../../../Components/useNotificationHand
 import { MessageAlert } from "../../../Components/MessageAlert";
 import SearchComponent from "../../../Components/SearchComponent ";
 import { CustomPagination } from "../../../Components/CustomPagination";
+import { CSVLink } from "react-csv";
 
 export const BillofMaterialsView = () => {
   const [openPopup, setOpenPopup] = useState(false);
@@ -63,6 +64,66 @@ export const BillofMaterialsView = () => {
     getconsumables();
   }, []);
 
+  const [exportData, setExportData] = useState([]);
+  const csvLinkRef = useRef(null);
+
+  const handleExport = async () => {
+    try {
+      setOpen(true);
+      let response;
+      if (searchQuery) {
+        response = await InventoryServices.getAllBillofMaterialsData(
+          "all",
+          searchQuery
+        );
+      } else {
+        response = await InventoryServices.getAllBillofMaterialsData("all");
+      }
+      const rawData = response.data;
+      return rawData.flatMap((bom) => {
+        const processedProducts = bom.products_data.map(
+          (productData, index) => ({
+            nameOfItem: index === 0 ? bom.product : "", // Show only for the first product
+            unit: index === 0 ? bom.unit : "", // Show only for the first product
+            nameOfBom: index === 0 ? bom.bom_id : "", // Example static data
+            unitOfManufacture: index === 0 ? 1 : "", // Show only for the first product
+            item: productData.product, // Product from products_data
+            godown: "", // Example static data
+            qty: productData.quantity, // Quantity from products_data
+          })
+        );
+        return processedProducts;
+      });
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setOpen(false);
+    }
+  };
+
+  const handleDownload = async () => {
+    try {
+      const data = await handleExport();
+      setExportData(data);
+      setTimeout(() => {
+        csvLinkRef.current.link.click();
+      });
+      handleSuccess("CSV Downloaded Successfully");
+    } catch (error) {
+      console.log("CSVLink Download error", error);
+    }
+  };
+
+  const headers = [
+    { label: "Name Of Item", key: "nameOfItem" },
+    { label: "Unit", key: "unit" },
+    { label: "Name Of BOM", key: "nameOfBom" },
+    { label: "Unit Of Manufacture", key: "unitOfManufacture" },
+    { label: "Item", key: "item" },
+    { label: "Godown", key: "godown" },
+    { label: "Qty", key: "qty" },
+  ];
+
   const getFinishGoods = async () => {
     try {
       setOpen(true);
@@ -80,7 +141,6 @@ export const BillofMaterialsView = () => {
     try {
       setOpen(true);
       const response = await ProductService.getAllRawMaterials("all");
-      console.log("raw material", response.data);
       var arr = response.data.map((ProductData) => ({
         product: ProductData.name,
         unit: ProductData.unit,
@@ -98,7 +158,6 @@ export const BillofMaterialsView = () => {
     try {
       setOpen(true);
       const response = await ProductService.getAllConsumable("all");
-      console.log("consumable", response.data);
       var arr = response.data.map((ProductData) => ({
         product: ProductData.name,
         unit: ProductData.unit,
@@ -306,6 +365,28 @@ export const BillofMaterialsView = () => {
                 display="flex"
                 justifyContent="flex-end"
               >
+                {(users.groups.includes("Accounts") ||
+                  users.groups.includes("Director")) && (
+                  <>
+                    <Button onClick={handleDownload} variant="contained">
+                      Download CSV
+                    </Button>
+                    {exportData.length > 0 && (
+                      <CSVLink
+                        data={[...exportData]}
+                        headers={headers}
+                        ref={csvLinkRef}
+                        filename="BOM.csv"
+                        target="_blank"
+                        style={{
+                          textDecoration: "none",
+                          outline: "none",
+                          height: "5vh",
+                        }}
+                      />
+                    )}
+                  </>
+                )}
                 <Button
                   onClick={() => setOpenPopup2(true)}
                   variant="contained"
