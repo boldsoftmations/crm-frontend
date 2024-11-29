@@ -368,7 +368,9 @@ export const ApplicantListView = () => {
               <TableBody>
                 {applicants.map((row, i) => (
                   <StyledTableRow key={i}>
-                    <StyledTableCell align="center">{row.job}</StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.job.join(" ")}
+                    </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.creation_date}
                     </StyledTableCell>

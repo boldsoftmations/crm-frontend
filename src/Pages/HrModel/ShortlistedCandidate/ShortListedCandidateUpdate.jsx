@@ -34,7 +34,7 @@ export const ShortListedCandidateUpdate = ({
     rejection_reason: row.rejection_reason || "",
     status: row.status || "",
     stage: row.stage,
-    applicant: row.contact,
+    applicant: row.applicant,
   });
   const [loader, setLoader] = useState(false);
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
@@ -44,7 +44,7 @@ export const ShortListedCandidateUpdate = ({
       rejection_reason: row.rejection_reason || "",
       status: row.status || "",
       stage: row.stage,
-      applicant: row.contact,
+      applicant: row.applicant,
     });
   }, [row]);
   console.log(row);
@@ -54,11 +54,11 @@ export const ShortListedCandidateUpdate = ({
   };
 
   const handleUpdate = async () => {
-    const { status, rejection_reason, stage, contact } = formData;
+    const { status, rejection_reason, stage, applicant } = formData;
     const updatedInterviewDetails = {
       status: status,
       stage: stage,
-      applicant: contact,
+      applicant: applicant,
       ...(status === "Rejected" && { rejection_reason: rejection_reason }),
     };
 
