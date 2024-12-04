@@ -11,12 +11,17 @@ import {
   TableBody,
   Table,
   tableCellClasses,
+  Button,
 } from "@mui/material";
 import { CustomLoader } from "../../Components/CustomLoader";
 import SearchComponent from "../../Components/SearchComponent ";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import CustomSnackbar from "../../Components/CustomerSnackbar";
 import DashboardService from "../../services/DashboardService";
+import { Popup } from "../../Components/Popup";
+import { CreateCustomerProformaInvoice } from "../Invoice/ProformaInvoice/CreateCustomerProformaInvoice";
+import CustomerServices from "../../services/CustomerService";
+import { UpdateAllCompanyDetails } from "../Cutomers/CompanyDetails/UpdateAllCompanyDetails";
 
 const getLastThreeMonths = () => {
   const now = new Date();
@@ -31,7 +36,13 @@ const getLastThreeMonths = () => {
 export const TopCustomerView = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [topCustomerData, setTopCustomerData] = useState([]);
+  const [openPopupOfUpdateCustomer, setOpenPopupOfUpdateCustomer] =
+    useState(false);
+  const [openPopupInvoice, setOpenPopupInvoice] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [rowdata, setRowdata] = useState();
+  const [recordForEdit, setRecordForEdit] = useState();
+  const [selectedCustomers, setSelectedCustomers] = useState();
   const [filterValue, setFilterValue] = useState("25");
   const [alertmsg, setAlertMsg] = useState({
     message: "",
@@ -108,7 +119,25 @@ export const TopCustomerView = () => {
   };
 
   const totals = calculateTotals();
+  const openInPopupOfUpdateCustomer = (item) => {
+    setRecordForEdit(item.order_book__company);
+    setSelectedCustomers(item);
+    setOpenPopupOfUpdateCustomer(true);
+  };
 
+  const openInPopupInvoice = async (row) => {
+    try {
+      const response = await CustomerServices.getCompanyDataById(
+        row.order_book__company
+      );
+      const data = response.data;
+      setRecordForEdit(data.id);
+      setRowdata(data);
+      setOpenPopupInvoice(true);
+    } catch (err) {
+      console.log("company data by id error", err);
+    }
+  };
   return (
     <>
       <CustomSnackbar
@@ -186,6 +215,7 @@ export const TopCustomerView = () => {
                   <StyledTableCell align="center">{months[2]}</StyledTableCell>
                   <StyledTableCell align="center">Total</StyledTableCell>
                   <StyledTableCell align="center">{months[3]}</StyledTableCell>
+                  <StyledTableCell align="center">Action</StyledTableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -208,6 +238,21 @@ export const TopCustomerView = () => {
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {numberFormatter.format(row.this_month_total)}
+                    </StyledTableCell>
+                    <StyledTableCell align="center" display="flex" gap={2}>
+                      <Button
+                        sx={{ color: "#1976d2" }}
+                        onClick={() => openInPopupOfUpdateCustomer(row)}
+                      >
+                        View
+                      </Button>
+
+                      <Button
+                        sx={{ color: "#28a745" }}
+                        onClick={() => openInPopupInvoice(row)}
+                      >
+                        Create PI
+                      </Button>
                     </StyledTableCell>
                   </StyledTableRow>
                 ))}
@@ -235,6 +280,31 @@ export const TopCustomerView = () => {
               </TableBody>
             </Table>
           </TableContainer>
+          <Popup
+            fullScreen={true}
+            title={"Update Customer"}
+            openPopup={openPopupOfUpdateCustomer}
+            setOpenPopup={setOpenPopupOfUpdateCustomer}
+          >
+            <UpdateAllCompanyDetails
+              setOpenPopup={setOpenPopupOfUpdateCustomer}
+              getAllCompanyDetails={getTopCustomers}
+              recordForEdit={recordForEdit}
+              selectedCustomers={selectedCustomers}
+            />
+          </Popup>
+          <Popup
+            fullScreen={true}
+            title={"Create Customer Proforma Invoice"}
+            openPopup={openPopupInvoice}
+            setOpenPopup={setOpenPopupInvoice}
+          >
+            <CreateCustomerProformaInvoice
+              recordForEdit={recordForEdit}
+              rowData={rowdata}
+              setOpenPopup={setOpenPopupInvoice}
+            />
+          </Popup>
         </Paper>
       </Grid>
     </>
