@@ -21,7 +21,12 @@ import { Popup } from "../../../Components/Popup";
 import { CreateCustomerProformaInvoice } from "../../Invoice/ProformaInvoice/CreateCustomerProformaInvoice";
 import CustomerServices from "../../../services/CustomerService";
 
-export const ViewProductDetails = ({ rowData, startMonth, startYear }) => {
+export const ViewProductDetails = ({
+  rowData,
+  startMonth,
+  startYear,
+  filterValue,
+}) => {
   const {
     product__description__name,
     product__brand__name,
@@ -54,7 +59,8 @@ export const ViewProductDetails = ({ rowData, startMonth, startYear }) => {
           product__brand__name,
           product__unit__name,
           startMonth + 1,
-          startYear
+          startYear,
+          filterValue
         );
       setSalesQuantityAnalysis(response.data);
     } catch (error) {
@@ -70,7 +76,7 @@ export const ViewProductDetails = ({ rowData, startMonth, startYear }) => {
 
   useEffect(() => {
     getSalesQuatityAnalysisdetailsByproduct();
-  }, [startMonth, startYear, rowData]);
+  }, [startMonth, startYear, rowData, filterValue]);
 
   // Create a number formatter to add commas to the total values
   const numberFormatter = new Intl.NumberFormat("en-IN", {

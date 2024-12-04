@@ -19,6 +19,7 @@ import DashboardService from "../../../services/DashboardService";
 import { Popup } from "../../../Components/Popup";
 import { ViewProductDetails } from "./ViewProductDetails";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import { useSelector } from "react-redux";
 
 export const ViewSalesQuantityAnalysis = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -37,6 +38,10 @@ export const ViewSalesQuantityAnalysis = () => {
     setAlertMsg({ open: false });
   };
 
+  const storeData = useSelector((state) => state.auth);
+  const users = storeData.profile;
+  const assigned_to_users = users.active_sales_user || [];
+  const [filterValue, setFilterValue] = useState("");
   const generateDynamicMonths = (startMonthIndex, startYear) => {
     // Generate dynamic month headers from the selected start month/year to the current month/year
     const months = [
@@ -86,7 +91,8 @@ export const ViewSalesQuantityAnalysis = () => {
     try {
       const response = await DashboardService.getSalesQuatityAnalysis(
         startMonth + 1,
-        startYear
+        startYear,
+        filterValue
       );
       setSalesQuantityAnalysis(response.data);
     } catch (error) {
@@ -103,7 +109,7 @@ export const ViewSalesQuantityAnalysis = () => {
 
   useEffect(() => {
     getSalesQuantityAnalysis();
-  }, [startMonth, startYear]);
+  }, [startMonth, startYear, filterValue]);
 
   const handleGetproductDetails = (data) => {
     setrowData(data);
@@ -123,6 +129,15 @@ export const ViewSalesQuantityAnalysis = () => {
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
           <Grid item xs={12} md={7}>
             <Box display="flex" gap="1rem" marginBottom="1rem">
+              <CustomAutocomplete
+                fullWidth
+                size="small"
+                value={filterValue}
+                onChange={(e, value) => setFilterValue(value)}
+                options={assigned_to_users.map((option) => option.email)}
+                getOptionLabel={(option) => `${option}`}
+                label={"Filter By Employee"}
+              />
               <CustomAutocomplete
                 fullWidth
                 size="small"
@@ -254,6 +269,7 @@ export const ViewSalesQuantityAnalysis = () => {
               startMonth={startMonth}
               startYear={startYear}
               setOpenPopup={setOpenPopup}
+              filterValue={filterValue}
             />
           </Popup>
         </Paper>

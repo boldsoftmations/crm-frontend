@@ -384,10 +384,19 @@ const getCRReportData = (email) => {
   return CustomAxios.get(`/api/dashboard/cr-report/?email=${email}`);
 };
 
-const getSalesQuatityAnalysis = (month, year) => {
-  return CustomAxios.get(
-    `/api/dashboard/sales-qty/?start_month=${month}&start_year=${year}`
-  );
+const getSalesQuatityAnalysis = (start_month, start_year, email) => {
+  const params = new URLSearchParams();
+  if (start_month) {
+    params.append("start_month", start_month);
+  }
+  if (start_year) {
+    params.append("start_year", start_year);
+  }
+  if (email) {
+    params.append("email", email);
+  }
+
+  return CustomAxios.get(`/api/dashboard/sales-qty/?${params.toString()}`);
 };
 
 const getSalesQuatityAnalysisdetailsByproduct = (
@@ -395,15 +404,29 @@ const getSalesQuatityAnalysisdetailsByproduct = (
   brand,
   unit,
   start_month,
-  start_year
+  year,
+  email
 ) => {
-  const params = new URLSearchParams({
-    description,
-    brand,
-    unit,
-    start_month,
-    start_year,
-  });
+  const params = new URLSearchParams();
+  if (description) {
+    params.append("description", description);
+  }
+  if (brand) {
+    params.append("brand", brand);
+  }
+  if (unit) {
+    params.append("unit", unit);
+  }
+  if (start_month) {
+    params.append("start_month", start_month);
+  }
+  if (year) {
+    params.append("year", year);
+  }
+  if (email) {
+    params.append("email", email);
+  }
+
   return CustomAxios.get(
     `/api/dashboard/customers-sale-qty/?${params.toString()}`
   );
@@ -445,6 +468,8 @@ const DashboardService = {
   getDailyInvoiceQuantityDataByFilter,
   getDailyOrderBookQuantityData,
   getDailyOrderBookQuantityDataByFilter,
+  // consolidate
+
   getConsLastThreeMonthForecastData,
   getConsLastThreeMonthForecastDataByFilter,
   getConsNewCustomerData,
