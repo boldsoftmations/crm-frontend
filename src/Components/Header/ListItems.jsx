@@ -10,8 +10,6 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import {
   Dashboard as DashboardIcon,
-  AssignmentInd as AssignmentIndIcon,
-  Person as PersonIcon,
   InsertDriveFile as InsertDriveFileIcon,
   Receipt as ReceiptIcon,
   Description as DescriptionIcon,
@@ -19,7 +17,6 @@ import {
   Inventory as InventoryIcon,
   TrendingUp as TrendingUpIcon,
   AssignmentTurnedIn as AssignmentTurnedInIcon,
-  FollowTheSigns as FollowTheSignsIcon,
   HelpOutline as HelpOutlineIcon,
   Work as WorkIcon,
   AttachMoney as AttachMoneyIcon,
@@ -178,10 +175,16 @@ export const ListItems = ({ setOpen }) => {
           { to: "/user/profile-tab", text: "Employees Master" },
           { to: "/hr-model/hr-master", text: "HR Master" },
         ]),
-        renderListItem("/task/view-task", <AssignmentTurnedInIcon />, "Task"),
         renderListItem("/hr-model", <WorkIcon />, "Recruitment"),
       ],
     },
+
+    //menus for Hr Recruitment
+    {
+      condition: userData.groups.includes("HR Recruiter"),
+      items: [renderListItem("/hr-model", <WorkIcon />, "Recruitment")],
+    },
+
     // Store and Production menus
     {
       condition:
@@ -405,11 +408,11 @@ export const ListItems = ({ setOpen }) => {
           { to: "/invoice/performa-invoice-tab", text: "Performa Invoice" },
           { to: "/invoice/sales-invoice", text: "Sales Invoice" },
         ]),
-        renderSubmenu("production", <FactoryIcon />, "Production", [
-          { to: "/inventory/view-production", text: "Production" },
-        ]),
         renderSubmenu("inventory", <InventoryIcon />, "Inventory", [
           { to: "/inventory/view-inventory", text: "Inventory" },
+        ]),
+        renderSubmenu("production", <FactoryIcon />, "Production", [
+          { to: "/inventory/view-production", text: "Production" },
         ]),
         renderSubmenu("sales", <TrendingUpIcon />, "Sales", [
           { to: "/customers/all-customer", text: "Customer" },
