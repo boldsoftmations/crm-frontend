@@ -90,6 +90,30 @@ export const CreateLeadsProformaInvoice = (props) => {
     setInputValue({ ...inputValue, [name]: value });
   };
 
+  const [timeLeft, setTimeLeft] = useState(5 * 60); // 5 minutes in seconds
+
+  useEffect(() => {
+    if (timeLeft <= 0) {
+      setOpenPopup(false); // Close the popup when the timer reaches 0
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setTimeLeft((prevTime) => prevTime - 1);
+    }, 1000);
+
+    return () => clearInterval(timer); // Cleanup on component unmount
+  }, [timeLeft, setOpenPopup]);
+
+  const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${String(minutes).padStart(2, "0")}:${String(secs).padStart(
+      2,
+      "0"
+    )}`;
+  };
+
   const getProduct = useCallback(async () => {
     try {
       const res = await ProductService.getAllValidPriceList("all");
@@ -257,7 +281,7 @@ export const CreateLeadsProformaInvoice = (props) => {
         message={alertInfo.message}
       />
       <CustomLoader open={open} />
-
+      <p>Time Left: {formatTime(timeLeft)}</p>
       <Box
         component="form"
         noValidate

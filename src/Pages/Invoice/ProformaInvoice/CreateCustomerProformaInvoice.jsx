@@ -57,7 +57,7 @@ const values = {
 };
 
 export const CreateCustomerProformaInvoice = (props) => {
-  const { recordForEdit, rowData } = props;
+  const { recordForEdit, rowData, setOpenPopup } = props;
   const [productOption, setProductOption] = useState([]);
   const [productDetails, setProductDetails] = useState(null);
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
@@ -126,6 +126,30 @@ export const CreateCustomerProformaInvoice = (props) => {
   const openInPopup = () => {
     setOpenPopup3(true);
     setOpenPopup2(false);
+  };
+
+  const [timeLeft, setTimeLeft] = useState(5 * 60); // 5 minutes in seconds
+
+  useEffect(() => {
+    if (timeLeft <= 0) {
+      setOpenPopup(false); // Close the popup when the timer reaches 0
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setTimeLeft((prevTime) => prevTime - 1);
+    }, 1000);
+
+    return () => clearInterval(timer); // Cleanup on component unmount
+  }, [timeLeft, setOpenPopup]);
+
+  const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${String(minutes).padStart(2, "0")}:${String(secs).padStart(
+      2,
+      "0"
+    )}`;
   };
 
   const getProduct = useCallback(async () => {
@@ -349,6 +373,7 @@ export const CreateCustomerProformaInvoice = (props) => {
         message={alertInfo.message}
       />
       <CustomLoader open={open} />
+      <p>Time Left: {formatTime(timeLeft)}</p>
       <Box
         component="form"
         noValidate
