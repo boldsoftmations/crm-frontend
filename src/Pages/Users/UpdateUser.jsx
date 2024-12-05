@@ -11,6 +11,7 @@ import {
   Chip,
   FormControlLabel,
   Grid,
+  Typography,
 } from "@mui/material";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
 import TaskService from "../../services/TaskService";
@@ -52,12 +53,11 @@ const UpdateUser = ({
 
       // Prepare the merged state
       setState((prev) => {
-        const prevStateCities = activeUsersByIDData.assigned_state_city || {}; // Previous state and city data
-        const newStateCities = response.data; // New state and city data from response
-
+        const prevStateCities =
+          activeUsersByIDData.assigned_state_city.data || {}; // Previous state and city data
+        const newStateCities = response.data.data; // New state and city data from response
         // Create a new object to hold the merged data
         const mergedStateCities = { ...prevStateCities };
-
         // Merge newStateCities into mergedStateCities
         Object.entries(newStateCities).forEach(([state, cities]) => {
           if (mergedStateCities[state]) {
@@ -123,104 +123,132 @@ const UpdateUser = ({
 
   useEffect(() => {
     if (activeUsersByIDData && activeUsersByIDData.assigned_state_city) {
+      const result = {};
+      let data = activeUsersByIDData.assigned_state_city.data;
+      Object.entries(data).forEach(([stateName, stateData]) => {
+        result[stateName] = {
+          cities: stateData.cities.map((cityObj) => cityObj.city), // Extract city names
+        };
+      });
+
       setSelectedStateCities((prev) => ({
         ...prev,
-        ...activeUsersByIDData.assigned_state_city, // Merge existing states with new activeUsersByIDData.assigned_state_city
+        ...result, // Merge existing states with new activeUsersByIDData.assigned_state_city
       }));
     }
   }, [activeUsersByIDData.first_name]);
 
-  const handleCheck = (event, state, cities = []) => {
+  const handleCheck = (event, stateName, cities = []) => {
     setSelectedStateCities((prev) => {
-      const newSelectedStateCities = { ...prev };
+      const updatedStateCities = { ...prev };
 
-      // If the state already exists in prev, keep it
-      const existingCities = newSelectedStateCities[state] || [];
+      const cityNames = cities.map((cityObj) => cityObj.city);
 
       if (event.target.checked) {
-        // Add new cities to the existing cities array
-        const updatedCities = [...new Set([...existingCities, ...cities])]; // Avoid duplicates
-        newSelectedStateCities[state] = updatedCities;
+        // Select all cities for the state
+        updatedStateCities[stateName] = { cities: cityNames };
       } else {
-        // Deselect the state or individual cities based on the event
-        if (cities.length === 0) {
-          // If no cities are passed, deselect the entire state
-          delete newSelectedStateCities[state];
-        } else {
-          // If cities are passed, remove only those cities
-          const remainingCities = existingCities.filter(
-            (city) => !cities.includes(city)
-          );
-          if (remainingCities.length > 0) {
-            newSelectedStateCities[state] = remainingCities;
-          } else {
-            delete newSelectedStateCities[state]; // Remove the state if no cities remain
-          }
-        }
+        // Deselect the state
+        delete updatedStateCities[stateName];
       }
 
-      return newSelectedStateCities;
+      return updatedStateCities;
     });
   };
 
-  const handleCityCheck = (event, state, city) => {
+  const handleCityCheck = (event, stateName, cityName) => {
     setSelectedStateCities((prev) => {
-      const newSelectedStateCities = { ...prev };
+      const updatedStateCities = { ...prev };
 
-      // Check if the state is already present in the object
-      if (newSelectedStateCities[state]) {
-        if (event.target.checked) {
-          // Add the city to the array, only if it doesn't already exist (avoid duplicates)
-          if (!newSelectedStateCities[state].includes(city)) {
-            newSelectedStateCities[state] = [
-              ...newSelectedStateCities[state],
-              city,
-            ];
-          }
-        } else {
-          // Remove the city from the array
-          newSelectedStateCities[state] = newSelectedStateCities[state].filter(
-            (c) => c !== city
-          );
-
-          // If no cities are left, remove the state from the object
-          if (newSelectedStateCities[state].length === 0) {
-            delete newSelectedStateCities[state];
-          }
-        }
-      } else if (event.target.checked) {
-        // If the state is not in the object, add the city under the state
-        newSelectedStateCities[state] = [city];
+      // Ensure the state exists in the structure
+      if (!updatedStateCities[stateName]) {
+        updatedStateCities[stateName] = { cities: [] };
       }
 
-      return newSelectedStateCities;
+      const selectedCities = updatedStateCities[stateName].cities;
+
+      if (event.target.checked) {
+        // Add the city (avoid duplicates)
+        updatedStateCities[stateName].cities = [
+          ...new Set([...selectedCities, cityName]),
+        ];
+      } else {
+        // Remove the city
+        updatedStateCities[stateName].cities = selectedCities.filter(
+          (city) => city !== cityName
+        );
+
+        // If no cities remain, remove the state from the structure
+        if (updatedStateCities[stateName].cities.length === 0) {
+          delete updatedStateCities[stateName];
+        }
+      }
+
+      return updatedStateCities;
     });
   };
 
-  // Check if all cities are selected for the state
   const isStateFullySelected = (stateName, cities) => {
-    return (
-      selectedStateCities[stateName] &&
-      selectedStateCities[stateName].length === cities.length
-    );
+    if (
+      !selectedStateCities[stateName] ||
+      !selectedStateCities[stateName].cities
+    ) {
+      // If the state or cities data is not ready, wait or return false
+      return false;
+    }
+
+    const cityNames = cities.map((cityObj) => cityObj.city);
+    const selectedCities = selectedStateCities[stateName].cities; // Access cities directly
+
+    return selectedCities.length === cityNames.length; // Fully selected when lengths match
   };
 
-  // Check if some but not all cities are selected for the state
   const isStatePartiallySelected = (stateName, cities) => {
+    if (
+      !selectedStateCities[stateName] ||
+      !Array.isArray(selectedStateCities[stateName].cities)
+    ) {
+      // If data is not available or cities is not an array, return false
+      return false;
+    }
+
+    const cityNames = cities.map((cityObj) => cityObj.city);
+    const selectedCities = selectedStateCities[stateName].cities;
+
     return (
-      selectedStateCities[stateName] &&
-      selectedStateCities[stateName].length > 0 &&
-      selectedStateCities[stateName].length < cities.length
+      selectedCities.length > 0 && // Some cities are selected
+      selectedCities.length < cityNames.length // Not all cities are selected
     );
   };
+  const isChecked = (stateName, cityName) => {
+    if (
+      !selectedStateCities[stateName] ||
+      !Array.isArray(selectedStateCities[stateName].cities)
+    ) {
+      // If data is not available or cities is not an array, return false
+      return false;
+    }
 
-  const isChecked = (state, city) =>
-    (selectedStateCities[state] && selectedStateCities[state].includes(city)) ||
-    false;
+    const selectedCities = selectedStateCities[stateName].cities;
+
+    return selectedCities.includes(cityName); // Check if the city is selected
+  };
+
+  const transformStateCities = (data) => {
+    const result = {};
+
+    Object.entries(data).forEach(([stateName, stateData]) => {
+      result[stateName] = stateData.cities || []; // Extract cities or default to an empty array
+    });
+
+    return result;
+  };
+
   const createUsersDetails = async (e) => {
     try {
       e.preventDefault();
       setOpen(true);
+
       const req = {
         first_name: activeUsersByIDData.first_name,
         last_name: activeUsersByIDData.last_name,
@@ -229,7 +257,7 @@ const UpdateUser = ({
         is_active: activeUsersByIDData.is_active,
         group_names: activeUsersByIDData.groups,
         ref_user: activeUsersByIDData.ref_user,
-        state: selectedStateCities || [],
+        state: transformStateCities(selectedStateCities) || [],
       };
 
       const response = await TaskService.createUsers(
@@ -267,7 +295,7 @@ const UpdateUser = ({
       return acc;
     }, {});
 
-  console.log(sortedState);
+  console.log("selectedStateCities  by me", selectedStateCities);
   return (
     <>
       <MessageAlert
@@ -354,6 +382,36 @@ const UpdateUser = ({
             activeUsersByIDData.groups.includes(
               "Customer Relationship Executive"
             ) && (
+              <Box
+                sx={{
+                  p: 2,
+                  borderColor: "grey.300",
+                  borderRadius: 2,
+                  maxWidth: 400,
+                  mx: "auto",
+                  mt: 2,
+                  backgroundColor: "grey.100",
+                }}
+              >
+                <Typography
+                  variant="body1"
+                  sx={{ fontWeight: "bold", color: "primary.main" }}
+                >
+                  Total Customers Assigned :{" "}
+                  <strong>
+                    {
+                      activeUsersByIDData.assigned_state_city
+                        .assigned_total_count
+                    }
+                  </strong>
+                </Typography>
+              </Box>
+            )}
+          {activeUsersByIDData &&
+            activeUsersByIDData.groups &&
+            activeUsersByIDData.groups.includes(
+              "Customer Relationship Executive"
+            ) && (
               <Grid item xs={12}>
                 <TreeView
                   aria-label="checkbox tree"
@@ -366,10 +424,12 @@ const UpdateUser = ({
                     mx: "10px",
                   }}
                 >
-                  {state &&
+                  {sortedState &&
                     Object.entries(sortedState).map(
-                      ([stateName, cities], stateIndex) => {
+                      ([stateName, stateData], stateIndex) => {
                         const stateId = `state-${stateIndex}`;
+                        const cities = stateData.cities || []; // Ensure cities is an array
+
                         return (
                           <TreeItem
                             key={stateId}
@@ -380,7 +440,7 @@ const UpdateUser = ({
                                   <Checkbox
                                     checked={
                                       !!isStateFullySelected(stateName, cities)
-                                    } // Ensure controlled value (either true or false)
+                                    }
                                     indeterminate={isStatePartiallySelected(
                                       stateName,
                                       cities
@@ -396,7 +456,9 @@ const UpdateUser = ({
                                     }}
                                   />
                                 }
-                                label={stateName}
+                                label={`${stateName} [${
+                                  stateData.state_count || 0
+                                }]`}
                                 sx={{
                                   color: isStatePartiallySelected(
                                     stateName,
@@ -415,7 +477,6 @@ const UpdateUser = ({
                             }
                           >
                             {Array.isArray(cities) &&
-                              cities.length > 0 &&
                               cities.map((city, cityIndex) => {
                                 const cityId = `city-${stateIndex}-${cityIndex}`;
                                 return (
@@ -427,18 +488,18 @@ const UpdateUser = ({
                                         control={
                                           <Checkbox
                                             checked={
-                                              !!isChecked(stateName, city)
-                                            } // Ensure controlled value (either true or false)
+                                              !!isChecked(stateName, city.city)
+                                            }
                                             onChange={(event) =>
                                               handleCityCheck(
                                                 event,
                                                 stateName,
-                                                city
+                                                city.city
                                               )
                                             }
                                           />
                                         }
-                                        label={city}
+                                        label={`${city.city} [${city.count}]`}
                                       />
                                     }
                                   />
