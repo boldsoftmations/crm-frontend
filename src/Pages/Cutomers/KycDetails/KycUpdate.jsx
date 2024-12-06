@@ -7,13 +7,9 @@ import CustomTextField from "../../../Components/CustomTextField";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
+import { useFetcher } from "react-router-dom";
 
-const KycUpdate = ({
-  recordForEdit,
-  setOpenPopup,
-  getIncompleteKycCustomerData,
-  onDataUpdated,
-}) => {
+const KycUpdate = ({ recordForEdit, setOpenPopup, onDataUpdated }) => {
   const [contactData, setContactData] = useState([]);
   const [allCompetitors, setAllCompetitors] = useState([]);
   const [open, setOpen] = useState(false);
@@ -37,39 +33,6 @@ const KycUpdate = ({
     }
   };
 
-  useEffect(() => {
-    getCompetitors();
-  }, []);
-
-  //fetch group companies
-
-  const fetchGroupCompanies = async () => {
-    try {
-      const response = await CustomerServices.getAllGroupCompanies();
-      const names = response.data.map((company) => ({
-        ref_customer: company.name,
-      }));
-      return names;
-    } catch (error) {
-      handleError(error);
-      console.error("Failed to fetch group companies", error);
-      return [];
-    }
-  };
-
-  useEffect(() => {
-    setLoading(true);
-    fetchGroupCompanies()
-      .then((data) => {
-        setGroupCompanies(data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Failed to fetch group companies", error);
-        setLoading(false);
-      });
-  }, []);
-
   // Fetch company details based on ID
   const getAllCompanyDetailsByID = async () => {
     setOpen(true);
@@ -78,7 +41,7 @@ const KycUpdate = ({
         CustomerServices.getCompanyDataByIdWithType(recordForEdit, "contacts"),
         CustomerServices.getCompanyDataById(recordForEdit),
       ]);
-      // Extract only the required fields for setInputValue
+
       const {
         website,
         estd_year,
@@ -100,7 +63,10 @@ const KycUpdate = ({
         type_of_customer,
         whatsapp_group,
         origin_type,
+        ref_customer,
       } = kycResponse.data;
+
+      // Update input value
       setInputValue({
         website,
         estd_year,
@@ -122,8 +88,14 @@ const KycUpdate = ({
         type_of_customer,
         whatsapp_group,
         origin_type,
+        ref_customer,
       });
-      // Extract only the required fields for setContactData
+
+      // Fetch group companies based on `type_of_customer`
+      if (type_of_customer) {
+        fetchGroupCompanies(type_of_customer);
+      }
+
       const filteredContacts = contactResponse.data.contacts.map((contact) => ({
         id: contact.id,
         name: contact.name,
@@ -137,9 +109,10 @@ const KycUpdate = ({
         religion: contact.religion,
       }));
       setContactData(filteredContacts);
+
       // Find the ID for the purchase decision maker
       const decisionMaker = filteredContacts.find(
-        (item) => item.name === kycResponse.data.purchase_decision_maker
+        (item) => item.name === purchase_decision_maker
       );
       if (decisionMaker) {
         setContactValue(decisionMaker);
@@ -152,11 +125,32 @@ const KycUpdate = ({
     }
   };
 
+  const fetchGroupCompanies = async (type_of_customer) => {
+    try {
+      setLoading(true);
+      const response = await CustomerServices.getAllGroupCompanies(
+        type_of_customer
+      );
+      const names = response.data.map((company) => ({
+        ref_customer: company.name,
+      }));
+      setGroupCompanies(names);
+    } catch (error) {
+      handleError(error);
+      console.error("Failed to fetch group companies", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (recordForEdit) {
       getAllCompanyDetailsByID();
+      getCompetitors();
     }
   }, [recordForEdit]);
+
+  console.log(inputValue.type_of_customer);
 
   // Handle input changes
   const handleInputChange = (name, value) => {
@@ -189,30 +183,6 @@ const KycUpdate = ({
   const handleContactsChange = (name, value) => {
     setContactValue((prevState) => ({ ...prevState, [name]: value }));
   };
-
-  // Fetch purchase decision maker data by ID
-  // const getPurchaseDecisionMakerDataByID = async (ID) => {
-  //   try {
-  //     setOpen(true);
-  //     const contactResponse = await CustomerServices.getCompanyDataByIdWithType(
-  //       ID,
-  //       "contacts"
-  //     );
-
-  //     if (contactResponse.data && contactResponse.data.contacts) {
-  //       const contact = contactResponse.data.contacts;
-  //       setContactValue((prevState) => ({
-  //         ...prevState,
-  //         religion: contact.religion || "",
-  //         birth_date: contact.birth_date || "",
-  //         marital_status: contact.marital_status || "",
-  //         anniversary_date: contact.anniversary_date || "",
-  //       }));
-  //     }
-  //   } finally {
-  //     setOpen(false);
-  //   }
-  // };
 
   // Update company details
   const UpdateCompanyDetails = async (e) => {
@@ -298,7 +268,6 @@ const KycUpdate = ({
   const resetErrorMessage = () => {
     setErrorMessage("");
   };
-
   return (
     <>
       <MessageAlert
@@ -573,26 +542,25 @@ const KycUpdate = ({
             />
           </Grid>
 
-          {inputValue.type_of_customer === "Distribution Customer" && (
-            <Grid item xs={12} sm={6}>
-              <CustomAutocomplete
-                fullWidth
-                name="ref_customer"
-                size="small"
-                label="Group Company"
-                options={groupCompanies}
-                value={inputValue.ref_customer || ""}
-                onChange={(event, newValue) => {
-                  handleInputChange("ref_customer", newValue || "");
-                  resetErrorMessage();
-                }}
-                error={!!errorMessage}
-                helperText={errorMessage}
-                loading={loading}
-                getOptionLabel={(option) => (option ? option.ref_customer : "")}
-              />
-            </Grid>
-          )}
+          <Grid item xs={12} sm={6}>
+            <CustomAutocomplete
+              fullWidth
+              name="ref_customer"
+              size="small"
+              label="Group Company"
+              options={groupCompanies.map(
+                (companyGrp, i) => companyGrp.ref_customer
+              )}
+              value={inputValue.ref_customer || ""}
+              onChange={(event, newValue) => {
+                handleInputChange("ref_customer", newValue || "");
+                resetErrorMessage();
+              }}
+              error={!!errorMessage}
+              helperText={errorMessage}
+              loading={loading}
+            />
+          </Grid>
         </Grid>
         <Grid item xs={12} sm={3}>
           <Button

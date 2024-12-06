@@ -44,6 +44,7 @@ const UpdateUser = ({
       [name]: value,
     });
   };
+
   const getAllStatesList = async () => {
     try {
       setOpen(true);
@@ -76,10 +77,8 @@ const UpdateUser = ({
             ? newStateData.cities
             : [];
 
-          const prevStateData = mergedStateCities[state] || {
-            cities: [],
-            state_count: 0,
-          };
+          // Get previous state data or initialize it
+          const prevStateData = mergedStateCities[state] || { cities: [] };
 
           const prevCities = Array.isArray(prevStateData.cities)
             ? prevStateData.cities
@@ -96,10 +95,10 @@ const UpdateUser = ({
 
           const mergedCities = Array.from(mergedCitiesMap.values());
 
-          // Update the state data with merged cities and state count
+          // Update the state data with merged cities, keeping the original state_count
           mergedStateCities[state] = {
-            cities: mergedCities,
-            state_count: prevStateData.state_count,
+            state_count: newStateData.state_count, // Keep state_count from the response
+            cities: mergedCities, // Only update cities, maintaining unique entries
           };
         });
 
@@ -112,7 +111,8 @@ const UpdateUser = ({
       setOpen(false);
     }
   };
-  console.log("state", state);
+
+  console.log(state);
 
   useEffect(() => {
     getAllStatesList();

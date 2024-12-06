@@ -230,8 +230,10 @@ const updateCompetitors = (id, data) => {
   return CustomAxios.patch(`/api/customer/list-main-distribution/${id}`, data);
 };
 
-const getAllGroupCompanies = () => {
-  return CustomAxios.get("/api/customer/list-group-company/");
+const getAllGroupCompanies = (type) => {
+  return CustomAxios.get(
+    `/api/customer/list-group-company/?type_of_customer=${type}`
+  );
 };
 
 // Whatsapp routes
