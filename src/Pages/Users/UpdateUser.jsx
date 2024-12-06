@@ -53,7 +53,7 @@ const UpdateUser = ({
 
       // Prepare the merged state
       setState((prev) => {
-        // Safely access `assigned_state_city.data` or use an empty object if it's undefined
+        // Safely access `assigned_state_city.data` or use an empty object if undefined
         const prevStateCities =
           activeUsersByIDData &&
           activeUsersByIDData.assigned_state_city &&
@@ -71,26 +71,40 @@ const UpdateUser = ({
         const mergedStateCities = { ...prevStateCities };
 
         // Merge `newStateCities` into `mergedStateCities`
-        Object.entries(newStateCities).forEach(([state, cities]) => {
-          // Ensure `mergedStateCities[state]` is an array
-          const prevCities = Array.isArray(mergedStateCities[state])
-            ? mergedStateCities[state]
+        Object.entries(newStateCities).forEach(([state, newStateData]) => {
+          const newCities = Array.isArray(newStateData.cities)
+            ? newStateData.cities
             : [];
 
-          // Ensure `cities` is an array
-          const newCities = Array.isArray(cities) ? cities : [];
+          const prevStateData = mergedStateCities[state] || {
+            cities: [],
+            state_count: 0,
+          };
 
-          // Merge cities and avoid duplicates
-          mergedStateCities[state] = [
-            ...new Set([...prevCities, ...newCities]),
-          ];
+          const prevCities = Array.isArray(prevStateData.cities)
+            ? prevStateData.cities
+            : [];
+
+          // Merge cities by avoiding duplicates based on city names
+          const mergedCitiesMap = new Map();
+          prevCities.forEach((cityObj) =>
+            mergedCitiesMap.set(cityObj.city, cityObj)
+          );
+          newCities.forEach((cityObj) =>
+            mergedCitiesMap.set(cityObj.city, cityObj)
+          );
+
+          const mergedCities = Array.from(mergedCitiesMap.values());
+
+          // Update the state data with merged cities and state count
+          mergedStateCities[state] = {
+            cities: mergedCities,
+            state_count: prevStateData.state_count,
+          };
         });
 
         // Return the final merged object
-        return {
-          ...prev, // Keep other previous state
-          ...mergedStateCities, // Add the merged states and cities
-        };
+        return mergedStateCities;
       });
     } catch (error) {
       handleError(error);
@@ -98,6 +112,7 @@ const UpdateUser = ({
       setOpen(false);
     }
   };
+  console.log("state", state);
 
   useEffect(() => {
     getAllStatesList();
@@ -312,14 +327,18 @@ const UpdateUser = ({
   ];
 
   // sorting state alphabetically
-  const sortedState = Object.keys(state)
-    .sort()
-    .reduce((acc, key) => {
-      acc[key] = state[key];
-      return acc;
-    }, {});
+  const sortStatesByName = (data) => {
+    // Convert the object into an array of [key, value] pairs
+    const entries = Object.entries(data);
 
-  console.log("selectedStateCities  by me", selectedStateCities);
+    // Sort the array by state name (key)
+    entries.sort(([stateA], [stateB]) => stateA.localeCompare(stateB));
+
+    // Convert the sorted array back to an object
+    return Object.fromEntries(entries);
+  };
+  const sortedData = sortStatesByName(state);
+
   return (
     <>
       <MessageAlert
@@ -448,8 +467,8 @@ const UpdateUser = ({
                     mx: "10px",
                   }}
                 >
-                  {sortedState &&
-                    Object.entries(sortedState).map(
+                  {sortedData &&
+                    Object.entries(sortedData).map(
                       ([stateName, stateData], stateIndex) => {
                         const stateId = `state-${stateIndex}`;
                         const cities = stateData.cities || []; // Ensure cities is an array
