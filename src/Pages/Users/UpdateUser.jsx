@@ -53,22 +53,37 @@ const UpdateUser = ({
 
       // Prepare the merged state
       setState((prev) => {
+        // Safely access `assigned_state_city.data` or use an empty object if it's undefined
         const prevStateCities =
-          activeUsersByIDData.assigned_state_city.data || {}; // Previous state and city data
-        const newStateCities = response.data.data; // New state and city data from response
+          activeUsersByIDData &&
+          activeUsersByIDData.assigned_state_city &&
+          activeUsersByIDData.assigned_state_city.data
+            ? activeUsersByIDData.assigned_state_city.data
+            : {};
+
+        // Ensure `response.data.data` is an object or fallback to an empty object
+        const newStateCities =
+          response && response.data && response.data.data
+            ? response.data.data
+            : {};
+
         // Create a new object to hold the merged data
         const mergedStateCities = { ...prevStateCities };
-        // Merge newStateCities into mergedStateCities
+
+        // Merge `newStateCities` into `mergedStateCities`
         Object.entries(newStateCities).forEach(([state, cities]) => {
-          if (mergedStateCities[state]) {
-            // If the state already exists, merge cities and avoid duplicates
-            mergedStateCities[state] = [
-              ...new Set([...mergedStateCities[state], ...cities]),
-            ];
-          } else {
-            // If the state does not exist, directly add it
-            mergedStateCities[state] = cities;
-          }
+          // Ensure `mergedStateCities[state]` is an array
+          const prevCities = Array.isArray(mergedStateCities[state])
+            ? mergedStateCities[state]
+            : [];
+
+          // Ensure `cities` is an array
+          const newCities = Array.isArray(cities) ? cities : [];
+
+          // Merge cities and avoid duplicates
+          mergedStateCities[state] = [
+            ...new Set([...prevCities, ...newCities]),
+          ];
         });
 
         // Return the final merged object
@@ -122,7 +137,11 @@ const UpdateUser = ({
   }, [selectedGrp]);
 
   useEffect(() => {
-    if (activeUsersByIDData && activeUsersByIDData.assigned_state_city) {
+    if (
+      activeUsersByIDData &&
+      activeUsersByIDData.assigned_state_city &&
+      activeUsersByIDData.assigned_state_city.data
+    ) {
       const result = {};
       let data = activeUsersByIDData.assigned_state_city.data;
       Object.entries(data).forEach(([stateName, stateData]) => {
@@ -235,6 +254,9 @@ const UpdateUser = ({
   };
 
   const transformStateCities = (data) => {
+    if (!data) {
+      return {}; // Return an empty object if data is not provided
+    }
     const result = {};
 
     Object.entries(data).forEach(([stateName, stateData]) => {
@@ -257,7 +279,9 @@ const UpdateUser = ({
         is_active: activeUsersByIDData.is_active,
         group_names: activeUsersByIDData.groups,
         ref_user: activeUsersByIDData.ref_user,
-        state: transformStateCities(selectedStateCities) || [],
+        state:
+          (selectedStateCities && transformStateCities(selectedStateCities)) ||
+          [],
       };
 
       const response = await TaskService.createUsers(
