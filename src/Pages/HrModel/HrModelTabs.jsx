@@ -8,7 +8,6 @@ import { ShortListedCandidateView } from "./ShortlistedCandidate/ShortListedCand
 import { RejectedCandidate } from "./RejectedCandidate/RejectedCandidate.jsx";
 import { useSelector } from "react-redux";
 import { ViewCompetitorCandidates } from "./CompetitorCandidates/ViewCompetitorCandidates.jsx";
-import { ATSRejectedCandidatesView } from "./RejectedCandidatesByCV/ATSRejectedCandidatesView.jsx";
 import { ViewAssementDetails } from "./AsssementDetails/ViewAssementDetails.jsx";
 export const HrModelTabs = () => {
   const [activeTab, setActiveTab] = useState(0);
