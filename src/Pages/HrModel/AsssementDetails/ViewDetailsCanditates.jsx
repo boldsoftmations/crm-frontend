@@ -129,6 +129,29 @@ const ViewDetailsCandidates = ({ data }) => {
           </Grid>
         </Grid>
 
+        {/* family Info */}
+        <Grid item xs={12}>
+          {renderSectionHeader("Family Details")}
+          <Grid container spacing={2}>
+            {data.family_members.map((members, index) => (
+              <Grid item xs={12} sm={6} key={index}>
+                <Box
+                  sx={{
+                    p: 2,
+                    backgroundColor: "#fff",
+                    borderRadius: 2,
+                    boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.1)",
+                  }}
+                >
+                  {renderInfoBox("Name", members.name)}
+                  {renderInfoBox("Relation", members.relation)}
+                  {renderInfoBox("Age", members.dob_or_age)}
+                </Box>
+              </Grid>
+            ))}
+          </Grid>
+        </Grid>
+
         {/* Other Info */}
         <Grid item xs={12}>
           {renderSectionHeader("Other Info")}

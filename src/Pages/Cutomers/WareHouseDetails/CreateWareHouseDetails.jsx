@@ -2,16 +2,16 @@ import React, { useState } from "react";
 import { Box, Button, Grid } from "@mui/material";
 import CustomerServices from "../../../services/CustomerService";
 import { useSelector } from "react-redux";
-import axios from "axios";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomTextField from "../../../Components/CustomTextField";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import MasterService from "../../../services/MasterService";
+import CustomSnackbar from "../../../Components/CustomerSnackbar";
 
 export const CreateWareHouseDetails = (props) => {
   const { setOpenPopup, getAllCompanyDetailsByID, contactData } = props;
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState([]);
-  const [pinCodeData, setPinCodeData] = useState([]);
   const [selectedcontact, setSelectedContact] = useState("");
   const data = useSelector((state) => state.auth);
 
@@ -19,31 +19,57 @@ export const CreateWareHouseDetails = (props) => {
     const { name, value } = event.target;
     setInputValue({ ...inputValue, [name]: value });
   };
-
+  const [alertmsg, setAlertMsg] = useState({
+    message: "",
+    severity: "",
+    open: false,
+  });
+  const handleClose = () => {
+    setAlertMsg({ open: false });
+  };
   const validatePinCode = async () => {
     try {
       setOpen(true);
       const PINCODE = inputValue.pincode;
-
-      // Replace with Geonames API endpoint
-      const response = await axios.get(
-        `http://api.geonames.org/postalCodeLookupJSON?postalcode=${PINCODE}&username=your_username`
+      const response = await MasterService.getCountryDataByPincode(
+        "India",
+        PINCODE
       );
-
-      // Adjust according to Geonames API response structure
-      if (response.data && response.data.postalcodes.length > 0) {
-        setPinCodeData(response.data.postalcodes[0]);
+      if (response.data.length === 0) {
+        setAlertMsg({
+          message:
+            "This Pin Code does not exist ! First Create the Pin code in the master country",
+          severity: "warning",
+          open: true,
+        });
+        setInputValue({
+          ...inputValue,
+          state: "",
+          city: "",
+        });
       } else {
-        console.log("No data found for this pincode");
+        setAlertMsg({
+          message: "Pin code is valid",
+          severity: "success",
+          open: true,
+        });
+        setInputValue({
+          ...inputValue,
+          state: response.data[0].state,
+          city: response.data[0].city_name,
+        });
       }
-
-      setOpen(false);
     } catch (error) {
-      console.log("Error validating pincode", error);
+      console.log("error", error);
+      setAlertMsg({
+        message: "Error fetching country data by pincode",
+        severity: "error",
+        open: true,
+      });
+    } finally {
       setOpen(false);
     }
   };
-
   const createWareHouseDetails = async (e) => {
     try {
       e.preventDefault();
@@ -69,7 +95,12 @@ export const CreateWareHouseDetails = (props) => {
   return (
     <div>
       <CustomLoader open={open} />
-
+      <CustomSnackbar
+        open={alertmsg.open}
+        message={alertmsg.message}
+        severity={alertmsg.severity}
+        onClose={handleClose}
+      />
       <Box
         component="form"
         noValidate
@@ -102,23 +133,22 @@ export const CreateWareHouseDetails = (props) => {
               value={inputValue.address}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={12}>
             <CustomTextField
-              fullWidth
+              sx={{ minWidth: "300px" }}
               onChange={handleInputChange}
               size="small"
               name="pincode"
               label="Pin Code"
-              variant="outlined"
               value={inputValue.pincode}
             />
-            {/* <Button
-              onClick={() => validatePinCode()}
+            <Button
+              onClick={validatePinCode}
               variant="contained"
               sx={{ marginLeft: "1rem" }}
             >
               Validate
-            </Button> */}
+            </Button>
           </Grid>
 
           <Grid item xs={12} sm={6}>
@@ -130,6 +160,7 @@ export const CreateWareHouseDetails = (props) => {
               variant="outlined"
               value={inputValue.state || ""}
               onChange={handleInputChange}
+              disabled
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -141,6 +172,7 @@ export const CreateWareHouseDetails = (props) => {
               variant="outlined"
               value={inputValue.city || ""}
               onChange={handleInputChange}
+              disabled
             />
           </Grid>
         </Grid>
