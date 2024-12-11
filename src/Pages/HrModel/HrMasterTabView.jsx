@@ -19,71 +19,66 @@ export const HrMasterTabView = () => {
     groups.some((group) => userData.groups.includes(group));
 
   const allTabs = isInGroups("Director", "HR");
-  const [activeTab, setActiveTab] = useState(allTabs ? 0 : 4);
+  const isRecruiterAndDirector = isInGroups("Director", "HR", "HR Recruiter");
 
   const tabs = [
     {
       label: "Designation",
       visible: allTabs,
-      index: 0,
+      component: <DesignationView />,
     },
     {
       label: "Department",
       visible: allTabs,
-      index: 1,
+      component: <DepartmentView />,
     },
     {
       label: "Source",
       visible: allTabs,
-      index: 2,
+      component: <SourceView />,
     },
     {
       label: "Location",
       visible: allTabs,
-      index: 3,
+      component: <LocationView />,
     },
     {
       label: "MCQ Question",
       visible: allTabs,
-      index: 4,
+      component: <ViewMCQs />,
     },
     {
       label: "Interview Question",
       visible: allTabs,
-      index: 5,
+      component: <InterviewQuestionView />,
     },
-    { label: "Attribute", visible: allTabs, index: 6 },
-    { label: "Competency Attribute", visible: allTabs, index: 7 },
-    { label: "Role Clarity", visible: allTabs, index: 8 },
-    { label: "Job Description", visible: allTabs, index: 9 },
+    { label: "Attribute", visible: allTabs, component: <ViewAttribute /> },
+    {
+      label: "Competency Attribute",
+      visible: allTabs,
+      component: <ViewCompentancyAttribute />,
+    },
+    { label: "Role Clarity", visible: allTabs, component: <ViewRoleClarity /> },
+    {
+      label: "Job Description",
+      visible: isRecruiterAndDirector,
+      component: <ViewJobDescription />,
+    },
   ];
 
   const visibleTabs = tabs.filter((tab) => tab.visible);
-  const visibleTabIndexes = visibleTabs.map((tab) => tab.index);
-
-  const tabComponents = {
-    0: <DesignationView />,
-    1: <DepartmentView />,
-    2: <SourceView />,
-    3: <LocationView />,
-    4: <ViewMCQs />,
-    5: <InterviewQuestionView />,
-    6: <ViewAttribute />,
-    7: <ViewCompentancyAttribute />,
-    8: <ViewRoleClarity />,
-    9: <ViewJobDescription />,
-  };
+  const [activeTab, setActiveTab] = useState(0);
 
   return (
     <div>
       <CustomTabs
         tabs={visibleTabs}
         activeTab={activeTab}
-        onTabChange={(index) => setActiveTab(visibleTabIndexes[index])}
+        onTabChange={(index) => setActiveTab(index)}
       />
-      {visibleTabIndexes.includes(activeTab) && (
-        <div>{tabComponents[activeTab]}</div>
-      )}
+      <div>
+        {visibleTabs[activeTab].component && visibleTabs[activeTab].component}
+      </div>
     </div>
   );
 };

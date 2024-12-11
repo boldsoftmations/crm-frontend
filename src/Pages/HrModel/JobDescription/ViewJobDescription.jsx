@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-  Container,
   Paper,
   styled,
   TableCell,
@@ -12,7 +11,6 @@ import {
   Table,
   tableCellClasses,
   Typography,
-  Box,
   Grid,
 } from "@mui/material";
 import Hr from "../../../services/Hr";
@@ -23,13 +21,7 @@ import SearchComponent from "../../../Components/SearchComponent ";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import JobDescriptionDetail from "./ViewJdpdf";
 import UpdateJobDescription from "./UpdateJobDescription";
-
-const colors = {
-  section1: "#f0f0f0",
-  section2: "#e0f7fa",
-  section3: "#ffecb3",
-  section4: "#dcedc8",
-};
+import { useSelector } from "react-redux";
 
 export const ViewJobDescription = () => {
   const [jobDescription, setJobDescription] = useState([]);
@@ -41,7 +33,7 @@ export const ViewJobDescription = () => {
   const [addOpenPopup, setAddOpenPopup] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
   const [openPopup2, setOpenPopup2] = useState(false);
-
+  const userData = useSelector((state) => state.auth.profile);
   const getJobDescription = async () => {
     try {
       setLoader(true);
@@ -99,15 +91,17 @@ export const ViewJobDescription = () => {
               Job Description
             </Typography>
           </Grid>
-          <Grid item xs={12} sm={4} sx={{ textAlign: "right" }}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => setAddOpenPopup(true)}
-            >
-              Add
-            </Button>
-          </Grid>
+          {!userData.groups.includes("HR Recruiter") && (
+            <Grid item xs={12} sm={4} sx={{ textAlign: "right" }}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => setAddOpenPopup(true)}
+              >
+                Add
+              </Button>
+            </Grid>
+          )}
         </Grid>
         <TableContainer
           sx={{
@@ -162,13 +156,15 @@ export const ViewJobDescription = () => {
                     <Button variant="text" onClick={() => handleView(row)}>
                       View
                     </Button>
-                    <Button
-                      variant="text"
-                      color="success"
-                      onClick={() => handleEdit(row)}
-                    >
-                      Edit
-                    </Button>
+                    {!userData.groups.includes("HR Recruiter") && (
+                      <Button
+                        variant="text"
+                        color="success"
+                        onClick={() => handleEdit(row)}
+                      >
+                        Edit
+                      </Button>
+                    )}
                   </StyledTableCell>
                 </StyledTableRow>
               ))}

@@ -182,7 +182,12 @@ export const ListItems = ({ setOpen }) => {
     //menus for Hr Recruitment
     {
       condition: userData.groups.includes("HR Recruiter"),
-      items: [renderListItem("/hr-model", <WorkIcon />, "Recruitment")],
+      items: [
+        renderSubmenu("master", <BusinessIcon />, "Master", [
+          { to: "/hr-model/hr-master", text: "HR Master" },
+        ]),
+        renderListItem("/hr-model", <WorkIcon />, "Recruitment"),
+      ],
     },
 
     // Store and Production menus
