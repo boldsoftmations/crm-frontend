@@ -5,85 +5,85 @@ import { ApprovePi } from "./ApprovePi";
 import { ActivePI } from "./ActivePI";
 import { PriceApprovalPI } from "./PriceApprovalPI";
 import { AllProformaInvoice } from "./AllProformaInvoice";
+
 export const AllPerformaInvoiceTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
 
-  const isInGroups = (...groups) =>
-    groups.some((group) => userData.groups.includes(group));
+  const isInGroups = (...groups) => {
+    return (
+      userData &&
+      userData.groups &&
+      groups.some((group) => userData.groups.indexOf(group) > -1)
+    );
+  };
 
-  const allTabs = isInGroups("Director", "Accounts");
-  const isSalesManager = isInGroups(
-    "Sales Manager",
-    "Customer Relationship Manager",
-    "Business Development Manager"
+  const roles = useMemo(
+    () => ({
+      allTabs: isInGroups("Director", "Accounts"),
+      isSalesManager: isInGroups(
+        "Sales Manager",
+        "Customer Relationship Manager",
+        "Business Development Manager"
+      ),
+      isSalesDManager: isInGroups("Sales Deputy Manager"),
+      isSalesADManager: isInGroups("Sales Assistant Deputy Manager"),
+      isSalesExecutive: isInGroups(
+        "Sales Executive",
+        "Customer Relationship Executive",
+        "Business Development Executive"
+      ),
+      isSalesManagerWithoutLeads: isInGroups("Sales Manager without Leads"),
+      isSalesManagerWithLeads: isInGroups("Sales Manager with Leads"),
+      isCustomerService: isInGroups("Customer Service"),
+      isAccountBillingDepartment: isInGroups("Accounts Billing Department"),
+    }),
+    [userData]
   );
-  const isSalesDManager = isInGroups("Sales Deputy Manager");
-  const isSalesADManager = isInGroups("Sales Assistant Deputy Manager");
-  const isSalesExecutive = isInGroups(
-    "Sales Executive",
-    "Customer Relationship Executive",
-    "Business Development Executive"
-  );
-  const isSalesManagerWithoutLeads = isInGroups("Sales Manager without Leads");
-  const isSalesManagerWithLeads = isInGroups("Sales Manager with Leads");
-  const isCustomerService = isInGroups("Customer Service");
-  const isAccountBillingDepartment = isInGroups("Accounts Billing Department");
 
   const tabs = useMemo(
     () => [
       {
         label: "Approve PI",
-        visible: allTabs || isAccountBillingDepartment,
+        visible: roles.allTabs || roles.isAccountBillingDepartment,
         index: 0,
         component: <ApprovePi />,
       },
       {
         label: "Active PI",
         visible:
-          isSalesManager ||
-          isSalesDManager ||
-          isSalesADManager ||
-          isSalesExecutive ||
-          isSalesManagerWithoutLeads ||
-          isSalesManagerWithLeads ||
-          allTabs ||
-          isCustomerService,
+          roles.isSalesManager ||
+          roles.isSalesDManager ||
+          roles.isSalesADManager ||
+          roles.isSalesExecutive ||
+          roles.isSalesManagerWithoutLeads ||
+          roles.isSalesManagerWithLeads ||
+          roles.allTabs ||
+          roles.isCustomerService,
         index: 1,
         component: <ActivePI />,
       },
       {
         label: "Price Approval PI",
-        visible: allTabs,
+        visible: roles.allTabs,
         index: 2,
         component: <PriceApprovalPI />,
       },
       {
         label: "All PI",
         visible:
-          isSalesManager ||
-          isSalesDManager ||
-          isSalesADManager ||
-          isSalesExecutive ||
-          isSalesManagerWithoutLeads ||
-          isSalesManagerWithLeads ||
-          allTabs ||
-          isCustomerService ||
-          isAccountBillingDepartment,
+          roles.isSalesManager ||
+          roles.isSalesDManager ||
+          roles.isSalesADManager ||
+          roles.isSalesExecutive ||
+          roles.isSalesManagerWithoutLeads ||
+          roles.isSalesManagerWithLeads ||
+          roles.allTabs ||
+          roles.isAccountBillingDepartment,
         index: 3,
         component: <AllProformaInvoice />,
       },
     ],
-    [
-      allTabs,
-      isSalesManager,
-      isSalesDManager,
-      isSalesADManager,
-      isSalesExecutive,
-      isSalesManagerWithoutLeads,
-      isSalesManagerWithLeads,
-      isCustomerService,
-      isAccountBillingDepartment,
-    ]
+    [roles]
   );
 
   const visibleTabs = useMemo(() => tabs.filter((tab) => tab.visible), [tabs]);
@@ -93,14 +93,16 @@ export const AllPerformaInvoiceTabView = () => {
   );
 
   // Set the first visible tab as active by default
-  const [activeTab, setActiveTab] = useState(visibleTabIndexes[0] || 0);
+  const [activeTab, setActiveTab] = useState(
+    visibleTabs.length > 0 ? visibleTabs[0].index : 0
+  );
 
   useEffect(() => {
     // Update the active tab if the current one is no longer visible
-    if (!visibleTabIndexes.includes(activeTab)) {
-      setActiveTab(visibleTabIndexes[0] || 0);
+    if (visibleTabs.length > 0 && visibleTabIndexes.indexOf(activeTab) === -1) {
+      setActiveTab(visibleTabs[0].index);
     }
-  }, [visibleTabIndexes, activeTab]);
+  }, [visibleTabs, visibleTabIndexes, activeTab]);
 
   return (
     <div>
@@ -109,10 +111,9 @@ export const AllPerformaInvoiceTabView = () => {
         activeTab={activeTab}
         onTabChange={(index) => setActiveTab(visibleTabIndexes[index])}
       />
-      {visibleTabIndexes.includes(activeTab) && (
-        <div>
-          {visibleTabs.find((tab) => tab.index === activeTab).component}
-        </div>
+      {visibleTabs.map(
+        (tab) =>
+          tab.index === activeTab && <div key={tab.index}>{tab.component}</div>
       )}
     </div>
   );
