@@ -1,6 +1,19 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { CustomTable } from "../../Components/CustomTable";
-import { Box, Grid, Paper } from "@mui/material";
+import {
+  Box,
+  Grid,
+  Paper,
+  styled,
+  Button,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TableBody,
+  Table,
+  tableCellClasses,
+} from "@mui/material";
 import CustomerServices from "../../services/CustomerService";
 import { CustomPagination } from "../../Components/CustomPagination";
 import { CustomLoader } from "../../Components/CustomLoader";
@@ -10,6 +23,8 @@ import SearchComponent from "../../Components/SearchComponent ";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../Components/MessageAlert";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
+import CustomSnackbar from "../../Components/CustomerSnackbar";
+import { WhatsappServices } from "../../services/Whatsapp";
 
 export const CustomerNoWhatsappGroup = () => {
   const [open, setOpen] = useState(false);
@@ -25,6 +40,16 @@ export const CustomerNoWhatsappGroup = () => {
   const [filterCustomer, setFilterCustomer] = useState("");
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
+
+  const [alertmsg, setAlertMsg] = useState({
+    message: "",
+    severity: "",
+    open: false,
+  });
+
+  const handleClose = () => {
+    setAlertMsg({ open: false });
+  };
 
   const getAllCustomerNotHavingWhatsappGroup = useCallback(
     async (page = currentPage, searchValue = searchQuery) => {
@@ -79,16 +104,37 @@ export const CustomerNoWhatsappGroup = () => {
 
   const Tabledata = Array.isArray(customerNotHavingWhatsappGroupData)
     ? customerNotHavingWhatsappGroupData.map((row) => ({
-        id: row.id,
         name: row.name,
+        id: row.id,
       }))
     : [];
 
-  const Tableheaders = ["ID", "Company", "Action"];
+  const Tableheaders = ["Company", "Action"];
 
-  const handleKycUpdate = async (data) => {
+  const handleKycUpdate = (data) => {
     setSelectedCustomerData(data.id);
     setOpenPopupKycUpdate(true);
+  };
+
+  const handleCreateWhatsappGroup = async (data) => {
+    try {
+      setOpen(true);
+      await WhatsappServices.createWhatsappGroup({ customer: data.name });
+      setAlertMsg({
+        message: "Whatsapp Group created successfully",
+        severity: "success",
+        open: true,
+      });
+      refreshData();
+    } catch (err) {
+      setAlertMsg({
+        message: err.response.data.message || "Failed to create Whatsapp Group",
+        severity: "error",
+        open: true,
+      });
+    } finally {
+      setOpen(false);
+    }
   };
 
   return (
@@ -98,6 +144,12 @@ export const CustomerNoWhatsappGroup = () => {
         onClose={handleCloseSnackbar}
         severity={alertInfo.severity}
         message={alertInfo.message}
+      />
+      <CustomSnackbar
+        open={alertmsg.open}
+        message={alertmsg.message}
+        severity={alertmsg.severity}
+        onClose={handleClose}
       />
       <CustomLoader open={open} />
       <Grid item xs={12}>
@@ -142,11 +194,74 @@ export const CustomerNoWhatsappGroup = () => {
               </Grid>
             </Grid>
           </Box>
-          <CustomTable
+          <TableContainer
+            sx={{
+              maxHeight: 440,
+              "&::-webkit-scrollbar": {
+                width: 15,
+              },
+              "&::-webkit-scrollbar-track": {
+                backgroundColor: "#f2f2f2",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: "#aaa9ac",
+              },
+            }}
+          >
+            <Table
+              sx={{ minWidth: 1200 }}
+              stickyHeader
+              aria-label="sticky table"
+            >
+              <TableHead>
+                <TableRow>
+                  {Tableheaders.map((header) => {
+                    return (
+                      <StyledTableCell align="center">{header}</StyledTableCell>
+                    );
+                  })}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {Tabledata.map((row, i) => (
+                  <StyledTableRow key={i}>
+                    <StyledTableCell align="center">{row.name}</StyledTableCell>
+
+                    <StyledTableCell align="center">
+                      <Box
+                        display="flex"
+                        justifyContent="center"
+                        alignItems="center"
+                        gap={4}
+                      >
+                        <Button
+                          variant="outlined"
+                          color="info"
+                          size="small"
+                          onClick={() => handleKycUpdate(row)}
+                        >
+                          View
+                        </Button>
+                        <Button
+                          variant="contained"
+                          color="success"
+                          size="small"
+                          onClick={() => handleCreateWhatsappGroup(row)}
+                        >
+                          Create Group
+                        </Button>
+                      </Box>
+                    </StyledTableCell>
+                  </StyledTableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          {/* <CustomTable
             headers={Tableheaders}
             data={Tabledata}
             openInPopup={handleKycUpdate}
-          />
+          /> */}
           <CustomPagination
             currentPage={currentPage}
             totalPages={totalPages}
@@ -184,3 +299,23 @@ const FilterOptions = [
     value: "Exclusive Distribution Customer",
   },
 ];
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  "&:nth-of-type(odd)": {
+    backgroundColor: theme.palette.action.hover,
+  },
+  // hide last border
+  "&:last-child td, &:last-child th": {
+    border: 0,
+  },
+}));
