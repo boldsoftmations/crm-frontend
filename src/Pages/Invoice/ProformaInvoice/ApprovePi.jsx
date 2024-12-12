@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Box, Grid, Paper } from "@mui/material";
+import { Box, Grid, Paper, Typography } from "@mui/material";
 import InvoiceServices from "../../../services/InvoiceService";
 import { Popup } from "../../../Components/Popup";
 import { ProformaInvoiceView } from "./ProformaInvoiceView";
@@ -28,6 +28,7 @@ export const ApprovePi = () => {
   const [searchValue, setSearchValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [totalPiAmount, setTotalPiAmount] = useState(0);
   const data = useSelector((state) => state.auth);
   const users = data.profile;
   const assigned = users.active_sales_user || [];
@@ -85,6 +86,7 @@ export const ApprovePi = () => {
         );
         setInvoiceData(response.data.results);
         setTotalPages(Math.ceil(response.data.count / 25));
+        setTotalPiAmount(response.data.total_amount);
       } catch (error) {
         handleError(error);
       } finally {
@@ -207,6 +209,34 @@ export const ApprovePi = () => {
                   onSearch={handleSearch}
                   onReset={handleReset}
                 />
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <Box display="flex" justifyContent="center" alignItems="center">
+                  <Typography
+                    variant="body1"
+                    style={{
+                      fontWeight: 500,
+                      color: "#4CAF50", // Green color for a fresh and appealing look
+                      textTransform: "uppercase",
+                      letterSpacing: "1.2px",
+                    }}
+                  >
+                    Total PI Amount:{" "}
+                    <strong
+                      style={{
+                        fontSize: "20px",
+                        color: "#FF5722", // Highlighted in a contrasting color
+                        textShadow: "1px 1px 2px rgba(0, 0, 0, 0.2)", // Adds subtle depth
+                      }}
+                    >
+                      {totalPiAmount
+                        ? `₹ ${new Intl.NumberFormat("en-IN").format(
+                            totalPiAmount
+                          )}`
+                        : "₹ 0"}
+                    </strong>
+                  </Typography>
+                </Box>
               </Grid>
             </Grid>
           </Box>
