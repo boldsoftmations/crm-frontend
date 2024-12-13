@@ -210,34 +210,40 @@ export const ApprovePi = () => {
                   onReset={handleReset}
                 />
               </Grid>
-              <Grid item xs={12} sm={6} md={4}>
-                <Box display="flex" justifyContent="center" alignItems="center">
-                  <Typography
-                    variant="body1"
-                    style={{
-                      fontWeight: 500,
-                      color: "#4CAF50", // Green color for a fresh and appealing look
-                      textTransform: "uppercase",
-                      letterSpacing: "1.2px",
-                    }}
+              {totalPiAmount && (
+                <Grid item xs={12} sm={6} md={4}>
+                  <Box
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="center"
                   >
-                    Total PI Amount:{" "}
-                    <strong
+                    <Typography
+                      variant="body1"
                       style={{
-                        fontSize: "20px",
-                        color: "#FF5722", // Highlighted in a contrasting color
-                        textShadow: "1px 1px 2px rgba(0, 0, 0, 0.2)", // Adds subtle depth
+                        fontWeight: 500,
+                        color: "#4CAF50", // Green color for a fresh and appealing look
+                        textTransform: "uppercase",
+                        letterSpacing: "1.2px",
                       }}
                     >
-                      {totalPiAmount
-                        ? `₹ ${new Intl.NumberFormat("en-IN").format(
-                            totalPiAmount
-                          )}`
-                        : "₹ 0"}
-                    </strong>
-                  </Typography>
-                </Box>
-              </Grid>
+                      Total PI Amount:{" "}
+                      <strong
+                        style={{
+                          fontSize: "20px",
+                          color: "#FF5722", // Highlighted in a contrasting color
+                          textShadow: "1px 1px 2px rgba(0, 0, 0, 0.2)", // Adds subtle depth
+                        }}
+                      >
+                        {totalPiAmount
+                          ? `₹ ${new Intl.NumberFormat("en-IN").format(
+                              totalPiAmount
+                            )}`
+                          : "₹ 0"}
+                      </strong>
+                    </Typography>
+                  </Box>
+                </Grid>
+              )}
             </Grid>
           </Box>
           <Box display="flex" alignItems="center" justifyContent="center">

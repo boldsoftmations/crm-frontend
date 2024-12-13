@@ -182,13 +182,14 @@ export const InterviewAssessmentResultView = ({ result }) => {
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.primary.main,
+    fontSize: 12,
+    backgroundColor: "#006BA1",
     color: theme.palette.common.white,
     fontWeight: "bold",
     textTransform: "uppercase",
   },
   [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
+    fontSize: 13,
   },
 }));
 

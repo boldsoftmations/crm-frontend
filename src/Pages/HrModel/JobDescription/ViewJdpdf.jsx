@@ -46,7 +46,7 @@ const JobDescriptionDetail = ({ job }) => {
       margin: 10,
       filename: `${job.designation}_Job_Description.pdf`,
       image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 3, useCORS: true, backgroundColor: "#ffffff" }, // Set scale and background color
+      html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff" }, // Set scale and background color
       jsPDF: { unit: "pt", format: "a4", orientation: "portrait" },
     };
 

@@ -114,6 +114,9 @@ export const JobOpeningCreate = ({ addNewJobOpening, setOpenCreatePopup }) => {
 
   return (
     <Box>
+      {/* <Typography variant="h6" gutterBottom>
+        Add New Job Opening
+      </Typography> */}
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <CustomAutocomplete

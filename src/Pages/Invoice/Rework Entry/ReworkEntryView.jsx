@@ -144,25 +144,6 @@ export const ReworkEntryView = () => {
                   Rework Entry
                 </h3>
               </Grid>
-
-              {/* Add Button on the right */}
-              {/* <Grid
-                item
-                xs={12}
-                md={4}
-                sx={{
-                  display: "flex",
-                  justifyContent: { xs: "center", md: "flex-end" },
-                }}
-              >
-                <Button
-                  color="success"
-                  variant="contained"
-                  onClick={() => setOpenPopupSalesReturn(true)}
-                >
-                  Sales Return
-                </Button>
-              </Grid> */}
             </Grid>
           </Box>
 
@@ -298,118 +279,16 @@ export const ReworkEntryView = () => {
   );
 };
 
-// function Row(props) {
-//   const { row, getReworkEntryData } = props;
-//   console.log("row", row);
-//   const [tableExpand, setTableExpand] = useState(false);
-
-//   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
-//     useNotificationHandling();
-
-//   return (
-//     <>
-//       <MessageAlert
-//         open={alertInfo.open}
-//         onClose={handleCloseSnackbar}
-//         severity={alertInfo.severity}
-//         message={alertInfo.message}
-//       />
-//       <CustomLoader open={open} />
-
-//       <StyledTableRow
-//         sx={{
-//           "& > *": { borderBottom: "unset" },
-//           textDecoration: row.cancelled ? "line-through" : "none",
-//         }}
-//       >
-//         <StyledTableCell>
-//           <IconButton
-//             aria-label="expand row"
-//             size="small"
-//             onClick={() => setTableExpand(!tableExpand)}
-//           >
-//             {tableExpand ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-//           </IconButton>
-//         </StyledTableCell>
-//         <StyledTableCell align="center">{row.creation_date}</StyledTableCell>
-//         <StyledTableCell align="center">{row.seller_account}</StyledTableCell>
-//         <StyledTableCell align="center">{row.batch_no}</StyledTableCell>
-//         <StyledTableCell align="center">{row.created_by}</StyledTableCell>
-//         <StyledTableCell align="center">
-//           <Switch
-//             checked={row.is_accepted}
-//             inputProps={{ "aria-label": "controlled" }}
-//           />
-//         </StyledTableCell>
-//         {row.is_accepted ? (
-//           <StyledTableCell align="center">
-//             <Button variant="text" color="primary" disabled>
-//               Accepted
-//             </Button>
-//           </StyledTableCell>
-//         ) : (
-//           <StyledTableCell align="center">
-//             <Button
-//               variant="text"
-//               color="success"
-//               onClick={() => handleUpdateReworkInvoice(row)}
-//             >
-//               Accept
-//             </Button>
-//           </StyledTableCell>
-//         )}
-//       </StyledTableRow>
-//       <TableRow>
-//         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-//           <Collapse in={tableExpand} timeout="auto" unmountOnExit>
-//             <Box sx={{ margin: 1 }}>
-//               <Typography variant="h6" gutterBottom component="div">
-//                 Product
-//               </Typography>
-//               <Table size="small" aria-label="purchases">
-//                 <TableHead>
-//                   <TableRow>
-//                     <TableCell align="center">PRODUCT</TableCell>
-//                     <TableCell align="center">RATE</TableCell>
-//                     <TableCell align="center">QUANTITY</TableCell>
-//                     <TableCell align="center">AMOUNT</TableCell>
-//                     <TableCell align="center">ACTION</TableCell>
-//                   </TableRow>
-//                 </TableHead>
-//                 <TableBody>
-//                   {row.raw_materials.map((product) => (
-//                     <TableRow key={product.date}>
-//                       <TableCell component="th" scope="row" align="center">
-//                         {product.product}
-//                       </TableCell>
-//                       <TableCell component="th" scope="row" align="center">
-//                         {product.rate}
-//                       </TableCell>
-//                       <TableCell align="center">{product.quantity}</TableCell>
-//                       <TableCell align="center">{product.amount}</TableCell>
-//                       <TableCell align="center">
-
-//                       </TableCell>
-//                     </TableRow>
-//                   ))}
-//                 </TableBody>
-//               </Table>
-//             </Box>
-//           </Collapse>
-//         </TableCell>
-//       </TableRow>
-
-//     </>
-//   );
-// }
-
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
+    fontSize: 12,
+    backgroundColor: "#006BA1",
     color: theme.palette.common.white,
+    fontWeight: "bold",
+    textTransform: "uppercase",
   },
   [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
+    fontSize: 13,
   },
 }));
 
@@ -417,7 +296,6 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   "&:nth-of-type(odd)": {
     backgroundColor: theme.palette.action.hover,
   },
-  // hide last border
   "&:last-child td, &:last-child th": {
     border: 0,
   },
