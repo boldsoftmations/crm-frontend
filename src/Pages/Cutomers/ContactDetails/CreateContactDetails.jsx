@@ -75,7 +75,7 @@ export const CreateContactDetails = (props) => {
         name: inputValue.name,
         designation: designation,
         contact: contact || "",
-        alternate_contact: contact2 || "",
+        alternate_contact: phone2 ? contact2 : null,
         email: formValues.email,
         alternate_email: formValues.alternate_email,
         pan_number: panNumber,

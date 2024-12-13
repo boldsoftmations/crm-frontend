@@ -361,30 +361,62 @@ export const CustomerOrderBookDetails = () => {
               <TableHead>
                 <TableRow>
                   {Tableheaders2.map((header, i) => {
-                    return <StyledTableCell key={i}>{header}</StyledTableCell>;
+                    return (
+                      <StyledTableCell key={i} align="center">
+                        {header}
+                      </StyledTableCell>
+                    );
                   })}
                 </TableRow>
               </TableHead>
               <TableBody>
                 {orderBookData.map((row, i) => (
                   <StyledTableRow key={i}>
-                    <StyledTableCell>{row.proforma_invoice}</StyledTableCell>
-                    <StyledTableCell>{row.pi_date}</StyledTableCell>
-                    <StyledTableCell>{row.order_book_date}</StyledTableCell>
-                    <StyledTableCell>{row.company}</StyledTableCell>
-                    <StyledTableCell>{row.raised_by}</StyledTableCell>
-                    <StyledTableCell>{row.billing_city}</StyledTableCell>
-                    <StyledTableCell>{row.shipping_city}</StyledTableCell>
-                    <StyledTableCell>{row.product}</StyledTableCell>
-                    <StyledTableCell>{row.quantity}</StyledTableCell>
-                    <StyledTableCell>{row.pending_quantity}</StyledTableCell>
-                    <StyledTableCell>{row.estimated_date}</StyledTableCell>
-                    <StyledTableCell>{row.ready_date}</StyledTableCell>
-                    <StyledTableCell>{row.requested_date}</StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.proforma_invoice}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.pi_date}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.order_book_date}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.company}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.raised_by}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.billing_city}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.shipping_city}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.product}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.quantity}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.pending_quantity}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.estimated_date}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.ready_date}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.requested_date}
+                    </StyledTableCell>
                     <StyledTableCell>
                       {row.special_instructions}
                     </StyledTableCell>
-                    <StyledTableCell>{row.revision}</StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.revision}
+                    </StyledTableCell>
                     <StyledTableCell>
                       <Button
                         variant="text"
@@ -564,11 +596,14 @@ const headers2 = [
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
+    fontSize: 12,
+    backgroundColor: "#006BA1",
     color: theme.palette.common.white,
+    fontWeight: "bold",
+    textTransform: "uppercase",
   },
   [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
+    fontSize: 13,
   },
 }));
 
@@ -576,7 +611,6 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   "&:nth-of-type(odd)": {
     backgroundColor: theme.palette.action.hover,
   },
-  // hide last border
   "&:last-child td, &:last-child th": {
     border: 0,
   },

@@ -23,7 +23,7 @@ export const CustomTable = ({
   return (
     <div
       style={{
-        maxHeight: 400,
+        maxHeight: 440,
         overflowY: "scroll",
         "&::-webkit-scrollbar": {
           width: 15,
@@ -40,7 +40,7 @@ export const CustomTable = ({
         style={{
           display: "table",
           minWidth: 700,
-          backgroundColor: "#f5f5f5",
+          backgroundColor: "#006BA1",
           width: "100%",
         }}
       >
@@ -50,7 +50,7 @@ export const CustomTable = ({
             position: "sticky",
             top: 0,
             zIndex: 1,
-            backgroundColor: "#444444",
+            backgroundColor: "#006BA1",
           }}
         >
           <div style={{ display: "table-row" }}>
@@ -59,10 +59,14 @@ export const CustomTable = ({
                 style={{
                   display: "table-cell",
                   textAlign: "center",
-                  padding: "6px",
+                  fontWeight: "bold",
+                  textTransform: "uppercase",
+                  paddingTop: 10,
+                  paddingBottom: 10,
                   color: "white",
+                  fontFamily: " Arial, Helvetica, sans-serif !important",
                   borderBottom: "1px solid rgba(224, 224, 224, 1)",
-                  fontSize: "16px",
+                  fontSize: "12px",
                 }}
                 key={index}
               >
@@ -97,7 +101,9 @@ export const CustomTable = ({
                       display: "table-cell",
                       textAlign: "center",
                       borderBottom: "1px solid rgba(224, 224, 224, 1)",
-                      fontSize: "14px",
+                      fontSize: 13,
+                      fontFamily: " Arial, Helvetica, sans-serif !important",
+                      padding: 10,
                     }}
                     key={colIndex}
                   >
