@@ -196,7 +196,7 @@ export const CustomerNoWhatsappGroup = () => {
           </Box>
           <TableContainer
             sx={{
-              maxHeight: 440,
+              maxHeight: 450,
               "&::-webkit-scrollbar": {
                 width: 15,
               },
@@ -205,6 +205,7 @@ export const CustomerNoWhatsappGroup = () => {
               },
               "&::-webkit-scrollbar-thumb": {
                 backgroundColor: "#aaa9ac",
+                borderRadius: 5,
               },
             }}
           >
@@ -302,11 +303,14 @@ const FilterOptions = [
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
+    fontSize: 12,
+    backgroundColor: "#006BA1",
     color: theme.palette.common.white,
+    fontWeight: "bold",
+    textTransform: "uppercase",
   },
   [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
+    fontSize: 13,
   },
 }));
 
@@ -314,7 +318,6 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   "&:nth-of-type(odd)": {
     backgroundColor: theme.palette.action.hover,
   },
-  // hide last border
   "&:last-child td, &:last-child th": {
     border: 0,
   },
