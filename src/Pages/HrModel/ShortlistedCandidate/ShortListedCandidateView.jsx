@@ -25,7 +25,10 @@ export const ShortListedCandidateView = () => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const [filters, setFilters] = useState({ stage: "", status: "" });
+  const [filters, setFilters] = useState({
+    stage: "Round1",
+    status: "Schedule",
+  });
 
   const fetchCandidates = async () => {
     try {
@@ -96,6 +99,7 @@ export const ShortListedCandidateView = () => {
       ...prevFilters,
       [name]: value,
     }));
+    setCurrentPage(1);
   };
   return (
     <>
@@ -112,6 +116,7 @@ export const ShortListedCandidateView = () => {
               id="combo-box-stage"
               onChange={(e, value) => handleFilterChange(e, value, "stage")}
               options={shortList}
+              value={filters.stage}
               getOptionLabel={(option) => option}
               label="Filter By Stage"
             />
@@ -123,6 +128,7 @@ export const ShortListedCandidateView = () => {
               id="combo-box-status"
               onChange={(e, value) => handleFilterChange(e, value, "status")}
               options={status}
+              value={filters.status}
               getOptionLabel={(option) => option}
               label="Filter By Status"
             />
@@ -188,4 +194,4 @@ export const ShortListedCandidateView = () => {
   );
 };
 const shortList = ["Round1", "Round2"];
-const status = ["Schedule", "Selected", "Reschedule", "Rejected"];
+const status = ["Schedule", "Selected", "Reschedule"];
