@@ -275,10 +275,10 @@ export const PriceApprovalPI = () => {
                       {row.pi_number}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {row.raised_by}
+                      {row.generation_date}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {row.generation_date}
+                      {row.raised_by}
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.customer}
