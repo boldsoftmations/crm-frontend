@@ -107,7 +107,7 @@ export const OfferStatusView = () => {
                     {row.designation}
                   </StyledTableCell>
                   <StyledTableCell align="center">
-                    {row.location}
+                    {row.current_location}
                   </StyledTableCell>
                   <StyledTableCell align="center">{row.stage}</StyledTableCell>
                   <StyledTableCell align="center">{row.status}</StyledTableCell>
