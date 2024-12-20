@@ -221,10 +221,7 @@ export const CreateCustomerProformaInvoice = (props) => {
         rowData && rowData.name,
         value.unit
       );
-      const res = await CustomerServices.getProductLastPi(
-        rowData && rowData.name,
-        value.unit
-      );
+
       setCustomerLastPiData(response.data || {});
     } catch (err) {
       console.error("error getting last pi", err);
@@ -258,7 +255,9 @@ export const CreateCustomerProformaInvoice = (props) => {
   useEffect(() => {
     getAllCompanyDetailsByID();
     getContactsDetailsByID();
-    getCurrencyDetails();
+    if (rowData.origin_type === "International") {
+      getCurrencyDetails();
+    }
   }, [openPopup3]);
 
   const createCustomerProformaInvoiceDetails = async (e) => {
@@ -807,6 +806,9 @@ export const CreateCustomerProformaInvoice = (props) => {
                     onChange={async (event, value) => {
                       // Handle product change
                       handleAutocompleteChange(index, event, value); // Update product state
+                      if (!selectedSellerData) {
+                        return alert("Please select seller unit first! ");
+                      }
                       if (value) {
                         try {
                           setOpen(true);
@@ -835,8 +837,24 @@ export const CreateCustomerProformaInvoice = (props) => {
                     style={tfStyle}
                   />
                 </Grid>
-
-                <Grid item xs={12} sm={3}>
+                <Grid item xs={12} sm={2}>
+                  <CustomTextField
+                    fullWidth
+                    size="small"
+                    label="Available Quantity"
+                    variant="outlined"
+                    disabled
+                    value={
+                      productDetails &&
+                      productDetails[index] &&
+                      productDetails[index].available_qty
+                    }
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={2}>
                   <CustomTextField
                     fullWidth
                     name="quantity"
@@ -856,7 +874,7 @@ export const CreateCustomerProformaInvoice = (props) => {
                     value={input.unit}
                   />
                 </Grid>
-                <Grid item xs={12} sm={3}>
+                <Grid item xs={12} sm={2}>
                   <CustomTextField
                     fullWidth
                     name="rate"
