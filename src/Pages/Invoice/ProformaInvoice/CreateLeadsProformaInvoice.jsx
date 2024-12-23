@@ -176,6 +176,9 @@ export const CreateLeadsProformaInvoice = (props) => {
 
   const createLeadProformaInvoiceDetails = async (e) => {
     e.preventDefault();
+    if (!inputValue.transporter_name) {
+      return alert("Transporter name is required");
+    }
     const payload = {
       type: "Lead",
       raised_by: users.email,
