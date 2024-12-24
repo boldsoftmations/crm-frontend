@@ -273,12 +273,6 @@ export const CompanyDetails = () => {
                   value={statusFilter}
                   onChange={(event, newValue) => {
                     setStatusFilter(newValue);
-                    getAllCompanyDetails(
-                      currentPage,
-                      newValue,
-                      filterSelectedQuery,
-                      searchQuery
-                    );
                   }}
                   label="Filter By Status" // Passed directly to CustomAutocomplete
                 />
@@ -291,12 +285,6 @@ export const CompanyDetails = () => {
                     value={filterSelectedQuery}
                     onChange={(event, newValue) => {
                       setFilterSelectedQuery(newValue);
-                      getAllCompanyDetails(
-                        currentPage,
-                        statusFilter,
-                        newValue,
-                        searchQuery
-                      );
                     }}
                     options={assigned.map((option) => option.email)}
                     getOptionLabel={(option) => option}
