@@ -24,7 +24,12 @@ import { useSelector } from "react-redux";
 export const ViewSalesQuantityAnalysis = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [salesQuantityAnalysis, setSalesQuantityAnalysis] = useState([]);
-  const [startMonth, setStartMonth] = useState(3);
+  const [startMonth, setStartMonth] = useState(() => {
+    const currentMonth = new Date().getMonth(); // Get the current month (0-11)
+    return currentMonth === 0 || currentMonth === 1 || currentMonth === 2
+      ? currentMonth
+      : 3;
+  });
   const [startYear, setStartYear] = useState(new Date().getFullYear());
   const [openPopup, setOpenPopup] = useState(false);
   const [rowData, setrowData] = useState(null);
@@ -84,6 +89,7 @@ export const ViewSalesQuantityAnalysis = () => {
 
     return data;
   };
+
   const data = generateDynamicMonths(startMonth, startYear);
 
   const getSalesQuantityAnalysis = async () => {
@@ -299,7 +305,6 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     border: 0,
   },
 }));
-
 const months = [
   {
     value: 1,
