@@ -258,11 +258,6 @@ export const CustomerNoWhatsappGroup = () => {
               </TableBody>
             </Table>
           </TableContainer>
-          {/* <CustomTable
-            headers={Tableheaders}
-            data={Tabledata}
-            openInPopup={handleKycUpdate}
-          /> */}
           <CustomPagination
             currentPage={currentPage}
             totalPages={totalPages}

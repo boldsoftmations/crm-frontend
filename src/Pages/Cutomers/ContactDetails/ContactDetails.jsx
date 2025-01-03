@@ -192,7 +192,7 @@ export const ContactDetails = ({ recordForEdit }) => {
       }
     } catch (err) {
       setAlertMsg({
-        message: err.response.data.message || "Failed to create Whatsapp Group",
+        message: err.response.data.error || "Failed to create Whatsapp Group",
         severity: "error",
         open: true,
       });

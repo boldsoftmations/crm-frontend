@@ -104,9 +104,15 @@ export const ApplicantListView = () => {
       setApplicants(response.data.results);
       const total = response.data.count;
       setTotalPages(Math.ceil(total / 25));
-      setIsLoading(false);
     } catch (error) {
+      setAlertMsg({
+        message: error.response.data.error,
+        severity: "error",
+        open: true,
+      });
       console.error("Error fetching applicants:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
