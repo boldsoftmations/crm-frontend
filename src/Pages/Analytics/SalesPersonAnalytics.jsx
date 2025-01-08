@@ -977,7 +977,7 @@ export const SalesPersonAnalytics = (props) => {
                     sx={{ marginTop: "10px" }}
                     size="small"
                     value={selectedDOBQData}
-                    onChange={handleDataForOrderBook}
+                    onChange={(e, value) => handleDataForOrderBook(value)}
                     options={descriptionOptionsForOrderBook}
                     getOptionLabel={(option) => option}
                     label="Filter By Description"
