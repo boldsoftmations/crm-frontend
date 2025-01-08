@@ -7,7 +7,6 @@ import CustomTextField from "../../../Components/CustomTextField";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
-import { useFetcher } from "react-router-dom";
 
 const KycUpdate = ({ recordForEdit, setOpenPopup, onDataUpdated }) => {
   const [contactData, setContactData] = useState([]);
@@ -150,8 +149,6 @@ const KycUpdate = ({ recordForEdit, setOpenPopup, onDataUpdated }) => {
     }
   }, [recordForEdit]);
 
-  console.log(inputValue.type_of_customer);
-
   // Handle input changes
   const handleInputChange = (name, value) => {
     setInputValue((prevState) => ({ ...prevState, [name]: value }));
@@ -211,9 +208,7 @@ const KycUpdate = ({ recordForEdit, setOpenPopup, onDataUpdated }) => {
         main_distribution: inputValue.main_distribution || [],
         whatsapp_group: inputValue.whatsapp_group || null,
         origin_type: inputValue.origin_type,
-        ref_customer: inputValue.ref_customer
-          ? inputValue.ref_customer.ref_customer
-          : null,
+        ref_customer: inputValue.ref_customer,
       };
       await CustomerServices.updateCompanyData(recordForEdit, req);
       UpdateContactDetails();

@@ -117,6 +117,7 @@ export const ProductionInventoryView = () => {
   };
 
   const Tableheaders = [
+    "ID",
     "PRODUCT",
     "SELLER STATE",
     "DESCRIPTION",
@@ -130,6 +131,7 @@ export const ProductionInventoryView = () => {
   ];
 
   const Tabledata = productionInventoryData.map((row, i) => ({
+    id: row.id,
     product: row.product,
     seller_account: row.seller_account,
     description: row.description,
