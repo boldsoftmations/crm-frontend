@@ -939,7 +939,7 @@ export const SalesPersonAnalytics = (props) => {
                     sx={{ marginTop: "10px" }}
                     size="small"
                     value={selectedDIQData}
-                    onChange={handleDataForInvoice}
+                    onChange={(e, data) => handleDataForInvoice(data)}
                     options={descriptionOptionsForInvoice}
                     getOptionLabel={(option) => option}
                     label="Filter By Description"
