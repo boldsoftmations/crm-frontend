@@ -1,5 +1,4 @@
 import CustomAxios from "./api";
-import UpdateInterviewQuestion from "./../Pages/HrModel/InterviewAssessment/UpdateInterviewQuestion";
 
 //Designation API
 const getDesignationsData = (page, searchQuery) => {
@@ -23,6 +22,10 @@ const addDesignation = (data) => {
 const updateDesignations = (id, data) => {
   console.log("data", data);
   return CustomAxios.patch(`/api/hr/designation/${id}/`, data);
+};
+
+const deleteDesignations = (id, data) => {
+  return CustomAxios.delete(`/api/hr/designation/${id}/`, data);
 };
 
 //Department API
@@ -439,6 +442,7 @@ const Hr = {
   getDesignationsData,
   addDesignation,
   updateDesignations,
+  deleteDesignations,
   getDepartment,
   addDepartment,
   updateDepartment,

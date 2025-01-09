@@ -146,7 +146,7 @@ export const Header = () => {
                 fontSize: { xs: "0.75rem", sm: "1rem" }, // Adjust font size for responsiveness
               }}
             >
-              Bold ERP
+              BOLD ERP
             </Typography>
             <>
               {/* Other Icons */}
@@ -201,6 +201,13 @@ export const Header = () => {
                 </MenuItem>
                 <MenuItem component={RouterLink} to={"/"} onClick={logout}>
                   Logout
+                </MenuItem>
+                <MenuItem
+                  component={RouterLink}
+                  to={"/reset-password"}
+                  onClick={handleClose}
+                >
+                  Reset password
                 </MenuItem>
               </Menu>
             </>

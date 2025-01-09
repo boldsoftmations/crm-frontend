@@ -261,7 +261,9 @@ export const InActiveUsers = () => {
                     <StyledTableCell align="center">
                       {row.groups.map((row) => row).join(",")}
                     </StyledTableCell>
-                    <StyledTableCell align="center">{row.name}</StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.ref_user}
+                    </StyledTableCell>
                     <StyledTableCell align="center">
                       <Button
                         variant="contained"

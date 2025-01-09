@@ -182,9 +182,13 @@ export const WhatsappGroupView = () => {
                       <StyledTableCell align="center">
                         {row.whatsapp_group}
                       </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.whatsapp_group_id}
-                      </StyledTableCell>
+                      {userData.groups.includes("Director") ? (
+                        <StyledTableCell align="center">
+                          {row.whatsapp_group_id}
+                        </StyledTableCell>
+                      ) : (
+                        <StyledTableCell align="center">-</StyledTableCell>
+                      )}
                       <StyledTableCell align="center">
                         <Box
                           display="flex"

@@ -41,7 +41,7 @@ export const AllWhatsappTabs = () => {
     },
     {
       label: "Group Info",
-      visible: allTabs,
+      visible: allTabs || fourTabs,
       index: 4,
     },
     {

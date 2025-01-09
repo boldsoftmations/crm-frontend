@@ -349,16 +349,21 @@ export const RouteScreen = () => {
               </PrivateRoute>
             }
           />
+          <Route
+            path="/reset-password"
+            element={
+              <PrivateRoute>
+                <ChangePassword />
+              </PrivateRoute>
+            }
+          />
         </>
       ) : (
         <>
           {/* Public and authentication routes */}
           <Route path="/" exact element={<Auths />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route
-            path="/change-password/:id/:token"
-            element={<ChangePassword />}
-          />
+          {/* <Route path="/reset-password" element={<ChangePassword />} /> */}
         </>
       )}
       {/* Redirect unknown routes to login or analytics based on token presence */}

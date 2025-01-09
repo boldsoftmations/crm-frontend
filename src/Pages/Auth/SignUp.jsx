@@ -1,31 +1,27 @@
-import React, { useState } from "react";
-import {
-  ThemeProvider,
-  createTheme,
-  Box,
-  Grid,
-  Button,
-  Paper,
-  Avatar,
-  Modal,
-  Typography,
-} from "@mui/material";
-import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
+import React, { useEffect, useState } from "react";
+import { Box, Grid, Chip } from "@mui/material";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { CustomButton } from "./../../Components/CustomButton";
 import { CustomLoader } from "../../Components/CustomLoader";
 import CustomTextField from "../../Components/CustomTextField";
 import UserProfileService from "../../services/UserProfileService";
+import CustomAutocomplete from "../../Components/CustomAutocomplete";
+import TaskService from "../../services/TaskService";
+import CustomSnackbar from "../../Components/CustomerSnackbar";
 
-export const SignUp = (props) => {
-  const { handleToggle } = props;
+export const SignUp = ({ setOpenAddEmployeesPopUp, refreshPageFunction }) => {
   const [open, setOpen] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [message, setMessage] = useState("");
+  const [groupsData, setGroupsData] = useState([]);
 
-  const headerStyle = { margin: 0 };
-  const avatarStyle = { backgroundColor: "#1bbd7e" };
+  const [alertmsg, setAlertMsg] = useState({
+    message: "",
+    severity: "",
+    open: false,
+  });
+  const handleClose = () => {
+    setAlertMsg({ open: false });
+  };
 
   const validationSchema = Yup.object().shape({
     first_name: Yup.string().required("first name is required"),
@@ -34,17 +30,27 @@ export const SignUp = (props) => {
     contact: Yup.string()
       .required("contact is required")
       .matches(phoneRegExp, "Phone number is not valid"),
-    password: Yup.string()
-      .required("Please Enter your password")
-      .matches(
-        /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
-        "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and one special case Character"
-      ),
-    password2: Yup.string()
-      .required("Confirm Password is required")
-      .oneOf([Yup.ref("password"), null], "Confirm Password does not match"),
-    acceptTerms: Yup.bool().oneOf([true], "Accept Terms is required"),
+    group_names: Yup.array()
+      .min(1, "At least one group is required")
+      .required("Groups name is required"),
   });
+
+  const getAllUsersDetails = async () => {
+    try {
+      setOpen(true);
+      const response = await TaskService.getAllUsers("True");
+      setGroupsData(response.data.groups);
+      setOpen(false);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    getAllUsersDetails();
+  }, []);
 
   const formik = useFormik({
     initialValues: {
@@ -53,222 +59,168 @@ export const SignUp = (props) => {
       email: "",
       contact: "",
       password: "",
-      password2: "",
+      group_names: [],
     },
     validationSchema: validationSchema,
 
     onSubmit: async (values) => {
       try {
-        const req = {
-          first_name: values.first_name,
-          last_name: values.last_name,
-          email: values.email,
-          contact: values.contact,
-          password: values.password,
-          password2: values.password2,
-        };
         setOpen(true);
-
+        const req = { ...values };
         const res = await UserProfileService.register(req);
-        console.log("res :>> ", res);
-        setMessage(res.data.message);
-        setModalOpen(true);
-        setOpen(false);
+        if (res.statusCode === 200) {
+          setOpenAddEmployeesPopUp(false);
+          formik.resetForm();
+          setAlertMsg({
+            message: res.data.message || "Employees created successfully",
+            severity: "success",
+            open: true,
+          });
+          refreshPageFunction();
+        }
       } catch (error) {
-        console.log("error", error);
+        setAlertMsg({
+          message: error.response.data.message || "Failed to create employees",
+          severity: "error",
+          open: true,
+        });
+        setOpen(false);
+      } finally {
         setOpen(false);
       }
     },
   });
 
-  const theme = createTheme();
   return (
     <div>
-      <ThemeProvider theme={theme}>
-        <CustomLoader open={open} />
-
-        <Modal
-          open={modalOpen}
-          onClose={() => setModalOpen(false)}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
+      <CustomSnackbar
+        open={alertmsg.open}
+        message={alertmsg.message}
+        severity={alertmsg.severity}
+        onClose={handleClose}
+      />
+      <CustomLoader open={open} />
+      <Grid>
+        <Box
+          // className="Auth-form-content"
+          component="form"
+          noValidate
+          onSubmit={formik.handleSubmit}
+          sx={{ mt: "1em" }}
         >
-          <Box sx={style}>
-            <Typography id="modal-modal-title" variant="h6" component="h2">
-              Verify Your Email
-            </Typography>
-            <Typography
-              id="modal-modal-description"
-              sx={{ mb: 2, color: "#3980F4" }}
-            >
-              {message}
-            </Typography>
-            <Button variant="contained" onClick={() => handleToggle(true)}>
-              LOGIN
-            </Button>
-          </Box>
-        </Modal>
-        <Grid>
-          {/* <Paper style={paperStyle}> */}
-          <Grid align="center">
-            <Avatar style={avatarStyle}>
-              <AddCircleOutlineOutlinedIcon />
-            </Avatar>
-            <h2 style={headerStyle}>Sign Up</h2>
-            <Typography variant="caption" gutterBottom>
-              Please fill this form to create an account !
-            </Typography>
-          </Grid>
-          <Box
-            // className="Auth-form-content"
-            component="form"
-            noValidate
-            onSubmit={formik.handleSubmit}
-            sx={{ mt: "1em" }}
-          >
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <CustomTextField
-                  required
-                  name="first_name"
-                  size="small"
-                  label="First Name"
-                  variant="outlined"
-                  value={formik.values.first_name}
-                  onChange={formik.handleChange}
-                  error={
-                    formik.touched.first_name &&
-                    Boolean(formik.errors.first_name)
-                  }
-                  helperText={
-                    formik.touched.first_name && formik.errors.first_name
-                  }
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <CustomTextField
-                  required
-                  name="last_name"
-                  size="small"
-                  label="Last Name"
-                  variant="outlined"
-                  value={formik.values.last_name}
-                  onChange={formik.handleChange}
-                  error={
-                    formik.touched.last_name && Boolean(formik.errors.last_name)
-                  }
-                  helperText={
-                    formik.touched.last_name && formik.errors.last_name
-                  }
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <CustomTextField
-                  required
-                  name="email"
-                  fullWidth
-                  size="small"
-                  label="Email"
-                  variant="outlined"
-                  value={formik.values.email}
-                  onChange={formik.handleChange}
-                  error={formik.touched.email && Boolean(formik.errors.email)}
-                  helperText={formik.touched.email && formik.errors.email}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <CustomTextField
-                  required
-                  name="contact"
-                  fullWidth
-                  size="small"
-                  label="Contact No."
-                  type="phone"
-                  variant="outlined"
-                  value={formik.values.contact}
-                  onChange={formik.handleChange}
-                  error={
-                    formik.touched.contact && Boolean(formik.errors.contact)
-                  }
-                  helperText={formik.touched.contact && formik.errors.contact}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <CustomTextField
-                  required
-                  name="password"
-                  size="small"
-                  type="password"
-                  label="Password"
-                  variant="outlined"
-                  value={formik.values.password}
-                  onChange={formik.handleChange}
-                  error={
-                    formik.touched.password && Boolean(formik.errors.password)
-                  }
-                  helperText={formik.touched.password && formik.errors.password}
-                />
-              </Grid>
-              <Grid rowSpacing={0.5} item xs={12} sm={6}>
-                <CustomTextField
-                  required
-                  name="password2"
-                  size="small"
-                  type="Password"
-                  label="Confirm Password"
-                  variant="outlined"
-                  value={formik.values.password2}
-                  onChange={formik.handleChange}
-                  error={
-                    formik.touched.password2 && Boolean(formik.errors.password2)
-                  }
-                  helperText={
-                    formik.touched.password2 && formik.errors.password
-                  }
-                />
-              </Grid>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={12}>
+              <CustomTextField
+                required
+                fullWidth
+                name="first_name"
+                size="small"
+                label="First Name"
+                variant="outlined"
+                value={formik.values.first_name}
+                onChange={formik.handleChange}
+                error={
+                  formik.touched.first_name && Boolean(formik.errors.first_name)
+                }
+                helperText={
+                  formik.touched.first_name && formik.errors.first_name
+                }
+              />
             </Grid>
-            <CustomButton
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-              text={"Sign Up"}
-            />
-            {/* <Button
+            <Grid item xs={12} sm={12}>
+              <CustomTextField
+                required
+                fullWidth
+                name="last_name"
+                size="small"
+                label="Last Name"
+                variant="outlined"
+                value={formik.values.last_name}
+                onChange={formik.handleChange}
+                error={
+                  formik.touched.last_name && Boolean(formik.errors.last_name)
+                }
+                helperText={formik.touched.last_name && formik.errors.last_name}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <CustomTextField
+                required
+                name="email"
+                fullWidth
+                size="small"
+                label="Email"
+                variant="outlined"
+                value={formik.values.email}
+                onChange={formik.handleChange}
+                error={formik.touched.email && Boolean(formik.errors.email)}
+                helperText={formik.touched.email && formik.errors.email}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <CustomTextField
+                required
+                name="contact"
+                fullWidth
+                size="small"
+                label="Contact No."
+                type="phone"
+                variant="outlined"
+                value={formik.values.contact}
+                onChange={formik.handleChange}
+                error={formik.touched.contact && Boolean(formik.errors.contact)}
+                helperText={formik.touched.contact && formik.errors.contact}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <CustomAutocomplete
+                size="small"
+                multiple
+                required
+                id="group_names"
+                options={groupsData}
+                value={formik.values.group_names}
+                onChange={(event, value) =>
+                  formik.setFieldValue("group_names", value)
+                }
+                renderTags={(value, getTagProps) =>
+                  value.map((option, index) => (
+                    <Chip
+                      variant="outlined"
+                      label={option}
+                      {...getTagProps({ index })}
+                    />
+                  ))
+                }
+                renderInput={(params) => (
+                  <CustomTextField
+                    {...params}
+                    label="Groups"
+                    placeholder="Select groups"
+                    error={
+                      formik.touched.group_names &&
+                      Boolean(formik.errors.group_names)
+                    }
+                    helperText={
+                      formik.touched.group_names && formik.errors.group_names
+                    }
+                  />
+                )}
+              />
+            </Grid>
+          </Grid>
+          <CustomButton
             type="submit"
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
-          >
-            Sign Up
-          </Button> */}
-            <Grid container justifyContent="center">
-              <Grid item>
-                <Button onClick={() => handleToggle(true)} variant="text">
-                  Already have an account? Sign in
-                </Button>
-              </Grid>
-            </Grid>
-          </Box>
-          {/* </Paper> */}
-        </Grid>
-      </ThemeProvider>
+            text={"Add"}
+          />
+        </Box>
+      </Grid>
     </div>
   );
-};
-
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
 };
 
 const phoneRegExp =

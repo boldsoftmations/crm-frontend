@@ -207,21 +207,6 @@ export const Login = () => {
             sx={{ mt: 3, mb: 2 }}
             text={"Sign In"}
           />
-          {/* <Button
-          type="submit"
-          fullWidth
-          variant="contained"
-          sx={{ mt: 3, mb: 2 }}
-        >
-          Sign In
-        </Button> */}
-          <Grid container justifyContent="center">
-            <Grid item>
-              <Link to="/forgot-password" className="link-primary">
-                Forgot Password? Click Here
-              </Link>
-            </Grid>
-          </Grid>
         </Box>
         {/* </Paper> */}
       </Grid>

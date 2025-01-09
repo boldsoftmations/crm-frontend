@@ -17,20 +17,28 @@ import {
 } from "@mui/material";
 import { Popup } from "../../Components/Popup";
 import SearchComponent from "../../Components/SearchComponent ";
-import { MessageAlert } from "../../Components/MessageAlert";
-import { useNotificationHandling } from "../../Components/useNotificationHandling ";
 import UpdateUser from "./UpdateUser";
+import { SignUp } from "../Auth/SignUp";
+import UserProfileService from "../../services/UserProfileService";
+import CustomSnackbar from "../../Components/CustomerSnackbar";
 
 export const ActiveUsers = () => {
   const [open, setOpen] = useState(false);
+  const [openAddEmployeesPopUp, setOpenAddEmployeesPopUp] = useState(false);
   const [activeUsersData, setActiveUsersData] = useState([]);
   const [groupsData, setGroupsData] = useState([]);
   const [editData, setEditData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [openPopup, setOpenPopup] = useState(null);
-  const { handleError, handleCloseSnackbar, alertInfo } =
-    useNotificationHandling();
+  const [alertmsg, setAlertMsg] = useState({
+    message: "",
+    severity: "",
+    open: false,
+  });
 
+  const handleClose = () => {
+    setAlertMsg({ open: false });
+  };
   const handleSearch = (query) => {
     setSearchQuery(query);
   };
@@ -53,7 +61,11 @@ export const ActiveUsers = () => {
       setActiveUsersData(response.data.users);
       setOpen(false);
     } catch (error) {
-      handleError(error);
+      setAlertMsg({
+        message: error.message,
+        severity: "error",
+        open: true,
+      });
     } finally {
       setOpen(false);
     }
@@ -78,13 +90,40 @@ export const ActiveUsers = () => {
     "Report",
     "Action",
   ];
+
+  const handlChangePassword = async (data) => {
+    setOpen(true);
+    try {
+      const res = await UserProfileService.resetPassword(data.emp_id);
+      console.log(res.data.message);
+      if (res.status === 200) {
+        setAlertMsg({
+          message: res.data.message || "Password reset successfully",
+          severity: "success",
+          open: true,
+        });
+        setTimeout(() => {
+          getAllUsersDetails();
+        }, 1000);
+      }
+    } catch (err) {
+      setAlertMsg({
+        message: err.response.data.error || "Failed to reset password",
+        severity: "error",
+        open: true,
+      });
+      setOpen(false);
+    } finally {
+      setOpen(false);
+    }
+  };
   return (
     <>
-      <MessageAlert
-        open={alertInfo.open}
-        onClose={handleCloseSnackbar}
-        severity={alertInfo.severity}
-        message={alertInfo.message}
+      <CustomSnackbar
+        open={alertmsg.open}
+        message={alertmsg.message}
+        severity={alertmsg.severity}
+        onClose={handleClose}
       />
       <CustomLoader open={open} />
       <Grid item xs={12}>
@@ -110,7 +149,15 @@ export const ActiveUsers = () => {
                   Active Employees
                 </h3>
               </Grid>
-              <Grid item xs={12} sm={4}></Grid>
+              <Grid item xs={12} sm={4} justifyContent="flex-end">
+                <Button
+                  onClick={() => setOpenAddEmployeesPopUp(true)}
+                  variant="contained"
+                  color="primary"
+                >
+                  Add Employee
+                </Button>
+              </Grid>
             </Grid>
           </Box>
 
@@ -170,12 +217,20 @@ export const ActiveUsers = () => {
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       <Button
-                        variant="contained"
+                        variant="text"
                         color="info"
                         size="small"
                         onClick={() => openInPopup(row)}
                       >
                         View
+                      </Button>
+                      <Button
+                        variant="text"
+                        color="success"
+                        size="small"
+                        onClick={() => handlChangePassword(row)}
+                      >
+                        Change password
                       </Button>
                     </StyledTableCell>
                   </StyledTableRow>
@@ -185,6 +240,7 @@ export const ActiveUsers = () => {
           </TableContainer>
         </Paper>
       </Grid>
+
       <Popup
         title={"Update Active Users"}
         openPopup={openPopup}
@@ -195,6 +251,18 @@ export const ActiveUsers = () => {
           editData={editData}
           getAllUsersDetails={getAllUsersDetails}
           groupsData={groupsData}
+        />
+      </Popup>
+
+      <Popup
+        maxWidth="sm"
+        title={"Add New Employee"}
+        openPopup={openAddEmployeesPopUp}
+        setOpenPopup={setOpenAddEmployeesPopUp}
+      >
+        <SignUp
+          setOpenPopup={setOpenAddEmployeesPopUp}
+          refreshPageFunction={getAllUsersDetails}
         />
       </Popup>
     </>

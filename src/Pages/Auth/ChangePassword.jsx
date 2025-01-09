@@ -2,150 +2,144 @@ import React, { useState } from "react";
 import "../CommonStyle.css";
 import {
   Avatar,
-  Container,
-  ThemeProvider,
-  createTheme,
   Box,
   Grid,
   Button,
-  Modal,
-  Typography,
+  IconButton,
+  InputAdornment,
 } from "@mui/material";
 import LockResetIcon from "@mui/icons-material/LockReset";
-import { Link, useParams } from "react-router-dom";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import CustomTextField from "../../Components/CustomTextField";
 import { CustomLoader } from "../../Components/CustomLoader";
 import UserProfileService from "../../services/UserProfileService";
-
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-};
+import { useSelector } from "react-redux";
+import CustomSnackbar from "../../Components/CustomerSnackbar";
+import { useNavigate } from "react-router-dom";
 
 export const ChangePassword = () => {
   const [password, setPassword] = useState("");
-  const [password2, setPassword2] = useState("");
-  const theme = createTheme();
+  const [showPassword, setShowPassword] = useState(false); // For toggling password visibility
   const [open, setOpen] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [message, setMessage] = useState("");
-  const { id } = useParams();
-  const { token } = useParams();
-  console.log("token", token);
+  const navigate = useNavigate();
+  const [alertmsg, setAlertMsg] = useState({
+    message: "",
+    severity: "",
+    open: false,
+  });
 
-  console.log("id", id);
+  const handleClose = () => {
+    setAlertMsg({ open: false });
+  };
+
+  const userData = useSelector((state) => state.auth.profile);
+  const emp_id = userData.emp_id;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       setOpen(true);
-
       const req = {
+        employee_id: emp_id,
+        email: userData.email,
         password: password,
-        password2: password2,
       };
-      const response = await UserProfileService.ChangePassword(id, token, req);
-      setMessage(response.data.message);
-      setModalOpen(true);
-
-      setOpen(false);
+      const response = await UserProfileService.resetPasswordByUser(
+        emp_id,
+        req
+      );
+      if (response.status === 200) {
+        setAlertMsg({
+          message: response.data.message || "Password changed successfully",
+          severity: "success",
+          open: true,
+        });
+        setTimeout(() => {
+          navigate("/user/analytics");
+        }, 1000);
+      }
     } catch (err) {
-      console.log("err :>> ", err);
+      setAlertMsg({
+        message: err.response.data.error || "An error occurred. Try again.",
+        severity: "error",
+        open: true,
+      });
+    } finally {
       setOpen(false);
     }
   };
 
-  return (
-    <ThemeProvider className="main" theme={theme}>
-      <CustomLoader open={open} />
-      <Modal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Password Reset Confirmation
-          </Typography>
-          <Typography
-            id="modal-modal-description"
-            sx={{ mb: 2, mt: 2, color: "#3980F4" }}
-          >
-            {message}
+  const handleTogglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
+  };
 
-            <CheckCircleIcon color="success" />
-          </Typography>
-          <Button variant="contained" component={Link} to="/login">
-            LOGIN
+  return (
+    <>
+      <CustomLoader open={open} />
+      <CustomSnackbar
+        open={alertmsg.open}
+        message={alertmsg.message}
+        severity={alertmsg.severity}
+        onClose={handleClose}
+      />
+      <Box
+        className="Auth-form"
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          width: "40%",
+          margin: "auto",
+          marginTop: "5%",
+        }}
+      >
+        <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+          <LockResetIcon />
+        </Avatar>
+        <Box
+          className="Auth-form-content"
+          onSubmit={handleSubmit}
+          component="form"
+          noValidate
+          sx={{ mt: 1 }}
+        >
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <CustomTextField
+                fullWidth
+                size="small"
+                label="Password"
+                variant="outlined"
+                name="password"
+                type={showPassword ? "text" : "password"} // Toggle between "text" and "password"
+                onChange={(e) => setPassword(e.target.value)}
+                value={password}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={handleTogglePasswordVisibility}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Grid>
+          </Grid>
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+          >
+            Submit
           </Button>
         </Box>
-      </Modal>
-      <Container className="Auth-form-container" component="main" maxWidth="xs">
-        <Box
-          className="Auth-form"
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-            <LockResetIcon />
-          </Avatar>
-          <h3 className="Auth-form-title">Forgot Password</h3>
-
-          <Box
-            className="Auth-form-content"
-            onSubmit={(e) => handleSubmit(e)}
-            component="form"
-            noValidate
-            sx={{ mt: 1 }}
-          >
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <CustomTextField
-                  fullWidth
-                  size="small"
-                  label="Password"
-                  variant="outlined"
-                  name="password"
-                  type={"password"}
-                  onChange={(e) => setPassword(e.target.value)}
-                  value={password}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <CustomTextField
-                  fullWidth
-                  size="small"
-                  label="Confirm Password"
-                  variant="outlined"
-                  name="password2"
-                  type={"password"}
-                  onChange={(e) => setPassword2(e.target.value)}
-                  value={password2}
-                />
-              </Grid>
-            </Grid>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              Submit
-            </Button>
-          </Box>
-        </Box>
-      </Container>
-    </ThemeProvider>
+      </Box>
+    </>
   );
 };

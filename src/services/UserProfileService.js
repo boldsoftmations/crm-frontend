@@ -5,7 +5,7 @@ const login = (data) => {
 };
 
 const register = (data) => {
-  return CustomAxios.post("api/user/register/", data);
+  return CustomAxios.post("api/user/users/", data);
 };
 
 const sendResetPasswordEmail = (data) => {
@@ -153,6 +153,13 @@ const updateDailySaleReviewData = (id, data) => {
   return CustomAxios.patch(`api/user/daily-sales-review/${id}/`, data);
 };
 
+const resetPasswordByUser = (id, data) => {
+  return CustomAxios.post(`api/user/users/${id}/set_password/`, data);
+};
+
+const resetPassword = (id) => {
+  return CustomAxios.post(`api/user/users/${id}/change_password/`);
+};
 const UserProfileService = {
   login,
   getProfile,
@@ -176,6 +183,8 @@ const UserProfileService = {
   getDailySaleReviewById,
   createDailySaleReviewData,
   updateDailySaleReviewData,
+  resetPasswordByUser,
+  resetPassword,
 };
 
 export default UserProfileService;

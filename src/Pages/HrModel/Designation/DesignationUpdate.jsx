@@ -8,7 +8,7 @@ export const DesignationUpdate = ({
   setOpenUpdatePopup,
   getDesignationsDetails,
 }) => {
-  const [designation, setDesignation] = useState(designationId.name);
+  const [designation, setDesignation] = useState(designationId.designation);
   const [departmentList, setDepartmentList] = useState([]);
   const [department, setDepartment] = useState(designationId.department);
 
@@ -41,6 +41,7 @@ export const DesignationUpdate = ({
     <form onSubmit={handleSubmit}>
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
         <TextField
+          size="small"
           label="Designation"
           variant="outlined"
           value={designation}

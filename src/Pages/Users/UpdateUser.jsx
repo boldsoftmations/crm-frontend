@@ -350,7 +350,7 @@ const UpdateUser = ({
       <CustomLoader open={open} />
       <Box component="form" noValidate onSubmit={(e) => createUsersDetails(e)}>
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={12}>
             <CustomTextField
               fullWidth
               size="small"
