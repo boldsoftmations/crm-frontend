@@ -3,6 +3,7 @@ import { Box, TextField, Button, Grid } from "@mui/material";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import Hr from "../../../services/Hr";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import CustomSnackbar from "../../../Components/CustomerSnackbar";
 
 export const DesignationCreate = ({
   setOpenCreatePopup,
@@ -12,7 +13,15 @@ export const DesignationCreate = ({
   const [designation, setDesignation] = useState("");
   const [departmentList, setDepartmentList] = useState([]);
   const [department, setDepartment] = useState(null);
+  const [alertmsg, setAlertMsg] = useState({
+    message: "",
+    severity: "",
+    open: false,
+  });
 
+  const handleClose = () => {
+    setAlertMsg({ open: false });
+  };
   // Fetch department list once on component mount
   useEffect(() => {
     const fetchDepartmentList = async () => {
@@ -41,11 +50,26 @@ export const DesignationCreate = ({
 
     try {
       setOpen(true);
-      await Hr.addDesignation(payload); // Use the correct payload structure
-      getDesignationsDetails(); // Refetch the designations
-      setOpenCreatePopup(false);
+      const res = await Hr.addDesignation(payload);
+      if (res.status === 201) {
+        setAlertMsg({
+          message: res.data.message || "Designation created successfully!",
+          severity: "success",
+          open: true,
+        });
+        setTimeout(() => {
+          setOpenCreatePopup(false);
+          getDesignationsDetails(); // Refetch the designations
+        }, 500);
+      }
     } catch (error) {
-      console.error("Failed to add designation", error);
+      setAlertMsg({
+        message:
+          (error && error.response.data.message) ||
+          "Error creating designation",
+        severity: "error",
+        open: true,
+      });
     } finally {
       setOpen(false);
     }
@@ -64,6 +88,12 @@ export const DesignationCreate = ({
 
   return (
     <>
+      <CustomSnackbar
+        open={alertmsg.open}
+        message={alertmsg.message}
+        severity={alertmsg.severity}
+        onClose={handleClose}
+      />
       <CustomLoader open={open} />
       <form
         onSubmit={(e) => {
@@ -74,6 +104,7 @@ export const DesignationCreate = ({
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           <TextField
             label="Designation"
+            size="small"
             variant="outlined"
             name="designation"
             value={designation}

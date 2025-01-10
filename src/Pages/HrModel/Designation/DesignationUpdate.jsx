@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Box, TextField, Button, Grid } from "@mui/material";
 import Hr from "../../../services/Hr";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import CustomSnackbar from "../../../Components/CustomerSnackbar";
 
 export const DesignationUpdate = ({
   designationId,
@@ -11,7 +12,15 @@ export const DesignationUpdate = ({
   const [designation, setDesignation] = useState(designationId.designation);
   const [departmentList, setDepartmentList] = useState([]);
   const [department, setDepartment] = useState(designationId.department);
+  const [alertmsg, setAlertMsg] = useState({
+    message: "",
+    severity: "",
+    open: false,
+  });
 
+  const handleClose = () => {
+    setAlertMsg({ open: false });
+  };
   useEffect(() => {
     const fetchDepartmentList = async () => {
       try {
@@ -31,14 +40,38 @@ export const DesignationUpdate = ({
       designation: designation,
     };
     try {
-      await Hr.updateDesignations(designationId.id, payload);
-      getDesignationsDetails();
-      setOpenUpdatePopup(false);
-    } catch (error) {}
+      const res = await Hr.updateDesignations(designationId.id, payload);
+      if (res.status === 200) {
+        setAlertMsg({
+          message: res.data.message || "Designation updated successfully",
+          severity: "success",
+          open: true,
+        });
+        setTimeout(() => {
+          setOpenUpdatePopup(false);
+          getDesignationsDetails();
+        }, 600);
+      }
+    } catch (error) {
+      console.error("Failed to update designation", error);
+      setAlertMsg({
+        message:
+          error.response.data.designation.toString() ||
+          "Failed to update designation",
+        severity: "error",
+        open: true,
+      });
+    }
   };
 
   return (
     <form onSubmit={handleSubmit}>
+      <CustomSnackbar
+        open={alertmsg.open}
+        message={alertmsg.message}
+        severity={alertmsg.severity}
+        onClose={handleClose}
+      />
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
         <TextField
           size="small"
