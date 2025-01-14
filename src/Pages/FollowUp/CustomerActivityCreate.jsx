@@ -10,15 +10,12 @@ import {
   MenuItem,
   Select,
 } from "@mui/material";
-import { useSelector } from "react-redux";
 import CustomTextField from "../../Components/CustomTextField";
 
 export const CustomerActivityCreate = (props) => {
   const { recordForEdit, setOpenModal, getFollowUp } = props;
   const [open, setOpen] = useState(false);
   const [followUp, setFollowUp] = useState([]);
-  const data = useSelector((state) => state.auth);
-  const userId = data.profile.email;
   const [activityRequiresFollowup, setActivityRequiresFollowup] =
     useState(false);
 
@@ -29,7 +26,6 @@ export const CustomerActivityCreate = (props) => {
 
       const data = {
         company: recordForEdit,
-        user: userId,
         activity: followUp.activity,
         notes: followUp.notes,
         next_followup_date: followUp.next_followup_date,

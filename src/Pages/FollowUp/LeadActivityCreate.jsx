@@ -28,8 +28,6 @@ export const LeadActivityCreate = memo(
   }) => {
     const [open, setOpen] = useState(false);
     const [followUp, setFollowUp] = useState({});
-    const data = useSelector((state) => state.auth);
-    const userId = data.profile.email;
     const [activityRequiresFollowup, setActivityRequiresFollowup] =
       useState(false);
     const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
@@ -64,7 +62,6 @@ export const LeadActivityCreate = memo(
 
           const followUpData = {
             leads: leadsByID,
-            user: userId,
             ...followUp,
           };
 

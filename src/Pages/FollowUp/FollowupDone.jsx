@@ -17,11 +17,9 @@ export const FollowupDone = (props) => {
         current_date: DoneFollowup.current_date,
         next_followup_date: DoneFollowup.next_followup_date,
         notes: DoneFollowup.notes,
-        user: DoneFollowup.user,
         is_followed_up: true,
       };
       await LeadServices.DoneLeadFollowup(DoneFollowup.id, data);
-      console.log("After api");
       setOpenModal(false);
       getFollowUp();
       setOpen(false);

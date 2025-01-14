@@ -114,7 +114,7 @@ export const TodayFollowup = () => {
     company: row.company,
     company_name: row.company_name,
     name: row.name,
-    user: row.user,
+    user: row.email,
 
     current_date: moment(row.current_date ? row.current_date : "-").format(
       "DD/MM/YYYY h:mm:ss"
