@@ -42,7 +42,7 @@ export const Login = () => {
   const errRef = useRef();
 
   const [user, setUser] = useState({
-    email: "",
+    employee_id: "",
     password: "",
     showPassword: false,
   });
@@ -78,17 +78,16 @@ export const Login = () => {
       setOpen(true);
       dispatch(loginstart());
       const req = {
-        email: user.email,
+        employee_id: user.employee_id,
         password: user.password,
       };
       const response = await UserProfileService.login(req);
-      if (response.data.token.access) {
+      if (response.data.token) {
         setUserData(response.data.token);
         dispatch(loginsucces(response.data));
         dispatch(getProfileUser(response.data));
         getUsers();
       }
-
       navigate("/user/analytics");
       setUser("");
 
@@ -162,14 +161,14 @@ export const Login = () => {
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                name="email"
+                name="employee_id "
                 size="small"
-                label="Email"
+                label="Enter your employee id"
                 variant="outlined"
-                ref={userRef}
                 autoComplete="off"
-                onChange={handleChange("email")}
-                value={user.email}
+                ref={userRef}
+                onChange={handleChange("employee_id")}
+                value={user.employee_id}
                 required
               />
             </Grid>
