@@ -14,7 +14,6 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import CustomTextField from "../../Components/CustomTextField";
 import { CustomLoader } from "../../Components/CustomLoader";
 import UserProfileService from "../../services/UserProfileService";
-import { useSelector } from "react-redux";
 import CustomSnackbar from "../../Components/CustomerSnackbar";
 import { useNavigate } from "react-router-dom";
 
@@ -32,23 +31,14 @@ export const ChangePassword = () => {
   const handleClose = () => {
     setAlertMsg({ open: false });
   };
-
-  const userData = useSelector((state) => state.auth.profile);
-  const emp_id = userData.emp_id;
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       setOpen(true);
       const req = {
-        employee_id: emp_id,
-        email: userData.email,
         password: password,
       };
-      const response = await UserProfileService.resetPasswordByUser(
-        emp_id,
-        req
-      );
+      const response = await UserProfileService.resetPasswordByUser(req);
       if (response.status === 200) {
         setAlertMsg({
           message: response.data.message || "Password changed successfully",

@@ -153,8 +153,8 @@ const updateDailySaleReviewData = (id, data) => {
   return CustomAxios.patch(`api/user/daily-sales-review/${id}/`, data);
 };
 
-const resetPasswordByUser = (id, data) => {
-  return CustomAxios.post(`api/user/users/${id}/set_password/`, data);
+const resetPasswordByUser = (data) => {
+  return CustomAxios.post(`api/user/change-password/`, data);
 };
 
 const resetPassword = (id) => {
