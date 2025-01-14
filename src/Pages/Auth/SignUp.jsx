@@ -10,7 +10,7 @@ import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import TaskService from "../../services/TaskService";
 import CustomSnackbar from "../../Components/CustomerSnackbar";
 
-export const SignUp = ({ setOpenAddEmployeesPopUp, refreshPageFunction }) => {
+export const SignUp = ({ setOpenPopup, refreshPageFunction }) => {
   const [open, setOpen] = useState(false);
   const [groupsData, setGroupsData] = useState([]);
 
@@ -68,15 +68,17 @@ export const SignUp = ({ setOpenAddEmployeesPopUp, refreshPageFunction }) => {
         setOpen(true);
         const req = { ...values };
         const res = await UserProfileService.register(req);
-        if (res.statusCode === 200) {
-          setOpenAddEmployeesPopUp(false);
+        if (res.status === 201) {
           formik.resetForm();
           setAlertMsg({
             message: res.data.message || "Employees created successfully",
             severity: "success",
             open: true,
           });
-          refreshPageFunction();
+          setTimeout(() => {
+            setOpenPopup(false);
+            refreshPageFunction();
+          }, 500);
         }
       } catch (error) {
         setAlertMsg({
