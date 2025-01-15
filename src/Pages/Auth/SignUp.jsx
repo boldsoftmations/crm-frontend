@@ -82,7 +82,7 @@ export const SignUp = ({ setOpenPopup, refreshPageFunction }) => {
         }
       } catch (error) {
         setAlertMsg({
-          message: error.response.data.message || "Failed to create employees",
+          message: error.response.data.error || "Failed to create employees",
           severity: "error",
           open: true,
         });

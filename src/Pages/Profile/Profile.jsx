@@ -1,10 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { Avatar, Button, Grid, Paper, Typography } from "@mui/material";
+import {
+  Avatar,
+  Button,
+  Divider,
+  Grid,
+  Paper,
+  Typography,
+  Box,
+} from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { Popup } from "../../Components/Popup";
 import { UserProfileCreate } from "./UserProfile/UserProfileCreate";
 import UserProfileService from "../../services/UserProfileService";
 import { CustomLoader } from "../../Components/CustomLoader";
+import { Link } from "react-router-dom";
 
 export const Profile = () => {
   const [open, setOpen] = useState(false);
@@ -29,49 +38,117 @@ export const Profile = () => {
   };
 
   return (
-    <Grid sx={{ marginTop: "5em" }}>
+    <Grid container justifyContent="center" sx={{ marginTop: "5em" }}>
       <CustomLoader open={open} />
-      <Paper style={paperStyle}>
-        <Grid align="center">
+      <Paper style={paperStyle} elevation={4}>
+        <Box align="center" sx={{ paddingBottom: "1em" }}>
           <Avatar style={avatarStyle}>
-            {/* <AccountCircleOutlinedIcon /> */}
+            {(userData.first_name && userData.first_name.charAt(0)) || "U"}
           </Avatar>
-          <h2>User Profile</h2>
-        </Grid>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <Text>
-              ID :- <span>{userData.emp_id}</span>
-            </Text>
-          </Grid>
-          <Grid item xs={12}>
-            <Text>
-              Name :-{" "}
-              <span>
-                {userData.first_name} &nbsp;
-                {userData.last_name}
+          <Typography variant="h5" sx={{ marginTop: "0.3em" }}>
+            {userData.first_name
+              ? `${userData.first_name} ${userData.last_name}`
+              : "User Profile"}
+          </Typography>
+        </Box>
+        <Divider />
+        <Grid container spacing={2} sx={{ marginTop: ".3em" }}>
+          <Grid
+            item
+            xs={12}
+            sx={{
+              backgroundColor: "#f9f9f9",
+              padding: 2,
+              borderRadius: 2,
+              gap: 1,
+              marginX: 2,
+              marginTop: 2,
+              boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
+            }}
+          >
+            <Typography
+              sx={{ fontSize: "1rem", marginBottom: "0.8rem", color: "#555" }}
+            >
+              <strong>Employee ID:</strong>{" "}
+              <span style={{ fontWeight: "300" }}>
+                {userData.employee_id || "N/A"}
               </span>
-            </Text>
+            </Typography>
+            <Typography
+              sx={{ fontSize: "1rem", marginBottom: "0.8rem", color: "#555" }}
+            >
+              <strong>Email:</strong>{" "}
+              <span style={{ fontWeight: "300" }}>
+                {userData.email || "N/A"}
+              </span>
+            </Typography>
+            <Typography
+              sx={{ fontSize: "1rem", marginBottom: "0.8rem", color: "#555" }}
+            >
+              <strong>Staff:</strong>{" "}
+              <span style={{ fontWeight: "300" }}>
+                {userData.groups || "N/A"}
+              </span>
+            </Typography>
           </Grid>
-          <Grid item xs={12}>
-            <Text>
-              Email :- <span>{userData.email}</span>
-            </Text>
-          </Grid>
-          <Grid item xs={12}>
-            <Text>
-              Staff :- <span>{userData.groups}</span>
-            </Text>
-          </Grid>
+
           {!userData.is_created && (
-            <Grid item xs={12}>
+            <Grid
+              item
+              xs={12}
+              align="center"
+              display="flex"
+              flexDirection="column"
+              justifyContent="center"
+              alignItems="center"
+              sx={{
+                backgroundColor: "#f2f3fa",
+                padding: 2,
+                borderRadius: 2,
+                gap: 1,
+                marginX: 2,
+                marginTop: 2,
+                boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
+              }}
+            >
               <Button
                 variant="contained"
                 color="primary"
+                size="small"
                 onClick={() => setOpenPopup(true)}
+                sx={{
+                  backgroundColor: "#1976d2",
+                  "&:hover": {
+                    backgroundColor: "#115293",
+                  },
+                  width: "80%",
+                }}
               >
                 Complete Profile
               </Button>
+
+              <Link
+                to="/reset-password"
+                style={{ textDecoration: "none", width: "80%" }}
+              >
+                <Button
+                  variant="outlined"
+                  size="small"
+                  sx={{
+                    borderColor: "#269435",
+                    backgroundColor: "#269435",
+                    color: "white",
+                    "&:hover": {
+                      borderColor: "#388e3c",
+                      backgroundColor: "#114217",
+                      color: "white",
+                    },
+                    width: "100%",
+                  }}
+                >
+                  Reset Password
+                </Button>
+              </Link>
             </Grid>
           )}
         </Grid>
@@ -88,13 +165,20 @@ export const Profile = () => {
   );
 };
 
+// Styling
 const paperStyle = {
   padding: 20,
-  height: "50vh",
-  width: 340,
-  margin: "0 auto",
+  width: 350,
+  borderRadius: 15,
+  backgroundColor: "#f9f9f9",
 };
-const avatarStyle = { backgroundColor: "#1bbd7e" };
-const Text = styled(Typography)(() => ({
-  padding: "0px",
+const avatarStyle = {
+  backgroundColor: "#1bbd7e",
+  width: 60,
+  height: 60,
+  fontSize: "1.7rem",
+};
+const InfoText = styled(Typography)(() => ({
+  fontSize: "1rem",
+  marginBottom: "0.5em",
 }));
