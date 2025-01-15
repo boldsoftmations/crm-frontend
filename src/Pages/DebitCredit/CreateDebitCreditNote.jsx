@@ -45,7 +45,7 @@ export const CreateDebitCreditNote = (props) => {
         InvoiceServices.getCustomersList(),
       ]);
       setSellerUnitOptions(sellerResponse.data);
-      setCustomer(customerResponse.data);
+      setCustomer(customerResponse.data.data);
     } catch (error) {
       handleError(error);
     } finally {
@@ -148,7 +148,7 @@ export const CreateDebitCreditNote = (props) => {
               disablePortal
               id="combo-box-demo"
               onChange={handleCustomerchange}
-              options={customer.map((option) => option.customer)}
+              options={customer}
               getOptionLabel={(option) => option}
               fullWidth
               label="Customer"
