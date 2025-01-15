@@ -49,7 +49,7 @@ export const HrMasterTabView = () => {
     },
     {
       label: "Interview Question",
-      visible: allTabs,
+      visible: isRecruiterAndDirector,
       component: <InterviewQuestionView />,
     },
     { label: "Attribute", visible: allTabs, component: <ViewAttribute /> },

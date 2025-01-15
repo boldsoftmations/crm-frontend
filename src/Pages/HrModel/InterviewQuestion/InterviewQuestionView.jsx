@@ -19,8 +19,10 @@ import { CustomPagination } from "../../../Components/CustomPagination";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
 import CreateInterviewQuestionAndAnswer from "./CreateInterviewQuestionAndAnswer";
 import UpdateQuestion from "./UpdateQuestion";
+import { useSelector } from "react-redux";
 
 const InterviewQuestionView = () => {
+  const userData = useSelector((state) => state.auth.profile);
   const [mcqData, setMcqData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [openQuestionPopUp, setOpenQuestionPopUp] = useState(false);
@@ -160,18 +162,20 @@ const InterviewQuestionView = () => {
               </Typography>
             </Grid>
             <Grid item xs={12} sm={4} textAlign="end">
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleAddQuestion}
-                sx={{
-                  padding: "10px 20px",
-                  borderRadius: "8px",
-                  boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-                }}
-              >
-                Add Question
-              </Button>
+              {!userData.groups.includes("HR Recruiter") && (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleAddQuestion}
+                  sx={{
+                    padding: "10px 20px",
+                    borderRadius: "8px",
+                    boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+                  }}
+                >
+                  Add Question
+                </Button>
+              )}
             </Grid>
           </Grid>
         </Box>
@@ -219,24 +223,26 @@ const InterviewQuestionView = () => {
                         {question.expected_answer}
                       </TableCell>
                       <TableCell align="center">
-                        <Button
-                          variant="contained"
-                          color="success"
-                          size="small"
-                          onClick={() => {
-                            handleEdit(question);
-                          }}
-                          sx={{
-                            padding: "5px 10px",
-                            borderRadius: "6px",
-                            backgroundColor: "#28a745",
-                            "&:hover": {
-                              backgroundColor: "#218838",
-                            },
-                          }}
-                        >
-                          Edit
-                        </Button>
+                        {!userData.groups.includes("HR Recruiter") && (
+                          <Button
+                            variant="contained"
+                            color="success"
+                            size="small"
+                            onClick={() => {
+                              handleEdit(question);
+                            }}
+                            sx={{
+                              padding: "5px 10px",
+                              borderRadius: "6px",
+                              backgroundColor: "#28a745",
+                              "&:hover": {
+                                backgroundColor: "#218838",
+                              },
+                            }}
+                          >
+                            Edit
+                          </Button>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))}
