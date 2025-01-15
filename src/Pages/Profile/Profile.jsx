@@ -53,6 +53,7 @@ export const Profile = () => {
         </Box>
         <Divider />
         <Grid container spacing={2} sx={{ marginTop: ".3em" }}>
+          {/* User Information Section */}
           <Grid
             item
             xs={12}
@@ -83,15 +84,34 @@ export const Profile = () => {
               </span>
             </Typography>
             <Typography
-              sx={{ fontSize: "1rem", marginBottom: "0.8rem", color: "#555" }}
+              sx={{
+                fontSize: "1rem",
+                marginBottom: "0.8rem",
+                color: "#555",
+                display: "flex",
+                alignItems: "center",
+                gap: 1, // Spacing between label and value
+              }}
             >
-              <strong>Staff:</strong>{" "}
-              <span style={{ fontWeight: "300" }}>
+              <strong>Staff:</strong>
+              <span
+                style={{
+                  fontWeight: "500", // Medium weight for better visibility
+                  color: "white",
+                  border: "1px solid #2e7d32", // Green border for emphasis
+                  padding: "4px 12px", // Padding for consistent spacing
+                  borderRadius: "8px", // Rounded corners
+                  backgroundColor: "#1bbd7e", // Highlight background color
+                  fontSize: "0.9rem", // Slightly smaller font size for the value
+                  display: "inline-block", // Ensures proper alignment
+                }}
+              >
                 {userData.groups || "N/A"}
               </span>
             </Typography>
           </Grid>
 
+          {/* Complete Profile Section */}
           {!userData.is_created && (
             <Grid
               item

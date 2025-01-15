@@ -171,7 +171,6 @@ export const BulkLeadAssign = (props) => {
       value: "Ladakh",
     },
   ];
-
   return (
     <>
       <CustomLoader open={open} />
@@ -199,14 +198,20 @@ export const BulkLeadAssign = (props) => {
               fullWidth
               size="small"
               id="grouped-demo"
-              value={assignFrom} // Ensure you are managing state for assignFrom
+              value={
+                assignFrom
+                  ? assigned.find((option) => option.employee_id === assignFrom)
+                  : null
+              }
               onChange={(event, value) => {
-                setAssignFrom(value);
+                setAssignFrom((value && value.employee_id) || ""); // Store employee_id in state
                 if (!touchedAssignFrom) setTouchedAssignFrom(true);
               }}
-              options={assigned.map((option) => option.email)}
-              getOptionLabel={(option) => option}
-              label="Assign From"
+              options={assigned}
+              getOptionLabel={(option) => option.name || ""} // Display name in dropdown
+              isOptionEqualToValue={(option, value) =>
+                option.employee_id === value
+              } // Match based on employee_id
               renderInput={(params) => (
                 <CustomTextField
                   {...params}
@@ -225,19 +230,28 @@ export const BulkLeadAssign = (props) => {
               )}
             />
           </Grid>
+
           <Grid item xs={12}>
             <CustomAutocomplete
               fullWidth
               size="small"
               id="grouped-demo"
-              value={assignTo} // Ensure you have a state variable for assignTo
+              value={
+                assignTo
+                  ? assigned_to_users.find(
+                      (option) => option.employee_id === assignTo
+                    ) || null
+                  : null
+              } // Find the option by employee_id
               onChange={(event, value) => {
-                setAssignTo(value);
+                setAssignTo((value && value.employee_id) || ""); // Store the employee_id in state
                 if (!touchedAssignTo) setTouchedAssignTo(true);
               }}
-              options={assigned_to_users.map((option) => option.email)}
-              getOptionLabel={(option) => option}
-              label="Assign To"
+              options={assigned_to_users} // Pass the full user objects
+              getOptionLabel={(option) => option.name || ""} // Display email in dropdown
+              isOptionEqualToValue={(option, value) =>
+                option.employee_id === value
+              } // Match by employee_id
               renderInput={(params) => (
                 <CustomTextField
                   {...params}
