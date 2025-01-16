@@ -87,6 +87,29 @@ const InterviewQuestionView = () => {
     setOpenQuestionPopUp(true);
   };
 
+  const handleDeleteQuestion = async (data) => {
+    try {
+      const res = await Hr.DeteteInterviewQuestionandanswwer(data.id);
+      if (res.status === 200) {
+        setAlertMsg({
+          message: res.data.message || "Question deleted successfully",
+          severity: "success",
+          open: true,
+        });
+        setTimeout(() => {
+          getInterviewQuestionAndAnswer();
+        }, 400);
+      }
+    } catch (error) {
+      console.error("Error deleting  Question:", error);
+      setAlertMsg({
+        open: true,
+        message: error.response.data.error || "Error deleting  Question",
+        severity: "error",
+      });
+    }
+  };
+
   const handlePageChange = (_, value) => setCurrentPage(value);
 
   if (loading) {
@@ -224,24 +247,33 @@ const InterviewQuestionView = () => {
                       </TableCell>
                       <TableCell align="center">
                         {!userData.groups.includes("HR Recruiter") && (
-                          <Button
-                            variant="contained"
-                            color="success"
-                            size="small"
-                            onClick={() => {
-                              handleEdit(question);
-                            }}
-                            sx={{
-                              padding: "5px 10px",
-                              borderRadius: "6px",
-                              backgroundColor: "#28a745",
-                              "&:hover": {
-                                backgroundColor: "#218838",
-                              },
-                            }}
+                          <Box
+                            display="flex"
+                            gap="10px"
+                            justifyContent="center"
+                            alignItems="center"
                           >
-                            Edit
-                          </Button>
+                            <Button
+                              variant="contained"
+                              color="success"
+                              size="small"
+                              onClick={() => {
+                                handleEdit(question);
+                              }}
+                            >
+                              Edit
+                            </Button>
+                            <Button
+                              variant="contained"
+                              color="error"
+                              size="small"
+                              onClick={() => {
+                                handleDeleteQuestion(question);
+                              }}
+                            >
+                              Delete
+                            </Button>
+                          </Box>
                         )}
                       </TableCell>
                     </TableRow>

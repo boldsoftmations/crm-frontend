@@ -80,6 +80,29 @@ const ViewMCQs = () => {
 
   const handlePageChange = (_, value) => setCurrentPage(value);
 
+  const handleDeleteQuestion = async (data) => {
+    try {
+      const res = await Hr.deleteMCQQuestion(data.id);
+      if (res.status === 200) {
+        setAlertMsg({
+          message: res.data.message || "MCQ Question deleted successfully",
+          severity: "success",
+          open: true,
+        });
+        setTimeout(() => {
+          getMCQQuetion();
+        }, 400);
+      }
+    } catch (error) {
+      console.error("Error deleting MCQ Question:", error);
+      setAlertMsg({
+        open: true,
+        message: error.response.data.error || "Error deleting MCQ Question",
+        severity: "error",
+      });
+    }
+  };
+
   if (loading) {
     return (
       <Typography variant="h6" align="center">
@@ -177,16 +200,33 @@ const ViewMCQs = () => {
                       </TableCell>
                       <TableCell>{mcq.answer}</TableCell>
                       <TableCell>
-                        <Button
-                          variant="contained"
-                          color="success"
-                          size="small"
-                          onClick={() => {
-                            handleEdit(mcq);
-                          }}
+                        <Box
+                          display="flex"
+                          gap="10px"
+                          justifyContent="center"
+                          alignItems="center"
                         >
-                          Edit
-                        </Button>
+                          <Button
+                            variant="contained"
+                            color="success"
+                            size="small"
+                            onClick={() => {
+                              handleEdit(mcq);
+                            }}
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            variant="contained"
+                            color="error"
+                            size="small"
+                            onClick={() => {
+                              handleDeleteQuestion(mcq);
+                            }}
+                          >
+                            Delete
+                          </Button>
+                        </Box>
                       </TableCell>
                     </TableRow>
                   ))}

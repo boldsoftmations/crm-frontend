@@ -404,6 +404,10 @@ const UpdateInterviewQuestionandanswwer = (id, data) => {
   return CustomAxios.patch(`/api/hr/interview-question/${id}/`, data);
 };
 
+const DeteteInterviewQuestionandanswwer = (id) => {
+  return CustomAxios.delete(`/api/hr/interview-question/${id}/`);
+};
+
 const handleGetDataFromCVAndCheckATS = (data) => {
   return CustomAxios.post("/api/hr/ats/", data);
 };
@@ -437,6 +441,10 @@ const getAssessementDetails = (page) => {
 
 const getAssessementResultDetails = (data) => {
   return CustomAxios.post(`/api/hr/question-answer/applicant_result/`, data);
+};
+
+const deleteMCQQuestion = (id) => {
+  return CustomAxios.delete(`/api/hr/mcq/${id}/`);
 };
 const Hr = {
   getDesignationsData,
@@ -486,12 +494,14 @@ const Hr = {
   createMCQQuetion,
   UpdateMCQQuetion,
   getMCQQuetion,
+  deleteMCQQuestion,
   getCompetitorCandidates,
   getDepartmentList,
   getDesginationList,
   createInterviewQuestionAndanswwer,
   getInterviewQuestionAndAnswer,
   UpdateInterviewQuestionandanswwer,
+  DeteteInterviewQuestionandanswwer,
   handleGetDataFromCVAndCheckATS,
   sendAutomatedMessage,
   bulkATScandidates,
