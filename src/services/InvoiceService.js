@@ -277,8 +277,8 @@ const getTallyInvoiceData = (startDate, endDate, filterValue) => {
   return CustomAxios.get(`/api/invoice/tally-invoice/?${params.toString()}`);
 };
 
-const createSalesinvoiceData = (data) => {
-  return CustomAxios.post("/api/invoice/list-sales-invoice/", data);
+const createBranchinvoiceData = (data) => {
+  return CustomAxios.post("/api/invoice/branch-invoice/", data);
 };
 
 const cancelSalesInvoice = (id, data) => {
@@ -494,7 +494,7 @@ const InvoiceServices = {
   getAllOrderBookDataWithSearch,
   getSalesInvoiceData,
   getTallyInvoiceData,
-  createSalesinvoiceData,
+  createBranchinvoiceData,
   cancelSalesInvoice,
   getSalesnvoiceDataById,
   getAllSaleRegisterData,

@@ -11,6 +11,7 @@ import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomAutocomplete from "./../../../Components/CustomAutocomplete";
 import CustomTextField from "../../../Components/CustomTextField";
 import InventoryServices from "../../../services/InventoryService";
+import CustomSnackbar from "../../../Components/CustomerSnackbar";
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -26,8 +27,15 @@ const values = {
 
 const BranchInvoicesCreate = ({ getSalesInvoiceDetails, setOpenPopup }) => {
   const [productOption, setProductOption] = useState([]);
-  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
-    useNotificationHandling();
+  const [alertmsg, setAlertMsg] = useState({
+    message: "",
+    severity: "",
+    open: false,
+  });
+
+  const handleClose = () => {
+    setAlertMsg({ open: false });
+  };
   const {
     handleAutocompleteChange,
     handleFormChange,
@@ -39,6 +47,7 @@ const BranchInvoicesCreate = ({ getSalesInvoiceDetails, setOpenPopup }) => {
       {
         product: "",
         quantity: "",
+        rate: "",
       },
     ],
     productOption,
@@ -60,7 +69,16 @@ const BranchInvoicesCreate = ({ getSalesInvoiceDetails, setOpenPopup }) => {
   };
 
   const handleAutocompleteChangeForUnits = (name, value) => {
-    setInputValue({ ...inputValue, [name]: value ? value.unit : "" });
+    const { unit } = value;
+    if (inputValue.from_unit && inputValue.from_unit === unit) {
+      setAlertMsg({
+        message: "From unit and To Units should not be same!",
+        severity: "warning",
+        open: true,
+      });
+      return;
+    }
+    setInputValue({ ...inputValue, [name]: value ? unit : "" });
   };
 
   const getProduct = useCallback(async () => {
@@ -94,6 +112,7 @@ const BranchInvoicesCreate = ({ getSalesInvoiceDetails, setOpenPopup }) => {
     const formattedProducts = products.map((prod) => ({
       product: prod.product,
       quantity: prod.quantity,
+      rate: parseFloat(prod.rate),
     }));
 
     const payload = {
@@ -108,14 +127,24 @@ const BranchInvoicesCreate = ({ getSalesInvoiceDetails, setOpenPopup }) => {
 
     try {
       setOpen(true);
-      const response = await InvoiceServices.createSalesinvoiceData(payload);
+      const response = await InvoiceServices.createBranchinvoiceData(payload);
       const successMessage =
         response.data.message || "Branch Invoice created successfully!";
-      handleSuccess(successMessage);
-      setOpenPopup(false);
-      getSalesInvoiceDetails();
+      setAlertMsg({
+        message: successMessage,
+        severity: "success",
+        open: true,
+      });
+      setTimeout(() => {
+        setOpenPopup(false);
+        getSalesInvoiceDetails();
+      }, 400);
     } catch (error) {
-      handleError(error); // Using the custom hook's method to handle errors
+      setAlertMsg({
+        message: error.message || "Error: creating Branch Invoice!",
+        severity: "error",
+        open: true,
+      });
       console.error("Creating BI error", error);
     } finally {
       setOpen(false); // Close the loading indicator
@@ -124,11 +153,11 @@ const BranchInvoicesCreate = ({ getSalesInvoiceDetails, setOpenPopup }) => {
 
   return (
     <div>
-      <MessageAlert
-        open={alertInfo.open}
-        onClose={handleCloseSnackbar}
-        severity={alertInfo.severity}
-        message={alertInfo.message}
+      <CustomSnackbar
+        open={alertmsg.open}
+        message={alertmsg.message}
+        severity={alertmsg.severity}
+        onClose={handleClose}
       />
       <CustomLoader open={open} />
 
@@ -166,6 +195,11 @@ const BranchInvoicesCreate = ({ getSalesInvoiceDetails, setOpenPopup }) => {
               getOptionLabel={(option) => option.unit}
               sx={{ minWidth: 300 }}
               label="To Unit"
+              error={
+                inputValue.from_unit === inputValue.to_unit
+                  ? "Cannot be same unit"
+                  : ""
+              }
             />
           </Grid>
 
@@ -245,7 +279,18 @@ const BranchInvoicesCreate = ({ getSalesInvoiceDetails, setOpenPopup }) => {
                     onChange={(event) => handleFormChange(index, event)}
                   />
                 </Grid>
-                <Grid item xs={12} sm={4} alignContent="right">
+                <Grid item xs={12} sm={3}>
+                  <CustomTextField
+                    fullWidth
+                    name="rate"
+                    size="small"
+                    label="Rate"
+                    variant="outlined"
+                    value={input.rate}
+                    onChange={(event) => handleFormChange(index, event)}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={2} alignContent="right">
                   {index !== 0 && (
                     <Button
                       disabled={index === 0}

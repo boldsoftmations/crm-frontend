@@ -88,7 +88,7 @@ export const Login = () => {
         dispatch(getProfileUser(response.data));
         getUsers();
       }
-      navigate("/user/analytics");
+      navigate("/user/profile");
       setUser("");
 
       setOpen(false);
