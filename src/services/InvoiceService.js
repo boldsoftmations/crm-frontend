@@ -281,6 +281,10 @@ const createBranchinvoiceData = (data) => {
   return CustomAxios.post("/api/invoice/branch-invoice/", data);
 };
 
+const createSalesinvoiceData = (data) => {
+  return CustomAxios.post("/api/invoice/list-sales-invoice/", data);
+};
+
 const cancelSalesInvoice = (id, data) => {
   return CustomAxios.patch(`/api/invoice/list-sales-invoice/${id}`, data);
 };
@@ -514,6 +518,7 @@ const InvoiceServices = {
   getInvoiceByCustomerAndSellerUnit,
   getBillingAddressbyCustomer,
   uploadSalesinvoice,
+  createSalesinvoiceData,
 };
 
 export default InvoiceServices;
