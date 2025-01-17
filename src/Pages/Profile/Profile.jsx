@@ -38,7 +38,7 @@ export const Profile = () => {
   };
 
   return (
-    <Grid container justifyContent="center" sx={{ marginTop: "5em" }}>
+    <Grid container justifyContent="center" sx={{ marginTop: "2em" }}>
       <CustomLoader open={open} />
       <Paper style={paperStyle} elevation={4}>
         <Box align="center" sx={{ paddingBottom: "1em" }}>

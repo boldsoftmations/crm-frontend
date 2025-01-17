@@ -147,7 +147,7 @@ export const CreateContactDetails = (props) => {
                 labelId="demo-select-small"
                 id="demo-select-small"
                 value={designation}
-                label="Department"
+                label="Designation"
                 onChange={(event) => setDesignation(event.target.value)}
               >
                 <MenuItem value={"Owner"}>Owner </MenuItem>
@@ -157,6 +157,7 @@ export const CreateContactDetails = (props) => {
                 <MenuItem value={"Purchase"}>Purchase</MenuItem>
                 <MenuItem value={"Quality"}>Quality</MenuItem>
                 <MenuItem value={"Stores"}>Stores</MenuItem>
+                <MenuItem value={"General Manager"}>General Manager</MenuItem>
               </Select>
             </FormControl>
           </Grid>
