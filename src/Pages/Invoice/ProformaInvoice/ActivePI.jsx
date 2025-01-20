@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 
 import {
   Box,
@@ -28,9 +28,11 @@ import { useNotificationHandling } from "../../../Components/useNotificationHand
 import SearchComponent from "../../../Components/SearchComponent ";
 import CustomSelect from "../../../Components/CustomSelect";
 import { MessageAlert } from "../../../Components/MessageAlert";
+import { CSVLink } from "react-csv";
 
 export const ActivePI = () => {
   const dispatch = useDispatch();
+  const csvLinkRef = useRef(null);
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup1, setOpenPopup1] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
@@ -42,6 +44,7 @@ export const ActivePI = () => {
   const [searchValue, setSearchValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [exportData, setExportData] = useState([]);
   const data = useSelector((state) => state.auth);
   const users = data.profile;
   const assigned = users.active_sales_user || [];
@@ -162,7 +165,58 @@ export const ActivePI = () => {
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
+  const handleExport = async () => {
+    try {
+      setOpen(true);
+      const response = await InvoiceServices.getAllPIData(
+        "active",
+        "all",
+        filterType,
+        filterValue,
+        searchValue
+      );
+      const data = response.data.map((row) => {
+        return {
+          generation_date: row.generation_date,
+          pi_number: row.pi_number,
+          name_of_party: row.name_of_party,
+          raised_by: row.raised_by,
+          round_off_total: row.round_off_total,
+          balance_amount: row.balance_amount,
+          status: row.status,
+        };
+      });
+      setOpen(false);
+      return data;
+    } catch (error) {
+      handleError(error);
+      console.log("while downloading Pi", error);
+    } finally {
+      setOpen(false);
+    }
+  };
+  // export data
+  const handleDownload = async () => {
+    try {
+      const data = await handleExport();
+      setExportData(data);
+      setTimeout(() => {
+        csvLinkRef.current.link.click();
+      });
+    } catch (error) {
+      console.log("CSVLink Download error", error);
+    }
+  };
 
+  const headers = [
+    { label: "PI DATE", key: "generation_date" },
+    { label: "PI NUMBER", key: "pi_number" },
+    { label: "COMPANY", key: "name_of_party" },
+    { label: "SALES PERSON", key: "raised_by" },
+    { label: "PI AMOUNT", key: "round_off_total" },
+    { label: "BALANCE AMOUNT", key: "balance_amount" },
+    { label: "PI STATUS", key: "status" },
+  ];
   return (
     <>
       <MessageAlert
@@ -187,7 +241,7 @@ export const ActivePI = () => {
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
           <Box marginBottom="10px">
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={12} sm={3} md={3}>
                 <CustomSelect
                   label="Filter By"
                   options={FilterOptions}
@@ -197,7 +251,7 @@ export const ActivePI = () => {
                 />
               </Grid>
               {filterType === "status" && (
-                <Grid item xs={12} sm={6} md={4}>
+                <Grid item xs={12} sm={3} md={3}>
                   <CustomSelect
                     label="Status"
                     options={StatusOptions}
@@ -208,7 +262,7 @@ export const ActivePI = () => {
                 </Grid>
               )}
               {filterType === "type" && (
-                <Grid item xs={12} sm={6} md={4}>
+                <Grid item xs={12} sm={3} md={3}>
                   <CustomSelect
                     label="Type"
                     options={TypeOptions}
@@ -219,7 +273,7 @@ export const ActivePI = () => {
                 </Grid>
               )}
               {filterType === "raised_by__email" && (
-                <Grid item xs={12} sm={6} md={4}>
+                <Grid item xs={12} sm={3} md={3}>
                   <CustomSelect
                     label="Sales Person"
                     options={AssignedOptions}
@@ -229,12 +283,42 @@ export const ActivePI = () => {
                   />
                 </Grid>
               )}
-              <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={12} sm={3} md={3}>
                 <SearchComponent
                   onSearch={handleSearch}
                   onReset={handleReset}
                 />
               </Grid>
+
+              {/* Export data*/}
+              {(users.groups.includes("Accounts") ||
+                users.groups.includes("Director")) && (
+                <Grid item xs={12} sm={3}>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    className="mx-3"
+                    onClick={handleDownload}
+                  >
+                    DownLoad CSV
+                  </Button>
+
+                  {exportData.length > 0 && (
+                    <CSVLink
+                      data={exportData}
+                      headers={headers}
+                      ref={csvLinkRef}
+                      filename="Active Pi List.csv"
+                      target="_blank"
+                      style={{
+                        textDecoration: "none",
+                        outline: "none",
+                        visibility: "hidden",
+                      }}
+                    />
+                  )}
+                </Grid>
+              )}
             </Grid>
           </Box>
           <Box display="flex" alignItems="center" justifyContent="center">
