@@ -85,8 +85,8 @@ export const ShortListedCandidateView = () => {
   const TableData = candidates.map((candidate) => ({
     id: candidate.id,
     name: candidate.name,
+    email: candidate.email,
     applicant: candidate.applicant,
-    contact: candidate.contact,
     interview_date: candidate.date,
     interview_time: candidate.time,
     designation: candidate.designation,
