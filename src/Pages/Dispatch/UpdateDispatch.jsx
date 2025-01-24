@@ -224,8 +224,8 @@ export const UpdateDispatch = (props) => {
               />
             </Grid>
           )}
-          {(userData.groups.toString() === "Customer Service" ||
-            userData.groups.toString() === "Director") && (
+          {(userData.groups.includes("Customer Service") ||
+            userData.groups.includes("Director")) && (
             <Grid item xs={12}>
               <label>POD Copy : </label>
               <input
