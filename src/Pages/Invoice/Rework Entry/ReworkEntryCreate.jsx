@@ -59,8 +59,8 @@ export const ReworkEntryCreate = ({
 
   const getProduct = async () => {
     try {
-      const res = await ProductService.getAllValidPriceList("all");
-      setProductOption(res.data);
+      const res = await ProductService.getProductPriceList();
+      setProductOption(res.data.products);
     } catch (err) {
       console.error("error potential", err);
     }
@@ -182,7 +182,7 @@ export const ReworkEntryCreate = ({
               disablePortal
               id="combo-box-demo"
               onChange={(event, value) => handleInputChange("product", value)}
-              options={productOption.map((option) => option.product)}
+              options={productOption.map((option) => option.product__name)}
               getOptionLabel={(option) => option}
               fullWidth
               label="Product"
