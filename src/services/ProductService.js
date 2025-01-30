@@ -223,6 +223,9 @@ const createPriceList = (data) => {
 const getAllValidPriceList = (all) => {
   return CustomAxios.get(`/api/product/pricelist/?page=${all}`);
 };
+const getProductPriceList = () => {
+  return CustomAxios.get("/api/product/product-pricelist/");
+};
 
 const updatePriceList = (id, data) => {
   return CustomAxios.patch(`/api/product/pricelist/${id}`, data);
@@ -231,10 +234,12 @@ const updatePriceList = (id, data) => {
 const getAllProduct = () => {
   return CustomAxios.get("/api/product/product/");
 };
+
 //api for upload csv files
 const uploadCSVFile = (file) => {
   return CustomAxios.post("/api/product/upload-csv/", file);
 };
+
 const ProductService = {
   getAllColour,
   createColour,
@@ -272,6 +277,7 @@ const ProductService = {
   getAllPriceList,
   createPriceList,
   getAllValidPriceList,
+  getProductPriceList,
   updatePriceList,
   getAllProduct,
   uploadCSVFile,
