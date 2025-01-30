@@ -25,8 +25,8 @@ export const EmploymentFields = ({ formData, setFormData }) => {
   };
 
   const addEmploymentRecord = () => {
-    const employers = formData.employment_history.map((emp) =>
-      emp.company_name.toLowerCase()
+    const employers = formData.employment_history.map(
+      (emp) => emp.company_name
     );
 
     const hasDuplicates = new Set(employers).size !== employers.length;
@@ -58,6 +58,7 @@ export const EmploymentFields = ({ formData, setFormData }) => {
               size="small"
               label="Company Name"
               name="company_name"
+              required
               value={employment.company_name || ""}
               onChange={(event) => handleEmploymentChange(event, index)}
             />
@@ -65,6 +66,7 @@ export const EmploymentFields = ({ formData, setFormData }) => {
           <Grid item xs={12} sm={3}>
             <CustomTextField
               fullWidth
+              required
               size="small"
               label="Designation"
               name="post_held"
@@ -75,6 +77,7 @@ export const EmploymentFields = ({ formData, setFormData }) => {
           <Grid item xs={12} sm={2}>
             <CustomTextField
               fullWidth
+              required
               size="small"
               label="Worked From"
               type="date"
@@ -87,6 +90,7 @@ export const EmploymentFields = ({ formData, setFormData }) => {
           <Grid item xs={12} sm={2}>
             <CustomTextField
               fullWidth
+              required
               size="small"
               label="Worked Till"
               type="date"

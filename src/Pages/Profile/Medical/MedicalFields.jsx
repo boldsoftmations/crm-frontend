@@ -54,18 +54,33 @@ const fieldsConfig = [
   { label: "Pregnancy", name: "pregnancy", options: YesNoNAOptions },
 ];
 
-const AutoCompleteField = ({ label, name, value, options, handleChange }) => (
+const AutoCompleteField = ({
+  label,
+  name,
+  value,
+  options,
+  handleChange,
+  error,
+}) => (
   <CustomAutocomplete
     options={options || []}
     fullWidth
     size="small"
     value={value}
     onChange={(_, newValue) => handleChange(name, newValue)}
-    renderInput={(params) => <CustomTextField label={label} {...params} />}
+    renderInput={(params) => (
+      <CustomTextField
+        label={label}
+        {...params}
+        error={error && error[name]}
+        helperText={(error && error[name]) || ""} // Display helper text only if there's an error
+      />
+    )}
   />
 );
 
-export const MedicalFields = ({ formData, setFormData }) => {
+export const MedicalFields = ({ formData, setFormData, error }) => {
+  const showError = error && error.medical ? error.medical : {};
   const handleChange = (name, value) => {
     setFormData((prev) => ({
       ...prev,
@@ -89,6 +104,7 @@ export const MedicalFields = ({ formData, setFormData }) => {
               value={getValue(name) || ""}
               options={options}
               handleChange={handleChange}
+              error={showError}
             />
           ) : (
             <CustomTextField
@@ -96,6 +112,8 @@ export const MedicalFields = ({ formData, setFormData }) => {
               size="small"
               label={label}
               name={`medical.${name}`}
+              error={showError && showError[name]}
+              helperText={(showError && showError[name]) || ""}
               value={getValue(name) || ""}
               onChange={(e) => handleChange(name, e.target.value)}
             />

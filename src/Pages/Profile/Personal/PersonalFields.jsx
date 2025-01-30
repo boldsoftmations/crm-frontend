@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Grid } from "@mui/material";
 import CustomTextField from "../../../Components/CustomTextField";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
@@ -70,7 +70,9 @@ const fieldData = [
   },
 ];
 
-export const PersonalFields = ({ formData, setFormData }) => {
+export const PersonalFields = ({ formData, setFormData, error }) => {
+  let showError = error && error.personal;
+
   const handleChange = (event) => {
     const { name, value } = event.target;
     const keys = name.split(".");
@@ -107,7 +109,13 @@ export const PersonalFields = ({ formData, setFormData }) => {
                     });
                   }}
                   renderInput={(params) => (
-                    <CustomTextField {...params} label={field.label} />
+                    <CustomTextField
+                      {...params}
+                      label={field.label}
+                      required
+                      error={showError && !!showError[field.name]} // Only show error when there is an error message
+                      helperText={(showError && showError[field.name]) || ""} // Display helper text only if there's an error
+                    />
                   )}
                 />
               </Grid>
@@ -118,6 +126,7 @@ export const PersonalFields = ({ formData, setFormData }) => {
                 <Grid item xs={12} sm={4} key={index}>
                   <CustomTextField
                     fullWidth
+                    required
                     type="date"
                     size="small"
                     label={field.label}
@@ -125,6 +134,8 @@ export const PersonalFields = ({ formData, setFormData }) => {
                     value={value}
                     onChange={handleChange}
                     InputLabelProps={{ shrink: true }}
+                    error={showError && !!showError[field.name]} // Only show error when there is an error message
+                    helperText={(showError && showError[field.name]) || ""} // Display helper text only if there's an error
                   />
                 </Grid>
               );
@@ -137,11 +148,14 @@ export const PersonalFields = ({ formData, setFormData }) => {
                   fullWidth
                   type={field.type}
                   size="small"
+                  required
                   label={field.label}
                   name={`personal.${field.name}`}
                   value={value}
                   onChange={handleChange}
-                  disabled={field.disabled} // Add this line
+                  error={showError && !!showError[field.name]} // Only show error when there is an error message
+                  helperText={(showError && showError[field.name]) || ""} // Display helper text only if there's an error
+                  disabled={field.disabled}
                   InputLabelProps={
                     field.type === "date" ? { shrink: true } : {}
                   }

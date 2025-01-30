@@ -57,12 +57,12 @@ const educationFieldData = [
     name: "masters",
   },
   { section: "pg", type: "number", label: "Passout Year", name: "passout" },
-  {
-    section: "education",
-    type: "text",
-    label: "Additional Educational Qualifications",
-    name: "additional_qualifiction",
-  },
+  // {
+  //   section: "education",
+  //   type: "text",
+  //   label: "Additional Educational Qualifications",
+  //   name: "additional_qualifiction",
+  // },
 ];
 
 export const EducationFields = ({ formData, setFormData }) => {

@@ -4,7 +4,8 @@ import CustomTextField from "../../../Components/CustomTextField";
 import axios from "axios";
 import { CustomLoader } from "../../../Components/CustomLoader";
 
-export const KycFields = ({ formData, setFormData }) => {
+export const KycFields = ({ formData, setFormData, error }) => {
+  const showError = error && error.kyc;
   const [errMsg, setErrMsg] = useState("");
   const [open, setOpen] = useState(false);
 
@@ -60,8 +61,6 @@ export const KycFields = ({ formData, setFormData }) => {
     {
       label: "IFSC Code",
       name: "ifsc_code",
-      error: errMsg,
-      helperText: errMsg,
     },
     {
       label: "Bank Name",
@@ -105,6 +104,8 @@ export const KycFields = ({ formData, setFormData }) => {
             size="small"
             onChange={handleChange}
             value={formData.kyc[field.name]}
+            error={showError && !!showError[field.name]}
+            helperText={(showError && showError[field.name]) || ""}
             InputLabelProps={{
               shrink: formData.kyc[field.name] ? true : undefined,
               ...field.InputLabelProps,

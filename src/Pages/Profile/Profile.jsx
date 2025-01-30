@@ -112,25 +112,26 @@ export const Profile = () => {
           </Grid>
 
           {/* Complete Profile Section */}
-          {!userData.is_created && (
-            <Grid
-              item
-              xs={12}
-              align="center"
-              display="flex"
-              flexDirection="column"
-              justifyContent="center"
-              alignItems="center"
-              sx={{
-                backgroundColor: "#f2f3fa",
-                padding: 2,
-                borderRadius: 2,
-                gap: 1,
-                marginX: 2,
-                marginTop: 2,
-                boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
-              }}
-            >
+
+          <Grid
+            item
+            xs={12}
+            align="center"
+            display="flex"
+            flexDirection="column"
+            justifyContent="center"
+            alignItems="center"
+            sx={{
+              backgroundColor: "#f2f3fa",
+              padding: 2,
+              borderRadius: 2,
+              gap: 1,
+              marginX: 2,
+              marginTop: 2,
+              boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
+            }}
+          >
+            {!userData.is_created && (
               <Button
                 variant="contained"
                 color="primary"
@@ -146,31 +147,30 @@ export const Profile = () => {
               >
                 Complete Profile
               </Button>
-
-              <Link
-                to="/reset-password"
-                style={{ textDecoration: "none", width: "80%" }}
-              >
-                <Button
-                  variant="outlined"
-                  size="small"
-                  sx={{
-                    borderColor: "#269435",
-                    backgroundColor: "#269435",
+            )}
+            <Link
+              to="/reset-password"
+              style={{ textDecoration: "none", width: "80%" }}
+            >
+              <Button
+                variant="outlined"
+                size="small"
+                sx={{
+                  borderColor: "#269435",
+                  backgroundColor: "#269435",
+                  color: "white",
+                  "&:hover": {
+                    borderColor: "#388e3c",
+                    backgroundColor: "#114217",
                     color: "white",
-                    "&:hover": {
-                      borderColor: "#388e3c",
-                      backgroundColor: "#114217",
-                      color: "white",
-                    },
-                    width: "100%",
-                  }}
-                >
-                  Reset Password
-                </Button>
-              </Link>
-            </Grid>
-          )}
+                  },
+                  width: "100%",
+                }}
+              >
+                Reset Password
+              </Button>
+            </Link>
+          </Grid>
         </Grid>
       </Paper>
       <Popup

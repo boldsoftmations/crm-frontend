@@ -3,42 +3,7 @@ import { Grid, Button } from "@mui/material";
 import CustomTextField from "../../../Components/CustomTextField";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
-export const FamilyFields = ({ formData, setFormData }) => {
-  // Handle the change in family details
-  const handleFamilyDetailsChange = (event, index) => {
-    const { name, value } = event.target;
-    const updatedFamilyDetails = [...formData.family_details];
-    updatedFamilyDetails[index][name] = value;
-    setFormData({
-      ...formData,
-      family_details: updatedFamilyDetails,
-    });
-  };
-
-  // Add a new family member
-  const addFamilyMember = () => {
-    const updatedFamilyDetails = [...formData.family_details];
-    updatedFamilyDetails.push({
-      name: "",
-      marital_status: "",
-      blood_group: "",
-      contact_number: "",
-    });
-    setFormData({
-      ...formData,
-      family_details: updatedFamilyDetails,
-    });
-  };
-
-  // Remove a family member
-  const removeFamilyMember = (index) => {
-    const updatedFamilyDetails = [...formData.family_details];
-    updatedFamilyDetails.splice(index, 1);
-    setFormData({
-      ...formData,
-      family_details: updatedFamilyDetails,
-    });
-  };
+export const FamilyFields = ({ formData, setFormData, error }) => {
   const relationshipOptions = [
     "Father",
     "Mother",
@@ -52,7 +17,41 @@ export const FamilyFields = ({ formData, setFormData }) => {
     "Friend",
     "Neighbour",
   ];
+
   const bloodGroupOptions = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
+
+  const showError = error && error.family_details ? error.family_details : [];
+
+  // Handle the change in family details
+  const handleFamilyDetailsChange = (event, index) => {
+    const { name, value } = event.target;
+
+    setFormData((prev) => {
+      const updatedFamilyDetails = [...prev.family_details];
+      updatedFamilyDetails[index][name] = value;
+      return { ...prev, family_details: updatedFamilyDetails };
+    });
+  };
+
+  // Add a new family member
+  const addFamilyMember = () => {
+    setFormData((prev) => ({
+      ...prev,
+      family_details: [
+        ...prev.family_details,
+        { name: "", relationship: "", blood_group: "", contact_number: "" },
+      ],
+    }));
+  };
+
+  // Remove a family member
+  const removeFamilyMember = (index) => {
+    setFormData((prev) => {
+      const updatedFamilyDetails = [...prev.family_details];
+      updatedFamilyDetails.splice(index, 1);
+      return { ...prev, family_details: updatedFamilyDetails };
+    });
+  };
 
   return (
     <>
@@ -65,6 +64,12 @@ export const FamilyFields = ({ formData, setFormData }) => {
               label="Name"
               name="name"
               value={familyMember.name || ""}
+              error={showError[index] && showError[index].name ? true : false}
+              helperText={
+                showError[index] && showError[index].name
+                  ? showError[index].name
+                  : ""
+              }
               onChange={(event) => handleFamilyDetailsChange(event, index)}
             />
           </Grid>
@@ -76,16 +81,27 @@ export const FamilyFields = ({ formData, setFormData }) => {
               value={familyMember.relationship || ""}
               onChange={(event, newValue) => {
                 handleFamilyDetailsChange(
-                  {
-                    target: {
-                      name: "relationship",
-                      value: newValue || "",
-                    },
-                  },
+                  { target: { name: "relationship", value: newValue || "" } },
                   index
                 );
               }}
-              label="Contact Relationship"
+              renderInput={(params) => (
+                <CustomTextField
+                  {...params}
+                  label="Relation"
+                  required
+                  error={
+                    showError[index] && showError[index].relationship
+                      ? true
+                      : false
+                  }
+                  helperText={
+                    showError[index] && showError[index].relationship
+                      ? showError[index].relationship
+                      : ""
+                  }
+                />
+              )}
             />
           </Grid>
 
@@ -98,11 +114,27 @@ export const FamilyFields = ({ formData, setFormData }) => {
               value={familyMember.blood_group || ""}
               onChange={(event, newValue) => {
                 handleFamilyDetailsChange(
-                  { target: { name: "blood_group", value: newValue } },
+                  { target: { name: "blood_group", value: newValue || "" } },
                   index
                 );
               }}
-              label="Blood Group"
+              renderInput={(params) => (
+                <CustomTextField
+                  {...params}
+                  label="Blood Group"
+                  required
+                  error={
+                    showError[index] && showError[index].blood_group
+                      ? true
+                      : false
+                  }
+                  helperText={
+                    showError[index] && showError[index].blood_group
+                      ? showError[index].blood_group
+                      : ""
+                  }
+                />
+              )}
             />
           </Grid>
           <Grid item xs={12} sm={2}>
@@ -112,10 +144,20 @@ export const FamilyFields = ({ formData, setFormData }) => {
               label="Contact Number"
               name="contact_number"
               value={familyMember.contact_number || ""}
+              error={
+                showError[index] && showError[index].contact_number
+                  ? true
+                  : false
+              }
+              helperText={
+                showError[index] && showError[index].contact_number
+                  ? showError[index].contact_number
+                  : ""
+              }
               onChange={(event) => handleFamilyDetailsChange(event, index)}
             />
           </Grid>
-          {/* Remove Family Member Button */}
+
           {formData.family_details.length > 1 && (
             <Grid item xs={12} sm={2}>
               <Button

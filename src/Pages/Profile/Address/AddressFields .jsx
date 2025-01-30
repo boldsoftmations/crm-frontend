@@ -1,16 +1,17 @@
-import React from "react";
 import { Grid, FormControlLabel, Checkbox } from "@mui/material";
 import CustomTextField from "../../../Components/CustomTextField";
 import axios from "axios";
 import { CustomLoader } from "../../../Components/CustomLoader";
-
+import React from "react";
 export const AddressFields = ({
-  type, // current or permanent
+  type, // "current" or "permanent"
   formData,
   setFormData,
+  error,
 }) => {
   const [open, setOpen] = React.useState(false);
   const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+  const showError = error && error.address && error.address[type];
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -26,11 +27,8 @@ export const AddressFields = ({
 
   const handlePinChange = async (event) => {
     const pinCode = event.target.value;
-
-    // First, store the pincode in formData
     handleChange(event);
 
-    // Then, if pinCode has a specific length, make the API call
     if (pinCode.length === 6) {
       handlePinBlur(event);
     }
@@ -114,13 +112,16 @@ export const AddressFields = ({
           <CustomTextField
             fullWidth
             size="small"
+            required
             disabled={["city", "state"].includes(field)}
             label={`${capitalize(type)} ${capitalize(field)}`}
             name={fieldPath(field)}
-            value={formData.address[type][field]}
+            error={showError && !!showError[field]} // Fix: Replace fieldName with field
+            helperText={(showError && showError[field]) || ""} // Fix: Use correct field reference
+            value={formData.address[type][field] || ""}
             onChange={field === "pin" ? handlePinChange : handleChange}
             InputLabelProps={{
-              shrink: formData.address[type][field] ? true : undefined,
+              shrink: Boolean(formData.address[type][field]), // Ensures label shrinks when value exists
             }}
           />
         </Grid>

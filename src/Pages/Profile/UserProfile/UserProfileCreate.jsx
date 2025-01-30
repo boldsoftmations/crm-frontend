@@ -1,15 +1,7 @@
-import React, { useCallback, useEffect, useState } from "react";
-import {
-  Button,
-  Container,
-  Grid,
-  Divider,
-  Chip,
-  Box,
-  Snackbar,
-} from "@mui/material";
+import React, { useCallback, useState } from "react";
+import { Button, Container, Grid, Divider, Chip, Box } from "@mui/material";
+
 import { styled } from "@mui/material/styles";
-import Alert from "@mui/lab/Alert";
 import UserProfileService from "../../../services/UserProfileService";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { PersonalFields } from "../Personal/PersonalFields";
@@ -24,6 +16,7 @@ import { EmploymentFields } from "../Employment/EmploymentFields";
 import { FamilyFields } from "../Family/FamilyFields";
 import { KycFields } from "../Kyc/KycFields";
 import { useSelector } from "react-redux";
+import CustomSnackbar from "../../../Components/CustomerSnackbar";
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -35,11 +28,8 @@ const Root = styled("div")(({ theme }) => ({
 
 export const UserProfileCreate = ({ setOpenPopup, getUsers }) => {
   const [open, setOpen] = useState(false);
-  const [openSnackbar, setOpenSnackbar] = useState(false);
   const [profilePic, setProfilePic] = useState(null);
-
-  const [errorMessages, setErrorMessages] = useState([]);
-  const [currentErrorIndex, setCurrentErrorIndex] = useState(0);
+  const [errorMessages, setErrorMessages] = useState(null);
   const auth = useSelector((state) => state.auth);
   const Profile = auth.profile ? auth.profile : [];
   const [formData, setFormData] = useState({
@@ -49,9 +39,9 @@ export const UserProfileCreate = ({ setOpenPopup, getUsers }) => {
       middle_name: null,
       last_name: null,
       email: null,
-      // alternate_email: null,
+      gender: null,
       contact: null,
-      // alternate_contact: null,
+      religion: null,
       date_of_birth: null,
       place_of_birth: null,
       nationality: null,
@@ -170,6 +160,141 @@ export const UserProfileCreate = ({ setOpenPopup, getUsers }) => {
     ],
   });
 
+  const [alertmsg, setAlertMsg] = useState({
+    message: "",
+    severity: "",
+    open: false,
+  });
+
+  const handleClose = () => {
+    setAlertMsg({ open: false });
+  };
+
+  const validateFormData = (formData) => {
+    const errors = {};
+
+    // Helper function to check if a value is null or empty
+    const isEmpty = (value) =>
+      value === null || value === "" || value === undefined;
+
+    // Validate personal information
+    const personalFields = [
+      "first_name",
+      "middle_name",
+      "last_name",
+      "email",
+      "contact",
+      "date_of_birth",
+      "date_of_birth",
+      "place_of_birth",
+      "nationality",
+      "marital_status",
+      "date_of_joining",
+      "blood_group",
+      "gender",
+      "religion",
+    ];
+    errors.personal = {};
+    personalFields.forEach((field) => {
+      if (isEmpty(formData.personal[field])) {
+        errors.personal[field] = `${field.replace(/_/g, " ")} is required.`;
+      }
+    });
+
+    // Validate current address
+    errors.address = { current: {}, permanent: {} };
+    const addressFields = ["address", "pin"];
+    addressFields.forEach((field) => {
+      if (isEmpty(formData.address.current[field])) {
+        errors.address.current[field] = `Current ${field} is required.`;
+      }
+      if (
+        !formData.address.current.is_permanent_same_as_current &&
+        isEmpty(formData.address.permanent[field])
+      ) {
+        errors.address.permanent[field] = `Permanent ${field} is required.`;
+      }
+    });
+
+    // Validate KYC details
+    const kycFields = [
+      "ifsc_code",
+      "account_number",
+      "pan_card_number",
+      "aadhar_card_number",
+    ];
+    errors.kyc = {};
+    kycFields.forEach((field) => {
+      if (isEmpty(formData.kyc[field])) {
+        errors.kyc[field] = `${field.replace(/_/g, " ")} is required.`;
+      }
+    });
+
+    // Validate emergency contacts
+    errors.emergency_contacts = [];
+    formData.emergency_contacts.forEach((contact, index) => {
+      const contactErrors = {};
+      ["name", "relationship", "number"].forEach((field) => {
+        if (isEmpty(contact[field])) {
+          contactErrors[field] = `${field.replace(/_/g, " ")} is required.`;
+        }
+      });
+      if (Object.keys(contactErrors).length > 0) {
+        errors.emergency_contacts[index] = contactErrors;
+      }
+    });
+
+    // Validate family details
+    errors.family_details = [];
+    formData.family_details.forEach((family, index) => {
+      const familyErrors = {};
+      ["name", "relationship", "blood_group", "contact_number"].forEach(
+        (field) => {
+          if (isEmpty(family[field])) {
+            familyErrors[field] = `${field.replace(/_/g, " ")} is required.`;
+          }
+        }
+      );
+      if (Object.keys(familyErrors).length > 0) {
+        errors.family_details[index] = familyErrors;
+      }
+    });
+
+    // Validate medical details
+    errors.medical = {};
+    [
+      "known_allergies",
+      "diabetic",
+      "vision",
+      "surgery_type",
+      "pregnancy",
+      "previous_surgeries",
+      "known_allergies",
+      "diabetic",
+      "hyper_tension",
+      "heart_issues",
+      "cancer",
+      "high_blood_pressure",
+      "low_blood_pressure",
+      "asthama_respiratory",
+      "vision",
+      "hearing",
+    ].forEach((field) => {
+      if (isEmpty(formData.medical[field])) {
+        errors.medical[field] = `${field.replace(/_/g, " ")} is required.`;
+      }
+    });
+    // Validate addiction details
+    errors.addiction = {};
+    ["tobacco", "cigarettes", "alcohol"].forEach((field) => {
+      if (isEmpty(formData.addiction[field])) {
+        errors.addiction[field] = `${field.replace(/_/g, " ")} is required.`;
+      }
+    });
+
+    return errors;
+  };
+
   const handleProfilePicChange = (e) => {
     const file = e.target.files[0];
     if (file && file.size <= 100 * 1024) {
@@ -180,52 +305,69 @@ export const UserProfileCreate = ({ setOpenPopup, getUsers }) => {
     }
   };
 
-  const handleCloseSnackbar = useCallback(() => {
-    if (currentErrorIndex < errorMessages.length - 1) {
-      setCurrentErrorIndex((prevIndex) => prevIndex + 1);
-    } else {
-      setOpenSnackbar(false);
-      setCurrentErrorIndex(0); // Reset for any future errors
-    }
-  }, [currentErrorIndex, errorMessages.length]);
+  const hasErrors = (obj) => {
+    if (!obj) return false;
 
-  const extractErrorMessages = (data) => {
-    return Object.values(data).flatMap((errors) => errors);
+    if (Array.isArray(obj)) {
+      return obj.some((item) => hasErrors(item)); // Check for errors in array elements
+    }
+
+    if (typeof obj === "object") {
+      return Object.values(obj).some((value) => {
+        if (typeof value === "object") {
+          return hasErrors(value);
+        }
+        return value !== ""; // Check if value is not an empty string
+      });
+    }
+
+    return false;
   };
 
   const CreateUserProfile = async (e) => {
     e.preventDefault();
-    setOpen(true);
+    const errorList = validateFormData(formData);
 
+    if (hasErrors(errorList)) {
+      setErrorMessages(errorList);
+      return; // Prevent form submission if there are errors
+    }
     try {
-      await UserProfileService.createUserProfileData(formData);
-      setOpenPopup(false);
-      getUsers();
+      setOpen(true);
+      const res = await UserProfileService.createUserProfileData(formData);
+      if (res.status === 201) {
+        setAlertMsg({
+          message: "User profile created successfully",
+          severity: "success",
+          open: true,
+        });
+        setTimeout(() => {
+          setOpenPopup(false);
+          getUsers();
+        }, 500);
+      }
     } catch (error) {
       console.error("Error creating user profile:", error);
-      const newErrors = extractErrorMessages(error.response.data);
-      setErrorMessages((prevErrors) => [...prevErrors, ...newErrors]);
-      setCurrentErrorIndex(0); // Reset the error index when new errors arrive
-      setOpenSnackbar((prevOpen) => !prevOpen);
+      setAlertMsg({
+        message: "Error creating user profile",
+        severity: "error",
+        open: true,
+      });
     } finally {
-      setOpen(false); // Close loader in either case (success or error)
+      setOpen(false);
     }
   };
 
   return (
     <Container>
+      <CustomSnackbar
+        open={alertmsg.open}
+        message={alertmsg.message}
+        severity={alertmsg.severity}
+        onClose={handleClose}
+      />
       <CustomLoader open={open} />
       {/* Display errors */}
-      <Snackbar
-        open={openSnackbar}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      >
-        <Alert onClose={handleCloseSnackbar} severity="error">
-          {errorMessages[currentErrorIndex]}
-        </Alert>
-      </Snackbar>
 
       <Box component="form" noValidate onSubmit={CreateUserProfile}>
         <Grid item xs={12} sx={{ marginTop: "20px", marginBottom: "20px" }}>
@@ -257,7 +399,11 @@ export const UserProfileCreate = ({ setOpenPopup, getUsers }) => {
               </Divider>
             </Root>
           </Grid>
-          <PersonalFields formData={formData} setFormData={setFormData} />
+          <PersonalFields
+            formData={formData}
+            setFormData={setFormData}
+            error={errorMessages}
+          />
           {/* Current And Permanent Address Details */}
           <Grid item xs={12}>
             <Root>
@@ -270,6 +416,7 @@ export const UserProfileCreate = ({ setOpenPopup, getUsers }) => {
             type="current"
             formData={formData}
             setFormData={setFormData}
+            error={errorMessages}
           />
           <Grid item xs={12}>
             <Root>
@@ -282,6 +429,7 @@ export const UserProfileCreate = ({ setOpenPopup, getUsers }) => {
             type="permanent"
             formData={formData}
             setFormData={setFormData}
+            error={errorMessages}
           />
 
           {/* KYC Details */}
@@ -292,7 +440,11 @@ export const UserProfileCreate = ({ setOpenPopup, getUsers }) => {
               </Divider>
             </Root>
           </Grid>
-          <KycFields formData={formData} setFormData={setFormData} />
+          <KycFields
+            formData={formData}
+            setFormData={setFormData}
+            error={errorMessages}
+          />
           <Grid item xs={12}>
             <Root>
               <Divider>
@@ -304,6 +456,7 @@ export const UserProfileCreate = ({ setOpenPopup, getUsers }) => {
           <EmergencyContactFields
             formData={formData}
             setFormData={setFormData}
+            error={errorMessages}
           />
           {/* PF & ESI Details */}
           <Grid item xs={12}>
@@ -340,7 +493,11 @@ export const UserProfileCreate = ({ setOpenPopup, getUsers }) => {
               </Divider>
             </Root>
           </Grid>
-          <FamilyFields formData={formData} setFormData={setFormData} />
+          <FamilyFields
+            formData={formData}
+            setFormData={setFormData}
+            error={errorMessages}
+          />
           {/*Known Health Issues Details  */}
           <Grid item xs={12}>
             <Root>
@@ -349,7 +506,11 @@ export const UserProfileCreate = ({ setOpenPopup, getUsers }) => {
               </Divider>
             </Root>
           </Grid>
-          <MedicalFields formData={formData} setFormData={setFormData} />
+          <MedicalFields
+            formData={formData}
+            setFormData={setFormData}
+            error={errorMessages}
+          />
 
           {/*Addiction Details  */}
           <Grid item xs={12}>
@@ -359,7 +520,11 @@ export const UserProfileCreate = ({ setOpenPopup, getUsers }) => {
               </Divider>
             </Root>
           </Grid>
-          <AddictionFields formData={formData} setFormData={setFormData} />
+          <AddictionFields
+            formData={formData}
+            setFormData={setFormData}
+            error={errorMessages}
+          />
 
           {/*Family Doctor Details  */}
           <Grid item xs={12}>

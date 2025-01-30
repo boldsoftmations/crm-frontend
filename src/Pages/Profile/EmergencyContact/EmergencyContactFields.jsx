@@ -3,7 +3,7 @@ import { Button, Grid } from "@mui/material";
 import CustomTextField from "../../../Components/CustomTextField";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
-export const EmergencyContactFields = ({ formData, setFormData }) => {
+export const EmergencyContactFields = ({ formData, setFormData, error }) => {
   const relationshipOptions = [
     "Father",
     "Mother",
@@ -18,35 +18,34 @@ export const EmergencyContactFields = ({ formData, setFormData }) => {
     "Neighbour",
   ];
 
+  // Ensure `showError` is not accessed when `error` or `error.emergency_contacts` is undefined
+  const showError =
+    error && error.emergency_contacts ? error.emergency_contacts : [];
+
   const handleEmergencyContactChange = (event, index) => {
     const { name, value } = event.target;
-    const updatedEmergencyContacts = [...formData.emergency_contacts];
-    updatedEmergencyContacts[index][name] = value;
-    setFormData({
-      ...formData,
-      emergency_contacts: updatedEmergencyContacts,
+    setFormData((prev) => {
+      const updatedContacts = [...prev.emergency_contacts];
+      updatedContacts[index][name] = value;
+      return { ...prev, emergency_contacts: updatedContacts };
     });
   };
 
   const addEmergencyContact = () => {
-    const updatedEmergencyContacts = [...formData.emergency_contacts];
-    updatedEmergencyContacts.push({
-      name: "",
-      relationship: "", // Use the default relationship
-      number: "",
-    });
-    setFormData({
-      ...formData,
-      emergency_contacts: updatedEmergencyContacts,
-    });
+    setFormData((prev) => ({
+      ...prev,
+      emergency_contacts: [
+        ...prev.emergency_contacts,
+        { name: "", relationship: "", number: "" },
+      ],
+    }));
   };
 
   const removeEmergencyContact = (index) => {
-    const updatedEmergencyContacts = [...formData.emergency_contacts];
-    updatedEmergencyContacts.splice(index, 1); // This will remove the contact at the given index
-    setFormData({
-      ...formData,
-      emergency_contacts: updatedEmergencyContacts,
+    setFormData((prev) => {
+      const updatedContacts = [...prev.emergency_contacts];
+      updatedContacts.splice(index, 1);
+      return { ...prev, emergency_contacts: updatedContacts };
     });
   };
 
@@ -58,9 +57,16 @@ export const EmergencyContactFields = ({ formData, setFormData }) => {
             <CustomTextField
               fullWidth
               size="small"
+              required
               label="Emergency Contact Person Name"
               name="name"
               value={emergencyContact.name || ""}
+              error={showError[index] && showError[index].name ? true : false}
+              helperText={
+                showError[index] && showError[index].name
+                  ? showError[index].name
+                  : ""
+              }
               onChange={(event) => handleEmergencyContactChange(event, index)}
             />
           </Grid>
@@ -72,30 +78,48 @@ export const EmergencyContactFields = ({ formData, setFormData }) => {
               value={emergencyContact.relationship || ""}
               onChange={(event, newValue) => {
                 handleEmergencyContactChange(
-                  {
-                    target: {
-                      name: "relationship",
-                      value: newValue || "",
-                    },
-                  },
+                  { target: { name: "relationship", value: newValue || "" } },
                   index
                 );
               }}
-              label="Emergency Contact Relationship"
+              renderInput={(params) => (
+                <CustomTextField
+                  {...params}
+                  label="Emergency Contact Relationship"
+                  required
+                  error={
+                    showError[index] && showError[index].relationship
+                      ? true
+                      : false
+                  }
+                  helperText={
+                    showError[index] && showError[index].relationship
+                      ? showError[index].relationship
+                      : ""
+                  }
+                />
+              )}
             />
           </Grid>
           <Grid item xs={12} sm={3}>
             <CustomTextField
               fullWidth
               size="small"
+              required
               label="Emergency Contact Number"
               type="tel"
               name="number"
+              error={showError[index] && showError[index].number ? true : false}
+              helperText={
+                showError[index] && showError[index].number
+                  ? showError[index].number
+                  : ""
+              }
               value={emergencyContact.number || ""}
               onChange={(event) => handleEmergencyContactChange(event, index)}
             />
           </Grid>
-          {formData.emergency_contacts.length > 1 && ( // Check if there's more than one emergency contact
+          {formData.emergency_contacts.length > 1 && (
             <Grid item xs={12} sm={2}>
               <Button
                 variant="contained"

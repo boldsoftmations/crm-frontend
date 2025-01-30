@@ -221,7 +221,7 @@ export const UserProfileView = () => {
   const csvData = getCsvData();
 
   const data = filteredUserProfiles.map((user) => ({
-    employee_id: user.employee_id,
+    employee_id: user.id,
     first_name: user.personal.first_name || "-",
     last_name: user.personal.last_name || "-",
     phone_number: user.personal.contact || "-",
@@ -381,16 +381,14 @@ export const UserProfileView = () => {
     </>
   );
 };
+
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
-    fontSize: 12,
-    backgroundColor: "#006BA1",
+    backgroundColor: theme.palette.common.black,
     color: theme.palette.common.white,
-    fontWeight: "bold",
-    textTransform: "uppercase",
   },
   [`&.${tableCellClasses.body}`]: {
-    fontSize: 13,
+    fontSize: 14,
   },
 }));
 
@@ -398,6 +396,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   "&:nth-of-type(odd)": {
     backgroundColor: theme.palette.action.hover,
   },
+  // hide last border
   "&:last-child td, &:last-child th": {
     border: 0,
   },

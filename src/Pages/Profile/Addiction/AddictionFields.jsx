@@ -1,10 +1,12 @@
 import React from "react";
 import { Grid } from "@mui/material";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import CustomTextField from "../../../Components/CustomTextField";
 
 const YesNoOptions = ["Yes", "No"];
 
-export const AddictionFields = ({ formData, setFormData }) => {
+export const AddictionFields = ({ formData, setFormData, error }) => {
+  const showError = error && error.addiction ? error.addiction : {};
   const handleChange = (event) => {
     const { name, value } = event.target;
     const keys = name.split(".");
@@ -35,7 +37,15 @@ export const AddictionFields = ({ formData, setFormData }) => {
               },
             });
           }}
-          label="Tobacco"
+          renderInput={(params) => (
+            <CustomTextField
+              {...params}
+              label="Tobacco"
+              required
+              error={showError.tobacco}
+              helperText={showError.tobacco || ""}
+            />
+          )}
         />
       </Grid>
       <Grid item xs={12} sm={4}>
@@ -52,7 +62,15 @@ export const AddictionFields = ({ formData, setFormData }) => {
               },
             });
           }}
-          label="Cigarettes"
+          renderInput={(params) => (
+            <CustomTextField
+              {...params}
+              label="Cigarettes"
+              required
+              error={showError.tobacco}
+              helperText={showError.tobacco || ""}
+            />
+          )}
         />
       </Grid>
       <Grid item xs={12} sm={4}>
@@ -69,7 +87,15 @@ export const AddictionFields = ({ formData, setFormData }) => {
               },
             });
           }}
-          label="Alcohol"
+          renderInput={(params) => (
+            <CustomTextField
+              {...params}
+              label="Alcohol"
+              required
+              error={showError && showError.alcohol}
+              helperText={(showError && showError.alcohol) || ""}
+            />
+          )}
         />
       </Grid>
     </>

@@ -34,23 +34,24 @@ export const AllOrderBookTabView = () => {
     "Factory-Delhi-OrderBook"
   );
 
+  const isDispatch = isInGroups("Factory-Mumbai-Dispatch");
   const customerServiceTabs = isInGroups("Customer Service");
   const [activeTab, setActiveTab] = useState(allTabs || orderBookUsers ? 0 : 4);
 
   const tabs = [
     {
       label: "Customer Wise Orderbook",
-      visible: orderBookUsers || allTabs || customerServiceTabs,
+      visible: orderBookUsers || allTabs || customerServiceTabs || isDispatch,
       index: 0,
     },
     {
       label: "Product Wise Orderbook",
-      visible: orderBookUsers || allTabs || customerServiceTabs,
+      visible: orderBookUsers || allTabs || customerServiceTabs || isDispatch,
       index: 1,
     },
     {
       label: "PI Wise Orderbook",
-      visible: orderBookUsers || allTabs,
+      visible: orderBookUsers || allTabs || isDispatch,
       index: 2,
     },
   ];
