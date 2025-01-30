@@ -116,8 +116,8 @@ export const CreateLeadsProformaInvoice = (props) => {
 
   const getProduct = useCallback(async () => {
     try {
-      const res = await ProductService.getAllValidPriceList("all");
-      setProductOption(res.data);
+      const res = await ProductService.getProductPriceList();
+      setProductOption(res.data.products);
     } catch (err) {
       console.error("error potential", err);
     }
@@ -585,7 +585,9 @@ export const CreateLeadsProformaInvoice = (props) => {
                     onChange={(event, value) =>
                       handleAutocompleteChange(index, event, value)
                     }
-                    options={productOption.map((option) => option.product)}
+                    options={productOption.map(
+                      (option) => option.product__name
+                    )}
                     getOptionLabel={(option) => option}
                     sx={{ minWidth: 300 }}
                     label="Product Name"

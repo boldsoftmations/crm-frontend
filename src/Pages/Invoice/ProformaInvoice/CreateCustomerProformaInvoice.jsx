@@ -72,7 +72,6 @@ export const CreateCustomerProformaInvoice = (props) => {
     [
       {
         product: "",
-        unit: "",
         quantity: "",
         rate: "",
         requested_date: values.someDate,
@@ -154,13 +153,12 @@ export const CreateCustomerProformaInvoice = (props) => {
 
   const getProduct = useCallback(async () => {
     try {
-      const res = await ProductService.getAllValidPriceList("all");
-      setProductOption(res.data);
+      const res = await ProductService.getProductPriceList();
+      setProductOption(res.data.products);
     } catch (err) {
       console.error("error potential", err);
     }
   }, []);
-
   const getAllSellerAccountsDetails = async () => {
     try {
       const response = await InvoiceServices.getAllPaginateSellerAccountData(
@@ -830,7 +828,9 @@ export const CreateCustomerProformaInvoice = (props) => {
                         }
                       }
                     }}
-                    options={productOption.map((option) => option.product)}
+                    options={productOption.map(
+                      (option) => option.product__name
+                    )}
                     getOptionLabel={(option) => option}
                     sx={{ minWidth: 300 }}
                     label="Product Name"
@@ -870,8 +870,13 @@ export const CreateCustomerProformaInvoice = (props) => {
                     fullWidth
                     size="small"
                     label="Unit"
+                    disabled
                     variant="outlined"
-                    value={input.unit}
+                    value={
+                      productDetails &&
+                      productDetails[index] &&
+                      productDetails[index].unit
+                    }
                   />
                 </Grid>
                 <Grid item xs={12} sm={2}>
