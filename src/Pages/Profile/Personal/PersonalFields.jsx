@@ -66,7 +66,7 @@ const fieldData = [
     type: "autocomplete",
     label: "Blood Group",
     name: "blood_group",
-    options: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
+    options: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-", "Don't Know"],
   },
 ];
 
