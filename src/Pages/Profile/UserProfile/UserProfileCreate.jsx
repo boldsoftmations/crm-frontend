@@ -335,7 +335,7 @@ export const UserProfileCreate = ({ setOpenPopup, getUsers }) => {
     try {
       setOpen(true);
       const res = await UserProfileService.createUserProfileData(formData);
-      if (res.status === 200) {
+      if (res.status === 201) {
         setAlertMsg({
           message: "User profile created successfully",
           severity: "success",
