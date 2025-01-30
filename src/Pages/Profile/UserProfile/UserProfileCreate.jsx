@@ -349,7 +349,7 @@ export const UserProfileCreate = ({ setOpenPopup, getUsers }) => {
     } catch (error) {
       console.error("Error creating user profile:", error);
       setAlertMsg({
-        message: "Error creating user profile",
+        message: error.response.data.error || "Error creating user profile",
         severity: "error",
         open: true,
       });
