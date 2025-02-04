@@ -21,7 +21,9 @@ const useDynamicFormFields = (
   const handleAutocompleteChange = useCallback(
     (index, event, value) => {
       let data = [...products];
-      const productObj = productOption.find((item) => item.product === value);
+      const productObj = productOption.find(
+        (item) => item.product__name === value
+      );
       data[index] = {
         ...data[index],
         product: value,

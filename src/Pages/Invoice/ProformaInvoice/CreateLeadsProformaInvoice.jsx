@@ -60,9 +60,9 @@ export const CreateLeadsProformaInvoice = (props) => {
     [
       {
         product: "",
-        unit: "",
         quantity: "",
         rate: "",
+        unit: "",
         requested_date: values.someDate,
         special_instructions: "",
       },
@@ -634,7 +634,6 @@ export const CreateLeadsProformaInvoice = (props) => {
                     label="Amount"
                     variant="outlined"
                     value={(input.quantity * input.rate).toFixed(2)}
-                    // onChange={(event) => handleFormChange(index, event)}
                   />
                 </Grid>
                 <Grid item xs={12} sm={2}>
