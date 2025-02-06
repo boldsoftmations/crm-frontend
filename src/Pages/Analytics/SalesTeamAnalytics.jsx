@@ -451,6 +451,7 @@ export const SalesTeamAnalytics = (props) => {
             </Card>
           </Grid>
         </Grid>
+
         <Grid item xs={12} sm={12} sx={{ marginTop: "20px" }}>
           <Button
             variant={activeButton === "monthly" ? "contained" : "outlined"} // Set variant to 'contained' for the active button
@@ -544,109 +545,6 @@ export const SalesTeamAnalytics = (props) => {
               heightStyle={"300px"}
             />
           )}
-        </Grid>
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={12} sx={{ marginTop: "20px" }}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" color="primary">
-                  Call Performance
-                </Typography>
-                <Divider />
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="start"
-                  sx={{ marginTop: "20px" }}
-                >
-                  <FormControl sx={{ minWidth: 120, marginRight: 2 }}>
-                    <InputLabel id="date-select-label">Date</InputLabel>
-                    <Select
-                      labelId="date-select-label"
-                      id="date-select"
-                      label="Date"
-                      value={selectedDate || ""}
-                      onChange={handleChange}
-                      size="small"
-                    >
-                      {DateOptions.map((option, i) => (
-                        <MenuItem key={i} value={option.value}>
-                          {option.value}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-
-                  {selectedDate === "Custom Date" && (
-                    <React.Fragment>
-                      <FormControl sx={{ marginRight: 2 }}>
-                        <CustomTextField
-                          fullWidth
-                          label="Start Date"
-                          variant="outlined"
-                          size="small"
-                          type="date"
-                          id="start-date"
-                          value={
-                            startDate
-                              ? startDate.toISOString().split("T")[0]
-                              : ""
-                          }
-                          min={minDate}
-                          max={maxDate}
-                          onChange={handleStartDateChange}
-                        />
-                      </FormControl>
-                      <FormControl>
-                        <CustomTextField
-                          fullWidth
-                          label="End Date"
-                          variant="outlined"
-                          size="small"
-                          type="date"
-                          id="end-date"
-                          value={
-                            endDate ? endDate.toISOString().split("T")[0] : ""
-                          }
-                          min={
-                            startDate
-                              ? startDate.toISOString().split("T")[0]
-                              : minDate
-                          }
-                          max={maxDate}
-                          onChange={handleEndDateChange}
-                          disabled={!startDate}
-                        />
-                      </FormControl>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={getResetDate}
-                        sx={{ marginLeft: 2 }}
-                      >
-                        Reset
-                      </Button>
-                    </React.Fragment>
-                  )}
-                </Box>
-
-                <CustomChart
-                  chartType="BarChart"
-                  data={[
-                    ["Call Category", "Value"],
-                    ...callPerformance.map((item) => [item.name, item.value]),
-                  ]}
-                  options={{
-                    // title: "Call Performance",
-                    width: "100%",
-                    height: "300px",
-                  }}
-                  widthStyle={"100%"}
-                  heightStyle={"300px"}
-                />
-              </CardContent>
-            </Card>
-          </Grid>
         </Grid>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
@@ -747,6 +645,109 @@ export const SalesTeamAnalytics = (props) => {
                     // title: "Daily Sales OrderBook Quantity",
                     width: "100%",
                     height: "400px",
+                  }}
+                  widthStyle={"100%"}
+                  heightStyle={"300px"}
+                />
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={12} sx={{ marginTop: "20px" }}>
+            <Card>
+              <CardContent>
+                <Typography variant="h6" color="primary">
+                  Call Performance
+                </Typography>
+                <Divider />
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="start"
+                  sx={{ marginTop: "20px" }}
+                >
+                  <FormControl sx={{ minWidth: 120, marginRight: 2 }}>
+                    <InputLabel id="date-select-label">Date</InputLabel>
+                    <Select
+                      labelId="date-select-label"
+                      id="date-select"
+                      label="Date"
+                      value={selectedDate || ""}
+                      onChange={handleChange}
+                      size="small"
+                    >
+                      {DateOptions.map((option, i) => (
+                        <MenuItem key={i} value={option.value}>
+                          {option.value}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+
+                  {selectedDate === "Custom Date" && (
+                    <React.Fragment>
+                      <FormControl sx={{ marginRight: 2 }}>
+                        <CustomTextField
+                          fullWidth
+                          label="Start Date"
+                          variant="outlined"
+                          size="small"
+                          type="date"
+                          id="start-date"
+                          value={
+                            startDate
+                              ? startDate.toISOString().split("T")[0]
+                              : ""
+                          }
+                          min={minDate}
+                          max={maxDate}
+                          onChange={handleStartDateChange}
+                        />
+                      </FormControl>
+                      <FormControl>
+                        <CustomTextField
+                          fullWidth
+                          label="End Date"
+                          variant="outlined"
+                          size="small"
+                          type="date"
+                          id="end-date"
+                          value={
+                            endDate ? endDate.toISOString().split("T")[0] : ""
+                          }
+                          min={
+                            startDate
+                              ? startDate.toISOString().split("T")[0]
+                              : minDate
+                          }
+                          max={maxDate}
+                          onChange={handleEndDateChange}
+                          disabled={!startDate}
+                        />
+                      </FormControl>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={getResetDate}
+                        sx={{ marginLeft: 2 }}
+                      >
+                        Reset
+                      </Button>
+                    </React.Fragment>
+                  )}
+                </Box>
+
+                <CustomChart
+                  chartType="BarChart"
+                  data={[
+                    ["Call Category", "Value"],
+                    ...callPerformance.map((item) => [item.name, item.value]),
+                  ]}
+                  options={{
+                    // title: "Call Performance",
+                    width: "100%",
+                    height: "300px",
                   }}
                   widthStyle={"100%"}
                   heightStyle={"300px"}

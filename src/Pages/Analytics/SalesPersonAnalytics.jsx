@@ -28,7 +28,7 @@ export const SalesPersonAnalytics = (props) => {
     barChartData,
     pieChartData,
     newCustomerData,
-    pendingTask,
+    // pendingTask,
     pendingFollowup,
     pendingDescription,
     monthlyStatus,
@@ -555,59 +555,6 @@ export const SalesPersonAnalytics = (props) => {
           </Grid>
 
           {/* second row */}
-
-          {!(
-            userData.groups.includes("Sales Executive") ||
-            userData.groups.includes("Sales Assistant Deputy Manager") ||
-            userData.groups.includes("Customer Relationship Manager") ||
-            userData.groups.includes("Customer Relationship Executive")
-          ) && (
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={12} sx={{ marginTop: "20px" }}>
-                <Card>
-                  <CardContent>
-                    <Typography variant="h6" color="primary">
-                      IndiaMart Leads
-                    </Typography>
-                    <Divider />
-                    <CustomTextField
-                      id="date"
-                      size="small"
-                      label="Date"
-                      type="date"
-                      value={selectedWeek}
-                      onChange={handleDateChange}
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                      sx={{ width: "300px", marginTop: "10px" }}
-                    />
-
-                    <CustomChart
-                      chartType="ColumnChart"
-                      data={[
-                        ["Day", "Total Leads"],
-                        ...indiaMartLeadData.map((item) => [
-                          item.day,
-                          item.totalLeads,
-                        ]),
-                      ]}
-                      options={{
-                        // title: "IndiaMart Leads",
-                        width: "100%",
-                        height: "300px",
-                      }}
-                      widthStyle={"100%"}
-                      heightStyle={"300px"}
-                    />
-                  </CardContent>
-                </Card>
-              </Grid>
-            </Grid>
-          )}
-
-          {/* third row */}
-
           <Grid container spacing={2}>
             <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
               <Card>
@@ -688,6 +635,164 @@ export const SalesPersonAnalytics = (props) => {
             </Grid>
           </Grid>
 
+          {!(
+            userData.groups.includes("Sales Executive") ||
+            userData.groups.includes("Sales Assistant Deputy Manager") ||
+            userData.groups.includes("Customer Relationship Manager") ||
+            userData.groups.includes("Customer Relationship Executive")
+          ) && (
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={12} sx={{ marginTop: "20px" }}>
+                <Card>
+                  <CardContent>
+                    <Typography variant="h6" color="primary">
+                      IndiaMart Leads
+                    </Typography>
+                    <Divider />
+                    <CustomTextField
+                      id="date"
+                      size="small"
+                      label="Date"
+                      type="date"
+                      value={selectedWeek}
+                      onChange={handleDateChange}
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      sx={{ width: "300px", marginTop: "10px" }}
+                    />
+
+                    <CustomChart
+                      chartType="ColumnChart"
+                      data={[
+                        ["Day", "Total Leads"],
+                        ...indiaMartLeadData.map((item) => [
+                          item.day,
+                          item.totalLeads,
+                        ]),
+                      ]}
+                      options={{
+                        // title: "IndiaMart Leads",
+                        width: "100%",
+                        height: "300px",
+                      }}
+                      widthStyle={"100%"}
+                      heightStyle={"300px"}
+                    />
+                  </CardContent>
+                </Card>
+              </Grid>
+            </Grid>
+          )}
+          {/* third row */}
+
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" color="primary">
+                    OrderBook Pending Quantity by Description
+                  </Typography>
+                  <Divider />
+                  <CustomChart
+                    chartType="BarChart"
+                    data={[
+                      ["Product Description", "Pending Quantity"],
+                      ...pendingDescription.map((item) => [
+                        item.name,
+                        item.value,
+                      ]),
+                    ]}
+                    options={{
+                      // title: "OrderBook Pending Quantity by Description",
+                      width: "100%",
+                      height: "400px",
+                      legend: { position: "none" },
+                    }}
+                    widthStyle={"100%"}
+                    heightStyle={"300px"}
+                  />
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" color="primary">
+                    Daily Sales Invoice Quantity
+                  </Typography>
+                  <Divider />
+
+                  <CustomAutocomplete
+                    sx={{ marginTop: "10px" }}
+                    size="small"
+                    value={selectedDIQData}
+                    onChange={(e, data) => handleDataForInvoice(data)}
+                    options={descriptionOptionsForInvoice}
+                    getOptionLabel={(option) => option}
+                    label="Filter By Description"
+                  />
+                  <CustomChart
+                    chartType="LineChart"
+                    data={[
+                      ["Date", "Total"],
+                      ...dIQdata.map((entry) => [
+                        entry.sales_invoice__generation_date,
+                        entry.total,
+                      ]),
+                    ]}
+                    options={{
+                      // title: "Daily Sales Invoice Quantity",
+                      width: "100%",
+                      height: "400px",
+                    }}
+                    widthStyle={"100%"}
+                    heightStyle={"300px"}
+                  />
+                </CardContent>
+              </Card>
+            </Grid>
+
+            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" color="primary">
+                    Daily Sales OrderBook Quantity
+                  </Typography>
+                  <Divider />
+
+                  <CustomAutocomplete
+                    sx={{ marginTop: "10px" }}
+                    size="small"
+                    value={selectedDOBQData}
+                    onChange={(e, value) => handleDataForOrderBook(value)}
+                    options={descriptionOptionsForOrderBook}
+                    getOptionLabel={(option) => option}
+                    label="Filter By Description"
+                  />
+                  <CustomChart
+                    chartType="LineChart"
+                    data={[
+                      ["Date", "Total"],
+                      ...((dOBQdata &&
+                        dOBQdata.map((entry) => [
+                          entry.orderbook__proforma_invoice__generation_date,
+                          entry.total,
+                        ])) ||
+                        []),
+                    ]}
+                    options={{
+                      // title: "Daily Sales OrderBook Quantity",
+                      width: "100%",
+                      height: "400px",
+                    }}
+                    widthStyle={"100%"}
+                    heightStyle={"300px"}
+                  />
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
           {/* fourth row */}
 
           <Grid item xs={12} sm={3} sx={{ marginTop: "20px" }}>
@@ -889,113 +994,6 @@ export const SalesPersonAnalytics = (props) => {
             </Grid>
           </Grid>
           {/* sixth row */}
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
-              <Card>
-                <CardContent>
-                  <Typography variant="h6" color="primary">
-                    OrderBook Pending Quantity by Description
-                  </Typography>
-                  <Divider />
-                  <CustomChart
-                    chartType="BarChart"
-                    data={[
-                      ["Product Description", "Pending Quantity"],
-                      ...pendingDescription.map((item) => [
-                        item.name,
-                        item.value,
-                      ]),
-                    ]}
-                    options={{
-                      // title: "OrderBook Pending Quantity by Description",
-                      width: "100%",
-                      height: "400px",
-                      legend: { position: "none" },
-                    }}
-                    widthStyle={"100%"}
-                    heightStyle={"300px"}
-                  />
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
-              <Card>
-                <CardContent>
-                  <Typography variant="h6" color="primary">
-                    Daily Sales Invoice Quantity
-                  </Typography>
-                  <Divider />
-
-                  <CustomAutocomplete
-                    sx={{ marginTop: "10px" }}
-                    size="small"
-                    value={selectedDIQData}
-                    onChange={(e, data) => handleDataForInvoice(data)}
-                    options={descriptionOptionsForInvoice}
-                    getOptionLabel={(option) => option}
-                    label="Filter By Description"
-                  />
-                  <CustomChart
-                    chartType="LineChart"
-                    data={[
-                      ["Date", "Total"],
-                      ...dIQdata.map((entry) => [
-                        entry.sales_invoice__generation_date,
-                        entry.total,
-                      ]),
-                    ]}
-                    options={{
-                      // title: "Daily Sales Invoice Quantity",
-                      width: "100%",
-                      height: "400px",
-                    }}
-                    widthStyle={"100%"}
-                    heightStyle={"300px"}
-                  />
-                </CardContent>
-              </Card>
-            </Grid>
-
-            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
-              <Card>
-                <CardContent>
-                  <Typography variant="h6" color="primary">
-                    Daily Sales OrderBook Quantity
-                  </Typography>
-                  <Divider />
-
-                  <CustomAutocomplete
-                    sx={{ marginTop: "10px" }}
-                    size="small"
-                    value={selectedDOBQData}
-                    onChange={(e, value) => handleDataForOrderBook(value)}
-                    options={descriptionOptionsForOrderBook}
-                    getOptionLabel={(option) => option}
-                    label="Filter By Description"
-                  />
-                  <CustomChart
-                    chartType="LineChart"
-                    data={[
-                      ["Date", "Total"],
-                      ...((dOBQdata &&
-                        dOBQdata.map((entry) => [
-                          entry.orderbook__proforma_invoice__generation_date,
-                          entry.total,
-                        ])) ||
-                        []),
-                    ]}
-                    options={{
-                      // title: "Daily Sales OrderBook Quantity",
-                      width: "100%",
-                      height: "400px",
-                    }}
-                    widthStyle={"100%"}
-                    heightStyle={"300px"}
-                  />
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
         </div>
       )}
     </Box>
