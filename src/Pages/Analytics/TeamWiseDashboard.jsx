@@ -439,15 +439,14 @@ export const TeamWiseDashboard = () => {
       setOpen(true);
 
       const response = await DashboardService.getConsMonthlyCallStatusData();
-      const Data = Object.keys(response.data).flatMap((key) => {
-        return response.data[key].map((item) => {
-          return {
-            combination: `${shortMonths[item.month - 1]}-${item.year}`,
-            existing_lead: item.existing_lead,
-            new_lead: item.new_lead,
-            customer: item.customer,
-          };
-        });
+      const data = response.data;
+      const Data = Object.keys(data).map((key) => {
+        return {
+          combination: key,
+          existing_lead: data[key].existing_lead,
+          new_lead: data[key].new_lead,
+          customer: data[key].customer,
+        };
       });
 
       setMonthlyStatus(Data);
@@ -463,14 +462,13 @@ export const TeamWiseDashboard = () => {
       setOpen(true);
 
       const response = await DashboardService.getConsWeeklyCallStatusData();
-      const Data = response.data.map((dayObject) => {
-        const week = Object.keys(dayObject)[0];
-        const weekData = dayObject[week][0];
+      const data = response.data;
+      const Data = Object.keys(data).map((key) => {
         return {
-          combination: week,
-          existing_lead: weekData.existing_lead,
-          new_lead: weekData.new_lead,
-          customer: weekData.customer,
+          combination: key,
+          existing_lead: data[key].existing_lead,
+          new_lead: data[key].new_lead,
+          customer: data[key].customer,
         };
       });
       setWeeklyStatus(Data);
@@ -486,18 +484,13 @@ export const TeamWiseDashboard = () => {
       setOpen(true);
 
       const response = await DashboardService.getConsDailyCallStatusData();
-      const Data = response.data.map((dayObject) => {
-        const day = Object.keys(dayObject)[0];
-        const dayData = dayObject[day][0];
-
-        // Convert full day name to abbreviated form
-        const abbreviatedDay = getAbbreviatedDay(day);
-
+      const data = response.data;
+      const Data = Object.keys(data).map((key) => {
         return {
-          combination: abbreviatedDay,
-          existing_lead: dayData.existing_lead,
-          new_lead: dayData.new_lead,
-          customer: dayData.customer,
+          combination: key,
+          existing_lead: data[key].existing_lead,
+          new_lead: data[key].new_lead,
+          customer: data[key].customer,
         };
       });
 
@@ -952,15 +945,14 @@ export const TeamWiseDashboard = () => {
       setOpen(true);
       const response =
         await DashboardService.getConsMonthlyCallStatusDataByFilter(FilterData);
-      const Data = Object.keys(response.data).flatMap((key) => {
-        return response.data[key].map((item) => {
-          return {
-            combination: `${shortMonths[item.month - 1]}-${item.year}`,
-            existing_lead: item.existing_lead,
-            new_lead: item.new_lead,
-            customer: item.customer,
-          };
-        });
+      const data = response.data;
+      const Data = Object.keys(data).map((key) => {
+        return {
+          combination: key,
+          existing_lead: data[key].existing_lead,
+          new_lead: data[key].new_lead,
+          customer: data[key].customer,
+        };
       });
 
       setMonthlyStatus(Data);
@@ -978,15 +970,13 @@ export const TeamWiseDashboard = () => {
       setOpen(true);
       const response =
         await DashboardService.getConsWeeklyCallStatusDataByFilter(FilterData);
-      const Data = response.data.map((dayObject) => {
-        const week = Object.keys(dayObject)[0];
-        const weekData = dayObject[week][0];
-
+      const data = response.data;
+      const Data = Object.keys(data).map((key) => {
         return {
-          combination: week,
-          existing_lead: weekData.existing_lead,
-          new_lead: weekData.new_lead,
-          customer: weekData.customer,
+          combination: key,
+          existing_lead: data[key].existing_lead,
+          new_lead: data[key].new_lead,
+          customer: data[key].customer,
         };
       });
 
@@ -1005,18 +995,13 @@ export const TeamWiseDashboard = () => {
       setOpen(true);
       const response =
         await DashboardService.getConsDailyCallStatusDataByFilter(FilterData);
-      const Data = response.data.map((dayObject) => {
-        const day = Object.keys(dayObject)[0];
-        const dayData = dayObject[day][0];
-
-        // Convert full day name to abbreviated form
-        const abbreviatedDay = getAbbreviatedDay(day);
-
+      const data = response.data;
+      const Data = Object.keys(data).map((key) => {
         return {
-          combination: abbreviatedDay,
-          existing_lead: dayData.existing_lead,
-          new_lead: dayData.new_lead,
-          customer: dayData.customer,
+          combination: key,
+          existing_lead: data[key].existing_lead,
+          new_lead: data[key].new_lead,
+          customer: data[key].customer,
         };
       });
 

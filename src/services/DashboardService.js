@@ -178,7 +178,7 @@ const getDailyOrderBookQuantityDataByFilter = (filter) => {
 // last Three Month Forecast End Point
 const getConsLastThreeMonthForecastData = () => {
   return CustomAxios.get(
-    `/api/dashboard/consolidated-last-three-month-forecast/`
+    `/api/dashboard/consolidated-last-three-months-forecast/`
   );
 };
 

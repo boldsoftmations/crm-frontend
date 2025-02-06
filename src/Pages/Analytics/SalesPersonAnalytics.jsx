@@ -155,7 +155,6 @@ export const SalesPersonAnalytics = (props) => {
   const descriptionOptionsForInvoice = dailyInvoiceQuantity.map(
     (entry) => Object.keys(entry)[0]
   );
-
   // Map the dailyOrderBookQuantity to get description options
   const descriptionOptionsForOrderBook = dailyOrderBookQuantity.map(
     (entry) => Object.keys(entry)[0]
@@ -168,12 +167,10 @@ export const SalesPersonAnalytics = (props) => {
     const filteredData = dailyInvoiceQuantity.find((entry) =>
       entry.hasOwnProperty(value)
     );
-
     if (filteredData && filteredData[value]) {
       setDIQData(filteredData[value]);
     }
   };
-
   // Handler function to set data for order book
   const handleDataForOrderBook = (value) => {
     setSelectedDOBQData(value); // Update the selected option
@@ -306,7 +303,7 @@ export const SalesPersonAnalytics = (props) => {
             })}
           </Grid>
           <Grid container spacing={2}>
-            <Grid item xs={12} lg={6}>
+            <Grid item xs={12} lg={6} md={6}>
               <Card>
                 <CardContent>
                   <Typography variant="h6" color="primary">
@@ -334,7 +331,7 @@ export const SalesPersonAnalytics = (props) => {
                 </CardContent>
               </Card>
             </Grid>
-            <Grid item xs={12} lg={6}>
+            <Grid item xs={12} lg={6} md={6}>
               <Card>
                 <CardContent>
                   <Typography variant="h6" color="primary">
@@ -454,36 +451,48 @@ export const SalesPersonAnalytics = (props) => {
             )}
           </Grid>
 
+          {/* first row */}
+
           <Grid container spacing={2}>
-            <Grid item xs={12} lg={6}>
+            <Grid item xs={12} lg={4} md={40}>
               <Card>
                 <CardContent>
                   <Typography variant="h6" color="primary">
-                    Actual vs Forecast(Quantity)
+                    Actual vs Forecast (Quantity)
                   </Typography>
                   <Divider />
-                  <CustomChart
-                    chartType="ColumnChart"
-                    data={[
-                      ["Combination", "Actual", "Forecast"],
-                      ...barChartData.map((item) => [
-                        item.combination,
-                        item.actual,
-                        item.forecast,
-                      ]),
-                    ]}
-                    options={{
-                      // title: "Actual vs Forecast(Quantity)",
-                      width: "100%",
-                      height: "300px",
-                    }}
-                    widthStyle={"100%"}
-                    heightStyle={"300px"}
-                  />
+                  {barChartData.length > 0 ? (
+                    <CustomChart
+                      chartType="ColumnChart"
+                      data={[
+                        ["Combination", "Actual", "Forecast"],
+                        ...barChartData.map((item) => [
+                          item.combination,
+                          item.actual,
+                          item.forecast,
+                        ]),
+                      ]}
+                      options={{
+                        width: "100%",
+                        height: "300px",
+                      }}
+                      widthStyle={"100%"}
+                      heightStyle={"300px"}
+                    />
+                  ) : (
+                    <Typography
+                      variant="body1"
+                      color="textSecondary"
+                      style={{ textAlign: "center", marginTop: "20px" }}
+                    >
+                      No data available
+                    </Typography>
+                  )}
                 </CardContent>
               </Card>
             </Grid>
-            <Grid item xs={12} lg={6}>
+
+            <Grid item xs={12} lg={4} md={4}>
               {!(
                 userData.groups.includes("Customer Relationship Manager") ||
                 userData.groups.includes("Customer Relationship Executive")
@@ -515,34 +524,7 @@ export const SalesPersonAnalytics = (props) => {
                 </Card>
               )}
             </Grid>
-          </Grid>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6} sx={{ marginTop: "20px" }}>
-              <Card>
-                <CardContent>
-                  <Typography variant="h6" color="primary">
-                    Pending Task Data
-                  </Typography>
-                  <Divider />
-                  <CustomChart
-                    chartType="PieChart"
-                    data={[
-                      ["Label", "Value"],
-                      ...pendingTask.map((item) => [item.label, item.value]),
-                    ]}
-                    options={{
-                      // title: "Pending Task Data",
-                      width: "100%",
-                      height: "300px",
-                      pieHole: 0.4,
-                    }}
-                    widthStyle={"100%"}
-                    heightStyle={"300px"}
-                  />
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} sm={6} sx={{ marginTop: "20px" }}>
+            <Grid item xs={12} sm={4}>
               <Card>
                 <CardContent>
                   <Typography variant="h6" color="primary">
@@ -571,6 +553,9 @@ export const SalesPersonAnalytics = (props) => {
               </Card>
             </Grid>
           </Grid>
+
+          {/* second row */}
+
           {!(
             userData.groups.includes("Sales Executive") ||
             userData.groups.includes("Sales Assistant Deputy Manager") ||
@@ -578,7 +563,7 @@ export const SalesPersonAnalytics = (props) => {
             userData.groups.includes("Customer Relationship Executive")
           ) && (
             <Grid container spacing={2}>
-              <Grid item xs={12} sx={{ marginTop: "20px" }}>
+              <Grid item xs={12} sm={12} sx={{ marginTop: "20px" }}>
                 <Card>
                   <CardContent>
                     <Typography variant="h6" color="primary">
@@ -620,8 +605,11 @@ export const SalesPersonAnalytics = (props) => {
               </Grid>
             </Grid>
           )}
+
+          {/* third row */}
+
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6} sx={{ marginTop: "20px" }}>
+            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
               <Card>
                 <CardContent>
                   <Typography variant="h6" color="primary">
@@ -643,7 +631,7 @@ export const SalesPersonAnalytics = (props) => {
                 </CardContent>
               </Card>
             </Grid>
-            <Grid item xs={12} sm={6} sx={{ marginTop: "20px" }}>
+            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
               <Card>
                 <CardContent>
                   <Typography variant="h6" color="primary">
@@ -671,8 +659,38 @@ export const SalesPersonAnalytics = (props) => {
                 </CardContent>
               </Card>
             </Grid>
+            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" color="primary">
+                    Description
+                  </Typography>
+                  <Divider />
+                  <CustomChart
+                    chartType="PieChart"
+                    data={[
+                      ["Product Description", "Quantity"],
+                      ...descriptionQuantity.map((item) => [
+                        item.name,
+                        item.value,
+                      ]),
+                    ]}
+                    options={{
+                      // title: "Description Wise Sales Quantity",
+                      width: "100%",
+                      height: "400px",
+                    }}
+                    widthStyle={"100%"}
+                    heightStyle={"300px"}
+                  />
+                </CardContent>
+              </Card>
+            </Grid>
           </Grid>
-          <Grid item xs={12} sm={12} sx={{ marginTop: "20px" }}>
+
+          {/* fourth row */}
+
+          <Grid item xs={12} sm={3} sx={{ marginTop: "20px" }}>
             <Button
               variant={activeButton === "monthly" ? "contained" : "outlined"} // Set variant to 'contained' for the active button
               sx={{ margin: "0 10px 10px 0" }}
@@ -766,63 +784,7 @@ export const SalesPersonAnalytics = (props) => {
               />
             )}
           </Grid>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6} sx={{ marginTop: "20px" }}>
-              <Card>
-                <CardContent>
-                  <Typography variant="h6" color="primary">
-                    OrderBook Pending Quantity by Description
-                  </Typography>
-                  <Divider />
-                  <CustomChart
-                    chartType="BarChart"
-                    data={[
-                      ["Product Description", "Pending Quantity"],
-                      ...pendingDescription.map((item) => [
-                        item.name,
-                        item.value,
-                      ]),
-                    ]}
-                    options={{
-                      // title: "OrderBook Pending Quantity by Description",
-                      width: "100%",
-                      height: "400px",
-                      legend: { position: "none" },
-                    }}
-                    widthStyle={"100%"}
-                    heightStyle={"300px"}
-                  />
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} sm={6} sx={{ marginTop: "20px" }}>
-              <Card>
-                <CardContent>
-                  <Typography variant="h6" color="primary">
-                    Description
-                  </Typography>
-                  <Divider />
-                  <CustomChart
-                    chartType="PieChart"
-                    data={[
-                      ["Product Description", "Quantity"],
-                      ...descriptionQuantity.map((item) => [
-                        item.name,
-                        item.value,
-                      ]),
-                    ]}
-                    options={{
-                      // title: "Description Wise Sales Quantity",
-                      width: "100%",
-                      height: "400px",
-                    }}
-                    widthStyle={"100%"}
-                    heightStyle={"300px"}
-                  />
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
+          {/* fifth row */}
           <Grid container spacing={2}>
             <Grid item xs={12} sm={12} sx={{ marginTop: "20px" }}>
               <Card>
@@ -917,7 +879,7 @@ export const SalesPersonAnalytics = (props) => {
                     options={{
                       // title: "Call Performance",
                       width: "100%",
-                      height: "400px",
+                      height: "300px",
                     }}
                     widthStyle={"100%"}
                     heightStyle={"300px"}
@@ -926,8 +888,37 @@ export const SalesPersonAnalytics = (props) => {
               </Card>
             </Grid>
           </Grid>
+          {/* sixth row */}
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6} sx={{ marginTop: "20px" }}>
+            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" color="primary">
+                    OrderBook Pending Quantity by Description
+                  </Typography>
+                  <Divider />
+                  <CustomChart
+                    chartType="BarChart"
+                    data={[
+                      ["Product Description", "Pending Quantity"],
+                      ...pendingDescription.map((item) => [
+                        item.name,
+                        item.value,
+                      ]),
+                    ]}
+                    options={{
+                      // title: "OrderBook Pending Quantity by Description",
+                      width: "100%",
+                      height: "400px",
+                      legend: { position: "none" },
+                    }}
+                    widthStyle={"100%"}
+                    heightStyle={"300px"}
+                  />
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
               <Card>
                 <CardContent>
                   <Typography variant="h6" color="primary">
@@ -965,7 +956,7 @@ export const SalesPersonAnalytics = (props) => {
               </Card>
             </Grid>
 
-            <Grid item xs={12} sm={6} sx={{ marginTop: "20px" }}>
+            <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
               <Card>
                 <CardContent>
                   <Typography variant="h6" color="primary">
