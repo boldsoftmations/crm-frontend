@@ -1171,7 +1171,6 @@ export const SalesPersonDashboard = () => {
       <SalesPersonAnalytics
         barChartData={barChartData}
         pieChartData={pieChartData}
-        horizontalBarData={horizontalBarData}
         newCustomerData={newCustomerData}
         pendingTask={pendingTask}
         pendingFollowup={pendingFollowup}
