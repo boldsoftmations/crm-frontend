@@ -1157,7 +1157,7 @@ export const TeamWiseDashboard = () => {
         pieChartData={pieChartData}
         horizontalBarData={horizontalBarData}
         newCustomerData={newCustomerData}
-        pendingTask={pendingTask}
+        // pendingTask={pendingTask}
         pendingFollowup={pendingFollowup}
         pendingDescription={pendingDescription}
         piData={piData}
