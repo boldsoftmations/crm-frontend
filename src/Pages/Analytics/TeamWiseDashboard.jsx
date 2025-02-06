@@ -311,15 +311,12 @@ export const TeamWiseDashboard = () => {
   const getConsNewCustomerDetails = async () => {
     try {
       setOpen(true);
-      const newcustomerResponse = await DashboardService.getNewCustomerData();
-      const Data = Object.keys(newcustomerResponse.data).flatMap((key) => {
-        return newcustomerResponse.data[key].map((item) => {
-          return {
-            combination: `${shortMonths[item.month - 1]}-${item.year}`,
-            count: item.count,
-          };
-        });
-      });
+      const newcustomerResponse =
+        await DashboardService.getConsNewCustomerData();
+      const Data = newcustomerResponse.data.map((item) => ({
+        combination: `${shortMonths[item.month - 1]}-${item.year}`,
+        count: item.count,
+      }));
 
       setNewCustomerData(Data);
       setOpen(false);
