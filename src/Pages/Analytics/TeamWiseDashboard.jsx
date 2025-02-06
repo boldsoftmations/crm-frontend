@@ -651,7 +651,7 @@ export const TeamWiseDashboard = () => {
       setAssign(value.email);
       getConsDataByFilter(value.email);
       getConsNewCustomerByFilter(value.email);
-      getConsPendingTaskByFilter(value.email);
+      // getConsPendingTaskByFilter(value.email);
       getConsPendingFollowupByFilter(value.email);
       getConsPIByFilter(value.email);
       getConsCustomerByFilter(value.email);
@@ -744,36 +744,36 @@ export const TeamWiseDashboard = () => {
     }
   };
 
-  const getConsPendingTaskByFilter = async (value) => {
-    try {
-      const FilterData = value;
-      setOpen(true);
-      const response = await DashboardService.getConsPendingTaskDataByFilter(
-        FilterData
-      );
-      const Data = [
-        {
-          label: "Activity",
-          value: response.data.atleast_one_activity,
-        },
-        {
-          label: "No Activity",
-          value: response.data.no_activity,
-        },
-        {
-          label: "Overdue Tasks",
-          value: response.data.overdue_tasks,
-        },
-      ];
+  // const getConsPendingTaskByFilter = async (value) => {
+  //   try {
+  //     const FilterData = value;
+  //     setOpen(true);
+  //     const response = await DashboardService.getConsPendingTaskDataByFilter(
+  //       FilterData
+  //     );
+  //     const Data = [
+  //       {
+  //         label: "Activity",
+  //         value: response.data.atleast_one_activity,
+  //       },
+  //       {
+  //         label: "No Activity",
+  //         value: response.data.no_activity,
+  //       },
+  //       {
+  //         label: "Overdue Tasks",
+  //         value: response.data.overdue_tasks,
+  //       },
+  //     ];
 
-      setPendingTask(Data);
+  //     setPendingTask(Data);
 
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
-  };
+  //     setOpen(false);
+  //   } catch (error) {
+  //     console.log("error", error);
+  //     setOpen(false);
+  //   }
+  // };
 
   const getConsPendingFollowupByFilter = async (value) => {
     try {
