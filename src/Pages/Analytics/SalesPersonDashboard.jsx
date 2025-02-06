@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import DashboardService from "../../services/DashboardService";
 import { CustomLoader } from "../../Components/CustomLoader";
+import InvoiceServices from "../../services/InvoiceService";
 import { SalesPersonAnalytics } from "./SalesPersonAnalytics";
 
 export const SalesPersonDashboard = () => {
@@ -12,7 +13,7 @@ export const SalesPersonDashboard = () => {
   const [barChartData, setBarChartData] = useState([]);
   const [pieChartData, setPieChartData] = useState([]);
   const [newCustomerData, setNewCustomerData] = useState([]);
-  const [pendingTask, setPendingTask] = useState([]);
+  // const [pendingTask, setPendingTask] = useState([]);
   const [pendingFollowup, setPendingFollowup] = useState([]);
   const [pendingDescription, setPendingDescription] = useState([]);
   const [descriptionQuantity, setDescriptionQuantity] = useState([]);
@@ -56,7 +57,7 @@ export const SalesPersonDashboard = () => {
     getAllTaskDetails();
     getCustomerDetails();
     getNewCustomerDetails();
-    getPendingTaskDetails();
+    // getPendingTaskDetails();
     getPendingFollowupDetails();
     getPIDetails();
     getIndiaMartLeadDetails();
@@ -298,32 +299,32 @@ export const SalesPersonDashboard = () => {
     }
   };
 
-  const getPendingTaskDetails = async () => {
-    try {
-      setOpen(true);
-      const response = await DashboardService.getPendingTaskData();
+  // const getPendingTaskDetails = async () => {
+  //   try {
+  //     setOpen(true);
+  //     const response = await DashboardService.getPendingTaskData();
 
-      const Data = [
-        {
-          label: "Activity",
-          value: response.data.atleast_one_activity,
-        },
-        {
-          label: "No Activity",
-          value: response.data.no_activity,
-        },
-        {
-          label: "Overdue Tasks",
-          value: response.data.overdue_tasks,
-        },
-      ];
-      setPendingTask(Data);
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("err", err);
-    }
-  };
+  //     const Data = [
+  //       {
+  //         label: "Activity",
+  //         value: response.data.atleast_one_activity,
+  //       },
+  //       {
+  //         label: "No Activity",
+  //         value: response.data.no_activity,
+  //       },
+  //       {
+  //         label: "Overdue Tasks",
+  //         value: response.data.overdue_tasks,
+  //       },
+  //     ];
+  //     setPendingTask(Data);
+  //     setOpen(false);
+  //   } catch (err) {
+  //     setOpen(false);
+  //     console.log("err", err);
+  //   }
+  // };
 
   const getPendingFollowupDetails = async () => {
     try {
@@ -640,7 +641,7 @@ export const SalesPersonDashboard = () => {
       setAssign(value.email);
       getDataByFilter(value.email);
       getNewCustomerByFilter(value.email);
-      getPendingTaskByFilter(value.email);
+      // getPendingTaskByFilter(value.email);
       getPendingFollowupByFilter(value.email);
       getPIByFilter(value.email);
       getCustomerByFilter(value.email);
@@ -657,7 +658,7 @@ export const SalesPersonDashboard = () => {
       // Handle the case when value is null (i.e., when the Autocomplete is reset)
       getForecastDetails();
       getNewCustomerDetails();
-      getPendingTaskDetails();
+      // getPendingTaskDetails();
       getPendingFollowupDetails();
       getCustomerDetails();
       getPIDetails();
@@ -733,36 +734,36 @@ export const SalesPersonDashboard = () => {
     }
   };
 
-  const getPendingTaskByFilter = async (value) => {
-    try {
-      const FilterData = value;
-      setOpen(true);
-      const response = await DashboardService.getPendingTaskDataByFilter(
-        FilterData
-      );
-      const Data = [
-        {
-          label: "Activity",
-          value: response.data.atleast_one_activity,
-        },
-        {
-          label: "No Activity",
-          value: response.data.no_activity,
-        },
-        {
-          label: "Overdue Tasks",
-          value: response.data.overdue_tasks,
-        },
-      ];
+  // const getPendingTaskByFilter = async (value) => {
+  //   try {
+  //     const FilterData = value;
+  //     setOpen(true);
+  //     const response = await DashboardService.getPendingTaskDataByFilter(
+  //       FilterData
+  //     );
+  //     const Data = [
+  //       {
+  //         label: "Activity",
+  //         value: response.data.atleast_one_activity,
+  //       },
+  //       {
+  //         label: "No Activity",
+  //         value: response.data.no_activity,
+  //       },
+  //       {
+  //         label: "Overdue Tasks",
+  //         value: response.data.overdue_tasks,
+  //       },
+  //     ];
 
-      setPendingTask(Data);
+  //     setPendingTask(Data);
 
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
-  };
+  //     setOpen(false);
+  //   } catch (error) {
+  //     console.log("error", error);
+  //     setOpen(false);
+  //   }
+  // };
 
   const getPendingFollowupByFilter = async (value) => {
     try {
@@ -1172,7 +1173,7 @@ export const SalesPersonDashboard = () => {
         barChartData={barChartData}
         pieChartData={pieChartData}
         newCustomerData={newCustomerData}
-        pendingTask={pendingTask}
+        // pendingTask={pendingTask}
         pendingFollowup={pendingFollowup}
         pendingDescription={pendingDescription}
         piData={piData}

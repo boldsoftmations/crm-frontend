@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import DashboardService from "../../services/DashboardService";
 import { CustomLoader } from "../../Components/CustomLoader";
+import InvoiceServices from "../../services/InvoiceService";
 import { SalesTeamAnalytics } from "./SalesTeamAnalytics";
 
 export const TeamWiseDashboard = () => {
@@ -51,7 +52,6 @@ export const TeamWiseDashboard = () => {
   useEffect(() => {
     getConsAllTaskDetails();
     getConsCustomerDetails();
-    getConsAllDispatchData();
     getConsNewCustomerDetails();
     // getConsPendingTaskDetails();
     getConsPendingFollowupDetails();
@@ -460,36 +460,6 @@ export const TeamWiseDashboard = () => {
       console.log("Error:", err);
     }
   };
-
-  const getAbbreviatedDay = (fullDay) => {
-    const fullDayNames = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-    ];
-    const abbreviatedDayNames = [
-      "Sun",
-      "Mon",
-      "Tue",
-      "Wed",
-      "Thu",
-      "Fri",
-      "Sat",
-    ];
-
-    const index = fullDayNames.indexOf(fullDay);
-    if (index !== -1) {
-      return abbreviatedDayNames[index];
-    }
-
-    // If the full day name is not found, return the original value
-    return fullDay;
-  };
-
   const getConsDescriptionQuantityDetails = async () => {
     try {
       setOpen(true);
