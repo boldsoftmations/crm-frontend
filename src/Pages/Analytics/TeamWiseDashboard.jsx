@@ -14,7 +14,7 @@ export const TeamWiseDashboard = () => {
   const [pieChartData, setPieChartData] = useState([]);
   const [horizontalBarData, setHorizontalBarData] = useState([]);
   const [newCustomerData, setNewCustomerData] = useState([]);
-  const [pendingTask, setPendingTask] = useState([]);
+  // const [pendingTask, setPendingTask] = useState([]);
   const [pendingFollowup, setPendingFollowup] = useState([]);
   const [pendingDescription, setPendingDescription] = useState([]);
   const [descriptionQuantity, setDescriptionQuantity] = useState([]);
@@ -55,7 +55,7 @@ export const TeamWiseDashboard = () => {
     getConsCustomerDetails();
     getConsAllDispatchData();
     getConsNewCustomerDetails();
-    getConsPendingTaskDetails();
+    // getConsPendingTaskDetails();
     getConsPendingFollowupDetails();
     getConsPIDetails();
     getConsPendingDescriptionDetails();
@@ -311,8 +311,7 @@ export const TeamWiseDashboard = () => {
   const getConsNewCustomerDetails = async () => {
     try {
       setOpen(true);
-      const newcustomerResponse =
-        await DashboardService.getConsConsNewCustomerData();
+      const newcustomerResponse = await DashboardService.getNewCustomerData();
       const Data = Object.keys(newcustomerResponse.data).flatMap((key) => {
         return newcustomerResponse.data[key].map((item) => {
           return {
@@ -330,32 +329,32 @@ export const TeamWiseDashboard = () => {
     }
   };
 
-  const getConsPendingTaskDetails = async () => {
-    try {
-      setOpen(true);
-      const response = await DashboardService.getConsPendingTaskData();
+  // const getConsPendingTaskDetails = async () => {
+  //   try {
+  //     setOpen(true);
+  //     const response = await DashboardService.getConsPendingTaskData();
 
-      const Data = [
-        {
-          label: "Activity",
-          value: response.data.atleast_one_activity,
-        },
-        {
-          label: "No Activity",
-          value: response.data.no_activity,
-        },
-        {
-          label: "Overdue Tasks",
-          value: response.data.overdue_tasks,
-        },
-      ];
-      setPendingTask(Data);
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("err", err);
-    }
-  };
+  //     const Data = [
+  //       {
+  //         label: "Activity",
+  //         value: response.data.atleast_one_activity,
+  //       },
+  //       {
+  //         label: "No Activity",
+  //         value: response.data.no_activity,
+  //       },
+  //       {
+  //         label: "Overdue Tasks",
+  //         value: response.data.overdue_tasks,
+  //       },
+  //     ];
+  //     setPendingTask(Data);
+  //     setOpen(false);
+  //   } catch (err) {
+  //     setOpen(false);
+  //     console.log("err", err);
+  //   }
+  // };
 
   const getConsPendingFollowupDetails = async () => {
     try {
@@ -669,7 +668,7 @@ export const TeamWiseDashboard = () => {
       // Handle the case when value is null (i.e., when the Autocomplete is reset)
       getConsForecastDetails();
       getConsNewCustomerDetails();
-      getConsPendingTaskDetails();
+      // getConsPendingTaskDetails();
       getConsPendingFollowupDetails();
       getConsCustomerDetails();
       getConsPIDetails();

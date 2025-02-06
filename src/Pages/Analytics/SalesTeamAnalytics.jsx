@@ -25,7 +25,7 @@ export const SalesTeamAnalytics = (props) => {
     barChartData,
     pieChartData,
     newCustomerData,
-    pendingTask,
+    // pendingTask,
     pendingFollowup,
     pendingDescription,
     monthlyStatus,
