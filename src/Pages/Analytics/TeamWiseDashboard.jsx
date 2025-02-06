@@ -3,7 +3,6 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import DashboardService from "../../services/DashboardService";
 import { CustomLoader } from "../../Components/CustomLoader";
-import InvoiceServices from "../../services/InvoiceService";
 import { SalesTeamAnalytics } from "./SalesTeamAnalytics";
 
 export const TeamWiseDashboard = () => {
@@ -12,7 +11,6 @@ export const TeamWiseDashboard = () => {
   const [funnelData, setFunnelData] = useState([]);
   const [barChartData, setBarChartData] = useState([]);
   const [pieChartData, setPieChartData] = useState([]);
-  const [horizontalBarData, setHorizontalBarData] = useState([]);
   const [newCustomerData, setNewCustomerData] = useState([]);
   // const [pendingTask, setPendingTask] = useState([]);
   const [pendingFollowup, setPendingFollowup] = useState([]);
@@ -270,41 +268,6 @@ export const TeamWiseDashboard = () => {
     } catch (err) {
       setOpen(false);
       console.log("Error:", err);
-    }
-  };
-
-  const getConsAllDispatchData = async () => {
-    try {
-      setOpen(true);
-      const response = await InvoiceServices.getConsDispatchDashboardData();
-      const Data = [
-        { name: "LR-M1", value: response.data.LR_M1, unit: "M1", type: "LR" },
-        { name: "LR-M2", value: response.data.LR_M2, unit: "M2", type: "LR" },
-        { name: "LR-D1", value: response.data.LR_D1, unit: "D1", type: "LR" },
-        {
-          name: "POD-M1",
-          value: response.data.POD_M1,
-          unit: "M1",
-          type: "POD",
-        },
-        {
-          name: "POD-M2",
-          value: response.data.POD_M2,
-          unit: "M2",
-          type: "POD",
-        },
-        {
-          name: "POD-D1",
-          value: response.data.POD_D1,
-          unit: "D1",
-          type: "POD",
-        },
-      ];
-      setHorizontalBarData(Data);
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("err", err);
     }
   };
 
@@ -1152,7 +1115,6 @@ export const TeamWiseDashboard = () => {
       <SalesTeamAnalytics
         barChartData={barChartData}
         pieChartData={pieChartData}
-        horizontalBarData={horizontalBarData}
         newCustomerData={newCustomerData}
         // pendingTask={pendingTask}
         pendingFollowup={pendingFollowup}
