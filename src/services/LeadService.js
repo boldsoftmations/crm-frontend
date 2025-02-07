@@ -155,6 +155,35 @@ const getFollowUp = (typeValue, page, filterValue) => {
   return CustomAxios.get(`api/lead/list-followup/?${params.toString()}`);
 };
 
+const getCustomerFollowup = (
+  followup,
+  page,
+  filterValue,
+  start_date,
+  end_date
+) => {
+  const params = new URLSearchParams();
+  if (followup) {
+    params.append("followup", followup);
+  }
+  if (page) {
+    params.append("page", page);
+  }
+
+  if (filterValue) {
+    params.append("user__email", filterValue);
+  }
+  if (start_date) {
+    params.append("start_date", start_date);
+  }
+  if (end_date) {
+    params.append("end_date", end_date);
+  }
+  return CustomAxios.get(
+    `api/customer/customer-followup/?${params.toString()}`
+  );
+};
+
 const createPotentialLead = (data) => {
   return CustomAxios.post("/api/lead/list-potential/", data);
 };
@@ -222,6 +251,7 @@ const createLeadForecast = (data) => {
 const updateLeadForecast = (id, data) => {
   return CustomAxios.patch(`/api/forecast/lead-forecast/${id}/`, data);
 };
+
 const createJustDialLeads = (data) => {
   return CustomAxios.post("/api/lead/just-dial-lead/", data);
 };
@@ -236,6 +266,7 @@ const LeadServices = {
   updateLeads,
   createFollowUpLeads,
   getFollowUp,
+  getCustomerFollowup,
   createPotentialLead,
   deletePotentialLeadsById,
   getAllRefernces,

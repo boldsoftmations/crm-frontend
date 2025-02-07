@@ -40,6 +40,7 @@ import { AllCCFtab } from "../Pages/CCF/AllCCFtab";
 import { AllComplaintListView } from "../Pages/CCF/AllComplaintListView";
 import { SalesInvoiceAllTab } from "../Pages/Invoice/SalesInvoice/SalesInvoiceAllTab";
 import { AllTabView } from "../Pages/StateAndCity/AllTAbView";
+import { ViewMasterActivitiesList } from "../Pages/MasterActivityList/ViewMasterActivitiesList";
 
 const PrivateRoute = ({ children, redirectTo = "/" }) => {
   const tokenData = useSelector((state) => state.auth);
@@ -341,6 +342,7 @@ export const RouteScreen = () => {
               </PrivateRoute>
             }
           />
+
           <Route
             path="/customers/whatsapp-tabs"
             element={
@@ -357,13 +359,21 @@ export const RouteScreen = () => {
               </PrivateRoute>
             }
           />
+
+          <Route
+            path="/master/activity-list"
+            element={
+              <PrivateRoute>
+                <ViewMasterActivitiesList />
+              </PrivateRoute>
+            }
+          />
         </>
       ) : (
         <>
           {/* Public and authentication routes */}
           <Route path="/" exact element={<Auths />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
-          {/* <Route path="/reset-password" element={<ChangePassword />} /> */}
         </>
       )}
       {/* Redirect unknown routes to login or analytics based on token presence */}

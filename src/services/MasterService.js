@@ -98,6 +98,22 @@ const getCountryDataByPincode = (country = "India", pincode) => {
   );
 };
 
+const getMasterActivity = (page) => {
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+  return CustomAxios.get(`/api/master/model-master/?${params.toString()}`);
+};
+
+const createMasterActivityMainHeading = (data) => {
+  return CustomAxios.post(`/api/master/model-master/`, data);
+};
+
+const createMasterActivityOption = (data) => {
+  return CustomAxios.post(`/api/master/model-option/`, data);
+};
+
 const MasterService = {
   createMasterCountry,
   updateMasterCountry,
@@ -112,5 +128,8 @@ const MasterService = {
   createMasterPincode,
   updateMasterPincode,
   getCountryDataByPincode,
+  getMasterActivity,
+  createMasterActivityMainHeading,
+  createMasterActivityOption,
 };
 export default MasterService;
