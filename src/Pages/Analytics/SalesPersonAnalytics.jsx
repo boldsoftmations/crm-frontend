@@ -230,9 +230,9 @@ export const SalesPersonAnalytics = (props) => {
   };
 
   return (
-    <Box sx={{ margin: "20px" }}>
+    <Box sx={{ margin: "10px" }}>
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={4} sx={{ marginTop: "20px" }}>
+        <Grid item xs={12} sm={4} sx={{ marginTop: "0px" }}>
           <FormControlLabel
             control={<Switch checked={privacy} disabled />}
             label="Privacy"
@@ -1033,17 +1033,4 @@ CircularProgressWithLabel.propTypes = {
   value: PropTypes.number.isRequired,
 };
 
-const DateOptions = [
-  { value: "Today" },
-  { value: "Yesterday" },
-  { value: "Last 3 Days" },
-  { value: "Last 7 Days" },
-  { value: "Last 14 Days" },
-  { value: "Last 30 Days" },
-  { value: "Last 90 Days" },
-  { value: "Last 180 Days" },
-  { value: "Last 365 Days" },
-  { value: "This Month" },
-  { value: "Last Month" },
-  { value: "Custom Date" },
-];
+const DateOptions = [{ value: "Today" }, { value: "Custom Date" }];

@@ -3,7 +3,6 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import DashboardService from "../../services/DashboardService";
 import { CustomLoader } from "../../Components/CustomLoader";
-import InvoiceServices from "../../services/InvoiceService";
 import { SalesTeamAnalytics } from "./SalesTeamAnalytics";
 
 export const TeamWiseDashboard = () => {
@@ -44,7 +43,7 @@ export const TeamWiseDashboard = () => {
     currentDate.getMonth() + 1,
     0
   );
-  const [selectedDate, setSelectedDate] = useState("This Month");
+  const [selectedDate, setSelectedDate] = useState("Today");
   const [endDate, setEndDate] = useState(initialEndDate);
   const [startDate, setStartDate] = useState(initialStartDate); // set default value as current date
   const minDate = new Date().toISOString().split("T")[0];
@@ -98,49 +97,9 @@ export const TeamWiseDashboard = () => {
     switch (selectedValue) {
       case "Today":
         startDate = new Date(today);
-        endDate = new Date(today.getTime() + 86400000); // Plus 1 day
+        endDate = new Date(today);
         break;
-      case "Yesterday":
-        startDate = new Date(today.setDate(today.getDate() - 1));
-        endDate = new Date();
-        break;
-      case "Last 3 Days":
-        startDate = new Date(today.setDate(today.getDate() - 2));
-        endDate = new Date();
-        break;
-      case "Last 7 Days":
-        startDate = new Date(today.setDate(today.getDate() - 6));
-        endDate = new Date();
-        break;
-      case "Last 14 Days":
-        startDate = new Date(today.setDate(today.getDate() - 13));
-        endDate = new Date();
-        break;
-      case "Last 30 Days":
-        startDate = new Date(today.setDate(today.getDate() - 29));
-        endDate = new Date();
-        break;
-      case "Last 90 Days":
-        startDate = new Date(today.setDate(today.getDate() - 89));
-        endDate = new Date();
-        break;
-      case "Last 180 Days":
-        startDate = new Date(today.setDate(today.getDate() - 179));
-        endDate = new Date();
-        break;
-      case "Last 365 Days":
-        startDate = new Date(today.setDate(today.getDate() - 364));
-        endDate = new Date();
-        break;
-      case "This Month":
-        startDate = new Date(today.getFullYear(), today.getMonth(), 1);
-        endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-        break;
-      case "Last Month":
-        endDate = new Date(today.getFullYear(), today.getMonth(), 0);
-        startDate = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
-        endDate = new Date(endDate.getFullYear(), endDate.getMonth() + 1, 0);
-        break;
+
       case "Custom Date":
         startDate = new Date(); // Today
         endDate = new Date(); // Now
@@ -324,11 +283,11 @@ export const TeamWiseDashboard = () => {
       const Data = [
         {
           label: "Upcoming FollowUp",
-          value: response.data.upcoming_followups,
+          value: response.data.upcoming_follow_ups,
         },
         {
           label: "Today FollowUp",
-          value: response.data.todays_follow_ups,
+          value: response.data.todays_followups,
         },
         {
           label: "Overdue FollowUp",
