@@ -78,7 +78,7 @@ export const Login = () => {
       setOpen(true);
       dispatch(loginstart());
       const req = {
-        employee_id: user.employee_id,
+        employee_id: user.employee_id.toUpperCase(),
         password: user.password,
       };
       const response = await UserProfileService.login(req);
@@ -163,7 +163,7 @@ export const Login = () => {
                 fullWidth
                 name="employee_id "
                 size="small"
-                label="Enter your employee id"
+                label="Employee ID"
                 variant="outlined"
                 autoComplete="off"
                 ref={userRef}

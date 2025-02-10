@@ -41,13 +41,13 @@ export const UpdateCompanyDetails = (props) => {
   } = props;
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState([]);
-  const [assigned, setAssigned] = useState([]);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [errorMessages, setErrorMessages] = useState([]);
   const [currentErrorIndex, setCurrentErrorIndex] = useState(0);
   const dispatch = useDispatch();
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
+  const Active_sales = userData.active_sales_user;
   const [alertmsg, setAlertMsg] = useState({
     message: "",
     severity: "",
@@ -70,22 +70,6 @@ export const UpdateCompanyDetails = (props) => {
       ...inputValue,
       [name]: value,
     });
-  };
-
-  useEffect(() => {
-    getAssignedData();
-  }, []);
-
-  const getAssignedData = async (id) => {
-    try {
-      setOpen(true);
-      const res = await UserProfileService.getProfile();
-      setAssigned(res.data.sales_users);
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
   };
 
   const validatePinCode = async () => {
@@ -449,7 +433,7 @@ export const UpdateCompanyDetails = (props) => {
               multiple
               limitTags={3}
               id="multiple-limit-tags"
-              options={assigned.map((option) => option.email)}
+              options={Active_sales.map((option) => option.email)}
               freeSolo
               renderTags={(value, getTagProps) =>
                 value.map((option, index) => (

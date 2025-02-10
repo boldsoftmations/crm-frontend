@@ -84,7 +84,7 @@ export const SalesReturnCreate = (props) => {
       setOpen(false);
     }
   };
-  console.log("inputValue", inputValue);
+
   const getCustomerWiseOrderBook = async (value) => {
     try {
       setOpen(true); // Show loading spinner
@@ -139,7 +139,6 @@ export const SalesReturnCreate = (props) => {
     }
   };
 
-  console.log("salesreturn", salesReturnData);
   const createSalesInvoiceDetails = async (e) => {
     try {
       e.preventDefault();
