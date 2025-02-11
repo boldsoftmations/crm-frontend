@@ -1,5 +1,16 @@
 import CustomAxios from "./api";
 
+const getSalesAnalyticDashboard = (eamil, sales_type) => {
+  const params = new URLSearchParams();
+  if (eamil) {
+    params.append("email", eamil);
+  }
+  if (sales_type) {
+    params.append("sales_type", sales_type);
+  }
+
+  return CustomAxios.get(`/api/dashboard/sales-analytic/?${params.toString()}`);
+};
 // last Three Month Forecast End Point
 const getLastThreeMonthForecastData = () => {
   return CustomAxios.get(`/api/dashboard/last-three-months-forecast/`);
@@ -431,7 +442,31 @@ const getSalesQuatityAnalysisdetailsByproduct = (
     `/api/dashboard/customers-sale-qty/?${params.toString()}`
   );
 };
+const getFollowupCallDashboard = (
+  email,
+  start_date,
+  end_date,
+  sales_type = ""
+) => {
+  const params = new URLSearchParams();
+  if (email) {
+    params.append("email", email);
+  }
+  if (start_date) {
+    params.append("start_date", start_date);
+  }
+  if (end_date) {
+    params.append("end_date", end_date);
+  }
+  if (sales_type) {
+    params.append("sales_type", sales_type);
+  }
+  return CustomAxios.get(
+    `/api/dashboard/company-followup/?${params.toString()}`
+  );
+};
 const DashboardService = {
+  getSalesAnalyticDashboard,
   getLastThreeMonthForecastData,
   getLastThreeMonthForecastDataByFilter,
   getNewCustomerData,
@@ -511,6 +546,7 @@ const DashboardService = {
   getCRReportData,
   getSalesQuatityAnalysis,
   getSalesQuatityAnalysisdetailsByproduct,
+  getFollowupCallDashboard,
 };
 
 export default DashboardService;

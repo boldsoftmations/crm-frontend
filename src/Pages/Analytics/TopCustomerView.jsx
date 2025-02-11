@@ -310,6 +310,7 @@ export const TopCustomerView = () => {
     </>
   );
 };
+
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     fontSize: 12,

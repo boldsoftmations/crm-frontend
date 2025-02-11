@@ -19,12 +19,14 @@ import { CustomChart } from "../../Components/CustomChart";
 import { useSelector } from "react-redux";
 import CustomTextField from "../../Components/CustomTextField";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
+import CallDashboard from "./CallStatusDashboard";
 
 export const SalesTeamAnalytics = (props) => {
   const {
     barChartData,
     pieChartData,
     newCustomerData,
+    callDashboardData,
     // pendingTask,
     pendingFollowup,
     pendingDescription,
@@ -60,6 +62,7 @@ export const SalesTeamAnalytics = (props) => {
   const [dOBQdata, setDOBQData] = useState([]);
   const [selectedDOBQData, setSelectedDOBQData] = useState(null);
   const [activeButton, setActiveButton] = useState("monthly");
+  const [activeButtonType, setActiveButtonType] = useState("customer");
   const assigned = userData.sales_users || [];
   let SALES_PERSON_OPTIONS = assigned;
 
@@ -112,6 +115,9 @@ export const SalesTeamAnalytics = (props) => {
 
   const handleButtonClick = (buttonType) => {
     setActiveButton(buttonType);
+  };
+  const handleButtonType = (btn) => {
+    setActiveButtonType(btn);
   };
 
   // UseEffect hook to set initial data state for DIQDATA and DOBQDATA
@@ -451,7 +457,106 @@ export const SalesTeamAnalytics = (props) => {
             </Card>
           </Grid>
         </Grid>
+        <Grid container spacing={2}>
+          <Box style={{ marginLeft: "20px", marginTop: "30px", width: "100%" }}>
+            <Button
+              variant={
+                activeButtonType === "customer" ? "contained" : "outlined"
+              }
+              color="primary"
+              size="small"
+              onClick={() => handleButtonType("customer")}
+            >
+              Customer
+            </Button>
+            <Button
+              variant={activeButtonType === "lead" ? "contained" : "outlined"} // Set variant to 'contained' for the active button
+              color="primary"
+              size="small"
+              onClick={() => handleButtonType("lead")}
+              style={{ marginLeft: "20px" }}
+            >
+              Lead
+            </Button>
+          </Box>
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="start"
+            sx={{ marginLeft: "20px", marginTop: "20px" }}
+          >
+            <FormControl sx={{ minWidth: 120, marginRight: 2 }}>
+              <InputLabel id="date-select-label">Date</InputLabel>
+              <Select
+                labelId="date-select-label"
+                id="date-select"
+                label="Date"
+                value={selectedDate || ""}
+                onChange={handleChange}
+                size="small"
+              >
+                {DateOptions.map((option, i) => (
+                  <MenuItem key={i} value={option.value}>
+                    {option.value}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
+            {selectedDate === "Custom Date" && (
+              <React.Fragment>
+                <FormControl sx={{ marginRight: 2 }}>
+                  <CustomTextField
+                    fullWidth
+                    label="Start Date"
+                    variant="outlined"
+                    size="small"
+                    type="date"
+                    id="start-date"
+                    value={
+                      startDate ? startDate.toISOString().split("T")[0] : ""
+                    }
+                    min={minDate}
+                    max={maxDate}
+                    onChange={handleStartDateChange}
+                  />
+                </FormControl>
+                <FormControl>
+                  <CustomTextField
+                    fullWidth
+                    label="End Date"
+                    variant="outlined"
+                    size="small"
+                    type="date"
+                    id="end-date"
+                    value={endDate ? endDate.toISOString().split("T")[0] : ""}
+                    min={
+                      startDate
+                        ? startDate.toISOString().split("T")[0]
+                        : minDate
+                    }
+                    max={maxDate}
+                    onChange={handleEndDateChange}
+                    disabled={!startDate}
+                  />
+                </FormControl>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={getResetDate}
+                  sx={{ marginLeft: 2 }}
+                >
+                  Reset
+                </Button>
+              </React.Fragment>
+            )}
+          </Box>
+          <Grid item xs={12} sm={12}>
+            {activeButtonType === "customer" && (
+              <CallDashboard callDashboardData={callDashboardData} />
+            )}
+          </Grid>
+        </Grid>
         <Grid item xs={12} sm={12} sx={{ marginTop: "20px" }}>
           <Button
             variant={activeButton === "monthly" ? "contained" : "outlined"} // Set variant to 'contained' for the active button

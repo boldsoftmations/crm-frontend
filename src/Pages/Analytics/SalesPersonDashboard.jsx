@@ -3,7 +3,6 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import DashboardService from "../../services/DashboardService";
 import { CustomLoader } from "../../Components/CustomLoader";
-import InvoiceServices from "../../services/InvoiceService";
 import { SalesPersonAnalytics } from "./SalesPersonAnalytics";
 
 export const SalesPersonDashboard = () => {
@@ -13,7 +12,6 @@ export const SalesPersonDashboard = () => {
   const [barChartData, setBarChartData] = useState([]);
   const [pieChartData, setPieChartData] = useState([]);
   const [newCustomerData, setNewCustomerData] = useState([]);
-  // const [pendingTask, setPendingTask] = useState([]);
   const [pendingFollowup, setPendingFollowup] = useState([]);
   const [pendingDescription, setPendingDescription] = useState([]);
   const [descriptionQuantity, setDescriptionQuantity] = useState([]);
@@ -23,6 +21,7 @@ export const SalesPersonDashboard = () => {
   const [weeklyStatus, setWeeklyStatus] = useState([]);
   const [dailyStatus, setDailyStatus] = useState([]);
   const [callPerformance, setCallPerformance] = useState([]);
+  const [callDashboardData, setCallDashboardData] = useState(null);
   const [dailyInvoiceQuantity, setDailyInvoiceQuantity] = useState([]);
   const [dailyOrderBookQuantity, setDailyOrderBookQuantity] = useState([]);
   const [openPopup3, setOpenPopup3] = useState(false);
@@ -54,20 +53,14 @@ export const SalesPersonDashboard = () => {
   const formattedCurrentDate = currentDate.toISOString().split("T")[0];
   const [selectedWeek, setSelectedWeek] = useState(formattedCurrentDate);
   useEffect(() => {
-    getAllTaskDetails();
-    getCustomerDetails();
-    getNewCustomerDetails();
-    // getPendingTaskDetails();
-    getPendingFollowupDetails();
-    getPIDetails();
+    getSalesAnalyticDashboard();
     getIndiaMartLeadDetails();
-    getPendingDescriptionDetails();
     getMonthlyCallStatusDetails();
     getWeeklyCallStatusDetails();
     getDailyCallStatusDetails();
-    getDescriptionQuantityDetails();
     getDailyInvoiceQuantityDetails();
     getDailyOrderBookQuantityDetails();
+    getCallPerformanceDetails();
   }, []);
 
   useEffect(() => {
@@ -76,11 +69,13 @@ export const SalesPersonDashboard = () => {
 
   useEffect(() => {
     if (filterValue) {
+      getFollowupCallDashboard(filterValue);
       getCallPerformanceByFilter(filterValue, startDate, endDate);
     } else {
+      getFollowupCallDashboard();
       getCallPerformanceDetails();
     }
-  }, [startDate, endDate]);
+  }, [startDate, endDate, filterValue]);
 
   const handleStartDateChange = (event) => {
     const date = new Date(event.target.value);
@@ -126,78 +121,132 @@ export const SalesPersonDashboard = () => {
     setSelectedDate("This Month");
   };
 
-  const getAllTaskDetails = async () => {
+  const getSalesAnalyticDashboard = async (email) => {
     try {
       setOpen(true);
-      const response = await DashboardService.getLeadDashboard();
-      const Data = [
-        { name: "new", label: "New", value: response.data.new },
-        { name: "open", label: "Open", value: response.data.open },
+      const response = await DashboardService.getSalesAnalyticDashboard(
+        email ? email : ""
+      );
+      const CustomeDetail = response.data.customer_dashboard;
+      const FunnelData = response.data.lead_dashboard;
+      const newCustomerDatas = response.data.new_customers;
+      const PendingFollowupData = response.data.pending_followup;
+      const PiData = response.data.pi_data;
+      const MonthlyDescriptionWiseData =
+        response.data.current_month_order_description;
+      const DescriptionWisePendingQautity =
+        response.data.pending_order_description_wise;
+      setTotal(CustomeDetail.total_customers);
+
+      const CustomerData = [
+        {
+          label: "Active Customers",
+          value: CustomeDetail.active_customers,
+        },
+        {
+          label: "Dead Customers",
+          value: CustomeDetail.dead_customers,
+        },
+        {
+          label: "New Customers",
+          value: CustomeDetail.new_customers,
+        },
+        {
+          label: "Total",
+          value: CustomeDetail.total_customers,
+        },
+      ];
+
+      const LeadData = [
+        { name: "new", label: "New", value: FunnelData.new },
+        { name: "open", label: "Open", value: FunnelData.open },
         {
           name: "opportunity",
           label: "Opportunity",
-          value: response.data.opportunity,
+          value: FunnelData.opportunity,
         },
         {
           name: "potential",
           label: "Potential",
-          value: response.data.potential,
+          value: FunnelData.potential,
         },
         {
           name: "not_interested",
           label: "Not Interested",
-          value: response.data.not_interested,
+          value: FunnelData.not_interested,
         },
         {
           name: "converted",
           label: "Converted",
-          value: response.data.converted,
+          value: FunnelData.converted,
         },
       ];
 
-      setFunnelData(Data);
+      const newCustomerDatasFormat = Object.keys(newCustomerDatas).map(
+        (key) => {
+          return {
+            combination: key,
+            count: newCustomerDatas[key].count,
+          };
+        }
+      );
 
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("err", err);
-    }
-  };
-
-  const getCustomerDetails = async () => {
-    try {
-      setOpen(true);
-      const response = await DashboardService.getCustomerDashboard();
-      const Total =
-        response.data.active_customers +
-        response.data.dead_customers +
-        response.data.new_customers;
-      setTotal(Total);
-      const Data = [
+      const PendingFollowupDataFormat = [
         {
-          label: "Active Customers",
-          value: response.data.active_customers,
+          label: "Upcoming FollowUp",
+          value: PendingFollowupData.upcoming_follow_ups,
         },
         {
-          label: "Dead Customers",
-          value: response.data.dead_customers,
+          label: "Today FollowUp",
+          value: PendingFollowupData.todays_followups,
         },
         {
-          label: "New Customers",
-          value: response.data.new_customers,
-        },
-        {
-          label: "Total",
-          value: Total,
+          label: "Overdue FollowUp",
+          value: PendingFollowupData.overdue_follow_ups,
         },
       ];
 
-      setPieChartData(Data);
+      const PiDataFormat = [
+        {
+          label: "Paid PI",
+          value: PiData.paid_pi,
+        },
+        {
+          label: "Unpaid PI",
+          value: PiData.unpaid_pi,
+        },
+        {
+          label: "Dropped PI",
+          value: PiData.dropped_pi,
+        },
+      ];
 
+      const MonthlyDescriptionWiseDataFormat = MonthlyDescriptionWiseData.map(
+        (item) => {
+          return {
+            name: item.product__description__name,
+            value: item.total_quantity,
+          };
+        }
+      );
+
+      const DescriptionWisePendingQautityFormat =
+        DescriptionWisePendingQautity.map((item) => {
+          return {
+            name: item.product__description__name,
+            value: item.total_pending_quantity,
+          };
+        });
+      setPendingDescription(DescriptionWisePendingQautityFormat);
+      setDescriptionQuantity(MonthlyDescriptionWiseDataFormat);
+      setPieChartData(CustomerData);
+      setPendingFollowup(PendingFollowupDataFormat);
+      setNewCustomerData(newCustomerDatasFormat);
+      setFunnelData(LeadData);
+      setPiData(PiDataFormat);
+    } catch (e) {
       setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("err", err);
+      console.log("error", e);
     }
   };
 
@@ -235,108 +284,6 @@ export const SalesPersonDashboard = () => {
     }
   };
 
-  const getNewCustomerDetails = async () => {
-    try {
-      setOpen(true);
-      const newcustomerResponse = await DashboardService.getNewCustomerData();
-      const Data = newcustomerResponse.data.map((item) => {
-        return {
-          combination: `${shortMonths[item.month - 1]}-${item.year}`,
-          count: item.count,
-        };
-      });
-      setNewCustomerData(Data);
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.error("Error:", err);
-    }
-  };
-
-  // const getPendingTaskDetails = async () => {
-  //   try {
-  //     setOpen(true);
-  //     const response = await DashboardService.getPendingTaskData();
-
-  //     const Data = [
-  //       {
-  //         label: "Activity",
-  //         value: response.data.atleast_one_activity,
-  //       },
-  //       {
-  //         label: "No Activity",
-  //         value: response.data.no_activity,
-  //       },
-  //       {
-  //         label: "Overdue Tasks",
-  //         value: response.data.overdue_tasks,
-  //       },
-  //     ];
-  //     setPendingTask(Data);
-  //     setOpen(false);
-  //   } catch (err) {
-  //     setOpen(false);
-  //     console.log("err", err);
-  //   }
-  // };
-
-  const getPendingFollowupDetails = async () => {
-    try {
-      setOpen(true);
-      const response = await DashboardService.getPendingFollowupData();
-
-      const Data = [
-        {
-          label: "Upcoming FollowUp",
-          value: response.data.upcoming_follow_ups,
-        },
-        {
-          label: "Today FollowUp",
-          value: response.data.todays_followups,
-        },
-        {
-          label: "Overdue FollowUp",
-          value: response.data.overdue_follow_ups,
-        },
-      ];
-
-      setPendingFollowup(Data);
-
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("err", err);
-    }
-  };
-
-  const getPIDetails = async () => {
-    try {
-      setOpen(true);
-      const response = await DashboardService.getPIData();
-      const Data = [
-        {
-          label: "Paid PI",
-          value: response.data.paid_pi,
-        },
-        {
-          label: "Unpaid PI",
-          value: response.data.unpaid_pi,
-        },
-        {
-          label: "Dropped PI",
-          value: response.data.dropped_pi,
-        },
-      ];
-
-      setPiData(Data);
-
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("err", err);
-    }
-  };
-
   const getIndiaMartLeadDetails = async () => {
     try {
       setOpen(true);
@@ -353,26 +300,6 @@ export const SalesPersonDashboard = () => {
     } catch (err) {
       setOpen(false);
       console.error("Error:", err);
-    }
-  };
-
-  const getPendingDescriptionDetails = async () => {
-    try {
-      setOpen(true);
-      const response =
-        await DashboardService.getDescriptionWisePendingQuantityData();
-      const Data = response.data.map((item) => {
-        return {
-          name: item.product__description__name,
-          value: item.total_pending_quantity,
-        };
-      });
-      setPendingDescription(Data);
-
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("err", err);
     }
   };
 
@@ -475,25 +402,6 @@ export const SalesPersonDashboard = () => {
     return fullDay;
   };
 
-  const getDescriptionQuantityDetails = async () => {
-    try {
-      setOpen(true);
-      const response = await DashboardService.getDescriptionWiseQuantityData();
-      const Data = response.data.map((item) => {
-        return {
-          name: item.product__description__name,
-          value: item.total_quantity,
-        };
-      });
-      setDescriptionQuantity(Data);
-
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("err", err);
-    }
-  };
-
   const getCallPerformanceDetails = async () => {
     try {
       setOpen(true);
@@ -564,6 +472,24 @@ export const SalesPersonDashboard = () => {
       console.log("err", err);
     }
   };
+  const getFollowupCallDashboard = async (value) => {
+    try {
+      setOpen(true);
+      const start_date = startDate.toISOString().split("T")[0];
+      const end_date = endDate.toISOString().split("T")[0];
+      const response = await DashboardService.getFollowupCallDashboard(
+        value ? value : "",
+        start_date,
+        end_date
+      );
+      setCallDashboardData(response.data);
+    } catch {
+      setOpen(false);
+      console.log("Error fetching followup call dashboard data");
+    } finally {
+      setOpen(false);
+    }
+  };
 
   const getDailyInvoiceQuantityDetails = async () => {
     try {
@@ -588,194 +514,29 @@ export const SalesPersonDashboard = () => {
       console.log("Error:", err);
     }
   };
+
   const handleAutocompleteChange = (value) => {
     // Check if value is not null before accessing its properties
     if (value) {
       setFilterValue(value.email);
+      getSalesAnalyticDashboard(value.email);
+      getDailyOrderBookQuantityByFilter(value.email);
       setAssign(value.email);
-      getDataByFilter(value.email);
-      getNewCustomerByFilter(value.email);
-      // getPendingTaskByFilter(value.email);
-      getPendingFollowupByFilter(value.email);
-      getPIByFilter(value.email);
-      getCustomerByFilter(value.email);
-      geTaskByFilter(value.email);
-      getPendingDescriptionByFilter(value.email);
       getMonthlyCallStatusByFilter(value.email);
       getWeeklyCallStatusByFilter(value.email);
       getDailyCallStatusByFilter(value.email);
-      getDescriptionQuantityByFilter(value.email);
-      getCallPerformanceByFilter(value.email, startDate, endDate);
       getDailyInvoiceQuantityByFilter(value.email);
-      getDailyOrderBookQuantityByFilter(value.email);
     } else {
-      // Handle the case when value is null (i.e., when the Autocomplete is reset)
       getForecastDetails();
-      getNewCustomerDetails();
-      // getPendingTaskDetails();
-      getPendingFollowupDetails();
-      getCustomerDetails();
-      getPIDetails();
-      getAllTaskDetails();
-      setAssign(null);
-      getPendingDescriptionDetails();
+      getSalesAnalyticDashboard();
+      getDailyInvoiceQuantityDetails();
+      getDailyOrderBookQuantityDetails();
       setFilterValue(null);
       getMonthlyCallStatusDetails();
       getWeeklyCallStatusDetails();
       getDailyCallStatusDetails();
-      getDescriptionQuantityDetails();
+      getFollowupCallDashboard();
       getCallPerformanceDetails();
-      getDailyInvoiceQuantityDetails();
-      getDailyOrderBookQuantityDetails();
-    }
-  };
-
-  const getDataByFilter = async (value) => {
-    try {
-      const FilterData = value;
-      setOpen(true);
-      const forecastResponse =
-        await DashboardService.getLastThreeMonthForecastDataByFilter(
-          FilterData
-        );
-
-      const columnKeys = Object.keys(forecastResponse.data);
-      const isAllColumnsEmpty = columnKeys.every(
-        (key) => forecastResponse.data[key].length === 0
-      );
-
-      let Data = [];
-
-      if (!isAllColumnsEmpty) {
-        Data = columnKeys.flatMap((key) =>
-          forecastResponse.data[key].map((item) => ({
-            combination: `${shortMonths[item.month - 1]}-${item.year}`,
-            actual: item.actual || 0,
-            forecast: item.total_forecast || 0,
-          }))
-        );
-
-        Data.forEach((item) => {
-          item.combination = String(item.combination); // Convert combination to string explicitly
-        });
-      }
-
-      setBarChartData(Data);
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
-  };
-
-  const getNewCustomerByFilter = async (value) => {
-    try {
-      const FilterData = value;
-      setOpen(true);
-      const newcustomerResponse =
-        await DashboardService.getNewCustomerDataByFilter(FilterData);
-      const Data = newcustomerResponse.data.map((item) => {
-        return {
-          combination: `${shortMonths[item.month - 1]}-${item.year}`,
-          count: item.count,
-        };
-      });
-      setNewCustomerData(Data);
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
-  };
-
-  // const getPendingTaskByFilter = async (value) => {
-  //   try {
-  //     const FilterData = value;
-  //     setOpen(true);
-  //     const response = await DashboardService.getPendingTaskDataByFilter(
-  //       FilterData
-  //     );
-  //     const Data = [
-  //       {
-  //         label: "Activity",
-  //         value: response.data.atleast_one_activity,
-  //       },
-  //       {
-  //         label: "No Activity",
-  //         value: response.data.no_activity,
-  //       },
-  //       {
-  //         label: "Overdue Tasks",
-  //         value: response.data.overdue_tasks,
-  //       },
-  //     ];
-
-  //     setPendingTask(Data);
-
-  //     setOpen(false);
-  //   } catch (error) {
-  //     console.log("error", error);
-  //     setOpen(false);
-  //   }
-  // };
-
-  const getPendingFollowupByFilter = async (value) => {
-    try {
-      const FilterData = value;
-      setOpen(true);
-      const response = await DashboardService.getPendingFollowupDataByFilter(
-        FilterData
-      );
-      const Data = [
-        {
-          label: "Upcoming FollowUp",
-          value: response.data.upcoming_followups,
-        },
-        {
-          label: "Today FollowUp",
-          value: response.data.todays_follow_ups,
-        },
-        {
-          label: "Overdue FollowUp",
-          value: response.data.overdue_follow_ups,
-        },
-      ];
-
-      setPendingFollowup(Data);
-
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
-  };
-
-  const getPIByFilter = async (value) => {
-    try {
-      const FilterData = value;
-      setOpen(true);
-      const response = await DashboardService.getPIDataByFilter(FilterData);
-      const Data = [
-        {
-          label: "Paid PI",
-          value: response.data.paid_pi,
-        },
-        {
-          label: "Unpaid PI",
-          value: response.data.unpaid_pi,
-        },
-        {
-          label: "Dropped PI",
-          value: response.data.dropped_pi,
-        },
-      ];
-
-      setPiData(Data);
-
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
     }
   };
 
@@ -792,108 +553,6 @@ export const SalesPersonDashboard = () => {
         };
       });
       setIndiaMartLeadData(formattedData);
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
-  };
-
-  const getCustomerByFilter = async (value) => {
-    try {
-      const FilterData = value;
-      setOpen(true);
-      const response = await DashboardService.getCustomerDataByFilter(
-        FilterData
-      );
-      const Total =
-        response.data.active_customers +
-        response.data.dead_customers +
-        response.data.new_customers;
-      setTotal(Total);
-      const Data = [
-        {
-          label: "Active Customers",
-          value: response.data.active_customers,
-        },
-        {
-          label: "Dead Customers",
-          value: response.data.dead_customers,
-        },
-        {
-          label: "New Customers",
-          value: response.data.new_customers,
-        },
-        {
-          label: "Total",
-          value: Total,
-        },
-      ];
-
-      setPieChartData(Data);
-
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
-  };
-
-  const geTaskByFilter = async (value) => {
-    try {
-      const FilterData = value;
-      setOpen(true);
-      const response = await DashboardService.getLeadDataByFilter(FilterData);
-      const Data = [
-        { name: "new", label: "New", value: response.data.new },
-        { name: "open", label: "Open", value: response.data.open },
-        {
-          name: "opportunity",
-          label: "Opportunity",
-          value: response.data.opportunity,
-        },
-        {
-          name: "potential",
-          label: "Potential",
-          value: response.data.potential,
-        },
-        {
-          name: "not_interested",
-          label: "Not Interested",
-          value: response.data.not_interested,
-        },
-        {
-          name: "converted",
-          label: "Converted",
-          value: response.data.converted,
-        },
-      ];
-
-      setFunnelData(Data);
-
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
-  };
-
-  const getPendingDescriptionByFilter = async (value) => {
-    try {
-      const FilterData = value;
-      setOpen(true);
-      const response =
-        await DashboardService.getDescriptionWisePendingQuantityDataByFilter(
-          FilterData
-        );
-      const Data = response.data.map((item) => {
-        return {
-          name: item.product__description__name,
-          value: item.total_pending_quantity,
-        };
-      });
-      setPendingDescription(Data);
-
       setOpen(false);
     } catch (error) {
       console.log("error", error);
@@ -979,29 +638,6 @@ export const SalesPersonDashboard = () => {
       });
 
       setDailyStatus(Data);
-
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
-  };
-
-  const getDescriptionQuantityByFilter = async (value) => {
-    try {
-      const FilterData = value;
-      setOpen(true);
-      const response =
-        await DashboardService.getDescriptionWiseQuantityDataByFilter(
-          FilterData
-        );
-      const Data = response.data.map((item) => {
-        return {
-          name: item.product__description__name,
-          value: item.total_quantity,
-        };
-      });
-      setDescriptionQuantity(Data);
 
       setOpen(false);
     } catch (error) {
@@ -1127,7 +763,7 @@ export const SalesPersonDashboard = () => {
         barChartData={barChartData}
         pieChartData={pieChartData}
         newCustomerData={newCustomerData}
-        // pendingTask={pendingTask}
+        CallDashboardData={callDashboardData}
         pendingFollowup={pendingFollowup}
         pendingDescription={pendingDescription}
         piData={piData}
