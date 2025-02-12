@@ -749,7 +749,12 @@ export const SalesPersonAnalytics = (props) => {
             userData.groups.includes("Sales Executive") ||
             userData.groups.includes("Sales Assistant Deputy Manager") ||
             userData.groups.includes("Customer Relationship Manager") ||
-            userData.groups.includes("Customer Relationship Executive")
+            userData.groups.includes("Customer Relationship Executive") ||
+            userData.groups.includes("Director") ||
+            userData.groups.includes("Accounts") ||
+            userData.groups.includes("Sales Manager") ||
+            userData.groups.includes("Sales Deputy Manager") ||
+            userData.groups.includes("Business Development Executive")
           ) && (
             <Grid container spacing={2}>
               <Grid item xs={12} sm={12} sx={{ marginTop: "20px" }}>

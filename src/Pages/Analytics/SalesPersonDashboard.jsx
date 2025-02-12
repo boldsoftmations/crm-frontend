@@ -32,22 +32,10 @@ export const SalesPersonDashboard = () => {
   const userData = useSelector((state) => state.auth.profile);
   // Get the current date
   const currentDate = new Date();
-  const initialStartDate = new Date(
-    currentDate.getFullYear(),
-    currentDate.getMonth(),
-    1
-  );
-
-  // Set the initial endDate to the last day of the current month
-  const initialEndDate = new Date(
-    currentDate.getFullYear(),
-    currentDate.getMonth() + 1,
-    0
-  );
 
   const [selectedDate, setSelectedDate] = useState("Today");
-  const [endDate, setEndDate] = useState(initialEndDate);
-  const [startDate, setStartDate] = useState(initialStartDate); // set default value as current date
+  const [endDate, setEndDate] = useState(currentDate);
+  const [startDate, setStartDate] = useState(currentDate); // set default value as current date
   const minDate = new Date().toISOString().split("T")[0];
   const maxDate = new Date("2030-12-31").toISOString().split("T")[0];
   const formattedCurrentDate = currentDate.toISOString().split("T")[0];
@@ -102,8 +90,8 @@ export const SalesPersonDashboard = () => {
 
     switch (selectedValue) {
       case "Today":
-        startDate = new Date(today);
-        endDate = new Date(today);
+        startDate = today;
+        endDate = today;
         break;
       default:
         break;
@@ -116,9 +104,9 @@ export const SalesPersonDashboard = () => {
   };
 
   const getResetDate = () => {
-    setStartDate(initialStartDate);
-    setEndDate(initialEndDate);
-    setSelectedDate("This Month");
+    setStartDate(currentDate);
+    setEndDate(currentDate);
+    setSelectedDate("Today");
   };
 
   const getSalesAnalyticDashboard = async (email) => {
