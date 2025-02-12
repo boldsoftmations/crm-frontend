@@ -63,7 +63,7 @@ export const SalesTeamAnalytics = (props) => {
   const [selectedDOBQData, setSelectedDOBQData] = useState(null);
   const [activeButton, setActiveButton] = useState("monthly");
   const [activeButtonType, setActiveButtonType] = useState("customer");
-  const assigned = userData.sales_users || [];
+  const assigned = userData.active_sales_user || [];
   let SALES_PERSON_OPTIONS = assigned;
 
   if (team) {
@@ -81,6 +81,7 @@ export const SalesTeamAnalytics = (props) => {
     return {
       email: option.email,
       primaryGroup: team ? option.groups__name : null,
+      name: option.name,
     };
   });
 
@@ -287,7 +288,9 @@ export const SalesTeamAnalytics = (props) => {
                     onChange={(event, value) => handleAutocompleteChange(value)}
                     options={displayOptions}
                     groupBy={(option) => option.primaryGroup || ""}
-                    getOptionLabel={(option) => option.email}
+                    getOptionLabel={(option) =>
+                      `${option.name} - ${option.email}`
+                    }
                     label="Filter By Sales Person"
                   />
                 </Grid>
