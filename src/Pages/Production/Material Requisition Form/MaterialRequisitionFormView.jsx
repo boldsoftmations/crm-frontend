@@ -797,11 +797,23 @@ const MyDocument = ({ materialRequisitionDataByID }) => (
               style={{
                 ...style.cell,
                 justifyContent: "center",
-                alignItems: "flex-start",
+                alignItems: "center",
               }}
             >
-              <Text style={{ fontSize: "18pt", fontWeight: "bold" }}>
+              <Text style={{ fontSize: "14pt", fontWeight: "semibold" }}>
                 Material Requisition Form
+              </Text>
+            </View>
+            <View
+              style={{
+                ...style.cell,
+                justifyContent: "center",
+                alignItems: "center",
+                display: "flex",
+              }}
+            >
+              <Text style={{ fontSize: "14pt", fontWeight: "semibold" }}>
+                ID: {materialRequisitionDataByID.id}
               </Text>
             </View>
           </View>
