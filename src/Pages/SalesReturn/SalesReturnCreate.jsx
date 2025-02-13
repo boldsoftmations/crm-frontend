@@ -108,7 +108,7 @@ export const SalesReturnCreate = (props) => {
           const product = {
             product: data.product,
             quantity: data.quantity,
-            rate: data.rate,
+            cost: data.cost,
             amount: data.amount,
           };
 
@@ -124,10 +124,9 @@ export const SalesReturnCreate = (props) => {
       const arr = productData.map((fruit) => ({
         product: fruit.product,
         quantity: fruit.quantity,
-        rate: fruit.rate,
+        rate: fruit.cost,
         amount: fruit.amount,
       }));
-
       // Update state with new array of product objects
       setProducts(arr);
 
