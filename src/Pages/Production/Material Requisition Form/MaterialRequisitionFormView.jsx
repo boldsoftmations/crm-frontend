@@ -127,7 +127,6 @@ export const MaterialRequisitionFormView = () => {
         return acc.concat(productsFlattened);
       }, []); // Initial value of accumulator is an empty array
       setOpen(false);
-      console.log("ArrayData", ArrayData);
       return ArrayData;
     } catch (err) {
       console.log(err);
@@ -141,7 +140,6 @@ export const MaterialRequisitionFormView = () => {
       setOpen(true);
       const response = await InventoryServices.getAllConsStoresInventoryData();
       setStoresInventoryData(response.data);
-      console.log(response.data);
     } catch (err) {
       console.log("err", err);
     } finally {
@@ -224,7 +222,6 @@ export const MaterialRequisitionFormView = () => {
   };
 
   const handleFilter = (event, value) => {
-    console.log("value", value);
     setFilterByUnit(value);
   };
 
@@ -265,6 +262,8 @@ export const MaterialRequisitionFormView = () => {
 
   const handlePrint = async (data) => {
     try {
+      const Total_qty =
+        data.products_data.reduce((acc, item) => acc + item.quantity, 0) || 0;
       setOpen(true);
 
       // create a new jsPDF instance
@@ -272,7 +271,7 @@ export const MaterialRequisitionFormView = () => {
 
       // generate the PDF document
       const pdfData = await pdf(
-        <MyDocument materialRequisitionDataByID={data} />,
+        <MyDocument materialRequisitionDataByID={data} Total_qty={Total_qty} />,
         pdfDoc,
         {
           // set options here if needed
@@ -784,7 +783,7 @@ const style = StyleSheet.create({
   },
 });
 
-const MyDocument = ({ materialRequisitionDataByID }) => (
+const MyDocument = ({ materialRequisitionDataByID, Total_qty }) => (
   <Document>
     <Page style={{ fontFamily: "Helvetica", fontSize: "12pt" }}>
       <View style={{ padding: "20pt" }}>
@@ -867,6 +866,9 @@ const MyDocument = ({ materialRequisitionDataByID }) => (
           </View>
           <View style={{ ...style.row, ...style.header }}>
             <View style={style.cell}>
+              <Text>Sr. No.</Text>
+            </View>
+            <View style={style.cell}>
               <Text>PRODUCT</Text>
             </View>
             <View style={style.cell}>
@@ -880,6 +882,9 @@ const MyDocument = ({ materialRequisitionDataByID }) => (
             materialRequisitionDataByID.products_data.map((historyRow, i) => (
               <View style={style.row} key={i}>
                 <View style={style.cell}>
+                  <Text style={style.lightText}>{i + 1}</Text>
+                </View>
+                <View style={style.cell}>
                   <Text style={style.lightText}>{historyRow.product}</Text>
                 </View>
                 <View style={style.cell}>
@@ -890,6 +895,18 @@ const MyDocument = ({ materialRequisitionDataByID }) => (
                 </View>
               </View>
             ))}
+          <View
+            style={{
+              margin: "10px",
+              textAlign: "right",
+              width: "100%",
+              fontSize: "14px",
+            }}
+          >
+            <Text style={{ ...style.lightText, marginRight: "40px" }}>
+              TOTAL QTY : {Total_qty}
+            </Text>
+          </View>
         </View>
       </View>
     </Page>
