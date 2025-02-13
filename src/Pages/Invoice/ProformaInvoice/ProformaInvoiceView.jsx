@@ -289,6 +289,7 @@ export const ProformaInvoiceView = (props) => {
         contact: invoiceData.contact,
         payment_terms: invoiceData.payment_terms,
         delivery_terms: invoiceData.delivery_terms,
+        lead: invoiceData.lead ? invoiceData.lead : null,
       };
 
       // Choose the API method dynamically based on type
