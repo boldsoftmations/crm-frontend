@@ -32,6 +32,7 @@ export const AllLeadsTabView = () => {
   const isSalesManagerWithLeads = isInGroups("Sales Manager with Leads");
   const isCustomerService = isInGroups("Customer Service");
   const isAdminAndDM = isInGroups("Director", "Digital Marketing");
+  const digitalManager = isInGroups("Digital Marketing");
   const tabs = useMemo(
     () => [
       {
@@ -90,7 +91,7 @@ export const AllLeadsTabView = () => {
       },
       {
         label: "Indiamart Leads",
-        visible: isAdmin,
+        visible: isAdmin || digitalManager,
         index: 6,
         component: <IndiaMartLeads />,
       },
