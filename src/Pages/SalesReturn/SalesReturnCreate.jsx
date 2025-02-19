@@ -36,6 +36,7 @@ export const SalesReturnCreate = (props) => {
       quantity: "",
       rate: "",
       amount: "",
+      cost: "",
     },
   ]);
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
@@ -110,6 +111,7 @@ export const SalesReturnCreate = (props) => {
             quantity: data.quantity,
             rate: data.rate,
             amount: data.amount,
+            cost: data.cost,
           };
 
           // Push product data to array
@@ -126,6 +128,7 @@ export const SalesReturnCreate = (props) => {
         quantity: fruit.quantity,
         rate: fruit.rate,
         amount: fruit.amount,
+        cost: fruit.cost,
       }));
       // Update state with new array of product objects
       setProducts(arr);
@@ -148,6 +151,7 @@ export const SalesReturnCreate = (props) => {
         quantity: product.quantity,
         rate: product.rate,
         amount: product.rate * product.quantity,
+        cost: product.cost,
       }));
 
       const req = {
