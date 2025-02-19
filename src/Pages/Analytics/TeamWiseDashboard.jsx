@@ -16,9 +16,7 @@ export const TeamWiseDashboard = () => {
   const [pendingDescription, setPendingDescription] = useState([]);
   const [descriptionQuantity, setDescriptionQuantity] = useState([]);
   const [piData, setPiData] = useState([]);
-  const [monthlyStatus, setMonthlyStatus] = useState([]);
-  const [weeklyStatus, setWeeklyStatus] = useState([]);
-  const [dailyStatus, setDailyStatus] = useState([]);
+  const [callStatusData, setCallStatusData] = useState([]);
   const [callPerformance, setCallPerformance] = useState([]);
   const [dailyInvoiceQuantity, setDailyInvoiceQuantity] = useState([]);
   const [dailyOrderBookQuantity, setDailyOrderBookQuantity] = useState([]);
@@ -37,11 +35,9 @@ export const TeamWiseDashboard = () => {
   const maxDate = new Date("2030-12-31").toISOString().split("T")[0];
   useEffect(() => {
     getSalesAnalyticDashboard();
-    getConsMonthlyCallStatusDetails();
-    getConsWeeklyCallStatusDetails();
-    getConsDailyCallStatusDetails();
     getConsDailyInvoiceQuantityDetails();
     getConsDailyOrderBookQuantityDetails();
+    getMonthyCallStatusData("monthly");
   }, []);
 
   useEffect(() => {
@@ -271,11 +267,14 @@ export const TeamWiseDashboard = () => {
     }
   };
 
-  const getConsMonthlyCallStatusDetails = async () => {
+  const getMonthyCallStatusData = async (type = "monthly", filterValue) => {
     try {
       setOpen(true);
-
-      const response = await DashboardService.getConsMonthlyCallStatusData();
+      const response = await DashboardService.getCallStatusDataByFilter(
+        type,
+        filterValue,
+        "team"
+      );
       const data = response.data;
       const Data = Object.keys(data).map((key) => {
         return {
@@ -285,57 +284,12 @@ export const TeamWiseDashboard = () => {
           customer: data[key].customer,
         };
       });
+      setCallStatusData(Data);
 
-      setMonthlyStatus(Data);
       setOpen(false);
-    } catch (err) {
+    } catch (error) {
+      console.log("error", error);
       setOpen(false);
-      console.log("Error:", err);
-    }
-  };
-
-  const getConsWeeklyCallStatusDetails = async () => {
-    try {
-      setOpen(true);
-
-      const response = await DashboardService.getConsWeeklyCallStatusData();
-      const data = response.data;
-      const Data = Object.keys(data).map((key) => {
-        return {
-          combination: key,
-          existing_lead: data[key].existing_lead,
-          new_lead: data[key].new_lead,
-          customer: data[key].customer,
-        };
-      });
-      setWeeklyStatus(Data);
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("Error:", err);
-    }
-  };
-
-  const getConsDailyCallStatusDetails = async () => {
-    try {
-      setOpen(true);
-
-      const response = await DashboardService.getConsDailyCallStatusData();
-      const data = response.data;
-      const Data = Object.keys(data).map((key) => {
-        return {
-          combination: key,
-          existing_lead: data[key].existing_lead,
-          new_lead: data[key].new_lead,
-          customer: data[key].customer,
-        };
-      });
-
-      setDailyStatus(Data);
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("Error:", err);
     }
   };
 
@@ -459,9 +413,6 @@ export const TeamWiseDashboard = () => {
       getSalesAnalyticDashboard(value.email);
       setAssign(value.email);
       getConsDataByFilter(value.email);
-      getConsMonthlyCallStatusByFilter(value.email);
-      getConsWeeklyCallStatusByFilter(value.email);
-      getConsDailyCallStatusByFilter(value.email);
       getConsCallPerformanceByFilter(value.email, startDate, endDate);
       getFollowupCallDashboard(value.email, startDate, endDate);
       getConsDailyInvoiceQuantityByFilter(value.email);
@@ -472,13 +423,11 @@ export const TeamWiseDashboard = () => {
       getConsForecastDetails();
       setAssign(null);
       setFilterValue(null);
-      getConsMonthlyCallStatusDetails();
-      getConsWeeklyCallStatusDetails();
-      getConsDailyCallStatusDetails();
       getConsCallPerformanceDetails();
       getFollowupCallDashboard();
       getConsDailyInvoiceQuantityDetails();
       getConsDailyOrderBookQuantityDetails();
+      getMonthyCallStatusData("monthly");
     }
   };
 
@@ -513,81 +462,6 @@ export const TeamWiseDashboard = () => {
       }
 
       setBarChartData(Data);
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
-  };
-
-  const getConsMonthlyCallStatusByFilter = async (value) => {
-    try {
-      const FilterData = value;
-      setOpen(true);
-      const response =
-        await DashboardService.getConsMonthlyCallStatusDataByFilter(FilterData);
-      const data = response.data;
-      const Data = Object.keys(data).map((key) => {
-        return {
-          combination: key,
-          existing_lead: data[key].existing_lead,
-          new_lead: data[key].new_lead,
-          customer: data[key].customer,
-        };
-      });
-
-      setMonthlyStatus(Data);
-
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
-  };
-
-  const getConsWeeklyCallStatusByFilter = async (value) => {
-    try {
-      const FilterData = value;
-      setOpen(true);
-      const response =
-        await DashboardService.getConsWeeklyCallStatusDataByFilter(FilterData);
-      const data = response.data;
-      const Data = Object.keys(data).map((key) => {
-        return {
-          combination: key,
-          existing_lead: data[key].existing_lead,
-          new_lead: data[key].new_lead,
-          customer: data[key].customer,
-        };
-      });
-
-      setWeeklyStatus(Data);
-
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
-  };
-
-  const getConsDailyCallStatusByFilter = async (value) => {
-    try {
-      const FilterData = value;
-      setOpen(true);
-      const response =
-        await DashboardService.getConsDailyCallStatusDataByFilter(FilterData);
-      const data = response.data;
-      const Data = Object.keys(data).map((key) => {
-        return {
-          combination: key,
-          existing_lead: data[key].existing_lead,
-          new_lead: data[key].new_lead,
-          customer: data[key].customer,
-        };
-      });
-
-      setDailyStatus(Data);
-
       setOpen(false);
     } catch (error) {
       console.log("error", error);
@@ -716,13 +590,11 @@ export const TeamWiseDashboard = () => {
         pieChartData={pieChartData}
         newCustomerData={newCustomerData}
         callDashboardData={callDashboardData}
-        // pendingTask={pendingTask}
+        getMonthyCallStatusData={getMonthyCallStatusData}
         pendingFollowup={pendingFollowup}
         pendingDescription={pendingDescription}
         piData={piData}
-        monthlyStatus={monthlyStatus}
-        weeklyStatus={weeklyStatus}
-        dailyStatus={dailyStatus}
+        callStatusData={callStatusData}
         handleSegmentHover={handleSegmentHover}
         handleAutocompleteChange={handleAutocompleteChange}
         assign={assign}
@@ -746,6 +618,7 @@ export const TeamWiseDashboard = () => {
         openPopup3={openPopup3}
         setOpenPopup3={setOpenPopup3}
         team={true}
+        filterValue={filterValue}
       />
     </>
   );

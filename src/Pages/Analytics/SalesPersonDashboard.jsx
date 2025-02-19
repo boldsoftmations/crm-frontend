@@ -17,9 +17,7 @@ export const SalesPersonDashboard = () => {
   const [descriptionQuantity, setDescriptionQuantity] = useState([]);
   const [piData, setPiData] = useState([]);
   const [indiaMartLeadData, setIndiaMartLeadData] = useState([]);
-  const [monthlyStatus, setMonthlyStatus] = useState([]);
-  const [weeklyStatus, setWeeklyStatus] = useState([]);
-  const [dailyStatus, setDailyStatus] = useState([]);
+  const [callStatusData, setCallStatusData] = useState([]);
   const [callPerformance, setCallPerformance] = useState([]);
   const [callDashboardData, setCallDashboardData] = useState(null);
   const [dailyInvoiceQuantity, setDailyInvoiceQuantity] = useState([]);
@@ -43,9 +41,7 @@ export const SalesPersonDashboard = () => {
   useEffect(() => {
     getSalesAnalyticDashboard();
     getIndiaMartLeadDetails();
-    getMonthlyCallStatusDetails();
-    getWeeklyCallStatusDetails();
-    getDailyCallStatusDetails();
+    getMonthyCallStatusData("monthly");
     getDailyInvoiceQuantityDetails();
     getDailyOrderBookQuantityDetails();
     getCallPerformanceDetails();
@@ -291,105 +287,6 @@ export const SalesPersonDashboard = () => {
     }
   };
 
-  const getMonthlyCallStatusDetails = async () => {
-    try {
-      setOpen(true);
-
-      const response = await DashboardService.getMonthlyCallStatusData();
-      const data = response.data;
-      const Data = Object.keys(data).map((key) => {
-        return {
-          combination: key,
-          existing_lead: data[key].existing_lead,
-          new_lead: data[key].new_lead,
-          customer: data[key].customer,
-        };
-      });
-
-      setMonthlyStatus(Data);
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("Error:", err);
-    }
-  };
-
-  const getWeeklyCallStatusDetails = async () => {
-    try {
-      setOpen(true);
-
-      const response = await DashboardService.getWeeklyCallStatusData();
-
-      const data = response.data;
-      const Data = Object.keys(data).map((key) => {
-        return {
-          combination: key,
-          existing_lead: data[key].existing_lead,
-          new_lead: data[key].new_lead,
-          customer: data[key].customer,
-        };
-      });
-
-      setWeeklyStatus(Data);
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("Error:", err);
-    }
-  };
-
-  const getDailyCallStatusDetails = async () => {
-    try {
-      setOpen(true);
-
-      const response = await DashboardService.getDailyCallStatusData();
-
-      const data = response.data;
-      const Data = Object.keys(data).map((key) => {
-        return {
-          combination: key,
-          existing_lead: data[key].existing_lead,
-          new_lead: data[key].new_lead,
-          customer: data[key].customer,
-        };
-      });
-      setDailyStatus(Data);
-      setOpen(false);
-    } catch (err) {
-      setOpen(false);
-      console.log("Error:", err);
-    }
-  };
-
-  const getAbbreviatedDay = (fullDay) => {
-    const fullDayNames = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-    ];
-    const abbreviatedDayNames = [
-      "Sun",
-      "Mon",
-      "Tue",
-      "Wed",
-      "Thu",
-      "Fri",
-      "Sat",
-    ];
-
-    const index = fullDayNames.indexOf(fullDay);
-    if (index !== -1) {
-      return abbreviatedDayNames[index];
-    }
-
-    // If the full day name is not found, return the original value
-    return fullDay;
-  };
-
   const getCallPerformanceDetails = async () => {
     try {
       setOpen(true);
@@ -510,9 +407,6 @@ export const SalesPersonDashboard = () => {
       getSalesAnalyticDashboard(value.email);
       getDailyOrderBookQuantityByFilter(value.email);
       setAssign(value.email);
-      getMonthlyCallStatusByFilter(value.email);
-      getWeeklyCallStatusByFilter(value.email);
-      getDailyCallStatusByFilter(value.email);
       getDailyInvoiceQuantityByFilter(value.email);
     } else {
       getForecastDetails();
@@ -520,11 +414,9 @@ export const SalesPersonDashboard = () => {
       getDailyInvoiceQuantityDetails();
       getDailyOrderBookQuantityDetails();
       setFilterValue(null);
-      getMonthlyCallStatusDetails();
-      getWeeklyCallStatusDetails();
-      getDailyCallStatusDetails();
       getFollowupCallDashboard();
       getCallPerformanceDetails();
+      getMonthyCallStatusData("monthly");
     }
   };
 
@@ -548,84 +440,23 @@ export const SalesPersonDashboard = () => {
     }
   };
 
-  const getMonthlyCallStatusByFilter = async (value) => {
+  const getMonthyCallStatusData = async (type = "monthly", filterValue) => {
     try {
-      const FilterData = value;
       setOpen(true);
-      const response = await DashboardService.getMonthlyCallStatusDataByFilter(
-        FilterData
+      const response = await DashboardService.getCallStatusDataByFilter(
+        type,
+        filterValue
       );
-      const Data = Object.keys(response.data).flatMap((key) => {
-        return response.data[key].map((item) => {
-          return {
-            combination: `${shortMonths[item.month - 1]}-${item.year}`,
-            existing_lead: item.existing_lead,
-            new_lead: item.new_lead,
-            customer: item.customer,
-          };
-        });
-      });
-
-      setMonthlyStatus(Data);
-
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
-  };
-
-  const getWeeklyCallStatusByFilter = async (value) => {
-    try {
-      const FilterData = value;
-      setOpen(true);
-      const response = await DashboardService.getWeeklyCallStatusDataByFilter(
-        FilterData
-      );
-      const Data = response.data.map((dayObject) => {
-        const week = Object.keys(dayObject)[0];
-        const weekData = dayObject[week][0];
-
+      const data = response.data;
+      const Data = Object.keys(data).map((key) => {
         return {
-          combination: week,
-          existing_lead: weekData.existing_lead,
-          new_lead: weekData.new_lead,
-          customer: weekData.customer,
+          combination: key,
+          existing_lead: data[key].existing_lead,
+          new_lead: data[key].new_lead,
+          customer: data[key].customer,
         };
       });
-
-      setWeeklyStatus(Data);
-
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
-  };
-
-  const getDailyCallStatusByFilter = async (value) => {
-    try {
-      const FilterData = value;
-      setOpen(true);
-      const response = await DashboardService.getDailyCallStatusDataByFilter(
-        FilterData
-      );
-      const Data = response.data.map((dayObject) => {
-        const day = Object.keys(dayObject)[0];
-        const dayData = dayObject[day][0];
-
-        // Convert full day name to abbreviated form
-        const abbreviatedDay = getAbbreviatedDay(day);
-
-        return {
-          combination: abbreviatedDay,
-          existing_lead: dayData.existing_lead,
-          new_lead: dayData.new_lead,
-          customer: dayData.customer,
-        };
-      });
-
-      setDailyStatus(Data);
+      setCallStatusData(Data);
 
       setOpen(false);
     } catch (error) {
@@ -756,9 +587,7 @@ export const SalesPersonDashboard = () => {
         pendingDescription={pendingDescription}
         piData={piData}
         indiaMartLeadData={indiaMartLeadData}
-        monthlyStatus={monthlyStatus}
-        weeklyStatus={weeklyStatus}
-        dailyStatus={dailyStatus}
+        callStatusData={callStatusData}
         handleSegmentHover={handleSegmentHover}
         handleAutocompleteChange={handleAutocompleteChange}
         assign={assign}
@@ -784,6 +613,8 @@ export const SalesPersonDashboard = () => {
         team={false}
         selectedWeek={selectedWeek}
         handleDateChange={handleDateChange}
+        getMonthyCallStatusData={getMonthyCallStatusData}
+        filterValue={filterValue}
       />
     </>
   );

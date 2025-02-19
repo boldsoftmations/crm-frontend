@@ -27,12 +27,10 @@ export const SalesTeamAnalytics = (props) => {
     pieChartData,
     newCustomerData,
     callDashboardData,
-    // pendingTask,
+    getMonthyCallStatusData,
     pendingFollowup,
     pendingDescription,
-    monthlyStatus,
-    weeklyStatus,
-    dailyStatus,
+    callStatusData,
     handleSegmentHover,
     handleAutocompleteChange,
     assign,
@@ -55,6 +53,7 @@ export const SalesTeamAnalytics = (props) => {
     minDate,
     getResetDate,
     team,
+    filterValue,
   } = props;
   const userData = useSelector((state) => state.auth.profile);
   const [dIQdata, setDIQData] = useState([]);
@@ -114,7 +113,21 @@ export const SalesTeamAnalytics = (props) => {
   // Sort the displayOptions array
   displayOptions.sort(sortOptions);
 
+  useEffect(() => {
+    if (filterValue) {
+      getMonthyCallStatusData(activeButton, filterValue);
+    } else {
+      setActiveButton("monthly");
+    }
+  }, [filterValue]);
+
+  // Handler function for button clicks
   const handleButtonClick = (buttonType) => {
+    if (buttonType === "weekly") {
+      getMonthyCallStatusData("weekly", filterValue ? filterValue : "");
+    } else if (buttonType === "daily") {
+      getMonthyCallStatusData("daily", filterValue ? filterValue : "");
+    }
     setActiveButton(buttonType);
   };
   const handleButtonType = (btn) => {
@@ -590,7 +603,7 @@ export const SalesTeamAnalytics = (props) => {
               chartType="ColumnChart"
               data={[
                 ["Month", "Existing Lead", "New Lead", "Customer"],
-                ...monthlyStatus.map((item) => [
+                ...callStatusData.map((item) => [
                   item.combination,
                   item.existing_lead,
                   item.new_lead,
@@ -613,7 +626,7 @@ export const SalesTeamAnalytics = (props) => {
               chartType="ColumnChart"
               data={[
                 ["Week", "Existing Lead", "New Lead", "Customer"],
-                ...weeklyStatus.map((item) => [
+                ...callStatusData.map((item) => [
                   item.combination,
                   item.existing_lead,
                   item.new_lead,
@@ -636,7 +649,7 @@ export const SalesTeamAnalytics = (props) => {
               chartType="ColumnChart"
               data={[
                 ["Day", "Existing Lead", "New Lead", "Customer"],
-                ...dailyStatus.map((item) => [
+                ...callStatusData.map((item) => [
                   item.combination,
                   item.existing_lead,
                   item.new_lead,

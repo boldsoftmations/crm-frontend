@@ -30,12 +30,10 @@ export const SalesPersonAnalytics = (props) => {
     pieChartData,
     newCustomerData,
     CallDashboardData,
-    // pendingTask,
     pendingFollowup,
     pendingDescription,
-    monthlyStatus,
-    weeklyStatus,
-    dailyStatus,
+    callStatusData,
+    filterValue,
     handleSegmentHover,
     handleAutocompleteChange,
     assign,
@@ -61,6 +59,7 @@ export const SalesPersonAnalytics = (props) => {
     team,
     selectedWeek,
     handleDateChange,
+    getMonthyCallStatusData,
   } = props;
 
   // Retrieving user data from Redux store
@@ -139,9 +138,21 @@ export const SalesPersonAnalytics = (props) => {
 
   // Handler function for button clicks
   const handleButtonClick = (buttonType) => {
+    if (buttonType === "weekly") {
+      getMonthyCallStatusData("weekly", filterValue ? filterValue : "");
+    } else if (buttonType === "daily") {
+      getMonthyCallStatusData("daily", filterValue ? filterValue : "");
+    }
     setActiveButton(buttonType);
   };
 
+  useEffect(() => {
+    if (filterValue) {
+      getMonthyCallStatusData(activeButton, filterValue);
+    } else {
+      setActiveButton("monthly");
+    }
+  }, [filterValue]);
   const handleButtonType = (btn) => {
     setActiveButtonType(btn);
   };
@@ -748,17 +759,7 @@ export const SalesPersonAnalytics = (props) => {
               )}
             </Grid>
           </Grid>
-          {!(
-            userData.groups.includes("Sales Executive") ||
-            userData.groups.includes("Sales Assistant Deputy Manager") ||
-            userData.groups.includes("Customer Relationship Manager") ||
-            userData.groups.includes("Customer Relationship Executive") ||
-            userData.groups.includes("Director") ||
-            userData.groups.includes("Accounts") ||
-            userData.groups.includes("Sales Manager") ||
-            userData.groups.includes("Sales Deputy Manager") ||
-            userData.groups.includes("Business Development Executive")
-          ) && (
+          {userData.groups.includes("Director") && (
             <Grid container spacing={2}>
               <Grid item xs={12} sm={12} sx={{ marginTop: "20px" }}>
                 <Card>
@@ -943,7 +944,7 @@ export const SalesPersonAnalytics = (props) => {
                 chartType="ColumnChart"
                 data={[
                   ["Month", "Existing Lead", "New Lead", "Customer"],
-                  ...monthlyStatus.map((item) => [
+                  ...callStatusData.map((item) => [
                     item.combination,
                     item.existing_lead,
                     item.new_lead,
@@ -966,7 +967,7 @@ export const SalesPersonAnalytics = (props) => {
                 chartType="ColumnChart"
                 data={[
                   ["Week", "Existing Lead", "New Lead", "Customer"],
-                  ...weeklyStatus.map((item) => [
+                  ...callStatusData.map((item) => [
                     item.combination,
                     item.existing_lead,
                     item.new_lead,
@@ -989,7 +990,7 @@ export const SalesPersonAnalytics = (props) => {
                 chartType="ColumnChart"
                 data={[
                   ["Day", "Existing Lead", "New Lead", "Customer"],
-                  ...dailyStatus.map((item) => [
+                  ...callStatusData.map((item) => [
                     item.combination,
                     item.existing_lead,
                     item.new_lead,
