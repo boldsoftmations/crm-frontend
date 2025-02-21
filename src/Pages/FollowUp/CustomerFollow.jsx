@@ -2,11 +2,9 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Grid, Paper, Box } from "@mui/material";
 import moment from "moment";
 import { Popup } from "../../Components/Popup";
-import { UpdateLeads } from "../Leads/UpdateLeads";
 import { CustomLoader } from "../../Components/CustomLoader";
 import { CustomTable } from "../../Components/CustomTable";
 import { UpdateCompanyDetails } from "../Cutomers/CompanyDetails/UpdateCompanyDetails";
-import { FollowupDone } from "./FollowupDone";
 import LeadServices from "../../services/LeadService";
 import { Helmet } from "react-helmet";
 import { useSelector } from "react-redux";
@@ -14,20 +12,25 @@ import { CustomPagination } from "../../Components/CustomPagination";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import { MessageAlert } from "../../Components/MessageAlert";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
+import CustomDate from "../../Components/CustomDate";
 
-export const PendingFollowup = () => {
+export const CustomerFollowup = () => {
   const [pendingFollowUp, setPendingFollowUp] = useState([]);
   const [open, setOpen] = useState(false);
-  const [pendingFollowUpByID, setPendingFollowUpByID] = useState("");
-  const [openModal, setOpenModal] = useState(false);
-  const [popupLead, setPopupLead] = useState(false);
+  // const [pendingFollowUpByID, setPendingFollowUpByID] = useState("");
+  // const [openModal, setOpenModal] = useState(false);
   const [popupCustomer, setPopupCustomer] = useState(false);
-  const [leadsByID, setLeadsByID] = useState(null);
   const [customerId, setCustomerId] = useState(null);
+  const [filterFollowup, setFilterFollowup] = useState();
   const [isPrinting, setIsPrinting] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [endDate, setEndDate] = useState(null);
+  const [startDate, setStartDate] = useState(null);
+  const minDate = new Date().toISOString().split("T")[0];
+  const maxDate = new Date("2030-12-31").toISOString().split("T")[0];
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
+  const [customDataPopup, setCustomDataPopup] = useState(false);
   const userData = useSelector((state) => state.auth.profile);
   const assigned = userData.sales_users || [];
   const { handleError, handleCloseSnackbar, alertInfo } =
@@ -56,15 +59,19 @@ export const PendingFollowup = () => {
 
   useEffect(() => {
     getFollowUp();
-  }, [currentPage, filterSelectedQuery]);
+  }, [currentPage, filterSelectedQuery, filterFollowup, startDate, endDate]);
 
   const getFollowUp = useCallback(async () => {
     try {
       setOpen(true);
-      const response = await LeadServices.getFollowUp(
-        "overdue_followup",
+      const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
+      const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
+      const response = await LeadServices.getCustomerFollowup(
+        filterFollowup ? filterFollowup : "today_followup",
         currentPage,
-        filterSelectedQuery
+        filterSelectedQuery,
+        StartDate,
+        EndDate
       );
       setPendingFollowUp(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -73,7 +80,7 @@ export const PendingFollowup = () => {
     } finally {
       setOpen(false);
     }
-  }, [currentPage, filterSelectedQuery]);
+  }, [currentPage, filterSelectedQuery, filterFollowup, startDate, endDate]);
 
   const handleFilterChange = (filterSelectedValue) => {
     setFilterSelectedQuery(filterSelectedValue);
@@ -83,44 +90,22 @@ export const PendingFollowup = () => {
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
-  const openInPopup = async (item) => {
-    try {
-      setOpen(true);
-      if (item.type === "lead" && item.lead) {
-        setLeadsByID(item.lead); // Set lead data
-        setPopupLead(true); // Open the leads popup
-      } else if (item.type === "customer" && item.company) {
-        setCustomerId(item.company); // Set company data
-        setPopupCustomer(true); // Open the company popup
-      } else {
-        console.warn("Unhandled item type or missing ID:", item.type);
-      }
-    } catch (err) {
-      console.error("Error in openInPopup:", err);
-    } finally {
-      setOpen(false);
-    }
-  };
-
-  const openInPopup2 = (item) => {
-    const matchedFollowup = pendingFollowUp.find(
-      (followup) => followup.leads === item.lead
-    );
-    setPendingFollowUpByID(matchedFollowup);
-    setOpenModal(true);
+  const openInPopup = (item) => {
+    setCustomerId(item.id); // Set lead data
+    setPopupCustomer(true); // Open the leads popup
   };
 
   const Tabledata = Array.isArray(pendingFollowUp)
     ? pendingFollowUp.map((row, i) => ({
-        type: row.type,
-        lead: row.leads,
+        id: row.company_id,
         company: row.company,
-        company_name: row.company_name,
-        name: row.name,
-        user: row.email,
-        current_date: moment(row.current_date ? row.current_date : "-").format(
-          "DD/MM/YYYY h:mm:ss"
-        ),
+        created_by_email: row.created_by_email,
+        activity_name: row.activity_name,
+        status: row.status,
+        duration: row.duration,
+        current_date: moment(
+          row.creation_date ? row.creation_date : "-"
+        ).format("DD/MM/YYYY h:mm:ss"),
         next_followup_date: moment(
           row.next_followup_date ? row.next_followup_date : "-"
         ).format("DD/MM/YYYY h:mm:ss"),
@@ -129,18 +114,31 @@ export const PendingFollowup = () => {
     : [];
 
   const Tableheaders = [
-    "TYPE",
-    "LEADS",
+    "ID",
     "COMPANY",
-    "COMPANY NAME",
     "NAME",
-    "USER",
-    "CURRENT DATE",
-    "NEXT FOLLOWUP DATE",
+    "ACTIVITY",
+    "CALL STATUS",
+    "CALL DURATION",
+    "CREATION DATE",
+    "NEXT FOLLOWUP",
     "NOTE",
     "ACTION",
   ];
 
+  const handleEndDateChange = (event) => {
+    const date = new Date(event.target.value);
+    setEndDate(date);
+  };
+  const getResetDate = () => {
+    setStartDate(new Date());
+    setEndDate(new Date());
+  };
+  const handleStartDateChange = (event) => {
+    const date = new Date(event.target.value);
+    setStartDate(date);
+    setEndDate(new Date());
+  };
   return (
     <>
       <MessageAlert
@@ -165,19 +163,53 @@ export const PendingFollowup = () => {
       {/* Pending FollowUp */}
       <Grid item xs={12}>
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
-          {!userData.groups.includes("Sales Executive") && (
+          <Box display="flex" gap={4} spacing={2}>
+            {(userData.groups.includes("Director") ||
+              userData.groups.includes("Sales Maneger") ||
+              userData.groups.includes("Customer Relationship Manager") ||
+              userData.groups.includes("Business Development Manager")) && (
+              <Box display="flex" marginBottom="10px">
+                <CustomAutocomplete
+                  size="small"
+                  sx={{ width: 300 }}
+                  onChange={(event, value) => handleFilterChange(value)}
+                  value={filterSelectedQuery}
+                  options={assigned.map((option) => option.email)}
+                  getOptionLabel={(option) => option}
+                  label="Filter By Sales Person"
+                />
+              </Box>
+            )}
             <Box display="flex" marginBottom="10px">
               <CustomAutocomplete
                 size="small"
                 sx={{ width: 300 }}
-                onChange={(event, value) => handleFilterChange(value)}
-                value={filterSelectedQuery}
-                options={assigned.map((option) => option.email)}
-                getOptionLabel={(option) => option}
-                label="Filter By Sales Person"
+                onChange={(event, data) => {
+                  if (data && data.value === "custom_date") {
+                    setStartDate(new Date());
+                    setEndDate(new Date());
+                    setFilterFollowup("");
+                    setCustomDataPopup(true);
+                  } else {
+                    setFilterFollowup(data ? data.value : null);
+                    setStartDate(null);
+                    setEndDate(null);
+                  }
+                }}
+                value={
+                  followupOptions.find(
+                    (option) => option.value === filterFollowup
+                  ) || "today_followup"
+                } // Match the value with options
+                options={followupOptions}
+                getOptionLabel={(option) => option.label || "Today Followup"}
+                isOptionEqualToValue={(option, value) =>
+                  option.value === value.value || "Today Followup"
+                } // Ensure equality check works
+                label="Filter By Follow-up"
               />
             </Box>
-          )}
+          </Box>
           <Box display="flex" justifyContent={"center"}>
             <h3
               style={{
@@ -188,7 +220,7 @@ export const PendingFollowup = () => {
                 fontWeight: 800,
               }}
             >
-              Overdue Followup
+              Customer Followup
             </h3>
           </Box>
 
@@ -196,8 +228,6 @@ export const PendingFollowup = () => {
             headers={Tableheaders}
             data={Tabledata}
             openInPopup={openInPopup}
-            openInPopup2={openInPopup2}
-            ButtonText={"Done"}
           />
           <CustomPagination
             totalPages={totalPages}
@@ -207,19 +237,19 @@ export const PendingFollowup = () => {
         </Paper>
       </Grid>
       <Popup
-        maxWidth={"xl"}
-        title={"Update Leads"}
-        openPopup={popupLead}
-        setOpenPopup={setPopupLead}
+        openPopup={customDataPopup}
+        setOpenPopup={setCustomDataPopup}
+        title="Date Filter"
+        maxWidth="md"
       >
-        <UpdateLeads
-          leadsByID={leadsByID}
-          setOpenPopup={setPopupLead}
-          getAllleadsData={getFollowUp}
-          currentPage={currentPage}
-          filterQuery={null}
-          filterSelectedQuery={filterSelectedQuery}
-          searchQuery={null}
+        <CustomDate
+          startDate={startDate}
+          endDate={endDate}
+          minDate={minDate}
+          maxDate={maxDate}
+          handleStartDateChange={handleStartDateChange}
+          handleEndDateChange={handleEndDateChange}
+          resetDate={getResetDate}
         />
       </Popup>
       <Popup
@@ -234,18 +264,26 @@ export const PendingFollowup = () => {
           recordForEdit={customerId}
         />
       </Popup>
-      <Popup
-        maxWidth={"xl"}
-        title={"Followup Done"}
-        openPopup={openModal}
-        setOpenPopup={setOpenModal}
-      >
-        <FollowupDone
-          DoneFollowup={pendingFollowUpByID}
-          getFollowUp={getFollowUp}
-          setOpenModal={setOpenModal}
-        />
-      </Popup>
     </>
   );
 };
+
+const followupOptions = [
+  {
+    value: "today_followup",
+    label: "Today Followup",
+  },
+  {
+    value: "overdue_followup",
+    label: "Overdue Followup",
+  },
+  {
+    value: "upcoming_followup",
+    label: "Upcoming Followup",
+  },
+  {
+    value: "all_followup",
+    label: "All Followup",
+  },
+  { label: "Custom Date", value: "custom_date" },
+];

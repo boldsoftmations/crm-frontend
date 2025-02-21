@@ -171,7 +171,7 @@ const getCustomerFollowup = (
   }
 
   if (filterValue) {
-    params.append("user__email", filterValue);
+    params.append("created_by__email", filterValue);
   }
   if (start_date) {
     params.append("start_date", start_date);
@@ -182,6 +182,27 @@ const getCustomerFollowup = (
   return CustomAxios.get(
     `api/customer/customer-followup/?${params.toString()}`
   );
+};
+
+const getLeadFollowup = (followup, page, filterValue, start_date, end_date) => {
+  const params = new URLSearchParams();
+  if (followup) {
+    params.append("type", followup);
+  }
+  if (page) {
+    params.append("page", page);
+  }
+
+  if (filterValue) {
+    params.append("user__email", filterValue);
+  }
+  if (start_date) {
+    params.append("start_date", start_date);
+  }
+  if (end_date) {
+    params.append("end_date", end_date);
+  }
+  return CustomAxios.get(`api/lead/list-followup/?${params.toString()}`);
 };
 
 const createPotentialLead = (data) => {
@@ -196,6 +217,9 @@ const DoneLeadFollowup = (id, data) => {
   return CustomAxios.patch(`/api/lead/list-followup/${id}`, data);
 };
 
+const DoneCustomLeadFollowup = (id, data) => {
+  return CustomAxios.patch(`/api/customer/customer-followup/${id}/`, data);
+};
 const BulkLeadAssign = (data) => {
   return CustomAxios.post("/api/lead/assign-bulk-leads/", data);
 };
@@ -267,6 +291,7 @@ const LeadServices = {
   createFollowUpLeads,
   getFollowUp,
   getCustomerFollowup,
+  getLeadFollowup,
   createPotentialLead,
   deletePotentialLeadsById,
   getAllRefernces,
@@ -274,6 +299,7 @@ const LeadServices = {
   getReferncesById,
   updateRefernces,
   DoneLeadFollowup,
+  DoneCustomLeadFollowup,
   BulkLeadAssign,
   AssignMultipleLeads,
   getAllFollowUp,

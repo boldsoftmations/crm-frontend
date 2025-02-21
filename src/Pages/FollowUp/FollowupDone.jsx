@@ -12,14 +12,9 @@ export const FollowupDone = (props) => {
       e.preventDefault();
       setOpen(true);
       const data = {
-        id: DoneFollowup.id,
-        leads: DoneFollowup.leads,
-        current_date: DoneFollowup.current_date,
-        next_followup_date: DoneFollowup.next_followup_date,
-        notes: DoneFollowup.notes,
         is_followed_up: true,
       };
-      await LeadServices.DoneLeadFollowup(DoneFollowup.id, data);
+      await LeadServices.DoneCustomLeadFollowup(DoneFollowup.id, data);
       setOpenModal(false);
       getFollowUp();
       setOpen(false);

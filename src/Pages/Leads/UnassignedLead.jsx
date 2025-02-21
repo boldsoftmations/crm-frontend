@@ -308,13 +308,6 @@ export const UnassignedLead = () => {
                         <Button variant="text" onClick={() => openInPopup(row)}>
                           View
                         </Button>
-                        <Button
-                          color="success"
-                          variant="text"
-                          onClick={() => openInPopup2(row)}
-                        >
-                          Assign
-                        </Button>
                       </StyledTableCell>
                     </StyledTableRow>
                   );
@@ -395,12 +388,10 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
     padding: 5,
   },
 }));
-
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   "&:nth-of-type(odd)": {
     backgroundColor: theme.palette.action.hover,
   },
-  // hide last border
   "&:last-child td, &:last-child th": {
     border: 0,
   },
