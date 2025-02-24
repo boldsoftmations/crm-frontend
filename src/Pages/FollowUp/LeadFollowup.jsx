@@ -30,7 +30,7 @@ export const LeadFollowup = () => {
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
   const [customDataPopup, setCustomDataPopup] = useState(false);
   const userData = useSelector((state) => state.auth.profile);
-  const assigned = userData.sales_users || [];
+  const assigned = userData.active_sales_user || [];
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
