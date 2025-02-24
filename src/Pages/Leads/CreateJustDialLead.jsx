@@ -35,6 +35,14 @@ const CreateJustDialLead = () => {
   // Handle form submission
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (!formData.contact || !formData.name) {
+      setAlertMsg({
+        message: "Please fill in all required fields",
+        severity: "warning",
+        open: true,
+      });
+      return;
+    }
     try {
       const updatedFormData = { ...formData };
 
@@ -46,27 +54,24 @@ const CreateJustDialLead = () => {
       setLoader(true);
       const response = await LeadServices.createJustDialLeads(updatedFormData);
 
-      // Clear form after successful submission
-      setFormData({
-        references: "",
-        contact: "",
-        name: "",
-        stage: "",
-        city: "",
-        query_product_name: "",
-      });
+      if (response.status === 201) {
+        // Clear form after successful submission
+        setFormData({
+          references: "",
+          contact: "",
+          name: "",
+          stage: "",
+          city: "",
+          query_product_name: "",
+        });
 
-      setAlertMsg({
-        message:
-          response.message || "Just Dial lead has been created successfully",
-        severity: "success",
-        open: true,
-      });
-
-      // Refresh the page after a short delay to allow the user to see the success message
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000); // Delay of 2 seconds
+        setAlertMsg({
+          message:
+            response.message || "Just Dial lead has been created successfully",
+          severity: "success",
+          open: true,
+        });
+      }
     } catch (error) {
       setAlertMsg({
         message:
@@ -104,6 +109,18 @@ const CreateJustDialLead = () => {
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
+                    label="Name"
+                    name="name"
+                    required
+                    variant="outlined"
+                    size="small"
+                    value={formData.name}
+                    onChange={handleChange}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
                     label="Contact"
                     type="number"
                     name="contact"
@@ -111,18 +128,6 @@ const CreateJustDialLead = () => {
                     variant="outlined"
                     size="small"
                     value={formData.contact}
-                    onChange={handleChange}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Name"
-                    name="name"
-                    required
-                    variant="outlined"
-                    size="small"
-                    value={formData.name}
                     onChange={handleChange}
                   />
                 </Grid>
