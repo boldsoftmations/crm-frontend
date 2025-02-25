@@ -142,9 +142,9 @@ export const SalesRegisterView = () => {
     try {
       const data = await handleExport();
       setExportData(data);
-      // setTimeout(() => {
-      //   csvLinkRef.current.link.click();
-      // });
+      setTimeout(() => {
+        csvLinkRef.current.link.click();
+      });
     } catch (error) {
       console.log("CSVLink Download error", error);
     }
