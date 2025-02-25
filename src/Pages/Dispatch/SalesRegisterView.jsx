@@ -45,13 +45,46 @@ export const SalesRegisterView = () => {
   ); // set default value as current date
   const minDate = new Date().toISOString().split("T")[0];
   const maxDate = new Date("2030-12-31").toISOString().split("T")[0];
+  const [exportData, setExportData] = useState([]);
+  const csvLinkRef = useRef(null);
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
-
   const handleStartDateChange = (event) => {
     const date = new Date(event.target.value);
     setStartDate(date);
     setEndDate(new Date(date.getTime() + 7 * 24 * 60 * 60 * 1000));
+  };
+
+  const handleExport = async () => {
+    try {
+      setOpen(true);
+      const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
+      const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
+      const response = await InvoiceServices.getAllSaleRegisterData(
+        StartDate,
+        EndDate,
+        "all",
+        searchQuery,
+        unitFilter
+      );
+      const data = response.data.map((item) => {
+        return {
+          date: moment(item.date).format("DD-MM-YYYY"),
+          sales_invoice: item.sales_invoice,
+          customer: item.customer,
+          dispatch_location: item.dispatch_location,
+          lr_copy: item.lr_copy,
+          pod_copy: item.pod_copy,
+        };
+      });
+      setOpen(false);
+      return data;
+    } catch (error) {
+      handleError(error);
+      console.log("while downloading Price list", error);
+    } finally {
+      setOpen(false);
+    }
   };
   const getuserProfile = async () => {
     try {
@@ -105,18 +138,17 @@ export const SalesRegisterView = () => {
 
   const handlePageChange = (event, value) => setCurrentPage(value);
 
-  let data = salesRegisterData
-    .map((item) => {
-      return {
-        date: moment(item.date).format("DD-MM-YYYY"),
-        sales_invoice: item.sales_invoice,
-        customer: item.customer,
-        dispatch_location: item.dispatch_location,
-        lr_copy: item.lr_copy,
-        pod_copy: item.pod_copy,
-      };
-    })
-    .filter((item) => item !== null);
+  const handleDownload = async () => {
+    try {
+      const data = await handleExport();
+      setExportData(data);
+      // setTimeout(() => {
+      //   csvLinkRef.current.link.click();
+      // });
+    } catch (error) {
+      console.log("CSVLink Download error", error);
+    }
+  };
 
   return (
     <>
@@ -208,22 +240,28 @@ export const SalesRegisterView = () => {
                   textAlign: "right",
                 }}
               >
-                <CSVLink
-                  data={data}
-                  headers={headers}
-                  filename={"my-file.csv"}
-                  target="_blank"
-                  style={{
-                    textDecoration: "none",
-                    outline: "none",
-                    height: "5vh",
-                    textAlign: "right",
-                  }}
+                {exportData.length > 0 && (
+                  <CSVLink
+                    data={exportData}
+                    headers={headers}
+                    ref={csvLinkRef}
+                    filename="Sales_Register.csv"
+                    target="_blank"
+                    style={{
+                      textDecoration: "none",
+                      outline: "none",
+                      visibility: "hidden",
+                    }}
+                  />
+                )}
+
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={handleDownload}
                 >
-                  <Button variant="contained" color="success">
-                    Export to Excel
-                  </Button>
-                </CSVLink>
+                  Export to Excel
+                </Button>
               </Grid>
             </Grid>
           </Box>
