@@ -85,7 +85,11 @@ export const AllLeadsTabView = () => {
       },
       {
         label: "Unassigned Leads",
-        visible: isAdmin || isSalesADManager || isSalesManagerWithLeads,
+        visible:
+          isAdmin ||
+          isSalesADManager ||
+          isSalesManagerWithLeads ||
+          digitalManager,
         index: 5,
         component: <UnassignedLead />,
       },
