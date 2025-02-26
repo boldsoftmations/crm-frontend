@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Grid,
   Button,
@@ -25,6 +25,7 @@ import { useNotificationHandling } from "../../Components/useNotificationHandlin
 import SearchComponent from "../../Components/SearchComponent ";
 import { MessageAlert } from "../../Components/MessageAlert";
 import { useSelector } from "react-redux";
+import { CSVLink } from "react-csv";
 
 export const UnassignedLead = () => {
   const [leads, setLeads] = useState([]);
@@ -40,6 +41,8 @@ export const UnassignedLead = () => {
   const [referenceData, setReferenceData] = useState([]);
   const [leadsByID, setLeadsByID] = useState(null);
   const [selectedRows, setSelectedRows] = useState([]);
+  const [exportData, setExportData] = useState([]);
+  const csvLinkRef = useRef(null);
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
   const data = useSelector((state) => state.auth);
@@ -87,6 +90,60 @@ export const UnassignedLead = () => {
     getUnassigned();
   }, [currentPage, filterQuery, filterSelectedQuery]);
 
+  const handleExport = async () => {
+    try {
+      setOpen(true);
+      const response = await LeadServices.getAllUnassignedData(
+        "all",
+        filterQuery,
+        filterSelectedQuery
+      );
+      const data = response.data.map((row) => {
+        return {
+          name: row.name,
+          date_time: row.date_time,
+          contact: row.contact,
+          query_product_name: row.query_product_name,
+          assigned_to: row.assigned_to,
+          company: row.company,
+          references: row.references,
+          city: row.city,
+          state: row.state,
+        };
+      });
+      console.log("data", data);
+      setOpen(false);
+      return data;
+    } catch (error) {
+      handleError(error);
+      console.log("while downloading Price list", error);
+    } finally {
+      setOpen(false);
+    }
+  };
+
+  const headers = [
+    { label: "Date Time", key: "date_time" },
+    { label: "Name", key: "name" },
+    { label: "Contact", key: "contact" },
+    { label: "Product Name", key: "query_product_name" },
+    { label: "Assign To", key: "assigned_to" },
+    { label: "Company", key: "company" },
+    { label: "References", key: "references" },
+    { label: "City", key: "city" },
+    { label: "State", key: "state" },
+  ];
+  const handleDownload = async () => {
+    try {
+      const data = await handleExport();
+      setExportData(data);
+      setTimeout(() => {
+        csvLinkRef.current.link.click();
+      });
+    } catch (error) {
+      console.log("CSVLink Download error", error);
+    }
+  };
   const getUnassigned = useCallback(async () => {
     try {
       setOpen(true);
@@ -205,6 +262,34 @@ export const UnassignedLead = () => {
                   >
                     Assign
                   </Button>
+                )}
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                {(users.groups.includes("Director") ||
+                  users.groups.includes("Digital Marketing")) && (
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    className="mx-3"
+                    onClick={handleDownload}
+                  >
+                    DownLoad CSV
+                  </Button>
+                )}
+
+                {exportData.length > 0 && (
+                  <CSVLink
+                    data={exportData}
+                    headers={headers}
+                    ref={csvLinkRef}
+                    filename="UnassignLeads.csv"
+                    target="_blank"
+                    style={{
+                      textDecoration: "none",
+                      outline: "none",
+                      visibility: "hidden",
+                    }}
+                  />
                 )}
               </Grid>
             </Grid>
