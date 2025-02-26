@@ -97,9 +97,9 @@ export const LeadFollowup = () => {
   const Tabledata = Array.isArray(pendingFollowUp)
     ? pendingFollowUp.map((row, i) => ({
         lead: row.leads,
-        company: row.company,
-        created_by_email: row.created_by_email,
-        activity_name: row.activity_name,
+        company: row.company_name,
+        created_by_email: row.email,
+        activity_name: row.activity,
         status: row.status,
         duration: row.duration,
         current_date: moment(
