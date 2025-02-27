@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { TextField, Grid, Paper, Typography, Button, Box } from "@mui/material";
 import CustomSnackbar from "../../Components/CustomerSnackbar";
 import { CustomLoader } from "../../Components/CustomLoader";
 import LeadServices from "../../services/LeadService";
+import CustomAutocomplete from "../../Components/CustomAutocomplete";
 
 const CreateJustDialLead = () => {
   const [loader, setLoader] = useState(false);
+  const [referenceData, setReferenceData] = useState([]);
   const [formData, setFormData] = useState({
-    references: "Justdial",
+    references: "",
     contact: "",
     name: "",
     stage: "new",
@@ -19,6 +21,24 @@ const CreateJustDialLead = () => {
     severity: "",
     open: false,
   });
+
+  const FetchData = async (value) => {
+    try {
+      setLoader(true);
+      const res = await LeadServices.getAllRefernces();
+      setReferenceData(res.data);
+    } catch (error) {
+      console.log("error", error);
+      setLoader(false);
+    } finally {
+      setLoader(false);
+    }
+  };
+
+  useEffect(() => {
+    FetchData();
+  }, []);
+
   const handleClose = () => {
     setAlertMsg({ open: false });
   };
@@ -29,6 +49,13 @@ const CreateJustDialLead = () => {
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
+    }));
+  };
+
+  const handleFilterChange = (value) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      references: value,
     }));
   };
 
@@ -107,6 +134,18 @@ const CreateJustDialLead = () => {
             </Typography>
             <form onSubmit={handleSubmit}>
               <Grid container spacing={3}>
+                <Grid item xs={12}>
+                  <CustomAutocomplete
+                    size="small"
+                    fullWidth
+                    value={formData.references}
+                    name="references"
+                    onChange={(event, value) => handleFilterChange(value)}
+                    options={referenceData.map((option) => option.source)}
+                    getOptionLabel={(option) => option}
+                    label="Filter By References"
+                  />
+                </Grid>
                 <Grid item xs={12}>
                   <TextField
                     fullWidth

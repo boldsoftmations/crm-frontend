@@ -102,9 +102,9 @@ export const LeadFollowup = () => {
         activity_name: row.activity,
         status: row.status,
         duration: row.duration,
-        current_date: moment(
-          row.creation_date ? row.creation_date : "-"
-        ).format("DD/MM/YYYY h:mm:ss"),
+        current_date: moment(row.current_date ? row.current_date : "-").format(
+          "DD/MM/YYYY h:mm:ss"
+        ),
         next_followup_date: moment(
           row.next_followup_date ? row.next_followup_date : "-"
         ).format("DD/MM/YYYY h:mm:ss"),
