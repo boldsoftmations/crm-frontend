@@ -56,7 +56,7 @@ export const ViewCustomerFollowUp = ({ recordForEdit }) => {
           <TimelineItem>
             <TimelineOppositeContent sx={{ px: 2 }}>
               <Typography variant="h6">
-                {moment(data.current_date).format("DD/MM/YYYY h:mm")}
+                {moment(data.creation_date).format("DD/MM/YYYY h:mm")}
               </Typography>
             </TimelineOppositeContent>
             <TimelineSeparator>
