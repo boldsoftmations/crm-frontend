@@ -64,7 +64,8 @@ export const AllPerformaInvoiceTabView = () => {
       },
       {
         label: "Price Approval PI",
-        visible: roles.allTabs,
+        visible:
+          roles.allTabs || roles.isSalesManager || roles.isSalesExecutive,
         index: 2,
         component: <PriceApprovalPI />,
       },
