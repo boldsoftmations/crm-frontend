@@ -409,7 +409,6 @@ const FilterOptions = [
   { label: "Company", value: "company" },
   { label: "Pan No", value: "pan_number" },
 ];
-
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     fontSize: 12,

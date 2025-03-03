@@ -1,13 +1,6 @@
 import CustomAxios from "./api";
 
-const getAllLeads = (
-  page,
-  funnelVlue,
-  orderingValue,
-  filter,
-  filterValue,
-  searchValue
-) => {
+const getAllLeads = (page, funnelVlue, filter, filterValue, searchValue) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
 
@@ -17,10 +10,6 @@ const getAllLeads = (
 
   if (funnelVlue) {
     params.append("funnel", funnelVlue);
-  }
-
-  if (orderingValue) {
-    params.append("ordering", orderingValue);
   }
 
   if (filter && filterValue) {

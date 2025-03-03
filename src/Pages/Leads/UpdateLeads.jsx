@@ -417,9 +417,7 @@ export const UpdateLeads = memo((props) => {
               }}
               country={"in"}
               onChange={(newPhone) => {
-                const formattedPhone = newPhone.startsWith("+")
-                  ? newPhone
-                  : "+" + newPhone;
+                const formattedPhone = newPhone ? `+${newPhone}` : null;
                 handleSelectChange("contact", formattedPhone);
               }}
             />
@@ -434,9 +432,7 @@ export const UpdateLeads = memo((props) => {
               }}
               country={"in"}
               onChange={(newPhone) => {
-                const formattedPhone = newPhone.startsWith("+")
-                  ? newPhone
-                  : "+" + newPhone;
+                const formattedPhone = newPhone ? `+${newPhone}` : null;
                 handleSelectChange("alternate_contact", formattedPhone);
               }}
             />

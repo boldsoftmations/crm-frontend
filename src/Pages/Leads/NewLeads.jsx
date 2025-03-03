@@ -193,7 +193,6 @@ export const NewLeads = () => {
       const response = await LeadServices.getAllLeads(
         currentPage,
         "new",
-        "-lead_id",
         filterQuery,
         filterSelectedQuery,
         searchQuery

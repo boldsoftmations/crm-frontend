@@ -102,8 +102,7 @@ export const ClosedLead = () => {
       setOpen(true);
       const response = await LeadServices.getAllLeads(
         currentPage,
-        "hot",
-        "-lead_id",
+        "close",
         filterQuery,
         filterSelectedQuery,
         searchQuery
