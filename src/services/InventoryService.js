@@ -358,7 +358,13 @@ const updateBillofMaterialsData = (id, data) => {
 
 // Production Entry List Api
 
-const getAllProductionEntryData = (page, searchValue) => {
+const getAllProductionEntryData = (
+  page,
+  searchValue,
+  start_date,
+  end_date,
+  date
+) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
 
@@ -368,6 +374,16 @@ const getAllProductionEntryData = (page, searchValue) => {
 
   if (searchValue) {
     params.append("search", searchValue);
+  }
+
+  if (start_date) {
+    params.append("start_date", start_date);
+  }
+  if (end_date) {
+    params.append("end_date", end_date);
+  }
+  if (date) {
+    params.append("date", date);
   }
 
   // Sending a GET request with query parameters

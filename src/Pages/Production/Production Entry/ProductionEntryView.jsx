@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Box,
   Grid,
@@ -12,7 +12,6 @@ import {
   TableCell,
   Button,
   TableFooter,
-  Pagination,
   Collapse,
   Typography,
   IconButton,
@@ -32,6 +31,9 @@ import { useNotificationHandling } from "../../../Components/useNotificationHand
 import { MessageAlert } from "../../../Components/MessageAlert";
 import SearchComponent from "../../../Components/SearchComponent ";
 import { CustomPagination } from "../../../Components/CustomPagination";
+import CustomDate from "../../../Components/CustomDate";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import { CSVLink } from "react-csv";
 
 export const ProductionEntryView = () => {
   const [openPopup2, setOpenPopup2] = useState(false);
@@ -43,6 +45,14 @@ export const ProductionEntryView = () => {
   const [sellerOption, setSellerOption] = useState(null);
   const users = useSelector((state) => state.auth.profile);
   const dispatch = useDispatch();
+  const [endDate, setEndDate] = useState(null);
+  const [startDate, setStartDate] = useState(null);
+  const minDate = new Date().toISOString().split("T")[0];
+  const maxDate = new Date("2030-12-31").toISOString().split("T")[0];
+  const [customDataPopup, setCustomDataPopup] = useState(false);
+  const [filterByDays, setFilterByDays] = useState("today");
+  const [exportData, setExportData] = useState([]);
+  const csvLinkRef = useRef(null);
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
@@ -82,15 +92,78 @@ export const ProductionEntryView = () => {
 
   useEffect(() => {
     getAllProductionEntryDetails(currentPage, searchQuery);
-  }, [currentPage, searchQuery]);
+  }, [currentPage, searchQuery, startDate, endDate, filterByDays]);
+
+  const handleExport = async () => {
+    try {
+      const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
+      const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
+      setOpen(true);
+      const response = await InventoryServices.getAllProductionEntryData(
+        "all",
+        searchQuery,
+        StartDate,
+        EndDate,
+        filterByDays
+      );
+      const data = response.data.map((row) => {
+        return {
+          id: row.id,
+          bom: row.bom,
+          seller_account: row.seller_account,
+          product: row.product,
+          quantity: row.quantity,
+          user: row.user,
+          created_on: row.created_on,
+        };
+      });
+      console.log("data", data);
+      setOpen(false);
+      return data;
+    } catch (error) {
+      handleError(error);
+      console.log("while downloading Price list", error);
+    } finally {
+      setOpen(false);
+    }
+  };
+
+  const headers = [
+    { label: "ID", key: "id" },
+    { label: "Bom", key: "bom" },
+    { label: "Seller Account ", key: "seller_account" },
+    { label: "Product", key: "product" },
+    { label: "Quantity", key: "quantity" },
+    { label: "User", key: "user" },
+    { label: "Created Date", key: "created_on" },
+  ];
+
+  const handleDownload = async () => {
+    try {
+      const data = await handleExport();
+      setExportData(data);
+      setTimeout(() => {
+        csvLinkRef.current.link.click();
+      });
+    } catch (error) {
+      console.log("CSVLink Download error", error);
+    }
+  };
 
   const getAllProductionEntryDetails = useCallback(
     async (page, search = searchQuery) => {
       try {
+        const StartDate = startDate
+          ? startDate.toISOString().split("T")[0]
+          : "";
+        const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
         setOpen(true);
         const response = await InventoryServices.getAllProductionEntryData(
           page,
-          search
+          search,
+          StartDate,
+          EndDate,
+          filterByDays
         );
         setProductionEntry(response.data.results);
         setTotalPages(Math.ceil(response.data.count / 25));
@@ -101,7 +174,7 @@ export const ProductionEntryView = () => {
         setOpen(false);
       }
     },
-    [searchQuery]
+    [currentPage, searchQuery, startDate, endDate, filterByDays]
   );
 
   const handlePageChange = (event, value) => {
@@ -118,10 +191,31 @@ export const ProductionEntryView = () => {
     setCurrentPage(1);
   };
 
-  // const openInPopup = (item) => {
-  //   setIDForEdit(item);
-  //   setOpenPopup(true);
-  // };
+  const handleEndDateChange = (event) => {
+    const date = new Date(event.target.value);
+    setEndDate(date);
+  };
+  const getResetDate = () => {
+    setStartDate(new Date());
+    setEndDate(new Date());
+  };
+  const handleStartDateChange = (event) => {
+    const date = new Date(event.target.value);
+    setStartDate(date);
+    setEndDate(new Date());
+  };
+  const handleChange = (value) => {
+    if (value === "custom_date") {
+      setStartDate(new Date());
+      setEndDate(new Date());
+      setFilterByDays("");
+      setCustomDataPopup(true);
+    } else {
+      setFilterByDays(value);
+      setStartDate(null);
+      setEndDate(null);
+    }
+  };
 
   return (
     <>
@@ -143,15 +237,35 @@ export const ProductionEntryView = () => {
               justifyContent="space-between"
             >
               {/* Left Section: Search Component */}
-              <Grid item xs={12} sm={4} display="flex" alignItems="center">
+              <Grid
+                item
+                xs={12}
+                sm={5}
+                display="flex"
+                alignItems="center"
+                gap={1}
+              >
                 <SearchComponent
                   onSearch={handleSearch}
                   onReset={handleReset}
                 />
+                <CustomAutocomplete
+                  size="small"
+                  fullWidth
+                  onChange={(event, newValue) =>
+                    handleChange(newValue ? newValue.value : "")
+                  }
+                  options={filterDays}
+                  getOptionLabel={(option) => option.label}
+                  isOptionEqualToValue={(option, value) =>
+                    option.value === value.value
+                  }
+                  label="Filter By Date"
+                />
               </Grid>
 
               {/* Center Section: Title */}
-              <Grid item xs={12} sm={4} display="flex" justifyContent="center">
+              <Grid item xs={12} sm={3} display="flex" justifyContent="center">
                 <h3
                   style={{
                     fontSize: "24px",
@@ -172,6 +286,29 @@ export const ProductionEntryView = () => {
                 display="flex"
                 justifyContent="flex-end"
               >
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  className="mx-3"
+                  onClick={handleDownload}
+                >
+                  DownLoad CSV
+                </Button>
+
+                {exportData.length > 0 && (
+                  <CSVLink
+                    data={exportData}
+                    headers={headers}
+                    ref={csvLinkRef}
+                    filename="Productin Entry.csv"
+                    target="_blank"
+                    style={{
+                      textDecoration: "none",
+                      outline: "none",
+                      visibility: "hidden",
+                    }}
+                  />
+                )}
                 <Button
                   onClick={() => setOpenPopup2(true)}
                   variant="contained"
@@ -243,6 +380,22 @@ export const ProductionEntryView = () => {
           getAllProductionEntryDetails={getAllProductionEntryDetails}
           setOpenPopup={setOpenPopup2}
           sellerOption={sellerOption}
+        />
+      </Popup>
+      <Popup
+        openPopup={customDataPopup}
+        setOpenPopup={setCustomDataPopup}
+        title="Date Filter"
+        maxWidth="md"
+      >
+        <CustomDate
+          startDate={startDate}
+          endDate={endDate}
+          minDate={minDate}
+          maxDate={maxDate}
+          handleStartDateChange={handleStartDateChange}
+          handleEndDateChange={handleEndDateChange}
+          resetDate={getResetDate}
         />
       </Popup>
     </>
@@ -340,3 +493,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     border: 0,
   },
 }));
+const filterDays = [
+  { label: "Today", value: "today" },
+  { label: "Custom Date", value: "custom_date" },
+];
