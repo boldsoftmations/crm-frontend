@@ -27,6 +27,7 @@ export const SalesTeamAnalytics = (props) => {
     pieChartData,
     newCustomerData,
     callDashboardData,
+    getFollowupCallDashboard,
     getMonthyCallStatusData,
     pendingFollowup,
     pendingDescription,
@@ -130,10 +131,24 @@ export const SalesTeamAnalytics = (props) => {
     }
     setActiveButton(buttonType);
   };
+  useEffect(() => {
+    if (!filterValue) {
+      setActiveButtonType("customer");
+    }
+    if (activeButtonType === "lead") {
+      getFollowupCallDashboard(filterValue ? filterValue : "", "lead");
+    } else {
+      getFollowupCallDashboard(filterValue ? filterValue : "", "customer");
+    }
+  }, [filterValue, startDate, endDate]);
   const handleButtonType = (btn) => {
     setActiveButtonType(btn);
+    if (btn === "lead") {
+      getFollowupCallDashboard(filterValue ? filterValue : "", "lead");
+    } else {
+      getFollowupCallDashboard(filterValue ? filterValue : "", "customer");
+    }
   };
-
   // UseEffect hook to set initial data state for DIQDATA and DOBQDATA
   useEffect(() => {
     if (dailyInvoiceQuantity.length) {
@@ -485,15 +500,17 @@ export const SalesTeamAnalytics = (props) => {
             >
               Customer
             </Button>
-            <Button
-              variant={activeButtonType === "lead" ? "contained" : "outlined"} // Set variant to 'contained' for the active button
-              color="primary"
-              size="small"
-              onClick={() => handleButtonType("lead")}
-              style={{ marginLeft: "20px" }}
-            >
-              Lead
-            </Button>
+            {!userData.groups.includes("Customer Relationship Executive") && (
+              <Button
+                variant={activeButtonType === "lead" ? "contained" : "outlined"} // Set variant to 'contained' for the active button
+                color="primary"
+                size="small"
+                onClick={() => handleButtonType("lead")}
+                style={{ marginLeft: "20px" }}
+              >
+                Lead
+              </Button>
+            )}
           </Box>
           <Box
             display="flex"
@@ -569,6 +586,9 @@ export const SalesTeamAnalytics = (props) => {
           </Box>
           <Grid item xs={12} sm={12}>
             {activeButtonType === "customer" && (
+              <CallDashboard callDashboardData={callDashboardData} />
+            )}
+            {activeButtonType === "lead" && (
               <CallDashboard callDashboardData={callDashboardData} />
             )}
           </Grid>

@@ -53,11 +53,7 @@ export const SalesPersonDashboard = () => {
 
   useEffect(() => {
     if (filterValue) {
-      getFollowupCallDashboard(filterValue);
       getCallPerformanceByFilter(filterValue, startDate, endDate);
-    } else {
-      getFollowupCallDashboard();
-      getCallPerformanceDetails();
     }
   }, [startDate, endDate, filterValue]);
 
@@ -357,7 +353,7 @@ export const SalesPersonDashboard = () => {
       console.log("err", err);
     }
   };
-  const getFollowupCallDashboard = async (value) => {
+  const getFollowupCallDashboard = async (value = "", type = "") => {
     try {
       setOpen(true);
       const start_date = startDate.toISOString().split("T")[0];
@@ -365,7 +361,8 @@ export const SalesPersonDashboard = () => {
       const response = await DashboardService.getFollowupCallDashboard(
         value ? value : "",
         start_date,
-        end_date
+        end_date,
+        type ? type : ""
       );
       setCallDashboardData(response.data);
     } catch {
@@ -414,7 +411,6 @@ export const SalesPersonDashboard = () => {
       getDailyInvoiceQuantityDetails();
       getDailyOrderBookQuantityDetails();
       setFilterValue(null);
-      getFollowupCallDashboard();
       getCallPerformanceDetails();
       getMonthyCallStatusData("monthly");
     }
@@ -583,6 +579,7 @@ export const SalesPersonDashboard = () => {
         pieChartData={pieChartData}
         newCustomerData={newCustomerData}
         CallDashboardData={callDashboardData}
+        getFollowupCallDashboard={getFollowupCallDashboard}
         pendingFollowup={pendingFollowup}
         pendingDescription={pendingDescription}
         piData={piData}

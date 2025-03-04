@@ -51,13 +51,13 @@ export const TeamWiseDashboard = () => {
       getConsCallPerformanceDetails();
     }
   }, [startDate, endDate, filterValue]);
-  useEffect(() => {
-    if (filterValue) {
-      getFollowupCallDashboard(filterValue, startDate, endDate);
-    } else {
-      getFollowupCallDashboard();
-    }
-  }, [startDate, endDate, filterValue]);
+  // useEffect(() => {
+  //   if (filterValue) {
+  //     getFollowupCallDashboard(filterValue, startDate, endDate);
+  //   } else {
+  //     getFollowupCallDashboard();
+  //   }
+  // }, [startDate, endDate, filterValue]);
 
   const getSalesAnalyticDashboard = async (email) => {
     try {
@@ -363,7 +363,7 @@ export const TeamWiseDashboard = () => {
     }
   };
 
-  const getFollowupCallDashboard = async (value) => {
+  const getFollowupCallDashboard = async (value, type) => {
     try {
       setOpen(true);
       const start_date = startDate.toISOString().split("T")[0];
@@ -372,6 +372,7 @@ export const TeamWiseDashboard = () => {
         value ? value : "",
         start_date,
         end_date,
+        type ? type : "",
         "team"
       );
       setCallDashboardData(response.data);
@@ -590,6 +591,7 @@ export const TeamWiseDashboard = () => {
         pieChartData={pieChartData}
         newCustomerData={newCustomerData}
         callDashboardData={callDashboardData}
+        getFollowupCallDashboard={getFollowupCallDashboard}
         getMonthyCallStatusData={getMonthyCallStatusData}
         pendingFollowup={pendingFollowup}
         pendingDescription={pendingDescription}
