@@ -225,6 +225,7 @@ const getFollowupCallDashboard = (
   email,
   start_date,
   end_date,
+  type,
   sales_type = ""
 ) => {
   const params = new URLSearchParams();
@@ -237,11 +238,15 @@ const getFollowupCallDashboard = (
   if (end_date) {
     params.append("end_date", end_date);
   }
+  if (type) {
+    params.append("type", type);
+  }
   if (sales_type) {
     params.append("sales_type", sales_type);
   }
+
   return CustomAxios.get(
-    `/api/dashboard/company-followup/?${params.toString()}`
+    `/api/dashboard/followup-dashboard/?${params.toString()}`
   );
 };
 const DashboardService = {
