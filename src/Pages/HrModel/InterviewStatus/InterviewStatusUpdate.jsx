@@ -9,9 +9,13 @@ import { MessageAlert } from "../../../Components/MessageAlert";
 
 export const InterviewStatusCreate = ({
   row,
+  contact,
   closeDialog,
+  setIsFollowupDone,
   getInterviewData,
+  setOpenApplicantListPopup,
 }) => {
+  console.log("contact", contact);
   const [interviewDate, setInterviewDate] = useState("");
   const [interviewTime, setInterviewTime] = useState("");
   const [interviewerName, setInterviewerName] = useState("");
@@ -23,12 +27,12 @@ export const InterviewStatusCreate = ({
     e.preventDefault();
 
     const newInterviewDetails = {
-      applicant: row.contact,
       date: interviewDate,
       time: interviewTime,
       interviewer: interviewerName,
       status: "Schedule",
       stage: "Round1",
+      applicant: contact || row.contact,
     };
 
     try {
@@ -36,9 +40,22 @@ export const InterviewStatusCreate = ({
       await Hr.addInterviewDate(newInterviewDetails);
       handleSuccess("Interview Scheduled Successfully");
       setTimeout(() => {
-        closeDialog();
-        getInterviewData();
+        if (typeof closeDialog === "function") {
+          closeDialog();
+        }
+
+        if (typeof getInterviewData === "function") {
+          getInterviewData();
+        }
+
+        if (typeof setIsFollowupDone === "function") {
+          setIsFollowupDone(false);
+        }
+        if (typeof setOpenApplicantListPopup === "function") {
+          setOpenApplicantListPopup(false);
+        }
       }, 500);
+
       setLoading(false);
     } catch (error) {
       setLoading(false);

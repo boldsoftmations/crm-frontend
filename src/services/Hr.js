@@ -431,10 +431,16 @@ const SendbulkEamilTocandidates = (data) => {
   return CustomAxios.post(`/api/hr/send-bulk-email/`, data);
 };
 
-const getAssessementDetails = (page) => {
+const getAssessementDetails = (page, search, filter) => {
   const params = new URLSearchParams();
   if (page) {
     params.append("page", page);
+  }
+  if (search) {
+    params.append("search", search);
+  }
+  if (filter) {
+    params.append("job__designation__designation", filter);
   }
   return CustomAxios.get(`/api/hr/interview/?${params.toString()}`);
 };
@@ -445,6 +451,27 @@ const getAssessementResultDetails = (data) => {
 
 const deleteMCQQuestion = (id) => {
   return CustomAxios.delete(`/api/hr/mcq/${id}/`);
+};
+
+const createCandidateFollowup = (data) => {
+  return CustomAxios.post(`/api/hr/applicant-followup/`, data);
+};
+
+const getCandidateFollowup = (page, search) => {
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+  if (search) {
+    params.append("search", search);
+  }
+  return CustomAxios.get(`/api/hr/applicant-followup/?${params.toString()}`);
+};
+
+const getCandidates = () => {
+  return CustomAxios.get(
+    "/api/master/model-option/?page=all&model_master__name=Applicant Followup Status"
+  );
 };
 const Hr = {
   getDesignationsData,
@@ -508,6 +535,9 @@ const Hr = {
   SendbulkEamilTocandidates,
   getAssessementDetails,
   getAssessementResultDetails,
+  createCandidateFollowup,
+  getCandidateFollowup,
+  getCandidates,
 };
 
 export default Hr;

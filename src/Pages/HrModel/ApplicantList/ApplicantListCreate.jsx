@@ -9,6 +9,9 @@ import {
   IconButton,
   Checkbox,
   FormControlLabel,
+  Divider,
+  Chip,
+  styled,
 } from "@mui/material";
 import Hr from "../../../services/Hr";
 import CustomAxios from "../../../services/api";
@@ -17,7 +20,15 @@ import CloseIcon from "@mui/icons-material/Close";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
 import TypoAnimation from "./TypoAnimation";
-
+import { Popup } from "../../../Components/Popup";
+import { InterviewStatusCreate } from "../InterviewStatus/InterviewStatusUpdate";
+const Root = styled("div")(({ theme }) => ({
+  width: "100%",
+  ...theme.typography.body2,
+  "& > :not(style) + :not(style)": {
+    marginTop: theme.spacing(2),
+  },
+}));
 export const ApplicantListCreate = ({
   jobOpeningId,
   setOpenApplicantListPopup,
@@ -33,12 +44,18 @@ export const ApplicantListCreate = ({
     expected_salary: "",
     spoken_english: "",
     source: "",
-    interested: "",
     is_competitor: false,
     cv: null,
   });
+  const [followupData, setFollowupData] = useState({
+    applicant: contact ? contact : "",
+    call_status: "",
+    notes: "",
+    applicant_status: "",
+  });
   const [loader, setLoader] = useState(false);
   const [showAts, setShowAts] = useState(false);
+  const [contact, setContact] = useState(null);
   const [source, setSource] = useState([]);
   const [cvPreview, setCvPreview] = useState(null);
   const [alertmsg, setAlertMsg] = useState({
@@ -46,7 +63,8 @@ export const ApplicantListCreate = ({
     severity: "",
     open: false,
   });
-
+  const [candidateStatus, setCandidateStatus] = useState([]);
+  const [isFollowupDone, setIsFollowupDone] = useState(false);
   const handleClose = () => {
     setAlertMsg({ open: false });
   };
@@ -214,15 +232,32 @@ export const ApplicantListCreate = ({
     });
 
     try {
-      await Hr.addApplicant(formDataToSend);
-      setAlertMsg({
-        open: true,
-        message: "Applicant created successfully",
-        severity: "success",
-      });
-      setTimeout(() => {
-        setOpenApplicantListPopup(false);
-      }, 300);
+      const res = await Hr.addApplicant(formDataToSend);
+      if (res.status === 201) {
+        const data = res.data;
+        setAlertMsg({
+          open: true,
+          message: data.message || "Applicant created successfully",
+          severity: "success",
+        });
+        setContact(data.contact);
+        setFormData((prev) => {
+          return {
+            ...prev,
+            name: "",
+            email: "",
+            contact: "",
+            qualification: "",
+            current_location: "",
+            current_salary: "",
+            expected_salary: "",
+            spoken_english: "",
+            source: "",
+            is_competitor: false,
+            cv: null,
+          };
+        });
+      }
     } catch (error) {
       setAlertMsg({
         open: true,
@@ -234,6 +269,80 @@ export const ApplicantListCreate = ({
       setLoader(false);
     }
   };
+
+  const handleFollowChange = (e, newValue, name) => {
+    setFollowupData((prevData) => ({
+      ...prevData,
+      [name]: newValue,
+    }));
+  };
+
+  const handleFollowInputChange = (event) => {
+    let { name, value } = event.target;
+    setFollowupData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmitFollowup = async (e) => {
+    e.preventDefault();
+    if (!contact) {
+      setAlertMsg({
+        open: true,
+        message: "Contact number is required",
+        severity: "error",
+      });
+      return;
+    }
+    try {
+      setLoader(true);
+      const payload = {
+        applicant: contact ? contact : "",
+        call_status: followupData.call_status,
+        applicant_status: followupData.applicant_status,
+        notes: followupData.notes,
+      };
+      const res = await Hr.createCandidateFollowup(payload);
+      const data = res.data;
+      if (res.status === 201) {
+        setAlertMsg({
+          open: true,
+          message: "Followup created successfully",
+          severity: "success",
+        });
+        if (data.success === true) {
+          setIsFollowupDone(true);
+        } else {
+          setOpenApplicantListPopup(false);
+        }
+      }
+    } catch (e) {
+      setAlertMsg({
+        open: true,
+        message: e.response.data.message || "Error creating followup",
+        severity: "error",
+      });
+      console.error("Error creating followup:", e);
+    } finally {
+      setLoader(false);
+    }
+  };
+
+  useEffect(() => {
+    const getCandidateStatus = async () => {
+      try {
+        setLoader(true);
+        const res = await Hr.getCandidates();
+        setCandidateStatus(res.data);
+      } catch (e) {
+        console.log(e);
+      } finally {
+        setLoader(false);
+      }
+    };
+    getCandidateStatus();
+  }, []);
 
   return (
     <>
@@ -347,21 +456,7 @@ export const ApplicantListCreate = ({
                 label="Expected Salary"
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <CustomAutocomplete
-                size="small"
-                id="interested"
-                options={["Yes", "No", "CallBackLater"]}
-                renderInput={(params) => (
-                  <TextField {...params} label="Interested" />
-                )}
-                value={formData.interested}
-                onChange={(event, newValue) => {
-                  handleInputChange(event, newValue, "interested");
-                }}
-                label="Interested"
-              />
-            </Grid>
+
             <Grid item xs={12} sm={6}>
               <CustomAutocomplete
                 size="small"
@@ -378,22 +473,6 @@ export const ApplicantListCreate = ({
                   }));
                 }}
                 label="Spoken English"
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={setFormData.is_competitor}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        is_competitor: e.target.checked,
-                      }))
-                    }
-                  />
-                }
-                label="Is Competitor"
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -436,6 +515,23 @@ export const ApplicantListCreate = ({
                 </Box>
               )}
             </Grid>
+            <Grid item xs={12} sm={6}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={setFormData.is_competitor}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        is_competitor: e.target.checked,
+                      }))
+                    }
+                  />
+                }
+                label="Is Competitor"
+              />
+            </Grid>
+
             {showAts && (
               <Grid item xs={12} sm={12}>
                 <TypoAnimation
@@ -458,13 +554,98 @@ export const ApplicantListCreate = ({
                 eluavate resume
               </Button>
             </Grid>
+            <Grid item xs={12} sm={12}>
+              <Button
+                fullWidth
+                type="submit"
+                variant="contained"
+                color="primary"
+              >
+                Add Applicant
+              </Button>
+            </Grid>
+            <Grid item xs={12}>
+              <Root>
+                <Divider>
+                  <Chip label="Follow up" />
+                </Divider>
+              </Root>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <CustomAutocomplete
+                size="small"
+                id="call_status"
+                name="call_status"
+                options={["Connected", "Disconnected"]}
+                renderInput={(params) => (
+                  <TextField {...params} label="Call Status" />
+                )}
+                value={followupData.call_status}
+                onChange={(e, value) =>
+                  handleFollowChange(e, value, "call_status")
+                }
+                label="Call Status"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <CustomAutocomplete
+                size="small"
+                id="applicant_status"
+                options={candidateStatus}
+                getOptionLabel={(option) => option.name} // Show name in the dropdown
+                renderInput={(params) => (
+                  <TextField {...params} label="Applicant Status" />
+                )}
+                value={
+                  candidateStatus.find(
+                    (option) => option.id === followupData.applicant_status
+                  ) || null
+                } // Ensure selected value is an object
+                onChange={
+                  (e, value) =>
+                    handleFollowChange(
+                      e,
+                      value ? value.id : null,
+                      "applicant_status"
+                    ) // Store the ID
+                }
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                size="small"
+                label="Notes"
+                name="notes"
+                fullWidth
+                value={followupData.notes}
+                onChange={handleFollowInputChange}
+              />
+            </Grid>
           </Grid>
           <Box display="flex" justifyContent="flex-end" mt={2}>
-            <Button fullWidth type="submit" variant="contained" color="primary">
-              Add Applicant
+            <Button
+              fullWidth
+              onClick={handleSubmitFollowup}
+              variant="contained"
+              color="secondary"
+            >
+              Add Followup
             </Button>
           </Box>
         </Box>
+        <Popup
+          openPopup={isFollowupDone}
+          setOpenPopup={setIsFollowupDone}
+          title="Schedule Interview"
+          maxWidth="md"
+        >
+          <InterviewStatusCreate
+            setIsFollowupDone={setIsFollowupDone}
+            contact={contact}
+            setOpenApplicantListPopup={setOpenApplicantListPopup}
+          />
+        </Popup>
       </Container>
     </>
   );
