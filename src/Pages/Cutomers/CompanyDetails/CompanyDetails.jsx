@@ -20,7 +20,6 @@ import { useSelector } from "react-redux";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { BulkCustomerAssign } from "./BulkCustomerAssign";
 import { CustomPagination } from "../../../Components/CustomPagination";
-import { CustomerActivityCreate } from "../../FollowUp/CustomerActivityCreate";
 import { CreateCustomerProformaInvoice } from "./../../Invoice/ProformaInvoice/CreateCustomerProformaInvoice";
 import { CSVLink } from "react-csv";
 import { Helmet } from "react-helmet";
@@ -36,7 +35,6 @@ export const CompanyDetails = () => {
   const [openPopupOfCreateCustomer, setOpenPopupOfCreateCustomer] =
     useState(false);
   const [openPopupInvoice, setOpenPopupInvoice] = useState(false);
-  const [openPopupActivity, setOpenPopupActivity] = useState(false);
   const [openPopupPotential, setOpenPopupPotential] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -164,11 +162,6 @@ export const CompanyDetails = () => {
     setRecordForEdit(item.id);
     setRowData(item);
     setOpenPopupInvoice(true);
-  };
-
-  const openInPopupActivity = (item) => {
-    setRecordForEdit(item.id);
-    setOpenPopupActivity(true);
   };
 
   const handleSnackbarClose = () => {
@@ -481,12 +474,6 @@ export const CompanyDetails = () => {
                           PI,
                         </Button>
                       )}
-                      <Button
-                        sx={{ color: "#5e35b1" }}
-                        onClick={() => openInPopupActivity(row)}
-                      >
-                        Activity,
-                      </Button>
                     </StyledTableCell>
                   </StyledTableRow>
                 ))}
@@ -555,18 +542,6 @@ export const CompanyDetails = () => {
         <BulkCustomerAssign
           setOpenPopup={setOpenModal}
           setOpenSnackbar={setOpenSnackbar}
-        />
-      </Popup>
-      <Popup
-        maxWidth={"xl"}
-        title={"Create Activity"}
-        openPopup={openPopupActivity}
-        setOpenPopup={setOpenPopupActivity}
-      >
-        <CustomerActivityCreate
-          recordForEdit={recordForEdit}
-          setOpenModal={setOpenPopupActivity}
-          getFollowUp={getAllCompanyDetails}
         />
       </Popup>
       <Popup

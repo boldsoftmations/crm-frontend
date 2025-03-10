@@ -15,7 +15,7 @@ import { Popup } from "../../Components/Popup";
 import { CustomerActivityCreate } from "./CustomerActivityCreate";
 import CustomerServices from "../../services/CustomerService";
 
-export const ViewCustomerFollowUp = ({ recordForEdit }) => {
+export const ViewCustomerFollowUp = ({ recordForEdit, selectedCustomers }) => {
   const [openModal, setOpenModal] = useState(false);
   const [open, setOpen] = useState(false);
   const [followUpData, setFollowUpData] = useState([]);
@@ -129,9 +129,9 @@ export const ViewCustomerFollowUp = ({ recordForEdit }) => {
         setOpenPopup={setOpenModal}
       >
         <CustomerActivityCreate
-          recordForEdit={recordForEdit}
           setOpenModal={setOpenModal}
           getFollowUp={getCompanyDetailsByID}
+          selectedCustomers={selectedCustomers}
         />
       </Popup>
     </>

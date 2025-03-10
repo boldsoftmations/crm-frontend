@@ -28,7 +28,6 @@ import { ViewCustomerFollowUp } from "../../FollowUp/ViewCustomerFollowUp";
 import Option from "../../../Options/Options";
 import CustomTextField from "../../../Components/CustomTextField";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
-import UserProfileService from "../../../services/UserProfileService";
 import MasterService from "../../../services/MasterService";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
 
@@ -512,7 +511,10 @@ export const UpdateCompanyDetails = (props) => {
       )}
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <ViewCustomerFollowUp recordForEdit={recordForEdit} />
+          <ViewCustomerFollowUp
+            recordForEdit={recordForEdit}
+            selectedCustomers={selectedCustomers}
+          />
         </Grid>
       </Grid>
     </>

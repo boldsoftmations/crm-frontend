@@ -183,7 +183,7 @@ const updateProductForecastData = (id, data) => {
 
 // followUp endpoints
 const createFollowUpCustomer = (data) => {
-  return CustomAxios.post("/api/customer/list-followup/", data);
+  return CustomAxios.post("/api/customer/customer-followup/", data);
 };
 
 const getCustomerFollowUp = () => {
@@ -509,6 +509,11 @@ const createCustomerScheme = (data) => {
 const updateCustomerscheme = (id, data) => {
   return CustomAxios.patch(`/api/customer/scheme/${id}/`, data);
 };
+const getCustomerStatus = () => {
+  return CustomAxios.get(
+    "/api/master/model-option/?page=all&model_master__name=Customer Followup"
+  );
+};
 const CustomerServices = {
   getAllCustomerData,
   getIncompleteKycCustomerData,
@@ -584,6 +589,7 @@ const CustomerServices = {
   getCustomerScheme,
   createCustomerScheme,
   updateCustomerscheme,
+  getCustomerStatus,
 };
 
 export default CustomerServices;
