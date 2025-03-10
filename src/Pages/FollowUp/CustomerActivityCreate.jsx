@@ -57,20 +57,6 @@ export const CustomerActivityCreate = (props) => {
       ...prevData,
       [name]: newValue,
     }));
-    // Check if the selected activity requires a followup date
-    const requiresFollowup = [
-      "Not answering/busy/disconnecting",
-      "Having stock",
-      "Rate issue",
-      "Buying a different product from other company",
-      "Transportation cost issue",
-      "Call me back",
-      "Send sample",
-      "Require exclusive distributorship/dealership",
-      "Require credit",
-    ].includes(newValue);
-
-    setActivityRequiresFollowup(requiresFollowup);
   };
 
   return (
