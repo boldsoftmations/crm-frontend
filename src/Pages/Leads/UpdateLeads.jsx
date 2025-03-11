@@ -175,8 +175,14 @@ export const UpdateLeads = memo((props) => {
 
   const handleSameAsAddress = (event) => {
     setChecked(event.target.checked);
+    setLeads((prev) => ({
+      ...prev,
+      shipping_address: event.target.checked ? leads.address : "",
+      shipping_city: event.target.checked ? leads.city : "",
+      shipping_state: event.target.checked ? leads.state : "",
+      shipping_pincode: event.target.checked ? leads.pincode : null,
+    }));
   };
-
   const getDescriptionNoData = async () => {
     try {
       const res = await ProductService.getNoDescription();
@@ -255,14 +261,12 @@ export const UpdateLeads = memo((props) => {
           state: leads.state,
           country: leads.country,
           pincode: leads.pincode || null,
-          shipping_address:
-            checked === true ? leads.address : leads.shipping_address,
-          shipping_city: checked === true ? leads.city : leads.shipping_city,
-          shipping_state: checked === true ? leads.state : leads.shipping_state,
-          shipping_pincode:
-            checked === true
-              ? leads.pincode || null
-              : leads.shipping_pincode || null,
+          shipping_address: checked ? leads.address : leads.shipping_address,
+          shipping_city: checked ? leads.city : leads.shipping_city,
+          shipping_state: checked ? leads.state : leads.shipping_state,
+          shipping_pincode: checked
+            ? leads.pincode || null
+            : leads.shipping_pincode || null,
           type_of_customer: leads.type_of_customer,
           website: leads.website,
           approx_annual_turnover: leads.approx_annual_turnover,
@@ -285,7 +289,7 @@ export const UpdateLeads = memo((props) => {
           estd_year: leads.estd_year || null,
           purchase_decision_maker: leads.purchase_decision_maker,
         };
-
+        console.log("data", data);
         const response = await LeadServices.updateLeads(leadsByID, data);
 
         const successMessage =
