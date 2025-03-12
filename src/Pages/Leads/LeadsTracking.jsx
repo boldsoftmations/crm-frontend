@@ -27,6 +27,7 @@ export const LeadsTracking = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [filterStageValue, setFilterStageValue] = useState("");
   const [filterReferenceValue, setFilterReferenceValue] = useState("");
+  const [referenceData, setReferenceData] = useState([]);
   const [alertmsg, setAlertMsg] = useState({
     message: "",
     severity: "",
@@ -57,6 +58,21 @@ export const LeadsTracking = () => {
       console.error("Error fetching leadsData:", error);
     }
   };
+  const FetchData = async (value) => {
+    try {
+      setIsLoading(true);
+      const res = await LeadServices.getAllRefernces();
+      setReferenceData(res.data);
+    } catch (error) {
+      console.log("error", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    FetchData();
+  }, []);
 
   useEffect(() => {
     getCandidateFollowup();
@@ -132,7 +148,7 @@ export const LeadsTracking = () => {
                 id="combo-box-stage"
                 value={filterReferenceValue}
                 onChange={(e, value) => handleFilterReferenceType(value)}
-                options={["Justdial", "Hardware Express"]}
+                options={referenceData.map((option) => option.source)}
                 getOptionLabel={(option) => option}
                 label="Filter By References"
               />
@@ -160,6 +176,7 @@ export const LeadsTracking = () => {
             >
               <TableHead>
                 <TableRow>
+                  <StyledTableCell align="center">Date</StyledTableCell>
                   <StyledTableCell align="center">Company Name</StyledTableCell>
                   <StyledTableCell align="center">Assigned By</StyledTableCell>
                   <StyledTableCell align="center">Assigned To</StyledTableCell>
@@ -173,6 +190,9 @@ export const LeadsTracking = () => {
               <TableBody>
                 {leadsData.map((row, i) => (
                   <StyledTableRow key={i}>
+                    <StyledTableCell align="center">
+                      {row.date_time}
+                    </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.company}
                     </StyledTableCell>
