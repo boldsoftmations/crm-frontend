@@ -9,6 +9,7 @@ import { DuplicateLead } from "./DuplicateLead";
 import { UnassignedLead } from "./UnassignedLead";
 import { IndiaMartLeads } from "./IndiaMartLeads";
 import CreateJustDialLead from "./CreateJustDialLead";
+import { LeadsTracking } from "./LeadsTracking";
 
 export const AllLeadsTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
@@ -104,6 +105,12 @@ export const AllLeadsTabView = () => {
         visible: isAdminAndDM,
         index: 7,
         component: <CreateJustDialLead />,
+      },
+      {
+        label: "Leads Record",
+        visible: isAdminAndDM,
+        index: 8,
+        component: <LeadsTracking />,
       },
     ],
     [

@@ -269,6 +269,25 @@ const createJustDialLeads = (data) => {
   return CustomAxios.post("/api/lead/just-dial-lead/", data);
 };
 
+const LeadsRecordDatas = (page, search, stage, reference) => {
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+  if (search) {
+    params.append("search", search);
+  }
+
+  if (stage) {
+    params.append("stage", stage);
+  }
+
+  if (reference) {
+    params.append("references__source", reference);
+  }
+
+  return CustomAxios.get(`api/lead/assign-leads/?${params.toString()}`);
+};
 const LeadServices = {
   getAllLeads,
   getAllAssignedUser,
@@ -297,6 +316,7 @@ const LeadServices = {
   getLeadForecast,
   updateLeadForecast,
   createJustDialLeads,
+  LeadsRecordDatas,
 };
 
 export default LeadServices;
