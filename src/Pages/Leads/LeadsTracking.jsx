@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Box,
   Grid,
@@ -11,6 +11,7 @@ import {
   TableBody,
   Table,
   tableCellClasses,
+  Button,
 } from "@mui/material";
 import CustomSnackbar from "../../Components/CustomerSnackbar";
 import { CustomLoader } from "../../Components/CustomLoader";
@@ -18,6 +19,7 @@ import { CustomPagination } from "../../Components/CustomPagination";
 import SearchComponent from "../../Components/SearchComponent ";
 import LeadServices from "../../services/LeadService";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
+import { CSVLink } from "react-csv";
 
 export const LeadsTracking = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -27,6 +29,8 @@ export const LeadsTracking = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [filterStageValue, setFilterStageValue] = useState("");
   const [filterReferenceValue, setFilterReferenceValue] = useState("");
+  const [exportData, setExportData] = useState("");
+  const csvLinkRef = useRef(null);
   const [referenceData, setReferenceData] = useState([]);
   const [alertmsg, setAlertMsg] = useState({
     message: "",
@@ -96,7 +100,55 @@ export const LeadsTracking = () => {
     setFilterReferenceValue(filterValue);
     setCurrentPage(1);
   };
+  //csv download function
+  const handleExport = async () => {
+    try {
+      setIsLoading(true);
+      const response = await LeadServices.LeadsRecordDatas("all");
+      const data = response.data.map((row) => {
+        return {
+          date_time: row.date_time,
+          company: row.company,
+          contact: row.contact,
+          assigned_by: row.assigned_by,
+          assigned_to: row.assigned_to,
+          name: row.name,
+          stage: row.stage,
+          source: row.source,
+          updation_date: row.updation_date,
+        };
+      });
+      return data;
+    } catch (error) {
+      console.log("while downloading Price list", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const handleDownload = async () => {
+    try {
+      const data = await handleExport();
+      setExportData(data);
+      setTimeout(() => {
+        csvLinkRef.current.link.click();
+      });
+    } catch (error) {
+      console.log("CSVLink Download error", error);
+    }
+  };
 
+  const headers = [
+    { label: "Creation Date", key: "date_time" },
+    { label: "Company", key: "company" },
+    { label: "Contact", key: "contact" },
+    { label: "Assigned By", key: "assigned_by" },
+    { label: "Assigned To", key: "assigned_to" },
+    { label: "Name", key: "name" },
+    { label: "Stage", key: "stage" },
+    { label: "Source", key: "source" },
+    { label: "Updation Date", key: "updation_date" },
+    ,
+  ];
   return (
     <>
       <CustomLoader open={isLoading} />
@@ -110,6 +162,28 @@ export const LeadsTracking = () => {
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
           <Grid container spacing={2} alignItems="center" mb={3}>
             <Grid item xs={12} md={4}>
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={handleDownload}
+              >
+                DownLoad CSV
+              </Button>
+
+              {exportData.length > 0 && (
+                <CSVLink
+                  data={exportData}
+                  headers={headers}
+                  ref={csvLinkRef}
+                  filename="Lead Record.csv"
+                  target="_blank"
+                  style={{
+                    textDecoration: "none",
+                    outline: "none",
+                    visibility: "hidden",
+                  }}
+                />
+              )}
               <SearchComponent onSearch={handleSearch} onReset={handleReset} />
             </Grid>
             <Grid item xs={12} sm={4}>
@@ -176,8 +250,11 @@ export const LeadsTracking = () => {
             >
               <TableHead>
                 <TableRow>
-                  <StyledTableCell align="center">Date</StyledTableCell>
+                  <StyledTableCell align="center">
+                    Creation Date
+                  </StyledTableCell>
                   <StyledTableCell align="center">Company Name</StyledTableCell>
+                  <StyledTableCell align="center">Contact</StyledTableCell>
                   <StyledTableCell align="center">Assigned By</StyledTableCell>
                   <StyledTableCell align="center">Assigned To</StyledTableCell>
                   <StyledTableCell align="center">
@@ -185,6 +262,7 @@ export const LeadsTracking = () => {
                   </StyledTableCell>
                   <StyledTableCell align="center">Stage</StyledTableCell>
                   <StyledTableCell align="center">Source</StyledTableCell>
+                  <StyledTableCell align="center">Updated Date</StyledTableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -195,6 +273,9 @@ export const LeadsTracking = () => {
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.company}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.contact}
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.assigned_by}
@@ -208,6 +289,9 @@ export const LeadsTracking = () => {
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.source}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.updation_date}
                     </StyledTableCell>
                   </StyledTableRow>
                 ))}
