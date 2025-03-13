@@ -20,15 +20,21 @@ import CustomSnackbar from "../../../Components/CustomerSnackbar";
 import { Popup } from "../../../Components/Popup";
 import ViewDetailsCandidates from "./ViewDetailsCanditates";
 import { InterviewAssessmentResultView } from "./InterviewAssementResultView";
+import SearchComponent from "../../../Components/SearchComponent ";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import CustomAxios from "../../../services/api";
 
 export const ViewAssementDetails = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const [openCandidatesPopup, setOpenCandidatesPopup] = useState(false);
   const [openResultPopup, setOpenResultPopup] = useState(false);
   const [recordForEdit, setRecordForEdit] = useState({});
   const [assesementData, setAssesementData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [designations, setDesignations] = useState([]);
+  const [filterValue, setFilterValue] = useState("");
   const [alertmsg, setAlertMsg] = useState({
     message: "",
     severity: "",
@@ -45,7 +51,11 @@ export const ViewAssementDetails = () => {
   const getAssessementDetails = async () => {
     try {
       setIsLoading(true);
-      const response = await Hr.getAssessementDetails(currentPage);
+      const response = await Hr.getAssessementDetails(
+        currentPage,
+        searchQuery,
+        filterValue
+      );
       setAssesementData(response.data.results);
       const total = response.data.count;
       setTotalPages(Math.ceil(total / 25));
@@ -57,8 +67,21 @@ export const ViewAssementDetails = () => {
 
   useEffect(() => {
     getAssessementDetails();
-  }, [currentPage]);
+  }, [currentPage, searchQuery, filterValue]);
 
+  useEffect(() => {
+    const fetchDesignations = async () => {
+      try {
+        const response = await CustomAxios.get(
+          "/api/hr/designation/?type=list"
+        );
+        setDesignations(response.data);
+      } catch (error) {
+        console.error("Error fetching designations:", error);
+      }
+    };
+    fetchDesignations();
+  }, []);
   const handleOpenPopup = (row) => {
     setOpenCandidatesPopup(true);
     setRecordForEdit(row);
@@ -68,6 +91,15 @@ export const ViewAssementDetails = () => {
     setOpenCandidatesPopup(false);
     setRecordForEdit(row);
     setOpenResultPopup(true);
+  };
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    setCurrentPage(1); // Reset to first page with new search
+  };
+
+  const handleReset = () => {
+    setSearchQuery("");
+    setCurrentPage(1); // Reset to first page with no search query
   };
 
   return (
@@ -82,7 +114,9 @@ export const ViewAssementDetails = () => {
       <Grid item xs={12}>
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
           <Grid container spacing={2} alignItems="center" mb={3}>
-            <Grid item xs={12} sm={4}></Grid>
+            <Grid item xs={12} md={4}>
+              <SearchComponent onSearch={handleSearch} onReset={handleReset} />
+            </Grid>
             <Grid item xs={12} sm={4}>
               <Box display="flex" justifyContent="center" marginBottom="10px">
                 <h3
@@ -96,6 +130,19 @@ export const ViewAssementDetails = () => {
                   Assesement Details
                 </h3>
               </Box>
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <CustomAutocomplete
+                fullWidth
+                name="stage"
+                size="small"
+                disablePortal
+                id="combo-box-stage"
+                onChange={(e, value) => setFilterValue(value)}
+                options={designations.map((option) => option.designation)}
+                getOptionLabel={(option) => option}
+                label="Filter By Designation"
+              />
             </Grid>
           </Grid>
 

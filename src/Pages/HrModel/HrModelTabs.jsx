@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { CustomTabs } from "../../Components/CustomTabs.jsx";
 import { JobOpeningView } from "./../HrModel/JobOpening/JobOpeningView.jsx";
-import { InterviewStatusView } from "./InterviewStatus/InterviewStatusView.jsx";
 import { OfferStatusView } from "./OfferStatus/OfferStatusView.jsx";
 import { ApplicantListView } from "./ApplicantList/ApplicantListView.jsx";
 import { ShortListedCandidateView } from "./ShortlistedCandidate/ShortListedCandidateView.jsx";
@@ -26,15 +25,14 @@ export const HrModelTabs = () => {
     : [
         { label: "Job Opening" },
         { label: "Applicant List" },
-        { label: "Shortlisted Candidate" },
+        { label: "Candidates Followup" },
         { label: "Interview Status" },
         { label: "Offer Status" },
         // { label: "MIS Report" },
         // { label: "Dashboard" },
         { label: "Rejected Candidate" },
-        { label: "Competitor" },
         { label: "Assesment Details" },
-        { label: "Candidates Followup" },
+        { label: "Competitor" },
       ];
 
   return (
@@ -60,7 +58,7 @@ export const HrModelTabs = () => {
               )}
               {activeTab === 2 && (
                 <div>
-                  <InterviewStatusView />
+                  <ViewCandidatesFollowup />
                 </div>
               )}
               {activeTab === 3 && (
@@ -90,18 +88,12 @@ export const HrModelTabs = () => {
               )}
               {activeTab === 6 && (
                 <div>
-                  <ViewCompetitorCandidates />
+                  <ViewAssementDetails />
                 </div>
               )}
               {activeTab === 7 && (
                 <div>
-                  <ViewAssementDetails />
-                </div>
-              )}
-
-              {activeTab === 8 && (
-                <div>
-                  <ViewCandidatesFollowup />
+                  <ViewCompetitorCandidates />
                 </div>
               )}
             </>

@@ -457,7 +457,7 @@ const createCandidateFollowup = (data) => {
   return CustomAxios.post(`/api/hr/applicant-followup/`, data);
 };
 
-const getCandidateFollowup = (page, search) => {
+const getCandidateFollowup = (page, search, designation, type) => {
   const params = new URLSearchParams();
   if (page) {
     params.append("page", page);
@@ -465,7 +465,18 @@ const getCandidateFollowup = (page, search) => {
   if (search) {
     params.append("search", search);
   }
+  if (designation) {
+    params.append("applicant__job__designation__designation", designation);
+  }
+  if (type) {
+    params.append("type", type);
+  }
+
   return CustomAxios.get(`/api/hr/applicant-followup/?${params.toString()}`);
+};
+
+const CandidateDoneFollowup = (id, data) => {
+  return CustomAxios.patch(`/api/hr/applicant-followup/${id}/`, data);
 };
 
 const getCandidates = () => {
@@ -537,6 +548,7 @@ const Hr = {
   getAssessementResultDetails,
   createCandidateFollowup,
   getCandidateFollowup,
+  CandidateDoneFollowup,
   getCandidates,
 };
 

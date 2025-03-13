@@ -20,15 +20,20 @@ import CustomSnackbar from "../../../Components/CustomerSnackbar";
 import SearchComponent from "../../../Components/SearchComponent ";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import CustomAxios from "../../../services/api";
+import { Popup } from "../../../Components/Popup";
+import { CreateFollowup } from "./CreateFollow";
 
 export const ViewCandidatesFollowup = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [followupData, setFollowupData] = useState([]);
+  const [dataRecord, setDataRecord] = useState(null);
+  const [openUpdatePopup, setOpenUpdatePopup] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [designations, setDesignations] = useState([]);
-  const [filterValue, setFilterValue] = useState("");
+  const [filterDesignationValue, setFilterDesignationValue] = useState("");
+  const [filterFollowuptype, setFilterFollowuptype] = useState("Today");
   const [alertmsg, setAlertMsg] = useState({
     message: "",
     severity: "",
@@ -45,7 +50,12 @@ export const ViewCandidatesFollowup = () => {
   const getCandidateFollowup = async () => {
     try {
       setIsLoading(true);
-      const response = await Hr.getCandidateFollowup(currentPage, searchQuery);
+      const response = await Hr.getCandidateFollowup(
+        currentPage,
+        searchQuery,
+        filterDesignationValue,
+        filterFollowuptype
+      );
       setFollowupData(response.data.results);
       const total = response.data.count;
       setTotalPages(Math.ceil(total / 25));
@@ -57,7 +67,13 @@ export const ViewCandidatesFollowup = () => {
 
   useEffect(() => {
     getCandidateFollowup();
-  }, [currentPage, searchQuery]);
+  }, [
+    currentPage,
+    searchQuery,
+    searchQuery,
+    filterDesignationValue,
+    filterFollowuptype,
+  ]);
 
   useEffect(() => {
     const fetchDesignations = async () => {
@@ -83,6 +99,49 @@ export const ViewCandidatesFollowup = () => {
     setCurrentPage(1); // Reset to first page with no search query
   };
 
+  const handleFilterChange = (search) => {
+    setFilterDesignationValue(search);
+    setCurrentPage(1);
+  };
+
+  const handleFilterFollowupType = (filterValue) => {
+    setFilterFollowuptype(filterValue);
+    setCurrentPage(1);
+  };
+
+  const handleOpenFollowupPopup = (data) => {
+    setDataRecord(data);
+    setOpenUpdatePopup(true);
+  };
+
+  const handleDoneFollow = async (data) => {
+    const { id } = data;
+    try {
+      setIsLoading(true);
+      const payload = {
+        status: "Completed",
+      };
+      const res = await Hr.CandidateDoneFollowup(id, payload);
+      if (res.status === 200) {
+        setAlertMsg({
+          open: true,
+          message:
+            res.data.message || "Followup marked as completed successfully",
+          severity: "success",
+        });
+        getCandidateFollowup();
+      }
+    } catch (e) {
+      setAlertMsg({
+        open: true,
+        message: e.response.data.message || "Something went wrong!",
+        severity: "error",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <>
       <CustomLoader open={isLoading} />
@@ -95,7 +154,7 @@ export const ViewCandidatesFollowup = () => {
       <Grid item xs={12}>
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
           <Grid container spacing={2} alignItems="center" mb={3}>
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={3}>
               <SearchComponent onSearch={handleSearch} onReset={handleReset} />
             </Grid>
             <Grid item xs={12} sm={4}>
@@ -112,17 +171,31 @@ export const ViewCandidatesFollowup = () => {
                 </h3>
               </Box>
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={3}>
               <CustomAutocomplete
                 fullWidth
                 name="stage"
                 size="small"
                 disablePortal
                 id="combo-box-stage"
-                onChange={(e, value) => setFilterValue(value)}
+                value={filterDesignationValue}
+                onChange={(e, value) => handleFilterChange(value)}
                 options={designations.map((option) => option.designation)}
                 getOptionLabel={(option) => option}
                 label="Filter By Designation"
+              />
+            </Grid>
+            <Grid item xs={12} sm={2}>
+              <CustomAutocomplete
+                fullWidth
+                size="small"
+                disablePortal
+                id="combo-box-stage"
+                onChange={(e, value) => handleFilterFollowupType(value)}
+                options={["Today", "Upcoming", "All"]}
+                value={filterFollowuptype}
+                getOptionLabel={(option) => option}
+                label="Filter By Follow-up Type"
               />
             </Grid>
           </Grid>
@@ -164,7 +237,9 @@ export const ViewCandidatesFollowup = () => {
                   <StyledTableCell align="center">
                     Next Followup date
                   </StyledTableCell>
-                  <StyledTableCell align="center">Action</StyledTableCell>
+                  {filterFollowuptype === "Today" && (
+                    <StyledTableCell align="center">Action</StyledTableCell>
+                  )}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -198,23 +273,41 @@ export const ViewCandidatesFollowup = () => {
                     <StyledTableCell align="center">
                       {row.followup_date}
                     </StyledTableCell>
-                    <StyledTableCell align="center">
-                      <Box
-                        display="flex"
-                        gap={2}
-                        alignItems="center"
-                        justifyContent="center"
-                      >
-                        <Button
-                          variant="outlined"
-                          size="small"
-                          color="primary"
-                          //   onClick={() => handleOpenPopup(row)}
+                    {filterFollowuptype === "Today" && (
+                      <StyledTableCell align="center">
+                        <Box
+                          display="flex"
+                          gap={2}
+                          alignItems="center"
+                          justifyContent="end"
                         >
-                          View
-                        </Button>
-                      </Box>
-                    </StyledTableCell>
+                          {row.round_status !== "Rejected" &&
+                            filterFollowuptype === "Today" &&
+                            (row.call_status === "Disconnected" ||
+                              row.round_status === "Shortlisted") && (
+                              <Button
+                                variant="outlined"
+                                size="small"
+                                color="primary"
+                                onClick={() => handleOpenFollowupPopup(row)}
+                              >
+                                View
+                              </Button>
+                            )}
+
+                          {filterFollowuptype === "Today" && (
+                            <Button
+                              variant="contained"
+                              size="small"
+                              color="success"
+                              onClick={() => handleDoneFollow(row)}
+                            >
+                              Done
+                            </Button>
+                          )}
+                        </Box>
+                      </StyledTableCell>
+                    )}
                   </StyledTableRow>
                 ))}
               </TableBody>
@@ -225,6 +318,18 @@ export const ViewCandidatesFollowup = () => {
             totalPages={totalPages}
             handlePageChange={handlePageChange}
           />
+          <Popup
+            maxWidth="md"
+            title="Add Follow-up"
+            openPopup={openUpdatePopup}
+            setOpenPopup={setOpenUpdatePopup}
+          >
+            <CreateFollowup
+              dataRecord={dataRecord}
+              setOpenUpdatePopup={setOpenUpdatePopup}
+              getInterviewDatas={getCandidateFollowup}
+            />
+          </Popup>
         </Paper>
       </Grid>
     </>
