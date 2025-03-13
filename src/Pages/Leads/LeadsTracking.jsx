@@ -104,7 +104,12 @@ export const LeadsTracking = () => {
   const handleExport = async () => {
     try {
       setIsLoading(true);
-      const response = await LeadServices.LeadsRecordDatas("all");
+      const response = await LeadServices.LeadsRecordDatas(
+        "all",
+        searchQuery,
+        filterStageValue,
+        filterReferenceValue
+      );
       const data = response.data.map((row) => {
         return {
           date_time: row.date_time,

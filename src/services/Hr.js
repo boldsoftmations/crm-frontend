@@ -245,7 +245,12 @@ const getMisReport = () => {
 
 //Rejected Candaiate List API
 
-const getRejectedCandidates = (page, searchValue, filterValue) => {
+const getRejectedCandidates = (
+  page,
+  searchValue,
+  status = "Rejected",
+  filterValue
+) => {
   const params = new URLSearchParams();
 
   if (page) {
@@ -255,13 +260,16 @@ const getRejectedCandidates = (page, searchValue, filterValue) => {
   if (searchValue) {
     params.append("search", searchValue);
   }
+
+  if (status) {
+    params.append("status", status);
+  }
+
   if (filterValue) {
     params.append("job__designation__designation", filterValue);
   }
 
-  return CustomAxios.get(
-    `api/hr/applicant/?status=Rejected&${params.toString()}`
-  );
+  return CustomAxios.get(`api/hr/applicant/?${params.toString()}`);
 };
 
 const updateRejectedCandidates = (updatedRejectedCandidates) => {

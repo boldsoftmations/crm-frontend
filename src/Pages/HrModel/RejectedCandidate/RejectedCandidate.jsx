@@ -34,7 +34,10 @@ export const RejectedCandidate = () => {
   const [loader, setLoader] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const [filters, setFilters] = useState("");
+  const [filters, setFilters] = useState({
+    designation: "",
+    status: "Rejected",
+  });
 
   const fetchRejectedCandidates = async () => {
     try {
@@ -42,7 +45,8 @@ export const RejectedCandidate = () => {
       const response = await Hr.getRejectedCandidates(
         currentPage,
         searchQuery,
-        filters
+        filters.status,
+        filters.designation
       );
       setRejectedCandidates(response.data.results);
       const total = response.data.count;
@@ -93,8 +97,13 @@ export const RejectedCandidate = () => {
     setSearchQuery("");
     setCurrentPage(1); // Reset to first page with no search query
   };
-  const handleFilterChange = (event, value) => {
-    setFilters(value);
+  const handleFilterChange = (e, value, name) => {
+    console.log(value, name);
+    setFilters((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    setCurrentPage(1);
   };
   return (
     <Grid item xs={12}>
@@ -114,17 +123,37 @@ export const RejectedCandidate = () => {
             </Typography>
           </Grid>
           <Grid item xs={12} sm={4}>
-            <CustomAutocomplete
-              fullWidth
-              name="designations"
-              size="small"
-              disablePortal
-              id="combo-box-stage"
-              onChange={(e, value) => handleFilterChange(e, value)}
-              options={designations.map((option) => option.designation)}
-              getOptionLabel={(option) => option}
-              label="Filter By Designation"
-            />
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              gap={2}
+            >
+              <CustomAutocomplete
+                fullWidth
+                size="small"
+                disablePortal
+                id="combo-box-stage"
+                onChange={(e, value) =>
+                  handleFilterChange(e, value, "designation")
+                }
+                value={filters.designation}
+                options={designations.map((option) => option.designation)}
+                getOptionLabel={(option) => option}
+                label="Filter By Designation"
+              />
+              <CustomAutocomplete
+                fullWidth
+                size="small"
+                disablePortal
+                id="combo-box-stage"
+                value={filters.status}
+                onChange={(e, value) => handleFilterChange(e, value, "status")}
+                options={["Rejected", "Not Interested"]}
+                getOptionLabel={(option) => option}
+                label="Filter By Status"
+              />
+            </Box>
           </Grid>
         </Grid>
         <Box style={{ marginTop: "20px" }}>

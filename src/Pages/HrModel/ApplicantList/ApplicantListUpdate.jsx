@@ -164,7 +164,7 @@ export const ApplicantListUpdate = ({
     </>
   );
 };
-const shortList = ["Shortlisted", "Rejected"];
+const shortList = ["Shortlisted", "Rejected", "Not Interested"];
 const rejected_reason = [
   "Insufficient Technical Knowledge",
   "Poor Problem-Solving Skills",
