@@ -36,7 +36,7 @@ export const RejectedCandidate = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [filters, setFilters] = useState({
     designation: "",
-    status: "Rejected",
+    status: "",
   });
 
   const fetchRejectedCandidates = async () => {
@@ -45,7 +45,7 @@ export const RejectedCandidate = () => {
       const response = await Hr.getRejectedCandidates(
         currentPage,
         searchQuery,
-        filters.status,
+        filters.status ? filters.status : "Rejected",
         filters.designation
       );
       setRejectedCandidates(response.data.results);
