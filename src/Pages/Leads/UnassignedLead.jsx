@@ -26,6 +26,7 @@ import SearchComponent from "../../Components/SearchComponent ";
 import { MessageAlert } from "../../Components/MessageAlert";
 import { useSelector } from "react-redux";
 import { CSVLink } from "react-csv";
+import moment from "moment";
 
 export const UnassignedLead = () => {
   const [leads, setLeads] = useState([]);
@@ -345,7 +346,7 @@ export const UnassignedLead = () => {
                   <StyledTableCell align="center">NAME</StyledTableCell>
                   <StyledTableCell align="center">CONTACT</StyledTableCell>
                   <StyledTableCell align="center">PRODUCT</StyledTableCell>
-                  <StyledTableCell align="center">ASSIGNED TO</StyledTableCell>
+                  <StyledTableCell align="center">DATE</StyledTableCell>
                   <StyledTableCell align="center">COMPANY</StyledTableCell>
                   <StyledTableCell align="center">REFERENCE</StyledTableCell>
                   <StyledTableCell align="center">CITY</StyledTableCell>
@@ -375,7 +376,7 @@ export const UnassignedLead = () => {
                         {row.query_product_name}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {row.assigned_to}
+                        {moment(row.date_time).format("YYYY-MM-DD H:mm:ss")}
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         {row.company}
