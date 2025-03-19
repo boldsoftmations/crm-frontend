@@ -112,7 +112,6 @@ export const UnassignedLead = () => {
           state: row.state,
         };
       });
-      console.log("data", data);
       setOpen(false);
       return data;
     } catch (error) {

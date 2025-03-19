@@ -241,6 +241,19 @@ export const HotLeads = () => {
     return { priority: color };
   });
 
+  const TableheadersForExecutive = [
+    "COMPANY",
+    "NAME",
+    "CONTACT",
+    "ALTERNATE CONTACT",
+    "CITY",
+    "STATE",
+    "PRIORITY",
+    "STAGE",
+    "ASSIGNED BY",
+    "PIN",
+    "ACTION",
+  ];
   const Tableheaders = [
     "COMPANY",
     "NAME",
@@ -250,11 +263,11 @@ export const HotLeads = () => {
     "STATE",
     "PRIORITY",
     "STAGE",
+    "ASSIGNED BY",
     "ASSIGNED TO",
     "PIN",
     "ACTION",
   ];
-
   const handleopenEDCmodal = (data) => {
     setEditforedc(data);
     setOpenEDCModal(true);
@@ -416,7 +429,11 @@ export const HotLeads = () => {
             >
               <TableHead>
                 <StyledTableRow>
-                  {Tableheaders.map((header) => (
+                  {(users.groups.includes("Sales Executive") ||
+                  users.groups.includes("Business Development Executive")
+                    ? TableheadersForExecutive
+                    : Tableheaders
+                  ).map((header) => (
                     <StyledTableCell key={header} align="center">
                       {header}
                     </StyledTableCell>
@@ -463,8 +480,17 @@ export const HotLeads = () => {
                       {row.stage}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {row.assigned_to}
+                      {row.assigned_by}
                     </StyledTableCell>
+                    {/* Display 'Assigned To' column only for non-executive users */}
+                    {!(
+                      users.groups.includes("Sales Executive") ||
+                      users.groups.includes("Business Development Executive")
+                    ) && (
+                      <StyledTableCell align="center">
+                        {row.assigned_name}
+                      </StyledTableCell>
+                    )}
                     <StyledTableCell align="center">
                       <IconButton
                         onClick={(e) => handlePin(e, row)}

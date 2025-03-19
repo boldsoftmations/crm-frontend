@@ -245,6 +245,19 @@ export const OpenLead = () => {
     return { priority: color };
   });
 
+  const TableheadersForExecutive = [
+    "COMPANY",
+    "NAME",
+    "CONTACT",
+    "ALTERNATE CONTACT",
+    "CITY",
+    "STATE",
+    "PRIORITY",
+    "STAGE",
+    "ASSIGNED BY",
+    "PIN",
+    "ACTION",
+  ];
   const Tableheaders = [
     "COMPANY",
     "NAME",
@@ -254,6 +267,7 @@ export const OpenLead = () => {
     "STATE",
     "PRIORITY",
     "STAGE",
+    "ASSIGNED BY",
     "ASSIGNED TO",
     "PIN",
     "ACTION",
@@ -416,7 +430,11 @@ export const OpenLead = () => {
             >
               <TableHead>
                 <StyledTableRow>
-                  {Tableheaders.map((header) => (
+                  {(userData.groups.includes("Sales Executive") ||
+                  userData.groups.includes("Business Development Executive")
+                    ? TableheadersForExecutive
+                    : Tableheaders
+                  ).map((header) => (
                     <StyledTableCell key={header} align="center">
                       {header}
                     </StyledTableCell>
@@ -463,8 +481,17 @@ export const OpenLead = () => {
                       {row.stage}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {row.assigned_to}
+                      {row.assigned_by}
                     </StyledTableCell>
+                    {/* Display 'Assigned To' column only for non-executive users */}
+                    {!(
+                      userData.groups.includes("Sales Executive") ||
+                      userData.groups.includes("Business Development Executive")
+                    ) && (
+                      <StyledTableCell align="center">
+                        {row.assigned_name}
+                      </StyledTableCell>
+                    )}
                     <StyledTableCell align="center">
                       <IconButton
                         onClick={(e) => handlePin(e, row)}

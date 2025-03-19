@@ -67,8 +67,8 @@ export const NewLeads = () => {
   const tokenData = useSelector((state) => state.auth);
   const users = tokenData.profile;
   const [isPrinting, setIsPrinting] = useState(false);
-  const assigned = users.active_sales_user || [];
   const data = useSelector((state) => state.auth);
+  const assigned = data.active_sales_user || [];
   const userData = data.profile;
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
@@ -238,6 +238,19 @@ export const NewLeads = () => {
     return { priority: color };
   });
 
+  const TableheadersForExecutive = [
+    "COMPANY",
+    "NAME",
+    "CONTACT",
+    "ALTERNATE CONTACT",
+    "CITY",
+    "STATE",
+    "PRIORITY",
+    "STAGE",
+    "ASSIGNED BY",
+    "PIN",
+    "ACTION",
+  ];
   const Tableheaders = [
     "COMPANY",
     "NAME",
@@ -247,6 +260,7 @@ export const NewLeads = () => {
     "STATE",
     "PRIORITY",
     "STAGE",
+    "ASSIGNED BY",
     "ASSIGNED TO",
     "PIN",
     "ACTION",
@@ -407,7 +421,11 @@ export const NewLeads = () => {
             >
               <TableHead>
                 <StyledTableRow>
-                  {Tableheaders.map((header) => (
+                  {(userData.groups.includes("Sales Executive") ||
+                  userData.groups.includes("Business Development Executive")
+                    ? TableheadersForExecutive
+                    : Tableheaders
+                  ).map((header) => (
                     <StyledTableCell key={header} align="center">
                       {header}
                     </StyledTableCell>
@@ -454,8 +472,18 @@ export const NewLeads = () => {
                       {row.stage}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {row.assigned_to}
+                      {row.assigned_by}
                     </StyledTableCell>
+                    {/* Display 'Assigned To' column only for non-executive users */}
+                    {!(
+                      userData.groups.includes("Sales Executive") ||
+                      userData.groups.includes("Business Development Executive")
+                    ) && (
+                      <StyledTableCell align="center">
+                        {row.assigned_name}
+                      </StyledTableCell>
+                    )}
+
                     <StyledTableCell align="center">
                       <IconButton
                         onClick={(e) => handlePin(e, row)}
