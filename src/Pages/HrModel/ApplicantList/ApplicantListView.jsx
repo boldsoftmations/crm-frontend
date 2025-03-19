@@ -23,6 +23,7 @@ import CandidateProfile from "./CandidateProfile";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import CustomAxios from "../../../services/api";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
+import { InterviewStatusCreate } from "../InterviewStatus/InterviewStatusUpdate";
 
 export const ApplicantListView = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -35,6 +36,7 @@ export const ApplicantListView = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [designations, setDesignations] = useState([]);
   const [department, setDepartment] = useState([]);
+  const [scheduleInterviewpopup, setScheduleInterviewpopup] = useState(false);
   const [alertmsg, setAlertMsg] = useState({
     message: "",
     severity: "",
@@ -230,6 +232,11 @@ export const ApplicantListView = () => {
       setIsLoading(false);
     }
   };
+
+  const openinterviewSchedule = (data) => {
+    setScheduleInterviewpopup(true);
+    setRecordForEdit(data.contact);
+  };
   return (
     <>
       <CustomLoader open={isLoading} />
@@ -416,13 +423,25 @@ export const ApplicantListView = () => {
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       <Button
-                        variant="outlined"
+                        variant="text"
                         color="info"
                         size="small"
                         onClick={() => openInPopup(row)}
                       >
                         View
                       </Button>
+                      {row.status === "Shortlisted" &&
+                        row.stage === "Screening" && (
+                          <Button
+                            variant="text"
+                            color="success"
+                            size="small"
+                            marginTop="5px"
+                            onClick={() => openinterviewSchedule(row)}
+                          >
+                            Schedule Interview
+                          </Button>
+                        )}
                     </StyledTableCell>
                   </StyledTableRow>
                 ))}
@@ -453,6 +472,18 @@ export const ApplicantListView = () => {
             <CandidateProfile
               fetchApplicants={fetchApplicants}
               candidateData={recordForEdit}
+            />
+          </Popup>
+          <Popup
+            openPopup={scheduleInterviewpopup}
+            setOpenPopup={setScheduleInterviewpopup}
+            title="Schedule Interview"
+            maxWidth="md"
+          >
+            <InterviewStatusCreate
+              setIsFollowupDone={setScheduleInterviewpopup}
+              contact={recordForEdit}
+              getInterviewData={fetchApplicants}
             />
           </Popup>
         </Paper>
