@@ -19,10 +19,10 @@ import { Popup } from "../../../Components/Popup";
 import JobDescriptionForm from "./CreateJobDescription";
 import SearchComponent from "../../../Components/SearchComponent ";
 import { CustomLoader } from "../../../Components/CustomLoader";
-import JobDescriptionDetail from "./ViewJdpdf";
 import UpdateJobDescription from "./UpdateJobDescription";
 import { useSelector } from "react-redux";
-
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
 export const ViewJobDescription = () => {
   const [jobDescription, setJobDescription] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -32,7 +32,6 @@ export const ViewJobDescription = () => {
   const [openPopup, setOpenPopup] = useState(false);
   const [addOpenPopup, setAddOpenPopup] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
-  const [openPopup2, setOpenPopup2] = useState(false);
   const userData = useSelector((state) => state.auth.profile);
   const getJobDescription = async () => {
     try {
@@ -65,15 +64,73 @@ export const ViewJobDescription = () => {
     setSearchQuery("");
     setCurrentPage(1); // Reset to first page with no search query
   };
-  const handleView = (data) => {
-    setSelectedRow(data);
-    setOpenPopup2(true);
-  };
   const handleEdit = (data) => {
     setSelectedRow(data);
     setOpenPopup(true);
   };
 
+  //download jd pdf
+
+  // Convert data list into numbered format
+  const downloadPDF = (job) => {
+    const doc = new jsPDF();
+
+    // **Title Section**
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+    doc.text(`${job.designation} - Job Description`, 14, 10);
+
+    // **Prepare Table Data with Bullet Points**
+    const formatList = (items) => items.map((item) => `• ${item}`).join("\n");
+
+    const tableData = [
+      ["Purpose", job.job_purpose],
+      ["Reports To", job.reports_to],
+      ["Direct Reports", job.directs_report],
+      ["Key Responsibilities", formatList(job.kra)],
+      ["Major Tasks & Responsibilities", formatList(job.mtr)],
+      ["Occasional Duties", formatList(job.occasional_duties)],
+      ["Education Level", job.min_education_level],
+      ["Work Experience", `${job.work_experience} years`],
+      ["Described Work Experience", job.desc_work_exp],
+      ["Skills & Abilities", formatList(job.ssa)],
+      ["Relevant Skills", formatList(job.relevant_skill)],
+      ["Preferred Background", formatList(job.preferred_background)],
+    ];
+
+    // **Apply AutoTable with Better Formatting**
+    autoTable(doc, {
+      startY: 20, // Adjusted starting position
+      margin: { top: 5, left: 10, right: 10 }, // Proper margins
+      head: [["Section", "Details"]],
+      body: tableData,
+      styles: {
+        fontSize: 10,
+        cellPadding: 2, // Adds spacing inside cells
+        valign: "middle", // Aligns text vertically
+      },
+      headStyles: {
+        fillColor: [41, 128, 185],
+        textColor: [255, 255, 255],
+        fontSize: 12,
+        fontStyle: "bold",
+        halign: "center",
+      },
+      columnStyles: {
+        0: { cellWidth: 65, fontStyle: "bold", halign: "left" }, // Section Title
+        1: { cellWidth: "auto", halign: "left" }, // Dynamic Width
+      },
+      alternateRowStyles: { fillColor: [245, 245, 245] }, // Light gray alternating rows
+      didParseCell: (data) => {
+        if (data.column.index === 1) {
+          data.cell.styles.fontSize = 10; // Reduce font size for long texts
+        }
+      },
+    });
+
+    // **Save the PDF**
+    doc.save(`${job.designation}_Job_Description.pdf`);
+  };
   return (
     <Grid item xs={12}>
       <CustomLoader open={loader} />
@@ -153,8 +210,8 @@ export const ViewJobDescription = () => {
                     {row.jd ? "Yes" : "No"}
                   </StyledTableCell>
                   <StyledTableCell align="center">
-                    <Button variant="text" onClick={() => handleView(row)}>
-                      View
+                    <Button variant="text" onClick={() => downloadPDF(row)}>
+                      Download pdf
                     </Button>
                     {!userData.groups.includes("HR Recruiter") && (
                       <Button
@@ -199,14 +256,6 @@ export const ViewJobDescription = () => {
             getJobDescription={getJobDescription}
             setOpenPopup={setOpenPopup}
           />
-        </Popup>
-        <Popup
-          fullScreen={true}
-          title={"View Job Description"}
-          openPopup={openPopup2}
-          setOpenPopup={setOpenPopup2}
-        >
-          <JobDescriptionDetail job={selectedRow} />
         </Popup>
       </Paper>
     </Grid>
