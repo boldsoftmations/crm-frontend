@@ -5,7 +5,6 @@ import ISO from "../../../Images/ISO.png";
 import AllLogo from "../../../Images/allLogo.jpg";
 import MSME from "../../../Images/MSME.jpeg";
 import moment from "moment";
-import "../../../App.css";
 
 export const MyDocument = (props) => {
   const { productData, invoiceData, hsnData, AMOUNT_IN_WORDS, TOTAL_GST } =
@@ -826,8 +825,8 @@ export const MyDocument = (props) => {
                   <Text style={innerTextStyle}>
                     {invoiceData.approval
                       ? moment(invoiceData.approval.approval_date).format(
-                          "DD-MM-YYYY"
-                        )
+                        "DD-MM-YYYY"
+                      )
                       : ""}
                   </Text>
                   <Text style={innerTextStyle}>Authorising Signatory</Text>

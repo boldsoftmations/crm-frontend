@@ -4,7 +4,7 @@ import logo from "../../../Images/LOGOS3.png";
 import ISO from "../../../Images/ISO.png";
 import AllLogo from "../../../Images/allLogo.jpg";
 import MSME from "../../../Images/MSME.jpeg";
-import "../../../App.css";
+
 
 export const PurchaseOrderPDF = ({ purchaseOrderData, AMOUNT_IN_WORDS }) => {
   console.log("purchaseOrderData", purchaseOrderData);
@@ -496,15 +496,15 @@ export const PurchaseOrderPDF = ({ purchaseOrderData, AMOUNT_IN_WORDS }) => {
                   </Text>
                   {purchaseOrderData.vendor_type === "Domestic"
                     ? Information.map((data, i) => (
-                        <Text key={i} style={{ color: "#777777", fontSize: 6 }}>
-                          {data.id} {data.text}
-                        </Text>
-                      ))
+                      <Text key={i} style={{ color: "#777777", fontSize: 6 }}>
+                        {data.id} {data.text}
+                      </Text>
+                    ))
                     : Info.map((data, i) => (
-                        <Text key={i} style={{ color: "#777777", fontSize: 6 }}>
-                          {data.id} {data.text}
-                        </Text>
-                      ))}
+                      <Text key={i} style={{ color: "#777777", fontSize: 6 }}>
+                        {data.id} {data.text}
+                      </Text>
+                    ))}
                 </View>
                 <View
                   style={{
