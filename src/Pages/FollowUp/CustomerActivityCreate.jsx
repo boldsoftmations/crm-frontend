@@ -10,6 +10,9 @@ export const CustomerActivityCreate = (props) => {
   const [open, setOpen] = useState(false);
   const [followUp, setFollowUp] = useState({});
   const [customerStatus, setCustomerStatus] = useState([]);
+  const [activityRequiresFollowup, setActivityRequiresFollowup] =
+    useState(false);
+
   useEffect(() => {
     const getCustomerStatus = async () => {
       try {
@@ -57,6 +60,20 @@ export const CustomerActivityCreate = (props) => {
       ...prevData,
       [name]: newValue,
     }));
+    // Check if the selected activity requires a followup date
+    const requiresFollowup = [
+      "Not answering/busy/disconnecting",
+      "Having stock",
+      "Rate issue",
+      "Buying a different product from other company",
+      "Transportation cost issue",
+      "Call me back",
+      "Send sample",
+      "Require exclusive distributorship/dealership",
+      "Require credit",
+    ].includes(newValue);
+
+    setActivityRequiresFollowup(requiresFollowup);
   };
 
   return (
@@ -128,16 +145,42 @@ export const CustomerActivityCreate = (props) => {
               InputLabelProps={{
                 shrink: true,
               }}
+              required={activityRequiresFollowup}
+              error={activityRequiresFollowup && !followUp.next_followup_date}
+              helperText={
+                activityRequiresFollowup && !followUp.next_followup_date
+                  ? "Next Followup Date is required."
+                  : ""
+              }
               inputProps={{
                 min: new Date().toISOString().split("T")[0], // Set minimum date to today
               }}
             />
           </Grid>
         </Grid>
-        <Button fullWidth type="submit" variant="contained">
+        <Button
+          fullWidth
+          type="submit"
+          variant="contained"
+          disabled={
+            [
+              "Not answering/busy/disconnecting",
+              "Having stock",
+              "Rate issue",
+              "Buying a different product from other company",
+              "Transportation cost issue",
+              "Call me back",
+              "Send sample",
+              "Require exclusive distributorship/dealership",
+              "Require credit",
+            ].includes(followUp.activity) && !followUp.next_followup_date
+          }
+        >
           Submit
         </Button>
       </Box>
     </div>
   );
 };
+
+

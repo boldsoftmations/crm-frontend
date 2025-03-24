@@ -3,20 +3,13 @@ import { Box, Button, Grid } from "@mui/material";
 import CustomTextField from "../../../Components/CustomTextField";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import { useSelector } from "react-redux";
-import { styled } from "@mui/material/styles";
 import InventoryServices from "../../../services/InventoryService";
 import ProductService from "../../../services/ProductService";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
 
-const Root = styled("div")(({ theme }) => ({
-  width: "100%",
-  ...theme.typography.body2,
-  "& > :not(style) + :not(style)": {
-    marginTop: theme.spacing(2),
-  },
-}));
+
 
 export const SafetyStockCreate = memo(
   ({ setOpenPopup, onCreateSuccess, currentPage }) => {

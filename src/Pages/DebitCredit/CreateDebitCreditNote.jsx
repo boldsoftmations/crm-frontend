@@ -1,19 +1,11 @@
 import { Autocomplete, Box, Button, Grid } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { styled } from "@mui/material/styles";
 import { CustomLoader } from "../../Components/CustomLoader";
 import CustomTextField from "../../Components/CustomTextField";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../Components/MessageAlert";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import InvoiceServices from "../../services/InvoiceService";
-const Root = styled("div")(({ theme }) => ({
-  width: "100%",
-  ...theme.typography.body2,
-  "& > :not(style) + :not(style)": {
-    marginTop: theme.spacing(2),
-  },
-}));
 
 export const CreateDebitCreditNote = (props) => {
   const { getDebitCreditNotesData, setOpenPopup } = props;
@@ -190,7 +182,7 @@ export const CreateDebitCreditNote = (props) => {
             />
           </Grid>
 
-          {inputValue.note_type == "Debit" && (
+          {inputValue.note_type === "Debit" && (
             <Grid item xs={12} sm={4}>
               <CustomAutocomplete
                 name="reason"
@@ -211,7 +203,7 @@ export const CreateDebitCreditNote = (props) => {
             </Grid>
           )}
 
-          {inputValue.note_type == "Credit" && (
+          {inputValue.note_type === "Credit" && (
             <Grid item xs={12} sm={4}>
               <CustomAutocomplete
                 name="reason"

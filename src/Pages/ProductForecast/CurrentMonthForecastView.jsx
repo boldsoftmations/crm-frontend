@@ -37,6 +37,7 @@ export const CurrentMonthForecastView = () => {
   const [isPrinting, setIsPrinting] = useState(false);
   const UserData = useSelector((state) => state.auth.profile);
   const assignedOption = UserData.sales_users || [];
+  console.log(assignedOption);
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 

@@ -60,7 +60,6 @@ export const CreateProductCode = memo((props) => {
     },
     [productCode, description, currentPage, searchQuery]
   );
-  console.log("description", description);
   return (
     <>
       <MessageAlert

@@ -134,9 +134,9 @@ export const PurchaseOrderCreate = ({
     }
 
     // Check if the new value is already included in the selected products list to prevent duplicates
-    const isDuplicate = inputValues.products.some(
-      (product, idx) => product.product === selectedProductName && idx !== index
-    );
+    // const isDuplicate = inputValues.products.some(
+    //   (product, idx) => product.product === selectedProductName && idx !== index
+    // );
 
     // Safely update the state with the new products list
     setInputValues((prevValues) => {

@@ -213,6 +213,7 @@ export const ViewCity = () => {
     </>
   );
 };
+
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     fontSize: 12,

@@ -142,6 +142,19 @@ export const ViewCandidatesFollowup = () => {
     }
   };
 
+  const getRevisedDataHrFollowup = async () => {
+    try {
+      setIsLoading(true);
+      const res = await Hr.getRevisedDataHrFollowup();
+      if (res.status === 200) {
+        getCandidateFollowup();
+      }
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   return (
     <>
       <CustomLoader open={isLoading} />
@@ -154,24 +167,13 @@ export const ViewCandidatesFollowup = () => {
       <Grid item xs={12}>
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
           <Grid container spacing={2} alignItems="center" mb={3}>
-            <Grid item xs={12} md={3}>
+            {/* Search Component */}
+            <Grid item xs={12} md={2}>
               <SearchComponent onSearch={handleSearch} onReset={handleReset} />
             </Grid>
-            <Grid item xs={12} sm={4}>
-              <Box display="flex" justifyContent="center" marginBottom="10px">
-                <h3
-                  style={{
-                    fontSize: "22px",
-                    color: "rgb(34, 34, 34)",
-                    fontWeight: 600,
-                    textAlign: "center",
-                  }}
-                >
-                  Candidates Followup
-                </h3>
-              </Box>
-            </Grid>
-            <Grid item xs={12} sm={3}>
+
+            {/* Filter By Designation */}
+            <Grid item xs={12} sm={2}>
               <CustomAutocomplete
                 fullWidth
                 name="stage"
@@ -185,18 +187,51 @@ export const ViewCandidatesFollowup = () => {
                 label="Filter By Designation"
               />
             </Grid>
-            <Grid item xs={12} sm={2}>
-              <CustomAutocomplete
-                fullWidth
-                size="small"
-                disablePortal
-                id="combo-box-stage"
-                onChange={(e, value) => handleFilterFollowupType(value)}
-                options={["Today", "Upcoming", "All"]}
-                value={filterFollowuptype}
-                getOptionLabel={(option) => option}
-                label="Filter By Follow-up Type"
-              />
+
+            {/* Centered Heading */}
+            <Grid item xs={12} sm={3} textAlign="center">
+              <h3
+                style={{
+                  fontSize: "22px",
+                  color: "rgb(34, 34, 34)",
+                  fontWeight: 600,
+                }}
+              >
+                Candidates Follow-up
+              </h3>
+            </Grid>
+
+            {/* Filter By Follow-up Type + Button */}
+            <Grid item xs={12} sm={5}>
+              <Grid container spacing={1} alignItems="center">
+                {/* Show Button Only if filterFollowuptype is "Today" */}
+                {filterFollowuptype === "Today" && (
+                  <Grid item xs={4}>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      onClick={getRevisedDataHrFollowup}
+                    >
+                      Revised Date
+                    </Button>
+                  </Grid>
+                )}
+
+                {/* Follow-up Type Filter */}
+                <Grid item xs={8}>
+                  <CustomAutocomplete
+                    fullWidth
+                    size="small"
+                    disablePortal
+                    id="combo-box-stage"
+                    onChange={(e, value) => handleFilterFollowupType(value)}
+                    options={["Today", "Upcoming", "All"]}
+                    value={filterFollowuptype}
+                    getOptionLabel={(option) => option}
+                    label="Filter By Follow-up Type"
+                  />
+                </Grid>
+              </Grid>
             </Grid>
           </Grid>
 

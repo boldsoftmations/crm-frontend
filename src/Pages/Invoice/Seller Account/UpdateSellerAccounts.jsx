@@ -135,7 +135,6 @@ export const UpdateSellerAccounts = (props) => {
           error.response.data.errors.company_profile[0] ||
           "Failed to update company details",
         severity: "error",
-        open: true,
       });
       setOpen(false);
     }

@@ -20,26 +20,11 @@ export const WhatsappGroupCreate = ({ setOpenPopup, refreshData }) => {
     type_of_customer: "",
   });
   const [open, setOpen] = useState(false);
-  const [allWhatsappGroupMenu, setAllWhatsappGroupMenu] = useState([]);
   const [uploadedFile, setUploadedFile] = useState(null);
   const [filePreview, setFilePreview] = useState(null);
   const [isPdf, setIsPdf] = useState(false);
   const [filter, setFilter] = useState("message");
   const [errorMessage, setErrorMessage] = useState("");
-
-  useEffect(() => {
-    getAllWhatsappGroup();
-  }, []);
-
-  const getAllWhatsappGroup = async () => {
-    try {
-      const res = await CustomerServices.getAllWhatsappGroupData();
-      setAllWhatsappGroupMenu(res.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
 

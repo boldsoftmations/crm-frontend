@@ -1,6 +1,6 @@
 import React from "react";
 import { Chart } from "react-google-charts";
-import { Card, CardContent, Typography, Grid, Box } from "@mui/material";
+import { Card, CardContent, Typography, Grid } from "@mui/material";
 
 const CallDashboard = ({ callDashboardData }) => {
   console.log("CallDashboard", callDashboardData);
@@ -50,7 +50,7 @@ const CallDashboard = ({ callDashboardData }) => {
         >
           <CardContent>
             <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-              📞 Total Calls : <span> {callData.total_followups}</span>
+              Total Calls : <span> {callData.total_followups}</span>
             </Typography>
           </CardContent>
         </Card>
@@ -62,7 +62,7 @@ const CallDashboard = ({ callDashboardData }) => {
         >
           <CardContent>
             <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-              ⏳ Total Duration : <span> {callData.total_duration}</span>
+              Total Duration : <span> {callData.total_duration}</span>
             </Typography>
           </CardContent>
         </Card>

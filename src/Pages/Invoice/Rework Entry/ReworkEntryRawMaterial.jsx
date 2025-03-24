@@ -13,11 +13,6 @@ import {
 import { tableCellClasses } from "@mui/material/TableCell";
 
 export const ReworkEntryRawMaterial = ({ selectedRow }) => {
-  console.log("selectedRow", selectedRow);
-  const handlecheck = (value) => {
-    console.log("click value", value);
-  };
-
   return (
     <>
       <Grid item xs={12}>

@@ -20,7 +20,6 @@ import SearchComponent from "../../Components/SearchComponent ";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import { Popup } from "../../Components/Popup";
 import { UpdateAllCompanyDetails } from "../Cutomers/CompanyDetails/UpdateAllCompanyDetails";
-import { WhatsappServices } from "../../services/Whatsapp";
 import CustomSnackbar from "../../Components/CustomerSnackbar";
 
 export const CustomerNotInGroup = () => {
@@ -81,34 +80,34 @@ export const CustomerNotInGroup = () => {
   };
   const Tabledata = Array.isArray(whatsappGroupData)
     ? whatsappGroupData.map(({ id, name, whatsapp_group, assigned_to }) => ({
-        company: name,
-        whatsapp_group,
-        id,
-        assigned_to: Array.isArray(assigned_to) ? (
-          assigned_to.map((assigned, id) => (
-            <div
-              key={id}
-              style={{
-                border: "1px solid #4caf50",
-                borderRadius: "20px",
-                color: "#4caf50",
-              }}
-            >
-              {assigned}
-            </div>
-          ))
-        ) : (
+      company: name,
+      whatsapp_group,
+      id,
+      assigned_to: Array.isArray(assigned_to) ? (
+        assigned_to.map((assigned, id) => (
           <div
+            key={id}
             style={{
               border: "1px solid #4caf50",
               borderRadius: "20px",
               color: "#4caf50",
             }}
           >
-            assigned_to
+            {assigned}
           </div>
-        ),
-      }))
+        ))
+      ) : (
+        <div
+          style={{
+            border: "1px solid #4caf50",
+            borderRadius: "20px",
+            color: "#4caf50",
+          }}
+        >
+          assigned_to
+        </div>
+      ),
+    }))
     : [];
 
   const Tableheaders = ["Company ", "Group", "Assigned Sales Person", "Action"];

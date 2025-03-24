@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   styled,
   TableCell,
@@ -88,16 +88,16 @@ export const ViewAssignCustomers = (props) => {
               >
                 {(userData.groups.includes("Accounts") ||
                   userData.groups.includes("Director")) && (
-                  <>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={() => setOpenEDC(true)}
-                    >
-                      Add
-                    </Button>
-                  </>
-                )}
+                    <>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => setOpenEDC(true)}
+                      >
+                        Add
+                      </Button>
+                    </>
+                  )}
               </Grid>
             </Grid>
           </Box>
@@ -153,21 +153,21 @@ export const ViewAssignCustomers = (props) => {
                       <StyledTableCell align="center">
                         {(userData.groups.includes("Accounts") ||
                           userData.groups.includes("Director")) && (
-                          <>
-                            <Button
-                              variant="text"
-                              size="small"
-                              style={{ backgroundColor: "red" }}
-                              onClick={() => RemoveEdc(row.name)}
-                            >
-                              Remove
-                            </Button>
-                          </>
-                        )}
+                            <>
+                              <Button
+                                variant="text"
+                                size="small"
+                                style={{ backgroundColor: "red" }}
+                                onClick={() => RemoveEdc(row.name)}
+                              >
+                                Remove
+                              </Button>
+                            </>
+                          )}
                       </StyledTableCell>
                     </StyledTableRow>
                   ))}
-                {assignViewData.length == 0 && (
+                {assignViewData.length === 0 && (
                   <StyledTableRow>
                     <StyledTableCell colSpan={6} align="center">
                       No Customers assigned yet.

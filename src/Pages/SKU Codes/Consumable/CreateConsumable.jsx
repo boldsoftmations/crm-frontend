@@ -140,18 +140,6 @@ export const CreateConsumable = memo((props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <CustomTextField
-              fullWidth
-              size="small"
-              type="number"
-              name="shelfLife"
-              label="Shelf Life (Months)"
-              variant="outlined"
-              value={formData.shelf_life}
-              onChange={handleInputChange}
-            />
-          </Grid>
-          <Grid item xs={12} sm={4}>
             <CustomAutocomplete
               sx={{
                 minWidth: 220,

@@ -152,7 +152,6 @@ export const LeadsTracking = () => {
     { label: "Stage", key: "stage" },
     { label: "Source", key: "source" },
     { label: "Updation Date", key: "updation_date" },
-    ,
   ];
   return (
     <>

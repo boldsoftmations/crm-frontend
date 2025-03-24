@@ -6,7 +6,6 @@ import { CustomLoader } from "../../../Components/CustomLoader";
 
 export const KycFields = ({ formData, setFormData, error }) => {
   const showError = error && error.kyc;
-  const [errMsg, setErrMsg] = useState("");
   const [open, setOpen] = useState(false);
 
   const handleChange = (event) => {
@@ -44,13 +43,8 @@ export const KycFields = ({ formData, setFormData, error }) => {
           address: ADDRESS,
         },
       }));
-      setErrMsg("");
     } catch (error) {
-      const errorMessage =
-        error.response.status === 404
-          ? "Please enter a valid IFSC code."
-          : "Error fetching bank details. Please try again later.";
-      setErrMsg(errorMessage);
+      console.log(error)
     } finally {
       setOpen(false);
     }

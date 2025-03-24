@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Box, Button, Grid } from "@mui/material";
 import CustomerServices from "../../../services/CustomerService";
-import axios from "axios";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomTextField from "../../../Components/CustomTextField";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
@@ -13,27 +12,11 @@ export const UpdateWareHouseDetails = (props) => {
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState([]);
   const data = useSelector((state) => state.auth);
-  const [pinCodeData, setPinCodeData] = useState([]);
 
   const [selectedcontact, setSelectedContact] = useState("");
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setInputValue({ ...inputValue, [name]: value });
-  };
-
-  const validatePinCode = async () => {
-    try {
-      setOpen(true);
-      const PINCODE = inputValue.pincode;
-      const response = await axios.get(
-        `https://api.postalpincode.in/pincode/${PINCODE}`
-      );
-      setPinCodeData(response.data[0].PostOffice[0]);
-      setOpen(false);
-    } catch (error) {
-      console.log("Creating Bank error ", error);
-      setOpen(false);
-    }
   };
 
   useEffect(() => {

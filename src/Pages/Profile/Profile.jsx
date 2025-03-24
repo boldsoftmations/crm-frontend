@@ -8,7 +8,6 @@ import {
   Typography,
   Box,
 } from "@mui/material";
-import { styled } from "@mui/material/styles";
 import { Popup } from "../../Components/Popup";
 import { UserProfileCreate } from "./UserProfile/UserProfileCreate";
 import UserProfileService from "../../services/UserProfileService";
@@ -198,7 +197,3 @@ const avatarStyle = {
   height: 60,
   fontSize: "1.7rem",
 };
-const InfoText = styled(Typography)(() => ({
-  fontSize: "1rem",
-  marginBottom: "0.5em",
-}));

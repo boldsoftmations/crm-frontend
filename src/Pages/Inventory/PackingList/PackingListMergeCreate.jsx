@@ -1,19 +1,11 @@
-import React, { useEffect, useState, useCallback, memo } from "react";
-import { Autocomplete, Box, Button, Grid, styled } from "@mui/material";
+import React, { useState, useCallback, memo } from "react";
+import { Autocomplete, Box, Button, Grid } from "@mui/material";
 import CustomTextField from "../../../Components/CustomTextField";
 import InventoryServices from "../../../services/InventoryService";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { useSelector } from "react-redux";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
-
-const Root = styled("div")(({ theme }) => ({
-  width: "100%",
-  ...theme.typography.body2,
-  "& > :not(style) + :not(style)": {
-    marginTop: theme.spacing(2),
-  },
-}));
 
 export const PackingListMergeCreate = memo(
   ({ purchaseOrderData = [], setOpenPopup, getAllPurchaseOrderDetails }) => {
@@ -22,7 +14,6 @@ export const PackingListMergeCreate = memo(
       userData: state.auth.profile,
     }));
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
     const today = new Date().toISOString().slice(0, 10);
     const [selectedPoNos, setSelectedPoNos] = useState([]);
     const [details, setDetails] = useState({
@@ -60,9 +51,9 @@ export const PackingListMergeCreate = memo(
         const processedNewValue = newValue.map((po) =>
           typeof po === "string"
             ? {
-                label: po,
-                value: purchaseOrderData.find((p) => p.po_no === po),
-              }
+              label: po,
+              value: purchaseOrderData.find((p) => p.po_no === po),
+            }
             : po
         );
 
@@ -70,11 +61,11 @@ export const PackingListMergeCreate = memo(
         const selectedProducts = processedNewValue.flatMap((po) =>
           po.value && po.value.products
             ? po.value.products.map((product) => ({
-                id: product.id,
-                product: product.product,
-                unit: product.unit,
-                quantity: product.quantity,
-              }))
+              id: product.id,
+              product: product.product,
+              unit: product.unit,
+              quantity: product.quantity,
+            }))
             : []
         );
 
@@ -127,7 +118,6 @@ export const PackingListMergeCreate = memo(
       } catch (error) {
         handleError(error);
         console.error("Creating Packing list error", error);
-        setError(error.message || "An error occurred");
       } finally {
         setLoading(false);
       }

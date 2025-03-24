@@ -11,7 +11,6 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  FormHelperText,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useSelector } from "react-redux";
@@ -116,8 +115,8 @@ export const UpdateCustomerProformaInvoice = (props) => {
       setPaymentTermData(response.data.payment_terms);
       setDeliveryTermData(response.data.delivery_terms);
 
-      var arr = [];
-      var arr = response.data.products.map((fruit) => ({
+      let arr = [];
+      arr = response.data.products.map((fruit) => ({
         product: fruit.product,
         pending_quantity: fruit.pending_quantity,
         requested_date: fruit.requested_date,
@@ -231,7 +230,6 @@ export const UpdateCustomerProformaInvoice = (props) => {
         contact: contactData.contact,
         contact_person_name: contactData.name,
         alternate_contact: contactData.alternate_contact,
-        company_name: customerData.name,
         gst_number: customerData.gst_number || null,
         pan_number: customerData.pan_number,
         billing_address: customerData.address,
@@ -249,10 +247,10 @@ export const UpdateCustomerProformaInvoice = (props) => {
         buyer_order_no: checked
           ? "Verbal"
           : inputValue.buyer_order_no !== undefined
-          ? inputValue.buyer_order_no
-          : customerPIdataByID.buyer_order_no !== undefined
-          ? customerPIdataByID.buyer_order_no
-          : "",
+            ? inputValue.buyer_order_no
+            : customerPIdataByID.buyer_order_no !== undefined
+              ? customerPIdataByID.buyer_order_no
+              : "",
         buyer_order_date:
           inputValue.buyer_order_date ||
           customerPIdataByID.buyer_order_date ||
@@ -562,10 +560,10 @@ export const UpdateCustomerProformaInvoice = (props) => {
                 checked
                   ? "Verbal"
                   : inputValue.buyer_order_no !== undefined
-                  ? inputValue.buyer_order_no
-                  : customerPIdataByID.buyer_order_no !== undefined
-                  ? customerPIdataByID.buyer_order_no
-                  : ""
+                    ? inputValue.buyer_order_no
+                    : customerPIdataByID.buyer_order_no !== undefined
+                      ? customerPIdataByID.buyer_order_no
+                      : ""
               }
               onChange={handleInputChange}
               InputLabelProps={{
@@ -712,7 +710,7 @@ export const UpdateCustomerProformaInvoice = (props) => {
                         ? (input.quantity * input.rate).toFixed(2)
                         : ""
                     }
-                    // onChange={(event) => handleFormChange(index, event)}
+                  // onChange={(event) => handleFormChange(index, event)}
                   />
                 </Grid>
                 <Grid item xs={12} sm={2}>
@@ -882,7 +880,3 @@ const tfStyle = {
 const values = {
   someDate: new Date().toISOString().substring(0, 10),
 };
-
-const HelperText = styled(FormHelperText)(() => ({
-  padding: "0px",
-}));

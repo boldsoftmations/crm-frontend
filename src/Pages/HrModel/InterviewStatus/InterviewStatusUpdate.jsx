@@ -151,4 +151,3 @@ export const InterviewStatusCreate = ({
   );
 };
 
-const shortList = ["Round1", "Round2"];

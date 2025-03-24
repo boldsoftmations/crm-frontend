@@ -37,7 +37,7 @@ const UploadSalesInvoice = ({
     e.preventDefault();
     if (!file) {
       setAlertMsg({
-        message: "Please select a Pdf file only",
+        message: "Please select a file to upload",
         severity: "error",
         open: true,
       });
@@ -103,8 +103,13 @@ const UploadSalesInvoice = ({
             </Grid>
 
             <Grid item xs={12} sm={12}>
-              <Button type="submit" variant="contained" color="primary">
-                Upload Sales Invoice
+              <Button
+                type="submit"
+                size="small"
+                variant="contained"
+                color="primary"
+              >
+                Submit
               </Button>
             </Grid>
           </Grid>

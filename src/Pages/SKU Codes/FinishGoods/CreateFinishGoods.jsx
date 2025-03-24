@@ -20,6 +20,7 @@ export const CreateFinishGoods = memo((props) => {
   const { setOpenPopup, getFinishGoods, currentPage, searchQuery } = props;
   const [formData, setFormData] = useState([]);
   const [open, setOpen] = useState(false);
+  const GST = formData.gst / 2;
   const {
     brandAllData,
     colourAllData,
@@ -72,7 +73,7 @@ export const CreateFinishGoods = memo((props) => {
     }
 
     return combinedName;
-  }, [formData, shortName, getPackingUnitShortName]); // Add dependencies as needed
+  }, [formData, shortName, getPackingUnitShortName]);
 
   const handleInputChange = useCallback((event) => {
     const { name, value } = event.target;
@@ -123,7 +124,7 @@ export const CreateFinishGoods = memo((props) => {
     [formData, productName, GST, currentPage, searchQuery]
   );
 
-  const GST = formData.gst / 2;
+
 
   return (
     <>

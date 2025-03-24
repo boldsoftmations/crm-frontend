@@ -24,8 +24,8 @@ export const UpdateFinishGoods = memo((props) => {
     currentPage,
     searchQuery,
   } = props;
-
   const [formData, setFormData] = useState(recordForEdit);
+  const GST = JSON.stringify(formData.gst / 2);
   const [open, setOpen] = useState(false);
   const {
     brandAllData,
@@ -78,8 +78,7 @@ export const UpdateFinishGoods = memo((props) => {
     }
 
     return combinedName;
-  }, [formData, shortName, getPackingUnitShortName]); // Add dependencies as needed
-
+  }, [formData, shortName, getPackingUnitShortName]);
   const handleInputChange = useCallback((event) => {
     const { name, value } = event.target;
     setFormData((prevFormData) => ({ ...prevFormData, [name]: value }));
@@ -132,7 +131,7 @@ export const UpdateFinishGoods = memo((props) => {
     [formData, productName, GST, currentPage, searchQuery]
   );
 
-  const GST = JSON.stringify(formData.gst / 2);
+
 
   return (
     <>

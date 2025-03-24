@@ -102,28 +102,28 @@ export const ProductionEntryCreate = memo((props) => {
 
       const productData = checked
         ? products.map((product) => ({
+          product: product.product,
+          quantity: parseFloat(product.quantity) || 0,
+          expected_quantity: (
+            parseFloat(product.expected_quantity) *
+            parseFloat(quantity.quantity)
+          ).toFixed(4),
+        }))
+        : products.map((product) => {
+          const productQuantity = parseFloat(product.quantity);
+          const totalQuantity = parseFloat(quantity.quantity) || 0;
+          return {
             product: product.product,
-            quantity: parseFloat(product.quantity) || 0,
+            quantity:
+              isNaN(productQuantity) || isNaN(totalQuantity)
+                ? 0
+                : (productQuantity * totalQuantity).toFixed(4),
             expected_quantity: (
               parseFloat(product.expected_quantity) *
               parseFloat(quantity.quantity)
             ).toFixed(4),
-          }))
-        : products.map((product) => {
-            const productQuantity = parseFloat(product.quantity);
-            const totalQuantity = parseFloat(quantity.quantity) || 0;
-            return {
-              product: product.product,
-              quantity:
-                isNaN(productQuantity) || isNaN(totalQuantity)
-                  ? 0
-                  : (productQuantity * totalQuantity).toFixed(4),
-              expected_quantity: (
-                parseFloat(product.expected_quantity) *
-                parseFloat(quantity.quantity)
-              ).toFixed(4),
-            };
-          });
+          };
+        });
 
       const req = {
         seller_account: selectedSellerData,
@@ -209,22 +209,22 @@ export const ProductionEntryCreate = memo((props) => {
               label="Bill of Material"
             />
           </Grid>
-          {(users.email == "amol@glutape.com" ||
+          {(users.email === "amol@glutape.com" ||
             users.groups.includes("Director")) && (
-            <Grid item xs={12} sm={4}>
-              <FormControlLabel
-                label={"Gain And Loss"}
-                control={
-                  <Checkbox
-                    checked={checked}
-                    onChange={(e) => setChecked(e.target.checked)}
-                    inputProps={{ "aria-label": "controlled" }}
-                    disabled={checked}
-                  />
-                }
-              />
-            </Grid>
-          )}
+              <Grid item xs={12} sm={4}>
+                <FormControlLabel
+                  label={"Gain And Loss"}
+                  control={
+                    <Checkbox
+                      checked={checked}
+                      onChange={(e) => setChecked(e.target.checked)}
+                      inputProps={{ "aria-label": "controlled" }}
+                      disabled={checked}
+                    />
+                  }
+                />
+              </Grid>
+            )}
           <Grid item xs={12} sm={4}>
             <CustomTextField
               fullWidth
@@ -275,9 +275,9 @@ export const ProductionEntryCreate = memo((props) => {
                       value={
                         quantity.quantity && input.quantity
                           ? (
-                              parseFloat(input.quantity) *
-                              parseFloat(quantity.quantity)
-                            ).toFixed(4)
+                            parseFloat(input.quantity) *
+                            parseFloat(quantity.quantity)
+                          ).toFixed(4)
                           : input.quantity || ""
                       }
                       InputLabelProps={{
@@ -298,9 +298,9 @@ export const ProductionEntryCreate = memo((props) => {
                       value={
                         quantity.quantity && input.quantity && !checked
                           ? (
-                              parseFloat(input.quantity) *
-                              parseFloat(quantity.quantity)
-                            ).toFixed(4)
+                            parseFloat(input.quantity) *
+                            parseFloat(quantity.quantity)
+                          ).toFixed(4)
                           : input.quantity || ""
                       }
                       onChange={(event) => handleFormChange(index, event)}
@@ -318,9 +318,9 @@ export const ProductionEntryCreate = memo((props) => {
                       value={
                         quantity.quantity && input.expected_quantity
                           ? (
-                              parseFloat(input.expected_quantity) *
-                              parseFloat(quantity.quantity)
-                            ).toFixed(4)
+                            parseFloat(input.expected_quantity) *
+                            parseFloat(quantity.quantity)
+                          ).toFixed(4)
                           : ""
                       }
                     />

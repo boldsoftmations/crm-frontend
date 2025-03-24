@@ -31,6 +31,7 @@ export const ChangePassword = () => {
   const handleClose = () => {
     setAlertMsg({ open: false });
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {

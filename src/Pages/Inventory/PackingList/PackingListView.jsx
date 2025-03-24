@@ -11,7 +11,6 @@ import {
   TableCell,
   Button,
   TableFooter,
-  Pagination,
   Collapse,
   Typography,
   IconButton,

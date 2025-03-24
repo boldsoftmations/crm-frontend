@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { } from "react";
 import { Grid } from "@mui/material";
 import CustomTextField from "../../../Components/CustomTextField";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
@@ -66,7 +66,7 @@ const fieldData = [
     type: "autocomplete",
     label: "Blood Group",
     name: "blood_group",
-    options: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-", "Don't Know"],
+    options: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
   },
 ];
 

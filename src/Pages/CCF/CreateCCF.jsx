@@ -214,8 +214,8 @@ const CreateCCF = ({ getAllCCFData, setOpenCCF }) => {
           fileType === "image"
             ? "Photo"
             : fileType === "video"
-            ? "Video"
-            : "Other";
+              ? "Video"
+              : "Other";
 
         // Append media type for each file
         formData.append("media_type", mediaType);
@@ -246,10 +246,6 @@ const CreateCCF = ({ getAllCCFData, setOpenCCF }) => {
     } finally {
       setOpen(false);
     }
-  };
-
-  const isImage = (file) => {
-    return file.match(/\.(jpeg|jpg|gif|png)$/) != null;
   };
 
   return (

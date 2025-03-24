@@ -13,7 +13,6 @@ import {
   Button,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
-import CustomerServices from "../../../services/CustomerService";
 import { MessageAlert } from "../../../Components/MessageAlert";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { CSVLink } from "react-csv";
@@ -120,7 +119,6 @@ export const TallyInvoice = () => {
       quantity: row.quantity,
       rate: row.rate,
       amount: row.amount,
-      sgst: row.sgst || "",
       cgst: row.cgst || "",
       igst: row.igst || "",
       total: row.total,

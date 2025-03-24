@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   styled,
   TableCell,
@@ -16,11 +16,9 @@ import { tableCellClasses } from "@mui/material/TableCell";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
 import { CustomLoader } from "../../../Components/CustomLoader";
-import SearchComponent from "../../../Components/SearchComponent ";
 import { CustomPagination } from "../../../Components/CustomPagination";
 import CustomerServices from "../../../services/CustomerService";
 import { Popup } from "../../../Components/Popup";
-import { useSelector } from "react-redux";
 import { ViewAssignCustomers } from "./ViewAssignCustomer";
 import { ViewLeadCustomer } from "./ViewLeadCustomer";
 
@@ -29,14 +27,13 @@ export const ExclusiveDistributionCustomer = () => {
   const [edtData, setEdtData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const [searchQuery, setSearchQuery] = useState("");
   const [openEDC, setOpenEDC] = useState(false);
   const [openLeadCustomer, setOpenLeadCustomer] = useState(false);
   const [assignCustomerData, setAssignCustomerData] = useState([]);
   const [leadCustomerData, setLeadCustomerData] = useState([]);
   const [assignViewData, setAssignViewData] = useState([]);
 
-  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+  const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
   const getAllEDC = async () => {
@@ -83,15 +80,7 @@ export const ExclusiveDistributionCustomer = () => {
   useEffect(() => {
     getAllEDC();
   }, []);
-  const handleSearch = (query) => {
-    setSearchQuery(query);
-    setCurrentPage(1); // Reset to first page with new search
-  };
 
-  const handleReset = () => {
-    setSearchQuery("");
-    setCurrentPage(1); // Reset to first page with no search query
-  };
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
@@ -115,13 +104,6 @@ export const ExclusiveDistributionCustomer = () => {
             }}
           >
             <Grid container spacing={2} alignItems="center">
-              {/* Search Component on the left */}
-              <Grid item xs={12} md={4}>
-                <SearchComponent
-                  onSearch={handleSearch}
-                  onReset={handleReset}
-                />
-              </Grid>
 
               {/* Title Text centered */}
               <Grid

@@ -24,7 +24,7 @@ import CustomTextField from "../../../Components/CustomTextField";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 const CreateCapa = ({ recordForEdit, setOpenCapa }) => {
-  console.log("recordForEdit", recordForEdit);
+  const [documentId, setDocumentId] = useState([]);
   const [formData, setFormData] = useState({
     ccf: recordForEdit && recordForEdit.id,
     complaint: (recordForEdit && recordForEdit.complaint) || "",
@@ -35,7 +35,6 @@ const CreateCapa = ({ recordForEdit, setOpenCapa }) => {
     document: documentId ? documentId : [],
   });
   const [files, setFiles] = useState([]);
-  const [documentId, setDocumentId] = useState([]);
   const [errors, setErrors] = useState({});
   const [open, setOpen] = useState(false);
   const [loader, setLoader] = useState(false);

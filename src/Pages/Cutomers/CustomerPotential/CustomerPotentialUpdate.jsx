@@ -16,11 +16,6 @@ export const CustomerPotentialUpdate = ({
     const { name, value } = event.target;
     setPotential({ ...potential, [name]: value });
   };
-
-  const handleAutocompleteChange = (_, value) => {
-    setPotential({ ...potential, product: value });
-  };
-  console.log("potential", potential);
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {

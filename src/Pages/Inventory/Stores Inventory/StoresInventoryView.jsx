@@ -7,7 +7,6 @@ import { CSVLink } from "react-csv";
 import { Popup } from "../../../Components/Popup";
 import { StoresInventoryCreate } from "./StoresInventoryCreate";
 import { Box, Button, Grid, Paper } from "@mui/material";
-import { useSelector } from "react-redux";
 import SearchComponent from "../../../Components/SearchComponent ";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
@@ -16,14 +15,11 @@ export const StoresInventoryView = () => {
   const [open, setOpen] = useState(false);
   const [openPopup, setOpenPopup] = useState(false);
   const [storesInventoryData, setStoresInventoryData] = useState([]);
-  const [pageCount, setPageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [exportData, setExportData] = useState([]);
   const csvLinkRef = useRef(null);
-  const data = useSelector((state) => state.auth);
-  const userData = data.profile;
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 

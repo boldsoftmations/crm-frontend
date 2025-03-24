@@ -36,7 +36,7 @@ export const ViewCompentancyAttribute = () => {
   const getCompetancyData = async () => {
     try {
       setLoader(true);
-      const response = await Hr.getCompentancyAttribute(currentPage);
+      const response = await Hr.getCompentancyAttribute(currentPage, searchQuery);
       setCompetancyData(response.data.results);
       const total = response.data.count;
       setTotalPages(Math.ceil(total / 25));
@@ -49,7 +49,7 @@ export const ViewCompentancyAttribute = () => {
 
   useEffect(() => {
     getCompetancyData();
-  }, [currentPage]);
+  }, [currentPage, searchQuery]);
 
   const handleSearch = (query) => {
     setSearchQuery(query);

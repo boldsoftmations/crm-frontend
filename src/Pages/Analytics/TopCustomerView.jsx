@@ -14,7 +14,6 @@ import {
   Button,
 } from "@mui/material";
 import { CustomLoader } from "../../Components/CustomLoader";
-import SearchComponent from "../../Components/SearchComponent ";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import CustomSnackbar from "../../Components/CustomerSnackbar";
 import DashboardService from "../../services/DashboardService";
@@ -39,7 +38,6 @@ export const TopCustomerView = () => {
   const [openPopupOfUpdateCustomer, setOpenPopupOfUpdateCustomer] =
     useState(false);
   const [openPopupInvoice, setOpenPopupInvoice] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
   const [rowdata, setRowdata] = useState();
   const [recordForEdit, setRecordForEdit] = useState();
   const [selectedCustomers, setSelectedCustomers] = useState();
@@ -53,7 +51,7 @@ export const TopCustomerView = () => {
   const handleClose = () => {
     setAlertMsg({ open: false });
   };
-  const [months, setMonths] = useState(getLastThreeMonths());
+  const [months] = useState(getLastThreeMonths());
 
   const getTopCustomers = async () => {
     setIsLoading(true);
@@ -77,13 +75,6 @@ export const TopCustomerView = () => {
     getTopCustomers();
   }, [filterValue]);
 
-  const handleSearch = (query) => {
-    setSearchQuery(query);
-  };
-
-  const handleReset = () => {
-    setSearchQuery("");
-  };
 
   const handleFilterChange = (event, value) => {
     setFilterValue(value.value);
@@ -151,13 +142,6 @@ export const TopCustomerView = () => {
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
           <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
             <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} sm={4}>
-                <SearchComponent
-                  onSearch={handleSearch}
-                  onReset={handleReset}
-                />
-              </Grid>
-              <Grid item xs={12} sm={4}></Grid>
               <Grid item xs={12} sm={4}>
                 <Box display="flex" gap="2rem">
                   <CustomAutocomplete

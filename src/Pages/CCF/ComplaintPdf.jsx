@@ -14,7 +14,6 @@ import {
   TableCell,
   TableBody,
   Table,
-  Paper,
 } from "@mui/material";
 
 import { jsPDF } from "jspdf";

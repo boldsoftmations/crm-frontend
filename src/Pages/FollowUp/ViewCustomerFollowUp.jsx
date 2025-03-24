@@ -14,6 +14,7 @@ import moment from "moment";
 import { Popup } from "../../Components/Popup";
 import { CustomerActivityCreate } from "./CustomerActivityCreate";
 import CustomerServices from "../../services/CustomerService";
+import { CustomLoader } from "../../Components/CustomLoader";
 
 export const ViewCustomerFollowUp = ({ recordForEdit, selectedCustomers }) => {
   const [openModal, setOpenModal] = useState(false);
@@ -29,7 +30,7 @@ export const ViewCustomerFollowUp = ({ recordForEdit, selectedCustomers }) => {
     try {
       setOpen(true);
 
-      const [followupResponse, potentialResponse] = await Promise.all([
+      const [followupResponse,] = await Promise.all([
         CustomerServices.getCompanyDataByIdWithType(recordForEdit, "followup"),
         CustomerServices.getCompanyDataByIdWithType(recordForEdit, "potential"),
       ]);
@@ -86,6 +87,7 @@ export const ViewCustomerFollowUp = ({ recordForEdit, selectedCustomers }) => {
 
   return (
     <>
+      <CustomLoader open={open}></CustomLoader>
       <Box component="form" noValidate sx={{ mt: 1 }}>
         <Paper
           sx={{

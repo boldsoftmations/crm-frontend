@@ -37,7 +37,7 @@ export const PurchaseAllTabView = () => {
     },
     {
       label: "Challan Register",
-      roles: ["Director", "Accounts"],
+      roles: ["Director", "Accounts", "Purchase"],
       component: <ChallanRegisterView />,
     },
     {

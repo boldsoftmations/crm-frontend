@@ -33,6 +33,7 @@ export const ApplicantListCreate = ({
   jobOpeningId,
   setOpenApplicantListPopup,
 }) => {
+  const [contact, setContact] = useState(null);
   const [formData, setFormData] = useState({
     job: jobOpeningId.job_id,
     name: "",
@@ -55,7 +56,6 @@ export const ApplicantListCreate = ({
   });
   const [loader, setLoader] = useState(false);
   const [showAts, setShowAts] = useState(false);
-  const [contact, setContact] = useState(null);
   const [source, setSource] = useState([]);
   const [cvPreview, setCvPreview] = useState(null);
   const [alertmsg, setAlertMsg] = useState({

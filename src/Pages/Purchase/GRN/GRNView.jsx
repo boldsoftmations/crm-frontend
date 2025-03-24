@@ -236,7 +236,7 @@ export const GRNView = () => {
 };
 
 function Row(props) {
-  const { row, openInPopup, userData, handlePurchaseInvoice } = props;
+  const { row, userData, handlePurchaseInvoice } = props;
   const [open, setOpen] = useState(false);
 
   return (
@@ -263,10 +263,10 @@ function Row(props) {
           {(userData.groups.includes("Accounts Executive") ||
             userData.groups.includes("Director") ||
             userData.groups.includes("Accounts")) && (
-            <Button onClick={() => handlePurchaseInvoice(row)}>
-              Create PI
-            </Button>
-          )}
+              <Button onClick={() => handlePurchaseInvoice(row)}>
+                Create PI
+              </Button>
+            )}
         </StyledTableCell>
       </StyledTableRow>
       <TableRow>
@@ -327,21 +327,22 @@ const AcceptedOption = [
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
+    fontSize: 12,
+    backgroundColor: "#006BA1",
     color: theme.palette.common.white,
-    padding: 0, // Remove padding from header cells
+    fontWeight: "bold",
+    textTransform: "uppercase",
+    padding: 5,
   },
   [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-    padding: 0, // Remove padding from body cells
+    fontSize: 13,
+    padding: 5,
   },
 }));
-
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   "&:nth-of-type(odd)": {
     backgroundColor: theme.palette.action.hover,
   },
-  // hide last border
   "&:last-child td, &:last-child th": {
     border: 0,
   },

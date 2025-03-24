@@ -3,7 +3,7 @@ import { Login } from "./Login";
 import * as Components from "./Component";
 
 export const Auths = () => {
-  const [signIn, setSignIn] = useState(true);
+  const [signIn] = useState(true);
   return (
     <Components.ParentContainer>
       <Components.Container>

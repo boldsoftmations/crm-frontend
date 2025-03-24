@@ -1,5 +1,5 @@
 import { Box, Button, Grid, TextField } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
 import MasterService from "../../../services/MasterService";

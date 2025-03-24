@@ -16,7 +16,6 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import CustomerServices from "../../../services/CustomerService";
-import axios from "axios";
 import { Popup } from "./../../../Components/Popup";
 import { CreateAllCompanyDetails } from "./CreateAllCompanyDetails";
 import LeadServices from "../../../services/LeadService";

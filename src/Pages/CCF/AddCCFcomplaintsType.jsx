@@ -24,7 +24,7 @@ const AddCCFcomplaintsType = ({
     try {
       setOpen(true);
       const payload = { ...inputData };
-      const response = await CustomerServices.createComplaintpes(payload);
+      await CustomerServices.createComplaintpes(payload);
       handleSuccess("CCF complaint type created successfully!");
       setTimeout(() => {
         getAllComplaintsList();

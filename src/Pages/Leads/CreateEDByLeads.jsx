@@ -1,18 +1,9 @@
 import { Box, Button, Grid } from "@mui/material";
 import React, { useCallback, useEffect, useState } from "react";
-import { styled } from "@mui/material/styles";
 import { CustomLoader } from "../../Components/CustomLoader";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import CustomerServices from "../../services/CustomerService";
 import CustomSnackbar from "../../Components/CustomerSnackbar";
-
-const Root = styled("div")(({ theme }) => ({
-  width: "100%",
-  ...theme.typography.body2,
-  "& > :not(style) + :not(style)": {
-    marginTop: theme.spacing(2),
-  },
-}));
 
 export const CreateEDCByLeads = (props) => {
   const { editforedc, setLoaderPopup } = props;

@@ -21,7 +21,6 @@ import {
 import CustomerServices from "../../../services/CustomerService";
 import { useDispatch, useSelector } from "react-redux";
 import { getCompanyName } from "../../../Redux/Action/Action";
-import axios from "axios";
 import { styled } from "@mui/material/styles";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { ViewCustomerFollowUp } from "../../FollowUp/ViewCustomerFollowUp";
@@ -479,15 +478,15 @@ export const UpdateCompanyDetails = (props) => {
           userData.groups.includes("Accounts") ||
           userData.groups.includes("Accounts Billing Department") ||
           userData.groups.includes("Sales Manager")) && (
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-          >
-            Submit
-          </Button>
-        )}
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+            >
+              Submit
+            </Button>
+          )}
       </Box>
 
       {selectedCustomers && selectedCustomers.message && (

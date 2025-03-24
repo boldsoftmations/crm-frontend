@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { CustomTable } from "../../Components/CustomTable";
 import {
   Box,
   Grid,
@@ -104,9 +103,9 @@ export const CustomerNoWhatsappGroup = () => {
 
   const Tabledata = Array.isArray(customerNotHavingWhatsappGroupData)
     ? customerNotHavingWhatsappGroupData.map((row) => ({
-        name: row.name,
-        id: row.id,
-      }))
+      name: row.name,
+      id: row.id,
+    }))
     : [];
 
   const Tableheaders = ["Company", "Action"];

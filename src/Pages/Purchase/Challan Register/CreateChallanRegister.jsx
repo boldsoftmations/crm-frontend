@@ -34,7 +34,6 @@ export const CreateChallanRegister = memo(
       buyer_account: "",
       delivery_term: "",
       transporter_name: "",
-      challan_no: "",
       transpotation_cost: "",
       vechile_no: "",
       products: [
@@ -200,7 +199,6 @@ export const CreateChallanRegister = memo(
           delivery_term: inputValues.delivery_terms,
           schedule_date: inputValues.schedule_date,
           transporter_name: inputValues.transporter_name,
-          challan_no: inputValues.challan_no,
           transpotation_cost: parseFloat(inputValues.transpotation_cost),
           vechile_no: inputValues.vechile_no,
           products: inputValues.products || [],
@@ -311,17 +309,7 @@ export const CreateChallanRegister = memo(
                 onChange={handleInputChange}
               />
             </Grid>
-            <Grid item xs={12} sm={3}>
-              <CustomTextField
-                fullWidth
-                name="challan_no"
-                size="small"
-                label="Challan No"
-                variant="outlined"
-                value={inputValues.challan_no}
-                onChange={handleInputChange}
-              />
-            </Grid>
+
             <Grid item xs={12} sm={3}>
               <CustomTextField
                 fullWidth

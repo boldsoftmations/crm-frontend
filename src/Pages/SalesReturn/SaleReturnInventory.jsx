@@ -335,6 +335,7 @@ export const SaleReturnInventory = () => {
     </>
   );
 };
+
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     fontSize: 12,

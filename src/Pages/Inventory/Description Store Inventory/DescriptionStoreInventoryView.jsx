@@ -16,7 +16,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { Popup } from "../../../Components/Popup";
 import InventoryServices from "../../../services/InventoryService";
-import { useSelector } from "react-redux";
 import InvoiceServices from "../../../services/InvoiceService";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";

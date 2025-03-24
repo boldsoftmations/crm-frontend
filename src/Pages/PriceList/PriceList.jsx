@@ -66,6 +66,7 @@ export const PriceList = () => {
           slab3_price: row.slab3_price,
           validity: row.validity,
           discontinued: row.discontinued,
+
           description: row.description,
         };
       });

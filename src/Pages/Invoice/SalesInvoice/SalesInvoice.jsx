@@ -507,81 +507,82 @@ export const SalesInvoice = (props) => {
                     </div>
                   </div>
                 )}
-                {hsnData.length > 0 && (
-                  <div
-                    className="row mb-4"
-                    style={{
-                      ...typographyStyling,
-                      borderBottom: "1px Solid #000000",
-                    }}
-                  >
-                    <div className="col-md-8 text-right table-responsive">
-                      <table className="table table-bordered">
-                        <thead>
-                          <tr>
-                            <th>HSN</th>
-                            <th>TAXABLE AMOUNT</th>
-                            <th>CGST</th>
-                            <th>SGST</th>
-                            <th>IGST</th>
-                            <th>GST %</th>
-                            <th>TOTAL GST</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {hsnData.map((row, i) => (
-                            <tr key={i}>
-                              <td>{row.hsn_code}</td>
-                              <td>{row.amount}</td>
-                              <td>{row.cgst}</td>
-                              <td>{row.sgst}</td>
-                              <td>{row.igst}</td>
-                              <td>{row.gst_percentage}</td>
-                              <td>{row.total_gst}</td>
+                {salesInvoiceData.origin_type === "domestic" &&
+                  hsnData.length > 0 && (
+                    <div
+                      className="row mb-4"
+                      style={{
+                        ...typographyStyling,
+                        borderBottom: "1px Solid #000000",
+                      }}
+                    >
+                      <div className="col-md-8 text-right table-responsive">
+                        <table className="table table-bordered">
+                          <thead>
+                            <tr>
+                              <th>HSN</th>
+                              <th>TAXABLE AMOUNT</th>
+                              <th>CGST</th>
+                              <th>SGST</th>
+                              <th>IGST</th>
+                              <th>GST %</th>
+                              <th>TOTAL GST</th>
                             </tr>
-                          ))}
-                          <tr>
-                            <td colspan="1" className="text-end">
-                              <strong style={{ ...typographyStyling }}>
-                                Total :
-                              </strong>
-                            </td>
-                            <td colspan="1" className="text-start">
-                              <strong style={{ ...typographyStyling }}>
-                                {salesInvoiceData.amount}
-                              </strong>
-                            </td>
-                            <td colspan="1" className="text-start">
-                              <strong style={{ ...typographyStyling }}>
-                                {salesInvoiceData.cgst}
-                              </strong>
-                            </td>
-                            <td colspan="1" className="text-start">
-                              <strong style={{ ...typographyStyling }}>
-                                {salesInvoiceData.sgst}
-                              </strong>
-                            </td>
-                            <td colspan="1" className="text-start">
-                              <strong style={{ ...typographyStyling }}>
-                                {salesInvoiceData.igst}
-                              </strong>
-                            </td>
-                            <td colspan="1" className="text-start">
-                              <strong style={{ ...typographyStyling }}>
-                                {/* {salesInvoiceData.igst} */}
-                              </strong>
-                            </td>
-                            <td colspan="1" className="text-start">
-                              <strong style={{ ...typographyStyling }}>
-                                {TOTAL_GST}
-                              </strong>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
+                          </thead>
+                          <tbody>
+                            {hsnData.map((row, i) => (
+                              <tr key={i}>
+                                <td>{row.hsn_code}</td>
+                                <td>{row.amount}</td>
+                                <td>{row.cgst}</td>
+                                <td>{row.sgst}</td>
+                                <td>{row.igst}</td>
+                                <td>{row.gst_percentage}</td>
+                                <td>{row.total_gst}</td>
+                              </tr>
+                            ))}
+                            <tr>
+                              <td colspan="1" className="text-end">
+                                <strong style={{ ...typographyStyling }}>
+                                  Total :
+                                </strong>
+                              </td>
+                              <td colspan="1" className="text-start">
+                                <strong style={{ ...typographyStyling }}>
+                                  {salesInvoiceData.amount}
+                                </strong>
+                              </td>
+                              <td colspan="1" className="text-start">
+                                <strong style={{ ...typographyStyling }}>
+                                  {salesInvoiceData.cgst}
+                                </strong>
+                              </td>
+                              <td colspan="1" className="text-start">
+                                <strong style={{ ...typographyStyling }}>
+                                  {salesInvoiceData.sgst}
+                                </strong>
+                              </td>
+                              <td colspan="1" className="text-start">
+                                <strong style={{ ...typographyStyling }}>
+                                  {salesInvoiceData.igst}
+                                </strong>
+                              </td>
+                              <td colspan="1" className="text-start">
+                                <strong style={{ ...typographyStyling }}>
+                                  {/* {salesInvoiceData.igst} */}
+                                </strong>
+                              </td>
+                              <td colspan="1" className="text-start">
+                                <strong style={{ ...typographyStyling }}>
+                                  {TOTAL_GST}
+                                </strong>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
                 <div
                   className="row mb-4"
                   style={{

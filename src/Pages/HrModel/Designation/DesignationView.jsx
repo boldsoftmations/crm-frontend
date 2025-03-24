@@ -40,9 +40,7 @@ export const DesignationView = () => {
   const handleClose = () => {
     setAlertMsg({ open: false });
   };
-  useEffect(() => {
-    getDesignationsDetails(currentPage);
-  }, [currentPage, getDesignationsDetails]);
+
 
   const getDesignationsDetails = useCallback(
     async (page, query = searchQuery) => {
@@ -60,6 +58,10 @@ export const DesignationView = () => {
     },
     [searchQuery]
   );
+
+  useEffect(() => {
+    getDesignationsDetails(currentPage);
+  }, [currentPage, getDesignationsDetails]);
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);

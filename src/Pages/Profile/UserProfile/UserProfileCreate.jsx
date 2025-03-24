@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import { Button, Container, Grid, Divider, Chip, Box } from "@mui/material";
 
 import { styled } from "@mui/material/styles";
@@ -349,7 +349,7 @@ export const UserProfileCreate = ({ setOpenPopup, getUsers }) => {
     } catch (error) {
       console.error("Error creating user profile:", error);
       setAlertMsg({
-        message: error.response.data.error || "Error creating user profile",
+        message: "Error creating user profile",
         severity: "error",
         open: true,
       });

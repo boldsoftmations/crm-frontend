@@ -424,7 +424,7 @@ export const CreateCustomerProformaInvoice = (props) => {
               sx={{ minWidth: 300 }}
               label="Delivery Terms"
               value={
-                deliveryTermData == ""
+                deliveryTermData === ""
                   ? customerLastPiData && customerLastPiData.delivery_terms
                   : deliveryTermData
               }
@@ -515,8 +515,8 @@ export const CreateCustomerProformaInvoice = (props) => {
                 contactData && contactData.contact
                   ? contactData.contact
                   : customerLastPiData && customerLastPiData.contact
-                  ? customerLastPiData.contact
-                  : ""
+                    ? customerLastPiData.contact
+                    : ""
               }
               InputLabelProps={{
                 shrink: true, // This will ensure the label stays above the field
@@ -597,7 +597,7 @@ export const CreateCustomerProformaInvoice = (props) => {
               <InputLabel id="demo-simple-select-label">
                 Shipping Address
               </InputLabel>
-              {rowData.type_of_customer == "Exclusive Distribution Customer" ? (
+              {rowData.type_of_customer === "Exclusive Distribution Customer" ? (
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
@@ -711,8 +711,8 @@ export const CreateCustomerProformaInvoice = (props) => {
                 checked === true
                   ? "Verbal"
                   : inputValue.buyer_order_no
-                  ? inputValue.buyer_order_no
-                  : ""
+                    ? inputValue.buyer_order_no
+                    : ""
               }
               onChange={handleInputChange}
               InputLabelProps={{
@@ -887,8 +887,8 @@ export const CreateCustomerProformaInvoice = (props) => {
                         : productDetails &&
                           productDetails[index] &&
                           productDetails[index].rate
-                        ? parseFloat(productDetails[index].rate).toFixed(2) // Use productDetails if not edited
-                        : ""
+                          ? parseFloat(productDetails[index].rate).toFixed(2) // Use productDetails if not edited
+                          : ""
                     }
                     variant="outlined"
                     onChange={(event) => {
@@ -921,10 +921,10 @@ export const CreateCustomerProformaInvoice = (props) => {
                         : input.quantity &&
                           productDetails[index] &&
                           productDetails[index].rate
-                        ? (input.quantity * productDetails[index].rate).toFixed(
+                          ? (input.quantity * productDetails[index].rate).toFixed(
                             2
                           )
-                        : "0.00"
+                          : "0.00"
                     }
                     disabled // The amount is calculated, so it should not be manually editable.
                   />

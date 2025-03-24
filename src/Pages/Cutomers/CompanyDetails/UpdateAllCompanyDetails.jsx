@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { BankDetails } from "../BankDetails/BankDetails";
 import { ContactDetails } from "../ContactDetails/ContactDetails";
 import { WareHouseDetails } from "../WareHouseDetails/WareHouseDetails";

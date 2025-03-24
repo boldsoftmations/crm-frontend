@@ -19,7 +19,6 @@ import { UpdateWareHouseDetails } from "./UpdateWareHouseDetails";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { useSelector } from "react-redux";
 import CustomerServices from "../../../services/CustomerService";
-
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     fontSize: 12,
@@ -42,6 +41,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     border: 0,
   },
 }));
+
 export const WareHouseDetails = ({ recordForEdit }) => {
   const [open, setOpen] = useState(false);
   const [openPopup, setOpenPopup] = useState(false);

@@ -64,10 +64,6 @@ export const WhatsappGroupView = () => {
     setOpen(false);
   };
 
-  const handleDelete = async (data) => {
-    setSelectedRow(data);
-    setDeletePopupOpen(true);
-  };
 
   const closeDeletePopup = () => {
     setDeletePopupOpen(false);

@@ -1,19 +1,10 @@
-import { Autocomplete, Box, Button, Grid } from "@mui/material";
+import { Box, Button, Grid } from "@mui/material";
 import React, { useCallback, useEffect, useState } from "react";
-import { styled } from "@mui/material/styles";
-import { MessageAlert } from "../../../Components/MessageAlert";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import CustomerServices from "../../../services/CustomerService";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
-const Root = styled("div")(({ theme }) => ({
-  width: "100%",
-  ...theme.typography.body2,
-  "& > :not(style) + :not(style)": {
-    marginTop: theme.spacing(2),
-  },
-}));
 
 export const CreateEDC = (props) => {
   const { assignCustomerData, getAllEDC, closeModal } = props;
@@ -30,7 +21,7 @@ export const CreateEDC = (props) => {
     id: "",
   });
 
-  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+  const { handleError } =
     useNotificationHandling();
 
   const GetEdcData = useCallback(async () => {

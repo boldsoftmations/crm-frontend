@@ -146,7 +146,10 @@ export const PhysicalInventoryCreate = memo((props) => {
         const payload = {
           ...formData,
           gnl: formData.gnl,
-          rate: Number(formData.rate),
+          //including  'rate' in the payload if 'pending_quantity' is "0"
+          ...(formData.pending_quantity === "0" && {
+            rate: Number(formData.rate),
+          }),
         };
         const response = await InventoryServices.createPhysical(payload);
         handleSuccess(

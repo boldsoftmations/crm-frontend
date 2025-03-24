@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   styled,
   TableCell,
@@ -129,21 +129,21 @@ export const ViewLeadCustomer = (props) => {
                       <StyledTableCell align="center">
                         {(userData.groups.includes("Sales Manager") ||
                           userData.groups.includes("Director")) && (
-                          <>
-                            <Button
-                              variant="text"
-                              size="small"
-                              style={{ backgroundColor: "red" }}
-                              onClick={() => RemoveEdc(row.name)}
-                            >
-                              Remove
-                            </Button>
-                          </>
-                        )}
+                            <>
+                              <Button
+                                variant="text"
+                                size="small"
+                                style={{ backgroundColor: "red" }}
+                                onClick={() => RemoveEdc(row.name)}
+                              >
+                                Remove
+                              </Button>
+                            </>
+                          )}
                       </StyledTableCell>
                     </StyledTableRow>
                   ))}
-                {leadCustomerData.length == 0 && (
+                {leadCustomerData.length === 0 && (
                   <StyledTableRow>
                     <StyledTableCell colSpan={6} align="center">
                       No Exclusive Distrubution Customers assigned yet.

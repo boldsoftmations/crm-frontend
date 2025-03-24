@@ -128,4 +128,4 @@ export const ScheduleInterview = ({ row, closeDialog, fetchCandidates }) => {
   );
 };
 
-const shortList = ["Round1", "Round2"];
+

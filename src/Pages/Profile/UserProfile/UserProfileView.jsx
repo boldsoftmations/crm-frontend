@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import UserProfileService from "../../../services/UserProfileService";
 import { CustomLoader } from "../../../Components/CustomLoader";
-import { CustomTable } from "../../../Components/CustomTable";
 import { Popup } from "../../../Components/Popup";
 import { UserProfileUpdate } from "./UserProfileUpdate";
 import { CSVLink } from "react-csv";
@@ -78,10 +77,10 @@ export const UserProfileView = () => {
   const formatDate = (dateString) => {
     return dateString
       ? new Intl.DateTimeFormat("en-GB", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-        }).format(new Date(dateString))
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      }).format(new Date(dateString))
       : "-";
   };
 

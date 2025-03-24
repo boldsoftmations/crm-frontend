@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid, Typography, Box, Paper, Divider } from "@mui/material";
+import { Grid, Typography, Box, Paper } from "@mui/material";
 
 const ViewDetailsCandidates = ({ data }) => {
   const renderSectionHeader = (title) => (

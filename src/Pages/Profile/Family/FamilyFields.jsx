@@ -18,17 +18,7 @@ export const FamilyFields = ({ formData, setFormData, error }) => {
     "Neighbour",
   ];
 
-  const bloodGroupOptions = [
-    "A+",
-    "A-",
-    "B+",
-    "B-",
-    "AB+",
-    "AB-",
-    "O+",
-    "O-",
-    "Don't Know",
-  ];
+  const bloodGroupOptions = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
   const showError = error && error.family_details ? error.family_details : [];
 
