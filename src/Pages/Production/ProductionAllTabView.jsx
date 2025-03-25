@@ -27,6 +27,7 @@ export const ProductionAllTabView = () => {
         "Stores Delhi",
         "Production Delhi",
         "Production",
+        "Accounts Billing Department"
       ],
       component: <MaterialRequisitionFormView />,
     },
@@ -56,6 +57,7 @@ export const ProductionAllTabView = () => {
         "Production",
         "Production Delhi",
         "Accounts Executive",
+        "Accounts Billing Department"
       ],
       component: <MaterialTransferNoteView />,
     },
