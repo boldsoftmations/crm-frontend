@@ -27,13 +27,12 @@ export const ProductionAllTabView = () => {
         "Stores Delhi",
         "Production Delhi",
         "Production",
-        "Accounts Billing Department"
       ],
       component: <MaterialRequisitionFormView />,
     },
     {
       label: "MRF Products",
-      roles: ["Director", "Accounts"],
+      roles: ["Director", "Accounts", "Accounts Billing Department"],
       component: <ViewMRFProduct />,
     },
     {
