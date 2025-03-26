@@ -202,6 +202,12 @@ export const ListItems = ({ setOpen }) => {
         userData.groups.includes("Stores Delhi") ||
         userData.groups.includes("Production Delhi"),
       items: [
+        renderSubmenu("master", <BusinessIcon />, "Master", [
+          {
+            to: "/customer/complaints/ccp-capa/master",
+            text: "CCF Complaint Master",
+          },
+        ]),
         renderSubmenu("inventory", <InventoryIcon />, "Inventory", [
           { to: "/inventory/view-inventory", text: "Inventory" },
         ]),
@@ -213,6 +219,12 @@ export const ListItems = ({ setOpen }) => {
           "/inventory/sales-return",
           <DescriptionIcon />,
           "Sales Return"
+        ),
+        renderSubmenu(
+          "customer_complaint",
+          <ComplaintIcon />,
+          "Customer Complaint",
+          [{ to: "/customer/complaints/ccp-capa", text: "CCF-CAPA" }]
         ),
       ],
     },
@@ -453,6 +465,12 @@ export const ListItems = ({ setOpen }) => {
           { to: "/forecast/view-product-forecast", text: "Forecast" },
           // { to: "/market-analysis/competitor", text: "Market Analysis" },
         ]),
+        renderSubmenu(
+          "customer_complaint",
+          <ComplaintIcon />,
+          "Customer Complaint",
+          [{ to: "/customer/complaints/ccp-capa", text: "CCF-CAPA" }]
+        ),
         renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
         renderListItem("/dispatch/tab-view", <LocalShippingIcon />, "Dispatch"),
         renderListItem("/task/view-task", <AssignmentTurnedInIcon />, "Task"),
