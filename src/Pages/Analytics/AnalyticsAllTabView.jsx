@@ -44,6 +44,7 @@ export const AnalyticsAllTabView = () => {
         "Customer Relationship Manager",
         "Business Development Manager",
         "Business Development Executive",
+        "QA",
       ],
       component: <SalesPersonDashboard />,
     },

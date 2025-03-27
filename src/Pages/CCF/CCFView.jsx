@@ -24,6 +24,7 @@ import CustomerServices from "../../services/CustomerService";
 import ImageView from "./ImageView";
 import ComplainPdf from "./ComplaintPdf";
 import CreateCapa from "./CAFA/CreateCapa";
+import { useSelector } from "react-redux";
 
 export const CCFView = () => {
   const [open, setOpen] = useState(false);
@@ -38,7 +39,7 @@ export const CCFView = () => {
   const [recordForEdit, setRecordForEdit] = useState(null);
   const [pdfData, setPdfData] = useState(null);
   const [imagesData, setImagesData] = useState(null);
-
+  const userData = useSelector((state) => state.auth.profile);
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
@@ -142,13 +143,16 @@ export const CCFView = () => {
                   justifyContent: { xs: "center", md: "flex-end" },
                 }}
               >
-                <Button
-                  color="primary"
-                  variant="contained"
-                  onClick={() => setOpenCCF(true)}
-                >
-                  Add
-                </Button>
+                {(userData.groups.includes("Director") ||
+                  userData.groups.includes("Customer Service")) && (
+                  <Button
+                    color="primary"
+                    variant="contained"
+                    onClick={() => setOpenCCF(true)}
+                  >
+                    Add
+                  </Button>
+                )}
               </Grid>
             </Grid>
           </Box>
@@ -231,14 +235,17 @@ export const CCFView = () => {
                       >
                         DownLoad
                       </Button>
-                      {row.is_closed === false && (
-                        <Button
-                          color="success"
-                          onClick={() => handledOpenCapa(row)}
-                        >
-                          Create CAPA
-                        </Button>
-                      )}
+                      {(userData.groups.includes("Director") ||
+                        userData.groups.includes("Production") ||
+                        userData.groups.includes("QA")) &&
+                        row.is_closed === false && (
+                          <Button
+                            color="success"
+                            onClick={() => handledOpenCapa(row)}
+                          >
+                            Create CAPA
+                          </Button>
+                        )}
                     </StyledTableCell>
                   </StyledTableRow>
                 ))}

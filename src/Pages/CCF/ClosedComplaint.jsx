@@ -140,6 +140,7 @@ export const ClosedComplaint = () => {
                     Complaint Type
                   </StyledTableCell>
                   <StyledTableCell align="center">Complaint</StyledTableCell>
+                  <StyledTableCell align="center">CLosed Date</StyledTableCell>
                   <StyledTableCell align="center">Unit</StyledTableCell>
                   <StyledTableCell align="center">Invoices</StyledTableCell>
                 </TableRow>
@@ -159,6 +160,9 @@ export const ClosedComplaint = () => {
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.complaint}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.updated_date}
                     </StyledTableCell>
                     <StyledTableCell align="center">{row.unit}</StyledTableCell>
                     <StyledTableCell align="center">

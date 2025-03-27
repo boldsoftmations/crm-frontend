@@ -13,17 +13,37 @@ export const AllCCFtab = () => {
   const tabs = [
     {
       label: "Customer Complaint Form",
-      roles: ["Director", "Production", "Customer Service"],
+      roles: [
+        "Director",
+        "Sales Manager",
+        "Production",
+        "Customer Service",
+        "QA",
+      ],
       component: <CCFView />,
     },
     {
       label: "CAPA",
-      roles: ["Director", "Accounts", "Customer Service", "Production"],
+      roles: [
+        "Director",
+        "Sales Manager",
+        "Accounts",
+        "Customer Service",
+        "Production",
+        "QA",
+      ],
       component: <CapaView />,
     },
     {
       label: "Closed Complaints",
-      roles: ["Director", "Accounts", "Customer Service", "Production"],
+      roles: [
+        "Director",
+        "Accounts",
+        "Sales Manager",
+        "Customer Service",
+        "Production",
+        "QA",
+      ],
       component: <ClosedComplaint />,
     },
   ];

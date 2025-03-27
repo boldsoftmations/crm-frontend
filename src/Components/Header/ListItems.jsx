@@ -29,7 +29,8 @@ import {
   ExpandLess,
   ExpandMore,
 } from "@mui/icons-material";
-
+import StickyNote2Icon from "@mui/icons-material/StickyNote2";
+import DirectionsRunIcon from "@mui/icons-material/DirectionsRun";
 export const ListItems = ({ setOpen }) => {
   const { profile: userData } = useSelector((state) => state.auth);
   const location = useLocation();
@@ -103,6 +104,12 @@ export const ListItems = ({ setOpen }) => {
       items: [
         renderListItem("/user/report", <AssessmentIcon />, "Report"),
         renderListItem("/user/analytics", <DashboardIcon />, "Analytics"),
+        renderListItem("/customer/srf", <StickyNote2Icon />, "SRF"),
+        renderListItem(
+          "/master/customer-visit",
+          <DirectionsRunIcon />,
+          "Field Sales"
+        ),
         renderSubmenu("master", <BusinessIcon />, "Master", [
           { to: "/products/all-product", text: "Inventory Master" },
           { to: "/invoice/seller-account", text: "Company Master" },
@@ -248,6 +255,36 @@ export const ListItems = ({ setOpen }) => {
       ],
     },
 
+    //QA menus
+    {
+      condition: userData.groups.includes("QA"),
+      items: [
+        renderListItem("/user/analytics", <DashboardIcon />, "Analytics"),
+        renderSubmenu("master", <BusinessIcon />, "Master", [
+          {
+            to: "/customer/complaints/ccp-capa/master",
+            text: "CCF Complaint Master",
+          },
+        ]),
+        renderSubmenu(
+          "customer_complaint",
+          <ComplaintIcon />,
+          "Customer Complaint",
+          [{ to: "/customer/complaints/ccp-capa", text: "CCF-CAPA" }]
+        ),
+      ],
+    },
+    //Factory Menus
+
+    {
+      condition:
+        userData.groups.includes("Factory-Mumbai-Dispatch") ||
+        userData.groups.includes("Factory-Delhi-Dispatch"),
+      items: [
+        renderListItem("/dispatch/tab-view", <LocalShippingIcon />, "Dispatch"),
+        renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
+      ],
+    },
     // Service Menus
 
     {
@@ -377,7 +414,6 @@ export const ListItems = ({ setOpen }) => {
     {
       condition: userData.groups.includes("Accounts Executive"),
       items: [
-        renderListItem("/user/report", <AssessmentIcon />, "Report"),
         renderListItem("/user/analytics", <DashboardIcon />, "Analytics"),
         renderSubmenu("master", <BusinessIcon />, "Master", [
           { to: "/products/all-product", text: "Inventory Master" },
@@ -424,7 +460,6 @@ export const ListItems = ({ setOpen }) => {
     {
       condition: userData.groups.includes("Accounts Billing Department"),
       items: [
-        renderListItem("/user/report", <AssessmentIcon />, "Report"),
         renderListItem("/user/analytics", <DashboardIcon />, "Analytics"),
         renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
           { to: "/invoice/performa-invoice-tab", text: "Performa Invoice" },
@@ -453,7 +488,6 @@ export const ListItems = ({ setOpen }) => {
     {
       condition: userData.groups.includes("Sales Manager"),
       items: [
-        renderListItem("/user/report", <AssessmentIcon />, "Report"),
         renderListItem("/user/analytics", <DashboardIcon />, "Analytics"),
         renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
           { to: "/invoice/performa-invoice-tab", text: "Performa Invoice" },
@@ -544,7 +578,6 @@ export const ListItems = ({ setOpen }) => {
     {
       condition: userData.groups.includes("Sales Deputy Manager"),
       items: [
-        renderListItem("/user/report", <AssessmentIcon />, "Report"),
         renderListItem("/user/analytics", <DashboardIcon />, "Analytics"),
         renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
           { to: "/invoice/performa-invoice-tab", text: "Performa Invoice" },
@@ -613,7 +646,6 @@ export const ListItems = ({ setOpen }) => {
     {
       condition: userData.groups.includes("Sales Executive"),
       items: [
-        renderListItem("/user/report", <AssessmentIcon />, "Report"),
         renderListItem("/user/analytics", <DashboardIcon />, "Analytics"),
         renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
           { to: "/invoice/performa-invoice-tab", text: "Performa Invoice" },
