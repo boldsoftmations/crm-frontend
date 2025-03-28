@@ -224,6 +224,7 @@ export const CCFView = () => {
                       <Button
                         color="info"
                         variant="text"
+                        size="small"
                         onClick={() => handleImageShow(row.document)}
                       >
                         Document View
@@ -231,6 +232,7 @@ export const CCFView = () => {
                       <Button
                         color="secondary"
                         variant="text"
+                        size="small"
                         onClick={() => handledownloadpdf(row)}
                       >
                         DownLoad
@@ -241,6 +243,7 @@ export const CCFView = () => {
                         row.is_closed === false && (
                           <Button
                             color="success"
+                            size="small"
                             onClick={() => handledOpenCapa(row)}
                           >
                             Create CAPA

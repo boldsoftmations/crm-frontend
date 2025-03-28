@@ -467,6 +467,11 @@ const getAllDescription = () => {
 const CreateCapa = (data) => {
   return CustomAxios.post("/api/customer/cpa/", data);
 };
+
+const UpdateCapa = (id,data) => {
+  return CustomAxios.patch(`/api/customer/cpa/${id}/`, data);
+};
+
 const getAllCapaData = (page, search) => {
   const params = new URLSearchParams();
   if (page) {
@@ -514,6 +519,40 @@ const getCustomerStatus = () => {
     "/api/master/model-option/?page=all&model_master__name=Customer Followup"
   );
 };
+
+//Api for fields sales person and customer
+
+const getFieldsSalesPersonVisitPlan = (page, search) => {
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+
+  if (search) {
+    params.append("search", search);
+  }
+  return CustomAxios.get(`/api/field-sales/visit/?${params.toString()}`);
+};
+
+const createCustomerSRF = (data) => {
+  return CustomAxios.post("/api/srf/srf/", data);
+};
+
+const updateCustomerSRfStatus = (id,data)=>{
+  return CustomAxios.patch(`/api/srf/srf/${id}/`,data)
+}
+const getCustomerSRF = (page,search) => {
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+
+  if (search) {
+    params.append("search", search);
+  }
+  return CustomAxios.get(`/api/srf/srf/?${params.toString()}/`);
+};
+
 const CustomerServices = {
   getAllCustomerData,
   getIncompleteKycCustomerData,
@@ -581,6 +620,7 @@ const CustomerServices = {
   getProductBaseCustomer,
   getAllDescription,
   CreateCapa,
+  UpdateCapa,
   getAllCapaData,
   getCustomerLastPi,
   getProductLastPi,
@@ -590,6 +630,11 @@ const CustomerServices = {
   createCustomerScheme,
   updateCustomerscheme,
   getCustomerStatus,
+  getAllCustomerMasterList,
+  getFieldsSalesPersonVisitPlan,
+  createCustomerSRF,
+  updateCustomerSRfStatus,
+  getCustomerSRF
 };
 
 export default CustomerServices;

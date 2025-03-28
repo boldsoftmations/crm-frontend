@@ -31,7 +31,6 @@ const CreateCapa = ({ recordForEdit, setOpenCapa }) => {
     root_cause: "",
     cap: "",
     pap: "",
-    sfcs: "",
     document: documentId ? documentId : [],
   });
   const [files, setFiles] = useState([]);
@@ -39,7 +38,7 @@ const CreateCapa = ({ recordForEdit, setOpenCapa }) => {
   const [open, setOpen] = useState(false);
   const [loader, setLoader] = useState(false);
   const [message, setMessage] = useState("");
-  const [severity, setSeverity] = useState("success");
+  const [severity, setSeverity] = useState("");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -143,7 +142,7 @@ const CreateCapa = ({ recordForEdit, setOpenCapa }) => {
   const handleClose = () => {
     setOpen(false);
   };
-  console.log(formData);
+
   return (
     <Container maxWidth="lg">
       <CustomSnackbar
@@ -328,19 +327,6 @@ const CreateCapa = ({ recordForEdit, setOpenCapa }) => {
                 />
               </Grid>
               <Grid item xs={12} sm={12}>
-                <CustomAutocomplete
-                  size="small"
-                  disablePortal
-                  id="product-selector"
-                  options={SFCS_options}
-                  getOptionLabel={(option) => option}
-                  onChange={(e, value) =>
-                    setFormData((prev) => ({ ...prev, sfcs: value }))
-                  }
-                  label="Suggestion for claim settlement"
-                />
-              </Grid>
-              <Grid item xs={12} sm={12}>
                 <div>
                   <div
                     style={{
@@ -470,4 +456,3 @@ const CreateCapa = ({ recordForEdit, setOpenCapa }) => {
 };
 
 export default CreateCapa;
-const SFCS_options = ["Credit", "Material Return"];
