@@ -522,17 +522,6 @@ const getCustomerStatus = () => {
 
 //Api for fields sales person and customer
 
-const getFieldsSalesPersonVisitPlan = (page, search) => {
-  const params = new URLSearchParams();
-  if (page) {
-    params.append("page", page);
-  }
-
-  if (search) {
-    params.append("search", search);
-  }
-  return CustomAxios.get(`/api/field-sales/visit/?${params.toString()}`);
-};
 
 const createCustomerSRF = (data) => {
   return CustomAxios.post("/api/srf/srf/", data);
@@ -630,8 +619,6 @@ const CustomerServices = {
   createCustomerScheme,
   updateCustomerscheme,
   getCustomerStatus,
-  getAllCustomerMasterList,
-  getFieldsSalesPersonVisitPlan,
   createCustomerSRF,
   updateCustomerSRfStatus,
   getCustomerSRF
