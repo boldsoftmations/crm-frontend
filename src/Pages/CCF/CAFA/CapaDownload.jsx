@@ -94,7 +94,7 @@ const CapaDownload = ({ recordForEdit }) => {
                 <Typography variant="body1" fontWeight="bold">
                   Complaint No. :
                 </Typography>
-                <Typography variant="body2">{recordForEdit.id}</Typography>
+                <Typography variant="body2">{recordForEdit.ccf}</Typography>
                 <Divider sx={{ marginY: 1 }} />
               </Grid>
               <Grid item xs={12} sm={6}>
