@@ -20,7 +20,6 @@ const Root = styled("div")(({ theme }) => ({
 
 export const CreateMaterialReturn = (props) => {
   const { recordForEdit } = props;
-  console.log(recordForEdit);
   const [open, setOpen] = useState(false);
   const [salesReturnData, setSalesReturnData] = useState({});
   const [alertmsg, setAlertMsg] = useState({
@@ -31,7 +30,6 @@ export const CreateMaterialReturn = (props) => {
   const navigate = useNavigate();
   const getsearchByCompany = async () => {
     if (!recordForEdit || !recordForEdit.ccf_details) {
-      console.log("No record data available");
       return; // Prevents the API call if no data
     }
 
@@ -43,7 +41,6 @@ export const CreateMaterialReturn = (props) => {
       if (complaintNo) {
         const response = await InvoiceServices.getSalesReturnByCCF(complaintNo);
         setSalesReturnData(response.data);
-        console.log("res", response.data);
       } else {
         console.log("No complaint number provided");
       }
