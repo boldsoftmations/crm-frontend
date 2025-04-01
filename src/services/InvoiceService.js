@@ -423,6 +423,19 @@ const getSalesReturnBySearchCompany = (unitValue, companyValue) => {
   );
 };
 
+const getSalesReturnByCCF = (complain_no) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
+
+  if (complain_no) {
+    params.append("complain_no", complain_no);
+  }
+  // Sending a GET request with query parameters
+  return CustomAxios.get(
+    `/api/invoice/ccf-sales-invoice/?${params.toString()}`
+  );
+};
+
 //Debit/credit api starts here
 const getCustomersList = () => {
   return CustomAxios.get(`/api/customer/customer/`);
@@ -511,6 +524,7 @@ const InvoiceServices = {
   getPODCopyDashboardData,
   checkPrice,
   getSalesReturnBySearchCompany,
+  getSalesReturnByCCF,
   getCustomersList,
   getDebitCreditnotes,
   CreateDebitCreditNote,

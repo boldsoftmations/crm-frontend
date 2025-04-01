@@ -25,6 +25,7 @@ import UpdateCAPA from "./UpdateCAPA";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
 import { CreateCreditNote } from "./CreateCreditNote";
+import { CreateMaterialReturn } from "./CreateMaterialReturn";
 
 export const CapaView = () => {
   const [open, setOpen] = useState(false);
@@ -39,11 +40,14 @@ export const CapaView = () => {
   const [updateCAPAPopup, setUpdateCAPAPopup] = useState(false);
   const [openPopup, setOpenPopup] = useState(false);
   const [openCrediNote, setOpenCrediNote] = useState(false);
+  const [openMaterialReturn, setOpenMaterialReturn] = useState(false);
   const [formData, setFormData] = useState("");
   const userData = useSelector((state) => state.auth.profile);
   const [loader, setLoader] = useState(false);
   const [message, setMessage] = useState("");
   const [severity, setSeverity] = useState("success");
+
+  // ✅ Fetch CAPA Data
   const getAllCAPAData = useCallback(async () => {
     try {
       setLoader(true);
@@ -51,18 +55,18 @@ export const CapaView = () => {
         currentPage,
         searchQuery
       );
-      console.log("data", response.data.results);
       setCCFData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
     } catch (error) {
+      console.error("Error fetching CAPA data:", error);
     } finally {
       setLoader(false);
     }
-  }, [currentPage, searchQuery]); // Ensure dependencies are correctly listed
+  }, [currentPage, searchQuery]);
 
   useEffect(() => {
     getAllCAPAData();
-  }, [currentPage, searchQuery]);
+  }, [getAllCAPAData]);
 
   const handleSearch = (query) => {
     setSearchQuery(query);
@@ -78,31 +82,18 @@ export const CapaView = () => {
     setCurrentPage(value);
   };
 
-  const handleGetData = (data) => {
-    setRecordForEdit(data);
-    setOpenPdf(true);
-  };
   const handleImageShow = (data) => {
     setImageShow(true);
     setImagesData(data);
-  };
-
-  const handleUpdateCAPA = (data) => {
-    setRecordForEdit(data);
-    setUpdateCAPAPopup(true);
   };
 
   const handleClose = () => {
     setOpen(false);
   };
 
-  const handleUpdateCAPASettlement = async (data) => {
+  const handlePopup = (setter, data = null) => {
     setRecordForEdit(data);
-    setOpenPopup(true);
-  };
-  const handelOpenCreditNote = async (data) => {
-    setRecordForEdit(data);
-    setOpenCrediNote(true);
+    setter(true);
   };
 
   const handleUpdateCapa = async () => {
@@ -194,26 +185,28 @@ export const CapaView = () => {
             >
               <TableHead>
                 <TableRow>
-                  <StyledTableCell align="center">
-                    Complaint No.
-                  </StyledTableCell>
-                  <StyledTableCell align="center">Customer</StyledTableCell>
-                  <StyledTableCell align="center">Created By</StyledTableCell>
-                  <StyledTableCell align="center">Date</StyledTableCell>
-                  <StyledTableCell align="center">
-                    complaint Type
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    Complaint Status
-                  </StyledTableCell>
-                  <StyledTableCell align="center">Update By</StyledTableCell>
-                  <StyledTableCell align="center">Action</StyledTableCell>
+                  {[
+                    "Complaint No.",
+                    "Customer",
+                    "Created By",
+                    "Date",
+                    "Complaint Type",
+                    "Status",
+                    "Updated By",
+                    "Action",
+                  ].map((head, index) => (
+                    <StyledTableCell key={index} align="center">
+                      {head}
+                    </StyledTableCell>
+                  ))}
                 </TableRow>
               </TableHead>
               <TableBody>
                 {CCFData.map((row, i) => (
                   <StyledTableRow key={i}>
-                    <StyledTableCell align="center">{row.ccf}</StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.ccf_details.complain_no}
+                    </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.ccf_details.customer ? row.ccf_details.customer : ""}
                     </StyledTableCell>
@@ -248,7 +241,7 @@ export const CapaView = () => {
                               variant="text"
                               color="primary"
                               size="small"
-                              onClick={() => handleUpdateCAPASettlement(row)}
+                              onClick={() => handlePopup(setOpenPopup, row)}
                             >
                               View
                             </Button>
@@ -261,9 +254,24 @@ export const CapaView = () => {
                               variant="text"
                               color="primary"
                               size="small"
-                              onClick={() => handelOpenCreditNote(row)}
+                              onClick={() => handlePopup(setOpenCrediNote, row)}
                             >
                               Credit Note
+                            </Button>
+                          )}
+                        {(userData.groups.includes("Accounts") ||
+                          userData.groups.includes("Director")) &&
+                          row.status === "Accept" &&
+                          row.sfcs === "Material Return" && (
+                            <Button
+                              variant="text"
+                              color="primary"
+                              size="small"
+                              onClick={() =>
+                                handlePopup(setOpenMaterialReturn, row)
+                              }
+                            >
+                              Material Return
                             </Button>
                           )}
                         {(userData.groups.includes("QA") ||
@@ -273,7 +281,9 @@ export const CapaView = () => {
                               variant="text"
                               color="success"
                               size="small"
-                              onClick={() => handleUpdateCAPA(row)}
+                              onClick={() =>
+                                handlePopup(setUpdateCAPAPopup, row)
+                              }
                             >
                               Update
                             </Button>
@@ -283,7 +293,7 @@ export const CapaView = () => {
                           variant="text"
                           color="secondary"
                           size="small"
-                          onClick={() => handleGetData(row)}
+                          onClick={() => handlePopup(setOpenPdf, row)}
                         >
                           View pdf
                         </Button>
@@ -338,6 +348,7 @@ export const CapaView = () => {
       >
         <CapaDownload recordForEdit={recordForEdit} setOpenPdf={setOpenPdf} />
       </Popup>
+
       <Popup
         fullScreen={true}
         title="Update Corrective And Preventive Action"
@@ -347,6 +358,19 @@ export const CapaView = () => {
         <UpdateCAPA
           recordForEdit={recordForEdit}
           setUpdateCAPAPopup={setUpdateCAPAPopup}
+          getAllCAPAData={getAllCAPAData}
+        />
+      </Popup>
+
+      <Popup
+        fullScreen={true}
+        title="Create Sales Material Return"
+        openPopup={openMaterialReturn}
+        setOpenPopup={setOpenMaterialReturn}
+      >
+        <CreateMaterialReturn
+          recordForEdit={recordForEdit}
+          setOpenMaterialReturn={setOpenMaterialReturn}
           getAllCAPAData={getAllCAPAData}
         />
       </Popup>

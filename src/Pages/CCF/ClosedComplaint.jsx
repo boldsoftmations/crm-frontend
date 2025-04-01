@@ -148,7 +148,9 @@ export const ClosedComplaint = () => {
               <TableBody>
                 {CCFData.map((row, i) => (
                   <StyledTableRow key={i}>
-                    <StyledTableCell align="center">{row.id}</StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.complain_no}
+                    </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.department}
                     </StyledTableCell>

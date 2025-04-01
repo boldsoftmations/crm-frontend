@@ -25,6 +25,20 @@ const getAllCustomerData = (statusValue, page, assignToFilter, searchValue) => {
   return CustomAxios.get(`/api/customer/list-company/?${params.toString()}`);
 };
 
+const getAllCustomerMasterList = (page) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
+
+  if (page) {
+    params.append("page", page);
+  }
+
+  // Sending a GET request with query parameters
+  return CustomAxios.get(
+    `/api/customer/list-company/?status=Active&${params.toString()}`
+  );
+};
+
 const getIncompleteKycCustomerData = (page, assignToFilter, searchValue) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
@@ -522,6 +536,17 @@ const getCustomerStatus = () => {
 
 //Api for fields sales person and customer
 
+const getFieldsSalesPersonVisitPlan = (page, search) => {
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+
+  if (search) {
+    params.append("search", search);
+  }
+  return CustomAxios.get(`/api/field-sales/visit/?${params.toString()}`);
+};
 
 const createCustomerSRF = (data) => {
   return CustomAxios.post("/api/srf/srf/", data);
@@ -619,6 +644,8 @@ const CustomerServices = {
   createCustomerScheme,
   updateCustomerscheme,
   getCustomerStatus,
+  getAllCustomerMasterList,
+  getFieldsSalesPersonVisitPlan,
   createCustomerSRF,
   updateCustomerSRfStatus,
   getCustomerSRF
