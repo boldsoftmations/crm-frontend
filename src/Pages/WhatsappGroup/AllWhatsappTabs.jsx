@@ -16,6 +16,7 @@ export const AllWhatsappTabs = () => {
 
   const allTabs = isInGroups("Director");
   const fourTabs = isInGroups("Customer Service");
+  const digilMarketing = isInGroups("Digital Marketing");
   const [activeTab, setActiveTab] = useState(allTabs ? 0 : 4);
 
   const tabs = [
@@ -36,7 +37,7 @@ export const AllWhatsappTabs = () => {
     },
     {
       label: "Bulk Message",
-      visible: allTabs || fourTabs,
+      visible: allTabs || fourTabs || digilMarketing,
       index: 3,
     },
     {
