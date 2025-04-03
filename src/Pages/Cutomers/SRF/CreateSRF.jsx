@@ -89,7 +89,7 @@ export const CreateSRF = (props) => {
     if (
       type === "lead" &&
       (!recordForEdit ||
-        !recordForEdit.name ||
+        !recordForEdit.company ||
         !recordForEdit.state ||
         !recordForEdit.city ||
         !recordForEdit.country ||
