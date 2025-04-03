@@ -7,6 +7,7 @@ import { InActiveCustomer } from "./InActiveCustomer";
 import { IncompleteKycDetails } from "./IncompleteKycDetails";
 import { ExclusiveDistributionCustomer } from "../Exclusive Distribution Customer/ExclusiveDistributionCustomer";
 import { ProductBaseCustomerView } from "../ProductBaseCustomer/ProductBaseCustomerView";
+import { NewCustomerListView } from "../NewCustomers/NewCustomers";
 
 export const AllCustomerTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
@@ -20,6 +21,15 @@ export const AllCustomerTabView = () => {
     "Accounts",
     "Customer Relationship Manager",
     "Business Development Manager"
+  );
+
+  const BdeAndManager = isInGroups(
+    "Director",
+    "Sales Manager",
+    "Sales Executive",
+    "Sales Deputy Manager",
+    "Business Development Manager",
+    "Business Development Executive"
   );
 
   const isDirectorandSalesManager = isInGroups(
@@ -101,6 +111,12 @@ export const AllCustomerTabView = () => {
         index: 5,
         component: <ProductBaseCustomerView />,
       },
+      {
+        label: "New Customers",
+        visible: BdeAndManager,
+        index: 6,
+        component: <NewCustomerListView />,
+      },
     ],
     [
       allCustomerTabs,
@@ -113,6 +129,7 @@ export const AllCustomerTabView = () => {
       isSalesManagerWithLeads,
       isCustomerService,
       isAccountBillingDepartment,
+      BdeAndManager,
     ]
   );
 

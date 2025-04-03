@@ -567,6 +567,20 @@ const getCustomerSRF = (page,search) => {
   return CustomAxios.get(`/api/srf/srf/?${params.toString()}/`);
 };
 
+const getNewCustomers =   (page, filterPerson,day_range) => {
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+  if (filterPerson) {
+    params.append("lead__assigned_to__name", filterPerson);
+  }
+  if (day_range) {
+    params.append("day_range", day_range);
+  }
+  return CustomAxios.get(`/api/customer/new-customer/?${params.toString()}`);
+};
+
 const CustomerServices = {
   getAllCustomerData,
   getIncompleteKycCustomerData,
@@ -648,7 +662,8 @@ const CustomerServices = {
   getFieldsSalesPersonVisitPlan,
   createCustomerSRF,
   updateCustomerSRfStatus,
-  getCustomerSRF
+  getCustomerSRF,
+  getNewCustomers
 };
 
 export default CustomerServices;
