@@ -28,6 +28,7 @@ import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import SearchComponent from "../../../Components/SearchComponent ";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
+import { CreateSRF } from "../SRF/CreateSRF";
 
 export const CompanyDetails = () => {
   const [openPopupOfUpdateCustomer, setOpenPopupOfUpdateCustomer] =
@@ -35,6 +36,7 @@ export const CompanyDetails = () => {
   const [openPopupOfCreateCustomer, setOpenPopupOfCreateCustomer] =
     useState(false);
   const [openPopupInvoice, setOpenPopupInvoice] = useState(false);
+  const [openSRF, setOpenSRF] = useState(false);
   const [openPopupPotential, setOpenPopupPotential] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -204,6 +206,12 @@ export const CompanyDetails = () => {
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
+  };
+
+  //open popup for SRF(Sample Requist Form)
+  const handleOpenSRF = (data) => {
+    setRecordForEdit(data);
+    setOpenSRF(true);
   };
 
   const Tableheaders = [
@@ -462,7 +470,7 @@ export const CompanyDetails = () => {
                         sx={{ color: "#1976d2" }}
                         onClick={() => openInPopupOfUpdateCustomer(row)}
                       >
-                        View,
+                        View
                       </Button>
                       {!userData.groups.includes(
                         "Accounts Billing Department"
@@ -471,7 +479,18 @@ export const CompanyDetails = () => {
                           sx={{ color: "#28a745" }}
                           onClick={() => openInPopupInvoice(row)}
                         >
-                          PI,
+                          PI
+                        </Button>
+                      )}
+                      {!userData.groups.includes(
+                        "Accounts Billing Department"
+                      ) && (
+                        <Button
+                          size="small"
+                          color="secondary"
+                          onClick={() => handleOpenSRF(row)}
+                        >
+                          SRF
                         </Button>
                       )}
                     </StyledTableCell>
@@ -554,6 +573,18 @@ export const CompanyDetails = () => {
           getCompanyDetailsByID={getAllCompanyDetails}
           recordForEdit={recordForEdit}
           setOpenModal={setOpenPopupPotential}
+        />
+      </Popup>
+      <Popup
+        maxWidth={"lg"}
+        title={"Create Sample Request Form"}
+        openPopup={openSRF}
+        setOpenPopup={setOpenSRF}
+      >
+        <CreateSRF
+          type="customer"
+          recordForEdit={recordForEdit}
+          setOpenModal={setOpenSRF}
         />
       </Popup>
     </>

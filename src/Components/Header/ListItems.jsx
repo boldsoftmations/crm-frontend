@@ -215,6 +215,7 @@ export const ListItems = ({ setOpen }) => {
             text: "CCF Complaint Master",
           },
         ]),
+        renderListItem("/customer/srf", <StickyNote2Icon />, "SRF"),
         renderSubmenu("inventory", <InventoryIcon />, "Inventory", [
           { to: "/inventory/view-inventory", text: "Inventory" },
         ]),
@@ -243,15 +244,7 @@ export const ListItems = ({ setOpen }) => {
         userData.groups.includes("Factory-Mumbai-OrderBook"),
       items: [
         renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
-      ],
-    },
-    {
-      condition:
-        userData.groups.includes("Factory-Mumbai-Dispatch") ||
-        userData.groups.includes("Factory-Delhi-Dispatch"),
-      items: [
-        renderListItem("/dispatch/tab-view", <LocalShippingIcon />, "Dispatch"),
-        renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
+        renderListItem("/customer/srf", <StickyNote2Icon />, "SRF"),
       ],
     },
 
@@ -260,6 +253,7 @@ export const ListItems = ({ setOpen }) => {
       condition: userData.groups.includes("QA"),
       items: [
         renderListItem("/user/analytics", <DashboardIcon />, "Analytics"),
+        renderListItem("/customer/srf", <StickyNote2Icon />, "SRF"),
         renderSubmenu("master", <BusinessIcon />, "Master", [
           {
             to: "/customer/complaints/ccp-capa/master",
@@ -282,6 +276,7 @@ export const ListItems = ({ setOpen }) => {
         userData.groups.includes("Factory-Delhi-Dispatch"),
       items: [
         renderListItem("/dispatch/tab-view", <LocalShippingIcon />, "Dispatch"),
+        renderListItem("/customer/srf", <StickyNote2Icon />, "SRF"),
         renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
       ],
     },
@@ -311,6 +306,7 @@ export const ListItems = ({ setOpen }) => {
           "Customer Complaint",
           [{ to: "/customer/complaints/ccp-capa", text: "CCF-CAPA" }]
         ),
+        renderListItem("/customer/srf", <StickyNote2Icon />, "SRF"),
         renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
         renderListItem("/dispatch/tab-view", <LocalShippingIcon />, "Dispatch"),
         renderListItem("/task/view-task", <AssignmentTurnedInIcon />, "Task"),
@@ -492,6 +488,7 @@ export const ListItems = ({ setOpen }) => {
         renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
           { to: "/invoice/performa-invoice-tab", text: "Performa Invoice" },
         ]),
+        renderListItem("/customer/srf", <StickyNote2Icon />, "SRF"),
         renderSubmenu("sales", <TrendingUpIcon />, "Sales", [
           { to: "/leads/all-lead", text: "Leads" },
           { to: "/customers/all-customer", text: "Customer" },
@@ -523,6 +520,7 @@ export const ListItems = ({ setOpen }) => {
         renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
           { to: "/invoice/performa-invoice-tab", text: "Performa Invoice" },
         ]),
+        renderListItem("/customer/srf", <StickyNote2Icon />, "SRF"),
         renderSubmenu("sales", <TrendingUpIcon />, "Sales", [
           { to: "/leads/all-lead", text: "Leads" },
           { to: "/customers/all-customer", text: "Customer" },
@@ -544,6 +542,7 @@ export const ListItems = ({ setOpen }) => {
         renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
           { to: "/invoice/performa-invoice-tab", text: "Performa Invoice" },
         ]),
+        renderListItem("/customer/srf", <StickyNote2Icon />, "SRF"),
         renderSubmenu("sales", <TrendingUpIcon />, "Sales", [
           { to: "/customers/all-customer", text: "Customer" },
           { to: "/followp/view-followup", text: "Followup" },
@@ -563,6 +562,7 @@ export const ListItems = ({ setOpen }) => {
         renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
           { to: "/invoice/performa-invoice-tab", text: "Performa Invoice" },
         ]),
+        renderListItem("/customer/srf", <StickyNote2Icon />, "SRF"),
         renderSubmenu("sales", <TrendingUpIcon />, "Sales", [
           { to: "/customers/all-customer", text: "Customer" },
           { to: "/followp/view-followup", text: "Followup" },
@@ -582,6 +582,7 @@ export const ListItems = ({ setOpen }) => {
         renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
           { to: "/invoice/performa-invoice-tab", text: "Performa Invoice" },
         ]),
+        renderListItem("/customer/srf", <StickyNote2Icon />, "SRF"),
         renderSubmenu("sales", <TrendingUpIcon />, "Sales", [
           { to: "/leads/all-lead", text: "Leads" },
           { to: "/customers/all-customer", text: "Customer" },
@@ -650,6 +651,7 @@ export const ListItems = ({ setOpen }) => {
         renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
           { to: "/invoice/performa-invoice-tab", text: "Performa Invoice" },
         ]),
+        renderListItem("/customer/srf", <StickyNote2Icon />, "SRF"),
         renderSubmenu("sales", <TrendingUpIcon />, "Sales", [
           { to: "/leads/all-lead", text: "Leads" },
           { to: "/customers/all-customer", text: "Customer" },

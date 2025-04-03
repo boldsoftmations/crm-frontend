@@ -41,6 +41,7 @@ import { AllComplaintListView } from "../Pages/CCF/AllComplaintListView";
 import { SalesInvoiceAllTab } from "../Pages/Invoice/SalesInvoice/SalesInvoiceAllTab";
 import { AllTabView } from "../Pages/StateAndCity/AllTAbView";
 import { ViewMasterActivitiesList } from "../Pages/MasterActivityList/ViewMasterActivitiesList";
+import { AllSRFTab } from "../Pages/Cutomers/SRF/AllSRFTab";
 
 const PrivateRoute = ({ children, redirectTo = "/" }) => {
   const tokenData = useSelector((state) => state.auth);
@@ -365,6 +366,15 @@ export const RouteScreen = () => {
             element={
               <PrivateRoute>
                 <ViewMasterActivitiesList />
+              </PrivateRoute>
+            }
+          />
+  
+          <Route
+            path="/customer/srf"
+            element={
+              <PrivateRoute>
+                <AllSRFTab/>
               </PrivateRoute>
             }
           />

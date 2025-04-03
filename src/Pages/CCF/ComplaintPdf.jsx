@@ -129,7 +129,7 @@ const ComplainPdf = ({ pdfData }) => {
                 >
                   Complaint No:
                 </Typography>
-                <Typography variant="body1">{pdfData.id}</Typography>
+                <Typography variant="body1">{pdfData.complain_no}</Typography>
                 <Typography
                   variant="body1"
                   fontWeight="bold"

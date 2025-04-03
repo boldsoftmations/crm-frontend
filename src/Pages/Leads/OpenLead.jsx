@@ -32,7 +32,6 @@ import { CustomPagination } from "../../Components/CustomPagination";
 import { CustomLoader } from "../../Components/CustomLoader";
 import { BulkLeadAssign } from "./BulkLeadAssign";
 import { useSelector } from "react-redux";
-import { LeadActivityCreate } from "../FollowUp/LeadActivityCreate";
 import { CreateLeadsProformaInvoice } from "./../Invoice/ProformaInvoice/CreateLeadsProformaInvoice";
 import { Helmet } from "react-helmet";
 import { LeadPotentialCreate } from "./LeadPotential/LeadPotentialCreate";
@@ -42,6 +41,7 @@ import { useNotificationHandling } from "../../Components/useNotificationHandlin
 import { MessageAlert } from "../../Components/MessageAlert";
 import SearchComponent from "../../Components/SearchComponent ";
 import { CreateEDCByLeads } from "./CreateEDByLeads";
+import { CreateSRF } from "../Cutomers/SRF/CreateSRF";
 
 export const OpenLead = () => {
   const [leads, setLeads] = useState([]);
@@ -53,7 +53,6 @@ export const OpenLead = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
-  const [openModalFollowup, setOpenModalFollowup] = useState(false);
   const [openModalPotential, setOpenModalPotential] = useState(false);
   const [pinnedRows, setPinnedRows] = useState([]);
   const [openModalPI, setOpenModalPI] = useState(false);
@@ -67,6 +66,7 @@ export const OpenLead = () => {
   const tokenData = useSelector((state) => state.auth);
   const users = tokenData.profile;
   const [isPrinting, setIsPrinting] = useState(false);
+  const [openSRF, setOpenSRF] = useState(false);
   const assigned = users.sales_users || [];
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
@@ -108,11 +108,6 @@ export const OpenLead = () => {
     setOpenPopup(true);
   };
 
-  const openInPopup2 = (item) => {
-    setLeadsByID(item.lead_id);
-    setOpenModalFollowup(true);
-  };
-
   const openInPopup3 = (item) => {
     setLeadsByID(item.lead_id);
     setOpenModalPotential(true);
@@ -126,6 +121,12 @@ export const OpenLead = () => {
   const openInPopup5 = (item) => {
     setLeadsByID(item.lead_id);
     setOpenModalForecast(true);
+  };
+
+  //open popup for SRF(Sample Requist Form)
+  const handleOpenSRF = (data) => {
+    setLeadsByID(data);
+    setOpenSRF(true);
   };
 
   const FetchData = async (value) => {
@@ -505,15 +506,11 @@ export const OpenLead = () => {
                       </IconButton>
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      <Button onClick={() => openInPopup(row)}>View</Button>,
-                      <Button onClick={() => openInPopup2(row)}>
-                        Activity
-                      </Button>
-                      ,
+                      <Button onClick={() => openInPopup(row)}>View</Button>
                       <Button onClick={() => openInPopup3(row)}>
                         Potential
                       </Button>
-                      ,<Button onClick={() => openInPopup4(row)}>PI</Button>,{" "}
+                      ,<Button onClick={() => openInPopup4(row)}>PI</Button>{" "}
                       <Button onClick={() => openInPopup5(row)}>
                         Forecast
                       </Button>
@@ -525,6 +522,16 @@ export const OpenLead = () => {
                           onClick={() => handleopenEDCmodal(row)}
                         >
                           Assign EDC
+                        </Button>
+                      )}
+                      {!userData.groups.includes(
+                        "Accounts Billing Department"
+                      ) && (
+                        <Button
+                          color="success"
+                          onClick={() => handleOpenSRF(row)}
+                        >
+                          SRF
                         </Button>
                       )}
                     </StyledTableCell>
@@ -572,23 +579,6 @@ export const OpenLead = () => {
         />
       </Popup>
 
-      <Popup
-        maxWidth={"xl"}
-        title={"Create Activity"}
-        openPopup={openModalFollowup}
-        setOpenPopup={setOpenModalFollowup}
-      >
-        <LeadActivityCreate
-          getleads={getleads}
-          leadsByID={leadsByID}
-          setOpenPopup={setOpenModalFollowup}
-          getLeadByID={null}
-          currentPage={currentPage}
-          filterQuery={filterQuery}
-          filterSelectedQuery={filterSelectedQuery}
-          searchQuery={searchQuery}
-        />
-      </Popup>
       <Popup
         maxWidth={"lg"}
         title={"Create Potential"}
@@ -650,6 +640,19 @@ export const OpenLead = () => {
         <CreateEDCByLeads
           setOpenPopup={setOpenEDCModal}
           editforedc={editforedc}
+        />
+      </Popup>
+
+      <Popup
+        maxWidth={"lg"}
+        title={"Create Sample Request Form"}
+        openPopup={openSRF}
+        setOpenPopup={setOpenSRF}
+      >
+        <CreateSRF
+          recordForEdit={leadsByID}
+          type="lead"
+          setOpenModal={setOpenSRF}
         />
       </Popup>
     </>
