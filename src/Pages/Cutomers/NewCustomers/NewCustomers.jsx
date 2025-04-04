@@ -29,6 +29,16 @@ export const NewCustomerListView = () => {
   const [totalPages, setTotalPages] = useState(0);
   const userData = useSelector((state) => state.auth.profile);
   const assigned = userData.active_sales_user || [];
+  const roles = [
+    "Business Development Executive",
+    "Business Development Manager",
+    "Sales Executive",
+  ];
+
+  const filterBDEPerson = assigned.filter((group) =>
+    roles.includes(group.groups__name)
+  );
+
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
@@ -92,7 +102,7 @@ export const NewCustomerListView = () => {
                     id="combo-box-description"
                     onChange={handleFilterPerson}
                     value={filterValue}
-                    options={assigned.map((option) => option.name)}
+                    options={filterBDEPerson.map((option) => option.name)}
                     getOptionLabel={(option) => option}
                     label="Filter By Sales Person"
                   />
