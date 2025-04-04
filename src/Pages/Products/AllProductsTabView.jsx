@@ -11,6 +11,7 @@ import { ViewProductCode } from "./ProductCode/ViewProductCode";
 import { ViewRawMaterials } from "../SKU Codes/RawMaterials/ViewRawMaterials";
 import { ViewFinishGoods } from "../SKU Codes/FinishGoods/ViewFinishGoods";
 import { ViewConsumable } from "../SKU Codes/Consumable/ViewConsumable";
+import { ViewSamleProduct } from "../SKU Codes/SampleProduct/ViewSampleProduct";
 
 export const AllProductsTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
@@ -74,6 +75,11 @@ export const AllProductsTabView = () => {
       visible: isAdmin,
       index: 9,
     },
+    {
+      label: "Sample Product",
+      visible: isAdmin,
+      index: 10,
+    },
   ];
 
   // Filter tabs based on visibility
@@ -92,6 +98,7 @@ export const AllProductsTabView = () => {
     7: <ViewUnit />,
     8: <ViewPackingUnit />,
     9: <ViewBasicUnit />,
+    10: <ViewSamleProduct />,
   };
 
   return (

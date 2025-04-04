@@ -5,7 +5,6 @@ import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomTextField from "../../../Components/CustomTextField";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import ProductService from "../../../services/ProductService";
-import useDynamicFormFields from "../../../Components/useDynamicFormFields ";
 import CustomerServices from "../../../services/CustomerService";
 import { useNavigate } from "react-router-dom";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
@@ -29,25 +28,52 @@ export const CreateSRF = (props) => {
   const [productOption, setProductOption] = useState([]);
   const [filterSellerAcount, setFilterSellerAcount] = useState("");
   const [sellerData, setSellerData] = useState([]);
+  const [products, setProducts] = useState([
+    {
+      product: "",
+      quantity: "",
+      unit: "",
+      special_instructions: "",
+    },
+  ]);
   const [open, setOpen] = useState(false);
-  const {
-    handleAutocompleteChange,
-    handleFormChange,
-    addFields,
-    removeFields,
-    products,
-  } = useDynamicFormFields(
-    [
-      {
-        product: "",
-        quantity: "",
-        unit: "",
-        special_instructions: "",
-      },
-    ],
-    productOption,
-    true
+
+  const handleAutocompleteChange = useCallback(
+    (index, event, value) => {
+      let data = [...products];
+      const productObj = productOption.find((item) => item.name === value);
+      data[index] = {
+        ...data[index],
+        product: value,
+        unit: productObj ? productObj.unit__name : "",
+      };
+      setProducts(data);
+    },
+    [products, productOption]
   );
+
+  const handleFormChange = useCallback(
+    (index, event) => {
+      let data = [...products];
+      data[index][event.target.name] = event.target.value;
+      setProducts(data);
+    },
+    [products]
+  );
+
+  const addFields = useCallback(() => {
+    let newField = {
+      product: "",
+      unit: "",
+      quantity: "",
+      special_instructions: "",
+    };
+    setProducts((prevProducts) => [...prevProducts, newField]);
+  }, []);
+
+  const removeFields = useCallback((index) => {
+    setProducts((prevProducts) => prevProducts.filter((_, i) => i !== index));
+  }, []);
 
   const navigate = useNavigate();
   const [alertmsg, setAlertMsg] = useState({
@@ -60,8 +86,8 @@ export const CreateSRF = (props) => {
   };
   const getProduct = useCallback(async () => {
     try {
-      const res = await ProductService.getProductPriceList();
-      setProductOption(res.data.products);
+      const res = await ProductService.getSampleProduct();
+      setProductOption(res.data);
     } catch (err) {
       console.error("error potential", err);
     }
@@ -284,9 +310,7 @@ export const CreateSRF = (props) => {
                     onChange={(e, value) =>
                       handleAutocompleteChange(index, e, value)
                     }
-                    options={productOption.map(
-                      (option) => option.product__name
-                    )}
+                    options={productOption.map((option) => option.name)}
                     getOptionLabel={(option) => option}
                     sx={{ minWidth: 300 }}
                     label="Product Name"
