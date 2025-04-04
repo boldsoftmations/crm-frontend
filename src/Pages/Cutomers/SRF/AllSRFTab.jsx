@@ -21,6 +21,7 @@ export const AllSRFTab = () => {
         "Customer Relationship Manager",
         "Business Development Manager",
         "Business Development Executive",
+        "QA",
       ],
       component: <ViewSRF />,
     },
