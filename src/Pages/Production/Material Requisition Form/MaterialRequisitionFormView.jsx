@@ -754,8 +754,6 @@ const filterDays = [
 
 const style = StyleSheet.create({
   container: {
-    // margin: "50pt",
-    // padding: "10pt",
     border: "1pt solid #ccc",
   },
   row: {
@@ -780,6 +778,7 @@ const style = StyleSheet.create({
   },
   lightText: {
     color: "#777", // set the color to a light gray color
+    fontSize: "10px",
   },
 });
 
@@ -875,6 +874,9 @@ const MyDocument = ({ materialRequisitionDataByID, Total_qty }) => (
               <Text>UNIT</Text>
             </View>
             <View style={style.cell}>
+              <Text>SIZE</Text>
+            </View>
+            <View style={style.cell}>
               <Text>QUANTITY</Text>
             </View>
           </View>
@@ -889,6 +891,9 @@ const MyDocument = ({ materialRequisitionDataByID, Total_qty }) => (
                 </View>
                 <View style={style.cell}>
                   <Text style={style.lightText}>{historyRow.unit}</Text>
+                </View>
+                <View style={style.cell}>
+                  <Text style={style.lightText}>{historyRow.size}</Text>
                 </View>
                 <View style={style.cell}>
                   <Text style={style.lightText}>{historyRow.quantity}</Text>
