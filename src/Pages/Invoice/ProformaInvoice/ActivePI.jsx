@@ -292,7 +292,8 @@ export const ActivePI = () => {
 
               {/* Export data*/}
               {(users.groups.includes("Accounts") ||
-                users.groups.includes("Director")) && (
+                users.groups.includes("Director") ||
+                users.groups.includes("Customer Service")) && (
                 <Grid item xs={12} sm={3}>
                   <Button
                     variant="contained"
