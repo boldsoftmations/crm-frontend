@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   styled,
   TableCell,
@@ -10,6 +10,7 @@ import {
   TableRow,
   TableBody,
   Table,
+  Button,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
 import CustomerServices from "../../../services/CustomerService";
@@ -19,6 +20,7 @@ import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import { useNotificationHandling } from "./../../../Components/useNotificationHandling ";
 import { CustomPagination } from "../../../Components/CustomPagination";
 import { useSelector } from "react-redux";
+import { CSVLink } from "react-csv";
 
 export const NewCustomerListView = () => {
   const [open, setOpen] = useState(false);
@@ -29,6 +31,8 @@ export const NewCustomerListView = () => {
   const [totalPages, setTotalPages] = useState(0);
   const userData = useSelector((state) => state.auth.profile);
   const assigned = userData.active_sales_user || [];
+  const csvLinkRef = useRef(null);
+  const [exportData, setExportData] = useState([]);
   const roles = [
     "Business Development Executive",
     "Business Development Manager",
@@ -41,6 +45,54 @@ export const NewCustomerListView = () => {
 
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
+
+  //export data
+
+  const handleExport = async () => {
+    try {
+      setOpen(true);
+      const response = await CustomerServices.getNewCustomers(
+        "all",
+        filterValue,
+        filterByDays
+      );
+
+      const data = response.data.map((row) => {
+        return {
+          name: row.name,
+          status: row.status,
+          assigned_to: row.assigned_to.join(" , "),
+          creation_date: row.creation_date,
+        };
+      });
+      setOpen(false);
+      return data;
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setOpen(false);
+    }
+  };
+
+  const headers = [
+    { label: "Name", key: "name" },
+    { label: "Status", key: "status" },
+    { label: "Assigned To", key: "assigned_to" },
+    { label: "Creation Date", key: "creation_date" },
+  ];
+  //handle export function
+
+  const handleDownload = async () => {
+    try {
+      const data = await handleExport();
+      setExportData(data);
+      setTimeout(() => {
+        csvLinkRef.current.link.click();
+      });
+    } catch (error) {
+      console.log("CSVLink Download error", error);
+    }
+  };
 
   // Function to get product base customer data
   const getNewCustomers = async () => {
@@ -122,6 +174,31 @@ export const NewCustomerListView = () => {
                     label="Filter by days"
                   />
                 </Box>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  className="mx-3"
+                  onClick={handleDownload}
+                >
+                  DownLoad CSV
+                </Button>
+
+                {exportData.length > 0 && (
+                  <CSVLink
+                    data={exportData}
+                    headers={headers}
+                    ref={csvLinkRef}
+                    filename="New Customer.csv"
+                    target="_blank"
+                    style={{
+                      textDecoration: "none",
+                      outline: "none",
+                      visibility: "hidden",
+                    }}
+                  />
+                )}
               </Grid>
             </Grid>
           </Box>
