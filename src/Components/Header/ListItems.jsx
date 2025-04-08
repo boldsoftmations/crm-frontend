@@ -105,6 +105,11 @@ export const ListItems = ({ setOpen }) => {
         renderListItem("/user/report", <AssessmentIcon />, "Report"),
         renderListItem("/user/analytics", <DashboardIcon />, "Analytics"),
         renderListItem("/customer/srf", <StickyNote2Icon />, "SRF"),
+        renderListItem(
+          "/master/customer-visit",
+          <DirectionsRunIcon />,
+          "Field Sales"
+        ),
         renderSubmenu("master", <BusinessIcon />, "Master", [
           { to: "/products/all-product", text: "Inventory Master" },
           { to: "/invoice/seller-account", text: "Company Master" },

@@ -41,6 +41,7 @@ import { AllComplaintListView } from "../Pages/CCF/AllComplaintListView";
 import { SalesInvoiceAllTab } from "../Pages/Invoice/SalesInvoice/SalesInvoiceAllTab";
 import { AllTabView } from "../Pages/StateAndCity/AllTAbView";
 import { ViewMasterActivitiesList } from "../Pages/MasterActivityList/ViewMasterActivitiesList";
+import { FieldSalesAllTabView } from "../Pages/FieldSales/FieldSalesAllTab";
 import { AllSRFTab } from "../Pages/Cutomers/SRF/AllSRFTab";
 
 const PrivateRoute = ({ children, redirectTo = "/" }) => {
@@ -369,7 +370,15 @@ export const RouteScreen = () => {
               </PrivateRoute>
             }
           />
-  
+       
+          <Route
+            path="/master/customer-visit"
+            element={
+              <PrivateRoute>
+                <FieldSalesAllTabView />
+              </PrivateRoute>
+            }
+          />
           <Route
             path="/customer/srf"
             element={

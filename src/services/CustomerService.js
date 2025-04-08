@@ -39,6 +39,11 @@ const getAllCustomerMasterList = (page) => {
   );
 };
 
+
+const createCustomerVisitPlan = (data) => {
+  return CustomAxios.post("/api/field-sales/visit-plan/", data);
+};
+
 const getIncompleteKycCustomerData = (page, assignToFilter, searchValue) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
@@ -545,7 +550,7 @@ const getFieldsSalesPersonVisitPlan = (page, search) => {
   if (search) {
     params.append("search", search);
   }
-  return CustomAxios.get(`/api/field-sales/visit/?${params.toString()}`);
+  return CustomAxios.get(`/api/field-sales/visit-plan/?${params.toString()}`);
 };
 
 const createCustomerSRF = (data) => {
@@ -554,6 +559,10 @@ const createCustomerSRF = (data) => {
 
 const updateCustomerSRfStatus = (id,data)=>{
   return CustomAxios.patch(`/api/srf/srf/${id}/`,data)
+}
+
+const updateSRFProduct=(id,data)=>{
+  return CustomAxios.patch(`/api/srf/product/${id}/`,data)
 }
 const getCustomerSRF = (page,search) => {
   const params = new URLSearchParams();
@@ -659,9 +668,11 @@ const CustomerServices = {
   updateCustomerscheme,
   getCustomerStatus,
   getAllCustomerMasterList,
+  createCustomerVisitPlan,
   getFieldsSalesPersonVisitPlan,
   createCustomerSRF,
   updateCustomerSRfStatus,
+  updateSRFProduct,
   getCustomerSRF,
   getNewCustomers
 };
