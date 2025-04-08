@@ -264,6 +264,7 @@ function Row({ row, getCustomerSRF, handleError, handleSuccess }) {
     const contactLines = [
       `Name: ${contact_details.name}`,
       `Contact: ${contact_details.contact}`,
+      `Created By: ${data.created_by}`,
     ];
 
     contactLines.forEach((line, i) => {
@@ -286,14 +287,24 @@ function Row({ row, getCustomerSRF, handleError, handleSuccess }) {
       item.unit,
       item.quantity,
     ]);
-
     autoTable(doc, {
       startY: tableStartY,
       head: headers,
       body: rows,
-      styles: { fontSize: 10, halign: "center" },
-      headStyles: { fillColor: [0, 102, 204], textColor: 255 },
-      alternateRowStyles: { fillColor: [240, 240, 240] },
+      styles: {
+        fontSize: 10,
+        halign: "center",
+      },
+      headStyles: {
+        fillColor: "#ccc",
+        textColor: "black",
+        cellPadding: 3, // 👈 This adds padding in the header cells
+        fontStyle: "bold",
+      },
+      alternateRowStyles: {
+        fillColor: "white",
+        textColor: "black",
+      },
       margin: { left: 14, right: 14 },
     });
 
