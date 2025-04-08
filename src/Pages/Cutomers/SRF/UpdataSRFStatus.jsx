@@ -118,7 +118,7 @@ const UpdateSRFStatus = ({ setOpenPopup, getCustomerSRF, recordData }) => {
             value={status}
             id="combo-box-description"
             onChange={(_, value) => setStatus(value)}
-            options={["Dispatched", "Not Available"]}
+            options={["Dispatched"]}
             getOptionLabel={(option) => option}
             label="Status"
           />
@@ -164,19 +164,20 @@ const UpdateSRFStatus = ({ setOpenPopup, getCustomerSRF, recordData }) => {
           </Grid>
         )}
         {(userData.groups.includes("Customer Service") ||
-          userData.groups.includes("Director")) && (
-          <Grid item xs={12}>
-            <TextField
-              multiline
-              rows={3}
-              size="small"
-              fullWidth
-              label="Customer Feedback"
-              value={customerFeedback || ""}
-              onChange={(e) => setCustomerFeedback(e.target.value)}
-            />
-          </Grid>
-        )}
+          userData.groups.includes("Director")) &&
+          recordData.status === "Dispatched" && (
+            <Grid item xs={12}>
+              <TextField
+                multiline
+                rows={3}
+                size="small"
+                fullWidth
+                label="Customer Feedback"
+                value={customerFeedback || ""}
+                onChange={(e) => setCustomerFeedback(e.target.value)}
+              />
+            </Grid>
+          )}
         <Grid item xs={12}>
           <Button
             color="success"

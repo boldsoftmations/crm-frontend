@@ -26,14 +26,17 @@ import { useNotificationHandling } from "../../../Components/useNotificationHand
 import { Popup } from "../../../Components/Popup";
 import UpdateSRFStatus from "./UpdataSRFStatus";
 import { useSelector } from "react-redux";
-
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import CustomTextField from "../../../Components/CustomTextField";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 export const ViewSRF = () => {
   const [open, setOpen] = useState(false);
   const [srfData, setSrfData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
-  const { handleError, handleCloseSnackbar, alertInfo } =
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
   const getCustomerSRF = useCallback(async () => {
@@ -130,7 +133,7 @@ export const ViewSRF = () => {
             }}
           >
             <Table
-              sx={{ width: 1200, mx: "auto" }}
+              sx={{ minWidthwidth: 1250, mx: "auto" }}
               stickyHeader
               aria-label="sticky table"
             >
@@ -152,7 +155,13 @@ export const ViewSRF = () => {
               </TableHead>
               <TableBody>
                 {srfData.map((row) => (
-                  <Row key={row.id} row={row} getCustomerSRF={getCustomerSRF} />
+                  <Row
+                    key={row.id}
+                    row={row}
+                    getCustomerSRF={getCustomerSRF}
+                    handleSuccess={handleSuccess}
+                    handleError={handleError}
+                  />
                 ))}
               </TableBody>
             </Table>
@@ -168,10 +177,24 @@ export const ViewSRF = () => {
   );
 };
 
-function Row({ row, getCustomerSRF }) {
+function Row({ row, getCustomerSRF, handleError, handleSuccess }) {
   const [tableExpand, setTableExpand] = useState(false);
   const [recordData, setRecordData] = useState(null);
+  const [open, setOpen] = useState(false);
   const [openUpdateStatusPopup, setOpenUpdateStatusPopup] = useState(false);
+  const [inputValue, setInputValue] = useState();
+  useEffect(() => {
+    if (recordData) {
+      setInputValue({
+        special_instructions: recordData.special_instructions || "",
+        quantity: recordData.quantity || "",
+        status: recordData.status || "",
+      });
+    }
+  }, [recordData]);
+
+  const [openUpdateProductStatusPopup, setOpenUpdateProductStatusPopup] =
+    useState(false);
   const userData = useSelector((state) => state.auth.profile);
 
   const handleOpenPop = (data) => {
@@ -179,8 +202,134 @@ function Row({ row, getCustomerSRF }) {
     setRecordData(data);
   };
 
+  const handleUpdateProductStatusPopup = (data) => {
+    setOpenUpdateProductStatusPopup(true);
+    setRecordData(data);
+  };
+
+  const handleInputchange = (e) => {
+    const { name, value } = e.target;
+    setInputValue((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  //download odf
+  const generatePDF = (data) => {
+    const doc = new jsPDF();
+
+    // Title
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "semi bold");
+    doc.text(`SRF No: ${data.srf_no}`, 105, 20, {
+      align: "center",
+    });
+
+    const { customer, customer_details, contact_details } = data;
+    const startY = 40;
+    const leftX = 14;
+    const rightX = 150; // Push contact details further right
+    const lineHeight = 8;
+
+    // Left Block: Customer Details
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("Customer Details:", leftX, startY);
+    doc.setFont("helvetica", "normal");
+
+    const wrapAddress = doc.splitTextToSize(
+      `Address: ${customer_details.address}`,
+      120 // Wider wrap area
+    );
+
+    const customerLines = [
+      `Name: ${customer}`,
+      ...wrapAddress,
+      `City: ${customer_details.city}`,
+      `State: ${customer_details.state}`,
+      `Country: ${customer_details.country}`,
+      `Pincode: ${customer_details.pincode}`,
+    ];
+
+    customerLines.forEach((line, i) => {
+      doc.text(line, leftX, startY + lineHeight * (i + 1));
+    });
+
+    // Right Block: Contact Details (aligned to right corner)
+    doc.setFont("helvetica", "bold");
+    doc.text("Contact Details:", rightX, startY);
+    doc.setFont("helvetica", "normal");
+
+    const contactLines = [
+      `Name: ${contact_details.name}`,
+      `Contact: ${contact_details.contact}`,
+    ];
+
+    contactLines.forEach((line, i) => {
+      doc.text(line, rightX, startY + lineHeight * (i + 1));
+    });
+
+    // Calculate max Y to start table
+    const linesCount = Math.max(customerLines.length, contactLines.length);
+    const tableStartY = startY + (linesCount + 2) * lineHeight;
+
+    const headers = [["#", "Product", "Unit", "Quantity"]];
+
+    const filterProduct = data.srf_products.filter(
+      (item, id) => item.status === "Available"
+    );
+
+    const rows = filterProduct.map((item, index) => [
+      index + 1,
+      item.product,
+      item.unit,
+      item.quantity,
+    ]);
+
+    autoTable(doc, {
+      startY: tableStartY,
+      head: headers,
+      body: rows,
+      styles: { fontSize: 10, halign: "center" },
+      headStyles: { fillColor: [0, 102, 204], textColor: 255 },
+      alternateRowStyles: { fillColor: [240, 240, 240] },
+      margin: { left: 14, right: 14 },
+    });
+
+    // Footer
+    doc.setFontSize(11);
+    const footerY = doc.lastAutoTable.finalY + 20;
+    doc.text("Authorized Signature: ______________________", leftX, footerY);
+    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 150, footerY);
+
+    doc.save(`SRF-${data.srf_no}.pdf`);
+  };
+
+  //update products
+
+  const updateSRFProduct = async (id, data, close) => {
+    try {
+      setOpen(true);
+      const res = await CustomerServices.updateSRFProduct(id, data);
+      if (res.status === 200) {
+        const message = res.data.message;
+        handleSuccess(message);
+        setTimeout(() => {
+          close(false);
+          getCustomerSRF();
+        }, 500);
+      }
+    } catch (e) {
+      handleError(e.response.data.message || "Expected Error");
+      console.log(e);
+    } finally {
+      setOpen(false);
+    }
+  };
   return (
     <>
+      <CustomLoader open={open} />
       <StyledTableRow
         sx={{
           "& > *": { borderBottom: "unset" },
@@ -212,14 +361,24 @@ function Row({ row, getCustomerSRF }) {
             userData.groups.includes("Director") ||
             userData.groups.includes("QA") ||
             userData.groups.includes("Customer Service")) && (
-            <Button
-              variant="text"
-              size="small"
-              color="primary"
-              onClick={() => handleOpenPop(row)}
-            >
-              View
-            </Button>
+            <>
+              <Button
+                variant="text"
+                size="small"
+                color="primary"
+                onClick={() => handleOpenPop(row)}
+              >
+                View
+              </Button>
+              <Button
+                variant="text"
+                size="small"
+                color="secondary"
+                onClick={() => generatePDF(row)}
+              >
+                Download
+              </Button>
+            </>
           )}
         </StyledTableCell>
       </StyledTableRow>
@@ -234,34 +393,51 @@ function Row({ row, getCustomerSRF }) {
                   <TableRow style={{ backgroundColor: "#88a6cf" }}>
                     {" "}
                     {/* Heading background */}
-                    <TableCell align="center" style={{ color: "white" }}>
-                      Product
-                    </TableCell>
-                    <TableCell align="center" style={{ color: "white" }}>
-                      Unit
-                    </TableCell>
-                    <TableCell align="center" style={{ color: "white" }}>
-                      Quantity
-                    </TableCell>
-                    <TableCell align="center" style={{ color: "white" }}>
-                      Special Instructions
-                    </TableCell>
+                    {[
+                      "Product",
+                      "Unit",
+                      "Quantity",
+                      "Status",
+                      "Special Intructions",
+                      "Action",
+                    ].map((header, i) => (
+                      <TableCell
+                        align="center"
+                        style={{ color: "white" }}
+                        key={i}
+                      >
+                        {header}
+                      </TableCell>
+                    ))}
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {row.srf_products.map((option, index) => (
+                  {row.srf_products.map((rows, index) => (
                     <TableRow
-                      key={option.id}
+                      key={rows.id}
                       style={{
                         backgroundColor:
                           index % 2 === 0 ? "#f1f8ff" : "#ffffff", // Alternating row colors
                       }}
                     >
-                      <TableCell align="center">{option.product}</TableCell>
-                      <TableCell align="center">{option.unit}</TableCell>
-                      <TableCell align="center">{option.quantity}</TableCell>
+                      <TableCell align="center">{rows.product}</TableCell>
+                      <TableCell align="center">{rows.unit}</TableCell>
+                      <TableCell align="center">{rows.quantity}</TableCell>
+                      <TableCell align="center">{rows.status}</TableCell>
                       <TableCell align="center">
-                        {option.special_instructions}
+                        {rows.special_instructions}
+                      </TableCell>
+                      <TableCell align="center">
+                        {row.status === "Pending" && (
+                          <Button
+                            variant="text"
+                            size="small"
+                            color="success"
+                            onClick={() => handleUpdateProductStatusPopup(rows)}
+                          >
+                            View
+                          </Button>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -282,6 +458,67 @@ function Row({ row, getCustomerSRF }) {
           recordData={recordData}
           getCustomerSRF={getCustomerSRF}
         />
+      </Popup>
+      <Popup
+        openPopup={openUpdateProductStatusPopup}
+        setOpenPopup={setOpenUpdateProductStatusPopup}
+        title="Update Product Status"
+        maxWidth="md"
+      >
+        <Grid item xs={12} sm={12} mb={2}>
+          <CustomAutocomplete
+            size="small"
+            disablePortal
+            options={["Not Available"]}
+            value={(inputValue && inputValue.status) || ""}
+            onChange={(e, value) =>
+              setInputValue((prev) => ({
+                ...prev,
+                status: value,
+              }))
+            }
+            getOptionLabel={(option) => option}
+            sx={{ minWidth: 300 }}
+            label="Product Status"
+          />
+        </Grid>
+        <Grid item xs={12} sm={12} mb={2}>
+          <CustomTextField
+            fullWidth
+            name="quantity"
+            size="small"
+            label="Quantity"
+            variant="outlined"
+            value={(inputValue && inputValue.quantity) || ""}
+            onChange={handleInputchange}
+          />
+        </Grid>
+        <Grid item xs={12} sm={12}>
+          <CustomTextField
+            fullWidth
+            name="special_instructions"
+            size="small"
+            label="Special Instructions"
+            variant="outlined"
+            value={(inputValue && inputValue.special_instructions) || ""}
+            onChange={handleInputchange}
+          />
+        </Grid>
+
+        <Button
+          onClick={() =>
+            updateSRFProduct(
+              recordData && recordData.id,
+              inputValue,
+              setOpenUpdateProductStatusPopup
+            )
+          }
+          fullWidth
+          variant="contained"
+          sx={{ mt: 3, mb: 2 }}
+        >
+          Submit
+        </Button>
       </Popup>
     </>
   );

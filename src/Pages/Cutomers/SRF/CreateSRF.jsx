@@ -27,7 +27,9 @@ export const CreateSRF = (props) => {
   const { recordForEdit, setOpenModal, type } = props;
   const [productOption, setProductOption] = useState([]);
   const [filterSellerAcount, setFilterSellerAcount] = useState("");
+  const [contactId, setContactId] = useState("");
   const [sellerData, setSellerData] = useState([]);
+  const [contact, setContact] = useState([]);
   const [products, setProducts] = useState([
     {
       product: "",
@@ -93,6 +95,25 @@ export const CreateSRF = (props) => {
     }
   }, []);
 
+  const getCompanyDataByIdWithType = async (id) => {
+    try {
+      const res = await CustomerServices.getCompanyDataByIdWithType(
+        id,
+        "contacts"
+      );
+      setContact(res.data.contacts);
+    } catch (e) {
+    } finally {
+      setOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    if (recordForEdit.id && type === "customer") {
+      getCompanyDataByIdWithType(recordForEdit.id);
+    }
+  }, []);
+
   const getAllSellerAccountsDetails = async () => {
     try {
       const response = await InvoiceServices.getAllPaginateSellerAccountData(
@@ -149,43 +170,28 @@ export const CreateSRF = (props) => {
 
     const payload = {
       unit: filterSellerAcount,
-      type: type,
+      type,
       customer_id: customerId,
       srf_products: modiFyProduct,
+      ...(type === "customer" && { contact: contactId }),
     };
 
     setOpen(true);
 
     try {
       const res = await CustomerServices.createCustomerSRF(payload);
-      // Handle unexpected response data
-      if (res.status !== 200 && res.status !== 201) {
-        return setAlertMsg({
+      // Handle response data
+      if (res.status === 200 || res.status === 201) {
+        setAlertMsg({
           open: true,
-          message: `Unexpected status: ${res.status}`,
-          severity: "error",
+          message: res.data.message || "SRF created successfully!",
+          severity: "success",
         });
+
+        setOpenModal(false);
+        navigate("/customer/srf");
       }
-
-      if (res.data.error) {
-        return setAlertMsg({
-          open: true,
-          message: res.data.error,
-          severity: "error",
-        });
-      }
-
-      setAlertMsg({
-        open: true,
-        message: res.data.message || "SRF created successfully!",
-        severity: "success",
-      });
-
-      setOpenModal(false);
-      navigate("/customer/srf");
     } catch (e) {
-      console.error("API Error:", e); // Debugging
-
       const errorMessage =
         (e.response && e.response.data && e.response.data.message) ||
         (e.response && e.response.data && e.response.data.error) ||
@@ -226,6 +232,22 @@ export const CreateSRF = (props) => {
               style={tfStyle}
             />
           </Grid>
+          {type === "customer" && (
+            <Grid item xs={12} sm={4}>
+              <CustomAutocomplete
+                name="contact"
+                size="small"
+                disablePortal
+                id="combo-box-demo"
+                onChange={(e, value) => setContactId(value.id)}
+                options={contact}
+                getOptionLabel={(option) => option.contact}
+                sx={{ minWidth: 300 }}
+                label="Contact Person"
+                style={tfStyle}
+              />
+            </Grid>
+          )}
           <Grid item xs={12} sm={4}>
             <CustomTextField
               fullWidth
