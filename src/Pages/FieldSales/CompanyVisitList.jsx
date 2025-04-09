@@ -8,6 +8,7 @@ import {
   TableHead,
   TableRow,
   TableCell,
+  Button,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
 import { styled } from "@mui/material/styles";
@@ -16,9 +17,13 @@ import { CustomLoader } from "../../Components/CustomLoader";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
 import { CustomPagination } from "../../Components/CustomPagination";
 import CustomerServices from "../../services/CustomerService";
+import { Popup } from "../../Components/Popup";
+import { CustomerVisitView } from "./CustomerVIsitView";
 
 export const CompanyDetails = () => {
   const [open, setOpen] = useState(false);
+  const [openVisitLog, setOpenVisitLog] = useState(false);
+  const [visitLogId, setVisitLogId] = useState(null);
   const [companyData, setCompanyData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -57,9 +62,16 @@ export const CompanyDetails = () => {
       "Visit Person",
       "Planned Date",
       "Creation Date",
+      "Action",
     ],
     []
   );
+
+  const handleOpen = (data) => {
+    const { visit_log } = data;
+    setVisitLogId(visit_log);
+    setOpenVisitLog(true);
+  };
 
   return (
     <>
@@ -93,7 +105,7 @@ export const CompanyDetails = () => {
                     fontWeight: 800,
                   }}
                 >
-                  Customer Visit Plan
+                  Company Master List
                 </h3>
               </Grid>
             </Grid>
@@ -145,6 +157,16 @@ export const CompanyDetails = () => {
                     <StyledTableCell align="center">
                       {row.creation_date}
                     </StyledTableCell>
+                    <StyledTableCell align="center">
+                      <Button
+                        variant="contained"
+                        size="small"
+                        color="primary"
+                        onClick={() => handleOpen(row)}
+                      >
+                        View
+                      </Button>
+                    </StyledTableCell>
                   </StyledTableRow>
                 ))}
               </TableBody>
@@ -164,6 +186,17 @@ export const CompanyDetails = () => {
               handlePageChange={handlePageChange}
             />
           </div>
+          <Popup
+            openPopup={openVisitLog}
+            setOpenPopup={setOpenVisitLog}
+            title="Customer visit detail"
+            maxWidth="md"
+          >
+            <CustomerVisitView
+              visitLogId={visitLogId}
+              setOpenVisitLog={setOpenVisitLog}
+            />
+          </Popup>
         </div>
       </div>
     </>

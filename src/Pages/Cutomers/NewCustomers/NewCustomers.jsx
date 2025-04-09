@@ -21,14 +21,21 @@ import { useNotificationHandling } from "./../../../Components/useNotificationHa
 import { CustomPagination } from "../../../Components/CustomPagination";
 import { useSelector } from "react-redux";
 import { CSVLink } from "react-csv";
+import { Popup } from "../../../Components/Popup";
+import CustomDate from "../../../Components/CustomDate";
 
 export const NewCustomerListView = () => {
   const [open, setOpen] = useState(false);
   const [customerList, setCustomerList] = useState([]);
   const [filterValue, setFilterValue] = useState("");
+  const [openCustomDate, setOpenCustomDate] = useState(false);
   const [filterByDays, setFilterByDays] = useState("last 30 days");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const minDate = new Date().toISOString().split("T")[0];
+  const maxDate = new Date("2030-12-31").toISOString().split("T")[0];
   const userData = useSelector((state) => state.auth.profile);
   const assigned = userData.active_sales_user || [];
   const csvLinkRef = useRef(null);
@@ -61,7 +68,7 @@ export const NewCustomerListView = () => {
         return {
           name: row.name,
           status: row.status,
-          assigned_to: row.assigned_to.join(" , "),
+          created_by: row.created_by,
           creation_date: row.creation_date,
         };
       });
@@ -77,7 +84,7 @@ export const NewCustomerListView = () => {
   const headers = [
     { label: "Name", key: "name" },
     { label: "Status", key: "status" },
-    { label: "Assigned To", key: "assigned_to" },
+    { label: "Converted By", key: "created_by" },
     { label: "Creation Date", key: "creation_date" },
   ];
   //handle export function
@@ -98,10 +105,14 @@ export const NewCustomerListView = () => {
   const getNewCustomers = async () => {
     try {
       setOpen(true);
+      const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
+      const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
       const response = await CustomerServices.getNewCustomers(
         currentPage,
         filterValue,
-        filterByDays
+        filterByDays,
+        StartDate,
+        EndDate
       );
       setCustomerList(response.data.results);
       const total = response.data.count;
@@ -116,7 +127,7 @@ export const NewCustomerListView = () => {
   // Trigger API call when filters or filterValue changes
   useEffect(() => {
     getNewCustomers();
-  }, [currentPage, filterValue, filterByDays]);
+  }, [currentPage, filterValue, filterByDays, endDate, startDate]);
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
@@ -128,8 +139,34 @@ export const NewCustomerListView = () => {
   };
 
   const handleFilterDays = (event, value) => {
-    setFilterByDays(value);
-    setCurrentPage(1);
+    if (value === "Custom Date") {
+      setOpenCustomDate(true);
+      setStartDate(new Date());
+      setEndDate(new Date());
+      setFilterByDays("");
+      setCurrentPage(1);
+    } else {
+      setFilterByDays(value);
+      setCurrentPage(1);
+      setStartDate(null);
+      setEndDate(null);
+    }
+  };
+
+  const handleStartDateChange = (e) => {
+    let date = new Date(e.target.value);
+    setStartDate(date);
+    setEndDate(new Date());
+  };
+
+  const handleEndDateChange = (e) => {
+    let date = new Date(e.target.value);
+    setEndDate(date);
+  };
+
+  const resetDate = () => {
+    setStartDate(new Date());
+    setEndDate(new Date());
   };
   return (
     <>
@@ -169,7 +206,12 @@ export const NewCustomerListView = () => {
                     id="combo-box-description"
                     value={filterByDays}
                     onChange={handleFilterDays}
-                    options={["last 30 days", "last 60 days", "last 90 days"]}
+                    options={[
+                      "last 30 days",
+                      "last 60 days",
+                      "last 90 days",
+                      "Custom Date",
+                    ]}
                     getOptionLabel={(option) => option}
                     label="Filter by days"
                   />
@@ -241,7 +283,7 @@ export const NewCustomerListView = () => {
             >
               <TableHead>
                 <TableRow>
-                  {["Company", "Status", "Assigned", "Creation Date"].map(
+                  {["Company", "Status", "Converted By", "Creation Date"].map(
                     (header) => (
                       <StyledTableCell align="center">{header}</StyledTableCell>
                     )
@@ -260,7 +302,7 @@ export const NewCustomerListView = () => {
                         {row.status}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {row.assigned_to.join(" , ")}
+                        {row.created_by}
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         {row.creation_date}
@@ -276,6 +318,21 @@ export const NewCustomerListView = () => {
             handlePageChange={handlePageChange}
           />
         </Paper>
+        <Popup
+          maxWidth="md"
+          setOpenPopup={setOpenCustomDate}
+          openPopup={openCustomDate}
+        >
+          <CustomDate
+            startDate={startDate}
+            endDate={endDate}
+            minDate={minDate}
+            maxDate={maxDate}
+            handleStartDateChange={handleStartDateChange}
+            handleEndDateChange={handleEndDateChange}
+            resetDate={resetDate}
+          />
+        </Popup>
       </Grid>
     </>
   );

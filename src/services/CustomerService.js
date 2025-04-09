@@ -553,6 +553,10 @@ const getFieldsSalesPersonVisitPlan = (page, search) => {
   return CustomAxios.get(`/api/field-sales/visit-plan/?${params.toString()}`);
 };
 
+const getCustomerVisitDataById = (id) => {
+  return CustomAxios.get(`/api/field-sales/visit-logs/${id}/`);
+};
+
 const createCustomerSRF = (data) => {
   return CustomAxios.post("/api/srf/srf/", data);
 };
@@ -576,17 +580,14 @@ const getCustomerSRF = (page,search) => {
   return CustomAxios.get(`/api/srf/srf/?${params.toString()}/`);
 };
 
-const getNewCustomers =   (page, filterPerson,day_range) => {
+const getNewCustomers =   (page, filterPerson,custom_date,start_date,end_date) => {
   const params = new URLSearchParams();
-  if (page) {
-    params.append("page", page);
-  }
-  if (filterPerson) {
-    params.append("lead__assigned_to__name", filterPerson);
-  }
-  if (day_range) {
-    params.append("day_range", day_range);
-  }
+  if (page)  params.append("page", page);
+  if (filterPerson)  params.append("lead__assigned_to__name", filterPerson);
+  if(custom_date) params.append("custom_date",custom_date)
+  if(start_date)params.append("start_date",start_date)
+  if(end_date) params.append("end_date",end_date)
+  
   return CustomAxios.get(`/api/customer/new-customer/?${params.toString()}`);
 };
 
@@ -670,6 +671,7 @@ const CustomerServices = {
   getAllCustomerMasterList,
   createCustomerVisitPlan,
   getFieldsSalesPersonVisitPlan,
+  getCustomerVisitDataById,
   createCustomerSRF,
   updateCustomerSRfStatus,
   updateSRFProduct,
