@@ -64,19 +64,17 @@ export const NewLeads = () => {
   const [openModal, setOpenModal] = useState(false);
   const [openEDCModal, setOpenEDCModal] = useState(false);
   const [editforedc, setEditforedc] = useState();
-  const tokenData = useSelector((state) => state.auth);
-  const users = tokenData.profile;
   const [isPrinting, setIsPrinting] = useState(false);
   const data = useSelector((state) => state.auth);
-  const assigned = data.active_sales_user || [];
   const userData = data.profile;
+  const assigned = userData.active_sales_user || [];
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
   const FilterOptions = [
     { label: "References", value: "references__source" },
     { label: "Description", value: "description__name" },
-    ...(!users.groups.includes("Sales Executive")
+    ...(!userData.groups.includes("Sales Executive")
       ? [{ label: "Assigned To", value: "assigned_to__email" }]
       : []),
   ];
@@ -321,8 +319,6 @@ export const NewLeads = () => {
                         ? "Assigned To"
                         : filterQuery === "references__source"
                         ? "Reference"
-                        : filterQuery === "stage"
-                        ? "Stage"
                         : filterQuery === "description__name"
                         ? "Description"
                         : "",
@@ -330,8 +326,6 @@ export const NewLeads = () => {
                         ? assigned.map((option) => option.email)
                         : filterQuery === "references__source"
                         ? referenceData.map((option) => option.source)
-                        : filterQuery === "stage"
-                        ? StageOptions.map((option) => option.value)
                         : filterQuery === "description__name"
                         ? descriptionMenuData.map((option) => option.name)
                         : [],
@@ -641,17 +635,6 @@ export const NewLeads = () => {
     </>
   );
 };
-
-const StageOptions = [
-  { label: "New", value: "new" },
-  { label: "Open", value: "open" },
-  { label: "Opportunity", value: "opportunity" },
-  { label: "Potential", value: "potential" },
-  { label: "Interested", value: "interested" },
-  { label: "Converted", value: "converted" },
-  { label: "Not Interested", value: "not_interested" },
-  { label: "Close", value: "close" },
-];
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
