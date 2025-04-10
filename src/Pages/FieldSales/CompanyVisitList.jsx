@@ -105,7 +105,7 @@ export const CompanyDetails = () => {
                     fontWeight: 800,
                   }}
                 >
-                  Company Master List
+                  Company Visit List
                 </h3>
               </Grid>
             </Grid>
@@ -158,14 +158,16 @@ export const CompanyDetails = () => {
                       {row.creation_date}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      <Button
-                        variant="contained"
-                        size="small"
-                        color="primary"
-                        onClick={() => handleOpen(row)}
-                      >
-                        View
-                      </Button>
+                      {row.visit_log && (
+                        <Button
+                          variant="text"
+                          size="small"
+                          color="primary"
+                          onClick={() => handleOpen(row)}
+                        >
+                          View
+                        </Button>
+                      )}
                     </StyledTableCell>
                   </StyledTableRow>
                 ))}
