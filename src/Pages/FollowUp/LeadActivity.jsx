@@ -88,7 +88,7 @@ export const LeadActivity = memo((props) => {
                                 variant="h6"
                                 sx={{ fontFamily: "Arial", fontWeight: "bold" }}
                               >
-                                {data.activity} - {data.user} -
+                                {data.activity} - {data.user_name} -
                                 {data.next_followup_date &&
                                   moment(data.next_followup_date).format(
                                     "DD/MM/YYYY"

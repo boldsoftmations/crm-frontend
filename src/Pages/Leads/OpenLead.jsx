@@ -63,13 +63,11 @@ export const OpenLead = () => {
   const [referenceData, setReferenceData] = useState([]);
   const [descriptionMenuData, setDescriptionMenuData] = useState([]);
   const [openModal, setOpenModal] = useState(false);
-  const tokenData = useSelector((state) => state.auth);
-  const users = tokenData.profile;
   const [isPrinting, setIsPrinting] = useState(false);
   const [openSRF, setOpenSRF] = useState(false);
-  const assigned = users.sales_users || [];
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
+  const assigned = userData.active_sales_user || [];
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
@@ -77,7 +75,7 @@ export const OpenLead = () => {
     { label: "References", value: "references__source" },
     { label: "Description", value: "description__name" },
     { label: "Stage", value: "stage" },
-    ...(!users.groups.includes("Sales Executive")
+    ...(!userData.groups.includes("Sales Executive")
       ? [{ label: "Assigned To", value: "assigned_to__email" }]
       : []),
   ];
