@@ -541,15 +541,13 @@ const getCustomerStatus = () => {
 
 //Api for fields sales person and customer
 
-const getFieldsSalesPersonVisitPlan = (page, search) => {
+const getFieldsSalesPersonVisitPlan = (page, search,filter_type,visited_by__name,is_completed) => {
   const params = new URLSearchParams();
-  if (page) {
-    params.append("page", page);
-  }
-
-  if (search) {
-    params.append("search", search);
-  }
+  if(page) params.append("page", page);
+  if (search)  params.append("search", search);
+  if(filter_type) params.append("filter_type",filter_type)
+    if(visited_by__name) params.append("visited_by__name",visited_by__name)
+  if(is_completed) params.append("is_completed",is_completed)
   return CustomAxios.get(`/api/field-sales/visit-plan/?${params.toString()}`);
 };
 

@@ -73,15 +73,13 @@ export const MasterCustomerVisitList = () => {
   const Tableheaders = useMemo(() => ["CHECKBOX", "NAME", "CITY", "STATE"], []);
 
   //open modal
-
   const HandleOpenModal = (item) => {
     setSelectedCustomer(item);
     setModalOpen(true);
   };
-  //assign to sales person
 
+  //assign to sales person
   const updateAssigned = async (e) => {
-    console.log(e);
     try {
       setOpen(true);
       const req = {
@@ -141,9 +139,9 @@ export const MasterCustomerVisitList = () => {
                 <h3
                   style={{
                     textAlign: "center",
-                    fontSize: "24px",
-                    color: "rgb(34, 34, 34)",
-                    fontWeight: 800,
+                    fontSize: "22px",
+                    color: "rgba(7, 7, 7, 0.96)",
+                    fontWeight: 700,
                   }}
                 >
                   Company List
