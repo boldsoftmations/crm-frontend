@@ -136,7 +136,8 @@ export const WhatsappGroup = () => {
             <Accordion key={data.id} sx={{ margin: 1 }}>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography>
-                  {index + 1} Date: {formatDate(data.creation_date)} | All:{" "}
+                  {data.type_of_customer} {data.type_of_customer ? "|" : ""}{" "}
+                  Date: {formatDate(data.creation_date)} | All:{" "}
                   {data.messages_statistics.all} | Sent:{" "}
                   {data.messages_statistics.sent} | Failed:{" "}
                   {data.messages_statistics.unsent} | Queue:{" "}

@@ -197,10 +197,10 @@ export const WhatsappGroupCreate = ({ setOpenPopup, refreshData }) => {
               handleInputChange(event, value, "type_of_customer")
             }
             options={[
-              "Distribution",
-              "Exclusive",
-              "Distribution+Exclusive",
-              "Industrial",
+              "Non-Exclusive Distribution",
+              "Exclusive Distribution",
+              "All Distribution",
+              "All Industrial",
             ]}
             getOptionLabel={(option) => option}
             label="Type Of Customer"

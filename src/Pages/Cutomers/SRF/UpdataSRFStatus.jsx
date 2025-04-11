@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { Button, Container, Grid, TextField } from "@mui/material";
@@ -10,12 +10,13 @@ const UpdateSRFStatus = ({ setOpenPopup, getCustomerSRF, recordData }) => {
   const [status, setStatus] = useState(
     recordData.status === "Dispatched" ? recordData.status : ""
   );
-  console.log(status);
   const [customerFeedback, setCustomerFeedback] = useState(
     recordData.feedback ? recordData.feedback : ""
   );
   const [fileData, setFileData] = useState(null);
+  const [lr_no, setLr_no] = useState(recordData.lr_no ? recordData.lr_no : "");
   const [isLoading, setIsLoading] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState("");
   const [alertMsg, setAlertMsg] = useState({
     message: "",
     severity: "",
@@ -29,11 +30,19 @@ const UpdateSRFStatus = ({ setOpenPopup, getCustomerSRF, recordData }) => {
     e.preventDefault();
     if (
       !status ||
+      !lr_no ||
+      (status === "Dispatched" && !recordData.lr_no && !lr_no) ||
       (status === "Dispatched" && !recordData.lr_image && !fileData)
     ) {
       setAlertMsg({
         open: true,
-        message: !status ? "Please select a status." : "Please upload LR.",
+        message: !status
+          ? "Please select a status."
+          : !fileData
+          ? "Please upload LR file"
+          : !lr_no
+          ? "Please enter LR number."
+          : "",
         severity: "warning",
       });
       return;
@@ -43,6 +52,7 @@ const UpdateSRFStatus = ({ setOpenPopup, getCustomerSRF, recordData }) => {
     try {
       const formData = new FormData();
       if (status) formData.append("status", status);
+      if (!recordData.lr_no && lr_no) formData.append("lr_no", lr_no);
       if (!recordData.lr_image && fileData)
         formData.append("lr_image", fileData);
       if (!recordData.feedback && customerFeedback)
@@ -73,6 +83,14 @@ const UpdateSRFStatus = ({ setOpenPopup, getCustomerSRF, recordData }) => {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (fileData) {
+      const url = URL.createObjectURL(fileData);
+      setPreviewUrl(url);
+      return () => URL.revokeObjectURL(url); // cleanup
+    }
+  }, [fileData]);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -144,7 +162,7 @@ const UpdateSRFStatus = ({ setOpenPopup, getCustomerSRF, recordData }) => {
             {!recordData.lr_image && fileData && (
               <>
                 <img
-                  src={URL.createObjectURL(fileData)}
+                  src={previewUrl}
                   alt="Selected LR"
                   width="90%"
                   height="130px"
@@ -163,6 +181,15 @@ const UpdateSRFStatus = ({ setOpenPopup, getCustomerSRF, recordData }) => {
             )}
           </Grid>
         )}
+        <Grid item xs={12}>
+          <TextField
+            size="small"
+            fullWidth
+            label="LR Number"
+            value={lr_no || ""}
+            onChange={(e) => setLr_no(e.target.value)}
+          />
+        </Grid>
         {(userData.groups.includes("Customer Service") ||
           userData.groups.includes("Director")) &&
           recordData.status === "Dispatched" && (

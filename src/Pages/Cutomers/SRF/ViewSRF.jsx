@@ -146,6 +146,7 @@ export const ViewSRF = () => {
                   <StyledTableCell align="center">Customer</StyledTableCell>
                   <StyledTableCell align="center">Created By</StyledTableCell>
                   <StyledTableCell align="center">Status</StyledTableCell>
+                  <StyledTableCell align="center">LR NO.</StyledTableCell>
                   <StyledTableCell align="center">
                     Customer Type
                   </StyledTableCell>
@@ -365,6 +366,7 @@ function Row({ row, getCustomerSRF, handleError, handleSuccess }) {
         <StyledTableCell align="center">{row.customer}</StyledTableCell>
         <StyledTableCell align="center">{row.created_by}</StyledTableCell>
         <StyledTableCell align="center">{row.status}</StyledTableCell>
+        <StyledTableCell align="center">{row.lr_no}</StyledTableCell>
         <StyledTableCell align="center">{row.content_type}</StyledTableCell>
         <StyledTableCell align="center">
           {" "}
