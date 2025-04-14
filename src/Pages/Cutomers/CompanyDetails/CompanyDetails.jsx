@@ -474,14 +474,15 @@ export const CompanyDetails = () => {
                       </Button>
                       {!userData.groups.includes(
                         "Accounts Billing Department"
-                      ) && (
-                        <Button
-                          sx={{ color: "#28a745" }}
-                          onClick={() => openInPopupInvoice(row)}
-                        >
-                          PI
-                        </Button>
-                      )}
+                      ) &&
+                        row.status === "Active" && (
+                          <Button
+                            sx={{ color: "#28a745" }}
+                            onClick={() => openInPopupInvoice(row)}
+                          >
+                            PI
+                          </Button>
+                        )}
                       {!userData.groups.includes(
                         "Accounts Billing Department"
                       ) && (
