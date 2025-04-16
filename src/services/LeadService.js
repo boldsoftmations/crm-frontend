@@ -51,23 +51,14 @@ const getAllLeads = (page, funnelVlue, filter, filterValue, searchValue) => {
 //   return CustomAxios.get(`api/lead/duplicate-leads/?${params.toString()}`);
 // };
 
-const getAllDuplicateLeads = (page, filterValue, searchValue) => {
+const getAllDuplicateLeads = (searchValue) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
-
-  if (page) {
-    params.append("page", page);
-  }
-
-  if (filterValue) {
-    params.append("field", filterValue);
-  }
-
   if (searchValue) {
     params.append("search", searchValue);
   }
 
-  return CustomAxios.get(`api/lead/duplicate-leads/?${params.toString()}`);
+  return CustomAxios.get(`/api/lead/drop-leads/?${params.toString()}`);
 };
 
 const getAllUnassignedData = (page, filterValue, searchValue) => {
