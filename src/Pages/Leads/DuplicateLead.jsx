@@ -1,13 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react";
 import {
   Grid,
-  Button,
   Paper,
   Box,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   styled,
   Table,
   TableBody,
@@ -16,18 +11,15 @@ import {
   TableRow,
   TableCell,
   Typography,
+  TextField,
+  Button,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
 import LeadServices from "../../services/LeadService";
-import { CreateLeads } from "./CreateLeads";
-import { UpdateLeads } from "./UpdateLeads";
 import { Popup } from "../../Components/Popup";
-import { CustomPagination } from "../../Components/CustomPagination";
 import { CustomLoader } from "../../Components/CustomLoader";
-import { BulkLeadAssign } from "./BulkLeadAssign";
-import { useSelector } from "react-redux";
-import { LeadActivityCreate } from "../FollowUp/LeadActivityCreate";
-import { LeadPotentialCreate } from "./LeadPotential/LeadPotentialCreate";
+// import { BulkLeadAssign } from "./BulkLeadAssign";
+// import { useSelector } from "react-redux";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
 import SearchComponent from "../../Components/SearchComponent ";
 import { MessageAlert } from "../../Components/MessageAlert";
@@ -35,35 +27,24 @@ import { MessageAlert } from "../../Components/MessageAlert";
 export const DuplicateLead = () => {
   const [leads, setLeads] = useState([]);
   const [open, setOpen] = useState(false);
-  const [filterQuery, setFilterQuery] = useState("gst_number");
+  // const [filterQuery, setFilterQuery] = useState("gst_number");
   const [filterSelectedQuery, setFilterSelectedQuery] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
-  const [openPopup, setOpenPopup] = useState(false);
-  const [openPopup2, setOpenPopup2] = useState(false);
+  // const [currentPage, setCurrentPage] = useState(1);
+  // const [totalPages, setTotalPages] = useState(0);
+  // const [openPopup, setOpenPopup] = useState(false);
+  // const [openPopup2, setOpenPopup2] = useState(false);
   const [openModalFollowup, setOpenModalFollowup] = useState(false);
-  const [openModalPotential, setOpenModalPotential] = useState(false);
+  // const [openModalPotential, setOpenModalPotential] = useState(false);
   const [leadsByID, setLeadsByID] = useState(null);
-  const [openModal, setOpenModal] = useState(false);
-  // const [selectedRows, setSelectedRows] = useState([]);
-  const tokenData = useSelector((state) => state.auth);
-  const users = tokenData.profile;
-  const { handleError, handleCloseSnackbar, alertInfo } =
-    useNotificationHandling();
+  const [dropLeadReason, setDropLeadReason] = useState("");
+  // const [openModal, setOpenModal] = useState(false);
 
-  const openInPopup = (item) => {
-    setLeadsByID(item.lead_id);
-    setOpenPopup(true);
-  };
+  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+    useNotificationHandling();
 
   const openInPopup2 = (item) => {
     setLeadsByID(item.lead_id);
     setOpenModalFollowup(true);
-  };
-
-  const openInPopup3 = (item) => {
-    setLeadsByID(item.lead_id);
-    setOpenModalPotential(true);
   };
 
   // const handleCheckboxChange = (row) => {
@@ -85,45 +66,69 @@ export const DuplicateLead = () => {
   //   });
   // };
 
-  useEffect(() => {
-    getleads();
-  }, [currentPage, filterQuery, filterSelectedQuery]);
-
   const getleads = useCallback(async () => {
     try {
       setOpen(true);
       const response = await LeadServices.getAllDuplicateLeads(
-        currentPage,
-        filterQuery,
         filterSelectedQuery
       );
-      setLeads(response.data.results);
-      setTotalPages(Math.ceil(response.data.count / 25));
+      setLeads(response.data);
+      // setTotalPages(Math.ceil(response.data.count / 25));
     } catch (error) {
       handleError(error);
     } finally {
       setOpen(false);
     }
-  }, [currentPage, filterQuery, filterSelectedQuery]);
+  }, [filterSelectedQuery]);
 
-  const handleFilter = (event) => {
-    setFilterQuery(event.target.value);
-    setCurrentPage(1);
-  };
+  useEffect(() => {
+    if (filterSelectedQuery) {
+      getleads();
+    }
+  }, [filterSelectedQuery]);
+
+  // const handleFilter = (event) => {
+  //   setFilterQuery(event.target.value);
+  //   setCurrentPage(1);
+  // };
 
   const handleSearch = (query) => {
     setFilterSelectedQuery(query);
-    setCurrentPage(1);
   };
 
   const handleReset = () => {
     setFilterSelectedQuery("");
-    setCurrentPage(1);
   };
 
-  const handlePageChange = (event, value) => {
-    setCurrentPage(value);
+  //function for drop leads
+
+  const handleDroplead = async () => {
+    try {
+      setOpen(true);
+      const payload = {
+        activity: "Drop the lead",
+        notes: dropLeadReason,
+        leads: leadsByID,
+      };
+      const response = await LeadServices.createFollowUpLeads(payload);
+      if (response.status === 201) {
+        handleSuccess(response.data.message || "Lead dropped!");
+        setTimeout(() => {
+          getleads();
+          setOpenModalFollowup(false);
+        }, 500);
+      }
+    } catch (e) {
+      console.log(e);
+      handleError(e.error);
+    } finally {
+      setOpen(false);
+    }
   };
+
+  // const handlePageChange = (event, value) => {
+  //   setCurrentPage(value);
+  // };
 
   return (
     <>
@@ -139,7 +144,7 @@ export const DuplicateLead = () => {
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
           <Box sx={{ mb: 2 }}>
             <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} sm={6} md={3}>
+              {/* <Grid item xs={12} sm={6} md={3}>
                 <FormControl fullWidth sx={{ maxWidth: "300px" }} size="small">
                   <InputLabel id="demo-simple-select-label">
                     Fliter By
@@ -159,14 +164,14 @@ export const DuplicateLead = () => {
                     ))}
                   </Select>
                 </FormControl>
-              </Grid>
+              </Grid> */}
               <Grid item xs={12} sm={6} md={3}>
                 <SearchComponent
                   onSearch={handleSearch}
                   onReset={handleReset}
                 />
               </Grid>
-              <Grid item xs={12} sm={6} md={2}>
+              {/* <Grid item xs={12} sm={6} md={2}>
                 {(users.groups.includes("Director") ||
                   users.groups.includes("Sales Manager") ||
                   users.groups.includes("Sales Deputy Manager")) && (
@@ -178,16 +183,7 @@ export const DuplicateLead = () => {
                     Assign Bulk Lead
                   </button>
                 )}
-              </Grid>
-              <Grid item xs={12} sm={6} md={1}>
-                <Button
-                  onClick={() => setOpenPopup2(true)}
-                  variant="contained"
-                  color="success"
-                >
-                  Add
-                </Button>
-              </Grid>
+              </Grid> */}
             </Grid>
           </Box>
           <Box
@@ -241,8 +237,7 @@ export const DuplicateLead = () => {
                   <StyledTableCell align="center">NAME</StyledTableCell>
                   <StyledTableCell align="center">CONTACT</StyledTableCell>
                   <StyledTableCell align="center">ALT. CONTACT</StyledTableCell>
-                  <StyledTableCell align="center">CITY</StyledTableCell>
-                  <StyledTableCell align="center">STATE</StyledTableCell>
+
                   <StyledTableCell align="center">GST NO.</StyledTableCell>
                   <StyledTableCell align="center">PAN NO.</StyledTableCell>
                   <StyledTableCell align="center">ASSIGNED TO</StyledTableCell>
@@ -250,80 +245,65 @@ export const DuplicateLead = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {leads.map((row, i) => {
-                  return (
-                    <StyledTableRow key={i}>
-                      {/* <StyledTableCell align="center">
+                {leads &&
+                  leads.length > 0 &&
+                  leads.map((row, i) => {
+                    return (
+                      <StyledTableRow key={i}>
+                        {/* <StyledTableCell align="center">
                         <Checkbox
                           checked={isChecked}
                           onChange={() => handleCheckboxChange(row)}
                           inputProps={{ "aria-label": "controlled" }}
                         />
                       </StyledTableCell> */}
-                      <StyledTableCell align="center">
-                        {row.company}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.name}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.contact}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.alternate_contact}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.city}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.state}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.gst_number}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.pan_number}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.assigned_to}
-                      </StyledTableCell>
-                      <StyledTableCell
-                        align="center"
-                        style={{ width: "200px" }}
-                      >
-                        <div
-                          style={{ color: "blue" }}
-                          onClick={() => openInPopup(row)}
+                        <StyledTableCell align="center">
+                          {row.company}
+                        </StyledTableCell>
+                        <StyledTableCell align="center">
+                          {row.name}
+                        </StyledTableCell>
+                        <StyledTableCell align="center">
+                          {row.contact}
+                        </StyledTableCell>
+                        <StyledTableCell align="center">
+                          {row.alternate_contact}
+                        </StyledTableCell>
+
+                        <StyledTableCell align="center">
+                          {row.gst_number}
+                        </StyledTableCell>
+                        <StyledTableCell align="center">
+                          {row.pan_number}
+                        </StyledTableCell>
+                        <StyledTableCell align="center">
+                          {row.assigned_to}
+                        </StyledTableCell>
+                        <StyledTableCell
+                          align="center"
+                          style={{ width: "200px" }}
                         >
-                          View
-                        </div>
-                        <div
-                          style={{ color: "green" }}
-                          onClick={() => openInPopup2(row)}
-                        >
-                          Activity
-                        </div>
-                        <div
-                          style={{ color: "red" }}
-                          onClick={() => openInPopup3(row)}
-                        >
-                          Potential
-                        </div>
-                      </StyledTableCell>
-                    </StyledTableRow>
-                  );
-                })}
+                          <div
+                            style={{ color: "green" }}
+                            onClick={() => openInPopup2(row)}
+                          >
+                            Activity
+                          </div>
+                        </StyledTableCell>
+                      </StyledTableRow>
+                    );
+                  })}
               </TableBody>
             </Table>
           </TableContainer>
-          <CustomPagination
+          {/* <CustomPagination
             totalPages={totalPages}
             currentPage={currentPage}
             handlePageChange={handlePageChange}
-          />
+          /> */}
         </Paper>
       </Grid>
-      <Popup
+      {/* <Popup
         fullScreen={true}
         title={"Create Leads"}
         openPopup={openPopup2}
@@ -333,12 +313,9 @@ export const DuplicateLead = () => {
           getleads={getleads}
           setOpenPopup={setOpenPopup2}
           currentPage={currentPage}
-          filterQuery={filterQuery}
-          filterSelectedQuery={filterSelectedQuery}
-          searchQuery={null}
         />
-      </Popup>
-      <Popup
+      </Popup> */}
+      {/* <Popup
         fullScreen={true}
         title={"Update Leads"}
         openPopup={openPopup}
@@ -349,30 +326,40 @@ export const DuplicateLead = () => {
           setOpenPopup={setOpenPopup}
           getAllleadsData={getleads}
           currentPage={currentPage}
-          filterQuery={filterQuery}
-          filterSelectedQuery={filterSelectedQuery}
-          searchQuery={null}
         />
-      </Popup>
+      </Popup> */}
 
       <Popup
         maxWidth={"xl"}
-        title={"Create Activity"}
+        title={"Drop lead"}
         openPopup={openModalFollowup}
         setOpenPopup={setOpenModalFollowup}
       >
-        <LeadActivityCreate
-          getleads={getleads}
-          leadsByID={leadsByID}
-          setOpenPopup={setOpenModalFollowup}
-          getLeadByID={null}
-          currentPage={currentPage}
-          filterQuery={filterQuery}
-          filterSelectedQuery={filterSelectedQuery}
-          searchQuery={null}
-        />
+        <Grid container spacing={2} alignItems="center" minWidth={350}>
+          {/* Text Field */}
+          <Grid item xs={12} sm={12}>
+            <TextField
+              label="Reason"
+              variant="outlined"
+              size="small"
+              fullWidth
+              onChange={(e) => setDropLeadReason(e.target.value)}
+            />
+          </Grid>
+          <Grid item xs={12} sm={12}>
+            <Button
+              variant="contained"
+              size="small"
+              fullWidth
+              onClick={handleDroplead}
+            >
+              Submit
+            </Button>
+          </Grid>
+        </Grid>
       </Popup>
-      <Popup
+
+      {/* <Popup
         maxWidth={"lg"}
         title={"Create Potential"}
         openPopup={openModalPotential}
@@ -383,32 +370,28 @@ export const DuplicateLead = () => {
           getLeadByID={null}
           leadsByID={leadsByID}
           setOpenPopup={setOpenModalPotential}
-          currentPage={currentPage}
-          filterQuery={filterQuery}
-          filterSelectedQuery={filterSelectedQuery}
-          searchQuery={null}
         />
-      </Popup>
-      <Popup
+      </Popup> */}
+      {/* <Popup
         maxWidth={"lg"}
         title={"Assign Bulk Lead to another Employee"}
         openPopup={openModal}
         setOpenPopup={setOpenModal}
       >
         <BulkLeadAssign setOpenPopup={setOpenModal} />
-      </Popup>
+      </Popup> */}
     </>
   );
 };
 
-const FilterOptions = [
-  { label: "Gst Number", value: "gst_number" },
-  { label: "Contact", value: "contact" },
-  { label: "Alt Contact", value: "alternate_contact" },
-  { label: "Email", value: "email" },
-  { label: "Company", value: "company" },
-  { label: "Pan No", value: "pan_number" },
-];
+// const FilterOptions = [
+//   { label: "Gst Number", value: "gst_number" },
+//   { label: "Contact", value: "contact" },
+//   { label: "Alt Contact", value: "alternate_contact" },
+//   { label: "Email", value: "email" },
+//   { label: "Company", value: "company" },
+//   { label: "Pan No", value: "pan_number" },
+// ];
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     fontSize: 12,

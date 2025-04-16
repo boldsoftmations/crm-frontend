@@ -80,7 +80,13 @@ export const AllLeadsTabView = () => {
       },
       {
         label: "Duplicate Leads",
-        visible: isAdmin || isSalesADManager,
+        visible:
+          isAdmin ||
+          isSalesADManager ||
+          isSalesExecutive ||
+          isSalesManagerWithoutLeads ||
+          isSalesManagerWithLeads ||
+          isCustomerService,
         index: 4,
         component: <DuplicateLead />,
       },
@@ -142,10 +148,13 @@ export const AllLeadsTabView = () => {
     <div>
       <CustomTabs
         tabs={visibleTabs}
-        activeTab={activeTab}
-        onTabChange={(index) => setActiveTab(visibleTabIndexes[index])}
+        activeTab={visibleTabs.findIndex((tab) => tab.index === activeTab)}
+        onTabChange={(visibleTabIndex) =>
+          setActiveTab(visibleTabs[visibleTabIndex].index)
+        }
       />
-      {visibleTabIndexes.includes(activeTab) && (
+
+      {visibleTabs.some((tab) => tab.index === activeTab) && (
         <div>
           {visibleTabs.find((tab) => tab.index === activeTab).component}
         </div>
