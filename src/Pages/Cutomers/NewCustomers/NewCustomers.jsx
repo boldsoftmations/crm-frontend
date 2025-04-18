@@ -58,10 +58,14 @@ export const NewCustomerListView = () => {
   const handleExport = async () => {
     try {
       setOpen(true);
+      const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
+      const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
       const response = await CustomerServices.getNewCustomers(
         "all",
         filterValue,
-        filterByDays
+        filterByDays,
+        StartDate,
+        EndDate
       );
 
       const data = response.data.map((row) => {

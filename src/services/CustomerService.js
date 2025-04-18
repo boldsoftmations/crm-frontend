@@ -575,7 +575,7 @@ const getCustomerSRF = (page,search) => {
   if (search) {
     params.append("search", search);
   }
-  return CustomAxios.get(`/api/srf/srf/?${params.toString()}/`);
+  return CustomAxios.get(`/api/srf/srf/?${params.toString()}`);
 };
 
 const getNewCustomers =   (page, filterPerson,custom_date,start_date,end_date) => {
