@@ -158,6 +158,7 @@ export const CreateContactDetails = (props) => {
                 <MenuItem value={"Quality"}>Quality</MenuItem>
                 <MenuItem value={"Stores"}>Stores</MenuItem>
                 <MenuItem value={"General Manager"}>General Manager</MenuItem>
+                <MenuItem value={"Plant Head"}>Plant Head</MenuItem>
               </Select>
             </FormControl>
           </Grid>
