@@ -30,6 +30,7 @@ import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import CustomTextField from "../../../Components/CustomTextField";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import FileSaver from "file-saver";
 export const ViewSRF = () => {
   const [open, setOpen] = useState(false);
   const [srfData, setSrfData] = useState([]);
@@ -339,6 +340,12 @@ function Row({ row, getCustomerSRF, handleError, handleSuccess }) {
       setOpen(false);
     }
   };
+
+  //download lr image
+  const handleClickLRCOPY = async (data) => {
+    let url = data.lr_image ? data.lr_image : "";
+    FileSaver.saveAs(url, "image");
+  };
   return (
     <>
       <CustomLoader open={open} />
@@ -391,6 +398,16 @@ function Row({ row, getCustomerSRF, handleError, handleSuccess }) {
               >
                 Download
               </Button>
+              {row.lr_image && (
+                <Button
+                  variant="text"
+                  size="small"
+                  color="success"
+                  onClick={() => handleClickLRCOPY(row)}
+                >
+                  LR
+                </Button>
+              )}
             </>
           )}
         </StyledTableCell>
