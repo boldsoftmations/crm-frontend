@@ -31,14 +31,16 @@ export const CustomerActivityCreate = (props) => {
     try {
       e.preventDefault();
       setOpen(true);
-
       const data = {
-        company: selectedCustomers.name,
+        company:
+          (selectedCustomers && selectedCustomers.name) ||
+          selectedCustomers.company,
         notes: followUp.notes,
         next_followup_date: followUp.next_followup_date,
         status: followUp.status,
         activity: followUp.activity,
       };
+      console.log(data);
 
       await CustomerServices.createFollowUpCustomer(data);
       setOpenModal(false);
@@ -83,7 +85,7 @@ export const CustomerActivityCreate = (props) => {
         component="form"
         noValidate
         sx={{ mt: 1 }}
-        onSubmit={(e) => createFollowUpLeadsData(e)}
+        onSubmit={createFollowUpLeadsData}
       >
         <Grid container spacing={2}>
           <Grid item xs={12}>
@@ -182,5 +184,3 @@ export const CustomerActivityCreate = (props) => {
     </div>
   );
 };
-
-

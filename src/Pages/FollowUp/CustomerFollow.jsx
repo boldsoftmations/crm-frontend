@@ -21,6 +21,7 @@ export const CustomerFollowup = () => {
   // const [openModal, setOpenModal] = useState(false);
   const [popupCustomer, setPopupCustomer] = useState(false);
   const [customerId, setCustomerId] = useState(null);
+  const [selectedCustomers, setSelectedCustomers] = useState(null);
   const [filterFollowup, setFilterFollowup] = useState();
   const [isPrinting, setIsPrinting] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -92,6 +93,7 @@ export const CustomerFollowup = () => {
   };
   const openInPopup = (item) => {
     setCustomerId(item.id); // Set lead data
+    setSelectedCustomers(item);
     setPopupCustomer(true); // Open the leads popup
   };
 
@@ -262,6 +264,7 @@ export const CustomerFollowup = () => {
           setOpenPopup={setPopupCustomer}
           getAllCompanyDetails={getFollowUp}
           recordForEdit={customerId}
+          selectedCustomers={selectedCustomers}
         />
       </Popup>
     </>

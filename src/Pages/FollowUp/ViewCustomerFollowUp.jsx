@@ -30,7 +30,7 @@ export const ViewCustomerFollowUp = ({ recordForEdit, selectedCustomers }) => {
     try {
       setOpen(true);
 
-      const [followupResponse,] = await Promise.all([
+      const [followupResponse] = await Promise.all([
         CustomerServices.getCompanyDataByIdWithType(recordForEdit, "followup"),
         CustomerServices.getCompanyDataByIdWithType(recordForEdit, "potential"),
       ]);
