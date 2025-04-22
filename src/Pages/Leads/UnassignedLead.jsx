@@ -326,6 +326,7 @@ export const UnassignedLead = () => {
                   <StyledTableCell align="center">DATE</StyledTableCell>
                   <StyledTableCell align="center">COMPANY</StyledTableCell>
                   <StyledTableCell align="center">REFERENCE</StyledTableCell>
+                  <StyledTableCell align="center">STAGE</StyledTableCell>
                   <StyledTableCell align="center">CITY</StyledTableCell>
                   <StyledTableCell align="center">STATE</StyledTableCell>
                   <StyledTableCell align="center">Action</StyledTableCell>
@@ -360,6 +361,9 @@ export const UnassignedLead = () => {
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         {row.references}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.stage}
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         {row.city}
