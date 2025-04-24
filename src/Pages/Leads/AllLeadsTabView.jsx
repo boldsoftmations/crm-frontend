@@ -107,7 +107,7 @@ export const AllLeadsTabView = () => {
         component: <IndiaMartLeads />,
       },
       {
-        label: "Just Dial Leads",
+        label: "Assign Leads",
         visible: isAdminAndDM,
         index: 7,
         component: <CreateJustDialLead />,

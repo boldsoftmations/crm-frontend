@@ -130,7 +130,7 @@ const CreateJustDialLead = () => {
         <Grid item xs={12} sm={8} md={6}>
           <Paper elevation={3} style={{ padding: "1rem" }}>
             <Typography variant="h5" align="center" gutterBottom>
-              Create Just Dial Lead
+              Assign Leads
             </Typography>
             <form onSubmit={handleSubmit}>
               <Grid container spacing={3}>
