@@ -24,6 +24,7 @@ import { MessageAlert } from "../../../Components/MessageAlert";
 import useDynamicFormFields from "../../../Components/useDynamicFormFields ";
 import ProductService from "../../../services/ProductService";
 import InventoryServices from "../../../services/InventoryService";
+import CustomerServices from "../../../services/CustomerService";
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -47,6 +48,7 @@ const values = {
 export const CreateLeadsProformaInvoice = (props) => {
   const { setOpenPopup, leadsByID } = props;
   const [productOption, setProductOption] = useState([]);
+  const [productDetails, setProductDetails] = useState(null);
   const [currencyOption, setCurrencyOption] = useState([]);
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
@@ -582,9 +584,33 @@ export const CreateLeadsProformaInvoice = (props) => {
                     size="small"
                     disablePortal
                     id="combo-box-demo"
-                    onChange={(event, value) =>
-                      handleAutocompleteChange(index, event, value)
-                    }
+                    onChange={async (event, value) => {
+                      // Handle product change
+                      handleAutocompleteChange(index, event, value); // Update product state
+                      if (!selectedSellerData) {
+                        return alert("Please select seller unit first! ");
+                      }
+                      if (value) {
+                        try {
+                          setOpen(true);
+                          const response =
+                            await CustomerServices.getProductLastPi(
+                              "",
+                              selectedSellerData.unit,
+                              value
+                            );
+
+                          setProductDetails((prev) => ({
+                            ...prev,
+                            [index]: response.data, // Store product details by index
+                          }));
+                        } catch (err) {
+                          console.error("Error fetching product details:", err);
+                        } finally {
+                          setOpen(false);
+                        }
+                      }
+                    }}
                     options={productOption.map(
                       (option) => option.product__name
                     )}
@@ -594,7 +620,23 @@ export const CreateLeadsProformaInvoice = (props) => {
                     style={tfStyle}
                   />
                 </Grid>
-                <Grid item xs={12} sm={3}>
+                <Grid item xs={12} sm={2}>
+                  <CustomTextField
+                    fullWidth
+                    label="Available Quantity"
+                    size="small"
+                    variant="outlined"
+                    value={
+                      productDetails &&
+                      productDetails[index] &&
+                      productDetails[index].available_qty
+                    }
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={2}>
                   <CustomTextField
                     fullWidth
                     name="quantity"
@@ -614,7 +656,7 @@ export const CreateLeadsProformaInvoice = (props) => {
                     value={input.unit || ""}
                   />
                 </Grid>
-                <Grid item xs={12} sm={3}>
+                <Grid item xs={12} sm={2}>
                   <CustomTextField
                     type={"number"}
                     fullWidth

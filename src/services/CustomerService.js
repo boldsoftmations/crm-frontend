@@ -509,10 +509,22 @@ const getCustomerLastPi = (company, seller_account) => {
 };
 
 const getProductLastPi = (company, unit, product) => {
+  const params = new URLSearchParams();
+  if (company) {
+    params.append("company", company);
+  }
+  if (unit) {
+    params.append("seller_account", unit);
+  }
+
+  if (product) {
+    params.append("product", product);
+  }
   return CustomAxios.get(
-    `/api/invoice/pi-products/?company=${company}&seller_account=${unit}&product=${product}`
+    `/api/invoice/pi-products/?${params.toString()}`
   );
 };
+
 
 const getAllStatesList = () => {
   return CustomAxios.get("/api/customer/state/");
