@@ -22,27 +22,29 @@ import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import MasterService from "../../services/MasterService";
 import SearchComponent from "../../Components/SearchComponent ";
 
-export const MasterCustomerVisitList = ({
-  recordId,
+export const MasterLeadsData = ({
   getbeatCustomers,
   setOpenPopup,
-  setRecordId,
+  recordId,
 }) => {
+  console.log("recordId", recordId);
   const [open, setOpen] = useState(false);
-  const [companyData, setCompanyData] = useState([]);
+  const [leadsData, setLeadsData] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [beat, setBeat] = useState("");
   const [pincode, setPincode] = useState("");
-  const [selectedCustomer, setSelectedCustomer] = useState([]);
+  const [selectedLeads, setSelectedLeads] = useState([]);
   const [beatData, setBeatData] = useState([]);
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
-  const getAllCompanyDetails = useCallback(async () => {
+  const getLeadsMasterListByPincode = useCallback(async () => {
     try {
       setOpen(true);
-      const response = await CustomerServices.getAllCustomerMasterList(pincode);
-      setCompanyData(response.data);
+      const response = await CustomerServices.getLeadsMasterListByPincode(
+        pincode
+      );
+      setLeadsData(response.data);
     } catch (error) {
       handleError(error);
       console.log("while getting company details", error);
@@ -52,8 +54,8 @@ export const MasterCustomerVisitList = ({
   }, [pincode]);
 
   useEffect(() => {
-    getAllCompanyDetails();
-  }, [getAllCompanyDetails]);
+    getLeadsMasterListByPincode();
+  }, [getLeadsMasterListByPincode]);
 
   useEffect(() => {
     const getAllMasterBeat = async () => {
@@ -67,42 +69,42 @@ export const MasterCustomerVisitList = ({
         setOpen(false);
       }
     };
-    if (!recordId) {
-      getAllMasterBeat();
-    }
+    getAllMasterBeat();
   }, []);
 
   const allCustomerIds = useMemo(
-    () => companyData.map((comp) => comp.id),
-    [companyData]
+    () => leadsData.map((comp) => comp.lead_id),
+    [leadsData]
   );
 
   const isAllSelected =
-    selectedCustomer.length === allCustomerIds.length &&
-    allCustomerIds.length > 0;
+    selectedLeads.length === allCustomerIds.length && allCustomerIds.length > 0;
   const isIndeterminate =
-    selectedCustomer.length > 0 &&
-    selectedCustomer.length < allCustomerIds.length;
+    selectedLeads.length > 0 && selectedLeads.length < allCustomerIds.length;
 
   const handleCheckboxChange = (id) => {
-    setSelectedCustomer((prev) =>
+    console.log(id);
+    setSelectedLeads((prev) =>
       prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]
     );
   };
 
   const handleSelectAll = () => {
     if (isAllSelected || isIndeterminate) {
-      setSelectedCustomer([]);
+      setSelectedLeads([]);
     } else {
-      setSelectedCustomer(allCustomerIds);
+      setSelectedLeads(allCustomerIds);
     }
   };
 
-  const Tableheaders = useMemo(() => ["NAME", "CITY", "STATE", "PINCODE"], []);
+  const Tableheaders = useMemo(
+    () => ["NAME", "STAGE", "CITY", "STATE", "PINCODE"],
+    []
+  );
 
   //open modal
   const HandleOpenModal = (item) => {
-    setSelectedCustomer(item);
+    setSelectedLeads(item);
     setModalOpen(true);
   };
 
@@ -111,26 +113,23 @@ export const MasterCustomerVisitList = ({
     try {
       setOpen(true);
 
-      const basePayload = { company: selectedCustomer };
+      const basePayload = { lead: selectedLeads };
       const payload = recordId ? basePayload : { ...basePayload, beat };
 
       const response = recordId
-        ? await CustomerServices.updateCustomerBeatPlan(recordId, payload)
-        : await CustomerServices.createCustomerBeatPlan(payload);
-
-      handleSuccess(response.data.message);
+        ? await CustomerServices.updateLeadsBeatPlan(recordId, payload)
+        : await CustomerServices.addLeadsintoBeatName(payload);
+      const successMessage = response.data.message;
+      handleSuccess(successMessage);
 
       setTimeout(() => {
         setModalOpen(false);
-        if (typeof setRecordId === "function") {
-          setRecordId(null);
-        }
-        setSelectedCustomer([]);
+        setSelectedLeads([]);
         getbeatCustomers();
         setOpenPopup();
       }, 500);
     } catch (error) {
-      console.error("Error in updateAssigned:", error);
+      console.log(error);
     } finally {
       setOpen(false);
     }
@@ -181,19 +180,20 @@ export const MasterCustomerVisitList = ({
                     fontWeight: 700,
                   }}
                 >
-                  Company List
+                  Leads List
                 </h3>
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
-                {!recordId && selectedCustomer.length > 0 && (
+                {!recordId && selectedLeads.length > 0 && (
                   <Button
                     variant="contained"
-                    onClick={() => HandleOpenModal(selectedCustomer)}
+                    onClick={() => HandleOpenModal(selectedLeads)}
                   >
                     Assign to beat
                   </Button>
                 )}
-                {recordId && selectedCustomer.length > 0 && (
+
+                {recordId && selectedLeads.length > 0 && (
                   <Button
                     variant="contained"
                     color="primary"
@@ -203,6 +203,7 @@ export const MasterCustomerVisitList = ({
                   </Button>
                 )}
               </Grid>
+              <Grid item xs={12} sm={6} md={4}></Grid>
             </Grid>
           </Box>
 
@@ -248,17 +249,22 @@ export const MasterCustomerVisitList = ({
                 </StyledTableRow>
               </TableHead>
               <TableBody>
-                {companyData.map((row) => (
+                {leadsData.map((row) => (
                   <StyledTableRow key={row.id}>
                     <StyledTableCell align="center">
                       <Checkbox
-                        checked={selectedCustomer.includes(row.id)}
-                        onChange={() => handleCheckboxChange(row.id)}
+                        checked={selectedLeads.includes(row.lead_id)}
+                        onChange={() => handleCheckboxChange(row.lead_id)}
                         inputProps={{ "aria-label": "controlled" }}
                       />
                     </StyledTableCell>
 
-                    <StyledTableCell align="center">{row.name}</StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.company}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.stage}
+                    </StyledTableCell>
                     <StyledTableCell align="center">{row.city}</StyledTableCell>
                     <StyledTableCell align="center">
                       {row.state}
@@ -287,20 +293,19 @@ export const MasterCustomerVisitList = ({
             setOpenPopup={setModalOpen}
           >
             <Grid container spacing={2}>
-              {!recordId && (
-                <Grid item xs={12}>
-                  <CustomAutocomplete
-                    sx={{
-                      minWidth: 260,
-                    }}
-                    size="small"
-                    onChange={(e, value) => setBeat(value)}
-                    options={beatData.map((option) => option.name)}
-                    getOptionLabel={(option) => `${option}`}
-                    label={"Select beat Name"}
-                  />
-                </Grid>
-              )}
+              <Grid item xs={12}>
+                <CustomAutocomplete
+                  sx={{
+                    minWidth: 260,
+                  }}
+                  size="small"
+                  onChange={(e, value) => setBeat(value)}
+                  options={beatData.map((option) => option.name)}
+                  getOptionLabel={(option) => `${option}`}
+                  label={"Select beat Name"}
+                />
+              </Grid>
+
               <Grid item xs={12}>
                 <Button
                   variant="contained"

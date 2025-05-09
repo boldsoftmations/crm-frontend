@@ -249,6 +249,14 @@ const getFollowupCallDashboard = (
     `/api/dashboard/followup-dashboard/?${params.toString()}`
   );
 };
+
+const getSalesFieldDashboardData=(start_date,end_date)=>{
+  const params = new URLSearchParams();
+  if(start_date) params.append("start_date",start_date);
+  if(end_date) params.append("end_date",end_date);
+  return CustomAxios.get(`/api/field-sales/customer-visit-dashboard/?${params.toString()}`)
+}
+
 const DashboardService = {
   getSalesAnalyticDashboard,
   getLastThreeMonthForecastData,
@@ -283,6 +291,7 @@ const DashboardService = {
   getSalesQuatityAnalysisdetailsByproduct,
   getFollowupCallDashboard,
   getCallStatusDataByFilter,
+  getSalesFieldDashboardData,
 };
 
 export default DashboardService;

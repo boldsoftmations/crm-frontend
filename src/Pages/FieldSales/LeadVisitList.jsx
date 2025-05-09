@@ -24,24 +24,23 @@ import SearchComponent from "../../Components/SearchComponent ";
 import MasterService from "../../services/MasterService";
 import { useSelector } from "react-redux";
 
-export const CompanyDetails = () => {
+export const LeadVisitPlan = () => {
   const [open, setOpen] = useState(false);
   const [openVisitLog, setOpenVisitLog] = useState(false);
   const [visitLogId, setVisitLogId] = useState(null);
-  const [companyData, setCompanyData] = useState([]);
+  const [leadData, setLeadData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
   const [totalPages, setTotalPages] = useState(0);
   const [beatList, setBeatList] = useState([]);
   const [inputValue, setInputvalue] = useState({
-    email: "",
+    visited_by: "",
     beatid: "",
   });
   const [modalOpen, setModalOpen] = useState(false);
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
   const assigned = userData.active_sales_user || [];
-
   const visitedPersonOptions = useMemo(
     () => assigned.map((option) => option.name),
     [assigned]
@@ -57,13 +56,13 @@ export const CompanyDetails = () => {
   const getAllCompanyDetails = useCallback(async () => {
     try {
       setOpen(true);
-      const response = await CustomerServices.getFieldsSalesPersonVisitPlan(
+      const response = await CustomerServices.getFieldsSalesPersonLeadVisitPlan(
         currentPage,
         search,
         query.VisitedPerson,
         query.isCompleted
       );
-      setCompanyData(response.data.results);
+      setLeadData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
       setOpen(false);
     } catch (error) {
@@ -112,7 +111,7 @@ export const CompanyDetails = () => {
 
   const getBeatList = useCallback(async () => {
     try {
-      const res = await MasterService.getBeatlist();
+      const res = await MasterService.getLeadBeatlist();
       setBeatList(res.data);
     } catch (e) {
       console.log(e);
@@ -129,14 +128,16 @@ export const CompanyDetails = () => {
   const handleAssigned = async (e) => {
     try {
       setOpen(true);
-      if (!inputValue.beatid || !inputValue.email) {
+      if (!inputValue.beatid || !inputValue.visited_by) {
         return alert("Please select both option");
       }
       const payload = {
         beat: inputValue.beatid,
-        visited_by: inputValue.email,
+        visited_by: inputValue.visited_by,
       };
-      const response = await CustomerServices.AssignBeatToSalesPerson(payload);
+      const response = await CustomerServices.AssignBeatLeadToSalesPerson(
+        payload
+      );
       const successMessage = response.data.message;
       handleSuccess(successMessage);
 
@@ -197,7 +198,7 @@ export const CompanyDetails = () => {
                     fontWeight: 700,
                   }}
                 >
-                  Company Visit List
+                  Lead Visit
                 </h3>
               </Grid>
               <Grid item xs={12} md={2}>
@@ -256,11 +257,9 @@ export const CompanyDetails = () => {
                 </StyledTableRow>
               </TableHead>
               <TableBody>
-                {companyData.map((row, i) => (
+                {leadData.map((row, i) => (
                   <StyledTableRow key={row.id}>
-                    <StyledTableCell align="center">
-                      {row.company}
-                    </StyledTableCell>
+                    <StyledTableCell align="center">{row.lead}</StyledTableCell>
                     <StyledTableCell align="center">
                       {row.created_by}
                     </StyledTableCell>
@@ -346,7 +345,7 @@ export const CompanyDetails = () => {
                   onChange={(e, value) =>
                     setInputvalue((prev) => ({
                       ...prev,
-                      email: value && value.email,
+                      visited_by: value && value.email,
                     }))
                   }
                   options={assigned}

@@ -25,23 +25,52 @@ const getAllCustomerData = (statusValue, page, assignToFilter, searchValue) => {
   return CustomAxios.get(`/api/customer/list-company/?${params.toString()}`);
 };
 
-const getAllCustomerMasterList = (page) => {
-  // Constructing the query parameters
+const getAllCustomerMasterList = (pincode) => {
+  // Sending a GET request with query parameters
   const params = new URLSearchParams();
 
-  if (page) {
-    params.append("page", page);
+  if (pincode) {
+    params.append("pincode", pincode);
   }
-
-  // Sending a GET request with query parameters
   return CustomAxios.get(
-    `/api/customer/list-company/?status=Active&${params.toString()}`
+    `/api/customer/active-customer/?${params.toString()}`
+  );
+};
+
+const getLeadsMasterListByPincode = (pincode) => {
+  // Sending a GET request with query parameters
+  const params = new URLSearchParams();
+  if (pincode) {
+    params.append("pincode", pincode);
+  }
+  return CustomAxios.get(
+    `/api/lead/active-lead/?${params.toString()}`
   );
 };
 
 
-const createCustomerVisitPlan = (data) => {
+const createCustomerBeatPlan = (data) => {
+  return CustomAxios.post("/api/customer/customer-beat/", data);
+};
+
+const addLeadsintoBeatName = (data)=>{
+  return CustomAxios.post("/api/lead/lead-beat/",data)
+}
+
+
+const updateCustomerBeatPlan = (id,data) => {
+  return CustomAxios.post(`/api/customer/customer-beat/${id}/add_customer/`, data);
+}
+
+const updateLeadsBeatPlan = (id,data)=>{
+  return CustomAxios.post(`/api/lead/lead-beat/${id}/add_lead/`,data)
+}
+const AssignBeatToSalesPerson = (data) => {
   return CustomAxios.post("/api/field-sales/visit-plan/", data);
+};
+
+const AssignBeatLeadToSalesPerson = (data) => {
+  return CustomAxios.post("/api/field-sales/lead-visit-plan/", data);
 };
 
 const getIncompleteKycCustomerData = (page, assignToFilter, searchValue) => {
@@ -525,7 +554,6 @@ const getProductLastPi = (company, unit, product) => {
   );
 };
 
-
 const getAllStatesList = () => {
   return CustomAxios.get("/api/customer/state/");
 };
@@ -553,14 +581,21 @@ const getCustomerStatus = () => {
 
 //Api for fields sales person and customer
 
-const getFieldsSalesPersonVisitPlan = (page, search,filter_type,visited_by__name,is_completed) => {
+const getFieldsSalesPersonVisitPlan = (page, search,visited_by__name,is_completed=true) => {
   const params = new URLSearchParams();
   if(page) params.append("page", page);
   if (search)  params.append("search", search);
-  if(filter_type) params.append("filter_type",filter_type)
     if(visited_by__name) params.append("visited_by__name",visited_by__name)
-  if(is_completed) params.append("is_completed",is_completed)
-  return CustomAxios.get(`/api/field-sales/visit-plan/?${params.toString()}`);
+  return CustomAxios.get(`/api/field-sales/visit-plan/?is_completed=${is_completed}&${params.toString()}`);
+};
+
+
+const getFieldsSalesPersonLeadVisitPlan = (page, search,visited_by__name,is_completed=true) => {
+  const params = new URLSearchParams();
+  if(page) params.append("page", page);
+  if (search)  params.append("search", search);
+  if(visited_by__name) params.append("visited_by__name",visited_by__name)
+  return CustomAxios.get(`/api/field-sales/lead-visit-plan/?is_completed=${is_completed}&${params.toString()}`);
 };
 
 const getCustomerVisitDataById = (id) => {
@@ -679,14 +714,21 @@ const CustomerServices = {
   updateCustomerscheme,
   getCustomerStatus,
   getAllCustomerMasterList,
-  createCustomerVisitPlan,
+  createCustomerBeatPlan,
+  addLeadsintoBeatName,
+  updateCustomerBeatPlan,
+  updateLeadsBeatPlan,
+  AssignBeatToSalesPerson,
+  AssignBeatLeadToSalesPerson,
   getFieldsSalesPersonVisitPlan,
+  getFieldsSalesPersonLeadVisitPlan,
   getCustomerVisitDataById,
   createCustomerSRF,
   updateCustomerSRfStatus,
   updateSRFProduct,
   getCustomerSRF,
-  getNewCustomers
+  getNewCustomers,
+  getLeadsMasterListByPincode
 };
 
 export default CustomerServices;

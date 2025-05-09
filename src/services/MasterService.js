@@ -114,6 +114,65 @@ const createMasterActivityOption = (data) => {
   return CustomAxios.post(`/api/master/model-option/`, data);
 };
 
+const createMasterBeat = (data) => {
+  return CustomAxios.post(`/api/master/beat/`, data);
+};
+
+const getMasterBeat = (page,search) => {
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+  if (search) {
+    params.append("search", search);
+  }
+  return CustomAxios.get(`/api/master/beat/?${params.toString()}`);
+};
+
+const getBeatCustomers = (page,search)=>{
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+  if (search) {
+    params.append("search", search);
+  }
+  return CustomAxios.get(`/api/customer/customer-beat/?${params.toString()}`);
+}
+const getBeatLeads = (page,search)=>{
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+  if (search) {
+    params.append("filter", search);
+  }
+  return CustomAxios.get(`/api/lead/lead-beat/?${params.toString()}`);
+}
+
+const removeCustomterBeatList = (id,data)=>{
+ return CustomAxios.post(`/api/customer/customer-beat/${id}/remove_customer/`,data)
+}
+
+const removeLeadsBeatList = (id,data)=>{
+  return CustomAxios.post(`/api/lead/lead-beat/${id}/remove_lead/`,data)
+ }
+
+const getBeatlist= ()=>{
+  return CustomAxios.get("/api/customer/customer-beat/beat_list/")
+}
+
+const getLeadBeatlist= ()=>{
+  return CustomAxios.get("/api/lead/lead-beat/beat_list/")
+}
+
+const EmployeesAttendance = (page,search)=>{
+  const params = new URLSearchParams();
+  if (page)  params.append("page", page);
+  if (search)  params.append("search", search);
+  return CustomAxios.get(`/api/user/attendance/?${params.toString()}`);
+  
+}
 const MasterService = {
   createMasterCountry,
   updateMasterCountry,
@@ -131,5 +190,14 @@ const MasterService = {
   getMasterActivity,
   createMasterActivityMainHeading,
   createMasterActivityOption,
+  createMasterBeat,
+  getMasterBeat,
+  getBeatCustomers,
+  getBeatLeads,
+  removeCustomterBeatList,
+  removeLeadsBeatList,
+  getBeatlist,
+  getLeadBeatlist,
+  EmployeesAttendance
 };
 export default MasterService;

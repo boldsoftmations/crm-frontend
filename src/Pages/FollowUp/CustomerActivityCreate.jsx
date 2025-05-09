@@ -40,8 +40,6 @@ export const CustomerActivityCreate = (props) => {
         status: followUp.status,
         activity: followUp.activity,
       };
-      console.log(data);
-
       await CustomerServices.createFollowUpCustomer(data);
       setOpenModal(false);
       getFollowUp();

@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { CustomTabs } from "../../Components/CustomTabs";
-import { MasterCustomerVisitList } from "./MasterCustomerVisitList";
 import { CompanyDetails } from "./CompanyVisitList";
+import { ViewBeatCustomer } from "./BeatMaster/ViewBeatCustomer";
+import { LeadVisitPlan } from "./LeadVisitList";
 export const FieldSalesAllTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
 
@@ -11,14 +12,20 @@ export const FieldSalesAllTabView = () => {
 
   const tabs = [
     {
-      label: "Customer List",
+      label: "Beat Customer",
       roles: ["Director", "Sales Manager"],
-      component: <MasterCustomerVisitList />,
+      component: <ViewBeatCustomer />,
     },
+
     {
       label: "Customer Visit List",
       roles: ["Director", "Sales Manager"],
       component: <CompanyDetails />,
+    },
+    {
+      label: "Lead Visit List",
+      roles: ["Director", "Sales Manager"],
+      component: <LeadVisitPlan />,
     },
   ];
 
