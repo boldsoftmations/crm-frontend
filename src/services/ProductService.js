@@ -259,6 +259,10 @@ const getSampleProduct = ()=>{
   return CustomAxios.get("/api/product/sample/product_list/")
 }
 
+const updateSampleProduct = (id, data) => {
+  return CustomAxios.patch(`/api/product/sample/${id}/`, data);
+};
+
 const ProductService = {
   getAllColour,
   createColour,
@@ -302,7 +306,8 @@ const ProductService = {
   updatePriceList,
   getAllProduct,
   uploadCSVFile,
-  getSampleProduct
+  getSampleProduct,
+  updateSampleProduct
 };
 
 export default ProductService;

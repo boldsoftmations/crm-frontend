@@ -19,6 +19,7 @@ import { useNotificationHandling } from "../../../Components/useNotificationHand
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { Popup } from "../../../Components/Popup";
 import { CreateSampleProduct } from "./CreateSampleProduct";
+import { UpdateSampleProduct } from "./UpdateSampleProduct";
 
 export const ViewSamleProduct = () => {
   const dispatch = useDispatch();
@@ -27,9 +28,9 @@ export const ViewSamleProduct = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  // const [openPopup, setOpenPopup] = useState(false);
+  const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
-  // const [recordForEdit, setRecordForEdit] = useState(null);
+  const [recordForEdit, setRecordForEdit] = useState(null);
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
@@ -130,11 +131,11 @@ export const ViewSamleProduct = () => {
     setCurrentPage(value);
   };
 
-  // const openInPopup = (item) => {
-  //   const data = sp.find((data) => data.id === item.id);
-  //   setRecordForEdit(data || {}); // Ensures an object is set, even if no match is found
-  //   setOpenPopup(true);
-  // };
+  const openInPopup = (item) => {
+    const data = sp.find((data) => data.id === item.id);
+    setRecordForEdit(data || {}); // Ensures an object is set, even if no match is found
+    setOpenPopup(true);
+  };
 
   const TableHeader = [
     "ID",
@@ -216,7 +217,11 @@ export const ViewSamleProduct = () => {
             </Box>
           </Box>
           {/* CustomTable */}
-          <CustomTable headers={TableHeader} data={TableData} />
+          <CustomTable
+            headers={TableHeader}
+            data={TableData}
+            openInPopup={openInPopup}
+          />
           <CustomPagination
             totalPages={totalPages}
             currentPage={currentPage}
@@ -237,20 +242,20 @@ export const ViewSamleProduct = () => {
           searchQuery={searchQuery}
         />
       </Popup>
-      {/* <Popup
+      <Popup
         maxWidth={"xl"}
-        title={"Update sps"}
+        title={"Update Sample"}
         openPopup={openPopup}
         setOpenPopup={setOpenPopup}
       >
-        <Updatesps
+        <UpdateSampleProduct
           recordForEdit={recordForEdit}
           setOpenPopup={setOpenPopup}
           getAllSampleProduct={getAllSampleProduct}
           currentPage={currentPage}
           searchQuery={searchQuery}
         />
-      </Popup> */}
+      </Popup>
     </>
   );
 };
