@@ -151,6 +151,20 @@ export const CreateSRF = (props) => {
       return;
     }
 
+    if (
+      products.length === 0 ||
+      products.some(
+        (pro) => !pro.product.trim() || !pro.quantity.toString().trim()
+      )
+    ) {
+      setAlertMsg({
+        open: true,
+        message: "Please add at least one valid product with quantity!",
+        severity: "warning",
+      });
+      return;
+    }
+
     // Prepare products data
     const modiFyProduct = products.map((pro) => ({
       product: pro.product,
