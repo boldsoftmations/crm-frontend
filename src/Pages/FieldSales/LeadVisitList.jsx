@@ -41,8 +41,12 @@ export const LeadVisitPlan = () => {
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
   const assigned = userData.active_sales_user || [];
+
   const visitedPersonOptions = useMemo(
-    () => assigned.map((option) => option.name),
+    () =>
+      assigned
+        .filter((option) => option.groups__name === "Field Sales Executive")
+        .map((option) => option.name),
     [assigned]
   );
 
@@ -304,12 +308,13 @@ export const LeadVisitPlan = () => {
           <Popup
             openPopup={openVisitLog}
             setOpenPopup={setOpenVisitLog}
-            title="Customer visit detail"
+            title="Visit detail"
             maxWidth="md"
           >
             <CustomerVisitView
               visitLogId={visitLogId}
               setOpenVisitLog={setOpenVisitLog}
+              type="lead"
             />
           </Popup>
           <Popup

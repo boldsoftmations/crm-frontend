@@ -4,14 +4,18 @@ import CustomerServices from "../../services/CustomerService";
 import { CustomLoader } from "../../Components/CustomLoader";
 import { SimpleMapView } from "./MapView";
 
-export const CustomerVisitView = ({ visitLogId }) => {
+export const CustomerVisitView = ({ visitLogId, type }) => {
   const [customerData, setCustomerData] = useState(null);
   const [open, setOpen] = useState(false);
 
   const getCustomerVisitDataById = useCallback(async () => {
     try {
       setOpen(true);
-      const res = await CustomerServices.getCustomerVisitDataById(visitLogId);
+      const fetchFun =
+        type === "lead"
+          ? CustomerServices.getLeadVisitDataById
+          : CustomerServices.getCustomerVisitDataById;
+      const res = await fetchFun(visitLogId);
       setCustomerData(res.data);
     } catch (e) {
       console.log(e);
@@ -33,10 +37,6 @@ export const CustomerVisitView = ({ visitLogId }) => {
           <Stack spacing={1.5}>
             <Typography variant="body1">
               <strong>Customer:</strong> {customerData && customerData.customer}
-            </Typography>
-            <Typography variant="body1">
-              <strong>Planned Date:</strong>{" "}
-              {customerData && customerData.planned_date}
             </Typography>
             <Typography variant="body1">
               <strong>Check-In Time:</strong>{" "}

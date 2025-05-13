@@ -43,6 +43,7 @@ import { AllTabView } from "../Pages/StateAndCity/AllTAbView";
 import { ViewMasterActivitiesList } from "../Pages/MasterActivityList/ViewMasterActivitiesList";
 import { FieldSalesAllTabView } from "../Pages/FieldSales/FieldSalesAllTab";
 import { AllSRFTab } from "../Pages/Cutomers/SRF/AllSRFTab";
+import { ViewMasterBeat } from "../Pages/FieldSales/BeatMaster/ViewMasterBeat";
 
 const PrivateRoute = ({ children, redirectTo = "/" }) => {
   const tokenData = useSelector((state) => state.auth);
@@ -379,11 +380,20 @@ export const RouteScreen = () => {
               </PrivateRoute>
             }
           />
+          
           <Route
             path="/customer/srf"
             element={
               <PrivateRoute>
                 <AllSRFTab/>
+              </PrivateRoute>
+            }
+          />
+            <Route
+            path="/master/beat"
+            element={
+              <PrivateRoute>
+                <ViewMasterBeat/>
               </PrivateRoute>
             }
           />

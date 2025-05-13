@@ -128,6 +128,10 @@ export const ListItems = ({ setOpen }) => {
             to: "/master/activity-list",
             text: "Master Activity",
           },
+          {
+            to: "/master/beat",
+            text: "Beat Master",
+          },
         ]),
         renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
           { to: "/invoice/performa-invoice-tab", text: "Performa Invoice" },
@@ -485,6 +489,20 @@ export const ListItems = ({ setOpen }) => {
       condition: userData.groups.includes("Sales Manager"),
       items: [
         renderListItem("/user/analytics", <DashboardIcon />, "Analytics"),
+        renderSubmenu("master", <BusinessIcon />, "Master", [
+          {
+            to: "/county-state-city/master-tab",
+            text: "Country Master",
+          },
+          {
+            to: "/master/activity-list",
+            text: "Master Activity",
+          },
+          {
+            to: "/master/beat",
+            text: "Beat Master",
+          },
+        ]),
         renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
           { to: "/invoice/performa-invoice-tab", text: "Performa Invoice" },
         ]),

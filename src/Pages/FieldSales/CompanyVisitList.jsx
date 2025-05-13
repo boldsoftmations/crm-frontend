@@ -43,7 +43,10 @@ export const CompanyDetails = () => {
   const assigned = userData.active_sales_user || [];
 
   const visitedPersonOptions = useMemo(
-    () => assigned.map((option) => option.name),
+    () =>
+      assigned
+        .filter((option) => option.groups__name === "Field Sales Executive")
+        .map((option) => option.name),
     [assigned]
   );
 

@@ -8,6 +8,7 @@ import { CustomTabs } from "../../Components/CustomTabs";
 import { TopCustomerView } from "./TopCustomerView";
 import { CRReport } from "./CRreport";
 import { ViewSalesQuantityAnalysis } from "./Sales Quantity Analysis/ViewSalesQuantityAnalysis";
+import { SalesFieldDashboard } from "./SalesFieldDashboard";
 
 export const AnalyticsAllTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
@@ -60,6 +61,11 @@ export const AnalyticsAllTabView = () => {
         "Business Development Manager",
       ],
       component: <TeamWiseDashboard />,
+    },
+    {
+      label: "Field Sales",
+      roles: ["Director", "Sales Manager"],
+      component: <SalesFieldDashboard />,
     },
     {
       label: "Distribution Customer",

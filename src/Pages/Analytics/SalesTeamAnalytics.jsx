@@ -57,13 +57,13 @@ export const SalesTeamAnalytics = (props) => {
     filterValue,
   } = props;
   const userData = useSelector((state) => state.auth.profile);
+  const assigned = userData.active_sales_user || [];
   const [dIQdata, setDIQData] = useState([]);
   const [selectedDIQData, setSelectedDIQData] = useState(null);
   const [dOBQdata, setDOBQData] = useState([]);
   const [selectedDOBQData, setSelectedDOBQData] = useState(null);
   const [activeButton, setActiveButton] = useState("monthly");
   const [activeButtonType, setActiveButtonType] = useState("customer");
-  const assigned = userData.active_sales_user || [];
   let SALES_PERSON_OPTIONS = assigned;
 
   if (team) {

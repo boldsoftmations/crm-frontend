@@ -602,6 +602,11 @@ const getCustomerVisitDataById = (id) => {
   return CustomAxios.get(`/api/field-sales/visit-logs/${id}/`);
 };
 
+const getLeadVisitDataById = (id) => {
+  return CustomAxios.get(`/api/field-sales/lead-visit-logs/${id}/`);
+};
+
+
 const createCustomerSRF = (data) => {
   return CustomAxios.post("/api/srf/srf/", data);
 };
@@ -723,6 +728,7 @@ const CustomerServices = {
   getFieldsSalesPersonVisitPlan,
   getFieldsSalesPersonLeadVisitPlan,
   getCustomerVisitDataById,
+  getLeadVisitDataById,
   createCustomerSRF,
   updateCustomerSRfStatus,
   updateSRFProduct,
