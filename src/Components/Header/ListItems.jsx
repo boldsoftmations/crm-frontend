@@ -503,6 +503,11 @@ export const ListItems = ({ setOpen }) => {
             text: "Beat Master",
           },
         ]),
+        renderListItem(
+          "/master/customer-visit",
+          <DirectionsRunIcon />,
+          "Field Sales"
+        ),
         renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
           { to: "/invoice/performa-invoice-tab", text: "Performa Invoice" },
         ]),
