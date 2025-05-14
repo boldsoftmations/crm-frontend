@@ -273,6 +273,10 @@ const SalesPersonCustomerVisitMap = (email,visit_date)=>{
   return CustomAxios.get(`/api/field-sales/customer-visit-map/?${params.toString()}`)
 }
 
+const getEmployeesCurrentLocation = ()=>{
+  return CustomAxios.get(`/api/field-sales/current-location/`)
+}
+
 const getLeadSalesPersonCustomerVisitMap = (email,visit_date)=>{
    const params = new URLSearchParams();
   if(email) params.append("email",email);
@@ -317,6 +321,7 @@ const DashboardService = {
   getLeadSalesFieldDashboardData,
   SalesPersonCustomerVisitMap,
   getLeadSalesPersonCustomerVisitMap,
+  getEmployeesCurrentLocation,
 };
 
 export default DashboardService;

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Map, Marker, Overlay } from "pigeon-maps";
 
-const CustomerMap = ({ customerVisitMapData }) => {
-  const [selectedCustomer, setSelectedCustomer] = useState(null);
+const EmployeesCurrentLocation = ({ employeesCurrentLocation }) => {
+  const [currentLocation, setVCurrentLocation] = useState(null);
   const [addressMap, setAddressMap] = useState({});
   const [mapCenter, setMapCenter] = useState([20.5937, 78.9629]);
 
@@ -27,7 +27,7 @@ const CustomerMap = ({ customerVisitMapData }) => {
   };
 
   const handleMarkerHover = (index, lat, lon) => {
-    setSelectedCustomer(index);
+    setVCurrentLocation(index);
     fetchAddress(lat, lon, index);
     setMapCenter([lat, lon]);
   };
@@ -42,26 +42,22 @@ const CustomerMap = ({ customerVisitMapData }) => {
       }}
     >
       <Map height={400} center={mapCenter} zoom={5}>
-        {customerVisitMapData.map((item, index) => (
+        {employeesCurrentLocation.map((item, index) => (
           <Marker
             key={index}
             width={50}
-            anchor={[item.check_in_latitude, item.check_in_longitude]}
+            anchor={[item.latitude, item.longitude]}
             onMouseOver={() =>
-              handleMarkerHover(
-                index,
-                item.check_in_latitude,
-                item.check_in_longitude
-              )
+              handleMarkerHover(index, item.latitude, item.longitude)
             }
           />
         ))}
 
-        {selectedCustomer !== null && (
+        {currentLocation !== null && (
           <Overlay
             anchor={[
-              customerVisitMapData[selectedCustomer].check_in_latitude,
-              customerVisitMapData[selectedCustomer].check_in_longitude,
+              employeesCurrentLocation[currentLocation].latitude,
+              employeesCurrentLocation[currentLocation].longitude,
             ]}
             offset={[60, 30]}
           >
@@ -77,7 +73,7 @@ const CustomerMap = ({ customerVisitMapData }) => {
               <div
                 style={{ fontSize: "12px", color: "#666", marginBottom: "6px" }}
               >
-                {addressMap[selectedCustomer] || "Fetching address..."}
+                {addressMap[currentLocation] || "Fetching address..."}
               </div>
               <div
                 style={{
@@ -86,10 +82,13 @@ const CustomerMap = ({ customerVisitMapData }) => {
                   color: "#9C27B0",
                 }}
               >
-                {customerVisitMapData[selectedCustomer].customer}
+                {employeesCurrentLocation[currentLocation].customer}
+              </div>
+              <div style={{ fontSize: "12px", color: "#D84B86" }}>
+                Employee Name - {employeesCurrentLocation[currentLocation].user}
               </div>
               <div style={{ fontSize: "12px", color: "#C19EE0" }}>
-                {customerVisitMapData[selectedCustomer].check_in_time}
+                {employeesCurrentLocation[currentLocation].check_in_time}
               </div>
             </div>
           </Overlay>
@@ -99,4 +98,4 @@ const CustomerMap = ({ customerVisitMapData }) => {
   );
 };
 
-export default CustomerMap;
+export default EmployeesCurrentLocation;
