@@ -39,7 +39,6 @@ const DashboardCard = ({ title, value, color }) => (
 
 export const SalesFieldDashboard = () => {
   const [dashboardData, setDashboardData] = useState({});
-  const [tab, setTab] = useState("customer");
   const [customerVisitMapData, setCustomerVisitMapData] = useState([]);
   const [employeesCurrentLocation, setEmployeesCurrentLocation] = useState([]);
   const [open, setOpen] = useState(false);
@@ -61,24 +60,17 @@ export const SalesFieldDashboard = () => {
       ),
     [assigned]
   );
-
   const fetchDashboardData = async () => {
     try {
       setOpen(true);
       let EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
       let StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
-      const res =
-        tab === "customer"
-          ? await DashboardService.getSalesFieldDashboardData(
-              filterPerson ? filterPerson : "",
-              StartDate,
-              EndDate
-            )
-          : await DashboardService.getLeadSalesFieldDashboardData(
-              filterPerson ? filterPerson : "",
-              StartDate,
-              EndDate
-            );
+      const res = await DashboardService.getSalesFieldDashboardData(
+        filterPerson ? filterPerson : "",
+        StartDate,
+        EndDate
+      );
+
       setDashboardData(res.data);
     } catch (e) {
       console.log(e);
@@ -91,16 +83,11 @@ export const SalesFieldDashboard = () => {
     try {
       setOpen(true);
       let VisitDate = visitDate ? visitDate.toISOString().split("T")[0] : "";
-      const res =
-        tab === "customer"
-          ? await DashboardService.SalesPersonCustomerVisitMap(
-              filterPerson ? filterPerson : "",
-              VisitDate
-            )
-          : await DashboardService.getLeadSalesPersonCustomerVisitMap(
-              filterPerson ? filterPerson : "",
-              VisitDate
-            );
+      const res = await DashboardService.SalesPersonCustomerVisitMap(
+        filterPerson ? filterPerson : "",
+        VisitDate
+      );
+
       setCustomerVisitMapData(res.data);
     } catch (e) {
       console.log(e);
@@ -125,13 +112,13 @@ export const SalesFieldDashboard = () => {
     if (filterPerson) {
       fetchDashboardData();
     }
-  }, [filterPerson, startDate, endDate, tab]);
+  }, [filterPerson, startDate, endDate]);
 
   useEffect(() => {
     if (filterPerson) {
       getSalesPersonCustomerVisitMap();
     }
-  }, [filterPerson, visitDate, tab]);
+  }, [filterPerson, visitDate]);
 
   useEffect(() => {
     getEmployeesCurrentLocation();
@@ -186,36 +173,10 @@ export const SalesFieldDashboard = () => {
     setSelectedDate("Today");
   };
 
-  const handleButtonType = (btn) => {
-    setTab(btn);
-    setStartDate(currentDate);
-    setEndDate(currentDate);
-    setSelectedDate("Today");
-  };
   return (
     <>
       <CustomLoader open={open} />
 
-      <Box style={{ marginLeft: "20px", marginTop: "30px", width: "100%" }}>
-        <Button
-          variant={tab === "customer" ? "contained" : "outlined"}
-          color="primary"
-          size="small"
-          onClick={() => handleButtonType("customer")}
-        >
-          Customer
-        </Button>
-
-        <Button
-          variant={tab === "lead" ? "contained" : "outlined"} // Set variant to 'contained' for the active button
-          color="primary"
-          size="small"
-          onClick={() => handleButtonType("lead")}
-          style={{ marginLeft: "20px" }}
-        >
-          Lead
-        </Button>
-      </Box>
       <Box p={3} className="fade-in">
         {/* Filter */}
         <Grid container spacing={2} justifyContent="left" mb={2}>

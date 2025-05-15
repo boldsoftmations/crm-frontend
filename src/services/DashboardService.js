@@ -258,13 +258,7 @@ const getSalesFieldDashboardData=(email,start_date,end_date)=>{
   return CustomAxios.get(`/api/field-sales/customer-visit-dashboard/?${params.toString()}`)
 }
 
-const getLeadSalesFieldDashboardData=(email,start_date,end_date)=>{
-  const params = new URLSearchParams();
-  if(end_date) params.append("email",email);
-  if(start_date) params.append("start_date",start_date);
-  if(end_date) params.append("end_date",end_date);
-  return CustomAxios.get(`/api/field-sales/lead-visit-dashboard/?${params.toString()}`)
-}
+
 
 const SalesPersonCustomerVisitMap = (email,visit_date)=>{
    const params = new URLSearchParams();
@@ -277,12 +271,7 @@ const getEmployeesCurrentLocation = ()=>{
   return CustomAxios.get(`/api/field-sales/current-location/`)
 }
 
-const getLeadSalesPersonCustomerVisitMap = (email,visit_date)=>{
-   const params = new URLSearchParams();
-  if(email) params.append("email",email);
-  if(visit_date) params.append("visit_date",visit_date);
-  return CustomAxios.get(`/api/field-sales/lead-visit-map/?${params.toString()}`)
-}
+
 const DashboardService = {
   getSalesAnalyticDashboard,
   getLastThreeMonthForecastData,
@@ -318,9 +307,7 @@ const DashboardService = {
   getFollowupCallDashboard,
   getCallStatusDataByFilter,
   getSalesFieldDashboardData,
-  getLeadSalesFieldDashboardData,
   SalesPersonCustomerVisitMap,
-  getLeadSalesPersonCustomerVisitMap,
   getEmployeesCurrentLocation,
 };
 
