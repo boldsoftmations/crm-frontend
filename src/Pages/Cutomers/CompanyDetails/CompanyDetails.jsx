@@ -53,7 +53,7 @@ export const CompanyDetails = () => {
   const csvLinkRef = useRef(null);
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
-  const assigned = userData.sales_users || [];
+  const assigned = userData.active_sales_user || [];
   const [isPrinting, setIsPrinting] = useState(false);
   const [statusFilter, setStatusFilter] = useState("Active");
   const { handleError, handleCloseSnackbar, alertInfo } =
@@ -283,12 +283,11 @@ export const CompanyDetails = () => {
                   <CustomAutocomplete
                     size="small"
                     sx={{ minWidth: 200 }}
-                    value={filterSelectedQuery}
                     onChange={(event, newValue) => {
-                      setFilterSelectedQuery(newValue);
+                      setFilterSelectedQuery(newValue && newValue.email);
                     }}
-                    options={assigned.map((option) => option.email)}
-                    getOptionLabel={(option) => option}
+                    options={assigned}
+                    getOptionLabel={(option) => option.name}
                     label="Filter By Sales Person" // Passed directly to CustomAutocomplete
                   />
                 </Grid>
