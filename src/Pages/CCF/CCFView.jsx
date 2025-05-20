@@ -186,6 +186,9 @@ export const CCFView = () => {
                   <StyledTableCell align="center">
                     Complaint Type
                   </StyledTableCell>
+                  <StyledTableCell align="center">
+                    Creation Date
+                  </StyledTableCell>
                   <StyledTableCell align="center">Complaint</StyledTableCell>
                   <StyledTableCell align="center">Unit</StyledTableCell>
                   <StyledTableCell align="center">Invoices</StyledTableCell>
@@ -206,6 +209,9 @@ export const CCFView = () => {
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.complain_type}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.creation_date}
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.complaint}
