@@ -166,10 +166,11 @@ const getLeadBeatlist= ()=>{
   return CustomAxios.get("/api/lead/lead-beat/beat_list/")
 }
 
-const EmployeesAttendance = (page,search)=>{
+const EmployeesAttendance = (page,user__name,user__groups__name)=>{
   const params = new URLSearchParams();
   if (page)  params.append("page", page);
-  if (search)  params.append("search", search);
+  if(user__name) params.append("user__name", user__name);
+  if(user__groups__name) params.append("user__groups__name", user__groups__name);
   return CustomAxios.get(`/api/user/attendance/?${params.toString()}`);
   
 }

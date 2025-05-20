@@ -4,6 +4,7 @@ import { CustomTabs } from "../../Components/CustomTabs";
 import { ActiveUsers } from "./ActiveUsers";
 import { InActiveUsers } from "./InActiveUsers";
 import { UserProfileView } from "../Profile/UserProfile/UserProfileView";
+import { ViewEmployeesAttendance } from "./Attendance/ViewAttendance";
 
 export const AllProfileTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
@@ -12,6 +13,7 @@ export const AllProfileTabView = () => {
     groups.some((group) => userData.groups.includes(group));
 
   const allTabs = isInGroups("Director", "HR");
+  const managerTabs = isInGroups("Sales Manager");
 
   const [activeTab, setActiveTab] = useState(allTabs ? 0 : 4);
 
@@ -32,6 +34,11 @@ export const AllProfileTabView = () => {
       visible: allTabs,
       index: 2,
     },
+    {
+      label: "Employees Attendance",
+      visible: allTabs || managerTabs,
+      index: 3,
+    },
   ];
 
   const visibleTabs = tabs.filter((tab) => tab.visible);
@@ -41,6 +48,7 @@ export const AllProfileTabView = () => {
     0: <ActiveUsers />,
     1: <InActiveUsers />,
     2: <UserProfileView />,
+    3: <ViewEmployeesAttendance />,
   };
 
   return (
