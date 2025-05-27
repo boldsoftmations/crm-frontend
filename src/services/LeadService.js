@@ -279,6 +279,17 @@ const LeadsRecordDatas = (page, search, stage, reference) => {
 
   return CustomAxios.get(`api/lead/assign-leads/?${params.toString()}`);
 };
+
+const agenticLeadScoringData = (page, search) => {
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+  if (search) {
+    params.append("search", search);
+  }
+  return CustomAxios.get(`api/lead/score-leads/?${params.toString()}`);
+};
 const LeadServices = {
   getAllLeads,
   getAllAssignedUser,
@@ -308,6 +319,7 @@ const LeadServices = {
   updateLeadForecast,
   createJustDialLeads,
   LeadsRecordDatas,
+  agenticLeadScoringData,
 };
 
 export default LeadServices;

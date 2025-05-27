@@ -10,6 +10,7 @@ import { UnassignedLead } from "./UnassignedLead";
 import { IndiaMartLeads } from "./IndiaMartLeads";
 import CreateJustDialLead from "./CreateJustDialLead";
 import { LeadsTracking } from "./LeadsTracking";
+import { LeadScoring } from "./LeadScoring";
 
 export const AllLeadsTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
@@ -117,6 +118,12 @@ export const AllLeadsTabView = () => {
         visible: isAdminAndDM,
         index: 8,
         component: <LeadsTracking />,
+      },
+      {
+        label: "Agentic Lead Scoring",
+        visible: isAdminAndDM,
+        index: 9,
+        component: <LeadScoring />,
       },
     ],
     [
