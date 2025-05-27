@@ -73,6 +73,8 @@ export const LeadScoring = () => {
     "Stage",
     "Contact",
     "Alternate Contact",
+    "Lead Score",
+    "Assigned To",
     "reference",
     "Action",
   ];
@@ -171,6 +173,12 @@ export const LeadScoring = () => {
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.alternate_contact}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.lead_score}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.assigned_to}
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.reference}
