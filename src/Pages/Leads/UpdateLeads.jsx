@@ -33,6 +33,7 @@ import { MessageAlert } from "../../Components/MessageAlert";
 import { useSelector } from "react-redux";
 import MasterService from "../../services/MasterService";
 import CustomSnackbar from "../../Components/CustomerSnackbar";
+import ContactList from "./MultipleContactList";
 
 export const UpdateLeads = memo((props) => {
   // Destructure props
@@ -1000,6 +1001,16 @@ export const UpdateLeads = memo((props) => {
               />
             </Grid>
           )}
+          <Grid item xs={12}>
+            <Root>
+              <Divider>
+                <Chip label="Contact Info" />
+              </Divider>
+            </Root>
+          </Grid>
+          <Grid item xs={12}>
+            <ContactList leadData={leads} />
+          </Grid>
         </Grid>
         <Button
           type="submit"
