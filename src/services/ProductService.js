@@ -234,6 +234,10 @@ const createPriceList = (data) => {
   return CustomAxios.post("/api/product/pricelist/", data);
 };
 
+const updatePriceListValidity = (data) => {
+  return CustomAxios.post(`/api/product/update-validity/`, data);
+};
+
 const getAllValidPriceList = (all) => {
   return CustomAxios.get(`/api/product/pricelist/?page=${all}`);
 };
@@ -307,7 +311,8 @@ const ProductService = {
   getAllProduct,
   uploadCSVFile,
   getSampleProduct,
-  updateSampleProduct
+  updateSampleProduct,
+  updatePriceListValidity
 };
 
 export default ProductService;

@@ -13,6 +13,8 @@ import { UpdatePriceList } from "./UpdatePriceList";
 import { CreatePriceList } from "./CreatePriceList";
 import { CSVLink } from "react-csv";
 import UploadCSV from "./UploadCSV";
+import CustomTextField from "../../Components/CustomTextField";
+import CustomSnackbar from "../../Components/CustomerSnackbar";
 
 export const PriceList = () => {
   const [priceListData, setPriceListData] = useState([]);
@@ -20,6 +22,7 @@ export const PriceList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterQuery, setFilterQuery] = useState("");
   const [openPopup, setOpenPopup] = useState(false);
+  const [openPopupUpdateValidity, setOpenPopupUpdateValidity] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
   const [recordForEdit, setRecordForEdit] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -27,9 +30,20 @@ export const PriceList = () => {
   const [product, setProduct] = useState([]);
   const [exportData, setExportData] = useState([]);
   const [openCSVFile, setOpenCSVFile] = useState(false);
+  const [validityDate, setValidityDate] = useState(null);
 
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
+
+  const [alertmsg, setAlertMsg] = useState({
+    message: "",
+    severity: "",
+    open: false,
+  });
+  const handleClose = () => {
+    setAlertMsg({ open: false });
+  };
+
   const csvLinkRef = useRef(null);
   const getProduct = async () => {
     try {
@@ -176,6 +190,31 @@ export const PriceList = () => {
     }
   };
 
+  //update validity data
+
+  const handleValidityDateChange = (event) => {
+    setValidityDate(event.target.value);
+  };
+  const updateProductValidity = async (e) => {
+    e.preventDefault();
+    try {
+      const payload = {
+        validity: validityDate,
+      };
+      console.log(payload);
+      const response = await ProductService.updatePriceListValidity(payload);
+      const successMessage =
+        response.data.message || "Product Updated successfully";
+      setAlertMsg({ open: true, message: successMessage, severity: "success" });
+      setTimeout(() => {
+        setOpenPopupUpdateValidity(false);
+        getPriceList(currentPage, filterQuery, searchQuery);
+      }, 300);
+    } catch (error) {
+      handleError(error); // Handle errors from the API call
+    }
+  };
+
   return (
     <>
       <MessageAlert
@@ -183,6 +222,12 @@ export const PriceList = () => {
         onClose={handleCloseSnackbar}
         severity={alertInfo.severity}
         message={alertInfo.message}
+      />
+      <CustomSnackbar
+        open={alertmsg.open}
+        message={alertmsg.message}
+        severity={alertmsg.severity}
+        onClose={handleClose}
       />
       <CustomLoader open={open} />
 
@@ -261,6 +306,7 @@ export const PriceList = () => {
                   type="button"
                   variant="contained"
                   color="info"
+                  size="small"
                   onClick={() => setOpenCSVFile(true)}
                   style={{ marginRight: "10px" }}
                 >
@@ -270,6 +316,7 @@ export const PriceList = () => {
                 <Button
                   variant="contained"
                   color="secondary"
+                  size="small"
                   className="mx-3"
                   onClick={handleDownload}
                 >
@@ -294,9 +341,18 @@ export const PriceList = () => {
                 <Button
                   variant="contained"
                   color="success"
+                  size="small"
                   onClick={() => setOpenPopup2(true)}
                 >
                   Add
+                </Button>
+                <Button
+                  variant="contained"
+                  color="inherit"
+                  size="small"
+                  onClick={() => setOpenPopupUpdateValidity(true)}
+                >
+                  Update Validity
                 </Button>
               </Grid>
             </Grid>
@@ -305,7 +361,6 @@ export const PriceList = () => {
             headers={Tableheaders}
             data={Tabledata}
             openInPopup={openInPopup}
-            openInPopup2={null}
             openInPopup3={null}
             openInPopup4={null}
           />
@@ -354,6 +409,40 @@ export const PriceList = () => {
           setOpenCSVFile={setOpenCSVFile}
           getProduct={getProduct}
         ></UploadCSV>
+      </Popup>
+      <Popup
+        title={"Update Product Validity Date"}
+        openPopup={openPopupUpdateValidity}
+        setOpenPopup={setOpenPopupUpdateValidity}
+      >
+        <Grid container spacing={2} minWidth={350}>
+          <Grid item xs={12}>
+            <CustomTextField
+              fullWidth
+              variant="outlined"
+              size="small"
+              type="date"
+              label="Validity Date"
+              name="validity"
+              InputLabelProps={{
+                shrink: true,
+              }}
+              value={validityDate}
+              onChange={handleValidityDateChange}
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <Button
+              onClick={updateProductValidity}
+              variant="contained"
+              color="primary"
+              fullWidth
+            >
+              Submit
+            </Button>
+          </Grid>
+        </Grid>
       </Popup>
     </>
   );
