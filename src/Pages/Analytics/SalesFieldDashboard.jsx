@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -45,7 +45,7 @@ export const SalesFieldDashboard = () => {
   const [filterPerson, setFilterPerson] = useState("");
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
-  const assigned = userData.active_sales_user || [];
+  const assigned = userData.field_sales_user || [];
   const currentDate = new Date();
   const [selectedDate, setSelectedDate] = useState("Today");
   const [endDate, setEndDate] = useState(currentDate);
@@ -53,13 +53,7 @@ export const SalesFieldDashboard = () => {
   const [visitDate, setVisitDate] = useState(currentDate); // set default value as current date
   const minDate = new Date().toISOString().split("T")[0];
   const maxDate = new Date("2030-12-31").toISOString().split("T")[0];
-  const visitedPersonOptions = useMemo(
-    () =>
-      assigned.filter(
-        (option) => option.groups__name === "Field Sales Executive"
-      ),
-    [assigned]
-  );
+
   const fetchDashboardData = async () => {
     try {
       setOpen(true);
@@ -184,7 +178,7 @@ export const SalesFieldDashboard = () => {
             <CustomAutocomplete
               fullWidth
               size="small"
-              options={visitedPersonOptions}
+              options={assigned}
               getOptionLabel={(option) => `${option.name}`}
               onChange={(e, value) => setFilterPerson(value && value.email)}
               label={"Filter By Employee"}
