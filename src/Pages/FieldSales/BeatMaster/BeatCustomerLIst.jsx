@@ -148,7 +148,9 @@ export const ViewCustomerList = ({
               {customerListState.length > 0 ? (
                 customerListState.map((row, index) => (
                   <StyledTableRow key={index}>
-                    <StyledTableCell align="center">{row.name}</StyledTableCell>
+                    <StyledTableCell align="center">
+                      {customerType === "Customer" ? row.name : row.company}
+                    </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.state}
                     </StyledTableCell>

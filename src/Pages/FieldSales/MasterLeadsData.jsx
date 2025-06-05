@@ -27,7 +27,6 @@ export const MasterLeadsData = ({
   setOpenPopup,
   recordId,
 }) => {
-  console.log("recordId", recordId);
   const [open, setOpen] = useState(false);
   const [leadsData, setLeadsData] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
