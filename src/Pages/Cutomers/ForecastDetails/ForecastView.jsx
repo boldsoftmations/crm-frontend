@@ -17,6 +17,7 @@ import { ForecastUpdate } from "./ForecastUpdate";
 import { Popup } from "../../../Components/Popup";
 import CustomerServices from "../../../services/CustomerService";
 import { CustomLoader } from "../../../Components/CustomLoader";
+import UploadForecast from "./UploadForecast";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -47,6 +48,7 @@ export const ForecastView = ({ recordForEdit }) => {
   const [forecastdata, setForecastData] = useState([]);
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
+  const [openUploadForecast, setOpenUploadForecast] = useState(false);
   const [forecastDataByID, setForecastDataByID] = useState([]);
   // Get the current date
   const currentDate = new Date();
@@ -59,7 +61,7 @@ export const ForecastView = ({ recordForEdit }) => {
   const lastMonth1 = (currentMonth - 2 + 12) % 12;
   const lastMonth2 = (currentMonth - 1 + 12) % 12;
 
-  // Get the next 2 months
+  // Get the next 3 months
   const nextMonth1 = (currentMonth + 1) % 12;
   const nextMonth2 = (currentMonth + 2) % 12;
   const nextMonth3 = (currentMonth + 3) % 12;
@@ -105,44 +107,52 @@ export const ForecastView = ({ recordForEdit }) => {
   };
 
   // Get the unique index_position values to use as column headers
-  const indexPositions = [
+  const allForecastMonths = [
     ...new Set(
       forecastdata &&
         forecastdata.flatMap((row) =>
-          row.product_forecast.map((rowData) => rowData.index_position)
+          row.product_forecast.map((rowData) => rowData.month)
         )
     ),
-  ];
-
-  // Sort the index_positions array in ascending order
-  indexPositions.sort((a, b) => a - b);
+  ].sort((a, b) => a - b);
 
   return (
     <>
       <CustomLoader open={open} />
       <Grid item xs={12}>
         <Box display="flex">
-          <Box flexGrow={2}></Box>
           <Box flexGrow={2}>
             <h3
               style={{
-                textAlign: "left",
+                textAlign: "right",
                 marginBottom: "1em",
                 fontSize: "24px",
                 color: "rgb(34, 34, 34)",
-                fontWeight: 800,
+                fontWeight: 700,
               }}
             >
               Forecast Details
             </h3>
           </Box>
-          <Box flexGrow={0.5} align="right">
+          <Box flexGrow={1} align="right">
             <Button
               onClick={() => setOpenPopup2(true)}
               variant="contained"
               color="success"
+              style={{ marginRight: "1em" }}
+              size="small"
             >
               Add
+            </Button>
+            <Button
+              type="button"
+              color="secondary"
+              variant="contained"
+              style={{ marginRight: "1em" }}
+              size="small"
+              onClick={() => setOpenUploadForecast(true)}
+            >
+              Upload Forecast
             </Button>
           </Box>
         </Box>
@@ -220,27 +230,20 @@ export const ForecastView = ({ recordForEdit }) => {
                     <StyledTableCell align="center">
                       {row.product}
                     </StyledTableCell>
-                    {indexPositions.map((position) => {
+                    {allForecastMonths.map((position) => {
                       const rowData = row.product_forecast.find(
-                        (data) => data.index_position === position
+                        (data) => data.month === position
                       );
 
                       if (rowData) {
-                        if (rowData.actual !== null) {
-                          return (
-                            <TableCell key={position} align="center">
-                              {rowData.actual} - {rowData.forecast}
-                            </TableCell>
-                          );
-                        } else {
-                          return (
-                            <TableCell key={position} align="center">
-                              - {rowData.forecast}
-                            </TableCell>
-                          );
-                        }
+                        const actual = rowData.actual;
+                        const forecast = rowData.forecast;
+                        return (
+                          <TableCell key={position} align="center">
+                            {actual} - {forecast}
+                          </TableCell>
+                        );
                       } else {
-                        // Render an empty cell if no matching rowData is found
                         return (
                           <TableCell key={position} align="center">
                             N/A
@@ -248,6 +251,7 @@ export const ForecastView = ({ recordForEdit }) => {
                         );
                       }
                     })}
+
                     {/* <StyledTableCell align="center"></StyledTableCell> */}
                     <StyledTableCell align="center">
                       <Button
@@ -285,6 +289,16 @@ export const ForecastView = ({ recordForEdit }) => {
           getAllCompanyDetailsByID={getAllCompanyDetailsByID}
           setOpenPopup={setOpenPopup}
           forecastDataByID={forecastDataByID}
+        />
+      </Popup>
+      <Popup
+        title={"Upload Forecast Details"}
+        openPopup={openUploadForecast}
+        setOpenPopup={setOpenUploadForecast}
+      >
+        <UploadForecast
+          getAllCompanyDetailsByID={getAllCompanyDetailsByID}
+          setOpenUploadForecast={setOpenUploadForecast}
         />
       </Popup>
     </>

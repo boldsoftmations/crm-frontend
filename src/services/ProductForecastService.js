@@ -209,6 +209,9 @@ const getProductWiseTurnoverForecast = (page, filterValue) => {
   );
 };
 
+const uploadForecastInCSV=(data)=>{
+  return CustomAxios.post(`/api/forecast/customer-forecast/`,data);
+}
 const ProductForecastService = {
   getProductForecast,
   getByFilterProductForecast,
@@ -229,6 +232,7 @@ const ProductForecastService = {
   getConsLastThreeMonthForecastData,
   getLastThreeMonthForecastDataByFilter,
   getProductWiseTurnoverForecast,
+  uploadForecastInCSV
 };
 
 export default ProductForecastService;
