@@ -46,6 +46,7 @@ export const ViewSRF = () => {
   const minDate = new Date().toISOString().split("T")[0];
   const maxDate = new Date("2030-12-31").toISOString().split("T")[0];
   const [exportData, setExportData] = useState([]);
+  const [filterByStatus, setFilterByStatus] = useState("");
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
   const csvLinkRef = useRef(null);
@@ -57,6 +58,7 @@ export const ViewSRF = () => {
       const response = await CustomerServices.getCustomerSRF(
         currentPage,
         searchQuery,
+        filterByStatus,
         StartDate,
         EndDate
       );
@@ -67,7 +69,14 @@ export const ViewSRF = () => {
     } finally {
       setOpen(false);
     }
-  }, [currentPage, searchQuery, startDate, endDate, filterByDays]); // Ensure dependencies are correctly listed
+  }, [
+    currentPage,
+    searchQuery,
+    startDate,
+    endDate,
+    filterByDays,
+    filterByStatus,
+  ]); // Ensure dependencies are correctly listed
 
   const handleExport = async () => {
     try {
@@ -77,6 +86,7 @@ export const ViewSRF = () => {
       const response = await CustomerServices.getCustomerSRF(
         "all",
         searchQuery,
+        filterByStatus,
         StartDate,
         EndDate
       );
@@ -88,6 +98,7 @@ export const ViewSRF = () => {
           data.push({
             date: index === 0 ? row.creation_date : "",
             srf_no: index === 0 ? row.srf_no : "",
+            status: index === 0 ? row.status : "",
             unit: index === 0 ? row.unit : "",
             customer: index === 0 ? row.customer : "",
             product: product.product,
@@ -120,6 +131,7 @@ export const ViewSRF = () => {
   const headers = [
     { label: "Date", key: "date" },
     { label: "SRF No", key: "srf_no" },
+    { label: "Status", key: "status" },
     { label: "Unit", key: "unit" },
     { label: "Customer Name", key: "customer" },
     { label: "Product", key: "product" },
@@ -172,6 +184,11 @@ export const ViewSRF = () => {
     setStartDate(date);
     setEndDate(new Date());
   };
+  //filter by status
+  const handleFilterByStatus = (event, value) => {
+    setFilterByStatus(value);
+    setCurrentPage(1);
+  };
   return (
     <>
       <MessageAlert
@@ -190,25 +207,31 @@ export const ViewSRF = () => {
             }}
           >
             <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} sm={4}>
+              <Grid item xs={12} sm={5} display="flex" gap={2}>
                 <SearchComponent
                   onSearch={handleSearch}
                   onReset={handleReset}
                 />
+                <CustomAutocomplete
+                  size="small"
+                  sx={{ width: "100%" }}
+                  disablePortal
+                  id="combo-box-description"
+                  value={filterByStatus}
+                  onChange={handleFilterByStatus}
+                  options={["Pending", "Dispatched"]}
+                  getOptionLabel={(option) => option}
+                  label="Filter By Date"
+                />
               </Grid>
               {/* Title Text centered */}
-              <Grid
-                item
-                xs={12}
-                md={4}
-                sx={{ textAlign: { xs: "center", md: "end" } }}
-              >
+              <Grid item xs={12} md={3} sx={{ textAlign: "center" }}>
                 <h3
                   style={{
                     margin: 0,
-                    fontSize: "24px",
+                    fontSize: "20px",
                     color: "rgb(34, 34, 34)",
-                    fontWeight: 800,
+                    fontWeight: 700,
                   }}
                 >
                   Customer Sample Request
