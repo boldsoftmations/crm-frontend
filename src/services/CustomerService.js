@@ -618,7 +618,7 @@ const updateCustomerSRfStatus = (id,data)=>{
 const updateSRFProduct=(id,data)=>{
   return CustomAxios.patch(`/api/srf/product/${id}/`,data)
 }
-const getCustomerSRF = (page,search) => {
+const getCustomerSRF = (page,search,start_date,end_date) => {
   const params = new URLSearchParams();
   if (page) {
     params.append("page", page);
@@ -626,6 +626,12 @@ const getCustomerSRF = (page,search) => {
 
   if (search) {
     params.append("search", search);
+  }
+  if(start_date){
+    params.append("start_date",start_date)
+  }
+  if(end_date){
+    params.append("end_date",end_date)
   }
   return CustomAxios.get(`/api/srf/srf/?${params.toString()}`);
 };
