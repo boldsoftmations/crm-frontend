@@ -237,38 +237,65 @@ export const CreateSRF = (props) => {
 
   //handle customer address
   const handleAdressChange = (e, value) => {
-    let addType = value && value.value;
-    setFilterCustomerTypeAddress(addType);
-    const address = customerAdressType[addType];
+    const selectedType = (value && value.value) || "";
+    setFilterCustomerTypeAddress(selectedType);
 
-    setRecordForEdit((prev) => ({
-      ...prev,
-      address_type: address,
-      address: address.address,
-      city: address.city,
-      state: address.state,
-      country: address.country,
-      pincode: address.pincode,
-    }));
+    if (selectedType && customerAdressType[selectedType]) {
+      const address = customerAdressType[selectedType];
+      setRecordForEdit((prev) => ({
+        ...prev,
+        address_type: address,
+        city: address.city,
+        state: address.state,
+        country: address.country || "India",
+        pincode: address.pincode,
+      }));
+    } else {
+      // Optionally clear address fields when type is removed
+      setRecordForEdit((prev) => ({
+        ...prev,
+        address: "",
+        city: "",
+        state: "",
+        country: "",
+        pincode: "",
+      }));
+    }
   };
 
   //select customer shipping address
   const handleSelectAdress = (e, value) => {
-    let selectedAddress = value;
-    const findSelectedAddress =
-      recordForEdit &&
-      recordForEdit.address_type.find(
-        (item) => item.address === selectedAddress
-      );
+    if (!recordForEdit || !Array.isArray(recordForEdit.address_type)) {
+      return;
+    }
 
-    setRecordForEdit((prev) => ({
-      ...prev,
-      address: findSelectedAddress.address,
-      city: findSelectedAddress.city,
-      state: findSelectedAddress.state,
-      country: findSelectedAddress.country || "India",
-      pincode: findSelectedAddress.pincode,
-    }));
+    const selectedAddress = value;
+    const matchedAddress = recordForEdit.address_type.find(function (item) {
+      return item.address === selectedAddress;
+    });
+
+    const updatedFields = matchedAddress
+      ? {
+          address: matchedAddress.address,
+          city: matchedAddress.city,
+          state: matchedAddress.state,
+          country: matchedAddress.country || "India",
+          pincode: matchedAddress.pincode,
+        }
+      : {
+          address: "",
+          city: "",
+          state: "",
+          country: "",
+          pincode: "",
+        };
+
+    setRecordForEdit(function (prev) {
+      return {
+        ...prev,
+        ...updatedFields,
+      };
+    });
   };
 
   const getCustomerAddressType = async () => {
@@ -342,9 +369,11 @@ export const CreateSRF = (props) => {
                 disablePortal
                 id="combo-box-demo"
                 onChange={handleAdressChange}
-                value={addType.find(
-                  (item) => item.value === filterCustomerTypeAddress
-                )}
+                value={
+                  addType.find(
+                    (item) => item.value === filterCustomerTypeAddress
+                  ) || ""
+                }
                 options={addType}
                 getOptionLabel={(option) => option.label}
                 sx={{ minWidth: 300 }}
@@ -364,8 +393,11 @@ export const CreateSRF = (props) => {
                   disablePortal
                   id="combo-box-demo"
                   options={
-                    recordForEdit &&
-                    recordForEdit.address_type.map((option) => option.address)
+                    (recordForEdit &&
+                      recordForEdit.address_type.map(
+                        (option) => option.address
+                      )) ||
+                    ""
                   }
                   onChange={handleSelectAdress}
                   getOptionLabel={(option) => option}
