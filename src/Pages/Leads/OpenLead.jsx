@@ -648,7 +648,7 @@ export const OpenLead = () => {
         setOpenPopup={setOpenSRF}
       >
         <CreateSRF
-          recordForEdit={leadsByID}
+          customerData={leadsByID}
           type="lead"
           setOpenModal={setOpenSRF}
         />

@@ -611,6 +611,10 @@ const createCustomerSRF = (data) => {
   return CustomAxios.post("/api/srf/srf/", data);
 };
 
+const getCustomerAddressType=(customer_name)=>{
+  return CustomAxios.get(`/api/srf/customer-address/?customer=${customer_name}`)
+}
+
 const updateCustomerSRfStatus = (id,data)=>{
   return CustomAxios.patch(`/api/srf/srf/${id}/`,data)
 }
@@ -744,7 +748,8 @@ const CustomerServices = {
   updateSRFProduct,
   getCustomerSRF,
   getNewCustomers,
-  getLeadsMasterListByPincode
+  getLeadsMasterListByPincode,
+  getCustomerAddressType
 };
 
 export default CustomerServices;

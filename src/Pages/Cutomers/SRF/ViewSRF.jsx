@@ -221,7 +221,7 @@ export const ViewSRF = () => {
                   onChange={handleFilterByStatus}
                   options={["Pending", "Dispatched"]}
                   getOptionLabel={(option) => option}
-                  label="Filter By Date"
+                  label="Filter By Status"
                 />
               </Grid>
               {/* Title Text centered */}
@@ -405,7 +405,7 @@ function Row({ row, getCustomerSRF, handleError, handleSuccess }) {
       align: "center",
     });
 
-    const { customer, customer_details, contact_details } = data;
+    const { customer, address, contact_details } = data;
     const startY = 40;
     const leftX = 14;
     const rightX = 150; // Push contact details further right
@@ -418,17 +418,17 @@ function Row({ row, getCustomerSRF, handleError, handleSuccess }) {
     doc.setFont("helvetica", "normal");
 
     const wrapAddress = doc.splitTextToSize(
-      `Address: ${customer_details.address}`,
+      `Address: ${address.address}`,
       120 // Wider wrap area
     );
 
     const customerLines = [
       `Name: ${customer}`,
       ...wrapAddress,
-      `City: ${customer_details.city}`,
-      `State: ${customer_details.state}`,
-      `Country: ${customer_details.country}`,
-      `Pincode: ${customer_details.pincode}`,
+      `City: ${address.city}`,
+      `State: ${address.state}`,
+      `Country: ${address.country}`,
+      `Pincode: ${address.pincode}`,
     ];
 
     customerLines.forEach((line, i) => {

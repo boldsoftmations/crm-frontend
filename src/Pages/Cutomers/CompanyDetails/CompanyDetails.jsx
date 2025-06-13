@@ -583,7 +583,7 @@ export const CompanyDetails = () => {
       >
         <CreateSRF
           type="customer"
-          recordForEdit={recordForEdit}
+          customerData={recordForEdit}
           setOpenModal={setOpenSRF}
         />
       </Popup>

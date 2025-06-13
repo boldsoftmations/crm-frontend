@@ -24,11 +24,15 @@ const Root = styled("div")(({ theme }) => ({
   },
 }));
 export const CreateSRF = (props) => {
-  const { recordForEdit, setOpenModal, type } = props;
+  const { customerData, setOpenModal, type } = props;
   const [productOption, setProductOption] = useState([]);
+  const [recordForEdit, setRecordForEdit] = useState(customerData);
   const [filterSellerAcount, setFilterSellerAcount] = useState("");
   const [contactId, setContactId] = useState("");
   const [sellerData, setSellerData] = useState([]);
+  const [customerAdressType, setCustomerAdressType] = useState();
+  const [filterCustomerTypeAddress, setFilterCustomerTypeAddress] =
+    useState("billing_address");
   const [contact, setContact] = useState([]);
   const [products, setProducts] = useState([
     {
@@ -172,6 +176,15 @@ export const CreateSRF = (props) => {
       special_instructions: pro.special_instructions,
     }));
 
+    //lead address
+    let address = {
+      address: recordForEdit.address,
+      city: recordForEdit.city,
+      state: recordForEdit.state,
+      country: recordForEdit.country,
+      pincode: recordForEdit.pincode,
+    };
+
     // Ensure recordForEdit exists before accessing its properties
     const customerId =
       type === "customer"
@@ -187,6 +200,7 @@ export const CreateSRF = (props) => {
       type,
       customer_id: customerId,
       srf_products: modiFyProduct,
+      address: address,
       ...(type === "customer" && { contact: contactId }),
     };
 
@@ -221,6 +235,64 @@ export const CreateSRF = (props) => {
     }
   };
 
+  //handle customer address
+  const handleAdressChange = (e, value) => {
+    let addType = value && value.value;
+    setFilterCustomerTypeAddress(addType);
+    const address = customerAdressType[addType];
+
+    setRecordForEdit((prev) => ({
+      ...prev,
+      address_type: address,
+      address: address.address,
+      city: address.city,
+      state: address.state,
+      country: address.country,
+      pincode: address.pincode,
+    }));
+  };
+
+  //select customer shipping address
+  const handleSelectAdress = (e, value) => {
+    let selectedAddress = value;
+    const findSelectedAddress =
+      recordForEdit &&
+      recordForEdit.address_type.find(
+        (item) => item.address === selectedAddress
+      );
+
+    setRecordForEdit((prev) => ({
+      ...prev,
+      address: findSelectedAddress.address,
+      city: findSelectedAddress.city,
+      state: findSelectedAddress.state,
+      country: findSelectedAddress.country || "India",
+      pincode: findSelectedAddress.pincode,
+    }));
+  };
+
+  const getCustomerAddressType = async () => {
+    try {
+      setOpen(true);
+      const res = await CustomerServices.getCustomerAddressType(
+        recordForEdit && recordForEdit.name
+      );
+      setCustomerAdressType(res.data);
+    } catch (e) {
+      setAlertMsg({
+        open: true,
+        message: e && e.response.datamessage,
+        severity: "error",
+      });
+    } finally {
+      setOpen(false);
+    }
+  };
+  useEffect(() => {
+    if (type === "customer" && recordForEdit && recordForEdit.name) {
+      getCustomerAddressType();
+    }
+  }, []);
   return (
     <div>
       <CustomSnackbar
@@ -262,6 +334,47 @@ export const CreateSRF = (props) => {
               />
             </Grid>
           )}
+          {type === "customer" && (
+            <Grid item xs={12} sm={4}>
+              <CustomAutocomplete
+                name="contact"
+                size="small"
+                disablePortal
+                id="combo-box-demo"
+                onChange={handleAdressChange}
+                value={addType.find(
+                  (item) => item.value === filterCustomerTypeAddress
+                )}
+                options={addType}
+                getOptionLabel={(option) => option.label}
+                sx={{ minWidth: 300 }}
+                label="Select Type of Address"
+                style={tfStyle}
+              />
+            </Grid>
+          )}
+
+          {type === "customer" &&
+            filterCustomerTypeAddress &&
+            filterCustomerTypeAddress === "shipping_address" && (
+              <Grid item xs={12} sm={4}>
+                <CustomAutocomplete
+                  name="contact"
+                  size="small"
+                  disablePortal
+                  id="combo-box-demo"
+                  options={
+                    recordForEdit &&
+                    recordForEdit.address_type.map((option) => option.address)
+                  }
+                  onChange={handleSelectAdress}
+                  getOptionLabel={(option) => option}
+                  sx={{ minWidth: 300 }}
+                  label="Select Address"
+                  style={tfStyle}
+                />
+              </Grid>
+            )}
           <Grid item xs={12} sm={4}>
             <CustomTextField
               fullWidth
@@ -422,3 +535,14 @@ export const CreateSRF = (props) => {
     </div>
   );
 };
+
+const addType = [
+  {
+    label: "Billing",
+    value: "billing_address",
+  },
+  {
+    label: "Shipping",
+    value: "shipping_address",
+  },
+];
