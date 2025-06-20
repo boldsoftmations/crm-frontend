@@ -249,6 +249,7 @@ export const CreateSRF = (props) => {
         state: address.state,
         country: address.country || "India",
         pincode: address.pincode,
+        address: address.address,
       }));
     } else {
       // Optionally clear address fields when type is removed
