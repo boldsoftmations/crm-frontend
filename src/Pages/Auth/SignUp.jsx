@@ -58,8 +58,8 @@ export const SignUp = ({ setOpenPopup, refreshPageFunction }) => {
       last_name: "",
       email: "",
       contact: "",
-      password: "",
       group_names: [],
+      collar_type: "White-Collar",
     },
     validationSchema: validationSchema,
 
@@ -198,7 +198,7 @@ export const SignUp = ({ setOpenPopup, refreshPageFunction }) => {
                 renderInput={(params) => (
                   <CustomTextField
                     {...params}
-                    label="Groups"
+                    label="Designation"
                     placeholder="Select groups"
                     error={
                       formik.touched.group_names &&
@@ -209,6 +209,20 @@ export const SignUp = ({ setOpenPopup, refreshPageFunction }) => {
                     }
                   />
                 )}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <CustomAutocomplete
+                size="small"
+                style={{ minWidth: 220 }}
+                onChange={(event, value) =>
+                  formik.setFieldValue("collar_type", value)
+                }
+                value={formik.values.collar_type}
+                id="collar_type"
+                options={["White-Collar", "Blue-Collar"]}
+                getOptionLabel={(option) => `${option}`}
+                label="Employee Type"
               />
             </Grid>
           </Grid>
