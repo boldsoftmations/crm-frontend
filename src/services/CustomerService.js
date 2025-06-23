@@ -647,7 +647,7 @@ const getCustomerSRF = (page,search,status,start_date,end_date) => {
 const getNewCustomers =   (page, filterPerson,custom_date,start_date,end_date) => {
   const params = new URLSearchParams();
   if (page)  params.append("page", page);
-  if (filterPerson)  params.append("lead__assigned_to__name", filterPerson);
+  if (filterPerson)  params.append("order_book__proforma_invoice__lead__assigned_to__name", filterPerson);
   if(custom_date) params.append("custom_date",custom_date)
   if(start_date)params.append("start_date",start_date)
   if(end_date) params.append("end_date",end_date)

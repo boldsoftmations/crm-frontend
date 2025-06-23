@@ -70,10 +70,13 @@ export const NewCustomerListView = () => {
 
       const data = response.data.map((row) => {
         return {
-          name: row.name,
+          customer: row.customer,
           status: row.status,
-          created_by: row.created_by,
-          creation_date: row.creation_date,
+          created_by: row.sales_person,
+          creation_date: row.generation_date,
+          invoice_no: row.invoice_no,
+          source: row.source,
+          lead_stage: row.stage,
         };
       });
       setOpen(false);
@@ -86,10 +89,13 @@ export const NewCustomerListView = () => {
   };
 
   const headers = [
-    { label: "Name", key: "name" },
+    { label: "Creation Date", key: "creation_date" },
+    { label: "Customer", key: "customer" },
+    { label: "Invoice No", key: "invoice_no" },
     { label: "Status", key: "status" },
     { label: "Converted By", key: "created_by" },
-    { label: "Creation Date", key: "creation_date" },
+    { label: "Lead Source", key: "source" },
+    { label: "Lead Stage", key: "lead_stage" },
   ];
   //handle export function
 
@@ -287,11 +293,18 @@ export const NewCustomerListView = () => {
             >
               <TableHead>
                 <TableRow>
-                  {["Company", "Status", "Converted By", "Creation Date"].map(
-                    (header) => (
-                      <StyledTableCell align="center">{header}</StyledTableCell>
-                    )
-                  )}
+                  {[
+                    "Company",
+                    "Invoice Number",
+                    "Source",
+                    "Status",
+                    "Stage",
+                    "Sales Person",
+                    "Amount",
+                    "Creation Date",
+                  ].map((header) => (
+                    <StyledTableCell align="center">{header}</StyledTableCell>
+                  ))}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -299,17 +312,28 @@ export const NewCustomerListView = () => {
                   customerList.map((row, i) => (
                     <StyledTableRow key={i}>
                       <StyledTableCell align="center">
-                        {row.name}
+                        {row.customer}
                       </StyledTableCell>
-
+                      <StyledTableCell align="center">
+                        {row.invoice_no}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.source}
+                      </StyledTableCell>
                       <StyledTableCell align="center">
                         {row.status}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {row.created_by}
+                        {row.stage}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {row.creation_date}
+                        {row.sales_person}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.amount}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.generation_date}
                       </StyledTableCell>
                     </StyledTableRow>
                   ))}
