@@ -7,7 +7,7 @@ import {
   StyleSheet,
   Image,
 } from "@react-pdf/renderer";
-import logo from "../../../Images/LOGOS3.png"; // Ensure the logo is imported correctly
+import logo from "../../../Images/glutape logo.jpg"; // Ensure the logo is imported correctly
 
 // Register font if necessary
 // Font.register({ family: 'Oswald', src: 'http://fonts.gstatic.com/s/oswald/v13/Y_TKV6o8WovbUd3m_X9aAA.ttf' });
@@ -37,11 +37,10 @@ const styles = StyleSheet.create({
     height: 30,
   },
   title: {
-    fontSize: 14,
+    fontSize: 11,
     fontWeight: "bold",
-    // textAlign: "center",
+    textAlign: "center",
     flex: 1,
-    marginRight: 100, // Adjust based on the size of your logo
   },
   grnInfoContainer: {
     flexDirection: "column",
@@ -118,6 +117,7 @@ export const GRNPDFDownload = ({ grnRegisterPDFData }) => {
           </View>
           <View style={styles.header}>
             <Text style={styles.title}>GOODS RECEIVED NOTE</Text>
+            <Text style={styles.title}>UNIT : {grnRegisterPDFData.unit}</Text>
             <View style={styles.grnInfoContainer}>
               <Text style={styles.grnInfo}>
                 GRN No: {grnRegisterPDFData.grn_number}
