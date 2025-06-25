@@ -117,7 +117,9 @@ export const GRNPDFDownload = ({ grnRegisterPDFData }) => {
           </View>
           <View style={styles.header}>
             <Text style={styles.title}>GOODS RECEIVED NOTE</Text>
-            <Text style={styles.title}>UNIT : {grnRegisterPDFData.unit}</Text>
+            <Text style={styles.title}>
+              UNIT : {grnRegisterPDFData.seller_account}
+            </Text>
             <View style={styles.grnInfoContainer}>
               <Text style={styles.grnInfo}>
                 GRN No: {grnRegisterPDFData.grn_number}
