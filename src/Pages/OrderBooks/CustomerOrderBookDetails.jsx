@@ -226,7 +226,7 @@ export const CustomerOrderBookDetails = () => {
     "Pi Date",
     "Approval Date",
     "Company",
-    "Raised By",
+    "Sales Person",
     "Billing City",
     "Shipping City",
     "Product",
@@ -385,7 +385,7 @@ export const CustomerOrderBookDetails = () => {
                       {row.company}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {row.raised_by}
+                      {row.sales_person}
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.billing_city}
