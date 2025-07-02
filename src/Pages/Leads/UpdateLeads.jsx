@@ -695,6 +695,9 @@ export const UpdateLeads = memo((props) => {
               variant="outlined"
               value={leads.pincode}
               onChange={handleInputChange}
+              InputLabelProps={{
+                shrink: true,
+              }}
             />
             <Button
               size="small"
