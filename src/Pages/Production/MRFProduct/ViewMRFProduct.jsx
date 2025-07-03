@@ -72,7 +72,7 @@ export const ViewMRFProduct = () => {
 
       const data = response.data.map((row) => {
         return {
-          id: row.id,
+          id: row.mrf,
           date: row.date,
           product: row.product,
           unit: row.unit,
@@ -253,7 +253,7 @@ export const ViewMRFProduct = () => {
                   <React.Fragment key={mtnData.id}>
                     <StyledTableRow sx={{ "& > *": { borderBottom: "unset" } }}>
                       <StyledTableCell align="center">
-                        {mtnData.id}
+                        {mtnData.mrf}
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         {mtnData.date}

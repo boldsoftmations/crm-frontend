@@ -36,7 +36,7 @@ export const UserProfileView = () => {
     try {
       const response = await UserProfileService.getAllUserProfileData();
       if (response.data) {
-        setUserProfiles(response.data);
+        setUserProfiles(response.data.results);
       }
     } catch (error) {
       handleError(error);
@@ -77,16 +77,16 @@ export const UserProfileView = () => {
   const formatDate = (dateString) => {
     return dateString
       ? new Intl.DateTimeFormat("en-GB", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      }).format(new Date(dateString))
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        }).format(new Date(dateString))
       : "-";
   };
 
   const getCsvData = () => {
     return filteredUserProfiles.map((user) => {
-      const ID = user.id || "-";
+      const ID = user.employee_id || "-";
       const personal = user.personal || {};
       const kyc = user.kyc || {};
       const pfEsiDetails = user.pf_esi_details || {};
@@ -159,7 +159,7 @@ export const UserProfileView = () => {
 
   const getCsvHeaders = () => {
     return [
-      { label: "ID", key: "ID" },
+      { label: "Employee ID", key: "ID" },
       { label: "First Name", key: "First Name" },
       { label: "Middle Name", key: "Middle Name" },
       { label: "Last Name", key: "Last Name" },
@@ -220,7 +220,8 @@ export const UserProfileView = () => {
   const csvData = getCsvData();
 
   const data = filteredUserProfiles.map((user) => ({
-    employee_id: user.id,
+    id: user.id,
+    employee_id: user.employee_id,
     first_name: user.personal.first_name || "-",
     last_name: user.personal.last_name || "-",
     phone_number: user.personal.contact || "-",

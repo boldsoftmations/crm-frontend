@@ -32,7 +32,12 @@ export const ProductionAllTabView = () => {
     },
     {
       label: "MRF Products",
-      roles: ["Director", "Accounts", "Accounts Billing Department"],
+      roles: [
+        "Director",
+        "Accounts",
+        "Accounts Billing Department",
+        "Production",
+      ],
       component: <ViewMRFProduct />,
     },
     {
@@ -56,7 +61,7 @@ export const ProductionAllTabView = () => {
         "Production",
         "Production Delhi",
         "Accounts Executive",
-        "Accounts Billing Department"
+        "Accounts Billing Department",
       ],
       component: <MaterialTransferNoteView />,
     },

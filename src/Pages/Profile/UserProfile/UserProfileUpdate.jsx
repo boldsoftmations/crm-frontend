@@ -165,18 +165,13 @@ export const UserProfileUpdate = ({
       alert("Please select an image of size less than 100KB");
     }
   };
-  useEffect(() => {
-    if (IDForEdit) {
-      getUserProfileData(IDForEdit);
-    }
-  }, [IDForEdit]);
 
-  const getUserProfileData = async (ID) => {
+  const getUserProfileData = async () => {
     try {
       setOpen(true);
-      const response = await UserProfileService.getUserProfileDataById(ID);
-      console.log("response", response);
-
+      const response = await UserProfileService.getUserProfileDataById(
+        IDForEdit
+      );
       // Merge the received data with the existing state
       setFormData((prevData) => ({
         ...prevData,
@@ -188,6 +183,12 @@ export const UserProfileUpdate = ({
       setOpen(false);
     }
   };
+
+  useEffect(() => {
+    if (IDForEdit) {
+      getUserProfileData(IDForEdit);
+    }
+  }, [IDForEdit]);
 
   const UpdateUserProfile = async (e) => {
     try {
