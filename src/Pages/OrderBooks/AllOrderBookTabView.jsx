@@ -51,7 +51,7 @@ export const AllOrderBookTabView = () => {
     },
     {
       label: "PI Wise Orderbook",
-      visible: orderBookUsers || allTabs || isDispatch,
+      visible: orderBookUsers || allTabs || isDispatch || customerServiceTabs,
       index: 2,
     },
   ];
