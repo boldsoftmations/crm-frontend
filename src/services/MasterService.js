@@ -114,6 +114,12 @@ const createMasterActivityOption = (data) => {
   return CustomAxios.post(`/api/master/model-option/`, data);
 };
 
+const getMasterActivityOptions = (model_master__name) => {
+  return CustomAxios.get(
+    `/api/master/model-option/?page=all&model_master__name=${model_master__name}`
+  );
+};
+
 const createMasterBeat = (data) => {
   return CustomAxios.post(`/api/master/beat/`, data);
 };
@@ -174,6 +180,24 @@ const EmployeesAttendance = (page,user__name,user__groups__name)=>{
   return CustomAxios.get(`/api/user/attendance/?${params.toString()}`);
   
 }
+
+const getEmployeesLeaveForm = (page,status)=>{
+   const params = new URLSearchParams();
+  if (page)  params.append("page", page);
+  if(status) params.append("status", status);
+  return CustomAxios.get(`/api/user/leave/?${params.toString()}`);
+}
+
+const createLeaveApplication= (data)=>{
+  return CustomAxios.post(`/api/user/leave/`,data)
+}
+
+const leaveApproval = (data)=>{
+  return CustomAxios.post(`/api/user/leave-approval/`,data)
+}
+
+
+
 const MasterService = {
   createMasterCountry,
   updateMasterCountry,
@@ -191,6 +215,7 @@ const MasterService = {
   getMasterActivity,
   createMasterActivityMainHeading,
   createMasterActivityOption,
+  getMasterActivityOptions,
   createMasterBeat,
   getMasterBeat,
   getBeatCustomers,
@@ -199,6 +224,9 @@ const MasterService = {
   removeLeadsBeatList,
   getBeatlist,
   getLeadBeatlist,
-  EmployeesAttendance
+  EmployeesAttendance,
+  getEmployeesLeaveForm,
+  createLeaveApplication,
+  leaveApproval
 };
 export default MasterService;

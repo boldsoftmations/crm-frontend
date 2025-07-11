@@ -5,6 +5,7 @@ import { ActiveUsers } from "./ActiveUsers";
 import { InActiveUsers } from "./InActiveUsers";
 import { UserProfileView } from "../Profile/UserProfile/UserProfileView";
 import { ViewEmployeesAttendance } from "./Attendance/ViewAttendance";
+import { LeaveApplicationForm } from "./LeaveApplicationForm/LeaveApplicationForm";
 
 export const AllProfileTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
@@ -15,7 +16,7 @@ export const AllProfileTabView = () => {
   const allTabs = isInGroups("Director", "HR");
   const managerTabs = isInGroups("Sales Manager");
 
-  const [activeTab, setActiveTab] = useState(allTabs ? 0 : 4);
+  const [activeTab, setActiveTab] = useState(0);
 
   const tabs = [
     {
@@ -39,6 +40,11 @@ export const AllProfileTabView = () => {
       visible: allTabs || managerTabs,
       index: 3,
     },
+    {
+      label: "Leave Application Form",
+      visible: allTabs || managerTabs,
+      index: 4,
+    },
   ];
 
   const visibleTabs = tabs.filter((tab) => tab.visible);
@@ -49,6 +55,7 @@ export const AllProfileTabView = () => {
     1: <InActiveUsers />,
     2: <UserProfileView />,
     3: <ViewEmployeesAttendance />,
+    4: <LeaveApplicationForm />,
   };
 
   return (
