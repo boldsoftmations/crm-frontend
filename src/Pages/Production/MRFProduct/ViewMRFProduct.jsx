@@ -65,7 +65,7 @@ export const ViewMRFProduct = () => {
       const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
       setOpen(true);
       const response = await InventoryServices.getAllMrfProducts(
-        filterByDays,
+        filterByDays ? filterByDays : "today",
         StartDate,
         EndDate
       );
@@ -96,7 +96,7 @@ export const ViewMRFProduct = () => {
       const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
       const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
       const response = await InventoryServices.getAllMrfProducts(
-        filterByDays,
+        filterByDays ? filterByDays : "today",
         StartDate,
         EndDate
       );
