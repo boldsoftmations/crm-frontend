@@ -13,7 +13,6 @@ import {
   Button,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
-import SearchComponent from "../../Components/SearchComponent ";
 import { MessageAlert } from "../../Components/MessageAlert";
 import { CustomLoader } from "../../Components/CustomLoader";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
@@ -78,16 +77,6 @@ export const AllComplaintListView = () => {
     getAllComplaintsList();
   }, [currentPage, searchQuery]);
 
-  const handleSearch = (query) => {
-    setSearchQuery(query);
-    setCurrentPage(1); // Reset to first page with new search
-  };
-
-  const handleReset = () => {
-    setSearchQuery("");
-    setCurrentPage(1); // Reset to first page with no search query
-  };
-
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
@@ -109,33 +98,8 @@ export const AllComplaintListView = () => {
             }}
           >
             <Grid container spacing={2} alignItems="center">
-              {/* Search Component on the left */}
-              <Grid item xs={12} md={3}>
-                <SearchComponent
-                  onSearch={handleSearch}
-                  onReset={handleReset}
-                />
-              </Grid>
-
               {/* Title Text centered */}
-              <Grid
-                item
-                xs={12}
-                md={4}
-                sx={{ textAlign: { xs: "center", md: "center" } }}
-              >
-                <h3
-                  style={{
-                    margin: 0,
-                    fontSize: "24px",
-                    color: "rgb(34, 34, 34)",
-                    fontWeight: 800,
-                  }}
-                >
-                  Complaints Choice
-                </h3>
-              </Grid>
-              <Grid item xs={12} md={3}>
+              <Grid item xs={12} md={4}>
                 <CustomAutocomplete
                   fullWidth
                   size="small"
@@ -155,13 +119,24 @@ export const AllComplaintListView = () => {
               <Grid
                 item
                 xs={12}
-                md={2}
-                sx={{
-                  display: "flex",
-                  justifyContent: { xs: "center", md: "flex-end" },
-                }}
+                md={4}
+                sx={{ textAlign: { xs: "center", md: "center" } }}
               >
+                <h3
+                  style={{
+                    margin: 0,
+                    fontSize: "24px",
+                    color: "rgb(34, 34, 34)",
+                    fontWeight: 800,
+                  }}
+                >
+                  Complaints Choice
+                </h3>
+              </Grid>
+
+              <Grid item xs={12} md={4} sx={{ textAlign: "end" }}>
                 <Button
+                  sx={{ textAlign: "right" }}
                   color="primary"
                   variant="contained"
                   onClick={() => setOpenAddComplainttype(true)}

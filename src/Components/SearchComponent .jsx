@@ -18,6 +18,19 @@ const SearchComponent = ({ onSearch, onReset }) => {
     setSearchQuery("");
     onReset();
   };
+  const handleKeyDown = (e) => {
+    if (e.key === "Backspace") {
+      if (onReset) {
+        onReset(); // Optional callback to parent to clear results, etc.
+      }
+    }
+
+    if (e.key === "Enter") {
+      if (onSearch) {
+        onSearch(searchQuery); //append search value
+      }
+    }
+  };
 
   return (
     <Box sx={{ width: "100%" }}>
@@ -29,6 +42,7 @@ const SearchComponent = ({ onSearch, onReset }) => {
         variant="outlined"
         value={searchQuery}
         onChange={handleChange}
+        onKeyDown={handleKeyDown}
         fullWidth
         InputProps={{
           endAdornment: (
