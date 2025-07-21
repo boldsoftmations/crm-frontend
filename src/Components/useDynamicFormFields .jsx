@@ -22,8 +22,9 @@ const useDynamicFormFields = (
     (index, event, value) => {
       let data = [...products];
       const productObj = productOption.find(
-        (item) => item.product__name === value
+        (item) => item.product__name === value || item.product === value
       );
+
       data[index] = {
         ...data[index],
         product: value,
