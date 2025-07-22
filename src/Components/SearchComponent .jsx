@@ -27,7 +27,7 @@ const SearchComponent = ({ onSearch, onReset }) => {
 
     if (e.key === "Enter") {
       if (onSearch) {
-        onSearch(searchQuery); //append search value
+        onSearch(searchQuery.trim()); //append search value
       }
     }
   };
