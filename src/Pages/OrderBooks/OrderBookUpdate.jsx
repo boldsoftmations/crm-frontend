@@ -125,7 +125,7 @@ export const OrderBookUpdate = (props) => {
                 shrink: true,
               }}
               inputProps={{
-                min: new Date(new Date().setDate(new Date().getDate() + 1))
+                min: new Date(new Date().setDate(new Date().getDate()))
                   .toISOString()
                   .split("T")[0], // Converts the date to YYYY-MM-DD format
               }}
