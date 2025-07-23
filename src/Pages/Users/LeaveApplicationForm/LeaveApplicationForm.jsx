@@ -23,6 +23,7 @@ import LeaveForm from "./CreateLeaveApplication";
 import { Popup } from "../../../Components/Popup";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
 import CustomTextField from "../../../Components/CustomTextField";
+import { useSelector } from "react-redux";
 
 export const LeaveApplicationForm = () => {
   const [open, setOpen] = useState(false);
@@ -43,6 +44,14 @@ export const LeaveApplicationForm = () => {
   const handleClose = () => {
     setAlertMsg({ open: false });
   };
+
+  const { profile } = useSelector((state) => state.auth);
+
+  //this is for access to deparment
+  const giveAccess = ["Director", "HR"];
+  const isAccess =
+    profile && profile.groups.some((group) => giveAccess.includes(group));
+
   // Function to get product base customer data
   const getEmployeesLeaveForm = async () => {
     try {
@@ -238,7 +247,7 @@ export const LeaveApplicationForm = () => {
                     "Status",
                     "Reason for leave",
                     "Leave Date",
-                    "Action",
+                    isAccess ? "Action" : "",
                   ].map((header) => (
                     <StyledTableCell align="center">{header}</StyledTableCell>
                   ))}
@@ -307,20 +316,22 @@ export const LeaveApplicationForm = () => {
                         {row.created_at}
                       </StyledTableCell>
 
-                      <StyledTableCell align="center">
-                        <Button
-                          variant="text"
-                          color="primary"
-                          size="small"
-                          disabled={
-                            row.status === "Approved" ||
-                            row.status === "Rejected"
-                          }
-                          onClick={() => handleUpdateLeaveStatus(row)}
-                        >
-                          View
-                        </Button>
-                      </StyledTableCell>
+                      {isAccess && (
+                        <StyledTableCell align="center">
+                          <Button
+                            variant="text"
+                            color="primary"
+                            size="small"
+                            disabled={
+                              row.status === "Approved" ||
+                              row.status === "Rejected"
+                            }
+                            onClick={() => handleUpdateLeaveStatus(row)}
+                          >
+                            View
+                          </Button>
+                        </StyledTableCell>
+                      )}
                     </StyledTableRow>
                   ))}
               </TableBody>

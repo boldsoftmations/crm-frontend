@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { CustomTabs } from "../../Components/CustomTabs";
 import { ActiveUsers } from "./ActiveUsers";
@@ -13,61 +13,84 @@ export const AllProfileTabView = () => {
   const isInGroups = (...groups) =>
     groups.some((group) => userData.groups.includes(group));
 
-  const allTabs = isInGroups("Director", "HR");
-  const managerTabs = isInGroups("Sales Manager");
+  // Memoize group role checks
+  const permissions = useMemo(() => {
+    const allTabs = isInGroups(
+      "Director",
+      "Sales Manager",
+      "Sales Deputy Manager",
+      "Sales Assistant Deputy Manager",
+      "Sales Executive",
+      "Sales Manager without Leads",
+      "Sales Manager with Lead",
+      "HR",
+      "HR Recruiter",
+      "Factory-Mumbai-OrderBook",
+      "Factory-Delhi-OrderBook",
+      "Factory-Delhi-Dispatch",
+      "Factory-Mumbai-Dispatch",
+      "Customer Service",
+      "Purchase",
+      "Stores",
+      "Production Delhi",
+      "Stores Delhi",
+      "Production",
+      "Accounts",
+      "Accounts Billing Department",
+      "Accounts Executive",
+      "Customer Relationship Executive",
+      "Customer Relationship Manager",
+      "Business Development Manager",
+      "Business Development Executive",
+      "QA"
+    );
 
-  const [activeTab, setActiveTab] = useState(0);
+    return {
+      isDirectorOrHR: isInGroups("Director", "HR"),
+      isManager: isInGroups("Sales Manager"),
+      allTabs,
+    };
+  }, [userData]);
 
-  const tabs = [
+  const allTabDefinitions = [
     {
       label: "Active Employees",
-      visible: allTabs,
-      index: 0,
+      visible: permissions.isDirectorOrHR,
+      component: <ActiveUsers />,
     },
     {
       label: "InActive Employees",
-      visible: allTabs,
-      index: 1,
+      visible: permissions.isDirectorOrHR,
+      component: <InActiveUsers />,
     },
-
     {
       label: "Personal Profiles",
-      visible: allTabs,
-      index: 2,
+      visible: permissions.isDirectorOrHR,
+      component: <UserProfileView />,
     },
     {
       label: "Employees Attendance",
-      visible: allTabs || managerTabs,
-      index: 3,
+      visible: permissions.allTabs,
+      component: <ViewEmployeesAttendance />,
     },
     {
       label: "Leave Application Form",
-      visible: allTabs || managerTabs,
-      index: 4,
+      visible: permissions.allTabs || permissions.isManager,
+      component: <LeaveApplicationForm />,
     },
   ];
 
-  const visibleTabs = tabs.filter((tab) => tab.visible);
-  const visibleTabIndexes = visibleTabs.map((tab) => tab.index);
-
-  const tabComponents = {
-    0: <ActiveUsers />,
-    1: <InActiveUsers />,
-    2: <UserProfileView />,
-    3: <ViewEmployeesAttendance />,
-    4: <LeaveApplicationForm />,
-  };
+  const visibleTabs = allTabDefinitions.filter((tab) => tab.visible);
+  const [activeTabIndex, setActiveTabIndex] = useState(0);
 
   return (
     <div>
       <CustomTabs
-        tabs={visibleTabs}
-        activeTab={activeTab}
-        onTabChange={(index) => setActiveTab(visibleTabIndexes[index])}
+        tabs={visibleTabs.map((tab) => ({ label: tab.label }))}
+        activeTab={activeTabIndex}
+        onTabChange={(index) => setActiveTabIndex(index)}
       />
-      {visibleTabIndexes.includes(activeTab) && (
-        <div>{tabComponents[activeTab]}</div>
-      )}
+      <div>{visibleTabs && visibleTabs[activeTabIndex].component}</div>
     </div>
   );
 };
