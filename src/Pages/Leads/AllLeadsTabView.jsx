@@ -25,6 +25,9 @@ export const AllLeadsTabView = () => {
     "Business Development Manager"
   );
   const isSalesADManager = isInGroups("Sales Assistant Deputy Manager");
+  const isSaleDevelopmentExecutive = isInGroups(
+    "Business Development Executive"
+  );
   const isSalesExecutive = isInGroups(
     "Sales Executive",
     "Business Development Executive",
@@ -75,7 +78,7 @@ export const AllLeadsTabView = () => {
       },
       {
         label: "Dropped Leads",
-        visible: isAdmin || isSalesADManager,
+        visible: isAdmin || isSalesADManager || isSaleDevelopmentExecutive,
         index: 3,
         component: <ClosedLead />,
       },
