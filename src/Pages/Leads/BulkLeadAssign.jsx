@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Autocomplete, Box, Grid } from "@mui/material";
 import LeadServices from "../../services/LeadService";
 import { CustomLoader } from "../../Components/CustomLoader";
@@ -12,41 +12,13 @@ export const BulkLeadAssign = (props) => {
   const [open, setOpen] = useState(false);
   const [assignFrom, setAssignFrom] = useState("");
   const [assignTo, setAssignTo] = useState("");
-  const [assigned, setAssigned] = useState([]);
   const [touchedAssignFrom, setTouchedAssignFrom] = useState(false);
   const [touchedAssignTo, setTouchedAssignTo] = useState(false);
   const [selectedState, setSelectedState] = useState([]);
   const data = useSelector((state) => state.auth);
   const users = data.profile;
+  const assigned_from = users.sales_users || [];
   const assigned_to_users = users.active_sales_user || [];
-  useEffect(() => {
-    getAssignedData();
-  }, []);
-
-  const getAssignedData = async () => {
-    try {
-      setOpen(true);
-      const ALLOWED_ROLES = [
-        "Director",
-        "Customer Service",
-        "Sales Manager",
-        "Sales Deputy Manager",
-        "Sales Assistant Deputy Manager",
-        "Sales Executive",
-        "Sales Manager without Leads",
-      ];
-      const res = await LeadServices.getAllAssignedUser();
-      // Filter the data based on the ALLOWED_ROLES
-      const filteredData = res.data.filter((employee) =>
-        employee.groups.some((group) => ALLOWED_ROLES.includes(group))
-      );
-      setAssigned(filteredData);
-      setOpen(false);
-    } catch (error) {
-      console.log("error", error);
-      setOpen(false);
-    }
-  };
 
   const AssignBulkLead = async (e) => {
     try {
@@ -200,15 +172,19 @@ export const BulkLeadAssign = (props) => {
               id="grouped-demo"
               value={
                 assignFrom
-                  ? assigned.find((option) => option.employee_id === assignFrom)
+                  ? assigned_from.find(
+                      (option) => option.employee_id === assignFrom
+                    )
                   : null
               }
               onChange={(event, value) => {
                 setAssignFrom((value && value.employee_id) || ""); // Store employee_id in state
                 if (!touchedAssignFrom) setTouchedAssignFrom(true);
               }}
-              options={assigned}
-              getOptionLabel={(option) => option.name || ""} // Display name in dropdown
+              options={assigned_from}
+              getOptionLabel={(option) =>
+                `${option.name} ${option.employee_id}`
+              } // Display name in dropdown
               isOptionEqualToValue={(option, value) =>
                 option.employee_id === value
               } // Match based on employee_id
@@ -248,7 +224,9 @@ export const BulkLeadAssign = (props) => {
                 if (!touchedAssignTo) setTouchedAssignTo(true);
               }}
               options={assigned_to_users} // Pass the full user objects
-              getOptionLabel={(option) => option.name || ""} // Display email in dropdown
+              getOptionLabel={(option) =>
+                `${option.name} ${option.employee_id}`
+              } // Display email in dropdown
               isOptionEqualToValue={(option, value) =>
                 option.employee_id === value
               } // Match by employee_id
