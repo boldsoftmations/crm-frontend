@@ -23,6 +23,7 @@ export const AllProfileTabView = () => {
       "Sales Executive",
       "Sales Manager without Leads",
       "Sales Manager with Lead",
+      "Digital Marketing",
       "HR",
       "HR Recruiter",
       "Factory-Mumbai-OrderBook",
