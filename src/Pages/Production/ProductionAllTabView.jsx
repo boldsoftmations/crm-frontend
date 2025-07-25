@@ -31,14 +31,16 @@ export const ProductionAllTabView = () => {
       component: <MaterialRequisitionFormView />,
     },
     {
-      label: "MRF Products",
+      label: "Bill of Materials",
       roles: [
         "Director",
         "Accounts",
-        "Accounts Billing Department",
+        "Stores Delhi",
+        "Production Delhi",
         "Production",
+        "Accounts Executive",
       ],
-      component: <ViewMRFProduct />,
+      component: <BillofMaterialsView />,
     },
     {
       label: "Production Entry",
@@ -66,16 +68,14 @@ export const ProductionAllTabView = () => {
       component: <MaterialTransferNoteView />,
     },
     {
-      label: "Bill of Materials",
+      label: "MRF Products",
       roles: [
         "Director",
         "Accounts",
-        "Stores Delhi",
-        "Production Delhi",
+        "Accounts Billing Department",
         "Production",
-        "Accounts Executive",
       ],
-      component: <BillofMaterialsView />,
+      component: <ViewMRFProduct />,
     },
     {
       label: "Production Inventory (G&L)",

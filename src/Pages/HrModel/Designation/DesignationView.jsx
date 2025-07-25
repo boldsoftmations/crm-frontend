@@ -41,7 +41,6 @@ export const DesignationView = () => {
     setAlertMsg({ open: false });
   };
 
-
   const getDesignationsDetails = useCallback(
     async (page, query = searchQuery) => {
       try {
@@ -169,10 +168,9 @@ export const DesignationView = () => {
               </Grid>
             </Grid>
           </Box>
-          <Box display="flex" justifyContent="center" marginBottom="10px">
+          <Box display="flex" justifyContent="center" marginBottom={2}>
             <h3
               style={{
-                marginBottom: "1em",
                 fontSize: "24px",
                 color: "rgb(34, 34, 34)",
                 fontWeight: 800,

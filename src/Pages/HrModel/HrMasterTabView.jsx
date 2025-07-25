@@ -23,24 +23,25 @@ export const HrMasterTabView = () => {
 
   const tabs = [
     {
-      label: "Designation",
-      visible: allTabs,
-      component: <DesignationView />,
-    },
-    {
       label: "Department",
       visible: allTabs,
       component: <DepartmentView />,
     },
     {
-      label: "Source",
+      label: "Designation",
       visible: allTabs,
-      component: <SourceView />,
+      component: <DesignationView />,
     },
+
     {
       label: "Location",
       visible: allTabs,
       component: <LocationView />,
+    },
+    {
+      label: "Source",
+      visible: allTabs,
+      component: <SourceView />,
     },
     {
       label: "MCQ Question",

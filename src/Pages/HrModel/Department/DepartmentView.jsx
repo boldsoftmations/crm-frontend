@@ -105,10 +105,9 @@ export const DepartmentView = () => {
               </Grid>
             </Grid>
           </Box>
-          <Box display="flex" justifyContent="center" marginBottom="10px">
+          <Box display="flex" justifyContent="center">
             <h3
               style={{
-                marginBottom: "1em",
                 fontSize: "24px",
                 color: "rgb(34, 34, 34)",
                 fontWeight: 800,
@@ -118,7 +117,7 @@ export const DepartmentView = () => {
               Departments
             </h3>
           </Box>
-          <Paper sx={{ p: 2, m: 3 }}>
+          <Paper sx={{ p: 2 }}>
             <CustomTable
               headers={TableHeader}
               data={TableData}

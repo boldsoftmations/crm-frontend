@@ -115,10 +115,9 @@ export const SourceView = () => {
               </Grid>
             </Grid>
           </Box>
-          <Box display="flex" justifyContent="center" marginBottom="10px">
+          <Box display="flex" justifyContent="center" marginBottom={2}>
             <h3
               style={{
-                marginBottom: "1em",
                 fontSize: "24px",
                 color: "rgb(34, 34, 34)",
                 fontWeight: 800,

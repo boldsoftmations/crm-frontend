@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   Box,
   Grid,
@@ -75,7 +75,6 @@ export const TopCustomerView = () => {
     getTopCustomers();
   }, [filterValue]);
 
-
   const handleFilterChange = (event, value) => {
     setFilterValue(value.value);
   };
@@ -109,7 +108,7 @@ export const TopCustomerView = () => {
     };
   };
 
-  const totals = calculateTotals();
+  const totals = useMemo(() => calculateTotals(), [topCustomerData]);
   const openInPopupOfUpdateCustomer = (item) => {
     setRecordForEdit(item.order_book__company);
     setSelectedCustomers(item);
