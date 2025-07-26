@@ -11,13 +11,20 @@ import CustomSnackbar from "../../../Components/CustomerSnackbar";
 export const CreateWareHouseDetails = (props) => {
   const { setOpenPopup, getAllCompanyDetailsByID, contactData } = props;
   const [open, setOpen] = useState(false);
-  const [inputValue, setInputValue] = useState([]);
   const [selectedcontact, setSelectedContact] = useState("");
+  const [validCheck, setValidCheck] = useState(true);
   const data = useSelector((state) => state.auth);
 
+  const [inputValue, setInputValue] = useState({
+    address: "",
+    pincode: "",
+    city: "",
+    state: "",
+  });
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setInputValue({ ...inputValue, [name]: value });
+    setValidCheck(false);
   };
   const [alertmsg, setAlertMsg] = useState({
     message: "",
@@ -31,6 +38,19 @@ export const CreateWareHouseDetails = (props) => {
     try {
       setOpen(true);
       const PINCODE = inputValue.pincode;
+      if (!PINCODE || PINCODE.trim().length < 4) {
+        setInputValue({
+          ...inputValue,
+          state: "",
+          city: "",
+        });
+        setAlertMsg({
+          message: "Pin code is not valid",
+          severity: "warning",
+          open: true,
+        });
+        return;
+      }
       const response = await MasterService.getCountryDataByPincode(
         "India",
         PINCODE
@@ -53,6 +73,7 @@ export const CreateWareHouseDetails = (props) => {
           severity: "success",
           open: true,
         });
+
         setInputValue({
           ...inputValue,
           state: response.data[0].state,
@@ -146,6 +167,7 @@ export const CreateWareHouseDetails = (props) => {
               onClick={validatePinCode}
               variant="contained"
               sx={{ marginLeft: "1rem" }}
+              disabled={validCheck}
             >
               Validate
             </Button>
