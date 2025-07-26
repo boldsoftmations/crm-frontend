@@ -199,13 +199,7 @@ export const CustomerOrderBookDetails = () => {
 
   useEffect(() => {
     getAllCustomerWiseOrderBook();
-  }, [
-    currentPage,
-    filterSellerUnit,
-    filterRaisedByEmail,
-    searchQuery,
-    filterReadyDate,
-  ]);
+  }, [getAllCustomerWiseOrderBook]);
 
   const handleSearch = (query) => {
     setSearchQuery(query);
