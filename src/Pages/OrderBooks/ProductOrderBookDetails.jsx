@@ -16,25 +16,23 @@ import {
 } from "@mui/material";
 import { CSVLink } from "react-csv";
 import { CustomLoader } from "../../Components/CustomLoader";
-import { Popup } from "../../Components/Popup";
 import { CustomPagination } from "./../../Components/CustomPagination";
 import { useSelector } from "react-redux";
+import { Popup } from "../../Components/Popup";
 import {
   OrderBookPeningQuantityUpdate,
   OrderBookUpdate,
 } from "./OrderBookUpdate";
-import { TotalPendingQuantity } from "./TotalPendingQuantity";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
+import SearchComponent from "../../Components/SearchComponent ";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../Components/MessageAlert";
-import SearchComponent from "../../Components/SearchComponent ";
 
-export const ProductOrderBookDetails = () => {
+export const CustomerOrderBookDetails = () => {
   const [orderBookData, setOrderBookData] = useState([]);
   const [open, setOpen] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [openModal2, setOpenModal2] = useState(false);
-  const [openModal3, setOpenModal3] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [totalPages, setTotalPages] = useState(0);
@@ -46,9 +44,30 @@ export const ProductOrderBookDetails = () => {
   const csvLinkRef = useRef(null);
   const dataList = useSelector((state) => state.auth);
   const userData = dataList.profile;
-  const assigned = userData.sales_users || [];
+  const assigned = userData.active_sales_user || [];
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
+
+  const openInPopup = (item) => {
+    try {
+      const matchedODBData = orderBookData.find(
+        (ODBData) => ODBData.id === item.id
+      );
+      setRecordForEdit(matchedODBData);
+      if (userData.groups.includes("Accounts")) {
+        setOpenModal2(true);
+      }
+      if (
+        userData.groups.includes("Production") ||
+        userData.groups.includes("Production Delhi") ||
+        userData.groups.includes("Director")
+      ) {
+        setOpenModal(true);
+      }
+    } catch (err) {
+      console.log("err", err);
+    }
+  };
 
   const handleDownload = async () => {
     const data = await handleExport();
@@ -57,12 +76,13 @@ export const ProductOrderBookDetails = () => {
       csvLinkRef.current.link.click();
     });
   };
+  console.log(filterReadyDate);
 
   const handleExport = async () => {
     try {
       setOpen(true);
       const response = await InvoiceServices.getOrderBookData(
-        "product",
+        "customer",
         "all",
         filterSellerUnit,
         filterRaisedByEmail,
@@ -75,17 +95,16 @@ export const ProductOrderBookDetails = () => {
           userData.groups.includes("Factory-Delhi-OrderBook")
         ) {
           return {
-            product: item.product,
+            company: item.company,
             order_book_date: item.order_book_date,
             pi_date: item.pi_date,
             proforma_invoice: item.proforma_invoice,
-            quantity: item.quantity,
-            // amount: item.amount,
-            pending_quantity: item.pending_quantity,
-            pending_amount: item.pending_amount,
-            company: item.company,
             billing_city: item.billing_city,
             shipping_city: item.shipping_city,
+            product: item.product,
+            quantity: item.quantity,
+            pending_quantity: item.pending_quantity,
+            pending_amount: item.pending_amount,
             seller_state: item.seller_state,
             estimated_date: item.estimated_date,
             ready_date: item.ready_date,
@@ -94,19 +113,27 @@ export const ProductOrderBookDetails = () => {
           };
         } else if (userData.groups.includes("Customer Service")) {
           return {
-            product: item.product,
+            company: item.company,
             order_book_date: item.order_book_date,
             pi_date: item.pi_date,
             proforma_invoice: item.proforma_invoice,
+            billing_city: item.billing_city,
+            shipping_city: item.shipping_city,
+            product: item.product,
             quantity: item.quantity,
-            amount: item.amount,
+            rate: item.rate,
             pending_quantity: item.pending_quantity,
-            company: item.company,
+            seller_state: item.seller_state,
             billing_address: item.billing_address,
             billing_pincode: item.billing_pincode,
             shipping_address: item.shipping_address,
             shipping_pincode: item.shipping_pincode,
-            seller_state: item.seller_state,
+            payment_terms: item.payment_terms,
+            delivery_terms: item.delivery_terms,
+            transporter_name: item.transporter_name,
+            place_of_supply: item.place_of_supply,
+            buyer_order_no: item.buyer_order_no,
+            buyer_order_date: item.buyer_order_date,
             estimated_date: item.estimated_date,
             ready_date: item.ready_date,
             requested_date: item.requested_date,
@@ -114,20 +141,20 @@ export const ProductOrderBookDetails = () => {
           };
         } else {
           return {
-            product: item.product,
+            company: item.company,
             order_book_date: item.order_book_date,
             pi_date: item.pi_date,
             proforma_invoice: item.proforma_invoice,
-            quantity: item.quantity,
-            amount: item.amount,
-            pending_quantity: item.pending_quantity,
-            pending_amount: item.pending_amount,
-            company: item.company,
             billing_city: item.billing_city,
             shipping_city: item.shipping_city,
             billing_pincode: item.billing_pincode,
             shipping_pincode: item.shipping_pincode,
+            product: item.product,
+            quantity: item.quantity,
+            amount: item.amount,
+            pending_quantity: item.pending_quantity,
             seller_state: item.seller_state,
+            pending_amount: item.pending_amount,
             estimated_date: item.estimated_date,
             ready_date: item.ready_date,
             requested_date: item.requested_date,
@@ -144,46 +171,11 @@ export const ProductOrderBookDetails = () => {
     }
   };
 
-  const openInPopup = (item) => {
-    try {
-      const matchedODBData = orderBookData.find(
-        (ODBData) => ODBData.id === item.id
-      );
-      setRecordForEdit(matchedODBData);
-      if (
-        userData.groups.includes("Accounts") ||
-        userData.groups.includes("Director")
-      ) {
-        setOpenModal3(true);
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const openInPopup2 = (item) => {
-    try {
-      const matchedODBData = orderBookData.find(
-        (ODBData) => ODBData.id === item.id
-      );
-      setRecordForEdit(matchedODBData);
-      if (
-        userData.groups.includes("Production") ||
-        userData.groups.includes("Production Delhi") ||
-        userData.groups.includes("Director")
-      ) {
-        setOpenModal2(true);
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const getAllProductDataOrderBook = useCallback(async () => {
+  const getAllCustomerWiseOrderBook = useCallback(async () => {
     try {
       setOpen(true);
       const response = await InvoiceServices.getOrderBookData(
-        "product",
+        "customer",
         currentPage,
         filterSellerUnit,
         filterRaisedByEmail,
@@ -206,7 +198,7 @@ export const ProductOrderBookDetails = () => {
   ]);
 
   useEffect(() => {
-    getAllProductDataOrderBook();
+    getAllCustomerWiseOrderBook();
   }, [
     currentPage,
     filterSellerUnit,
@@ -228,6 +220,7 @@ export const ProductOrderBookDetails = () => {
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
+
   const Tableheaders2 = [
     "Pi No",
     "Pi Date",
@@ -288,14 +281,19 @@ export const ProductOrderBookDetails = () => {
                   label="Filter By Ready Date"
                 />
               </Grid>
+
               <Grid item xs={12} sm={3}>
                 <CustomAutocomplete
                   size="small"
                   fullWidth
-                  value={filterRaisedByEmail}
-                  onChange={(event, value) => setFilterRaisedByEmail(value)}
-                  options={assigned.map((option) => option.email)}
-                  getOptionLabel={(option) => option}
+                  value={assigned.find(
+                    (option) => option.email === filterRaisedByEmail
+                  )}
+                  onChange={(event, value) =>
+                    setFilterRaisedByEmail(value ? value.email : null)
+                  }
+                  options={assigned}
+                  getOptionLabel={(option) => option.name}
                   label="Filter By Sales Person"
                 />
               </Grid>
@@ -306,11 +304,7 @@ export const ProductOrderBookDetails = () => {
                 />
               </Grid>
               <Grid item xs={12} sm={3}>
-                <Button
-                  sx={{ marginLeft: "10px" }}
-                  variant="contained"
-                  onClick={handleDownload}
-                >
+                <Button variant="contained" onClick={handleDownload}>
                   Download CSV
                 </Button>
 
@@ -318,12 +312,12 @@ export const ProductOrderBookDetails = () => {
                   <CSVLink
                     headers={
                       userData.groups.includes("Customer Service")
-                        ? Customerheaders
-                        : headers
+                        ? headers
+                        : headers2
                     }
                     data={exportData}
                     ref={csvLinkRef}
-                    filename="Product Order Book.csv"
+                    filename="Customer Order Book.csv"
                     target="_blank"
                     style={{
                       textDecoration: "none",
@@ -345,9 +339,10 @@ export const ProductOrderBookDetails = () => {
                 fontWeight: 800,
               }}
             >
-              Product Order Book Details
+              Customer Order Book Details
             </h3>
           </Box>
+
           <TableContainer
             sx={{
               maxHeight: 440,
@@ -427,35 +422,21 @@ export const ProductOrderBookDetails = () => {
                       {row.revision}
                     </StyledTableCell>
                     <StyledTableCell>
-                      {(userData.groups.includes("Accounts") ||
-                        userData.groups.includes("Director")) && (
-                        <Button
-                          variant="text"
-                          color="info"
-                          size="small"
-                          onClick={() => openInPopup(row)}
-                        >
-                          Account View
-                        </Button>
-                      )}
-                      {(userData.groups.includes("Production") ||
-                        userData.groups.includes("Production Delhi") ||
-                        userData.groups.includes("Director")) && (
-                        <Button
-                          variant="text"
-                          color="secondary"
-                          size="small"
-                          onClick={() => openInPopup2(row)}
-                        >
-                          Production View
-                        </Button>
-                      )}
+                      <Button
+                        variant="text"
+                        color="info"
+                        size="small"
+                        onClick={() => openInPopup(row)}
+                      >
+                        Production View
+                      </Button>
                     </StyledTableCell>
                   </StyledTableRow>
                 ))}
               </TableBody>
             </Table>
           </TableContainer>
+
           <CustomPagination
             totalPages={totalPages}
             currentPage={currentPage}
@@ -464,33 +445,25 @@ export const ProductOrderBookDetails = () => {
         </Paper>
       </Grid>
       <Popup
-        maxWidth={"lg"}
-        title={"View Total Pending Quantity"}
+        title={"Update Customer OrderBook"}
         openPopup={openModal}
         setOpenPopup={setOpenModal}
       >
-        <TotalPendingQuantity />
-      </Popup>
-      <Popup
-        title={"Update Product OrderBook"}
-        openPopup={openModal2}
-        setOpenPopup={setOpenModal2}
-      >
         <OrderBookUpdate
           recordForEdit={recordForEdit}
-          setOpenPopup={setOpenModal2}
-          getAllOrderBook={getAllProductDataOrderBook}
+          setOpenPopup={setOpenModal}
+          getAllOrderBook={getAllCustomerWiseOrderBook}
         />
       </Popup>
       <Popup
         title={"Update Customer OrderBook"}
-        openPopup={openModal3}
-        setOpenPopup={setOpenModal3}
+        openPopup={openModal2}
+        setOpenPopup={setOpenModal2}
       >
         <OrderBookPeningQuantityUpdate
           recordForEdit={recordForEdit}
-          setOpenPopup={setOpenModal3}
-          getAllOrderBook={getAllProductDataOrderBook}
+          setOpenPopup={setOpenModal2}
+          getAllOrderBook={getAllCustomerWiseOrderBook}
         />
       </Popup>
     </>
@@ -498,15 +471,100 @@ export const ProductOrderBookDetails = () => {
 };
 
 const StateOption = ["Delhi", "Maharashtra"];
-
+const readyDateOption = [
+  {
+    label: "Ready",
+    value: true,
+  },
+  {
+    label: "Not Ready",
+    value: false,
+  },
+];
 const headers = [
   {
-    label: "Product",
-    key: "product",
+    label: "Seller State",
+    key: "seller_state",
   },
   { label: "Approval Date", key: "order_book_date" },
   { label: "PI Date", key: "pi_date" },
   { label: "PI Number", key: "proforma_invoice" },
+  { label: "Customer", key: "company" },
+
+  { label: "Billing City", key: "billing_city" },
+  { label: "Billing Address", key: "billing_address" },
+  { label: "Billing Pincode", key: "billing_pincode" },
+  { label: "Shipping City", key: "shipping_city" },
+  { label: "Shipping Address", key: "shipping_address" },
+  { label: "Shipping Pincode", key: "shipping_pincode" },
+  {
+    label: "Product",
+    key: "product",
+  },
+  {
+    label: "Pending Quantity",
+    key: "pending_quantity",
+  },
+
+  {
+    label: "Invoice Quantity",
+    key: "",
+  },
+  {
+    label: "Rate",
+    key: "rate",
+  },
+  {
+    label: "Amount",
+    key: "",
+  },
+  { label: "Payment Terms", key: "payment_terms" },
+  {
+    label: "Delivery Terms",
+    key: "delivery_terms",
+  },
+  {
+    label: "Transporter Name",
+    key: "transporter_name",
+  },
+  {
+    label: "Place Of Supply",
+    key: "place_of_supply",
+  },
+  {
+    label: "Buyer Order No",
+    key: "buyer_order_no",
+  },
+  {
+    label: "Buyer Order Date",
+    key: "buyer_order_date",
+  },
+  {
+    label: "Estimated Date",
+    key: "estimated_date",
+  },
+  { label: "Ready Date", key: "ready_date" },
+
+  { label: "Requested Date", key: "requested_date" },
+  {
+    label: "Special Instruction",
+    key: "special_instructions",
+  },
+];
+
+const headers2 = [
+  { label: "Customer", key: "company" },
+  { label: "Approval Date", key: "order_book_date" },
+  { label: "PI Date", key: "pi_date" },
+  { label: "PI Number", key: "proforma_invoice" },
+  { label: "Billing City", key: "billing_city" },
+  { label: "Shipping City", key: "shipping_city" },
+  { label: "Shipping Pincode", key: "shipping_pincode" },
+  { label: "Billing Pincode", key: "billing_pincode" },
+  {
+    label: "Product",
+    key: "product",
+  },
   {
     label: "Quantity",
     key: "quantity",
@@ -519,11 +577,6 @@ const headers = [
     label: "Pending Quantity",
     key: "pending_quantity",
   },
-  { label: "Customer", key: "company" },
-  { label: "Billing City", key: "billing_city" },
-  { label: "Shipping City", key: "shipping_city" },
-  { label: "Shipping Pincode", key: "shipping_pincode" },
-  { label: "Billing Pincode", key: "billing_pincode" },
   {
     label: "Seller State",
     key: "seller_state",
@@ -537,55 +590,11 @@ const headers = [
     key: "estimated_date",
   },
   { label: "Ready Date", key: "ready_date" },
-  {
-    label: "Special Instruction",
-    key: "special_instructions",
-  },
-];
 
-const Customerheaders = [
-  {
-    label: "Product",
-    key: "product",
-  },
-  { label: "Approval Date", key: "order_book_date" },
-  { label: "PI Date", key: "pi_date" },
-  { label: "PI Number", key: "proforma_invoice" },
-  {
-    label: "Quantity",
-    key: "quantity",
-  },
-  {
-    label: "Amount",
-    key: "amount",
-  },
-  {
-    label: "Pending Quantity",
-    key: "pending_quantity",
-  },
-  { label: "Customer", key: "company" },
-  { label: "Billing City", key: "billing_city" },
-  { label: "Billing Pincode", key: "billing_pincode" },
-  { label: "Shipping Address", key: "shipping_address" },
-  { label: "Shipping City", key: "shipping_city" },
-  { label: "Shipping Pincode", key: "shipping_pincode" },
-  {
-    label: "Seller State",
-    key: "seller_state",
-  },
+  { label: "Requested Date", key: "requested_date" },
   {
     label: "Special Instruction",
     key: "special_instructions",
-  },
-];
-const readyDateOption = [
-  {
-    label: "Ready",
-    value: true,
-  },
-  {
-    label: "Not Ready",
-    value: false,
   },
 ];
 

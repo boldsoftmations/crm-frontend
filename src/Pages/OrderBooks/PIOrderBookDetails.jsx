@@ -44,7 +44,8 @@ export const PIOrderBookDetails = () => {
   const csvLinkRef = useRef(null);
   const dataList = useSelector((state) => state.auth);
   const userData = dataList.profile;
-  const assigned = userData.sales_users || [];
+  const assigned = userData.active_sales_user || [];
+
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
@@ -269,10 +270,14 @@ export const PIOrderBookDetails = () => {
                 <CustomAutocomplete
                   size="small"
                   fullWidth
-                  value={filterRaisedByEmail}
-                  onChange={(event, value) => setFilterRaisedByEmail(value)}
-                  options={assigned.map((option) => option.email)}
-                  getOptionLabel={(option) => option}
+                  value={assigned.find(
+                    (option) => option.email === filterRaisedByEmail
+                  )}
+                  onChange={(event, value) =>
+                    setFilterRaisedByEmail(value ? value.email : null)
+                  }
+                  options={assigned}
+                  getOptionLabel={(option) => option.name}
                   label="Filter By Sales Person"
                 />
               </Grid>
