@@ -38,7 +38,7 @@ export const CreateWareHouseDetails = (props) => {
     try {
       setOpen(true);
       const PINCODE = inputValue.pincode;
-      if (!PINCODE || PINCODE.trim().length < 4) {
+      if (!PINCODE || PINCODE.trim().length < 2) {
         setInputValue({
           ...inputValue,
           state: "",
