@@ -42,6 +42,7 @@ export const UpdateCompanyDetails = (props) => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [errorMessages, setErrorMessages] = useState([]);
   const [currentErrorIndex, setCurrentErrorIndex] = useState(0);
+  const [disabled, setDisabled] = useState(true);
   const dispatch = useDispatch();
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
@@ -207,6 +208,15 @@ export const UpdateCompanyDetails = (props) => {
       setCurrentErrorIndex(0); // Reset for any future errors
     }
   }, [currentErrorIndex, errorMessages.length]);
+
+  useEffect(() => {
+    if (
+      userData.groups.includes("Director") ||
+      userData.groups.includes("Accounts")
+    ) {
+      setDisabled(false);
+    }
+  }, [userData]);
 
   return (
     <>
@@ -466,6 +476,7 @@ export const UpdateCompanyDetails = (props) => {
               size="small"
               label="Address"
               variant="outlined"
+              disabled={disabled}
               value={inputValue.address ? inputValue.address : ""}
               onChange={handleInputChange}
               InputLabelProps={{
@@ -478,15 +489,15 @@ export const UpdateCompanyDetails = (props) => {
           userData.groups.includes("Accounts") ||
           userData.groups.includes("Accounts Billing Department") ||
           userData.groups.includes("Sales Manager")) && (
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              Submit
-            </Button>
-          )}
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+          >
+            Submit
+          </Button>
+        )}
       </Box>
 
       {selectedCustomers && selectedCustomers.message && (
