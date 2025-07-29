@@ -1,4 +1,13 @@
-import { Autocomplete, Box, Button, Grid, Snackbar } from "@mui/material";
+import {
+  Autocomplete,
+  Box,
+  Button,
+  Grid,
+  Snackbar,
+  Typography,
+} from "@mui/material";
+import RuleIcon from "@mui/icons-material/Rule";
+import DangerousIcon from "@mui/icons-material/Dangerous";
 import { Alert, AlertTitle } from "@mui/material";
 import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
@@ -34,6 +43,7 @@ export const SalesInvoiceCreate = (props) => {
       proforma_invoice: "",
       id: "",
       user: "",
+      ready_date: "",
     },
   ]);
   const calculateTotalAmount = (products) => {
@@ -136,6 +146,7 @@ export const SalesInvoiceCreate = (props) => {
             proforma_invoice: data.proforma_invoice,
             id: data.id,
             raised_by: data.raised_by,
+            ready_date: data.ready_date,
           };
 
           // Push product data to array
@@ -155,6 +166,7 @@ export const SalesInvoiceCreate = (props) => {
         proforma_invoice: fruit.proforma_invoice,
         id: fruit.id,
         user: fruit.raised_by,
+        ready_date: fruit.ready_date,
       }));
 
       // Update state with new array of product objects
@@ -164,6 +176,7 @@ export const SalesInvoiceCreate = (props) => {
     } catch (err) {
       setOpen(false); // Hide loading spinner
       console.log("err", err);
+
       alert(err.response.data.errors.proforma_invoice); // Display error message
     }
   };
@@ -200,7 +213,6 @@ export const SalesInvoiceCreate = (props) => {
             : "",
         exchange_rate: inputValue.exchange_rate || null,
       };
-
       setOpen(true);
       if (inputValue.length !== 0) {
         await InvoiceServices.createSalesinvoiceData(req);
@@ -520,6 +532,7 @@ export const SalesInvoiceCreate = (props) => {
                 return null;
               }
               let amount;
+
               if (customerorderBookData.origin_type === "international") {
                 amount =
                   Number(inputValue.exchange_rate) *
@@ -529,12 +542,11 @@ export const SalesInvoiceCreate = (props) => {
                 amount =
                   (Number(input.quantity) || 0) * (Number(input.rate) || 0);
               }
-
               return (
                 <React.Fragment key={index}>
                   {" "}
                   {/* Use React.Fragment with a key for each item */}
-                  <Grid item xs={12} sm={3}>
+                  <Grid item xs={12} sm={2}>
                     <CustomTextField
                       fullWidth
                       name="product"
@@ -571,7 +583,7 @@ export const SalesInvoiceCreate = (props) => {
                       }
                     />
                   </Grid>
-                  <Grid item xs={12} sm={2}>
+                  <Grid item xs={12} sm={1.5}>
                     <CustomTextField
                       fullWidth
                       name="rate"
@@ -601,6 +613,17 @@ export const SalesInvoiceCreate = (props) => {
                     >
                       Remove
                     </Button>
+                  </Grid>
+                  <Grid item xs={12} sm={1.5}>
+                    {input.ready_date == null ? (
+                      <Typography variant="h6" sx={{ color: "red" }}>
+                        <DangerousIcon /> Not Ready
+                      </Typography>
+                    ) : (
+                      <Typography variant="h6" sx={{ color: "green" }}>
+                        <RuleIcon /> Ready
+                      </Typography>
+                    )}
                   </Grid>
                 </React.Fragment>
               );
