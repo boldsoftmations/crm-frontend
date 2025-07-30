@@ -212,7 +212,8 @@ export const UpdateCompanyDetails = (props) => {
   useEffect(() => {
     if (
       userData.groups.includes("Director") ||
-      userData.groups.includes("Accounts")
+      userData.groups.includes("Accounts") ||
+      userData.groups.includes("Accounts Billing Department")
     ) {
       setDisabled(false);
     }
