@@ -189,7 +189,10 @@ export const SalesInvoiceCreate = (props) => {
           (product) =>
             Number(product.pending_quantity) > 0 && Number(product.quantity) > 0
         ) // Keep products where both pending_quantity and quantity are > 0
-        .map(({ pending_quantity, rate, requested_date, ...rest }) => rest); // Exclude specified fields
+        .map(
+          ({ pending_quantity, rate, requested_date, ready_date, ...rest }) =>
+            rest
+        ); // Exclude specified fields
 
       const req = {
         invoice_type: "customer",
