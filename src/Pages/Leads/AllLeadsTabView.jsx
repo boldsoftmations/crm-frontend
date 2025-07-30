@@ -37,6 +37,7 @@ export const AllLeadsTabView = () => {
   const isSalesManagerWithLeads = isInGroups("Sales Manager with Leads");
   const isCustomerService = isInGroups("Customer Service");
   const isAdminAndDM = isInGroups("Director", "Digital Marketing");
+  const onlyAdmin = isInGroups("Director");
   const digitalManager = isInGroups("Digital Marketing");
   const tabs = useMemo(
     () => [
@@ -124,7 +125,7 @@ export const AllLeadsTabView = () => {
       },
       {
         label: "Agentic Lead Scoring",
-        visible: isAdminAndDM,
+        visible: onlyAdmin,
         index: 9,
         component: <LeadScoring />,
       },
