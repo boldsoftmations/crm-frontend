@@ -32,6 +32,8 @@ export const AllDispatchTabView = () => {
     "Production Delhi"
   );
   const customerServiceTab = isInGroups("Customer Service");
+  const salesRegisterTab = isInGroups("Accounts Billing Department");
+
   const [activeTab, setActiveTab] = useState(allTabs ? 0 : 4);
 
   const tabs = [
@@ -54,7 +56,7 @@ export const AllDispatchTabView = () => {
 
     {
       label: "Sales Register",
-      visible: allTabs || customerServiceTab,
+      visible: allTabs || customerServiceTab || salesRegisterTab,
       index: 3,
     },
   ];
