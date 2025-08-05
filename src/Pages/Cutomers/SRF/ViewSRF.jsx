@@ -103,6 +103,7 @@ export const ViewSRF = () => {
             customer: index === 0 ? row.customer : "",
             product: product.product,
             qty: product.quantity,
+            lr_no: index === 0 ? row.lr_no : "",
           });
         });
       });
@@ -119,7 +120,9 @@ export const ViewSRF = () => {
   const handleDownload = async () => {
     try {
       const data = await handleExport();
+      console.log(data);
       setExportData(data);
+
       setTimeout(() => {
         csvLinkRef.current.link.click();
       });
@@ -136,6 +139,7 @@ export const ViewSRF = () => {
     { label: "Customer Name", key: "customer" },
     { label: "Product", key: "product" },
     { label: "Quantity", key: "qty" },
+    { label: "LR Number", key: "lr_no" },
   ];
 
   useEffect(() => {
@@ -221,7 +225,7 @@ export const ViewSRF = () => {
                   onChange={handleFilterByStatus}
                   options={["Pending", "Dispatched"]}
                   getOptionLabel={(option) => option}
-                  label="Filter By Status"
+                  label="Filter By Date"
                 />
               </Grid>
               {/* Title Text centered */}

@@ -112,6 +112,7 @@ export const AllProformaInvoiceView = (props) => {
         place_of_supply: invoiceData.place_of_supply,
         seller_account: invoiceData.seller_account,
         company: invoiceData.company,
+        lead: invoiceData.lead,
         address: invoiceData.address,
         pincode: invoiceData.pincode,
         state: invoiceData.state,
@@ -121,12 +122,24 @@ export const AllProformaInvoiceView = (props) => {
         payment_terms: invoiceData.payment_terms,
         delivery_terms: invoiceData.delivery_terms,
       };
-      const response = await InvoiceServices.sendForApprovalCompanyData(
-        invoiceData.pi_number,
-        req
-      );
-      const successMessage = response.data.message || "Pi Dropped successfully";
-      handleSuccess(successMessage);
+      if (req.type === "Customer") {
+        const response = await InvoiceServices.sendForApprovalCompanyData(
+          invoiceData.pi_number,
+          req
+        );
+        const successMessage =
+          response.data.message || "Pi Dropped successfully";
+        handleSuccess(successMessage);
+      } else {
+        const response = await InvoiceServices.sendForApprovalLeadsData(
+          invoiceData.pi_number,
+          req
+        );
+        const successMessage =
+          response.data.message || "Pi Dropped successfully";
+        handleSuccess(successMessage);
+      }
+
       setTimeout(() => {
         setOpenPopup(false);
         getProformaInvoiceData();
