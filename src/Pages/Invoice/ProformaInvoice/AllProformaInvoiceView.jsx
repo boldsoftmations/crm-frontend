@@ -203,6 +203,8 @@ export const AllProformaInvoiceView = (props) => {
               users.groups.includes("Sales Deputy Manager") ||
               users.groups.includes("Customer Service") ||
               users.groups.includes("Customer Relationship Manager") ||
+              users.groups.includes("Business Development Manager") ||
+              users.groups.includes("Business Development Execution") ||
               users.groups.includes("Customer Relationship Executive")) &&
               (invoiceData.status === "Price Approval" ||
                 invoiceData.status === "Approved" ||
