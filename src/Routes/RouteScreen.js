@@ -44,6 +44,7 @@ import { ViewMasterActivitiesList } from "../Pages/MasterActivityList/ViewMaster
 import { FieldSalesAllTabView } from "../Pages/FieldSales/FieldSalesAllTab";
 import { AllSRFTab } from "../Pages/Cutomers/SRF/AllSRFTab";
 import { ViewMasterBeat } from "../Pages/FieldSales/BeatMaster/ViewMasterBeat";
+import LeadSummary from "../Pages/MasterLeadSummary/LeadSummary";
 
 const PrivateRoute = ({ children, redirectTo = "/" }) => {
   const tokenData = useSelector((state) => state.auth);
@@ -377,6 +378,14 @@ export const RouteScreen = () => {
             element={
               <PrivateRoute>
                 <FieldSalesAllTabView />
+              </PrivateRoute>
+            }
+          />
+             <Route
+            path="/lead/list-references"
+            element={
+              <PrivateRoute>
+                <LeadSummary />
               </PrivateRoute>
             }
           />

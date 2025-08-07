@@ -120,6 +120,26 @@ const getMasterActivityOptions = (model_master__name) => {
   );
 };
 
+const getLeadSummaryDetails = (page,search) => {
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+  if (search) {
+    params.append("search", search);
+  }
+  return CustomAxios.get(
+    `/api/lead/list-references`
+  );
+};
+
+const createLeadSummary = (data) => {
+ 
+  return CustomAxios.post(
+    `/api/lead/list-references/`,data
+  );
+};
+
 const createMasterBeat = (data) => {
   return CustomAxios.post(`/api/master/beat/`, data);
 };
@@ -134,6 +154,7 @@ const getMasterBeat = (page,search) => {
   }
   return CustomAxios.get(`/api/master/beat/?${params.toString()}`);
 };
+
 
 const getBeatCustomers = (page,search)=>{
   const params = new URLSearchParams();
@@ -188,6 +209,7 @@ const getEmployeesLeaveForm = (page,status)=>{
   return CustomAxios.get(`/api/user/leave/?${params.toString()}`);
 }
 
+
 const createLeaveApplication= (data)=>{
   return CustomAxios.post(`/api/user/leave/`,data)
 }
@@ -197,8 +219,9 @@ const leaveApproval = (data)=>{
 }
 
 
-
 const MasterService = {
+  createLeadSummary,
+  getLeadSummaryDetails,
   createMasterCountry,
   updateMasterCountry,
   getAllMasterCountries,
