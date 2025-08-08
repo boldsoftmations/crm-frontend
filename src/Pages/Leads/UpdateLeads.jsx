@@ -1053,6 +1053,7 @@ export const UpdateLeads = memo((props) => {
             getLeadByID={getLeadsData}
             followup={followup}
             leadsByID={leadsByID}
+            updateData={getAllleadsData}
           />
         </Grid>
       </Grid>

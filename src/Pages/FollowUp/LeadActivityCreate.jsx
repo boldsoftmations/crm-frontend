@@ -24,6 +24,7 @@ export const LeadActivityCreate = memo(
     filterQuery,
     filterSelectedQuery,
     searchQuery,
+    updateData,
   }) => {
     const [open, setOpen] = useState(false);
     const [followUp, setFollowUp] = useState({});
@@ -65,6 +66,7 @@ export const LeadActivityCreate = memo(
           };
 
           const response = await LeadServices.createFollowUpLeads(followUpData);
+
           const successMessage =
             response.data.message || "Activity Created successfully";
           handleSuccess(successMessage);
@@ -96,6 +98,12 @@ export const LeadActivityCreate = memo(
         searchQuery,
       ]
     );
+    const handleTabelLads = () => {
+      if (followUp.activity === "Drop the lead") {
+        updateData(followUp);
+        console.log("done");
+      }
+    };
 
     return (
       <>
@@ -198,6 +206,7 @@ export const LeadActivityCreate = memo(
                 "Require credit",
               ].includes(followUp.activity) && !followUp.next_followup_date
             }
+            onClick={handleTabelLads}
           >
             Submit
           </Button>

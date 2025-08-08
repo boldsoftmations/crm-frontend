@@ -10,6 +10,9 @@ const UpdateSRFStatus = ({ setOpenPopup, getCustomerSRF, recordData }) => {
   const [status, setStatus] = useState(
     recordData.status === "Dispatched" ? recordData.status : ""
   );
+  const [remark, setRemark] = useState(
+    recordData.remark ? recordData.remark : ""
+  );
   const [customerFeedback, setCustomerFeedback] = useState(
     recordData.feedback ? recordData.feedback : ""
   );
@@ -45,6 +48,7 @@ const UpdateSRFStatus = ({ setOpenPopup, getCustomerSRF, recordData }) => {
           : "",
         severity: "warning",
       });
+
       return;
     }
 
@@ -57,6 +61,8 @@ const UpdateSRFStatus = ({ setOpenPopup, getCustomerSRF, recordData }) => {
         formData.append("lr_image", fileData);
       if (!recordData.feedback && customerFeedback)
         formData.append("feedback", customerFeedback);
+      if (remark !== undefined) formData.append("remark", remark || "");
+
       const res = await CustomerServices.updateCustomerSRfStatus(
         recordData.id,
         formData
@@ -181,6 +187,19 @@ const UpdateSRFStatus = ({ setOpenPopup, getCustomerSRF, recordData }) => {
             )}
           </Grid>
         )}
+
+        {!recordData.lr_image && status === "Dispatched" && (
+          <Grid item xs={12}>
+            <TextField
+              size="small"
+              fullWidth
+              value={remark || ""}
+              onChange={(e) => setRemark(e.target.value)}
+              label="Remark"
+            />
+          </Grid>
+        )}
+
         <Grid item xs={12}>
           <TextField
             size="small"

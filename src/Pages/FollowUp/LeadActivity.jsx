@@ -15,7 +15,7 @@ import { Popup } from "../../Components/Popup";
 import { LeadActivityCreate } from "./LeadActivityCreate";
 
 export const LeadActivity = memo((props) => {
-  const { followup, leadsByID, getLeadByID } = props;
+  const { followup, leadsByID, getLeadByID, updateData } = props;
 
   const [openModal, setOpenModal] = useState(false);
   return (
@@ -122,6 +122,7 @@ export const LeadActivity = memo((props) => {
           leadsByID={leadsByID}
           getLeadByID={getLeadByID}
           setOpenPopup={setOpenModal}
+          updateData={updateData}
           getleads={null}
           currentPage={null}
           filterQuery={null}
