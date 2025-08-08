@@ -104,6 +104,7 @@ export const ViewSRF = () => {
             product: product.product,
             qty: product.quantity,
             lr_no: index === 0 ? row.lr_no : "",
+            remark: index === 0 ? row.remark : "",
           });
         });
       });
@@ -140,6 +141,7 @@ export const ViewSRF = () => {
     { label: "Product", key: "product" },
     { label: "Quantity", key: "qty" },
     { label: "LR Number", key: "lr_no" },
+    { label: "Remark", key: "remark" },
   ];
 
   useEffect(() => {
