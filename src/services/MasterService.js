@@ -120,14 +120,8 @@ const getMasterActivityOptions = (model_master__name) => {
   );
 };
 
-const getLeadSummaryDetails = (page,search) => {
-  const params = new URLSearchParams();
-  if (page) {
-    params.append("page", page);
-  }
-  if (search) {
-    params.append("search", search);
-  }
+const getLeadSummaryDetails = () => {
+
   return CustomAxios.get(
     `/api/lead/list-references`
   );
@@ -139,6 +133,17 @@ const createLeadSummary = (data) => {
     `/api/lead/list-references/`,data
   );
 };
+
+const getFactoryModelName=()=>{
+
+  return CustomAxios.get(
+    `/api/master/machine-model/`
+  );
+}
+const CreateFactoryModel = (data) => {
+  return CustomAxios.post(`/api/master/machine-model/`, data);
+};
+
 
 const createMasterBeat = (data) => {
   return CustomAxios.post(`/api/master/beat/`, data);
@@ -220,6 +225,8 @@ const leaveApproval = (data)=>{
 
 
 const MasterService = {
+  CreateFactoryModel,
+  getFactoryModelName,
   createLeadSummary,
   getLeadSummaryDetails,
   createMasterCountry,

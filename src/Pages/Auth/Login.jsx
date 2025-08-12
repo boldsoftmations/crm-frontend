@@ -146,7 +146,7 @@ export const Login = () => {
               padding: 10,
               marginBottom: 10,
               borderRadius: 4,
-              backgroundColor: errMsg ? "red" : "offscreen",
+              backgroundColor: errMsg ? "red" : "",
               textAlign: "center",
               color: "white",
               textTransform: "capitalize",

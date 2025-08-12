@@ -247,6 +247,7 @@ export const ViewRawMaterials = () => {
                 flexGrow: 1,
                 flexBasis: "40%",
                 display: "flex",
+                gap: "20px",
                 justifyContent: "flex-end",
                 minWidth: "300px",
               }}

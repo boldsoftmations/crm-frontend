@@ -20,7 +20,7 @@ import SearchComponent from "../../Components/SearchComponent ";
 import { CustomPagination } from "../../Components/CustomPagination";
 import { Popup } from "../../Components/Popup";
 import MasterService from "../../services/MasterService";
-import { CreateLeadSummary } from "./CreateLeadSummary";
+import CreateFactoryMaster from "./CreateFactoryMaster";
 
 // Styled components
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -45,14 +45,14 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-const LeadSummary = () => {
+const FactoryMaster = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [beatData, setBeatData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
   const [openPopup, setOpenPopup] = useState(false);
-  const [sourceData, setSourceData] = useState([]);
-
+  const [MachineData, setMachineData] = useState([]);
   const [alertMsg, setAlertMsg] = useState({
     message: "",
     severity: "",
@@ -62,12 +62,8 @@ const LeadSummary = () => {
   const handleCloseSnackbar = () =>
     setAlertMsg((prev) => ({ ...prev, open: false }));
 
-  // const handleSearch = (query) => {
-  //   setSearchQuery(query);
-  //   setCurrentPage(1);
-  // };
-
   const handleReset = () => {
+    setSearchQuery("");
     setCurrentPage(1);
   };
 
@@ -78,14 +74,17 @@ const LeadSummary = () => {
   const getAllMasterBeat = async () => {
     try {
       setIsLoading(true);
-      const response = await MasterService.getLeadSummaryDetails();
-      setBeatData(response.data || []);
-      setSourceData(response.data || []);
-      setTotalPages(Math.ceil(response.data.count / 25));
-      console.log(response.data);
+      const response = await MasterService.getFactoryModelName(
+        currentPage,
+        searchQuery
+      );
+      setBeatData(response.data.results || []);
+      setMachineData(response.data.results);
+      setTotalPages(Math.ceil(response.data.results.count / 25));
+      console.log(response.data.results);
     } catch (e) {
       setAlertMsg({
-        message: e.response.data.message || "Error fetching beat list",
+        message: e.response.data.message || "Error fetching model list",
         severity: "error",
         open: true,
       });
@@ -93,23 +92,23 @@ const LeadSummary = () => {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    getAllMasterBeat();
+  }, [currentPage, searchQuery]);
+
   const handleSearch = (query) => {
     if (query.trim() === "") {
-      setBeatData(sourceData);
+      setBeatData(MachineData);
     } else {
       setBeatData(
-        sourceData.filter(
+        MachineData.filter(
           (item) =>
-            item.source &&
-            item.source.toLowerCase().includes(query.toLowerCase())
+            item.model && item.model.toLowerCase().includes(query.toLowerCase())
         )
       );
     }
   };
-
-  useEffect(() => {
-    getAllMasterBeat();
-  }, [currentPage]);
 
   return (
     <>
@@ -135,7 +134,7 @@ const LeadSummary = () => {
             </Grid>
             <Grid item xs={12} sm={4} textAlign="center">
               <Typography variant="h6" fontWeight={700} color="text.primary">
-                Lead Summary
+                Factory Master
               </Typography>
             </Grid>
             <Grid item xs={12} sm={4} textAlign="right">
@@ -144,7 +143,7 @@ const LeadSummary = () => {
                 color="primary"
                 onClick={() => setOpenPopup(true)}
               >
-                Add Lead Summary
+                Add Machine
               </Button>
             </Grid>
           </Grid>
@@ -168,7 +167,13 @@ const LeadSummary = () => {
             <Table stickyHeader>
               <TableHead>
                 <TableRow>
-                  <StyledTableCell align="center">Source Name</StyledTableCell>
+                  {beatData.length > 0 &&
+                    Object.keys(beatData[0])
+
+                      .filter((key) => key !== "id")
+                      .map((key) => (
+                        <StyledTableCell align="center">{key}</StyledTableCell>
+                      ))}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -176,7 +181,13 @@ const LeadSummary = () => {
                   beatData.map((row, i) => (
                     <StyledTableRow key={i}>
                       <StyledTableCell align="center">
-                        {row.source}
+                        {row.model}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.seller_unit}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.creation_date}
                       </StyledTableCell>
                     </StyledTableRow>
                   ))
@@ -202,11 +213,11 @@ const LeadSummary = () => {
 
           {/* Popup */}
           <Popup
-            title="Add Lead Summary"
+            title="Add Machine Name"
             openPopup={openPopup}
             setOpenPopup={setOpenPopup}
           >
-            <CreateLeadSummary
+            <CreateFactoryMaster
               setOpenPopup={setOpenPopup}
               getAllMasterBeat={getAllMasterBeat}
             />
@@ -216,4 +227,4 @@ const LeadSummary = () => {
     </>
   );
 };
-export default LeadSummary;
+export default FactoryMaster;

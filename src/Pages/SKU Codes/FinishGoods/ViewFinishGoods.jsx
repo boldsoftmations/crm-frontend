@@ -284,6 +284,7 @@ export const ViewFinishGoods = () => {
             <Box
               sx={{
                 flexGrow: 1,
+                gap: "20px",
                 flexBasis: "40%",
                 display: "flex",
                 justifyContent: "flex-end",

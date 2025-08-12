@@ -127,22 +127,24 @@ export const JobOpeningUpdate = ({
             label="Position"
           />
         </Grid>
-        {values.position === "Replacement" && (
-          <CustomAutocomplete
-            size="small"
-            id="replacement_user"
-            options={emails}
-            fullWidth
-            label="Replacement Email"
-            value={values.replacement_user}
-            onChange={(event, newValue) => {
-              setValues({
-                ...values,
-                replacement_user: newValue,
-              });
-            }}
-          />
-        )}
+        <Grid item xs={12}>
+          {values.position === "Replacement" && (
+            <CustomAutocomplete
+              size="small"
+              id="replacement_user"
+              options={emails}
+              fullWidth
+              label="Replacement Email"
+              value={values.replacement_user}
+              onChange={(event, newValue) => {
+                setValues({
+                  ...values,
+                  replacement_user: newValue,
+                });
+              }}
+            />
+          )}
+        </Grid>
 
         <Grid item xs={12}>
           <Box display="flex" justifyContent="flex-end" mt={2}>

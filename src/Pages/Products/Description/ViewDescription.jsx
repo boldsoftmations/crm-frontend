@@ -164,6 +164,7 @@ export const ViewDescription = () => {
                 display: "flex",
                 justifyContent: "flex-end",
                 minWidth: "300px",
+                gap: "20px",
               }}
             >
               <Button

@@ -121,6 +121,7 @@ export const ListItems = ({ setOpen }) => {
           { to: "/inventory/view-currency", text: "Currency Master" },
           { to: "/user/profile-tab", text: "Employees Master" },
           { to: "/hr-model/hr-master", text: "HR Master" },
+          { to: "/master/factory", text: "Machine Master" },
           {
             to: "/customer/complaints/ccp-capa/master",
             text: "CCF Complaint Master",

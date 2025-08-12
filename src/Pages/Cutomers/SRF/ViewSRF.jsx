@@ -581,10 +581,11 @@ function Row({ row, getCustomerSRF, handleError, handleSuccess }) {
               >
                 Download
               </Button>
-              {row.lr_image && (
+              {row && (
                 <Button
                   variant="text"
                   size="small"
+                  sx={{ visibility: row.lr_no ? "visible" : "hidden" }}
                   color="success"
                   onClick={() => handleClickLRCOPY(row)}
                 >

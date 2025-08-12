@@ -21,7 +21,7 @@ export const CreateLeadSummary = ({ setOpenPopup, getAllMasterBeat }) => {
     e.preventDefault();
     if (!inputValue.trim()) {
       setAlertMsg({
-        message: "Beat name is required",
+        message: "Source  name is required",
         severity: "warning",
         open: true,
       });

@@ -45,6 +45,7 @@ import { FieldSalesAllTabView } from "../Pages/FieldSales/FieldSalesAllTab";
 import { AllSRFTab } from "../Pages/Cutomers/SRF/AllSRFTab";
 import { ViewMasterBeat } from "../Pages/FieldSales/BeatMaster/ViewMasterBeat";
 import LeadSummary from "../Pages/MasterLeadSummary/LeadSummary";
+import FactoryMaster from "../Pages/MasterFactory/FactoryMaster";
 
 const PrivateRoute = ({ children, redirectTo = "/" }) => {
   const tokenData = useSelector((state) => state.auth);
@@ -343,6 +344,14 @@ export const RouteScreen = () => {
             element={
               <PrivateRoute>
                 <AllTabView />
+              </PrivateRoute>
+            }
+          />
+              <Route
+            path="/master/factory"
+            element={
+              <PrivateRoute>
+                <FactoryMaster />
               </PrivateRoute>
             }
           />
