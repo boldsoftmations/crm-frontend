@@ -109,6 +109,7 @@ const FactoryMaster = () => {
       );
     }
   };
+  const headers = ["Model", "Seller Unit", "Creation Date"];
 
   return (
     <>
@@ -134,7 +135,7 @@ const FactoryMaster = () => {
             </Grid>
             <Grid item xs={12} sm={4} textAlign="center">
               <Typography variant="h6" fontWeight={700} color="text.primary">
-                Factory Master
+                Machine Master
               </Typography>
             </Grid>
             <Grid item xs={12} sm={4} textAlign="right">
@@ -167,13 +168,9 @@ const FactoryMaster = () => {
             <Table stickyHeader>
               <TableHead>
                 <TableRow>
-                  {beatData.length > 0 &&
-                    Object.keys(beatData[0])
-
-                      .filter((key) => key !== "id")
-                      .map((key) => (
-                        <StyledTableCell align="center">{key}</StyledTableCell>
-                      ))}
+                  {headers.map((key) => (
+                    <StyledTableCell align="center">{key}</StyledTableCell>
+                  ))}
                 </TableRow>
               </TableHead>
               <TableBody>
