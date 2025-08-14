@@ -204,7 +204,7 @@ const SalesParchaseAnalaysis = () => {
                 onChange={(e, value) => setFiltersalesPurchase(value)}
                 options={assigned_to_users.map((option) => option)}
                 getOptionLabel={(option) => `${option}`}
-                label={"Filter By Employee"}
+                label={"Filter By Invoice Type"}
               />
               <CustomAutocomplete
                 fullWidth
@@ -260,7 +260,7 @@ const SalesParchaseAnalaysis = () => {
                 onChange={(e, value) => setProductType(value)}
                 options={productOptions.map((option) => option)}
                 getOptionLabel={(option) => `${option}`}
-                label={"Filter By Employee"}
+                label={"Filter By product type"}
               />
             </Grid>
             <Grid md={4}>
