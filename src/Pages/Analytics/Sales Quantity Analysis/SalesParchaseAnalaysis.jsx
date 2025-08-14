@@ -23,22 +23,23 @@ import { CSVLink } from "react-csv";
 
 const SalesParchaseAnalaysis = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [salesAnalysis, SetSalesAnalysis] = useState([]);
   const [sellerData, setSellerData] = useState([]);
   const [filtersalesAnalysis, setFilterSalesAnalysis] = useState([]);
-  const [filtersalesPurchase, setFiltersalesPurchase] = useState("sales");
-  const [exportData, setExportData] = useState([]);
-  const [filterValue, setFilterValue] = useState({
-    unit: "",
-  });
+  const [filtersalesPurchase, setFiltersalesPurchase] = useState("Sales");
+
+  const [discription, setDiscription] = useState([]);
+
   const [startMonth, setStartMonth] = useState(() => {
     const currentMonth = new Date().getMonth(); // Get the current month (0-11)
     return currentMonth === 0 || currentMonth === 1 || currentMonth === 2
       ? currentMonth
       : 3;
   });
+  const [filterdiscription, setFilterDiscription] = useState([]);
   const [productType, setProductType] = useState("");
+  const [unit, setUnit] = useState([]);
   const [startYear, setStartYear] = useState(new Date().getFullYear());
+
   const [alertmsg, setAlertMsg] = useState({
     message: "",
     severity: "",
@@ -49,7 +50,7 @@ const SalesParchaseAnalaysis = () => {
     setAlertMsg({ open: false });
   };
 
-  const assigned_to_users = ["sales", "purchase"];
+  const assigned_to_users = ["Sales", "Purchase"];
 
   const generateDynamicMonths = (startMonthIndex, startYear) => {
     const months = [
@@ -100,18 +101,23 @@ const SalesParchaseAnalaysis = () => {
 
     try {
       const response =
-        filtersalesPurchase === "sales"
+        filtersalesPurchase === "Sales"
           ? await DashboardService.getSalesAnalysis(
               startMonth + 1,
               startYear,
-              productType
+              productType,
+              unit,
+              discription
             )
           : await DashboardService.getPurchaseAnalysis(
               startMonth + 1,
               startYear,
-              productType
+              productType,
+              unit,
+              discription
             );
-      SetSalesAnalysis(response.data);
+      const DiscriptionData = await DashboardService.getAllDescription("all");
+      setFilterDiscription(DiscriptionData.data.map((item) => item.name));
       setFilterSalesAnalysis(response.data);
     } catch (error) {
       const errorMessage = error.response.data.message;
@@ -127,16 +133,21 @@ const SalesParchaseAnalaysis = () => {
 
   useEffect(() => {
     getSaleAnlaysis();
-  }, [startMonth, startYear, filterValue, filtersalesPurchase, productType]);
+  }, [
+    startMonth,
+    startYear,
+    filtersalesPurchase,
+    productType,
+    unit,
+    discription,
+  ]);
 
   const getAllSellerAccountsDetails = async () => {
     try {
       const response = await InvoiceServices.getAllPaginateSellerAccountData(
         "all"
       );
-      setSellerData(response.data);
-
-      console.log(response.data);
+      setSellerData(response.data.map((item) => item.unit));
     } catch (error) {
       console.log("Error fetching seller account data:", error);
     }
@@ -146,44 +157,15 @@ const SalesParchaseAnalaysis = () => {
   useEffect(() => {
     getAllSellerAccountsDetails();
   }, []);
-  useEffect(() => {
-    let filtered = !salesAnalysis;
 
-    if (filterValue.unit) {
-      filtered = salesAnalysis.filter((item) =>
-        (item.branch_name || "")
-          .toLowerCase()
-          .includes(filterValue.unit.toLowerCase())
-      );
-    }
-
-    setFilterSalesAnalysis(filtered);
-    setExportData(filtered);
-    if (filterValue.unit === "") setFilterSalesAnalysis(salesAnalysis);
-  }, [filterValue, salesAnalysis, filtersalesPurchase, exportData]);
   const csvLinkRef = useRef(null);
 
   const handelDownload = async () => {
-    const data =
-      filtersalesPurchase === "sales"
-        ? await DashboardService.getSalesAnalysis(
-            startMonth + 1,
-            startYear,
-            productType
-          )
-        : await DashboardService.getPurchaseAnalysis(
-            startMonth + 1,
-            startYear,
-            productType
-          );
-    setExportData(data.data);
-
     setTimeout(() => {
       csvLinkRef.current.link.click();
     });
   };
 
-  //   console.log(sellerData);
   return (
     <>
       <CustomSnackbar
@@ -204,7 +186,7 @@ const SalesParchaseAnalaysis = () => {
                 onChange={(e, value) => setFiltersalesPurchase(value)}
                 options={assigned_to_users.map((option) => option)}
                 getOptionLabel={(option) => `${option}`}
-                label={"Filter By Invoice Type"}
+                label={"Select a Invoice"}
               />
               <CustomAutocomplete
                 fullWidth
@@ -219,24 +201,10 @@ const SalesParchaseAnalaysis = () => {
               />
 
               <CustomAutocomplete
-                name="seller_unit"
-                size="small"
-                disablePortal
-                value={filterValue.unit ? { unit: filterValue.unit } : null}
-                onChange={(e, value) =>
-                  setFilterValue({ unit: (value && value.unit) || "" })
-                }
-                options={sellerData}
-                getOptionLabel={(option) => option.unit || ""}
-                sx={{ minWidth: 300 }}
-                label="Seller Unit"
-              />
-
-              <CustomAutocomplete
                 size="small"
                 disablePortal
                 id="combo-box-start-year"
-                sx={{ minWidth: 300 }}
+                fullWidth
                 value={{ label: startYear }}
                 onChange={(e, value) => setStartYear(value.label)}
                 options={[...Array(3).keys()].map((i) => ({
@@ -247,44 +215,84 @@ const SalesParchaseAnalaysis = () => {
               />
             </Box>
           </Grid>
-          <Grid
-            item
-            md={12}
-            sx={{ display: "flex", justifyContent: "space-between" }}
-          >
-            <Grid md={4}>
+          <Grid item xs={12} md={7}>
+            <Box display="flex" gap="1rem" marginBottom="1.5rem">
               <CustomAutocomplete
+                fullWidth
+                name="seller_unit"
+                size="small"
+                value={unit}
+                onChange={(e, value) => setUnit(value)}
+                options={sellerData}
+                getOptionLabel={(option) => option || ""}
+                label="Filter By Unit"
+              />
+
+              <CustomAutocomplete
+                fullWidth
+                size="small"
+                value={discription}
+                onChange={(e, value) => setDiscription(value)}
+                options={filterdiscription.map((option) => option)}
+                getOptionLabel={(option) => `${option}`}
+                label={"Filter By Discription "}
+              />
+
+              <CustomAutocomplete
+                fullWidth
                 sx={{ minWidth: 300 }}
                 size="small"
                 value={productType}
                 onChange={(e, value) => setProductType(value)}
                 options={productOptions.map((option) => option)}
                 getOptionLabel={(option) => `${option}`}
-                label={"Filter By product type"}
+                label={"Filter By Product Type"}
               />
-            </Grid>
-            <Grid md={4}>
-              <Box>
+            </Box>
+          </Grid>
+          <Grid
+            item
+            md={12}
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "0.5rem",
+            }}
+          >
+            <Grid md={4} width={"60%"}>
+              <Box
+                sx={{ width: "100%" }}
+                display="flex"
+                justifyContent="right"
+                alignItems="center"
+                textAlign="center"
+                // border={"2px solid black"}
+              >
                 <h3
                   style={{
-                    marginBottom: "1em",
+                    // width: "100%",
+                    // marginBottom: "1em",
                     fontSize: "24px",
                     color: "rgb(34, 34, 34)",
                     fontWeight: 800,
-                    textAlign: "center",
                   }}
                 >
                   Sales & Purchase Analysis
                 </h3>
               </Box>
             </Grid>
-
             <Grid md={4}>
-              <Button variant="contained" onClick={handelDownload}>
-                Download
+              <Button
+                variant="contained"
+                color="success"
+                onClick={handelDownload}
+              >
+                Download CSV
               </Button>
               {filtersalesAnalysis.length > 0 && (
                 <CSVLink
+                  fullWidth
                   data={filtersalesAnalysis}
                   filename={`Sales&PurchaseAnalysis.csv`}
                   style={{ display: "none" }}
@@ -317,6 +325,7 @@ const SalesParchaseAnalaysis = () => {
               <TableHead>
                 <TableRow>
                   <StyledTableCell align="center">Branch Name</StyledTableCell>
+                  <StyledTableCell align="center">Product Name</StyledTableCell>
 
                   <StyledTableCell align="center">Description</StyledTableCell>
                   <StyledTableCell align="center">Brand</StyledTableCell>
@@ -326,8 +335,6 @@ const SalesParchaseAnalaysis = () => {
                       {month}
                     </StyledTableCell>
                   ))}
-                  <StyledTableCell align="center">Max QTY</StyledTableCell>
-                  <StyledTableCell align="center">Short QTY</StyledTableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -336,6 +343,9 @@ const SalesParchaseAnalaysis = () => {
                     <StyledTableRow key={i}>
                       <StyledTableCell align="center">
                         {row.branch_name || "N/A"}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.product || "N/A"}
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         {row.product__description__name || "N/A"}
@@ -351,12 +361,6 @@ const SalesParchaseAnalaysis = () => {
                           {row[month] || 0}
                         </StyledTableCell>
                       ))}
-                      <StyledTableCell align="center">
-                        {row.max_qty}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.short_qty || "-"}
-                      </StyledTableCell>
                     </StyledTableRow>
                   ))
                 ) : (
