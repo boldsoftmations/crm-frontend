@@ -24,6 +24,7 @@ import { useSelector } from "react-redux";
 import { Popup } from "../../Components/Popup";
 import CustomTextField from "../../Components/CustomTextField";
 import { PotentialTurnover } from "./Potential Turnover/PotentialTurnover";
+import EmployeeReport from "./employeReport/EmployeeReport";
 
 export function Report() {
   const [open, setOpen] = useState(false);
@@ -118,6 +119,10 @@ export function Report() {
     userData.groups.some((group) =>
       ["Accounts", "Accounts Executive", "Director"].includes(group)
     );
+  const onlyDirestorAccess = userData.groups.some((group) =>
+    ["Director"].includes(group)
+  );
+
   const SpecialAccess =
     specialAccessEmails.has(userData.email) ||
     userData.groups.some((group) => ["Director"].includes(group));
@@ -132,7 +137,8 @@ export function Report() {
     { label: "Forecast T." }, // Forecast Turnover
 
     ...(hasSpecialAccess ? [{ label: "Profit Report" }] : []), // Daily Profitability Report
-    ...(SpecialAccess ? [{ label: "Potential Turnover" }] : []), // Potential Turnover
+    ...(SpecialAccess ? [{ label: "Potential Turnover" }] : []),
+    ...(onlyDirestorAccess ? [{ label: "Lead Summary" }] : []), // Potential Turnover
   ];
 
   useEffect(() => {
@@ -358,6 +364,12 @@ export function Report() {
           {activeTab === 8 && (
             <div>
               <PotentialTurnover />
+            </div>
+          )}
+
+          {activeTab === 9 && (
+            <div>
+              <EmployeeReport />
             </div>
           )}
         </div>

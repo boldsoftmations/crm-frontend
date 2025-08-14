@@ -162,6 +162,10 @@ const getLeadRetailData = () => {
   return CustomAxios.get("/api/lead/lead-summary/");
 };
 
+const getActiveInactiveEmployees = () => {
+  return CustomAxios.get("/api/dashboard/lead-summary/");
+}
+
 const getTopCustomersMonthwise = (number = 25) => {
   return CustomAxios.get(`/api/dashboard/top-customer/?number=${number}`);
 };
@@ -188,6 +192,39 @@ const getSalesQuatityAnalysis = (start_month, start_year, email) => {
 
   return CustomAxios.get(`/api/dashboard/sales-qty/?${params.toString()}`);
 };
+
+
+const getSalesAnalysis = (start_month, start_year,product_type) => {
+  const params = new URLSearchParams();
+  if (start_month) {
+    params.append("start_month", start_month);
+  }
+  if (start_year) {
+    params.append("start_year", start_year);
+  }
+  if(product_type){
+    params.append("product_type", product_type);
+  }
+
+
+  return CustomAxios.get(`/api/dashboard/sales-data/?${params.toString()}`);
+};
+const getPurchaseAnalysis = (start_month, start_year,product_type) => {
+  const params = new URLSearchParams();
+  if (start_month) {
+    params.append("start_month", start_month);
+  }
+  if (start_year) {
+    params.append("start_year", start_year);
+  }
+  if(product_type){
+    params.append("product_type", product_type);
+  }
+
+
+  return CustomAxios.get(`/api/inventory/purchase-data/?${params.toString()}`);
+};
+
 
 const getSalesQuatityAnalysisdetailsByproduct = (
   description,
@@ -273,6 +310,8 @@ const getEmployeesCurrentLocation = ()=>{
 
 
 const DashboardService = {
+  getPurchaseAnalysis,
+  getSalesAnalysis,
   getSalesAnalyticDashboard,
   getLastThreeMonthForecastData,
   getLastThreeMonthForecastDataByFilter,
@@ -288,6 +327,7 @@ const DashboardService = {
   getDailyInvoiceQuantityDataByFilter,
   getDailyOrderBookQuantityData,
   getDailyOrderBookQuantityDataByFilter,
+  getActiveInactiveEmployees,
   // consolidate
   getConsLastThreeMonthForecastData,
   getConsLastThreeMonthForecastDataByFilter,

@@ -9,6 +9,7 @@ import { TopCustomerView } from "./TopCustomerView";
 import { CRReport } from "./CRreport";
 import { ViewSalesQuantityAnalysis } from "./Sales Quantity Analysis/ViewSalesQuantityAnalysis";
 import { SalesFieldDashboard } from "./SalesFieldDashboard";
+import SalesParchaseAnalaysis from "./Sales Quantity Analysis/SalesParchaseAnalaysis";
 
 export const AnalyticsAllTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
@@ -110,6 +111,11 @@ export const AnalyticsAllTabView = () => {
         "Sales Manager with Lead",
       ],
       component: <ViewSalesQuantityAnalysis />,
+    },
+    {
+      label: "sales purchase Analysis",
+      roles: ["Director"],
+      component: <SalesParchaseAnalaysis />,
     },
   ];
 
