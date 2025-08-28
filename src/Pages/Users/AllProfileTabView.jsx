@@ -6,7 +6,7 @@ import { InActiveUsers } from "./InActiveUsers";
 import { UserProfileView } from "../Profile/UserProfile/UserProfileView";
 import { ViewEmployeesAttendance } from "./Attendance/ViewAttendance";
 import { LeaveApplicationForm } from "./LeaveApplicationForm/LeaveApplicationForm";
-import { ViewWarningLetter } from "./WarningLetter/ViewWarningLetter";
+// import { ViewWarningLetter } from "./WarningLetter/ViewWarningLetter";
 
 export const AllProfileTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
@@ -110,11 +110,11 @@ export const AllProfileTabView = () => {
       component: <LeaveApplicationForm />,
     },
 
-    {
-      label: "Warning Letter",
-      visible: permissions.commonTabs,
-      component: <ViewWarningLetter />,
-    },
+    // {
+    //   label: "Warning Letter",
+    //   visible: permissions.commonTabs,
+    //   component: <ViewWarningLetter />,
+    // },
   ];
 
   const visibleTabs = allTabDefinitions.filter((tab) => tab.visible);
