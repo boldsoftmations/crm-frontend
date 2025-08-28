@@ -140,10 +140,23 @@ const getFactoryModelName=()=>{
     `/api/master/machine-model/`
   );
 }
+
+const getStageList=()=>{
+
+  return CustomAxios.get(
+    `/api/master/approval-stage/`
+  );
+}
 const CreateFactoryModel = (data) => {
   return CustomAxios.post(`/api/master/machine-model/`, data);
 };
 
+const CreatApprovalStage = (data) => {
+  return CustomAxios.post(`/api/master/approval-stage/`, data);
+};
+const updateApprovalStage = (id, data) => {
+  return CustomAxios.patch(`/api/master/approval-stage/${id}/`, data);
+};
 
 const createMasterBeat = (data) => {
   return CustomAxios.post(`/api/master/beat/`, data);
@@ -207,10 +220,12 @@ const EmployeesAttendance = (page,user__name,user__groups__name)=>{
   
 }
 
-const getEmployeesLeaveForm = (page,status)=>{
+const getEmployeesLeaveForm = (page,status,search)=>{
    const params = new URLSearchParams();
   if (page)  params.append("page", page);
   if(status) params.append("status", status);
+  if (search)  params.append("search", search);
+
   return CustomAxios.get(`/api/user/leave/?${params.toString()}`);
 }
 
@@ -222,9 +237,17 @@ const createLeaveApplication= (data)=>{
 const leaveApproval = (data)=>{
   return CustomAxios.post(`/api/user/leave-approval/`,data)
 }
+const getLeavapproval = ()=>{
+ 
+  return CustomAxios.get(`/api/user/leave-approval/`);
+}
 
 
 const MasterService = {
+  getLeavapproval,
+  updateApprovalStage,
+  CreatApprovalStage,
+  getStageList,
   CreateFactoryModel,
   getFactoryModelName,
   createLeadSummary,

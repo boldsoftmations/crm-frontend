@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   styled,
   TableCell,
@@ -22,8 +22,8 @@ import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import LeaveForm from "./CreateLeaveApplication";
 import { Popup } from "../../../Components/Popup";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
-import CustomTextField from "../../../Components/CustomTextField";
 import { useSelector } from "react-redux";
+import ViewLeavAplicaton from "./ViewLeavAplicaton";
 
 export const LeaveApplicationForm = () => {
   const [open, setOpen] = useState(false);
@@ -31,9 +31,10 @@ export const LeaveApplicationForm = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [openLeaveRequest, setOpenLeaveRequest] = useState(false);
-  const [formData, setFormData] = useState({});
   const [leaveStatusUpdate, setLeaveStatusUpdate] = useState(false);
+  const [selectedData, setSelectedData] = useState(null);
   const [filterValue, setFilterValue] = useState("");
+  const [searchValue, setsearchValue] = useState("");
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
   const [alertmsg, setAlertMsg] = useState({
@@ -48,104 +49,42 @@ export const LeaveApplicationForm = () => {
   const { profile } = useSelector((state) => state.auth);
 
   //this is for access to deparment
-  const giveAccess = ["Director", "HR"];
+  const giveAccess = ["Director"];
   const isAccess =
     profile && profile.groups.some((group) => giveAccess.includes(group));
 
   // Function to get product base customer data
-  const getEmployeesLeaveForm = async () => {
+  const getEmployeesLeaveForm = useCallback(async () => {
     try {
       setOpen(true);
       const response = await MasterService.getEmployeesLeaveForm(
         currentPage,
-        filterValue
+        filterValue,
+        searchValue
       );
       const total = response.data.count;
       setTotalPages(Math.ceil(total / 25));
       setleaveFormData(response.data.results);
+
       setOpen(false);
     } catch (err) {
       handleError("Failed to get product base customer data" || err);
       setOpen(false);
     }
-  };
+  }, [currentPage, filterValue, searchValue]);
 
   // Trigger API call when filters or filterValue changes
   useEffect(() => {
     getEmployeesLeaveForm();
-  }, [currentPage, filterValue]);
+  }, [getEmployeesLeaveForm, selectedData]);
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    // Simple validation
-    if (!formData.decision) {
-      setAlertMsg({
-        open: true,
-        message: "Please fill in all required fields",
-        severity: "warning",
-      });
-      return;
-    }
-
-    if (formData.decision === "Rejected" && !formData.remarks) {
-      setAlertMsg({
-        open: true,
-        message: "Please add the reason for rejection",
-        severity: "warning",
-      });
-      return;
-    }
-    const formDataWithRecordId = { ...formData };
-
-    try {
-      setOpen(true);
-      const res = await MasterService.leaveApproval(formDataWithRecordId);
-
-      if (res.status === 201) {
-        setAlertMsg({
-          open: true,
-          message: res.data.message || "Leave update submitted successfully",
-          severity: "success",
-        });
-
-        setTimeout(() => {
-          setLeaveStatusUpdate(false);
-          getEmployeesLeaveForm();
-        }, 500);
-
-        setFormData({
-          decision: "",
-          remarks: "",
-        });
-      }
-    } catch (err) {
-      console.error("Error submitting leave request:", err);
-      setAlertMsg({
-        open: true,
-        message: err.response.data.error || "Failed to submit leave request",
-        severity: "error",
-      });
-    } finally {
-      setOpen(false);
-    }
-  };
   const handleUpdateLeaveStatus = (data) => {
     setLeaveStatusUpdate(true);
-    setFormData((prev) => {
-      return {
-        ...prev,
-        leave: data.id,
-      };
-    });
+    setSelectedData(data);
   };
   return (
     <>
@@ -167,10 +106,38 @@ export const LeaveApplicationForm = () => {
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
           <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
             <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} sm={4}>
+              <Grid item xs={12} sm={2.5}>
                 <Box display="flex" gap="2rem">
                   <CustomAutocomplete
                     fullWidth
+                    size="small"
+                    disablePortal
+                    id="combo-box-description"
+                    onChange={(event, value) =>
+                      setsearchValue(value ? value.user : "")
+                    }
+                    onInputChange={(event, newInputValue) =>
+                      setsearchValue(newInputValue)
+                    }
+                    options={
+                      leaveFormData
+                        ? Array.from(
+                            new Map(
+                              leaveFormData.map((item) => [item.user, item])
+                            ).values()
+                          )
+                        : []
+                    }
+                    getOptionLabel={(option) => option.user}
+                    label="Filter By Name"
+                  />
+                </Box>
+              </Grid>
+
+              <Grid item xs={12} sm={5.5}>
+                <Box display="flex">
+                  <CustomAutocomplete
+                    sx={{ width: "45%" }}
                     size="small"
                     disablePortal
                     id="combo-box-description"
@@ -181,20 +148,6 @@ export const LeaveApplicationForm = () => {
                     getOptionLabel={(option) => option.label}
                     label="Filter By Leave Status"
                   />
-                </Box>
-              </Grid>
-              <Grid item xs={12} sm={4}>
-                <Box display="flex" justifyContent="center" marginBottom="10px">
-                  <h3
-                    style={{
-                      fontSize: "20px",
-                      color: "rgb(34, 34, 34)",
-                      fontWeight: 700,
-                      textAlign: "center",
-                    }}
-                  >
-                    Leave Application
-                  </h3>
                 </Box>
               </Grid>
               <Grid
@@ -218,6 +171,21 @@ export const LeaveApplicationForm = () => {
             </Grid>
           </Box>
 
+          <Grid item xs={12} sm={3}>
+            <Box display="flex" justifyContent="center" marginBottom="10px">
+              <h3
+                style={{
+                  fontSize: "20px",
+                  color: "rgb(34, 34, 34)",
+                  fontWeight: 700,
+                  textAlign: "center",
+                }}
+              >
+                Leave Application
+              </h3>
+            </Box>
+          </Grid>
+
           <TableContainer
             sx={{
               maxHeight: 440,
@@ -240,12 +208,13 @@ export const LeaveApplicationForm = () => {
               <TableHead>
                 <TableRow>
                   {[
+                    "SR NO",
                     "Employee Name",
                     "Designation",
                     "Leave Type",
                     "Period",
                     "Status",
-                    "Reason for leave",
+
                     "Leave Date",
                     isAccess ? "Action" : "",
                   ].map((header) => (
@@ -257,6 +226,7 @@ export const LeaveApplicationForm = () => {
                 {leaveFormData.length > 0 &&
                   leaveFormData.map((row, i) => (
                     <StyledTableRow key={i}>
+                      <StyledTableCell align="center">{i + 1}</StyledTableCell>
                       <StyledTableCell align="center">
                         {row.user}
                       </StyledTableCell>
@@ -305,33 +275,22 @@ export const LeaveApplicationForm = () => {
                       </StyledTableCell>
 
                       {/* Highlighted Reason */}
-                      <StyledTableCell
-                        align="center"
-                        sx={{ backgroundColor: "#fff3e0", fontStyle: "italic" }}
-                      >
-                        {row.reason}
-                      </StyledTableCell>
 
                       <StyledTableCell align="center">
                         {row.created_at}
                       </StyledTableCell>
 
-                      {isAccess && (
-                        <StyledTableCell align="center">
-                          <Button
-                            variant="text"
-                            color="primary"
-                            size="small"
-                            disabled={
-                              row.status === "Approved" ||
-                              row.status === "Rejected"
-                            }
-                            onClick={() => handleUpdateLeaveStatus(row)}
-                          >
-                            View
-                          </Button>
-                        </StyledTableCell>
-                      )}
+                      <StyledTableCell align="center">
+                        <Button
+                          variant="text"
+                          color="primary"
+                          size="small"
+                          // disabled={row.is_view || isAccess ? false : true}
+                          onClick={() => handleUpdateLeaveStatus(row)}
+                        >
+                          View
+                        </Button>
+                      </StyledTableCell>
                     </StyledTableRow>
                   ))}
               </TableBody>
@@ -359,58 +318,13 @@ export const LeaveApplicationForm = () => {
           title={"Update Leave Application Form"}
           setOpenPopup={setLeaveStatusUpdate}
           openPopup={leaveStatusUpdate}
+          fullScreen={true}
         >
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
-            sx={{ maxWidth: 500, mx: "auto" }}
-          >
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <CustomAutocomplete
-                  fullWidth
-                  size="small"
-                  disablePortal
-                  id="combo-box-description"
-                  options={leaveStatusOptions2}
-                  value={formData.leave_type}
-                  onChange={(e, value) =>
-                    setFormData({
-                      ...formData,
-                      decision: value ? value.value : "",
-                    })
-                  }
-                  getOptionLabel={(option) => option.label}
-                  label="Leave Approval"
-                />
-              </Grid>
-
-              {formData.decision === "rejected" && (
-                <Grid item xs={12}>
-                  <CustomTextField
-                    label="Reason for rejection"
-                    name="remarks"
-                    size="small"
-                    value={formData.remarks}
-                    onChange={handleChange}
-                    fullWidth
-                  />
-                </Grid>
-              )}
-
-              <Grid item xs={12}>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  fullWidth
-                  sx={{ mt: 1 }}
-                >
-                  Submit
-                </Button>
-              </Grid>
-            </Grid>
-          </Box>
+          <ViewLeavAplicaton
+            getEmployeesLeaveForm={getEmployeesLeaveForm}
+            setLeaveStatusUpdate={setLeaveStatusUpdate}
+            selectedRow={selectedData}
+          />
         </Popup>
       </Grid>
     </>
@@ -442,11 +356,6 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 const leaveStatusOptions = [
   { value: "pending", label: "Pending" },
-  { value: "approved", label: "Approved" },
-  { value: "rejected", label: "Rejected" },
-];
-
-const leaveStatusOptions2 = [
   { value: "approved", label: "Approved" },
   { value: "rejected", label: "Rejected" },
 ];

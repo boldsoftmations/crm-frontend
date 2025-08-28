@@ -92,7 +92,7 @@ export const ListItems = ({ setOpen }) => {
               selected={isActive(to)}
               activeClassName="Mui-selected"
               sx={{ pl: 8 }}
-              key={index}
+              key={to}
             >
               <ListItemText primary={text} />
             </ListItem>
@@ -285,6 +285,20 @@ export const ListItems = ({ setOpen }) => {
           "Customer Complaint",
           [{ to: "/customer/complaints/ccp-capa", text: "CCF-CAPA" }]
         ),
+      ],
+    },
+
+    //factory  orderbook Menus
+
+    {
+      condition: isInGroups(
+        "Factory-Delhi-OrderBook",
+        "Factory-Mumbai-OrderBook"
+      ),
+      items: [
+        renderSubmenu("master", <BusinessIcon />, "Master", [
+          { to: "/user/profile-tab", text: "Employees Master" },
+        ]),
       ],
     },
     //Factory Menus
@@ -648,6 +662,10 @@ export const ListItems = ({ setOpen }) => {
           { to: "/invoice/performa-invoice-tab", text: "Performa Invoice" },
         ]),
         renderListItem("/customer/srf", <StickyNote2Icon />, "SRF"),
+        renderSubmenu("master", <BusinessIcon />, "Master", [
+          { to: "/user/profile-tab", text: "Employees Master" },
+        ]),
+
         renderSubmenu("sales", <TrendingUpIcon />, "Sales", [
           { to: "/leads/all-lead", text: "Leads" },
           { to: "/customers/all-customer", text: "Customer" },
@@ -659,6 +677,17 @@ export const ListItems = ({ setOpen }) => {
         renderListItem("/dispatch/tab-view", <LocalShippingIcon />, "Dispatch"),
         renderListItem("/task/view-task", <AssignmentTurnedInIcon />, "Task"),
         renderListItem("/user/faq", <HelpOutlineIcon />, "Script"),
+      ],
+    },
+
+    // Sales Assistant Deputy Manager
+
+    {
+      condition: isInGroups("Sales Assistant Deputy Manager"),
+      items: [
+        renderSubmenu("master", <BusinessIcon />, "Master", [
+          { to: "/user/profile-tab", text: "Employees Master" },
+        ]),
       ],
     },
     //Sales Manager withouth Leads
@@ -753,7 +782,7 @@ export const ListItems = ({ setOpen }) => {
       {menuItems.map(
         (menu, index) =>
           menu.condition && (
-            <React.Fragment key={index}>{menu.items}</React.Fragment>
+            <React.Fragment key={menu.to}>{menu.items}</React.Fragment>
           )
       )}
     </div>

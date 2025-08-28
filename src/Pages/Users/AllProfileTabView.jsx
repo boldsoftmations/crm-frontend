@@ -6,6 +6,7 @@ import { InActiveUsers } from "./InActiveUsers";
 import { UserProfileView } from "../Profile/UserProfile/UserProfileView";
 import { ViewEmployeesAttendance } from "./Attendance/ViewAttendance";
 import { LeaveApplicationForm } from "./LeaveApplicationForm/LeaveApplicationForm";
+import { ViewWarningLetter } from "./WarningLetter/ViewWarningLetter";
 
 export const AllProfileTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
@@ -15,7 +16,7 @@ export const AllProfileTabView = () => {
 
   // Memoize group role checks
   const permissions = useMemo(() => {
-    const allTabs = isInGroups(
+    const commonTabs = isInGroups(
       "Director",
       "Sales Manager",
       "Sales Deputy Manager",
@@ -23,11 +24,39 @@ export const AllProfileTabView = () => {
       "Sales Executive",
       "Sales Manager without Leads",
       "Sales Manager with Lead",
-      "Digital Marketing",
       "HR",
+      "Digital Marketing",
       "HR Recruiter",
       "Factory-Mumbai-OrderBook",
       "Factory-Delhi-OrderBook",
+      "Factory-Delhi-Dispatch",
+      "Factory-Mumbai-Dispatch",
+      "Customer Service",
+      "Purchase",
+      "Stores",
+      "Production Delhi",
+      "Stores Delhi",
+      "Production",
+      "Accounts",
+      "Accounts Billing Department",
+      "Accounts Executive",
+      "Customer Relationship Executive",
+      "Customer Relationship Manager",
+      "Business Development Manager",
+      "Business Development Executive",
+      "QA"
+    );
+    const allTabs = isInGroups(
+      "Director",
+      "Sales Manager",
+
+      "Sales Executive",
+      "Sales Manager without Leads",
+      "Sales Manager with Lead",
+      "HR",
+      "Digital Marketing",
+      "HR Recruiter",
+
       "Factory-Delhi-Dispatch",
       "Factory-Mumbai-Dispatch",
       "Customer Service",
@@ -50,6 +79,7 @@ export const AllProfileTabView = () => {
       isDirectorOrHR: isInGroups("Director", "HR"),
       isManager: isInGroups("Sales Manager"),
       allTabs,
+      commonTabs,
     };
   }, [userData]);
 
@@ -76,8 +106,14 @@ export const AllProfileTabView = () => {
     },
     {
       label: "Leave Application Form",
-      visible: permissions.allTabs || permissions.isManager,
+      visible: permissions.commonTabs || permissions.isManager,
       component: <LeaveApplicationForm />,
+    },
+
+    {
+      label: "Warning Letter",
+      visible: permissions.commonTabs,
+      component: <ViewWarningLetter />,
     },
   ];
 
