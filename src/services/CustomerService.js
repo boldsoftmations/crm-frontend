@@ -463,8 +463,15 @@ const getAllCCFData = (page, searchValue) => {
   );
 };
 
-const getAllClosedCCF = () => {
-  return CustomAxios.get(`/api/customer/ccf/?is_closed=true`);
+const getAllClosedCCF = (page,search) => {
+  const params = new URLSearchParams();
+  if(page){
+    params.append("page",page);
+  }
+  if(search){
+    params.append("search",search);
+  }
+  return CustomAxios.get(`/api/customer/ccf/?is_closed=true${params.toString()}`);
 };
 const getAllComplaintsList = (page, department) => {
   const params = new URLSearchParams();
