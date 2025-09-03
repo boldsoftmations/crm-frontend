@@ -13,6 +13,7 @@ export const OrderBookUpdate = (props) => {
   const [estimateDate, setEstimateDate] = useState(
     recordForEdit.estimated_date
   );
+  const [remark, setRemark] = useState(recordForEdit.remark || "");
   const [readyDate, setReadyDate] = useState(recordForEdit.ready_date);
   const data = useSelector((state) => state.auth);
   const users = data.profile;
@@ -31,6 +32,7 @@ export const OrderBookUpdate = (props) => {
         amount: recordForEdit.amount,
         gst: recordForEdit.gst,
         total: recordForEdit.total,
+        remark: recordForEdit.remark,
       };
       // Add estimated_date only if readyDate is not present and estimateDate is valid
       if (!recordForEdit.estimated_date) {
@@ -39,6 +41,9 @@ export const OrderBookUpdate = (props) => {
       // Add ready_date if it exists
       if (!recordForEdit.ready_date && readyDate) {
         data.ready_date = readyDate;
+      }
+      if (!recordForEdit.remark && remark) {
+        data.remark = remark;
       }
       const response = await InvoiceServices.updateOrderBookData(
         recordForEdit.id,
@@ -152,6 +157,18 @@ export const OrderBookUpdate = (props) => {
               disabled={recordForEdit && recordForEdit.ready_date}
             />
           </Grid>
+          <Grid item xs={12} sm={12}>
+            <CustomTextField
+              fullWidth
+              name="Remarks"
+              size="small"
+              label="Remarks"
+              variant="outlined"
+              value={remark}
+              onChange={(e) => setRemark(e.target.value)}
+              disabled={recordForEdit && recordForEdit.remark}
+            />
+          </Grid>
         </Grid>
         {(users.groups.includes("Production") ||
           users.groups.includes("Director") ||
@@ -177,6 +194,8 @@ export const OrderBookPeningQuantityUpdate = (props) => {
   const [pendingQuantity, setPendingQuantity] = useState(
     recordForEdit.pending_quantity
   );
+  const [remark, setRemark] = useState(recordForEdit.remark || "");
+
   const data = useSelector((state) => state.auth);
   const users = data.profile;
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
@@ -194,6 +213,7 @@ export const OrderBookPeningQuantityUpdate = (props) => {
         amount: recordForEdit.amount,
         gst: recordForEdit.gst,
         total: recordForEdit.total,
+        remark: recordForEdit.remark,
         pending_quantity: pendingQuantity,
         revision: recordForEdit.revision + 1,
       };
@@ -286,6 +306,18 @@ export const OrderBookPeningQuantityUpdate = (props) => {
               InputLabelProps={{
                 shrink: true,
               }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={12}>
+            <CustomTextField
+              fullWidth
+              name="Remarks"
+              size="small"
+              label="Remarks"
+              variant="outlined"
+              value={remark}
+              onChange={(e) => setRemark(e.target.value)}
+              disabled={recordForEdit && recordForEdit.remark}
             />
           </Grid>
         </Grid>

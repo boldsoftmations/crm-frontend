@@ -186,6 +186,7 @@ export const GRNRegisterView = () => {
     "Invoce No",
     "Description",
     "Product",
+    "unit",
     "Order Quantity",
     "QA Rejected Quantity",
     "Received Quantity",
@@ -298,6 +299,9 @@ export const GRNRegisterView = () => {
                   </StyledTableCell>
                   <StyledTableCell align="center">
                     {row.products}
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    {row.seller_account}
                   </StyledTableCell>
                   <StyledTableCell align="center">
                     {row.invoice_quantity}

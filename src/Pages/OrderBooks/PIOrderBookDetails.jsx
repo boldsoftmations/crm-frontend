@@ -87,6 +87,7 @@ export const PIOrderBookDetails = () => {
             seller_state: item.seller_state,
             estimated_date: item.estimated_date,
             ready_date: item.ready_date,
+
             requested_date: item.requested_date,
             special_instructions: item.special_instructions,
           };
@@ -103,6 +104,7 @@ export const PIOrderBookDetails = () => {
             product: item.product,
             quantity: item.quantity,
             amount: item.amount,
+
             pending_amount: item.pending_amount,
             pending_quantity: item.pending_quantity,
             seller_state: item.seller_state,
