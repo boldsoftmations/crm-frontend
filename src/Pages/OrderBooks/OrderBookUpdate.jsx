@@ -166,7 +166,6 @@ export const OrderBookUpdate = (props) => {
               variant="outlined"
               value={remark}
               onChange={(e) => setRemark(e.target.value)}
-              disabled={recordForEdit && recordForEdit.remark}
             />
           </Grid>
         </Grid>
@@ -317,7 +316,6 @@ export const OrderBookPeningQuantityUpdate = (props) => {
               variant="outlined"
               value={remark}
               onChange={(e) => setRemark(e.target.value)}
-              disabled={recordForEdit && recordForEdit.remark}
             />
           </Grid>
         </Grid>
