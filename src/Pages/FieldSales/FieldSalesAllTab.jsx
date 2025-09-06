@@ -13,18 +13,18 @@ export const FieldSalesAllTabView = () => {
   const tabs = [
     {
       label: "Beat Customer",
-      roles: ["Director", "Sales Manager"],
+      roles: ["Director", "Sales Manager", "Sales Manager(Retailer)"],
       component: <ViewBeatCustomer />,
     },
 
     {
       label: "Customer Visit List",
-      roles: ["Director", "Sales Manager"],
+      roles: ["Director", "Sales Manager", "Sales Manager(Retailer)"],
       component: <CompanyDetails />,
     },
     {
       label: "Lead Visit List",
-      roles: ["Director", "Sales Manager"],
+      roles: ["Director", "Sales Manager", "Sales Manager(Retailer)"],
       component: <LeadVisitPlan />,
     },
   ];

@@ -14,7 +14,9 @@ export const HrModelTabs = () => {
   const data = useSelector((state) => state.auth);
   const users = data.profile;
   // const assigned = users.sales_users || [];
-  const isSalesManager = users.groups.includes("Sales Manager");
+  const isSalesManager =
+    users.groups.includes("Sales Manager") ||
+    users.groups.includes("Sales Manager(Retailer)");
 
   const handleTabChange = (index) => {
     setActiveTab(index);

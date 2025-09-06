@@ -16,6 +16,7 @@ export const AllCCFtab = () => {
       roles: [
         "Director",
         "Sales Manager",
+        "Sales Manager(Retailer)",
         "Production",
         "Customer Service",
         "QA",
@@ -27,6 +28,7 @@ export const AllCCFtab = () => {
       roles: [
         "Director",
         "Sales Manager",
+        "Sales Manager(Retailer)",
         "Accounts",
         "Customer Service",
         "Production",
@@ -40,6 +42,7 @@ export const AllCCFtab = () => {
         "Director",
         "Accounts",
         "Sales Manager",
+        "Sales Manager(Retailer)",
         "Customer Service",
         "Production",
         "QA",

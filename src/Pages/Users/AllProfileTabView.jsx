@@ -19,6 +19,7 @@ export const AllProfileTabView = () => {
     const commonTabs = isInGroups(
       "Director",
       "Sales Manager",
+      "Sales Manager(Retailer)",
       "Sales Deputy Manager",
       "Sales Assistant Deputy Manager",
       "Sales Executive",
@@ -49,14 +50,13 @@ export const AllProfileTabView = () => {
     const allTabs = isInGroups(
       "Director",
       "Sales Manager",
-
+      "Sales Manager(Retailer)",
       "Sales Executive",
       "Sales Manager without Leads",
       "Sales Manager with Lead",
       "HR",
       "Digital Marketing",
       "HR Recruiter",
-
       "Factory-Delhi-Dispatch",
       "Factory-Mumbai-Dispatch",
       "Customer Service",
@@ -77,7 +77,7 @@ export const AllProfileTabView = () => {
 
     return {
       isDirectorOrHR: isInGroups("Director", "HR"),
-      isManager: isInGroups("Sales Manager"),
+      isManager: isInGroups("Sales Manager", "Sales Manager(Retailer)"),
       allTabs,
       commonTabs,
     };

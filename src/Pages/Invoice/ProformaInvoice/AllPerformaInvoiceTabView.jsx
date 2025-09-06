@@ -22,6 +22,7 @@ export const AllPerformaInvoiceTabView = () => {
       allTabs: isInGroups("Director", "Accounts"),
       isSalesManager: isInGroups(
         "Sales Manager",
+        "Sales Manager(Retailer)",
         "Customer Relationship Manager",
         "Business Development Manager"
       ),
@@ -87,7 +88,11 @@ export const AllPerformaInvoiceTabView = () => {
     [roles]
   );
 
-  const visibleTabs = useMemo(() => tabs.filter((tab) => tab.visible), [tabs]);
+  const visibleTabs = useMemo(() => {
+    return tabs
+      .filter((tab) => tab.visible)
+      .map((tab, i) => ({ ...tab, index: i }));
+  }, [tabs]);
   const visibleTabIndexes = useMemo(
     () => visibleTabs.map((tab) => tab.index),
     [visibleTabs]

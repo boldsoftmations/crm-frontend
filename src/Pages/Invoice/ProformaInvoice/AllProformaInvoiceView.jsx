@@ -199,6 +199,7 @@ export const AllProformaInvoiceView = (props) => {
               )}
             {(users.groups.includes("Director") ||
               users.groups.includes("Sales Manager") ||
+              users.groups.includes("Sales Manager(Retailer)") ||
               users.groups.includes("Sales Executive") ||
               users.groups.includes("Sales Deputy Manager") ||
               users.groups.includes("Customer Service") ||

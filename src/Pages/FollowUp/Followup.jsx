@@ -15,6 +15,7 @@ export const Followup = () => {
       roles: [
         "Director",
         "Sales Manager",
+        "Sales Manager(Retailer)",
         "Business Development Manager",
         "Business Development Executive",
         "Customer Relationship Executive",
@@ -32,6 +33,7 @@ export const Followup = () => {
       roles: [
         "Director",
         "Sales Manager",
+        "Sales Manager(Retailer)",
         "Business Development Manager",
         "Business Development Executive",
         "Sales Deputy Manager",

@@ -16,6 +16,7 @@ export const AllDispatchTabView = () => {
     "Director",
     "Accounts",
     "Sales Manager",
+    "Sales Manager(Retailer)",
     "Sales Executive",
     "Customer Relationship Manager",
     "Customer Relationship Executive",

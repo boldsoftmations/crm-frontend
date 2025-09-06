@@ -16,6 +16,7 @@ export const AllOrderBookTabView = () => {
     "Stores Delhi",
     "Production Delhi",
     "Sales Manager",
+    "Sales Manager(Retailer)",
     "Sales Deputy Manager",
     "Sales Assistant Deputy Manager",
     "Sales Executive",

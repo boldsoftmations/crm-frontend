@@ -578,6 +578,58 @@ export const ListItems = ({ setOpen }) => {
       ],
     },
 
+    // Sales Manager(Retailer)
+    {
+      condition: userData.groups.includes("Sales Manager(Retailer)"),
+      items: [
+        renderListItem("/user/analytics", <DashboardIcon />, "Analytics"),
+        renderSubmenu("master", <BusinessIcon />, "Master", [
+          { to: "/user/profile-tab", text: "Employees Master" },
+          {
+            to: "/county-state-city/master-tab",
+            text: "Country Master",
+          },
+          { to: "lead/list-references", text: "Lead summary Master" },
+
+          {
+            to: "/master/activity-list",
+            text: "Master Activity",
+          },
+          {
+            to: "/master/beat",
+            text: "Beat Master",
+          },
+        ]),
+        renderListItem(
+          "/master/customer-visit",
+          <DirectionsRunIcon />,
+          "Field Sales"
+        ),
+        renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
+          { to: "/invoice/performa-invoice-tab", text: "Performa Invoice" },
+        ]),
+        renderListItem("/customer/srf", <StickyNote2Icon />, "SRF"),
+        renderSubmenu("sales", <TrendingUpIcon />, "Sales", [
+          { to: "/leads/all-lead", text: "Leads" },
+          { to: "/customers/all-customer", text: "Customer" },
+          { to: "/followp/view-followup", text: "Followup" },
+          { to: "/forecast/view-product-forecast", text: "Forecast" },
+          // { to: "/market-analysis/competitor", text: "Market Analysis" },
+        ]),
+        renderSubmenu(
+          "customer_complaint",
+          <ComplaintIcon />,
+          "Customer Complaint",
+          [{ to: "/customer/complaints/ccp-capa", text: "CCF-CAPA" }]
+        ),
+        renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
+        renderListItem("/dispatch/tab-view", <LocalShippingIcon />, "Dispatch"),
+        renderListItem("/task/view-task", <AssignmentTurnedInIcon />, "Task"),
+        renderListItem("/user/faq", <HelpOutlineIcon />, "Script"),
+        renderListItem("/hr-model", <WorkIcon />, "Recruitment"),
+      ],
+    },
+
     //Business Development Manager Menus and Excutive Menus
     {
       condition: isInGroups(

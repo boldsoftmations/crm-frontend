@@ -23,6 +23,7 @@ export const AnalyticsAllTabView = () => {
       roles: [
         "Director",
         "Sales Manager",
+        "Sales Manager(Retailer)",
         "Sales Deputy Manager",
         "Sales Assistant Deputy Manager",
         "Sales Executive",
@@ -56,6 +57,7 @@ export const AnalyticsAllTabView = () => {
         "Director",
         "Sales Manager",
         "Sales Deputy Manager",
+        "Sales Manager(Retailer)",
         "Sales Assistant Deputy Manager",
         "Sales Manager without Leads",
         "Sales Manager with Lead",
@@ -65,7 +67,7 @@ export const AnalyticsAllTabView = () => {
     },
     {
       label: "Field Sales",
-      roles: ["Director", "Sales Manager"],
+      roles: ["Director", "Sales Manager", "Sales Manager(Retailer)"],
       component: <SalesFieldDashboard />,
     },
     {
@@ -104,6 +106,7 @@ export const AnalyticsAllTabView = () => {
         "Customer Relationship Manager",
         "Business Development Manager",
         "Sales Manager",
+        "Sales Manager(Retailer)",
         "Sales Deputy Manager",
         "Sales Assistant Deputy Manager",
         "Sales Executive",

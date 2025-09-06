@@ -14,6 +14,7 @@ export const AllSRFTab = () => {
       roles: [
         "Director",
         "Sales Manager",
+        "Sales Manager(Retailer)",
         "Production",
         "Customer Service",
         "Sales Executive",

@@ -18,6 +18,7 @@ export const AllCustomerTabView = () => {
   const allCustomerTabs = isInGroups(
     "Director",
     "Sales Manager",
+    "Sales Manager(Retailer)",
     "Accounts",
     "Customer Relationship Manager",
     "Business Development Manager"
@@ -26,6 +27,7 @@ export const AllCustomerTabView = () => {
   const BdeAndManager = isInGroups(
     "Director",
     "Sales Manager",
+    "Sales Manager(Retailer)",
     "Sales Executive",
     "Accounts",
     "Sales Deputy Manager",
@@ -38,6 +40,7 @@ export const AllCustomerTabView = () => {
   const isDirectorandSalesManager = isInGroups(
     "Director",
     "Sales Manager",
+    "Sales Manager(Retailer)",
     "Customer Relationship Manager",
     "Business Development Manager"
   );
