@@ -76,6 +76,7 @@ export const SalesPersonAnalytics = (props) => {
   const [privacy] = useState(
     !userData.groups.includes("Director") &&
       !userData.groups.includes("Sales Manager") &&
+      !userData.groups.includes("Sales Manager(Retailer)") &&
       !userData.groups.includes("Sales Deputy Manager") &&
       !userData.groups.includes("Sales Assistant Deputy Manager") &&
       !userData.groups.includes("Sales Executive") &&
@@ -91,6 +92,7 @@ export const SalesPersonAnalytics = (props) => {
     SALES_PERSON_OPTIONS = assigned.filter((user) =>
       [
         "Sales Manager",
+        "Sales Manager(Retailer)",
         "Sales Deputy Manager",
         "Sales Assistant Deputy Manager",
         "Director",
@@ -116,6 +118,7 @@ export const SalesPersonAnalytics = (props) => {
   const sortOptions = (a, b) => {
     const order = [
       "Sales Manager",
+      "Sales Manager(Retailer)",
       "Sales Deputy Manager",
       "Sales Assistant Deputy Manager",
       "Director",
