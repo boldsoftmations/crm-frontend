@@ -132,21 +132,21 @@ export const PurchaseInvoiceView = () => {
           </Box>
           <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
             <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} sm={6}></Grid>
+              <Grid item xs={12} sm={4}></Grid>
 
-              <Grid item xs={12} sm={3}>
+              <Grid item xs={12} sm={4}>
                 <h3
                   style={{
-                    textAlign: "left",
+                    textAlign: "center",
                     fontSize: "24px",
                     color: "rgb(34, 34, 34)",
                     fontWeight: 800,
                   }}
                 >
-                  Purchase Register
+                  Purchase Invoice
                 </h3>
               </Grid>
-              <Grid item xs={12} sm={3}></Grid>
+              <Grid item xs={12} sm={4}></Grid>
             </Grid>
           </Box>
           <TableContainer

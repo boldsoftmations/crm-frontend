@@ -135,23 +135,30 @@ export const GRNView = () => {
               </Grid>
             </Grid>
           </Box>
-          <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
+          <Box
+            sx={{
+              marginBottom: 2,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
             <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} sm={6}></Grid>
+              <Grid item xs={12} sm={4}></Grid>
 
-              <Grid item xs={12} sm={3}>
+              <Grid item xs={12} sm={4}>
                 <h3
                   style={{
-                    textAlign: "left",
+                    textAlign: "center",
                     fontSize: "24px",
                     color: "rgb(34, 34, 34)",
                     fontWeight: 800,
                   }}
                 >
-                  Purchase Invoice
+                  Purchase Register
                 </h3>
               </Grid>
-              <Grid item xs={12} sm={3}></Grid>
+              <Grid item xs={12} sm={4}></Grid>
             </Grid>
           </Box>
           <TableContainer
@@ -176,6 +183,7 @@ export const GRNView = () => {
               <TableHead>
                 <StyledTableRow>
                   <StyledTableCell align="center"></StyledTableCell>
+                  <StyledTableCell align="center">SELLER</StyledTableCell>
                   <StyledTableCell align="center">GRN DATE</StyledTableCell>
                   <StyledTableCell align="center">GRN NO</StyledTableCell>
                   <StyledTableCell align="center">INVOICE NO</StyledTableCell>
@@ -253,6 +261,7 @@ function Row(props) {
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </StyledTableCell>
+        <StyledTableCell align="center">{row.seller_account}</StyledTableCell>
         <StyledTableCell align="center">{row.created_on}</StyledTableCell>
         <StyledTableCell align="center">{row.grn_no}</StyledTableCell>
         <StyledTableCell align="center">{row.packing_list_no}</StyledTableCell>
@@ -263,10 +272,10 @@ function Row(props) {
           {(userData.groups.includes("Accounts Executive") ||
             userData.groups.includes("Director") ||
             userData.groups.includes("Accounts")) && (
-              <Button onClick={() => handlePurchaseInvoice(row)}>
-                Create PI
-              </Button>
-            )}
+            <Button onClick={() => handlePurchaseInvoice(row)}>
+              Create PI
+            </Button>
+          )}
         </StyledTableCell>
       </StyledTableRow>
       <TableRow>
