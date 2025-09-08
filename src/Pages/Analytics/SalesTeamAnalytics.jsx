@@ -69,6 +69,7 @@ export const SalesTeamAnalytics = (props) => {
   if (team) {
     SALES_PERSON_OPTIONS = assigned.filter((user) =>
       [
+        "Sales Manager(Retailer)",
         "Sales Manager",
         "Sales Deputy Manager",
         "Sales Assistant Deputy Manager",
@@ -92,6 +93,7 @@ export const SalesTeamAnalytics = (props) => {
   // Custom sorting function
   const sortOptions = (a, b) => {
     const order = [
+      "Slaes Manager(Retailer)",
       "Sales Manager",
       "Sales Deputy Manager",
       "Sales Assistant Deputy Manager",
