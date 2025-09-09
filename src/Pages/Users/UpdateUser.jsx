@@ -294,6 +294,7 @@ const UpdateUser = ({
         is_active: activeUsersByIDData.is_active,
         group_names: activeUsersByIDData.groups,
         ref_user: activeUsersByIDData.ref_user,
+        user_id: activeUsersByIDData.user_id,
         state:
           (selectedStateCities && transformStateCities(selectedStateCities)) ||
           [],
@@ -321,6 +322,7 @@ const UpdateUser = ({
   const groups = [
     "Sales Assistant Deputy Manager",
     "Sales Deputy Manager",
+    "Sales Manager(Retailer)",
     "Sales Manager",
     "Customer Relationship Manager",
     "Business Development Manager",
@@ -587,7 +589,16 @@ const UpdateUser = ({
               />
             </Grid>
           )}
-
+          <Grid item xs={12} sm={6}>
+            <CustomTextField
+              fullWidth
+              size="small"
+              label="Biometric ID"
+              variant="outlined"
+              value={activeUsersByIDData.user_id}
+              onChange={(e) => handleSelectChange("user_id", e.target.value)}
+            />
+          </Grid>
           <Grid item xs={12} sm={6}>
             <FormControlLabel
               control={

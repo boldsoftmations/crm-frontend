@@ -185,8 +185,9 @@ export const SalesPersonAnalytics = (props) => {
       const firstKey = Object.keys(dailyOrderBookQuantity[0])[0];
       setSelectedDOBQData(firstKey); // Set the first option as selected
       setDOBQData(dailyOrderBookQuantity[0][firstKey]);
+      console.log("dobqdata", dOBQdata);
     }
-  }, [dailyInvoiceQuantity, dailyOrderBookQuantity]);
+  }, [dailyInvoiceQuantity, dailyOrderBookQuantity, dOBQdata]);
 
   // Map the dailyInvoiceQuantity to get description options
   const descriptionOptionsForInvoice = dailyInvoiceQuantity.map(
@@ -837,24 +838,36 @@ export const SalesPersonAnalytics = (props) => {
                     OrderBook Pending Quantity by Description
                   </Typography>
                   <Divider />
-                  <CustomChart
-                    chartType="BarChart"
-                    data={[
-                      ["Product Description", "Pending Quantity"],
-                      ...pendingDescription.map((item) => [
-                        item.name,
-                        item.value,
-                      ]),
-                    ]}
-                    options={{
-                      // title: "OrderBook Pending Quantity by Description",
-                      width: "100%",
-                      height: "400px",
-                      legend: { position: "none" },
-                    }}
-                    widthStyle={"100%"}
-                    heightStyle={"300px"}
-                  />
+                  {pendingDescription.length > 0 ? (
+                    <CustomChart
+                      chartType="BarChart"
+                      data={[
+                        ["Product Description", "Pending Quantity"],
+                        ...pendingDescription.map((item) => [
+                          item.name,
+                          item.value,
+                        ]),
+                      ]}
+                      options={{
+                        // title: "OrderBook Pending Quantity by Description",
+                        width: "100%",
+                        height: "400px",
+                        legend: { position: "none" },
+                      }}
+                      widthStyle={"100%"}
+                      heightStyle={"300px"}
+                    />
+                  ) : (
+                    <Typography
+                      sx={{
+                        textAlign: "center",
+                        color: "gray",
+                        marginTop: "20px",
+                      }}
+                    >
+                      No Data Found
+                    </Typography>
+                  )}
                 </CardContent>
               </Card>
             </Grid>
@@ -875,23 +888,34 @@ export const SalesPersonAnalytics = (props) => {
                     getOptionLabel={(option) => option}
                     label="Filter By Description"
                   />
-                  <CustomChart
-                    chartType="LineChart"
-                    data={[
-                      ["Date", "Total"],
-                      ...dIQdata.map((entry) => [
-                        entry.sales_invoice__generation_date,
-                        entry.total,
-                      ]),
-                    ]}
-                    options={{
-                      // title: "Daily Sales Invoice Quantity",
-                      width: "100%",
-                      height: "400px",
-                    }}
-                    widthStyle={"100%"}
-                    heightStyle={"300px"}
-                  />
+                  {dIQdata.length > 0 ? (
+                    <CustomChart
+                      chartType="LineChart"
+                      data={[
+                        ["Date", "Total"],
+                        ...dIQdata.map((entry) => [
+                          entry.sales_invoice__generation_date,
+                          entry.total,
+                        ]),
+                      ]}
+                      options={{
+                        width: "100%",
+                        height: "400px",
+                      }}
+                      widthStyle="100%"
+                      heightStyle="300px"
+                    />
+                  ) : (
+                    <Typography
+                      sx={{
+                        textAlign: "center",
+                        color: "gray",
+                        marginTop: "20px",
+                      }}
+                    >
+                      No Data Found
+                    </Typography>
+                  )}
                 </CardContent>
               </Card>
             </Grid>
@@ -913,25 +937,37 @@ export const SalesPersonAnalytics = (props) => {
                     getOptionLabel={(option) => option}
                     label="Filter By Description"
                   />
-                  <CustomChart
-                    chartType="LineChart"
-                    data={[
-                      ["Date", "Total"],
-                      ...((dOBQdata &&
-                        dOBQdata.map((entry) => [
-                          entry.orderbook__proforma_invoice__generation_date,
-                          entry.total,
-                        ])) ||
-                        []),
-                    ]}
-                    options={{
-                      // title: "Daily Sales OrderBook Quantity",
-                      width: "100%",
-                      height: "400px",
-                    }}
-                    widthStyle={"100%"}
-                    heightStyle={"300px"}
-                  />
+                  {dOBQdata.length > 0 ? (
+                    <CustomChart
+                      chartType="LineChart"
+                      data={[
+                        ["Date", "Total"],
+                        ...((dOBQdata &&
+                          dOBQdata.map((entry) => [
+                            entry.orderbook__proforma_invoice__generation_date,
+                            entry.total,
+                          ])) ||
+                          []),
+                      ]}
+                      options={{
+                        // title: "Daily Sales OrderBook Quantity",
+                        width: "100%",
+                        height: "400px",
+                      }}
+                      widthStyle={"100%"}
+                      heightStyle={"300px"}
+                    />
+                  ) : (
+                    <Typography
+                      sx={{
+                        textAlign: "center",
+                        color: "gray",
+                        marginTop: "20px",
+                      }}
+                    >
+                      No Data Found
+                    </Typography>
+                  )}
                 </CardContent>
               </Card>
             </Grid>
