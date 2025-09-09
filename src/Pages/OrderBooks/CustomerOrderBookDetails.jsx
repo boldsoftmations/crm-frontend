@@ -110,6 +110,7 @@ export const CustomerOrderBookDetails = () => {
             ready_date: item.ready_date,
             requested_date: item.requested_date,
             special_instructions: item.special_instructions,
+            remark: item.remark,
           };
         } else if (userData.groups.includes("Customer Service")) {
           return {
@@ -138,6 +139,7 @@ export const CustomerOrderBookDetails = () => {
             ready_date: item.ready_date,
             requested_date: item.requested_date,
             special_instructions: item.special_instructions,
+            remark: item.remark,
           };
         } else {
           return {
@@ -159,6 +161,7 @@ export const CustomerOrderBookDetails = () => {
             ready_date: item.ready_date,
             requested_date: item.requested_date,
             special_instructions: item.special_instructions,
+            remark: item.remark,
           };
         }
       });
@@ -544,6 +547,10 @@ const headers = [
     label: "Special Instruction",
     key: "special_instructions",
   },
+  {
+    label: "Remarks",
+    key: "remark",
+  },
 ];
 
 const headers2 = [
@@ -589,6 +596,10 @@ const headers2 = [
   {
     label: "Special Instruction",
     key: "special_instructions",
+  },
+  {
+    label: "Remarks",
+    key: "remark",
   },
 ];
 

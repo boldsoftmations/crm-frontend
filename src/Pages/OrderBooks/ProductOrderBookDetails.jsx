@@ -91,6 +91,7 @@ export const ProductOrderBookDetails = () => {
             ready_date: item.ready_date,
             requested_date: item.requested_date,
             special_instructions: item.special_instructions,
+            remark: item.remark,
           };
         } else if (userData.groups.includes("Customer Service")) {
           return {
@@ -111,6 +112,7 @@ export const ProductOrderBookDetails = () => {
             ready_date: item.ready_date,
             requested_date: item.requested_date,
             special_instructions: item.special_instructions,
+            remark: item.remark,
           };
         } else {
           return {
@@ -132,6 +134,7 @@ export const ProductOrderBookDetails = () => {
             ready_date: item.ready_date,
             requested_date: item.requested_date,
             special_instructions: item.special_instructions,
+            remark: item.remark,
           };
         }
       });
@@ -545,6 +548,10 @@ const headers = [
     label: "Special Instruction",
     key: "special_instructions",
   },
+  {
+    label: "Remarks",
+    key: "remark",
+  },
 ];
 
 const Customerheaders = [
@@ -580,6 +587,10 @@ const Customerheaders = [
   {
     label: "Special Instruction",
     key: "special_instructions",
+  },
+  {
+    label: "Remarks",
+    key: "remark",
   },
 ];
 const readyDateOption = [
