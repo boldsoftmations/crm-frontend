@@ -155,7 +155,7 @@ export const GRNView = () => {
                     fontWeight: 800,
                   }}
                 >
-                  Purchase Register
+                  Purchase Invoice
                 </h3>
               </Grid>
               <Grid item xs={12} sm={4}></Grid>

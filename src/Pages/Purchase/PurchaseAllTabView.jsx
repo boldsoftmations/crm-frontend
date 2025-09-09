@@ -20,12 +20,12 @@ export const PurchaseAllTabView = () => {
       component: <PurchaseOrderView />,
     },
     {
-      label: "Purchase Invoice",
+      label: "Purchase Register",
       roles: ["Director", "Accounts", "Accounts Executive"],
       component: <PurchaseInvoiceView />,
     },
     {
-      label: "Purchase Register",
+      label: "Purchase Invoice",
       roles: [
         "Director",
         "Accounts",

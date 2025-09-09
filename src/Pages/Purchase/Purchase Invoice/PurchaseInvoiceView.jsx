@@ -143,7 +143,7 @@ export const PurchaseInvoiceView = () => {
                     fontWeight: 800,
                   }}
                 >
-                  Purchase Invoice
+                  Purchase Register
                 </h3>
               </Grid>
               <Grid item xs={12} sm={4}></Grid>
