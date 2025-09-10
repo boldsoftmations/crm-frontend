@@ -224,13 +224,19 @@ const getAllDescription = (page) => {
   return CustomAxios.get(`api/product/description/?${params.toString()}`);
 };
 
-const getPurchaseAnalysis = (start_month, start_year,product_type) => {
+const getPurchaseAnalysis = (start_month, start_year,product_type,unit,description) => {
   const params = new URLSearchParams();
   if (start_month) {
     params.append("start_month", start_month);
   }
   if (start_year) {
     params.append("start_year", start_year);
+  }
+  if(description){
+    params.append("description", description);
+  }
+  if(unit){
+    params.append("unit", unit);
   }
   if(product_type){
     params.append("product_type", product_type);

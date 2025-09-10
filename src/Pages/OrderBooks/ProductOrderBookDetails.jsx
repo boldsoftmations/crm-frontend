@@ -42,6 +42,7 @@ export const ProductOrderBookDetails = () => {
   const [filterSellerUnit, setFilterSellerUnit] = useState("");
   const [filterRaisedByEmail, setFilterRaisedByEmail] = useState("");
   const [filterReadyDate, setFilterReadyDate] = useState("");
+  const [filterEstimateData, setFilterEstimateData] = useState("");
   const [recordForEdit, setRecordForEdit] = useState(null);
   const csvLinkRef = useRef(null);
   const dataList = useSelector((state) => state.auth);
@@ -67,7 +68,8 @@ export const ProductOrderBookDetails = () => {
         filterSellerUnit,
         filterRaisedByEmail,
         searchQuery,
-        filterReadyDate
+        filterReadyDate,
+        filterEstimateData
       );
       let data = response.data.map((item) => {
         if (
@@ -191,7 +193,8 @@ export const ProductOrderBookDetails = () => {
         filterSellerUnit,
         filterRaisedByEmail,
         searchQuery,
-        filterReadyDate
+        filterReadyDate,
+        filterEstimateData
       );
       setOrderBookData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -206,6 +209,7 @@ export const ProductOrderBookDetails = () => {
     filterRaisedByEmail,
     searchQuery,
     filterReadyDate,
+    filterEstimateData,
   ]);
 
   useEffect(() => {
@@ -216,6 +220,7 @@ export const ProductOrderBookDetails = () => {
     filterRaisedByEmail,
     searchQuery,
     filterReadyDate,
+    filterEstimateData,
   ]);
 
   const handleSearch = (query) => {
@@ -307,12 +312,24 @@ export const ProductOrderBookDetails = () => {
                 />
               </Grid>
               <Grid item xs={12} sm={3}>
-                <SearchComponent
-                  onSearch={handleSearch}
-                  onReset={handleReset}
+                <CustomAutocomplete
+                  size="small"
+                  fullWidth
+                  value={
+                    EsimatedDateOption.find(
+                      (option) => option.value === filterEstimateData
+                    ) || null
+                  }
+                  onChange={(event, value) =>
+                    setFilterEstimateData(value ? value.value : null)
+                  }
+                  options={EsimatedDateOption}
+                  getOptionLabel={(option) => option.label}
+                  label="Filter By Ready Date"
                 />
               </Grid>
-              <Grid item xs={12} sm={3}>
+
+              <Grid item xs={12} sm={4}>
                 <Button
                   sx={{ marginLeft: "10px" }}
                   variant="contained"
@@ -340,20 +357,26 @@ export const ProductOrderBookDetails = () => {
                   />
                 )}
               </Grid>
+              <Grid item xs={12} sm={5}>
+                <h3
+                  style={{
+                    textAlign: "left",
+                    marginBottom: "1em",
+                    fontSize: "24px",
+                    color: "rgb(34, 34, 34)",
+                    fontWeight: 800,
+                  }}
+                >
+                  Product Order Book Details
+                </h3>
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <SearchComponent
+                  onSearch={handleSearch}
+                  onReset={handleReset}
+                />
+              </Grid>
             </Grid>
-          </Box>
-          <Box display="flex" alignItems="center" justifyContent="center">
-            <h3
-              style={{
-                textAlign: "left",
-                marginBottom: "1em",
-                fontSize: "24px",
-                color: "rgb(34, 34, 34)",
-                fontWeight: 800,
-              }}
-            >
-              Product Order Book Details
-            </h3>
           </Box>
           <TableContainer
             sx={{
@@ -598,8 +621,19 @@ const readyDateOption = [
     label: "Ready",
     value: true,
   },
+
   {
     label: "Not Ready",
+    value: false,
+  },
+];
+const EsimatedDateOption = [
+  {
+    label: "Esimated",
+    value: true,
+  },
+  {
+    label: "Not Esimated",
     value: false,
   },
 ];

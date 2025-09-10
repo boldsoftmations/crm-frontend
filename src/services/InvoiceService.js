@@ -153,7 +153,8 @@ const getOrderBookData = (
   filterBySellerUnit,
   filterBySellerEmail,
   searchValue,
-  isReady
+  isReady,
+  is_estimated
 ) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
@@ -183,9 +184,8 @@ const getOrderBookData = (
     params.append("search", searchValue);
   }
 
-  if (isReady) {
     params.append("is_ready", isReady);
-  }
+  params.append("is_estimated",is_estimated)
 
   // Sending a GET request with query parameters
   return CustomAxios.get(`api/invoice/list-order-book/?${params.toString()}`);

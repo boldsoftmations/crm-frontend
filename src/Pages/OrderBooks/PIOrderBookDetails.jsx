@@ -41,10 +41,12 @@ export const PIOrderBookDetails = () => {
   const [filterSellerUnit, setFilterSellerUnit] = useState("");
   const [filterRaisedByEmail, setFilterRaisedByEmail] = useState("");
   const [filterReadyDate, setFilterReadyDate] = useState("");
+  const [filterEstimateData, setFilterEstimateData] = useState("");
   const csvLinkRef = useRef(null);
   const dataList = useSelector((state) => state.auth);
   const userData = dataList.profile;
   const assigned = userData.active_sales_user || [];
+  console.log();
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
@@ -65,7 +67,8 @@ export const PIOrderBookDetails = () => {
         filterSellerUnit,
         filterRaisedByEmail,
         searchQuery,
-        filterReadyDate
+        filterReadyDate,
+        filterEstimateData
       );
       let data = response.data.map((item) => {
         if (
@@ -168,7 +171,8 @@ export const PIOrderBookDetails = () => {
         filterSellerUnit,
         filterRaisedByEmail,
         searchQuery,
-        filterReadyDate
+        filterReadyDate,
+        filterEstimateData
       );
       setOrderBookData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -183,6 +187,7 @@ export const PIOrderBookDetails = () => {
     filterRaisedByEmail,
     searchQuery,
     filterReadyDate,
+    filterEstimateData,
   ]);
 
   useEffect(() => {
@@ -193,6 +198,7 @@ export const PIOrderBookDetails = () => {
     filterRaisedByEmail,
     searchQuery,
     filterReadyDate,
+    filterEstimateData,
   ]);
 
   const handleSearch = (query) => {
@@ -285,17 +291,25 @@ export const PIOrderBookDetails = () => {
                 />
               </Grid>
               <Grid item xs={12} sm={3}>
-                <SearchComponent
-                  onSearch={handleSearch}
-                  onReset={handleReset}
+                <CustomAutocomplete
+                  size="small"
+                  fullWidth
+                  value={
+                    EstimatedDateOption.find(
+                      (option) => option.value === filterEstimateData
+                    ) || null
+                  }
+                  onChange={(event, value) =>
+                    setFilterEstimateData(value ? value.value : null)
+                  }
+                  options={EstimatedDateOption}
+                  getOptionLabel={(option) => option.label}
+                  label="Filter By Estimated Date"
                 />
               </Grid>
-              <Grid item xs={12} sm={3}>
-                <Button
-                  sx={{ marginLeft: "10px" }}
-                  variant="contained"
-                  onClick={handleDownload}
-                >
+
+              <Grid item xs={12} sm={4}>
+                <Button variant="contained" onClick={handleDownload}>
                   Download CSV
                 </Button>
 
@@ -314,9 +328,27 @@ export const PIOrderBookDetails = () => {
                   />
                 )}
               </Grid>
+              <Grid item xs={12} sm={5}>
+                <h3
+                  style={{
+                    textAlign: "left",
+                    fontSize: "24px",
+                    color: "rgb(34, 34, 34)",
+                    fontWeight: 800,
+                  }}
+                >
+                  PI Order Book Details
+                </h3>
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <SearchComponent
+                  onSearch={handleSearch}
+                  onReset={handleReset}
+                />
+              </Grid>
             </Grid>
           </Box>
-          <Box display="flex" alignItems="center" justifyContent="center">
+          {/* <Box display="flex" alignItems="center" justifyContent="center">
             <h3
               style={{
                 textAlign: "left",
@@ -328,7 +360,7 @@ export const PIOrderBookDetails = () => {
             >
               PI Order Book Details
             </h3>
-          </Box>
+          </Box> */}
 
           <TableContainer
             sx={{
@@ -477,6 +509,16 @@ const readyDateOption = [
   },
   {
     label: "Not Ready",
+    value: false,
+  },
+];
+const EstimatedDateOption = [
+  {
+    label: "Esimated",
+    value: true,
+  },
+  {
+    label: "Not Esimated",
     value: false,
   },
 ];

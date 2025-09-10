@@ -40,6 +40,7 @@ export const CustomerOrderBookDetails = () => {
   const [filterSellerUnit, setFilterSellerUnit] = useState("");
   const [filterRaisedByEmail, setFilterRaisedByEmail] = useState("");
   const [filterReadyDate, setFilterReadyDate] = useState("");
+  const [filterEstimateData, setFilterEstimateData] = useState("");
   const [recordForEdit, setRecordForEdit] = useState(null);
   const csvLinkRef = useRef(null);
   const dataList = useSelector((state) => state.auth);
@@ -87,7 +88,8 @@ export const CustomerOrderBookDetails = () => {
         filterSellerUnit,
         filterRaisedByEmail,
         searchQuery,
-        filterReadyDate
+        filterReadyDate,
+        filterEstimateData
       );
       let data = response.data.map((item) => {
         if (
@@ -183,7 +185,8 @@ export const CustomerOrderBookDetails = () => {
         filterSellerUnit,
         filterRaisedByEmail,
         searchQuery,
-        filterReadyDate
+        filterReadyDate,
+        filterEstimateData
       );
       setOrderBookData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -198,6 +201,7 @@ export const CustomerOrderBookDetails = () => {
     filterRaisedByEmail,
     searchQuery,
     filterReadyDate,
+    filterEstimateData,
   ]);
 
   useEffect(() => {
@@ -294,13 +298,26 @@ export const CustomerOrderBookDetails = () => {
                   label="Filter By Sales Person"
                 />
               </Grid>
+
               <Grid item xs={12} sm={3}>
-                <SearchComponent
-                  onSearch={handleSearch}
-                  onReset={handleReset}
+                <CustomAutocomplete
+                  size="small"
+                  fullWidth
+                  value={
+                    EstimatedDateOption.find(
+                      (option) => option.value === filterEstimateData
+                    ) || null
+                  }
+                  onChange={(event, value) =>
+                    setFilterEstimateData(value ? value.value : null)
+                  }
+                  options={EstimatedDateOption}
+                  getOptionLabel={(option) => option.label}
+                  label="Filter By Estimated Date"
                 />
               </Grid>
-              <Grid item xs={12} sm={3}>
+
+              <Grid item xs={12} sm={4}>
                 <Button variant="contained" onClick={handleDownload}>
                   Download CSV
                 </Button>
@@ -324,20 +341,27 @@ export const CustomerOrderBookDetails = () => {
                   />
                 )}
               </Grid>
+
+              <Grid item xs={12} sm={5}>
+                <h3
+                  style={{
+                    textAlign: "left",
+
+                    fontSize: "24px",
+                    color: "rgb(34, 34, 34)",
+                    fontWeight: 800,
+                  }}
+                >
+                  Customer Order Book Details
+                </h3>
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <SearchComponent
+                  onSearch={handleSearch}
+                  onReset={handleReset}
+                />
+              </Grid>
             </Grid>
-          </Box>
-          <Box display="flex" alignItems="center" justifyContent="center">
-            <h3
-              style={{
-                textAlign: "left",
-                marginBottom: "1em",
-                fontSize: "24px",
-                color: "rgb(34, 34, 34)",
-                fontWeight: 800,
-              }}
-            >
-              Customer Order Book Details
-            </h3>
           </Box>
 
           <TableContainer
@@ -475,6 +499,16 @@ const readyDateOption = [
   },
   {
     label: "Not Ready",
+    value: false,
+  },
+];
+const EstimatedDateOption = [
+  {
+    label: "Esimated",
+    value: true,
+  },
+  {
+    label: "Not Esimated",
     value: false,
   },
 ];
