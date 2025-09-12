@@ -20,8 +20,8 @@ export const MyDocument = (props) => {
 
   // Split the productData into pages
   for (let i = 0; i < totalPages; i++) {
-    const startIndex = i * 6;
-    const endIndex = startIndex + 6;
+    const startIndex = i * 4;
+    const endIndex = startIndex + 4;
     const products = productData.slice(startIndex, endIndex);
     pages.push(products);
   }
@@ -64,7 +64,7 @@ export const MyDocument = (props) => {
                   }}
                 >
                   <Text style={{ fontWeight: "100", fontSize: 12 }}>
-                    Proforma Tax Invoice
+                    Proforma Tax Invoice / Sales Contract
                   </Text>
                 </View>
               </View>
@@ -148,22 +148,16 @@ export const MyDocument = (props) => {
               </View>
               {/* PAYMENT TERMS*/}
               <View style={rowStyle}>
-                <View style={{ ...cellStyle }}></View>
-                <View style={{ ...cellStyle, ...borderRightStyle }}></View>
-                <View style={{ ...cellStyle, ...borderRightStyle }}>
+                <View style={{ ...cellStyle }}>
                   <Text style={{ ...outerTextStyle }}>Payment Terms :</Text>
                 </View>
-                <View style={cellStyle}>
+                <View style={{ ...cellStyle, ...borderRightStyle }}>
                   <Text style={{ ...innerTextStyle }}>
                     {invoiceData.payment_terms}
                   </Text>
                 </View>
-              </View>
-              {/* DELIVERY TERMS */}
-              <View style={rowStyle}>
-                <View style={{ ...cellStyle }}></View>
-                <View style={{ ...cellStyle, ...borderRightStyle }}></View>
-                <View style={{ ...cellStyle, ...borderRightStyle }}>
+
+                <View style={{ ...cellStyle }}>
                   <Text style={{ ...outerTextStyle }}>Delivery Terms :</Text>
                 </View>
                 <View style={cellStyle}>
@@ -172,6 +166,10 @@ export const MyDocument = (props) => {
                   </Text>
                 </View>
               </View>
+              {/* DELIVERY TERMS */}
+              {/* <View style={rowStyle}>
+            
+              </View> */}
 
               {/* BILLED  AND SHIPPED TO*/}
               {/* BILLED TO */}
@@ -238,7 +236,7 @@ export const MyDocument = (props) => {
                 </View>
                 <View style={{ ...cellStyle, ...borderRightStyle }}>
                   <Text style={{ ...innerTextStyle }}>
-                    {capitalizeFirstLetter(invoiceData.billing_city)} &
+                    {capitalizeFirstLetter(invoiceData.billing_city)} &{" "}
                     {capitalizeFirstLetter(invoiceData.billing_state)}
                   </Text>
                 </View>
@@ -428,7 +426,7 @@ export const MyDocument = (props) => {
 
               {/* Display firstPageProducts */}
               {products.map((historyRow, i) => {
-                const productIndex = pageIndex * 6 + i + 1; // Calculate the product index across pages
+                const productIndex = pageIndex * 4 + i + 1; // Calculate the product index across pages
                 return (
                   <View style={{ ...rowStyle, paddingVertical: 5 }} key={i}>
                     <View
@@ -516,7 +514,14 @@ export const MyDocument = (props) => {
               })}
               {/* COMPANY DETAIL AND TOTAL GST AMOUNT */}
               <View style={{ ...rowStyle }}>
-                <View style={{ ...cellStyle, ...headerStyle }}>
+                <View
+                  style={{
+                    ...cellStyle,
+                    ...headerStyle,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
                   <Text
                     style={{
                       ...outerTextStyle,
@@ -530,9 +535,16 @@ export const MyDocument = (props) => {
                 <View
                   style={{ ...cellStyle, ...headerStyle, ...borderRightStyle }}
                 ></View>
-                <View style={{ ...cellStyle, flexGrow: 0.4 }}>
-                  <Text style={{ ...outerTextStyle, textAlign: "right" }}>
-                    Taxable Amount :
+                <View style={{ ...cellStyle, flexGrow: 0.6 }}>
+                  <Text
+                    style={{
+                      ...outerTextStyle,
+                      textAlign: "right",
+                      justifyContent: "center",
+                      alignContent: "center",
+                    }}
+                  >
+                    Taxable Amount
                   </Text>
                 </View>
                 <View style={{ ...cellStyle, flexGrow: 0.4 }}>
@@ -682,8 +694,21 @@ export const MyDocument = (props) => {
               </View>
               {/* HSN TABLE */}
               {invoiceData.origin_type === "domestic" && (
-                <View style={{ ...rowStyle, ...headerStyle }}>
-                  <View style={{ ...cellStyle, ...borderRightStyle }}>
+                <View
+                  style={{
+                    ...rowStyle,
+                    ...headerStyle,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <View
+                    style={{
+                      ...cellStyle,
+                      ...borderRightStyle,
+                      padding: "2px 0px",
+                    }}
+                  >
                     <Text style={{ ...outerTextStyle }}>HSN</Text>
                   </View>
                   <View style={{ ...cellStyle, ...borderRightStyle }}>
@@ -813,6 +838,23 @@ export const MyDocument = (props) => {
                 <View
                   style={{
                     ...cellStyle,
+                    marginLeft: "4pt",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text style={{ fontWeight: "bold", fontSize: 8 }}>
+                    For Buyer
+                  </Text>
+                  <Text
+                    style={{ color: "#777777", fontSize: 6, marginTop: "20px" }}
+                  >
+                    {"----------------------------"}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    ...cellStyle,
                     justifyContent: "center",
                     alignItems: "center",
                   }}
@@ -825,8 +867,8 @@ export const MyDocument = (props) => {
                   <Text style={innerTextStyle}>
                     {invoiceData.approval
                       ? moment(invoiceData.approval.approval_date).format(
-                        "DD-MM-YYYY"
-                      )
+                          "DD-MM-YYYY"
+                        )
                       : ""}
                   </Text>
                   <Text style={innerTextStyle}>Authorising Signatory</Text>
@@ -946,11 +988,12 @@ const containerStyle = {
 
 const rowStyle = {
   display: "flex",
+
   flexDirection: "row",
   borderBottom: "1pt solid #ccc",
 };
 const headersStyle = {
-  height: "40pt",
+  height: "60pt",
   flexDirection: "row",
   alignItems: "center",
   justifyContent: "space-between",
@@ -969,7 +1012,7 @@ const headerStyle = {
 const cellStyle = {
   flex: 1,
   flexGrow: 1,
-  fontSize: 10,
+  fontSize: 8,
 };
 const logoStyle = {
   height: "auto",
@@ -982,14 +1025,13 @@ const logo2Style = {
 const lightTextStyle = {
   fontWeight: 300,
   color: "#454545",
-  fontSize: 8,
+  fontSize: 10,
 };
 
 const outerTextStyle = {
   fontWeight: "bold",
-  fontSize: 8,
   textAlign: "left",
-  marginLeft: "5pt",
+  marginLeft: "4pt",
 };
 
 const innerTextStyle = {
