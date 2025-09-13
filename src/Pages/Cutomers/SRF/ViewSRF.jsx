@@ -563,6 +563,7 @@ function Row({ row, getCustomerSRF, handleError, handleSuccess }) {
           {(userData.groups.includes("Production") ||
             userData.groups.includes("Director") ||
             userData.groups.includes("QA") ||
+            userData.groups.includes("Sales Executive") ||
             userData.groups.includes("Customer Service")) && (
             <>
               <Button

@@ -112,9 +112,13 @@ export const CustomerOrderBookDetails = () => {
             ready_date: item.ready_date,
             requested_date: item.requested_date,
             special_instructions: item.special_instructions,
+
             remark: item.remark,
           };
-        } else if (userData.groups.includes("Customer Service")) {
+        } else if (
+          userData.groups.includes("Customer Service") ||
+          userData.groups.includes("Sales Executive")
+        ) {
           return {
             company: item.company,
             order_book_date: item.order_book_date,
@@ -325,7 +329,8 @@ export const CustomerOrderBookDetails = () => {
                 {exportData.length > 0 && (
                   <CSVLink
                     headers={
-                      userData.groups.includes("Customer Service")
+                      userData.groups.includes("Customer Service") ||
+                      userData.groups.includes("Sales Executive")
                         ? headers
                         : headers2
                     }
