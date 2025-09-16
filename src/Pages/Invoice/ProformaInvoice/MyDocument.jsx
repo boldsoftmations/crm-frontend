@@ -13,7 +13,7 @@ export const MyDocument = (props) => {
   console.log(invoiceData);
 
   // Calculate the number of pages required to display all products
-  const totalPages = Math.ceil(productData.length / 6);
+  const totalPages = Math.ceil(productData.length / 4);
 
   // Create an array to store the products for each page
   const pages = [];
