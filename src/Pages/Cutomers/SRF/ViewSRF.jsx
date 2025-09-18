@@ -104,6 +104,7 @@ export const ViewSRF = () => {
             product: product.product,
             qty: product.quantity,
             lr_no: index === 0 ? row.lr_no : "",
+            special_instructions: product.special_instructions,
             remark: index === 0 ? row.remark : "",
           });
         });
@@ -411,7 +412,8 @@ function Row({ row, getCustomerSRF, handleError, handleSuccess }) {
       align: "center",
     });
 
-    const { customer, address, contact_details } = data;
+    const { customer, address, contact_details, srf_products } = data;
+
     const startY = 40;
     const leftX = 14;
     const rightX = 150; // Push contact details further right
@@ -435,6 +437,9 @@ function Row({ row, getCustomerSRF, handleError, handleSuccess }) {
       `State: ${address.state}`,
       `Country: ${address.country}`,
       `Pincode: ${address.pincode}`,
+      `Spacial Instructions: ${srf_products.map(
+        (item) => item.special_instructions || "N/A"
+      )}`,
     ];
 
     customerLines.forEach((line, i) => {
