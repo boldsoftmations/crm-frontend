@@ -130,13 +130,23 @@ export const GRNCreate = memo(
               />
             </Grid>
 
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={2}>
               <CustomTextField
                 fullWidth
                 size="small"
                 label="Packing List ID"
                 variant="outlined"
                 value={idForEdit.id || ""}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={2}>
+              <CustomTextField
+                fullWidth
+                size="small"
+                label="Buyer State"
+                variant="outlined"
+                value={idForEdit.seller_account || ""}
               />
             </Grid>
 
