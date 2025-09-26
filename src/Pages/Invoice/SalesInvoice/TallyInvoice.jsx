@@ -26,6 +26,7 @@ export const TallyInvoice = () => {
   const [open, setOpen] = useState(false);
   const [tallyData, setTallyData] = useState([]);
   const [exportData, setExportData] = useState([]);
+  const [isToday, setIsToday] = useState(false);
   const [endDate, setEndDate] = useState(new Date());
   const [startDate, setStartDate] = useState(new Date());
   const minDate = new Date().toISOString().split("T")[0];
@@ -59,11 +60,12 @@ export const TallyInvoice = () => {
 
   useEffect(() => {
     getSalesInvoiceDetails();
-  }, [startDate, endDate, filterByUnit]);
+  }, [customDataPopup, filterByUnit, isToday]);
 
   const handleChange = (value) => {
     const selectedValue = value;
     if (selectedValue === "Today") {
+      setIsToday(!isToday);
       const today = new Date();
       setEndDate(today);
       setStartDate(today);
@@ -189,6 +191,10 @@ export const TallyInvoice = () => {
     } finally {
       setOpen(false);
     }
+  };
+
+  const getSubmitDate = () => {
+    setCustomDataPopup(false);
   };
 
   useEffect(() => {
@@ -359,7 +365,7 @@ export const TallyInvoice = () => {
             }}
           >
             <Grid container spacing={2}>
-              <Grid item xs={5} sm={5} md={5} lg={5}>
+              <Grid item xs={4} sm={4} md={4} lg={4}>
                 <CustomTextField
                   fullWidth
                   label="Start Date"
@@ -373,7 +379,7 @@ export const TallyInvoice = () => {
                   onChange={handleStartDateChange}
                 />
               </Grid>
-              <Grid item xs={5} sm={5} md={5} lg={5}>
+              <Grid item xs={4} sm={4} md={4} lg={4}>
                 <CustomTextField
                   fullWidth
                   label="End Date"
@@ -389,6 +395,15 @@ export const TallyInvoice = () => {
                   onChange={handleEndDateChange}
                   disabled={!startDate}
                 />
+              </Grid>
+              <Grid item xs={2} sm={2} md={2} lg={2}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={getSubmitDate}
+                >
+                  Submit
+                </Button>
               </Grid>
               <Grid item xs={2} sm={2} md={2} lg={2}>
                 <Button
