@@ -22,7 +22,7 @@ export const PurchaseAllTabView = () => {
     },
     {
       label: "PL Approved",
-      roles: ["Director", "Accounts", "Accounts Executive"],
+      roles: ["Director", "Purchase"],
       component: <PLApproveListView />,
     },
     {
