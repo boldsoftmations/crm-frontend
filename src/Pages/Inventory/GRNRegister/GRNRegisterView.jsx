@@ -25,21 +25,30 @@ import { GRNPDFDownload } from "./GRNPDFDownload";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
 import SearchComponent from "../../../Components/SearchComponent ";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import InvoiceServices from "../../../services/InvoiceService";
+import { Popup } from "../../../Components/Popup";
 
 export const GRNRegisterView = () => {
   const [open, setOpen] = useState(false);
-  const [grnRegisterData, setGRNRegisterData] = useState([]);
+  const minDate = new Date().toISOString().split("T")[0];
+  const maxDate = new Date("2030-12-31").toISOString().split("T")[0];
+  const [endDate, setEndDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(new Date());
+  // set default value as current date
+  const [customDataPopup, setCustomDataPopup] = useState(false);
+  const [isToday, setIsToday] = useState(false);
+
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [totalPages, setTotalPages] = useState(0);
+  // const [StartDate, setStartDate] = useState("");
+  // const [EndDate, setEndDate] = useState("");
   const [exportData, setExportData] = useState([]);
+  const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
+  const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
   const csvLinkRef = useRef(null);
-  const currentYearMonth = `${new Date().getFullYear()}-${(
-    new Date().getMonth() + 1
-  )
-    .toString()
-    .padStart(2, "0")}`;
-  const [selectedYearMonth, setSelectedYearMonth] = useState(currentYearMonth);
+
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
@@ -55,6 +64,7 @@ export const GRNRegisterView = () => {
       console.log("CSVLink Download error", error);
     }
   };
+  const [grnRegisterData, setGRNRegisterData] = useState([]);
 
   const headers = [
     { label: "Date", key: "invoice_date" },
@@ -66,12 +76,12 @@ export const GRNRegisterView = () => {
     { label: "QA Rejected Quantity", key: "qa_rejected" },
     { label: "Received Quantity", key: "qa_recieved" },
   ];
-
   const handleExport = async () => {
     try {
       setOpen(true);
       const response = await InventoryServices.getAllGRNRegisterDetails(
-        selectedYearMonth,
+        StartDate,
+        EndDate,
         "all",
         searchQuery
       );
@@ -94,6 +104,20 @@ export const GRNRegisterView = () => {
     }
   };
 
+  const handleChange = (value) => {
+    const selectedValue = value;
+    if (selectedValue === "Today") {
+      const today = new Date();
+      setIsToday(!isToday);
+      setEndDate(today);
+      setStartDate(today);
+    } else if (selectedValue === "Custom Date") {
+      setStartDate(new Date());
+      setEndDate(new Date());
+      setCustomDataPopup(true);
+    }
+  };
+
   const fetchGRNData = async (data) => {
     try {
       setOpen(true);
@@ -105,6 +129,19 @@ export const GRNRegisterView = () => {
     } finally {
       setOpen(false);
     }
+  };
+  const handleEndDateChange = (event) => {
+    const date = new Date(event.target.value);
+    setEndDate(date);
+  };
+  const getResetDate = () => {
+    setStartDate(new Date());
+    setEndDate(new Date());
+  };
+  const handleStartDateChange = (event) => {
+    const date = new Date(event.target.value);
+    setStartDate(date);
+    setEndDate(new Date());
   };
 
   const handlePrint = async (data) => {
@@ -147,7 +184,9 @@ export const GRNRegisterView = () => {
     try {
       setOpen(true);
       const response = await InventoryServices.getAllGRNRegisterDetails(
-        selectedYearMonth,
+        StartDate,
+        EndDate,
+
         currentPage,
         searchQuery
       );
@@ -159,11 +198,17 @@ export const GRNRegisterView = () => {
     } finally {
       setOpen(false);
     }
-  }, [selectedYearMonth, currentPage, searchQuery]);
+  }, [customDataPopup, currentPage, searchQuery, isToday]);
 
   useEffect(() => {
     getAllGRNRegisterDetails();
-  }, [selectedYearMonth, currentPage, searchQuery, getAllGRNRegisterDetails]);
+  }, [
+    customDataPopup,
+    currentPage,
+    searchQuery,
+    getAllGRNRegisterDetails,
+    isToday,
+  ]);
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
@@ -177,6 +222,9 @@ export const GRNRegisterView = () => {
   const handleReset = () => {
     setSearchQuery("");
     setCurrentPage(1);
+  };
+  const getSubmitDate = () => {
+    setCustomDataPopup(false);
   };
 
   const Tableheaders = [
@@ -208,18 +256,15 @@ export const GRNRegisterView = () => {
             <Grid item xs={12} sm={3}>
               <SearchComponent onSearch={handleSearch} onReset={handleReset} />
             </Grid>
-            <Grid item xs={12} sm={2} md={2}>
-              <CustomTextField
-                size="small"
-                type="month"
-                label="Filter By Month and Year"
-                value={selectedYearMonth}
-                onChange={(e) => {
-                  setCurrentPage(0);
-                  setSelectedYearMonth(e.target.value);
-                  getAllGRNRegisterDetails(0, e.target.value);
-                }}
+
+            <Grid item xs={12} sm={4} md={2}>
+              <CustomAutocomplete
                 fullWidth
+                size="small"
+                onChange={(event, newValue) => handleChange(newValue)}
+                options={DateOptions.map((option) => option.value)}
+                getOptionLabel={(option) => option}
+                label="Filter By Date" // Passed directly to CustomAutocomplete
               />
             </Grid>
 
@@ -332,6 +377,73 @@ export const GRNRegisterView = () => {
           handlePageChange={handlePageChange}
         />
       </Paper>
+
+      <Popup
+        openPopup={customDataPopup}
+        setOpenPopup={setCustomDataPopup}
+        title="Date Filter"
+        maxWidth="md"
+      >
+        <Box
+          sx={{
+            backgroundColor: "white",
+            borderRadius: "8px",
+            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+            margin: "10px",
+            padding: "20px",
+          }}
+        >
+          <Grid container spacing={2}>
+            <Grid item xs={4} sm={4} md={4} lg={4}>
+              <CustomTextField
+                fullWidth
+                label="Start Date"
+                variant="outlined"
+                size="small"
+                type="date"
+                id="start-date"
+                value={startDate ? startDate.toISOString().split("T")[0] : ""}
+                min={minDate}
+                max={maxDate}
+                onChange={handleStartDateChange}
+              />
+            </Grid>
+            <Grid item xs={4} sm={4} md={4} lg={4}>
+              <CustomTextField
+                fullWidth
+                label="End Date"
+                variant="outlined"
+                size="small"
+                type="date"
+                id="end-date"
+                value={endDate ? endDate.toISOString().split("T")[0] : ""}
+                min={startDate ? startDate : minDate}
+                max={maxDate}
+                onChange={handleEndDateChange}
+                disabled={!startDate}
+              />
+            </Grid>
+            <Grid item xs={2} sm={2} md={2} lg={2}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={getSubmitDate}
+              >
+                Submit
+              </Button>
+            </Grid>
+            <Grid item xs={2} sm={2} md={2} lg={2}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={getResetDate}
+              >
+                Reset
+              </Button>
+            </Grid>
+          </Grid>
+        </Box>
+      </Popup>
     </>
   );
 };
@@ -358,3 +470,13 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     border: 0,
   },
 }));
+
+const DateOptions = [
+  {
+    value: "Today",
+  },
+
+  {
+    value: "Custom Date",
+  },
+];

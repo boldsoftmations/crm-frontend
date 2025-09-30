@@ -18,7 +18,8 @@ const CustomAutocomplete = ({
   multiple, // Added for multi-select functionality
   limitTags, // Added to limit the number of tags shown
   freeSolo, // Added for allowing arbitrary values not present in the options
-  renderTags, // Added for custom tag rendering
+  renderTags,
+  disabled, // Added for custom tag rendering
   // Include any additional props that might be necessary
 }) => (
   <Autocomplete
@@ -44,6 +45,7 @@ const CustomAutocomplete = ({
           <Chip variant="outlined" label={option} {...getTagProps({ index })} />
         )))
     }
+    disabled={disabled}
     // Spread additional props for maximum flexibility
     {...(multiple ? { ChipComponent: Chip } : {})}
   />

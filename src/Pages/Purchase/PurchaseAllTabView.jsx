@@ -6,6 +6,7 @@ import { PurchaseInvoiceView } from "./Purchase Invoice/PurchaseInvoiceView";
 import { ChallanRegisterView } from "./Challan Register/ChallanRegisterView";
 import { ChalanInvoiceView } from "./ChallanInvoice/ChalanInvoiceView";
 import { CustomTabs } from "../../Components/CustomTabs";
+import PLApproveListView from "./PLApprove/PLApproveListView";
 
 export const PurchaseAllTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
@@ -18,6 +19,11 @@ export const PurchaseAllTabView = () => {
       label: "Purchase Order Book",
       roles: ["Director", "Purchase"],
       component: <PurchaseOrderView />,
+    },
+    {
+      label: "PL Approved",
+      roles: ["Director", "Accounts", "Accounts Executive"],
+      component: <PLApproveListView />,
     },
     {
       label: "Purchase Register",

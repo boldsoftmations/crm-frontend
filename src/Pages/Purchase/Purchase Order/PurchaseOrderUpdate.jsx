@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useState } from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import { Box, Button, Chip, Divider, Grid, Switch } from "@mui/material";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomTextField from "../../../Components/CustomTextField";
@@ -6,6 +6,8 @@ import InventoryServices from "../../../services/InventoryService";
 import { styled } from "@mui/material/styles";
 import { MessageAlert } from "../../../Components/MessageAlert";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import ProductService from "../../../services/ProductService";
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -26,6 +28,7 @@ export const PurchaseOrderUpdate = memo(
   }) => {
     const [inputValues, setInputValues] = useState(selectedRow);
     const [loading, setLoading] = useState(false);
+    const [productList, setProductList] = useState([]);
     const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
       useNotificationHandling();
 
@@ -76,6 +79,19 @@ export const PurchaseOrderUpdate = memo(
       },
       [inputValues, currentPage, acceptedFilter, searchQuery]
     );
+
+    const productListData = async () => {
+      try {
+        const response = await ProductService.getAllProduct();
+        setProductList(response.data);
+      } catch (error) {
+        handleError(error); // Handle errors from the API call
+      }
+    };
+
+    useEffect(() => {
+      productListData();
+    }, []);
 
     return (
       <>
@@ -171,6 +187,7 @@ export const PurchaseOrderUpdate = memo(
                 fullWidth
                 size="small"
                 label="Currency"
+                x
                 variant="outlined"
                 value={inputValues.currency || ""}
                 disabled
@@ -222,13 +239,41 @@ export const PurchaseOrderUpdate = memo(
               return (
                 <>
                   <Grid key={index} item xs={12} sm={3}>
-                    <CustomTextField
+                    {/* <CustomTextField
                       fullWidth
                       size="small"
                       label="Product"
                       variant="outlined"
                       value={input.product || ""}
-                      disabled
+                      onChange={(event) =>
+                        setInputValues({
+                          ...inputValues,
+                          product: event.target.value,
+                        })
+                      }
+                      disabled={selectedRow.is_package_list}
+                    /> */}
+                    <CustomAutocomplete
+                      fullWidth
+                      size="small"
+                      label="Product"
+                      variant="outlined"
+                      value={input.product || ""}
+                      options={productList.map((product) => product.name)}
+                      onChange={(event, newValue) => {
+                        setInputValues((prev) => {
+                          const updatedProducts = [...prev.products];
+                          updatedProducts[index] = {
+                            ...updatedProducts[index],
+                            product: newValue,
+                          };
+                          return {
+                            ...prev,
+                            products: updatedProducts,
+                          };
+                        });
+                      }}
+                      disabled={selectedRow && selectedRow.is_package_list}
                     />
                   </Grid>
                   <Grid item xs={12} sm={1}>
@@ -249,9 +294,23 @@ export const PurchaseOrderUpdate = memo(
                       label="Quantity"
                       variant="outlined"
                       value={input.quantity || ""}
-                      disabled
+                      onChange={(event) => {
+                        setInputValues((prev) => {
+                          const updatedProducts = [...prev.products];
+                          updatedProducts[index] = {
+                            ...updatedProducts[index],
+                            quantity: event.target.value,
+                          };
+                          return {
+                            ...prev,
+                            products: updatedProducts,
+                          };
+                        });
+                      }}
+                      disabled={selectedRow && selectedRow.is_package_list}
                     />
                   </Grid>
+
                   <Grid item xs={12} sm={2}>
                     <CustomTextField
                       fullWidth
@@ -270,7 +329,20 @@ export const PurchaseOrderUpdate = memo(
                       label="Rate"
                       variant="outlined"
                       value={input.rate || ""}
-                      disabled
+                      onChange={(event) => {
+                        setInputValues((prev) => {
+                          const updatedProducts = [...prev.products];
+                          updatedProducts[index] = {
+                            ...updatedProducts[index],
+                            rate: event.target.value,
+                          };
+                          return {
+                            ...prev,
+                            products: updatedProducts,
+                          };
+                        });
+                      }}
+                      disabled={selectedRow.is_package_list}
                     />
                   </Grid>
                   <Grid item xs={12} sm={2}>

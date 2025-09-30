@@ -64,10 +64,11 @@ export const PackingListView = () => {
       setOpen(false);
     }
   };
+  const [Reject, setReject] = useState(false);
 
   useEffect(() => {
     getAllPackingListDetails(currentPage, acceptedFilter, searchQuery);
-  }, [currentPage, acceptedFilter, searchQuery]);
+  }, [currentPage, acceptedFilter, searchQuery, Reject]);
 
   const getAllPackingListDetails = useCallback(async (page, filter, query) => {
     try {
@@ -237,6 +238,8 @@ export const PackingListView = () => {
                     openInPopup={openInPopup}
                     handleCreateGrn={handleCreateGrn}
                     userData={userData}
+                    Reject={Reject}
+                    setReject={setReject}
                   />
                 ))}
               </TableBody>
@@ -285,8 +288,30 @@ export const PackingListView = () => {
   );
 };
 
-function Row({ row, openInPopup, handleCreateGrn, userData }) {
+function Row({
+  row,
+  openInPopup,
+  handleCreateGrn,
+  setReject,
+  Reject,
+  userData,
+}) {
   const [open, setOpen] = useState(false);
+
+  const handleReject = async () => {
+    setOpenPopupCreateGrn(false);
+    try {
+      await InventoryServices.isPLApproveReject(row.id, { grn_rejected: true });
+    } catch (error) {
+      console.log("error", error);
+    }
+    setReject(!Reject);
+  };
+  const handleConfromReject = () => {
+    // setReject(false);
+    setOpenPopupCreateGrn(true);
+  };
+  const [openPopupCreateGrn, setOpenPopupCreateGrn] = useState(false);
 
   return (
     <>
@@ -310,7 +335,6 @@ function Row({ row, openInPopup, handleCreateGrn, userData }) {
 
         <StyledTableCell align="center">{row.vendor}</StyledTableCell>
         <StyledTableCell align="center">{row.seller_account}</StyledTableCell>
-
         <StyledTableCell align="center">
           {/* {
             // Show Edit button only if the user is NOT in any of the specified groups
@@ -327,9 +351,21 @@ function Row({ row, openInPopup, handleCreateGrn, userData }) {
               userData.groups.includes("Production Delhi") ||
               userData.groups.includes("Stores") ||
               userData.groups.includes("Director")) && (
-              <Button onClick={() => handleCreateGrn(row)}>Create GRN</Button>
+              <Button
+                disabled={row.grn_rejected}
+                onClick={() => handleCreateGrn(row)}
+              >
+                Create GRN
+              </Button>
             )
           }
+          <Button
+            disabled={row.grn_rejected || row.accepted}
+            onClick={handleConfromReject}
+          >
+            Reject
+          </Button>
+          {/* <Button onClick={() => handleReject}>Reject</Button> */}
         </StyledTableCell>
       </StyledTableRow>
       <StyledTableRow>
@@ -350,7 +386,13 @@ function Row({ row, openInPopup, handleCreateGrn, userData }) {
                 </TableHead>
                 <TableBody>
                   {row.products.map((historyRow, i) => (
-                    <StyledTableRow key={i}>
+                    <StyledTableRow
+                      key={i}
+                      sx={{
+                        opacity: row.grn_rejected ? 0.5 : 1,
+                        pointerEvents: row.grn_rejected ? "none" : "auto", // prevents clicks
+                      }}
+                    >
                       <StyledTableCell align="center">{i + 1}</StyledTableCell>
                       <StyledTableCell align="center">
                         {historyRow.product}
@@ -369,6 +411,26 @@ function Row({ row, openInPopup, handleCreateGrn, userData }) {
           </Collapse>
         </TableCell>
       </StyledTableRow>
+
+      <Popup
+        title={"Are You Sure?"}
+        openPopup={openPopupCreateGrn}
+        setOpenPopup={setOpenPopupCreateGrn}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            width: "100%",
+            gap: 12,
+            padding: "10px 40px",
+          }}
+        >
+          <Button onClick={() => setOpenPopupCreateGrn(false)}>NO</Button>
+          <Button onClick={handleReject} variant="contained">
+            YES
+          </Button>
+        </Box>
+      </Popup>
     </>
   );
 }

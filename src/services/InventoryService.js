@@ -75,6 +75,11 @@ const getAllPurchaseOrderData = (page, acceptedToFilter, searchValue) => {
   return CustomAxios.get(`/api/inventory/purchase-order/?${params.toString()}`);
 };
 
+
+const isPLApproveReject = (id, data) => {
+  return CustomAxios.patch(`/api/inventory/list-packing-list-rejected/${id}`, data);
+};
+
 const createPurchaseOrderData = (data) => {
   return CustomAxios.post("/api/inventory/purchase-order/", data);
 };
@@ -113,7 +118,11 @@ const createPackingListData = (data) => {
 };
 
 const updatePackingListData = (id, data) => {
-  return CustomAxios.patch(`/api/inventory/list-packing-list/${id}/`, data);
+  return CustomAxios.patch(`/api/inventory/list-packing-list/${id}`, data);
+};
+
+const updatePLApproveListData = (id, data) => {
+  return CustomAxios.patch(`api/inventory/list-packing-list/${id}`, data);
 };
 
 // grn List Api
@@ -138,7 +147,8 @@ const getAllGRNData = (page, acceptedToFilter, searchValue) => {
 };
 
 const createGRNData = (data) => {
-  return CustomAxios.post("/api/inventory/list-grn/", data);
+  
+  return CustomAxios.post("/api/inventory/list-grn/", data) ;
 };
 
 const getGRNDataById = (id) => {
@@ -150,12 +160,17 @@ const updateGRNData = (id, data) => {
 };
 
 // GRN Register
-const getAllGRNRegisterDetails = (yearMonthFilter, page, searchValue) => {
+const getAllGRNRegisterDetails = (StartDate,EndDate, page, searchValue) => {
   const params = new URLSearchParams();
 
-  if (yearMonthFilter) {
-    params.append("year_month", yearMonthFilter);
+  if (StartDate) {
+    params.append("start_date", StartDate);
   }
+
+  if (EndDate) {
+    params.append("end_date", EndDate);
+  }
+  
 
   if (page) {
     params.append("page", page);
@@ -685,6 +700,8 @@ const updateReworkInvoiceData = (id, data) => {
 };
 
 const InventoryServices = {
+  isPLApproveReject,
+  updatePLApproveListData,
   getAllVendorData,
   createVendorData,
   getVendorDataById,
