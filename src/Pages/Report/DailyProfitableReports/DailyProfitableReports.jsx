@@ -24,8 +24,8 @@ export const DailyProfitableReports = (props) => {
   ];
 
   const Tabledata = dailyProfitableReportsFilterData.map((row, i) => ({
-    date_range_before: row.date_range_before,
-    date_range_after: row.date_range_after,
+    date_range_before: row.date_range_after,
+    date_range_after: row.date_range_before,
     unit: row.sales_invoice__order_book__proforma_invoice__seller_account__unit,
     total: row.total,
   }));

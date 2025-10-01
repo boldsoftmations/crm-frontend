@@ -14,7 +14,6 @@ import {
   Collapse,
   Typography,
   IconButton,
-  Chip,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
 import React, { useCallback, useEffect, useState } from "react";
@@ -31,9 +30,7 @@ import { useNotificationHandling } from "../../../Components/useNotificationHand
 import { MessageAlert } from "../../../Components/MessageAlert";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import { CustomPagination } from "../../../Components/CustomPagination";
-import PendingIcon from "@mui/icons-material/Pending";
 import { PLApprovelListUpdate } from "./PLApprovelListUpdate";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 const PLApproveListView = () => {
   const dispatch = useDispatch();
   const userData = useSelector((state) => state.auth.profile);

@@ -421,8 +421,8 @@ function Row({
           sx={{
             display: "flex",
             width: "100%",
-            gap: 12,
-            padding: "10px 40px",
+            gap: 6,
+            padding: "10px 20px",
           }}
         >
           <Button onClick={() => setOpenPopupCreateGrn(false)}>NO</Button>
