@@ -440,24 +440,36 @@ export const PIOrderBookDetails = () => {
                     <StyledTableCell>{row.revision}</StyledTableCell>
                     <StyledTableCell align="center">
                       {(userData.groups.includes("Accounts") ||
+                        userData.groups.includes(
+                          "Operations & Supply Chain Manager"
+                        ) ||
                         userData.groups.includes("Director")) && (
                         <Button
                           variant="text"
                           color="info"
                           size="small"
                           onClick={() => openInPopup(row)}
+                          disabled={userData.groups.includes(
+                            "Operations & Supply Chain Manager"
+                          )}
                         >
                           Account View
                         </Button>
                       )}
                       {(userData.groups.includes("Production") ||
                         userData.groups.includes("Production Delhi") ||
+                        userData.groups.includes(
+                          "Operations & Supply Chain Manager"
+                        ) ||
                         userData.groups.includes("Director")) && (
                         <Button
                           variant="text"
                           color="secondary"
                           size="small"
                           onClick={() => openInPopup2(row)}
+                          disabled={userData.groups.includes(
+                            "Operations & Supply Chain Manager"
+                          )}
                         >
                           Production View
                         </Button>

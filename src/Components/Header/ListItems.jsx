@@ -362,6 +362,7 @@ export const ListItems = ({ setOpen }) => {
       condition: isInGroups("Operations & Supply Chain Manager"),
       items: [
         renderListItem("/dispatch/tab-view", <LocalShippingIcon />, "Dispatch"),
+        renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
       ],
     },
 

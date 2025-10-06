@@ -345,6 +345,9 @@ export const ProductOrderBookDetails = () => {
                   <CSVLink
                     headers={
                       userData.groups.includes("Customer Service") ||
+                      userData.groups.includes(
+                        "Operations & Supply Chain Manager"
+                      ) ||
                       userData.groups.includes("Sales Executive")
                         ? Customerheaders
                         : headers
@@ -462,24 +465,36 @@ export const ProductOrderBookDetails = () => {
                     </StyledTableCell>
                     <StyledTableCell>
                       {(userData.groups.includes("Accounts") ||
+                        userData.groups.includes(
+                          "Operations & Supply Chain Manager"
+                        ) ||
                         userData.groups.includes("Director")) && (
                         <Button
                           variant="text"
                           color="info"
                           size="small"
                           onClick={() => openInPopup(row)}
+                          disabled={userData.groups.includes(
+                            "Operations & Supply Chain Manager"
+                          )}
                         >
                           Account View
                         </Button>
                       )}
                       {(userData.groups.includes("Production") ||
                         userData.groups.includes("Production Delhi") ||
+                        userData.groups.includes(
+                          "Operations & Supply Chain Manager"
+                        ) ||
                         userData.groups.includes("Director")) && (
                         <Button
                           variant="text"
                           color="secondary"
                           size="small"
                           onClick={() => openInPopup2(row)}
+                          disabled={userData.groups.includes(
+                            "Operations & Supply Chain Manager"
+                          )}
                         >
                           Production View
                         </Button>
