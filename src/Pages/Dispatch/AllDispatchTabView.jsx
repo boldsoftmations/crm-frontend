@@ -23,7 +23,8 @@ export const AllDispatchTabView = () => {
     "Sales Deputy Manager",
     "Sales Assistant Deputy Manager",
     "Business Development Manager",
-    "Business Development Executive"
+    "Business Development Executive",
+    "Operations & Supply Chain Manager"
   );
 
   const twoTabs = isInGroups(

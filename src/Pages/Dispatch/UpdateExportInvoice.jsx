@@ -13,7 +13,7 @@ import CustomAutocomplete from "../../Components/CustomAutocomplete";
 export const UpdateExportInvoice = (props) => {
   const [open, setOpen] = useState(false);
   const [close, setClose] = useState(false);
-  const { idData, getAllDispatchDetails, setOpenPopup } = props;
+  const { idData, getAllDispatchDetails, setOpenPopup, handelError } = props;
   const [selectedFile, setSelectedFile] = useState("");
   const [selectedFileImage, setSelectedFileImage] = useState("");
   const [hideImage, setHideImage] = useState(false);
@@ -73,6 +73,7 @@ export const UpdateExportInvoice = (props) => {
       }
     } catch (error) {
       console.log("Error:", error);
+      handelError(error);
     } finally {
       setOpen(false); // Ensure setOpen(false) runs in both success and error cases
     }

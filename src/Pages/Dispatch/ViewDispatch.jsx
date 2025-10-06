@@ -108,6 +108,7 @@ export const ViewDispatch = () => {
         severity={alertInfo.severity}
         message={alertInfo.message}
       />
+
       <CustomLoader open={open} />
       <Grid item xs={12}>
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
@@ -181,6 +182,9 @@ export const ViewDispatch = () => {
                   </StyledTableCell>
                   {(users.groups.includes("Factory-Mumbai-Dispatch") ||
                     users.groups.includes("Factory-Delhi-Dispatch") ||
+                    users.groups.includes(
+                      "Operations & Supply Chain Manager"
+                    ) ||
                     users.groups.includes("Director")) && (
                     <StyledTableCell align="center">Dispatched</StyledTableCell>
                   )}
@@ -191,7 +195,9 @@ export const ViewDispatch = () => {
                 {dispatchData.map((row) => (
                   <Row
                     key={row.id}
+                    handleError={handleError}
                     row={row}
+                    alertInfo={alertInfo}
                     getAllDispatchDetails={getAllDispatchDetails}
                     users={users}
                   />
@@ -211,11 +217,12 @@ export const ViewDispatch = () => {
 };
 
 function Row(props) {
-  const { row, getAllDispatchDetails, users } = props;
+  const { row, getAllDispatchDetails, users, handleError } = props;
   const [open, setOpen] = useState(false);
   const [checked, setChecked] = useState(row.dispatched);
   const [openModal, setOpenModal] = useState(false);
   const [id, setId] = useState("");
+
   const [customer, setCustomer] = useState("");
 
   const handleChange = (event) => {
@@ -226,6 +233,7 @@ function Row(props) {
     try {
       e.preventDefault();
       setOpen(true);
+      setOpenModal(false);
       // const data = {
       //   sales_invoice: id,
       //   dispatched: checked,
@@ -238,7 +246,13 @@ function Row(props) {
       setOpen(false);
       setOpenModal(false);
     } catch (error) {
-      console.log("error :>> ", error);
+      // console.log(
+      //   error.response.data.errors.detail && error.response.data.errors.detail
+      // );
+      handleError(error);
+
+      // error.response.data.errors.detail && error.response.data.errors.detail;
+
       setOpen(false);
     }
   };
@@ -270,6 +284,7 @@ function Row(props) {
         <TableCell align="center">{row.dispatch_location}</TableCell>
         {(users.groups.includes("Factory-Mumbai-Dispatch") ||
           users.groups.includes("Factory-Delhi-Dispatch") ||
+          users.groups.includes("Operations & Supply Chain Manager") ||
           users.groups.includes("Director")) && (
           <TableCell align="center">
             <Button

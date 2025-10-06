@@ -356,6 +356,14 @@ export const ListItems = ({ setOpen }) => {
         ),
       ],
     },
+    //Operations & Supply Chain Manager
+
+    {
+      condition: isInGroups("Operations & Supply Chain Manager"),
+      items: [
+        renderListItem("/dispatch/tab-view", <LocalShippingIcon />, "Dispatch"),
+      ],
+    },
 
     // Purchase Menus
 

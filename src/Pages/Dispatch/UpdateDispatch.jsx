@@ -12,7 +12,8 @@ import { Popup } from "../../Components/Popup";
 export const UpdateDispatch = (props) => {
   const [open, setOpen] = useState(false);
   const [close, setClose] = useState(false);
-  const { idData, getAllDispatchDetails, setOpenPopup, userData } = props;
+  const { idData, getAllDispatchDetails, setOpenPopup, userData, handleError } =
+    props;
   const [lrCopy, setLrCopy] = useState("");
   const [lrCopyImage, setLrCopyImage] = useState("");
   const [hideImage, setHideImage] = useState(false);
@@ -127,6 +128,7 @@ export const UpdateDispatch = (props) => {
       }
     } catch (error) {
       console.log("error :>> ", error);
+      handleError(error);
       setOpen(false);
     }
   };

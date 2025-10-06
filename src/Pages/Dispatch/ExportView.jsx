@@ -175,6 +175,7 @@ export const ExportView = () => {
                     <StyledTableCell align="center">LR COPY</StyledTableCell>
                   )}
                   <StyledTableCell align="center">ACTION</StyledTableCell>
+                  <StyledTableCell align="center"></StyledTableCell>
                 </StyledTableRow>
               </TableHead>
               <TableBody>
@@ -184,6 +185,7 @@ export const ExportView = () => {
                     row={row}
                     getAllDispatchDetails={getAllDispatchDetails}
                     userData={userData}
+                    handleError={handleError}
                   />
                 ))}
               </TableBody>
@@ -201,7 +203,7 @@ export const ExportView = () => {
 };
 
 function Row(props) {
-  const { row, getAllDispatchDetails, userData } = props;
+  const { row, getAllDispatchDetails, userData, handleError } = props;
   const [open, setOpen] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [idData, setIdData] = useState("");
@@ -241,21 +243,24 @@ function Row(props) {
           {moment(row.date).format("DD-MM-YYYY")}
         </TableCell>
         <TableCell align="center">{row.dispatch_location}</TableCell>
-        {userData.groups.toString() === "Customer Service" && (
-          <TableCell align="center">
-            <Button
-              color="success"
-              variant="outlined"
-              onClick={() => handleClickLRCOPY(row)}
-            >
-              Download
-            </Button>
-          </TableCell>
-        )}
+        {userData.groups.toString() === "Customer Service" ||
+          (userData.groups.toString() ===
+            "Operations & Supply Chain Manager" && (
+            <TableCell align="center">
+              <Button
+                color="success"
+                variant="outlined"
+                onClick={() => handleClickLRCOPY(row)}
+              >
+                Download
+              </Button>
+            </TableCell>
+          ))}
         {(userData.groups.includes("Factory-Delhi-Dispatch") ||
           userData.groups.includes("Factory-Mumbai-Dispatch") ||
           userData.groups.includes("Director") ||
           userData.groups.includes("Customer Service") ||
+          userData.groups.includes("Operations & Supply Chain Manager") ||
           userData.groups.includes("Accounts")) && (
           <TableCell align="center">
             <button
@@ -310,6 +315,7 @@ function Row(props) {
         <UpdateExportInvoice
           idData={idData}
           getAllDispatchDetails={getAllDispatchDetails}
+          handelError={handleError}
           setOpenPopup={setOpenModal}
           userData={userData}
         />
