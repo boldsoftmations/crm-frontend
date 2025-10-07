@@ -113,12 +113,6 @@ export const AllProfileTabView = () => {
       visible: permissions.commonTabs || permissions.isManager,
       component: <LeaveApplicationForm />,
     },
-
-    {
-      label: "Warning Letter",
-      visible: permissions.commonTabs,
-      component: <ViewWarningLetter />,
-    },
   ];
 
   const visibleTabs = allTabDefinitions.filter((tab) => tab.visible);
