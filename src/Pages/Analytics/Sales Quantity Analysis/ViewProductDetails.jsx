@@ -20,6 +20,7 @@ import { UpdateAllCompanyDetails } from "../../Cutomers/CompanyDetails/UpdateAll
 import { Popup } from "../../../Components/Popup";
 import { CreateCustomerProformaInvoice } from "../../Invoice/ProformaInvoice/CreateCustomerProformaInvoice";
 import CustomerServices from "../../../services/CustomerService";
+import { useSelector } from "react-redux";
 
 export const ViewProductDetails = ({
   rowData,
@@ -45,7 +46,8 @@ export const ViewProductDetails = ({
     severity: "",
     open: false,
   });
-
+  const dataList = useSelector((state) => state.auth);
+  const userData = dataList.profile;
   const handleClose = () => {
     setAlertMsg({ open: false });
   };
@@ -211,6 +213,9 @@ export const ViewProductDetails = ({
                         <Button
                           sx={{ color: "#1976d2" }}
                           onClick={() => openInPopupOfUpdateCustomer(row)}
+                          disabled={userData.groups.includes(
+                            "Operations & Supply Chain Manager"
+                          )}
                         >
                           View
                         </Button>
@@ -218,6 +223,9 @@ export const ViewProductDetails = ({
                         <Button
                           sx={{ color: "#28a745" }}
                           onClick={() => openInPopupInvoice(row)}
+                          disabled={userData.groups.includes(
+                            "Operations & Supply Chain Manager"
+                          )}
                         >
                           Create PI
                         </Button>

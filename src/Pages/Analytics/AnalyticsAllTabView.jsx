@@ -112,12 +112,13 @@ export const AnalyticsAllTabView = () => {
         "Sales Executive",
         "Sales Manager without Leads",
         "Sales Manager with Lead",
+        "Operations & Supply Chain Manager",
       ],
       component: <ViewSalesQuantityAnalysis />,
     },
     {
       label: "sales purchase Analysis",
-      roles: ["Director"],
+      roles: ["Director", "Operations & Supply Chain Manager"],
       component: <SalesParchaseAnalaysis />,
     },
   ];
