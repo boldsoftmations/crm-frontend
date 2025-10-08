@@ -26,6 +26,7 @@ import { Popup } from "../../../Components/Popup";
 import { CustomPagination } from "../../../Components/CustomPagination";
 import InventoryServices from "../../../services/InventoryService";
 import { ChalanInvoiceCreate } from "../ChallanInvoice/ChalanInvoiceCreate";
+import { useSelector } from "react-redux";
 
 export const ChallanRegisterView = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -37,6 +38,7 @@ export const ChallanRegisterView = () => {
   const [challanNumbers, setChallanNumbers] = useState([]);
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
+  const userData = useSelector((state) => state.auth.profile);
 
   useEffect(() => {
     getChalanDetails(currentPage);
@@ -184,6 +186,9 @@ export const ChallanRegisterView = () => {
                         <Switch
                           checked={chalan.is_accepted}
                           inputProps={{ "aria-label": "controlled" }}
+                          disabled={userData.groups.includes(
+                            "Operations & Supply Chain Manager"
+                          )}
                         />
                       </StyledTableCell>
                       {/* <StyledTableCell align="center">
@@ -200,6 +205,9 @@ export const ChallanRegisterView = () => {
                             variant="text"
                             color="primary"
                             onClick={() => handleChallanCreate(chalan)}
+                            disabled={userData.groups.includes(
+                              "Operations & Supply Chain Manager"
+                            )}
                           >
                             Challan Create
                           </Button>

@@ -28,6 +28,7 @@ import CustomTextField from "../../../Components/CustomTextField";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
 import SearchComponent from "../../../Components/SearchComponent ";
+import { useSelector } from "react-redux";
 
 export const PurchaseInvoiceView = () => {
   const [openPopupView, setOpenPopupView] = useState(false);
@@ -227,6 +228,7 @@ export const PurchaseInvoiceView = () => {
 function Row(props) {
   const { row, openInPopup } = props;
   const [open, setOpen] = useState(false);
+  const userData = useSelector((state) => state.auth.profile);
 
   return (
     <>
@@ -254,6 +256,9 @@ function Row(props) {
               openInPopup(row.id);
             }}
             color="success"
+            disabled={userData.groups.includes(
+              "Operations & Supply Chain Manager"
+            )}
           >
             View
           </Button>

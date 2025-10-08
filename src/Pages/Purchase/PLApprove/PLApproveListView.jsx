@@ -320,15 +320,21 @@ function Row({ row, handleCreateGrn, userData }) {
           {
             // Show Create GRN button if the user is in any of the specified groups
             (userData.groups.includes("Stores Delhi") ||
-              userData.groups.includes("Purchase") ||
               userData.groups.includes("Accounts") ||
               userData.groups.includes("Production Delhi") ||
               userData.groups.includes("Stores") ||
+              userData.groups.includes("Operations & Supply Chain Manager") ||
               userData.groups.includes("Director")) && (
               <Button
                 onClick={() => handleCreateGrn(row)}
                 disabled={
-                  row.accepted ? true : false || row.grn_rejected ? false : true
+                  row.accepted
+                    ? true
+                    : false ||
+                      (row.grn_rejected ? false : true) ||
+                      userData.groups.includes(
+                        "Operations & Supply Chain Manager"
+                      )
                 }
               >
                 EDIT{" "}

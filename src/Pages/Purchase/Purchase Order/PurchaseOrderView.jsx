@@ -23,7 +23,7 @@ import { Popup } from "../../../Components/Popup";
 import InventoryServices from "../../../services/InventoryService";
 import { PurchaseOrderUpdate } from "./PurchaseOrderUpdate";
 import InvoiceServices from "../../../services/InvoiceService";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getSellerAccountData } from "../../../Redux/Action/Action";
 import { PurchaseOrderPDF } from "./PurchaseOrderPDF";
 import jsPDF from "jspdf";
@@ -50,6 +50,7 @@ export const PurchaseOrderView = () => {
   const dispatch = useDispatch();
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
+  const userData = useSelector((state) => state.auth.profile);
 
   const handleDownload = async (data) => {
     try {
@@ -213,6 +214,9 @@ export const PurchaseOrderView = () => {
                   onClick={() => {
                     setOpenMergePLPopup(true);
                   }}
+                  disabled={userData.groups.includes(
+                    "Operations & Supply Chain Manager"
+                  )}
                 >
                   Merge PL
                 </Button>
@@ -344,6 +348,7 @@ export const PurchaseOrderView = () => {
 function Row(props) {
   const { row, handleEdit, handleOpenCreatePLPopup, handleDownload } = props;
   const [open, setOpen] = useState(false);
+  const userData = useSelector((state) => state.auth.profile);
 
   return (
     <>
@@ -368,8 +373,21 @@ function Row(props) {
         <StyledTableCell align="center">{row.schedule_date}</StyledTableCell>
 
         <StyledTableCell align="center">
-          <Button onClick={() => handleEdit(row)}>Edit</Button>
-          <Button color="success" onClick={handleOpenCreatePLPopup}>
+          <Button
+            onClick={() => handleEdit(row)}
+            disabled={userData.groups.includes(
+              "Operations & Supply Chain Manager"
+            )}
+          >
+            Edit
+          </Button>
+          <Button
+            color="success"
+            onClick={handleOpenCreatePLPopup}
+            disabled={userData.groups.includes(
+              "Operations & Supply Chain Manager"
+            )}
+          >
             Create PL
           </Button>
           <Button color="secondary" onClick={() => handleDownload(row)}>

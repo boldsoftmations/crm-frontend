@@ -17,17 +17,27 @@ export const PurchaseAllTabView = () => {
   const tabs = [
     {
       label: "Purchase Order Book",
-      roles: ["Director", "Purchase"],
+      roles: ["Director", "Purchase", "Operations & Supply Chain Manager"],
       component: <PurchaseOrderView />,
     },
     {
       label: "PL Approved",
-      roles: ["Director", "Purchase"],
+      roles: [
+        "Director",
+        "Accounts",
+        "Accounts Executive",
+        "Operations & Supply Chain Manager",
+      ],
       component: <PLApproveListView />,
     },
     {
       label: "Purchase Register",
-      roles: ["Director", "Accounts", "Accounts Executive"],
+      roles: [
+        "Director",
+        "Accounts",
+        "Accounts Executive",
+        "Operations & Supply Chain Manager",
+      ],
       component: <PurchaseInvoiceView />,
     },
     {
@@ -38,17 +48,23 @@ export const PurchaseAllTabView = () => {
         "Stores Delhi",
         "Production Delhi",
         "Accounts Executive",
+        "Operations & Supply Chain Manager",
       ],
       component: <GRNView />,
     },
     {
       label: "Challan Register",
-      roles: ["Director", "Accounts", "Purchase"],
+      roles: [
+        "Director",
+        "Accounts",
+        "Purchase",
+        "Operations & Supply Chain Manager",
+      ],
       component: <ChallanRegisterView />,
     },
     {
       label: "Job Work Challan Invoice",
-      roles: ["Director", "Accounts"],
+      roles: ["Director", "Accounts", "Operations & Supply Chain Manager"],
       component: <ChalanInvoiceView />,
     },
   ];

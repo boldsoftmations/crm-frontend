@@ -138,7 +138,7 @@ export const ListItems = ({ setOpen }) => {
             to: "/master/beat",
             text: "Beat Master",
           },
-          { to: "lead/list-references", text: "Lead  Master" },
+          { to: "lead/list-references", text: "Lead Master" },
         ]),
         renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
           { to: "/invoice/performa-invoice-tab", text: "Performa Invoice" },
@@ -368,6 +368,9 @@ export const ListItems = ({ setOpen }) => {
         ]),
         renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
         renderListItem("/user/analytics", <DashboardIcon />, "Analytics"),
+        renderSubmenu("purchase", <PurchaseIcon />, "Purchase", [
+          { to: "/inventory/view-purchase", text: "Purchase" },
+        ]),
       ],
     },
 

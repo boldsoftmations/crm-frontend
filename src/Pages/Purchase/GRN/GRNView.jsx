@@ -272,7 +272,12 @@ function Row(props) {
           {(userData.groups.includes("Accounts Executive") ||
             userData.groups.includes("Director") ||
             userData.groups.includes("Accounts")) && (
-            <Button onClick={() => handlePurchaseInvoice(row)}>
+            <Button
+              onClick={() => handlePurchaseInvoice(row)}
+              disabled={userData.groups.includes(
+                "Operations & Supply Chain Manager"
+              )}
+            >
               Create PI
             </Button>
           )}
