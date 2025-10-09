@@ -172,6 +172,7 @@ export const PurchaseInvoiceView = () => {
               <TableHead>
                 <StyledTableRow>
                   <StyledTableCell align="center"></StyledTableCell>
+                  <StyledTableCell align="center">Seller Unit</StyledTableCell>
                   <StyledTableCell align="center">GRN NO</StyledTableCell>
                   <StyledTableCell align="center">GRN Date</StyledTableCell>
                   <StyledTableCell align="center">
@@ -244,6 +245,7 @@ function Row(props) {
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </StyledTableCell>
+        <StyledTableCell align="center">{row.seller_unit}</StyledTableCell>
         <StyledTableCell align="center">{row.grn}</StyledTableCell>
         <StyledTableCell align="center">{row.grn_date}</StyledTableCell>
         <StyledTableCell align="center">{row.po_no}</StyledTableCell>
