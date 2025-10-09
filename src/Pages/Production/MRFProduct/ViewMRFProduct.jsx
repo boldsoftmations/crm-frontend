@@ -21,6 +21,7 @@ import { MessageAlert } from "../../../Components/MessageAlert";
 import { Popup } from "../../../Components/Popup";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import CustomDate from "../../../Components/CustomDate";
+import SearchComponent from "../../../Components/SearchComponent ";
 
 export const ViewMRFProduct = () => {
   const [open, setOpen] = useState(false);
@@ -35,6 +36,8 @@ export const ViewMRFProduct = () => {
   const csvLinkRef = useRef(null);
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
+
+  const [searchValue, setSearchValue] = useState("");
 
   const handleDownload = async () => {
     try {
@@ -67,7 +70,8 @@ export const ViewMRFProduct = () => {
       const response = await InventoryServices.getAllMrfProducts(
         filterByDays ? filterByDays : "today",
         StartDate,
-        EndDate
+        EndDate,
+        searchValue
       );
 
       const data = response.data.map((row) => {
@@ -90,6 +94,16 @@ export const ViewMRFProduct = () => {
     }
   };
 
+  const handleSearch = (query) => {
+    setSearchValue(query);
+    // Reset to first page with new search
+  };
+
+  const handleReset = () => {
+    setSearchValue("");
+    // Reset to first page with no search query
+  };
+
   const getAllMrfProducts = useCallback(async () => {
     try {
       setOpen(true);
@@ -98,7 +112,8 @@ export const ViewMRFProduct = () => {
       const response = await InventoryServices.getAllMrfProducts(
         filterByDays ? filterByDays : "today",
         StartDate,
-        EndDate
+        EndDate,
+        searchValue
       );
 
       setMRFData(response.data);
@@ -107,11 +122,11 @@ export const ViewMRFProduct = () => {
     } finally {
       setOpen(false);
     }
-  }, [filterByDays, startDate, endDate]);
+  }, [filterByDays, startDate, endDate, searchValue]);
 
   useEffect(() => {
     getAllMrfProducts();
-  }, [filterByDays, startDate, endDate]);
+  }, [filterByDays, startDate, endDate, searchValue]);
 
   const handleChange = (value) => {
     if (value === "custom_date") {
@@ -159,7 +174,22 @@ export const ViewMRFProduct = () => {
               justifyContent="space-between"
             >
               {/* Left Section: Filter and Search */}
-              <Grid item xs={12} sm={4} display="flex" alignItems="center">
+              <Grid
+                item
+                xs={12}
+                sm={5}
+                display="flex"
+                sx={{ gap: 1 }}
+                // spacing={2}
+                alignItems="center"
+              >
+                <SearchComponent
+                  placeholder="Search By Product"
+                  searchValue={searchValue}
+                  setSearchValue={setSearchValue}
+                  onSearch={handleSearch}
+                  handleReset={handleReset}
+                />
                 <CustomAutocomplete
                   size="small"
                   fullWidth
@@ -174,7 +204,11 @@ export const ViewMRFProduct = () => {
                   label="Filter By Date"
                 />
               </Grid>
-              <Grid item xs={12} sm={4} display="flex" justifyContent="center">
+
+              {/* <Grid item xs={12} sm={2} display="flex" alignItems="center">
+             
+              </Grid> */}
+              <Grid item xs={12} sm={2} display="flex" justifyContent="center">
                 <h3
                   style={{
                     fontSize: "24px",

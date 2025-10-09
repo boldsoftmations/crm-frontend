@@ -450,7 +450,7 @@ const getAllMaterialTransferNoteData = (
   );
 };
 
-const getAllMrfProducts = (date, start_date, end_date) => {
+const getAllMrfProducts = (date, start_date, end_date,product) => {
   const params = new URLSearchParams();
   if (date) {
     params.append("date", date);
@@ -460,6 +460,9 @@ const getAllMrfProducts = (date, start_date, end_date) => {
   }
   if (end_date) {
     params.append("end_date", end_date);
+  }
+  if(product){
+    params.append("product",product)
   }
   return CustomAxios.get(`api/inventory/mrf-product/?${params.toString()}`);
 };
