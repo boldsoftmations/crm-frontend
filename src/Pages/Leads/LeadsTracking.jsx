@@ -150,6 +150,7 @@ export const LeadsTracking = () => {
     { label: "Assigned To", key: "assigned_to" },
     { label: "Name", key: "name" },
     { label: "Stage", key: "stage" },
+    { label: "City", key: "city" },
     { label: "Source", key: "source" },
     { label: "Updation Date", key: "updation_date" },
   ];
@@ -265,6 +266,7 @@ export const LeadsTracking = () => {
                     Contact Person
                   </StyledTableCell>
                   <StyledTableCell align="center">Stage</StyledTableCell>
+                  <StyledTableCell align="center">City</StyledTableCell>
                   <StyledTableCell align="center">Source</StyledTableCell>
                   <StyledTableCell align="center">Updated Date</StyledTableCell>
                 </TableRow>
@@ -291,6 +293,7 @@ export const LeadsTracking = () => {
                     <StyledTableCell align="center">
                       {row.stage}
                     </StyledTableCell>
+                    <StyledTableCell align="center">{row.city}</StyledTableCell>
                     <StyledTableCell align="center">
                       {row.source}
                     </StyledTableCell>
