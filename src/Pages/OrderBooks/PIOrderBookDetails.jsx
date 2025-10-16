@@ -92,7 +92,7 @@ export const PIOrderBookDetails = () => {
 
             requested_date: item.requested_date,
             special_instructions: item.special_instructions,
-            remarks: item.remark,
+            remark: item.remark,
           };
         } else {
           return {
@@ -543,22 +543,10 @@ const headers = [
   { label: "Shipping City", key: "shipping_city" },
   { label: "Shipping Pincode", key: "shipping_pincode" },
   { label: "Billing Pincode", key: "billing_pincode" },
-  {
-    label: "Product",
-    key: "product",
-  },
-  {
-    label: "Quantity",
-    key: "quantity",
-  },
-  {
-    label: "Amount",
-    key: "amount",
-  },
-  {
-    label: "Pending Amount",
-    key: "pending_amount",
-  },
+  { label: "Product", key: "product" },
+  { label: "Quantity", key: "quantity" },
+  { label: "Amount", key: "amount" },
+  { label: "Pending Amount", key: "pending_amount" },
   {
     label: "Pending Quantity",
     key: "pending_quantity",
