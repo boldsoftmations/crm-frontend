@@ -184,8 +184,8 @@ const getOrderBookData = (
     params.append("search", searchValue);
   }
 
-    params.append("is_ready", isReady);
-  params.append("is_estimated",is_estimated)
+  params.append("is_ready", isReady);
+  params.append("is_estimated", is_estimated);
 
   // Sending a GET request with query parameters
   return CustomAxios.get(`api/invoice/list-order-book/?${params.toString()}`);
@@ -299,7 +299,8 @@ const getAllSaleRegisterData = (
   endDate,
   page,
   searchValue,
-  filterByperson
+  filterByperson,
+  lr_status
 ) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
@@ -325,7 +326,9 @@ const getAllSaleRegisterData = (
       filterByperson
     );
   }
-
+  if (lr_status) {
+    params.append("lr_status", lr_status);
+  }
   // Sending a GET request with query parameters
   return CustomAxios.get(
     `api/invoice/list-sales-register/?${params.toString()}`

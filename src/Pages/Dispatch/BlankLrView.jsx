@@ -146,6 +146,7 @@ export const BlankLrView = () => {
                   options={["blank"]}
                   getOptionLabel={(option) => option}
                   label="Filter LR Copy"
+                  disabled={true}
                 />
               </Grid>
               <Grid
