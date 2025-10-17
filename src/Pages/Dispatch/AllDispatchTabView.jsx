@@ -5,6 +5,7 @@ import { ViewDispatch } from "./ViewDispatch";
 import { Dispatched } from "./Dispatched";
 import { SalesRegisterView } from "./SalesRegisterView";
 import { ExportView } from "./ExportView";
+import BlankLrView from "./BlankLrView";
 
 export const AllDispatchTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
@@ -61,6 +62,11 @@ export const AllDispatchTabView = () => {
       visible: allTabs || customerServiceTab || salesRegisterTab,
       index: 3,
     },
+    {
+      label: "Pending LR Copy",
+      visible: "admin" || "operations & supply chain manager",
+      index: 4,
+    },
   ];
 
   const visibleTabs = tabs.filter((tab) => tab.visible);
@@ -71,6 +77,7 @@ export const AllDispatchTabView = () => {
     1: <Dispatched />,
     2: <ExportView />,
     3: <SalesRegisterView />,
+    4: <BlankLrView />,
   };
 
   return (
