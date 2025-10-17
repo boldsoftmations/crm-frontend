@@ -27,14 +27,12 @@ import { CSVLink } from "react-csv";
 import CustomTextField from "../../Components/CustomTextField";
 import { MessageAlert } from "../../Components/MessageAlert";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
-import CustomAutocomplete from "../../Components/CustomAutocomplete";
 
 export const BlankLrView = () => {
   const [open, setOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [salesRegisterData, setsalesRegisterData] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
-  const [unitFilter, setUnitFilter] = useState("");
   const [endDate, setEndDate] = useState(new Date()); // set endDate as one week ahead of startDate
   const [startDate, setStartDate] = useState(
     new Date(endDate.getTime() - 30 * 24 * 60 * 60 * 1000)
@@ -63,7 +61,7 @@ export const BlankLrView = () => {
         EndDate,
         "all",
 
-        unitFilter
+        ""
       );
       const data = response.data.map((item) => {
         return {
@@ -94,8 +92,9 @@ export const BlankLrView = () => {
         StartDate,
         EndDate,
         currentPage,
+        "",
         email,
-        unitFilter
+        "blank"
       );
       setsalesRegisterData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -104,11 +103,11 @@ export const BlankLrView = () => {
     } finally {
       setOpen(false);
     }
-  }, [startDate, currentPage, unitFilter]); // Ensure dependencies are correctly listed
+  }, [startDate, currentPage]); // Ensure dependencies are correctly listed
 
   useEffect(() => {
     getSalesRegisterData();
-  }, [startDate, currentPage, unitFilter]);
+  }, [startDate, currentPage]);
 
   const handlePageChange = (event, value) => setCurrentPage(value);
 
@@ -138,14 +137,13 @@ export const BlankLrView = () => {
           <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={3}>
-                <CustomAutocomplete
-                  sx={{ flexGrow: 1, mr: 1, width: "300px" }}
+                <CustomTextField
+                  sx={{ width: "300px" }}
+                  label="Start Date"
+                  variant="outlined"
                   size="small"
-                  value={unitFilter}
-                  onChange={(event, newValue) => setUnitFilter(newValue)}
-                  options={["blank"]}
-                  getOptionLabel={(option) => option}
-                  label="Filter LR Copy"
+                  id="start-date"
+                  value={"Pending LR"}
                   disabled={true}
                 />
               </Grid>
@@ -270,7 +268,7 @@ export const BlankLrView = () => {
                   <StyledTableCell align="center"></StyledTableCell>
                   <StyledTableCell align="center">Date</StyledTableCell>
                   <StyledTableCell align="center">User</StyledTableCell>
-                  <StyledTableCell align="center">Unit</StyledTableCell>
+
                   <StyledTableCell align="center">PI No</StyledTableCell>
                   <StyledTableCell align="center">
                     Sales Invoice
