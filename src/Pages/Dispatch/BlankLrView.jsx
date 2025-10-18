@@ -27,6 +27,7 @@ import { CSVLink } from "react-csv";
 import CustomTextField from "../../Components/CustomTextField";
 import { MessageAlert } from "../../Components/MessageAlert";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
+import SearchComponent from "../../Components/SearchComponent ";
 
 export const BlankLrView = () => {
   const [open, setOpen] = useState(false);
@@ -50,6 +51,7 @@ export const BlankLrView = () => {
     setStartDate(date);
     setEndDate(new Date(date.getTime() + 30 * 24 * 60 * 60 * 1000));
   };
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleExport = async () => {
     try {
@@ -60,8 +62,9 @@ export const BlankLrView = () => {
         StartDate,
         EndDate,
         "all",
-
-        ""
+        searchQuery,
+        "",
+        "blank"
       );
       const data = response.data.map((item) => {
         return {
@@ -92,7 +95,7 @@ export const BlankLrView = () => {
         StartDate,
         EndDate,
         currentPage,
-        "",
+        searchQuery,
         email,
         "blank"
       );
@@ -103,11 +106,21 @@ export const BlankLrView = () => {
     } finally {
       setOpen(false);
     }
-  }, [startDate, currentPage]); // Ensure dependencies are correctly listed
+  }, [startDate, currentPage, searchQuery]); // Ensure dependencies are correctly listed
 
   useEffect(() => {
     getSalesRegisterData();
-  }, [startDate, currentPage]);
+  }, [startDate, currentPage, searchQuery]);
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    setCurrentPage(1); // Reset to first page with new search
+  };
+
+  const handleReset = () => {
+    setSearchQuery("");
+    setCurrentPage(1); // Reset to first page with no search query
+  };
 
   const handlePageChange = (event, value) => setCurrentPage(value);
 
@@ -198,12 +211,35 @@ export const BlankLrView = () => {
                 />
               </Grid>
 
+              <Grid item xs={12} sm={3}>
+                <SearchComponent
+                  onSearch={handleSearch}
+                  onReset={handleReset}
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}></Grid>
+
+              <Grid item xs={12} sm={4}>
+                <h3
+                  style={{
+                    textAlign: "center",
+                    alignItems: "center",
+                    marginBottom: "1em",
+                    fontSize: "24px",
+                    color: "rgb(34, 34, 34)",
+                    fontWeight: 800,
+                  }}
+                >
+                  LR Copy
+                </h3>
+              </Grid>
+
               <Grid
                 item
                 xs={12}
-                sm={3}
+                sm={4}
                 style={{
-                  textAlign: "center",
+                  textAlign: "right",
                 }}
               >
                 {exportData.length > 0 && (
@@ -211,7 +247,7 @@ export const BlankLrView = () => {
                     data={exportData}
                     headers={headers}
                     ref={csvLinkRef}
-                    filename="Sales_Register.csv"
+                    filename="Pending LR.csv"
                     target="_blank"
                     style={{
                       textDecoration: "none",
@@ -228,19 +264,6 @@ export const BlankLrView = () => {
                 >
                   Export to Excel
                 </Button>
-              </Grid>
-              <Grid item xs={12} sm={12}>
-                <h3
-                  style={{
-                    textAlign: "center",
-                    marginBottom: "1em",
-                    fontSize: "24px",
-                    color: "rgb(34, 34, 34)",
-                    fontWeight: 800,
-                  }}
-                >
-                  LR Copy
-                </h3>
               </Grid>
             </Grid>
           </Box>

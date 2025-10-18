@@ -36,6 +36,11 @@ export const AllDispatchTabView = () => {
   );
   const customerServiceTab = isInGroups("Customer Service");
   const salesRegisterTab = isInGroups("Accounts Billing Department");
+  const PendingLr = isInGroups(
+    "Director",
+    "Operations & Supply Chain Manager",
+    "Customer Service"
+  );
 
   const [activeTab, setActiveTab] = useState(allTabs ? 0 : 4);
 
@@ -64,7 +69,7 @@ export const AllDispatchTabView = () => {
     },
     {
       label: "Pending LR Copy",
-      visible: "admin" || "operations & supply chain manager",
+      visible: PendingLr,
       index: 4,
     },
   ];
