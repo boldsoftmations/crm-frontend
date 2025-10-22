@@ -72,6 +72,7 @@ export const SalesRegisterView = () => {
           date: moment(item.date).format("DD-MM-YYYY"),
           sales_invoice: item.sales_invoice,
           customer: item.customer,
+          transporter: item.transporter,
           dispatch_location: item.dispatch_location,
           lr_copy: item.lr_copy,
           pod_copy: item.pod_copy,
@@ -291,6 +292,10 @@ export const SalesRegisterView = () => {
                   <StyledTableCell align="center">User</StyledTableCell>
                   <StyledTableCell align="center">PI No</StyledTableCell>
                   <StyledTableCell align="center">
+                    transport Name
+                  </StyledTableCell>
+
+                  <StyledTableCell align="center">
                     Sales Invoice
                   </StyledTableCell>
                   <StyledTableCell align="center">Customer</StyledTableCell>
@@ -365,6 +370,7 @@ function Row(props) {
             ? row.pi_list.join(", ")
             : "NA"}
         </TableCell>
+        <TableCell align="center">{row.transporter}</TableCell>
         <TableCell align="center">{row.sales_invoice}</TableCell>
         <TableCell align="center">{row.customer}</TableCell>
 
@@ -463,6 +469,7 @@ const headers = [
   },
   { label: "Sales Invoice", key: "sales_invoice" },
   { label: "Customer", key: "customer" },
+  { label: "Transporter Name", key: "transporter" },
   { label: "Dispatch Location", key: "dispatch_location" },
   { label: "LR Copy", key: "lr_copy" },
   { label: "POD Copy", key: "pod_copy" },
