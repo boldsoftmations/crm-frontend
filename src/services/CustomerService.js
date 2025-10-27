@@ -1,7 +1,13 @@
 import CustomAxios from "./api";
 
 // Generic function to get order book data
-const getAllCustomerData = (statusValue, page, assignToFilter, searchValue) => {
+const getAllCustomerData = (
+  statusValue,
+  page,
+  assignToFilter,
+  searchValue,
+  type_of_customer
+) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
 
@@ -11,6 +17,9 @@ const getAllCustomerData = (statusValue, page, assignToFilter, searchValue) => {
 
   if (page) {
     params.append("page", page);
+  }
+  if (type_of_customer) {
+    params.append("type_of_customer", type_of_customer);
   }
 
   if (assignToFilter) {
@@ -32,9 +41,7 @@ const getAllCustomerMasterList = (pincode) => {
   if (pincode) {
     params.append("pincode", pincode);
   }
-  return CustomAxios.get(
-    `/api/customer/active-customer/?${params.toString()}`
-  );
+  return CustomAxios.get(`/api/customer/active-customer/?${params.toString()}`);
 };
 
 const getLeadsMasterListByPincode = (pincode) => {
@@ -43,28 +50,27 @@ const getLeadsMasterListByPincode = (pincode) => {
   if (pincode) {
     params.append("pincode", pincode);
   }
-  return CustomAxios.get(
-    `/api/lead/active-lead/?${params.toString()}`
-  );
+  return CustomAxios.get(`/api/lead/active-lead/?${params.toString()}`);
 };
-
 
 const createCustomerBeatPlan = (data) => {
   return CustomAxios.post("/api/customer/customer-beat/", data);
 };
 
-const addLeadsintoBeatName = (data)=>{
-  return CustomAxios.post("/api/lead/lead-beat/",data)
-}
+const addLeadsintoBeatName = (data) => {
+  return CustomAxios.post("/api/lead/lead-beat/", data);
+};
 
+const updateCustomerBeatPlan = (id, data) => {
+  return CustomAxios.post(
+    `/api/customer/customer-beat/${id}/add_customer/`,
+    data
+  );
+};
 
-const updateCustomerBeatPlan = (id,data) => {
-  return CustomAxios.post(`/api/customer/customer-beat/${id}/add_customer/`, data);
-}
-
-const updateLeadsBeatPlan = (id,data)=>{
-  return CustomAxios.post(`/api/lead/lead-beat/${id}/add_lead/`,data)
-}
+const updateLeadsBeatPlan = (id, data) => {
+  return CustomAxios.post(`/api/lead/lead-beat/${id}/add_lead/`, data);
+};
 const AssignBeatToSalesPerson = (data) => {
   return CustomAxios.post("/api/field-sales/visit-plan/", data);
 };
@@ -463,15 +469,17 @@ const getAllCCFData = (page, searchValue) => {
   );
 };
 
-const getAllClosedCCF = (page,search) => {
+const getAllClosedCCF = (page, search) => {
   const params = new URLSearchParams();
-  if(page){
-    params.append("page",page);
+  if (page) {
+    params.append("page", page);
   }
-  if(search){
-    params.append("search",search);
+  if (search) {
+    params.append("search", search);
   }
-  return CustomAxios.get(`/api/customer/ccf/?is_closed=true${params.toString()}`);
+  return CustomAxios.get(
+    `/api/customer/ccf/?is_closed=true${params.toString()}`
+  );
 };
 const getAllComplaintsList = (page, department) => {
   const params = new URLSearchParams();
@@ -523,7 +531,7 @@ const CreateCapa = (data) => {
   return CustomAxios.post("/api/customer/cpa/", data);
 };
 
-const UpdateCapa = (id,data) => {
+const UpdateCapa = (id, data) => {
   return CustomAxios.patch(`/api/customer/cpa/${id}/`, data);
 };
 
@@ -556,9 +564,7 @@ const getProductLastPi = (company, unit, product) => {
   if (product) {
     params.append("product", product);
   }
-  return CustomAxios.get(
-    `/api/invoice/pi-products/?${params.toString()}`
-  );
+  return CustomAxios.get(`/api/invoice/pi-products/?${params.toString()}`);
 };
 
 const getAllStatesList = () => {
@@ -588,21 +594,34 @@ const getCustomerStatus = () => {
 
 //Api for fields sales person and customer
 
-const getFieldsSalesPersonVisitPlan = (page, search,visited_by__name,is_completed=true) => {
+const getFieldsSalesPersonVisitPlan = (
+  page,
+  search,
+  visited_by__name,
+  is_completed = true
+) => {
   const params = new URLSearchParams();
-  if(page) params.append("page", page);
-  if (search)  params.append("search", search);
-    if(visited_by__name) params.append("visited_by__name",visited_by__name)
-  return CustomAxios.get(`/api/field-sales/visit-plan/?is_completed=${is_completed}&${params.toString()}`);
+  if (page) params.append("page", page);
+  if (search) params.append("search", search);
+  if (visited_by__name) params.append("visited_by__name", visited_by__name);
+  return CustomAxios.get(
+    `/api/field-sales/visit-plan/?is_completed=${is_completed}&${params.toString()}`
+  );
 };
 
-
-const getFieldsSalesPersonLeadVisitPlan = (page, search,visited_by__name,is_completed=true) => {
+const getFieldsSalesPersonLeadVisitPlan = (
+  page,
+  search,
+  visited_by__name,
+  is_completed = true
+) => {
   const params = new URLSearchParams();
-  if(page) params.append("page", page);
-  if (search)  params.append("search", search);
-  if(visited_by__name) params.append("visited_by__name",visited_by__name)
-  return CustomAxios.get(`/api/field-sales/lead-visit-plan/?is_completed=${is_completed}&${params.toString()}`);
+  if (page) params.append("page", page);
+  if (search) params.append("search", search);
+  if (visited_by__name) params.append("visited_by__name", visited_by__name);
+  return CustomAxios.get(
+    `/api/field-sales/lead-visit-plan/?is_completed=${is_completed}&${params.toString()}`
+  );
 };
 
 const getCustomerVisitDataById = (id) => {
@@ -613,23 +632,24 @@ const getLeadVisitDataById = (id) => {
   return CustomAxios.get(`/api/field-sales/lead-visit-logs/${id}/`);
 };
 
-
 const createCustomerSRF = (data) => {
   return CustomAxios.post("/api/srf/srf/", data);
 };
 
-const getCustomerAddressType=(customer_name)=>{
-  return CustomAxios.get(`/api/srf/customer-address/?customer=${customer_name}`)
-}
+const getCustomerAddressType = (customer_name) => {
+  return CustomAxios.get(
+    `/api/srf/customer-address/?customer=${customer_name}`
+  );
+};
 
-const updateCustomerSRfStatus = (id,data)=>{
-  return CustomAxios.patch(`/api/srf/srf/${id}/`,data)
-}
+const updateCustomerSRfStatus = (id, data) => {
+  return CustomAxios.patch(`/api/srf/srf/${id}/`, data);
+};
 
-const updateSRFProduct=(id,data)=>{
-  return CustomAxios.patch(`/api/srf/product/${id}/`,data)
-}
-const getCustomerSRF = (page,search,status,start_date,end_date) => {
+const updateSRFProduct = (id, data) => {
+  return CustomAxios.patch(`/api/srf/product/${id}/`, data);
+};
+const getCustomerSRF = (page, search, status, start_date, end_date) => {
   const params = new URLSearchParams();
   if (page) {
     params.append("page", page);
@@ -642,23 +662,33 @@ const getCustomerSRF = (page,search,status,start_date,end_date) => {
   if (status) {
     params.append("status", status);
   }
-  if(start_date){
-    params.append("start_date",start_date)
+  if (start_date) {
+    params.append("start_date", start_date);
   }
-  if(end_date){
-    params.append("end_date",end_date)
+  if (end_date) {
+    params.append("end_date", end_date);
   }
   return CustomAxios.get(`/api/srf/srf/?${params.toString()}`);
 };
 
-const getNewCustomers =   (page, filterPerson,custom_date,start_date,end_date) => {
+const getNewCustomers = (
+  page,
+  filterPerson,
+  custom_date,
+  start_date,
+  end_date
+) => {
   const params = new URLSearchParams();
-  if (page)  params.append("page", page);
-  if (filterPerson)  params.append("order_book__proforma_invoice__lead__assigned_to__name", filterPerson);
-  if(custom_date) params.append("custom_date",custom_date)
-  if(start_date)params.append("start_date",start_date)
-  if(end_date) params.append("end_date",end_date)
-  
+  if (page) params.append("page", page);
+  if (filterPerson)
+    params.append(
+      "order_book__proforma_invoice__lead__assigned_to__name",
+      filterPerson
+    );
+  if (custom_date) params.append("custom_date", custom_date);
+  if (start_date) params.append("start_date", start_date);
+  if (end_date) params.append("end_date", end_date);
+
   return CustomAxios.get(`/api/customer/new-customer/?${params.toString()}`);
 };
 
@@ -756,7 +786,7 @@ const CustomerServices = {
   getCustomerSRF,
   getNewCustomers,
   getLeadsMasterListByPincode,
-  getCustomerAddressType
+  getCustomerAddressType,
 };
 
 export default CustomerServices;

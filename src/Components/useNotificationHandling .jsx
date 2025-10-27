@@ -26,21 +26,29 @@ export const useNotificationHandling = (initialErrorMessages = []) => {
 
   const handleError = useCallback(
     (error) => {
-      let errorData = error.response && error.response.data;
       let extractedErrors = [];
 
-      if (errorData && errorData.detail) {
-        extractedErrors = [errorData.detail];
-      } else if (errorData && errorData.errors) {
-        extractedErrors = Object.entries(errorData.errors).flatMap(
-          ([key, value]) =>
-            Array.isArray(value)
-              ? value.map((msg) => `${key}: ${msg}`)
-              : `${key}: ${value}`
-        );
+      // ✅ If it's a plain string (custom validation)
+      if (typeof error === "string") {
+        extractedErrors = [error];
       }
+      // ✅ If it's a standard Error object with response (like Axios)
+      else if (error.response && error.response.data) {
+        const errorData = error.response.data;
 
-      if (extractedErrors.length === 0) {
+        if (errorData.detail) {
+          extractedErrors = [errorData.detail];
+        } else if (errorData.errors) {
+          extractedErrors = Object.entries(errorData.errors).flatMap(
+            ([key, value]) =>
+              Array.isArray(value)
+                ? value.map((msg) => `${key}: ${msg}`)
+                : `${key}: ${value}`
+          );
+        }
+      }
+      // ✅ Fallback (unknown case)
+      else {
         extractedErrors = ["An unexpected error occurred"];
       }
 

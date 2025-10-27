@@ -56,6 +56,7 @@ export const CompanyDetails = () => {
   const assigned = userData.active_sales_user || [];
   const [isPrinting, setIsPrinting] = useState(false);
   const [statusFilter, setStatusFilter] = useState("Active");
+  const [fillertedData, setFillertedData] = useState("");
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
@@ -122,7 +123,8 @@ export const CompanyDetails = () => {
         statusFilter,
         "all",
         filterSelectedQuery,
-        searchQuery
+        searchQuery,
+        fillertedData
       );
       const data = response.data.map((row) => {
         return {
@@ -154,6 +156,15 @@ export const CompanyDetails = () => {
     }
   };
 
+  const handlFilterCustomer = (data) => {
+    if (data && data.value) {
+      setFillertedData(data.value);
+      setCurrentPage(1); // Reset to first page with new filter
+    } else {
+      setFillertedData("");
+    }
+  };
+
   const openInPopupOfUpdateCustomer = (item) => {
     setRecordForEdit(item.id);
     setSelectedCustomers(item);
@@ -177,7 +188,8 @@ export const CompanyDetails = () => {
         statusFilter,
         currentPage,
         filterSelectedQuery,
-        searchQuery
+        searchQuery,
+        fillertedData
       );
       setCompanyData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -188,7 +200,13 @@ export const CompanyDetails = () => {
     } finally {
       setOpen(false);
     }
-  }, [statusFilter, currentPage, filterSelectedQuery, searchQuery]);
+  }, [
+    statusFilter,
+    currentPage,
+    filterSelectedQuery,
+    searchQuery,
+    fillertedData,
+  ]);
 
   useEffect(() => {
     getAllCompanyDetails();
@@ -217,6 +235,7 @@ export const CompanyDetails = () => {
   const Tableheaders = [
     "NAME",
     "Assigned To",
+    "Customer Type",
     "PAN NO.",
     "GST NO.",
     "CITY",
@@ -292,25 +311,26 @@ export const CompanyDetails = () => {
                   />
                 </Grid>
               )}
-              <Grid item xs={12} sm={4}>
+
+              <Grid item xs={12} sm={3}>
+                <CustomAutocomplete
+                  size="small"
+                  sx={{ minWidth: 200 }}
+                  onChange={(event, newValue) => {
+                    setFillertedData(newValue && newValue.value);
+                  }}
+                  options={TypeCustomer}
+                  getOptionLabel={(option) => option.label}
+                  label="Filter By Customer Type" // Passed directly to CustomAutocomplete
+                />
+              </Grid>
+              <Grid item xs={12} sm={3}>
                 <SearchComponent
                   onSearch={handleSearch}
                   onReset={handleReset}
                 />
               </Grid>
-
               {/* Add Button */}
-              {(userData.groups.includes("Accounts") ||
-                userData.groups.includes("Director")) && (
-                <Grid item xs={12} sm={1}>
-                  <Button
-                    variant="contained"
-                    onClick={() => setOpenPopupOfCreateCustomer(true)}
-                  >
-                    Add
-                  </Button>
-                </Grid>
-              )}
             </Grid>
           </Box>
           <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
@@ -340,12 +360,26 @@ export const CompanyDetails = () => {
                   Company
                 </h3>
               </Grid>
-              <Grid item xs={12} sm={3}>
+              <Grid
+                item
+                xs={12}
+                sm={3}
+                sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}
+              >
                 {/* Download CSV Button */}
                 <Button variant="contained" onClick={handleDownload}>
                   Download CSV
                 </Button>
 
+                {(userData.groups.includes("Accounts") ||
+                  userData.groups.includes("Director")) && (
+                  <Button
+                    variant="contained"
+                    onClick={() => setOpenPopupOfCreateCustomer(true)}
+                  >
+                    Add
+                  </Button>
+                )}
                 {/* Hidden CSVLink for downloading the CSV */}
                 {exportData.length > 0 && (
                   <CSVLink
@@ -450,6 +484,9 @@ export const CompanyDetails = () => {
                           {assignee}
                         </div>
                       ))}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.type_of_customer}
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.pan_number}
@@ -615,3 +652,17 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     border: 0,
   },
 }));
+const TypeCustomer = [
+  {
+    value: "industrial_customer",
+    label: "Industrial Customer",
+  },
+  {
+    value: "distribution_customer",
+    label: "Distribution Customer",
+  },
+  {
+    value: "Exclusive Distribution Customer",
+    label: "Exclusive Distribution Customer",
+  },
+];

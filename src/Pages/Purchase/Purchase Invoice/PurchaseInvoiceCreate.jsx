@@ -20,10 +20,10 @@ export const PurchaseInvoiceCreate = memo(
     const [open, setOpen] = useState(false);
     const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
       useNotificationHandling();
+
     const [products, setProducts] = useState(
       recordForEdit.products.map((product) => {
         // Log the rate of each product
-        console.log("rate", product.rate);
 
         // Return the new product object
         return {
@@ -51,27 +51,77 @@ export const PurchaseInvoiceCreate = memo(
 
       setProducts(list);
     };
+    console.log("recordForEdit", recordForEdit);
+    let lastPurchase =
+      (recordForEdit &&
+        recordForEdit.products.map((pro) =>
+          parseFloat(pro.last_purchase_rate)
+        )) ||
+      [];
+
+    let minRate =
+      (recordForEdit &&
+        recordForEdit.products.map((pro) =>
+          parseFloat(pro.min_validation_rate)
+        )) ||
+      [];
+
+    let maxRate =
+      (recordForEdit &&
+        recordForEdit.products.map((pro) =>
+          parseFloat(pro.max_validation_rate)
+        )) ||
+      [];
 
     const createPackingListDetails = async (e) => {
       try {
         e.preventDefault();
+
+        // Validate all products before proceeding
+        for (let i = 0; i < products.length; i++) {
+          const product = products[i];
+          const productRate = parseFloat(product.rate);
+          const productName = product.product || `Product ${i + 1}`;
+
+          const min = minRate[i];
+          const max = maxRate[i];
+          const price = lastPurchase[i];
+
+          // --- Defensive checks ---
+          if ([price, min, max].find((v) => v != null)) {
+            if ([productRate, min, max].some((v) => isNaN(v))) {
+              handleError(`Invalid rate value for ${productName}`);
+              return;
+            }
+
+            // --- Validation check ---
+            if (productRate < min || productRate > max) {
+              handleError(
+                `${productName} rate should be between ${min} and ${max}`
+              );
+              return;
+            }
+          }
+        }
+
         setOpen(true);
+
         const req = {
           grn: recordForEdit.grn_no,
           products_data: products,
           invoice_type: "Purchase",
         };
+
         await InventoryServices.createPurchaseInvoiceData(req);
-        console.log("createing Packing list");
+
         getAllGRNDetails();
         handleSuccess("Purchase Invoice created successfully");
-        setTimeout(() => {
-          setOpenPopup(false);
-        }, 300);
+
+        setTimeout(() => setOpenPopup(false), 300);
         setOpen(false);
       } catch (error) {
         handleError(error);
-        console.log("createing Packing list error", error);
+        console.log("Creating Packing list error", error);
         setOpen(false);
       }
     };
@@ -84,6 +134,7 @@ export const PurchaseInvoiceCreate = memo(
           severity={alertInfo.severity}
           message={alertInfo.message}
         />
+
         <CustomLoader open={open} />
         <Box
           component="form"
@@ -148,6 +199,7 @@ export const PurchaseInvoiceCreate = memo(
                 </Divider>
               </Root>
             </Grid>
+
             {products.map((input, index) => {
               return (
                 <>

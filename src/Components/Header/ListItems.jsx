@@ -367,10 +367,24 @@ export const ListItems = ({ setOpen }) => {
           { to: "/user/profile-tab", text: "Employees Master" },
         ]),
         renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
+        renderSubmenu("sales", <TrendingUpIcon />, "Sales", [
+          { to: "/customers/all-customer", text: "Customer" },
+        ]),
         renderListItem("/user/analytics", <DashboardIcon />, "Analytics"),
         renderSubmenu("purchase", <PurchaseIcon />, "Purchase", [
           { to: "/inventory/view-purchase", text: "Purchase" },
         ]),
+        renderSubmenu(
+          "customer_complaint",
+          <ComplaintIcon />,
+          "Customer Complaint",
+          [{ to: "/customer/complaints/ccp-capa", text: "CCF-CAPA" }]
+        ),
+        renderListItem(
+          "/customers/whatsapp-tabs",
+          <WhatsAppIcon />,
+          "Whatsapp"
+        ),
       ],
     },
 

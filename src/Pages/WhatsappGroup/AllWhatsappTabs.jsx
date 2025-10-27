@@ -16,23 +16,25 @@ export const AllWhatsappTabs = () => {
 
   const allTabs = isInGroups("Director");
   const fourTabs = isInGroups("Customer Service");
+
   const digilMarketing = isInGroups("Digital Marketing");
+  const oprationsManager = isInGroups("Operations & Supply Chain Manager");
   const [activeTab, setActiveTab] = useState(allTabs ? 0 : 4);
 
   const tabs = [
     {
       label: "Customer Not In Group",
-      visible: allTabs || fourTabs,
+      visible: allTabs || fourTabs || oprationsManager,
       index: 0,
     },
     {
       label: "Sales Person Not In Group",
-      visible: allTabs || fourTabs,
+      visible: allTabs || fourTabs || oprationsManager,
       index: 1,
     },
     {
       label: "Customer Not Having Group",
-      visible: allTabs || fourTabs,
+      visible: allTabs || fourTabs || oprationsManager,
       index: 2,
     },
     {
@@ -42,7 +44,7 @@ export const AllWhatsappTabs = () => {
     },
     {
       label: "Group Info",
-      visible: allTabs || fourTabs,
+      visible: allTabs || fourTabs || oprationsManager,
       index: 4,
     },
     {
