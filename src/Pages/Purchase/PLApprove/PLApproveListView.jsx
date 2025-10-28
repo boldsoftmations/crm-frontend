@@ -322,6 +322,7 @@ function Row({ row, handleCreateGrn, userData }) {
             (userData.groups.includes("Stores Delhi") ||
               userData.groups.includes("Accounts") ||
               userData.groups.includes("Production Delhi") ||
+              userData.groups.includes("Purchase") ||
               userData.groups.includes("Stores") ||
               userData.groups.includes("Operations & Supply Chain Manager") ||
               userData.groups.includes("Director")) && (
