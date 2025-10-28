@@ -30,6 +30,7 @@ import { MessageAlert } from "../../Components/MessageAlert";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import UserProfileService from "../../services/UserProfileService";
+import { useSelector } from "react-redux";
 
 export const SalesRegisterView = () => {
   const [open, setOpen] = useState(false);
@@ -54,6 +55,10 @@ export const SalesRegisterView = () => {
     setStartDate(date);
     setEndDate(new Date(date.getTime() + 7 * 24 * 60 * 60 * 1000));
   };
+  const userData = useSelector((state) => state.auth.profile);
+
+  const isInGroups = (...groups) =>
+    groups.some((group) => userData.groups.includes(group));
 
   const handleExport = async () => {
     try {
@@ -299,6 +304,14 @@ export const SalesRegisterView = () => {
                     Sales Invoice
                   </StyledTableCell>
                   <StyledTableCell align="center">Customer</StyledTableCell>
+                  {isInGroups(
+                    "Operations & Supply Chain Manager",
+                    "Director"
+                  ) && (
+                    <StyledTableCell align="center">
+                      Type Of Customer
+                    </StyledTableCell>
+                  )}
 
                   <StyledTableCell align="center">
                     Dispatch Location
@@ -336,7 +349,10 @@ function Row(props) {
   const [open, setOpen] = useState(false);
   // const [checked, setChecked] = useState(row.dispatched);
   // const [openModal, setOpenModal] = useState(false);
+  const userData = useSelector((state) => state.auth.profile);
 
+  const isInGroups = (...groups) =>
+    groups.some((group) => userData.groups.includes(group));
   const handleClickLRCOPY = async (data) => {
     let url = data.lr_copy ? data.lr_copy : "";
     FileSaver.saveAs(url, "image");
@@ -373,7 +389,9 @@ function Row(props) {
         <TableCell align="center">{row.transporter}</TableCell>
         <TableCell align="center">{row.sales_invoice}</TableCell>
         <TableCell align="center">{row.customer}</TableCell>
-
+        {isInGroups("Operations & Supply Chain Manager", "Director") && (
+          <TableCell align="center">{row.type_of_customer}</TableCell>
+        )}
         <TableCell align="center">{row.dispatch_location}</TableCell>
         <TableCell align="center">
           {row.lr_copy !== null && (
