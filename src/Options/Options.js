@@ -418,6 +418,9 @@ const ALLOWED_ROLES = [
 
 const Marital_Status_Options = ["Married", "UnMarried"];
 
+const Marridal_Status = ["Mr.", "Mrs."];
+const UnMarried_Status = ["Mr.", "Ms."];
+
 const religionsInIndia = [
   "Hinduism",
   "Islam",
@@ -459,5 +462,7 @@ const Option = {
   Marital_Status_Options,
   religionsInIndia,
   CustomerStatusData,
+  Marridal_Status,
+  UnMarried_Status,
 };
 export default Option;

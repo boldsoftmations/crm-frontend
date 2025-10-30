@@ -155,9 +155,19 @@ const KycUpdate = ({ recordForEdit, setOpenPopup, onDataUpdated }) => {
   };
 
   // Handle Contacts changes
-  const handleContactsInputChange = (event) => {
-    const { name, value } = event.target;
-    setContactValue((prevState) => ({ ...prevState, [name]: value }));
+  const handleContactsInputChange = (e) => {
+    const { name, value } = e.target; // value like "2000-10-29"
+
+    // Extract month and day
+    const monthDay = value.slice(5); // "10-29"
+
+    // Force current year for consistency
+    const fixedYearValue = `${new Date().getFullYear()}-${monthDay}`;
+
+    setContactValue((prev) => ({
+      ...prev,
+      [name]: fixedYearValue, // keep current year fixed
+    }));
   };
 
   // Handle select changes
@@ -242,6 +252,7 @@ const KycUpdate = ({ recordForEdit, setOpenPopup, onDataUpdated }) => {
       setOpen(true);
       const req = {
         name: contactValue.name || null,
+        id: contactValue.id,
         company: contactValue.company || null,
         contact: contactValue.contact || null,
         alternate_contact: contactValue.alternate_contact || null,
@@ -249,7 +260,8 @@ const KycUpdate = ({ recordForEdit, setOpenPopup, onDataUpdated }) => {
         birth_date: contactValue.birth_date || null,
         marital_status: contactValue.marital_status || null,
         anniversary_date: contactValue.anniversary_date || null,
-        religion: contactValue.religion || null, // Fixed typo from 'relogion' to 'religion'
+        religion: contactValue.religion || null,
+        prefix_status: contactValue.prefix_status || null, // Fixed typo from 'relogion' to 'religion'
       };
 
       await CustomerServices.updateContactData(contactValue.id, req);
@@ -263,6 +275,10 @@ const KycUpdate = ({ recordForEdit, setOpenPopup, onDataUpdated }) => {
   const resetErrorMessage = () => {
     setErrorMessage("");
   };
+  console.log(
+    "inputValue",
+    contactData.map((item) => item.marital_status)
+  );
   return (
     <>
       <MessageAlert
@@ -320,7 +336,9 @@ const KycUpdate = ({ recordForEdit, setOpenPopup, onDataUpdated }) => {
               fullWidth
               size="small"
               options={[
-                "1cr to 10cr",
+                "Below 1cr",
+                "1cr to 5cr",
+                "6cr to 10cr",
                 "10cr to 20cr",
                 "20cr to 30cr",
                 "30cr to 40cr",
@@ -374,7 +392,7 @@ const KycUpdate = ({ recordForEdit, setOpenPopup, onDataUpdated }) => {
               size="small"
               label="Birth date"
               variant="outlined"
-              value={contactValue.birth_date || ""}
+              value={contactValue.birth_date ? contactValue.birth_date : ""}
               onChange={handleContactsInputChange}
               InputLabelProps={{
                 shrink: true,
@@ -399,24 +417,39 @@ const KycUpdate = ({ recordForEdit, setOpenPopup, onDataUpdated }) => {
             />
           </Grid>
           {contactValue.marital_status === "Married" && (
-            <Grid item xs={12} sm={6}>
-              <CustomTextField
-                fullWidth
-                type="date"
-                name="anniversary_date"
-                size="small"
-                label="Anniversary Date"
-                variant="outlined"
-                value={contactValue.anniversary_date || ""}
-                onChange={handleContactsInputChange}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                inputProps={{
-                  max: currentDate, // restrict to current and previous dates only
-                }}
-              />
-            </Grid>
+            <>
+              <Grid item xs={12} sm={6}>
+                <CustomTextField
+                  fullWidth
+                  type="date"
+                  name="anniversary_date"
+                  size="small"
+                  label="Anniversary Date"
+                  variant="outlined"
+                  value={contactValue.anniversary_date || ""}
+                  onChange={handleContactsInputChange}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  inputProps={{
+                    max: currentDate, // restrict to current and previous dates only
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <CustomAutocomplete
+                  sx={{ minWidth: 220 }}
+                  size="small"
+                  onChange={(event, value) =>
+                    handleContactsChange("prefix_status", value)
+                  }
+                  value={contactValue.prefix_status || ""}
+                  options={Option.Marridal_Status.map((option) => option)}
+                  getOptionLabel={(option) => option}
+                  label="Prefix"
+                />
+              </Grid>
+            </>
           )}
           {inputValue.type_of_customer === "Industrial Customer" && (
             <Grid item xs={12} sm={6}>
@@ -520,7 +553,6 @@ const KycUpdate = ({ recordForEdit, setOpenPopup, onDataUpdated }) => {
               />
             </Grid>
           )}
-
           <Grid item xs={12} sm={6}>
             <CustomTextField
               fullWidth
@@ -536,7 +568,6 @@ const KycUpdate = ({ recordForEdit, setOpenPopup, onDataUpdated }) => {
               helperText={errorMessage}
             />
           </Grid>
-
           <Grid item xs={12} sm={6}>
             <CustomAutocomplete
               fullWidth

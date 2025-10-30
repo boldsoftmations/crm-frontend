@@ -156,15 +156,6 @@ export const CompanyDetails = () => {
     }
   };
 
-  const handlFilterCustomer = (data) => {
-    if (data && data.value) {
-      setFillertedData(data.value);
-      setCurrentPage(1); // Reset to first page with new filter
-    } else {
-      setFillertedData("");
-    }
-  };
-
   const openInPopupOfUpdateCustomer = (item) => {
     setRecordForEdit(item.id);
     setSelectedCustomers(item);

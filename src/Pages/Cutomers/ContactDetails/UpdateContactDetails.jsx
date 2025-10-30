@@ -20,6 +20,7 @@ export const UpdateContactDetails = (props) => {
     open: false,
     inputValue: {
       name: "",
+      last_name: "",
       contact: "",
       designation: "",
       alternate_contact: "",
@@ -121,6 +122,17 @@ export const UpdateContactDetails = (props) => {
               label="Name"
               variant="outlined"
               value={state.inputValue.name}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <CustomTextField
+              fullWidth
+              size="small"
+              name="last_name"
+              label="Last Name"
+              variant="outlined"
+              value={state.inputValue.last_name}
               onChange={handleInputChange}
             />
           </Grid>

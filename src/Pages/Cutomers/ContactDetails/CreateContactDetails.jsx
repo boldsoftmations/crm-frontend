@@ -73,6 +73,7 @@ export const CreateContactDetails = (props) => {
       const req = {
         company: data ? data.companyName : "",
         name: inputValue.name,
+        last_name: inputValue.last_name,
         designation: designation,
         contact: contact || "",
         alternate_contact: phone2 ? contact2 : null,
@@ -137,6 +138,17 @@ export const CreateContactDetails = (props) => {
               label="Name"
               variant="outlined"
               value={inputValue.name}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <CustomTextField
+              fullWidth
+              size="small"
+              name="last_name"
+              label="Last Name"
+              variant="outlined"
+              value={inputValue.last_name}
               onChange={handleInputChange}
             />
           </Grid>
