@@ -106,6 +106,7 @@ const KycUpdate = ({ recordForEdit, setOpenPopup, onDataUpdated }) => {
         marital_status: contact.marital_status,
         anniversary_date: contact.anniversary_date,
         religion: contact.religion,
+        prefix_status: contact.prefix_status,
       }));
       setContactData(filteredContacts);
 
@@ -263,6 +264,7 @@ const KycUpdate = ({ recordForEdit, setOpenPopup, onDataUpdated }) => {
         religion: contactValue.religion || null,
         prefix_status: contactValue.prefix_status || null, // Fixed typo from 'relogion' to 'religion'
       };
+      console.log(req);
 
       await CustomerServices.updateContactData(contactValue.id, req);
       getAllCompanyDetailsByID();

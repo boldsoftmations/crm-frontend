@@ -45,8 +45,8 @@ export const UpdateDispatch = (props) => {
 
       const data = new FormData();
       if (
-        userData.groups.toString() === "Customer Service" ||
-        userData.groups.toString() === "Director"
+        userData.groups.includes("Customer Service") ||
+        userData.groups.includes("Director")
       ) {
         data.append("sales_invoice", idData.sales_invoice);
         data.append(
@@ -85,6 +85,9 @@ export const UpdateDispatch = (props) => {
         if (lrCopy !== "") {
           data.append("lr_copy", lrCopy ? lrCopy : "");
         }
+        // if (podCopy !== "") {
+        //   data.append("pod_copy", podCopy ? podCopy : "");
+        // }
         data.append("dispatched", true);
       }
       const LRDATE = inputValue.lr_date ? inputValue.lr_date : idData.lr_date;
