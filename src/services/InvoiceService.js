@@ -300,7 +300,7 @@ const getAllSaleRegisterData = (
   page,
   searchValue,
   filterByperson,
-  lr_status
+  status
 ) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
@@ -326,8 +326,8 @@ const getAllSaleRegisterData = (
       filterByperson
     );
   }
-  if (lr_status) {
-    params.append("lr_status", lr_status);
+  if (status) {
+    params.append("status", status);
   }
   // Sending a GET request with query parameters
   return CustomAxios.get(

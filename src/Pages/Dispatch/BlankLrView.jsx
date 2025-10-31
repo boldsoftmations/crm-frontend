@@ -28,9 +28,13 @@ import CustomTextField from "../../Components/CustomTextField";
 import { MessageAlert } from "../../Components/MessageAlert";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
 import SearchComponent from "../../Components/SearchComponent ";
+import CustomAutocomplete from "../../Components/CustomAutocomplete";
+import { useSelector } from "react-redux";
 
 export const BlankLrView = () => {
   const [open, setOpen] = useState(false);
+  const [LR_Pending, setLRPending] = useState("pending lr");
+
   const [currentPage, setCurrentPage] = useState(1);
   const [salesRegisterData, setsalesRegisterData] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
@@ -40,6 +44,8 @@ export const BlankLrView = () => {
   );
 
   const email = "";
+  const data = useSelector((state) => state.auth);
+  const userData = data.profile;
   const minDate = new Date().toISOString().split("T")[0];
   const maxDate = new Date("2030-12-31").toISOString().split("T")[0];
   const [exportData, setExportData] = useState([]);
@@ -64,7 +70,7 @@ export const BlankLrView = () => {
         "all",
         searchQuery,
         "",
-        "blank"
+        LR_Pending
       );
       const data = response.data.map((item) => {
         return {
@@ -97,7 +103,7 @@ export const BlankLrView = () => {
         currentPage,
         searchQuery,
         email,
-        "blank"
+        LR_Pending
       );
       setsalesRegisterData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -106,11 +112,11 @@ export const BlankLrView = () => {
     } finally {
       setOpen(false);
     }
-  }, [startDate, currentPage, searchQuery]); // Ensure dependencies are correctly listed
+  }, [startDate, currentPage, searchQuery, LR_Pending]); // Ensure dependencies are correctly listed
 
   useEffect(() => {
     getSalesRegisterData();
-  }, [startDate, currentPage, searchQuery]);
+  }, [startDate, currentPage, searchQuery, LR_Pending]);
 
   const handleSearch = (query) => {
     setSearchQuery(query);
@@ -135,6 +141,14 @@ export const BlankLrView = () => {
       console.log("CSVLink Download error", error);
     }
   };
+  const handleAutoCompleteChange = (event, newValue) => {
+    setLRPending(newValue);
+  };
+  const userShows = userData.groups.includes(
+    "Customer Service",
+    "Director",
+    "Operation & supply chain manager"
+  );
 
   return (
     <>
@@ -150,14 +164,16 @@ export const BlankLrView = () => {
           <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={3}>
-                <CustomTextField
+                <CustomAutocomplete
                   sx={{ width: "300px" }}
                   label="Start Date"
                   variant="outlined"
                   size="small"
                   id="start-date"
-                  value={"Pending LR"}
-                  disabled={true}
+                  value={LR_Pending}
+                  onChange={handleAutoCompleteChange}
+                  options={["pending lr", "pending pod"].map((item) => item)}
+                  disabled={!userShows}
                 />
               </Grid>
               <Grid
