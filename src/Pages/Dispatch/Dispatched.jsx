@@ -127,7 +127,12 @@ export const Dispatched = () => {
                     fontWeight: 800,
                   }}
                 >
-                  Dispatched
+                  {userData.groups.includes("Customer Service")
+                    ? "Dispatch-POD Pending"
+                    : userData.groups.includes("Factory-Mumbai-Dispatch") ||
+                      userData.groups.includes("Factory-Delhi-Dispatch")
+                    ? "Dispatch-LR Pending"
+                    : "Dispatch"}
                 </h3>
               </Grid>
               <Grid item xs={12} sm={3}>

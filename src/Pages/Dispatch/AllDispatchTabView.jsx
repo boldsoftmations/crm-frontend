@@ -34,13 +34,13 @@ export const AllDispatchTabView = () => {
     "Stores Delhi",
     "Production Delhi"
   );
+  const dispatchPODPending = isInGroups("Customer Service");
+  const dispatchLRPending = isInGroups(
+    "Factory-Mumbai-Dispatch",
+    "Factory-Delhi-Dispatch"
+  );
   const customerServiceTab = isInGroups("Customer Service");
   const salesRegisterTab = isInGroups("Accounts Billing Department");
-  const PendingLr = isInGroups(
-    "Director",
-    "Operations & Supply Chain Manager",
-    "Customer Service"
-  );
 
   const [activeTab, setActiveTab] = useState(allTabs ? 0 : 4);
 
@@ -52,7 +52,11 @@ export const AllDispatchTabView = () => {
     },
 
     {
-      label: "Dispatched",
+      label: dispatchPODPending
+        ? "Dispatch-POD Pending"
+        : dispatchLRPending
+        ? "Dispatched-LR Pending"
+        : "Dispatch",
       visible: allTabs || twoTabs || customerServiceTab,
       index: 1,
     },
@@ -69,7 +73,7 @@ export const AllDispatchTabView = () => {
     },
     {
       label: "Pending LR Copy",
-      visible: PendingLr,
+      visible: "admin" || "operations & supply chain manager",
       index: 4,
     },
   ];
