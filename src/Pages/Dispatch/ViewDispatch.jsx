@@ -71,7 +71,8 @@ export const ViewDispatch = () => {
         "false",
         currentPage,
         searchQuery,
-        unitFilter
+        unitFilter,
+        users.groups.includes("Customer Service") ? "pending_dispatch_tab" : ""
       );
       setDispatchData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
