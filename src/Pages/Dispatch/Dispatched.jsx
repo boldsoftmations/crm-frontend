@@ -69,7 +69,8 @@ export const Dispatched = () => {
         true,
         currentPage,
         searchQuery,
-        unitFilter
+        unitFilter,
+        userData.groups.includes("Customer Service") ? "dispatch_tab" : ""
       );
       setDispatchData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -101,7 +102,9 @@ export const Dispatched = () => {
         true,
         currentPage,
         searchQuery,
-        unitFilter
+        unitFilter,
+        "",
+        "dispatch_tab"
       );
       if (!response || !response.data) {
         throw new Error("No data returned from API");

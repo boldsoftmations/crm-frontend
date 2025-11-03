@@ -340,7 +340,8 @@ const getDispatchData = (
   page,
   searchValue,
   filterByperson,
-  notlr
+
+  display_tab
 ) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
@@ -361,10 +362,10 @@ const getDispatchData = (
       filterByperson
     );
   }
-  if (notlr) {
-    params.append("dispatch_type", notlr);
-  }
 
+  if (display_tab) {
+    params.append("display_tab", display_tab);
+  }
   // Sending a GET request with query parameters
   return CustomAxios.get(
     `api/invoice/list-dispatch-book/?${params.toString()}`

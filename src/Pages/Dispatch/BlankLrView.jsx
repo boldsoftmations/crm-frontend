@@ -144,11 +144,10 @@ export const BlankLrView = () => {
   const handleAutoCompleteChange = (event, newValue) => {
     setLRPending(newValue);
   };
-  const userShows = userData.groups.includes(
-    "Customer Service",
-    "Director",
-    "Operation & supply chain manager"
-  );
+  const userShows =
+    userData.groups.includes("Customer Service") ||
+    userData.groups.includes("Director") ||
+    userData.groups.includes("Operation & supply chain manager");
 
   return (
     <>
@@ -166,10 +165,10 @@ export const BlankLrView = () => {
               <Grid item xs={12} sm={3}>
                 <CustomAutocomplete
                   sx={{ width: "300px" }}
-                  label="Start Date"
+                  label="Pending Status"
                   variant="outlined"
                   size="small"
-                  id="start-date"
+                  id="Pending Status"
                   value={LR_Pending}
                   onChange={handleAutoCompleteChange}
                   options={["pending lr", "pending pod"].map((item) => item)}
