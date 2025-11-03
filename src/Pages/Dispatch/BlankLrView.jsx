@@ -151,7 +151,7 @@ export const BlankLrView = () => {
   const userShows = [
     "Customer Service",
     "Director",
-    "Operation & supply chain manager",
+    "Operations & Supply Chain Manager",
   ].some((role) => groups.includes(role));
 
   return (
