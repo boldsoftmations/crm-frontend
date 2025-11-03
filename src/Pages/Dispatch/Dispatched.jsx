@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   Table,
   Typography,
@@ -31,9 +31,11 @@ import { useNotificationHandling } from "../../Components/useNotificationHandlin
 import { MessageAlert } from "../../Components/MessageAlert";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import UserProfileService from "../../services/UserProfileService";
+import { CSVLink } from "react-csv";
 
 export const Dispatched = () => {
   const [dispatchData, setDispatchData] = useState([]);
+  const [exportData, setExportData] = useState([]);
   const [open, setOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
@@ -41,6 +43,7 @@ export const Dispatched = () => {
   const [userList, setUserList] = useState([]);
   const [unitFilter, setUnitFilter] = useState("");
   const data = useSelector((state) => state.auth);
+  const csvLinkRef = useRef(null);
   const userData = data.profile;
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
@@ -89,6 +92,62 @@ export const Dispatched = () => {
   const handleReset = () => {
     setSearchQuery("");
     setCurrentPage(1); // Reset to first page with no search query
+  };
+  const handleExport = async () => {
+    try {
+      setOpen(true);
+
+      const response = await InvoiceServices.getDispatchData(
+        true,
+        currentPage,
+        searchQuery,
+        unitFilter
+      );
+      if (!response || !response.data) {
+        throw new Error("No data returned from API");
+      }
+
+      const data =
+        (response &&
+          response.data &&
+          response.data.results.map((item) => ({
+            date: moment(item.date).format("DD-MM-YYYY"),
+            user: item.user,
+            pi_list: (item.pi_list && item.pi_list.join(",")) || "", // ✅ safe chaining
+            customer: item.customer,
+            transporter: item.transporter,
+            dispatch_location: item.dispatch_location,
+            lr_copy: item.lr_copy,
+            pod_copy: item.pod_copy,
+          }))) ||
+        []; // ✅ fallback to empty array
+
+      setOpen(false);
+      return data;
+    } catch (error) {
+      handleError(error);
+      console.log("while downloading Price list", error);
+      return []; // ✅ always return an array
+    } finally {
+      setOpen(false);
+    }
+  };
+
+  const handleDownload = async () => {
+    try {
+      const data = await handleExport();
+      setExportData(data || []); // ✅ ensure not undefined
+
+      setTimeout(() => {
+        if (csvLinkRef.current) {
+          csvLinkRef.current.link.click();
+        } else {
+          console.error("CSVLink ref not ready");
+        }
+      }, 200);
+    } catch (error) {
+      console.error("CSVLink Download error", error);
+    }
   };
 
   const handlePageChange = (event, value) => {
@@ -141,6 +200,38 @@ export const Dispatched = () => {
                   onReset={handleReset}
                 />
               </Grid>
+              <Grid item xs={12} sm={7}></Grid>
+              <Grid
+                item
+                xs={12}
+                sm={5}
+                style={{
+                  textAlign: "right",
+                }}
+              >
+                {Array.isArray(exportData) && exportData.length > 0 && (
+                  <CSVLink
+                    data={exportData}
+                    headers={headers}
+                    ref={csvLinkRef}
+                    filename="dispatch.csv"
+                    target="_blank"
+                    style={{
+                      textDecoration: "none",
+                      outline: "none",
+                      visibility: "hidden",
+                    }}
+                  />
+                )}
+
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={handleDownload}
+                >
+                  Export to Excel
+                </Button>
+              </Grid>
             </Grid>
           </Box>
           <TableContainer
@@ -171,6 +262,9 @@ export const Dispatched = () => {
                   <StyledTableCell align="center">User</StyledTableCell>
                   <StyledTableCell align="center">PI No</StyledTableCell>
                   <StyledTableCell align="center">Customer</StyledTableCell>
+                  <StyledTableCell align="center">
+                    Transport Name
+                  </StyledTableCell>
                   <StyledTableCell align="center">Date</StyledTableCell>
                   <StyledTableCell align="center">
                     Dispatch Location
@@ -244,6 +338,7 @@ function Row(props) {
             : "NA"}
         </TableCell>
         <TableCell align="center">{row.customer}</TableCell>
+        <TableCell align="center">{row.transporter}</TableCell>
         <TableCell align="center">
           {moment(row.date).format("DD-MM-YYYY")}
         </TableCell>
@@ -351,3 +446,24 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     border: 0,
   },
 }));
+
+const headers = [
+  {
+    label: "Date",
+    key: "date",
+  },
+  { label: "User", key: "user" },
+  { label: "PI NO", key: "PI NO" },
+  { label: "Customer", key: "customer" },
+  { label: "Transporter", key: "transporter" },
+  { label: "Dispatch Location", key: "dispatch_location" },
+  { label: "LR Copy", key: "lr_copy" },
+  { label: "POD Copy", key: "pod_copy" },
+];
+
+// date: moment(item.date).format("DD-MM-YYYY"),
+//           user: item.user,
+//           pi_list: item.pi_list && item.pi_list.join(","),
+//           customer: item.customer,
+//           transporter: item.transporter,
+//           dispatch_location: item.dispatch_location,

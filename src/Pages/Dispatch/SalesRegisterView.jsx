@@ -295,6 +295,7 @@ export const SalesRegisterView = () => {
                 <StyledTableRow>
                   <StyledTableCell align="center"></StyledTableCell>
                   <StyledTableCell align="center">Date</StyledTableCell>
+                  <StyledTableCell align="center">Unit</StyledTableCell>
                   <StyledTableCell align="center">User</StyledTableCell>
                   <StyledTableCell align="center">PI No</StyledTableCell>
                   <StyledTableCell align="center">
@@ -381,6 +382,7 @@ function Row(props) {
         <TableCell align="center">
           {moment(row.date).format("DD-MM-YYYY")}
         </TableCell>
+        <TableCell align="center">{row.seller_unit}</TableCell>
         <TableCell align="center">{row.user}</TableCell>
         <TableCell align="center">
           {row.pi_list && row.pi_list.length > 0
@@ -486,6 +488,7 @@ const headers = [
     label: "Date",
     key: "date",
   },
+  { label: "Seller Unit", key: "seller_unit" },
   { label: "Sales Invoice", key: "sales_invoice" },
   { label: "Customer", key: "customer" },
   { label: "Transporter Name", key: "transporter" },
