@@ -146,7 +146,7 @@ export const BlankLrView = () => {
   };
   const groups = Array.isArray(userData.groups)
     ? userData.groups
-    : [userData.groups?.toString()];
+    : [userData.groups && userData.groups.toString()];
 
   const userShows = [
     "Customer Service",
