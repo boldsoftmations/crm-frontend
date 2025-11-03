@@ -144,10 +144,15 @@ export const BlankLrView = () => {
   const handleAutoCompleteChange = (event, newValue) => {
     setLRPending(newValue);
   };
-  const userShows =
-    userData.groups.includes("Customer Service") ||
-    userData.groups.includes("Director") ||
-    userData.groups.includes("Operation & supply chain manager");
+  const groups = Array.isArray(userData.groups)
+    ? userData.groups
+    : [userData.groups?.toString()];
+
+  const userShows = [
+    "Customer Service",
+    "Director",
+    "Operation & supply chain manager",
+  ].some((role) => groups.includes(role));
 
   return (
     <>
