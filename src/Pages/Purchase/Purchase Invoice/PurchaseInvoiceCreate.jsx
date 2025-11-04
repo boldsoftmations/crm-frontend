@@ -51,58 +51,65 @@ export const PurchaseInvoiceCreate = memo(
 
       setProducts(list);
     };
-    // console.log("recordForEdit", recordForEdit);
-    // let lastPurchase =
-    //   (recordForEdit &&
-    //     recordForEdit.products.map((pro) =>
-    //       parseFloat(pro.last_purchase_rate)
-    //     )) ||
-    //   [];
+    console.log("recordForEdit", recordForEdit);
+    let lastPurchase =
+      (recordForEdit &&
+        recordForEdit.products.map((pro) =>
+          parseFloat(pro.last_purchase_rate)
+        )) ||
+      [];
 
-    // let minRate =
-    //   (recordForEdit &&
-    //     recordForEdit.products.map((pro) =>
-    //       parseFloat(pro.min_validation_rate)
-    //     )) ||
-    //   [];
+    let minRate =
+      (recordForEdit &&
+        recordForEdit.products.map((pro) =>
+          parseFloat(pro.min_validation_rate)
+        )) ||
+      [];
 
-    // let maxRate =
-    //   (recordForEdit &&
-    //     recordForEdit.products.map((pro) =>
-    //       parseFloat(pro.max_validation_rate)
-    //     )) ||
-    //   [];
+    let maxRate =
+      (recordForEdit &&
+        recordForEdit.products.map((pro) =>
+          parseFloat(pro.max_validation_rate)
+        )) ||
+      [];
 
     const createPackingListDetails = async (e) => {
       try {
         e.preventDefault();
 
         // Validate all products before proceeding
-        // for (let i = 0; i < products.length; i++) {
-        //   const product = products[i];
-        //   const productRate = parseFloat(product.rate);
-        //   const productName = product.product || `Product ${i + 1}`;
+        for (let i = 0; i < products.length; i++) {
+          const product = products[i];
+          const productRate = parseFloat(product.rate);
+          const productName = product.product || `Product ${i + 1}`;
 
-        //   const min = minRate[i];
-        //   const max = maxRate[i];
-        //   const price = lastPurchase[i];
+          const min = minRate[i];
+          const max = maxRate[i];
+          const price = lastPurchase[i];
 
-        //   // --- Defensive checks ---
-        //   if ([price, min, max].find((v) => v != null)) {
-        //     if ([productRate, min, max].some((v) => isNaN(v))) {
-        //       handleError(`Invalid rate value for ${productName}`);
-        //       return;
-        //     }
+          if (
+            [min, max, price].some(
+              (v) => isNaN(v) || v === null || v === undefined
+            )
+          ) {
+            continue;
+          }
 
-        //     // --- Validation check ---
-        //     if (productRate < min || productRate > max) {
-        //       handleError(
-        //         `${productName} rate should be between ${min} and ${max}`
-        //       );
-        //       return;
-        //     }
-        //   }
-        // }
+          // --- Defensive checks ---
+          if ([price, min, max].find((v) => v != null)) {
+            if ([productRate, min, max].some((v) => isNaN(v))) {
+              handleError(`Invalid rate value for ${productName}`);
+              return;
+            }
+            // --- Validation check ---
+            if (productRate < min || productRate > max) {
+              handleError(
+                `${productName} rate should be between ${min} and ${max}`
+              );
+              return;
+            }
+          }
+        }
 
         setOpen(true);
 
