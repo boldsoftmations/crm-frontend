@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Box, Button, Grid } from "@mui/material";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomTextField from "../../../Components/CustomTextField";
+import ProductService from "../../../services/ProductService";
 import CustomerServices from "../../../services/CustomerService";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
@@ -12,104 +13,41 @@ export const CustomerPotentialCreate = ({
   setOpenModal,
 }) => {
   const [open, setOpen] = useState(false);
-  const [potential, setPotential] = useState({
-    description: "",
-    product: "",
-    current_buying_quantity: "",
-  });
-
-  const [productList, setProductList] = useState([]); // All products from API
-  const [filteredProducts, setFilteredProducts] = useState([]); // Filtered based on description
-  const [selectedProduct, setSelectedProduct] = useState(null); // For selected product
-  const [selectDis, setSelectDis] = useState(true); // Disable product until description selected
-
-  const [alertMsg, setAlertMsg] = useState({
+  const [potential, setPotential] = useState({});
+  const [product, setProduct] = useState([]);
+  const [alertmsg, setAlertMsg] = useState({
     message: "",
     severity: "",
     open: false,
   });
-
-  // Close snackbar
-  const handleClose = () => setAlertMsg({ open: false });
-
-  // Fetch all product data once
+  const handleClose = () => {
+    setAlertMsg({ open: false });
+  };
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchProduct = async () => {
       try {
         setOpen(true);
-        const res = await CustomerServices.getAllDescription();
-        setProductList(res.data || []);
-        console.log("Fetched products:", res.data);
+        const res = await ProductService.getAllProduct();
+        setProduct(res.data);
       } catch (err) {
-        console.error("Error fetching product list:", err);
+        console.error("error potential", err);
       } finally {
         setOpen(false);
       }
     };
-    fetchProducts();
+
+    fetchProduct();
   }, []);
 
-  // Handle description selection
-  const handleDescriptionChange = (event, value) => {
-    setPotential((prev) => ({ ...prev, description: value, product: "" }));
-
-    if (!value) {
-      setFilteredProducts([]);
-      setSelectDis(true);
-      return;
-    }
-
-    // Filter products by matching description
-    const matchedProducts = productList.filter(
-      (item) => item.description && item.description.trim() === value.trim()
-    );
-
-    // Split comma-separated product_list values if any
-    const separatedProducts = matchedProducts.flatMap((item) => {
-      if (item.product_list && Array.isArray(item.product_list)) {
-        return item.product_list.map((prod) => ({
-          ...item,
-          product_list: prod.trim(),
-        }));
-      }
-      if (
-        item.product_list &&
-        typeof item.product_list === "string" &&
-        item.product_list.includes(",")
-      ) {
-        return item.product_list.split(",").map((prod) => ({
-          ...item,
-          product_list: prod.trim(),
-        }));
-      }
-      return [item];
-    });
-
-    setFilteredProducts(separatedProducts);
-    setSelectDis(false);
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setPotential({ ...potential, [name]: value });
   };
 
-  // Handle product selection
-  const handleProductChange = (event, value) => {
-    setPotential((prev) => ({ ...prev, product: value }));
-
-    const foundProduct = filteredProducts.find((item) =>
-      item.product_list.includes(value)
-    );
-
-    if (foundProduct) {
-      setSelectedProduct(foundProduct);
-      console.log("Selected product:", foundProduct);
-    }
+  const handleAutocompleteChange = (event, value) => {
+    setPotential({ ...potential, product: value });
   };
 
-  // Handle text field input
-  const handleTextChange = (e) => {
-    const { name, value } = e.target;
-    setPotential((prev) => ({ ...prev, [name]: value }));
-  };
-
-  // Submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -120,33 +58,23 @@ export const CustomerPotentialCreate = ({
       };
       await CustomerServices.createPotentialCustomer(data);
 
+      // Success message
       setAlertMsg({
         message: "Potential customer created successfully!",
         severity: "success",
         open: true,
       });
 
-      // Reset form
-      setPotential({
-        description: "",
-        product: "",
-        current_buying_quantity: "",
-      });
-      setFilteredProducts([]);
-      setSelectDis(true);
-      setSelectedProduct(null);
-
       setOpenModal(false);
       await getCompanyDetailsByID();
     } catch (error) {
       setAlertMsg({
         message:
-          (error.response.data.message && error.response.data.message) ||
-          "Error creating potential customer",
+          error.response.data.message || "Error creating potential customer",
         severity: "error",
         open: true,
       });
-      console.error("Error:", error);
+      console.error("error:", error);
     } finally {
       setOpen(false);
     }
@@ -155,49 +83,25 @@ export const CustomerPotentialCreate = ({
   return (
     <>
       <CustomSnackbar
-        open={alertMsg.open}
-        message={alertMsg.message}
-        severity={alertMsg.severity}
+        open={alertmsg.open}
+        message={alertmsg.message}
+        severity={alertmsg.severity}
         onClose={handleClose}
       />
       <CustomLoader open={open} />
-
       <Box component="form" noValidate onSubmit={handleSubmit}>
         <Grid container spacing={2}>
-          {/* Description */}
           <Grid item xs={12} sm={6}>
             <CustomAutocomplete
               sx={{ minWidth: 180 }}
               size="small"
-              onChange={handleDescriptionChange}
-              value={potential.description}
-              options={[
-                ...new Set(
-                  (productList || []).map((option) => option.description)
-                ),
-              ]}
-              getOptionLabel={(option) => option || "No Options"}
-              label="Description"
-            />
-          </Grid>
-
-          {/* Product */}
-          <Grid item xs={12} sm={6}>
-            <CustomAutocomplete
-              sx={{ minWidth: 180 }}
-              size="small"
-              onChange={handleProductChange}
+              onChange={handleAutocompleteChange}
               value={potential.product}
-              options={(filteredProducts || []).flatMap(
-                (item) => item.product_list || []
-              )}
-              getOptionLabel={(option) => option || "No Options"}
+              options={product.map((option) => option.name)}
+              getOptionLabel={(option) => `${option ? option : "No Options"}`}
               label="Product"
-              disabled={selectDis}
             />
           </Grid>
-
-          {/* Quantity */}
           <Grid item xs={12} sm={6}>
             <CustomTextField
               fullWidth
@@ -205,13 +109,11 @@ export const CustomerPotentialCreate = ({
               size="small"
               label="Current Buying Quantity Monthly"
               variant="outlined"
-              value={potential.current_buying_quantity}
-              onChange={handleTextChange}
+              value={potential.current_buying_quantity || ""}
+              onChange={handleInputChange}
             />
           </Grid>
         </Grid>
-
-        {/* Submit */}
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <Button
