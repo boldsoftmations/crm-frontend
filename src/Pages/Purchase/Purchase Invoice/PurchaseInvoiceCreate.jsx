@@ -6,7 +6,10 @@ import InventoryServices from "../../../services/InventoryService";
 import { styled } from "@mui/material/styles";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
-
+import { Popup } from "../../../Components/Popup";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import WarningIcon from "@mui/icons-material/Warning";
+import TrendingDownIcon from "@mui/icons-material/TrendingDown";
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
   ...theme.typography.body2,
@@ -20,7 +23,16 @@ export const PurchaseInvoiceCreate = memo(
     const [open, setOpen] = useState(false);
     const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
       useNotificationHandling();
-
+    const [productvalidate, setProductvalidate] = useState("");
+    const [icons, setIcons] = useState(null);
+    const [openPopup, setOpenPopup1] = useState(false);
+    const [productname, setProductname] = useState("");
+    const title = (
+      <span>
+        <WarningIcon color="warning" />
+        {" Rate Check Alert"}
+      </span>
+    );
     const [products, setProducts] = useState(
       recordForEdit.products.map((product) => {
         // Log the rate of each product
@@ -78,39 +90,85 @@ export const PurchaseInvoiceCreate = memo(
         e.preventDefault();
 
         // Validate all products before proceeding
-        // for (let i = 0; i < products.length; i++) {
-        //   const product = products[i];
-        //   const productRate = parseFloat(product.rate);
-        //   const productName = product.product || `Product ${i + 1}`;
+        for (let i = 0; i < products.length; i++) {
+          const product = products[i];
+          const productRate = parseFloat(product.rate);
+          const productName = product.product || `Product ${i + 1}`;
 
-        //   const min = minRate[i];
-        //   const max = maxRate[i];
-        //   const price = lastPurchase[i];
+          const min = minRate[i];
+          const max = maxRate[i];
+          const price = lastPurchase[i];
 
-        //   if (
-        //     [min, max, price].some(
-        //       (v) => isNaN(v) || v === null || v === undefined
-        //     )
-        //   ) {
-        //     continue;
-        //   }
+          if (
+            [min, max, price].some(
+              (v) => isNaN(v) || v === null || v === undefined
+            )
+          ) {
+            continue;
+          }
 
-        //   // --- Defensive checks ---
-        //   if ([price, min, max].find((v) => v != null)) {
-        //     if ([productRate, min, max].some((v) => isNaN(v))) {
-        //       handleError(`Invalid rate value for ${productName}`);
-        //       return;
-        //     }
-        //     // --- Validation check ---
-        //     if (productRate < min || productRate > max) {
-        //       handleError(
-        //         `${productName} rate should be between ${min} and ${max}`
-        //       );
-        //       return;
-        //     }
-        //   }
-        // }
+          // --- Defensive checks ---
+          if ([price, min, max].find((v) => v != null)) {
+            if ([productRate, min, max].some((v) => isNaN(v))) {
+              handleError(`Invalid rate value for ${productName}`);
+              return;
+            }
+            // --- Validation check ---
+            if (productRate < min) {
+              setProductvalidate("rate should be less than ");
+              setOpenPopup1(true);
+              setProductname(productName);
+              setIcons(
+                <span>
+                  <TrendingDownIcon sx={{ fontSize: "3rem" }} color="error" />
+                </span>
+              );
+              console.log("Below minimum");
+              return;
+            }
 
+            if (productRate > max) {
+              setProductvalidate(`rate should be more than`);
+              setOpenPopup1(true);
+              setProductname(productName);
+              setIcons(
+                <span>
+                  <TrendingUpIcon sx={{ fontSize: "3rem" }} color="success" />
+                </span>
+              );
+              console.log(openPopup);
+              console.log("Above maximum");
+              return;
+            }
+          }
+        }
+
+        setOpen(true);
+
+        const req = {
+          grn: recordForEdit.grn_no,
+          products_data: products,
+          invoice_type: "Purchase",
+        };
+
+        await InventoryServices.createPurchaseInvoiceData(req);
+
+        getAllGRNDetails();
+        handleSuccess("Purchase Invoice created successfully");
+
+        setTimeout(() => setOpenPopup(false), 300);
+        setOpen(false);
+      } catch (error) {
+        handleError(error);
+        console.log("Creating Packing list error", error);
+        setOpen(false);
+      }
+    };
+
+    const handleSure = async (e) => {
+      e.preventDefault();
+      setOpenPopup1(false);
+      try {
         setOpen(true);
 
         const req = {
@@ -279,6 +337,37 @@ export const PurchaseInvoiceCreate = memo(
             Submit
           </Button>
         </Box>
+        <Popup openPopup={openPopup} setOpenPopup={setOpenPopup1} title={title}>
+          <Box
+            sx={{
+              display: "flex",
+
+              p: 0,
+              flexDirection: "column",
+              gap: 0,
+              padding: ["0px", "10px"],
+            }}
+          >
+            <span style={{ fontSize: "1.5rem" }}>{productname}</span>
+            <span>{productvalidate}</span>
+            <span style={{ fontSize: "2rem" }}>10% {icons}</span>
+            <span style={{ opacity: 0.5, fontSize: "0.8rem" }}>
+              Please verify the entered rate before Proceeding
+            </span>
+          </Box>
+          <Box sx={{ display: "flex", mt: 2, justifyContent: "space-around " }}>
+            <Button variant="contained" color="success" onClick={handleSure}>
+              Proceed Anyway
+            </Button>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={() => setOpenPopup1(false)}
+            >
+              Edit Rate
+            </Button>
+          </Box>
+        </Popup>
       </>
     );
   }
