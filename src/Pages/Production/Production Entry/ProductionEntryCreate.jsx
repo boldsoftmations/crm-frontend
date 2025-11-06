@@ -16,6 +16,10 @@ import CustomTextField from "../../../Components/CustomTextField";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import WarningIcon from "@mui/icons-material/Warning";
+import TrendingDownIcon from "@mui/icons-material/TrendingDown";
+import { Popup } from "../../../Components/Popup";
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
   ...theme.typography.body2,
@@ -31,6 +35,10 @@ export const ProductionEntryCreate = memo((props) => {
     currentPage,
     searchQuery,
   } = props;
+  const [openPopup, setOpenPopup1] = useState(false);
+  const [productvalidate, setProductvalidate] = useState("");
+  const [icons, setIcons] = useState(null);
+  const [productName, setProductName] = useState("");
   const [open, setOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState([]);
   const [selectedBOM, setSelectedBOM] = useState([]);
@@ -67,6 +75,12 @@ export const ProductionEntryCreate = memo((props) => {
     const { name, value } = event.target;
     setQuantity({ ...quantity, [name]: value });
   };
+  const title = (
+    <span>
+      <WarningIcon color="warning" />
+      {" Rate Check Alert"}
+    </span>
+  );
   const fetchProductOptions = async (value) => {
     try {
       setOpen(true);
@@ -102,29 +116,128 @@ export const ProductionEntryCreate = memo((props) => {
 
       const productData = checked
         ? products.map((product) => ({
-          product: product.product,
-          quantity: parseFloat(product.quantity) || 0,
-          expected_quantity: (
-            parseFloat(product.expected_quantity) *
-            parseFloat(quantity.quantity)
-          ).toFixed(4),
-        }))
-        : products.map((product) => {
-          const productQuantity = parseFloat(product.quantity);
-          const totalQuantity = parseFloat(quantity.quantity) || 0;
-          return {
             product: product.product,
-            quantity:
-              isNaN(productQuantity) || isNaN(totalQuantity)
-                ? 0
-                : (productQuantity * totalQuantity).toFixed(4),
+            quantity: parseFloat(product.quantity) || 0,
             expected_quantity: (
               parseFloat(product.expected_quantity) *
               parseFloat(quantity.quantity)
             ).toFixed(4),
-          };
-        });
+          }))
+        : products.map((product) => {
+            const productQuantity = parseFloat(product.quantity);
+            const totalQuantity = parseFloat(quantity.quantity) || 0;
+            return {
+              product: product.product,
+              quantity:
+                isNaN(productQuantity) || isNaN(totalQuantity)
+                  ? 0
+                  : (productQuantity * totalQuantity).toFixed(4),
+              expected_quantity: (
+                parseFloat(product.expected_quantity) *
+                parseFloat(quantity.quantity)
+              ).toFixed(4),
+            };
+          });
 
+      // ✅ Validation check
+      if (checked) {
+        let isInvalid = false;
+
+        for (const product of products) {
+          const totalQuantity = parseFloat(product.expected_quantity);
+          const productQuantity = parseFloat(product.quantity) || 0;
+          const tenPercentHigh = totalQuantity * 1.1;
+          const tenPercentLow = totalQuantity * 0.9;
+
+          if (productQuantity > tenPercentHigh) {
+            setProductvalidate("quantity should be more than");
+            setOpenPopup1(true);
+            setProductName(product.product);
+            setIcons(
+              <span>
+                <TrendingUpIcon sx={{ fontSize: "3rem" }} color="success" />
+              </span>
+            );
+            console.log("Above 10% range");
+            isInvalid = true;
+            break; // ✅ stop checking further
+          } else if (productQuantity < tenPercentLow) {
+            setProductvalidate("quantity should be less than");
+            setOpenPopup1(true);
+            setProductName(product.product);
+            setIcons(
+              <span>
+                <TrendingDownIcon sx={{ fontSize: "3rem" }} color="error" />
+              </span>
+            );
+            console.log("Below 10% range");
+            isInvalid = true;
+            break; // ✅ stop checking further
+          }
+        }
+
+        // ✅ Stop further API call if invalid
+        if (isInvalid) {
+          setOpen(false); // close loader if open
+          return;
+        }
+      }
+
+      // ✅ Proceed only if validation passed
+      const req = {
+        seller_account: selectedSellerData,
+        user: users.email,
+        bom: selectedBOM.bom_id,
+        product: selectedBOM.product,
+        production_gnl: checked,
+        quantity: quantity.quantity,
+        products_data: productData,
+      };
+
+      await InventoryServices.createProductionEntryData(req);
+      setOpenPopup(false);
+      getAllProductionEntryDetails(currentPage, searchQuery);
+      handleSuccess("Production Entry Created Successfully");
+
+      setTimeout(() => {
+        setOpen(false);
+      }, 300);
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setOpen(false);
+    }
+  };
+
+  const handleSure = async (e) => {
+    try {
+      e.preventDefault();
+      setOpen(true);
+      setOpenPopup1(false);
+      const productData = checked
+        ? products.map((product) => ({
+            product: product.product,
+            quantity: parseFloat(product.quantity) || 0,
+            expected_quantity: (
+              parseFloat(product.expected_quantity) *
+              parseFloat(quantity.quantity)
+            ).toFixed(4),
+          }))
+        : products.map((product) => {
+            const productQuantity = parseFloat(product.quantity);
+            const totalQuantity = parseFloat(quantity.quantity) || 0;
+            return {
+              product: product.product,
+              quantity:
+                isNaN(productQuantity) || isNaN(totalQuantity)
+                  ? 0
+                  : (productQuantity * totalQuantity).toFixed(4),
+              expected_quantity: (
+                parseFloat(product.expected_quantity) *
+                parseFloat(quantity.quantity)
+              ).toFixed(4),
+            };
+          });
       const req = {
         seller_account: selectedSellerData,
         user: users.email,
@@ -211,20 +324,20 @@ export const ProductionEntryCreate = memo((props) => {
           </Grid>
           {(users.email === "amol@glutape.com" ||
             users.groups.includes("Director")) && (
-              <Grid item xs={12} sm={4}>
-                <FormControlLabel
-                  label={"Gain And Loss"}
-                  control={
-                    <Checkbox
-                      checked={checked}
-                      onChange={(e) => setChecked(e.target.checked)}
-                      inputProps={{ "aria-label": "controlled" }}
-                      disabled={checked}
-                    />
-                  }
-                />
-              </Grid>
-            )}
+            <Grid item xs={12} sm={4}>
+              <FormControlLabel
+                label={"Gain And Loss"}
+                control={
+                  <Checkbox
+                    checked={checked}
+                    onChange={(e) => setChecked(e.target.checked)}
+                    inputProps={{ "aria-label": "controlled" }}
+                    disabled={checked}
+                  />
+                }
+              />
+            </Grid>
+          )}
           <Grid item xs={12} sm={4}>
             <CustomTextField
               fullWidth
@@ -275,9 +388,9 @@ export const ProductionEntryCreate = memo((props) => {
                       value={
                         quantity.quantity && input.quantity
                           ? (
-                            parseFloat(input.quantity) *
-                            parseFloat(quantity.quantity)
-                          ).toFixed(4)
+                              parseFloat(input.quantity) *
+                              parseFloat(quantity.quantity)
+                            ).toFixed(4)
                           : input.quantity || ""
                       }
                       InputLabelProps={{
@@ -298,9 +411,9 @@ export const ProductionEntryCreate = memo((props) => {
                       value={
                         quantity.quantity && input.quantity && !checked
                           ? (
-                            parseFloat(input.quantity) *
-                            parseFloat(quantity.quantity)
-                          ).toFixed(4)
+                              parseFloat(input.quantity) *
+                              parseFloat(quantity.quantity)
+                            ).toFixed(4)
                           : input.quantity || ""
                       }
                       onChange={(event) => handleFormChange(index, event)}
@@ -318,9 +431,9 @@ export const ProductionEntryCreate = memo((props) => {
                       value={
                         quantity.quantity && input.expected_quantity
                           ? (
-                            parseFloat(input.expected_quantity) *
-                            parseFloat(quantity.quantity)
-                          ).toFixed(4)
+                              parseFloat(input.expected_quantity) *
+                              parseFloat(quantity.quantity)
+                            ).toFixed(4)
                           : ""
                       }
                     />
@@ -339,6 +452,37 @@ export const ProductionEntryCreate = memo((props) => {
           Submit
         </Button>
       </Box>
+      <Popup openPopup={openPopup} setOpenPopup={setOpenPopup1} title={title}>
+        <Box
+          sx={{
+            display: "flex",
+
+            p: 0,
+            flexDirection: "column",
+            gap: 0,
+            padding: ["0px", "10px"],
+          }}
+        >
+          <span style={{ fontSize: "1.5rem" }}>{productName}</span>
+          <span>{productvalidate}</span>
+          <span style={{ fontSize: "2rem" }}>10% {icons}</span>
+          <span style={{ opacity: 0.5, fontSize: "0.8rem" }}>
+            Please verify the entered rate before Proceeding
+          </span>
+        </Box>
+        <Box sx={{ display: "flex", mt: 2, justifyContent: "space-around " }}>
+          <Button variant="contained" color="success" onClick={handleSure}>
+            Proceed Anyway
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => setOpenPopup1(false)}
+          >
+            Recheck
+          </Button>
+        </Box>
+      </Popup>
     </>
   );
 });
