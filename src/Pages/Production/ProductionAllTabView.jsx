@@ -26,6 +26,7 @@ export const ProductionAllTabView = () => {
         "Stores",
         "Stores Delhi",
         "Production Delhi",
+        "Operations & Supply Chain Manager",
         "Production",
       ],
       component: <MaterialRequisitionFormView />,
@@ -34,6 +35,7 @@ export const ProductionAllTabView = () => {
       label: "Bill of Materials",
       roles: [
         "Director",
+        "Operations & Supply Chain Manager",
         "Accounts",
         "Stores Delhi",
         "Production Delhi",
@@ -46,6 +48,7 @@ export const ProductionAllTabView = () => {
       label: "Production Entry",
       roles: [
         "Director",
+        "Operations & Supply Chain Manager",
         "Accounts",
         "Stores Delhi",
         "Production Delhi",
@@ -58,6 +61,7 @@ export const ProductionAllTabView = () => {
       roles: [
         "Director",
         "Accounts",
+        "Operations & Supply Chain Manager",
         "Stores",
         "Stores Delhi",
         "Production",
@@ -71,6 +75,7 @@ export const ProductionAllTabView = () => {
       label: "MRF Products",
       roles: [
         "Director",
+        "Operations & Supply Chain Manager",
         "Accounts",
         "Accounts Billing Department",
         "Production",
@@ -79,7 +84,12 @@ export const ProductionAllTabView = () => {
     },
     {
       label: "Production Inventory (G&L)",
-      roles: ["Director", "Accounts", "Accounts Executive"],
+      roles: [
+        "Director",
+        "Accounts",
+        "Accounts Executive",
+        "Operations & Supply Chain Manager",
+      ],
       component: <ProductionInventoryGAndLView />,
     },
     {
@@ -90,6 +100,7 @@ export const ProductionAllTabView = () => {
         "Purchase",
         "Stores",
         "Stores Delhi",
+        "Operations & Supply Chain Manager",
         "Production Delhi",
         "Production",
       ],
@@ -97,12 +108,22 @@ export const ProductionAllTabView = () => {
     },
     {
       label: "Daily Production Report",
-      roles: ["Director", "Accounts", "Accounts Executive"],
+      roles: [
+        "Director",
+        "Operations & Supply Chain Manager",
+        "Accounts",
+        "Accounts Executive",
+      ],
       component: <DailyProductionReport />,
     },
     {
       label: "Weekly Production Report",
-      roles: ["Director", "Accounts", "Accounts Executive"],
+      roles: [
+        "Director",
+        "Operations & Supply Chain Manager",
+        "Accounts",
+        "Accounts Executive",
+      ],
       component: <WeeklyProductionReport />,
     },
   ];

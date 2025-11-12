@@ -361,19 +361,27 @@ export const ListItems = ({ setOpen }) => {
     {
       condition: isInGroups("Operations & Supply Chain Manager"),
       items: [
-        renderListItem("/dispatch/tab-view", <LocalShippingIcon />, "Dispatch"),
-
         renderSubmenu("master", <BusinessIcon />, "Master", [
           { to: "/user/profile-tab", text: "Employees Master" },
         ]),
         renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
+        renderSubmenu("inventory", <InventoryIcon />, "Inventory", [
+          { to: "/inventory/view-inventory", text: "Inventory" },
+        ]),
+        renderSubmenu("production", <FactoryIcon />, "Production", [
+          { to: "/inventory/view-production", text: "Production" },
+        ]),
         renderSubmenu("sales", <TrendingUpIcon />, "Sales", [
           { to: "/customers/all-customer", text: "Customer" },
         ]),
-        renderListItem("/user/analytics", <DashboardIcon />, "Analytics"),
+
+        renderListItem("/dispatch/tab-view", <LocalShippingIcon />, "Dispatch"),
         renderSubmenu("purchase", <PurchaseIcon />, "Purchase", [
+          { to: "/inventory/view-vendor", text: "Vendor" },
           { to: "/inventory/view-purchase", text: "Purchase" },
         ]),
+        renderListItem("/user/analytics", <DashboardIcon />, "Analytics"),
+
         renderSubmenu(
           "customer_complaint",
           <ComplaintIcon />,

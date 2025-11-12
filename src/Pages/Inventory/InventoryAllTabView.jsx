@@ -20,7 +20,14 @@ export const InventoryAllTabView = () => {
   const tabs = [
     {
       label: "Pending GRN",
-      roles: ["Director", "Accounts", "Stores", "Stores Delhi", "Production"],
+      roles: [
+        "Director",
+        "Operations & Supply Chain Manager",
+        "Accounts",
+        "Stores",
+        "Stores Delhi",
+        "Production",
+      ],
       component: <PackingListView />,
     },
     {
@@ -35,6 +42,7 @@ export const InventoryAllTabView = () => {
         "Accounts",
         "Purchase",
         "Stores",
+        "Operations & Supply Chain Manager",
         "Stores Delhi",
         "Accounts Executive",
         "Production",
@@ -43,7 +51,12 @@ export const InventoryAllTabView = () => {
     },
     {
       label: "Stores Inventory",
-      roles: ["Director", "Accounts", "Accounts Executive"],
+      roles: [
+        "Director",
+        "Accounts",
+        "Operations & Supply Chain Manager",
+        "Accounts Executive",
+      ],
       component: <StoresInventoryView />,
     },
     {
@@ -54,6 +67,7 @@ export const InventoryAllTabView = () => {
         "Purchase",
         "Stores",
         "Stores Delhi",
+        "Operations & Supply Chain Manager",
         "Production Delhi",
         "Production",
         "Accounts Executive",
@@ -63,17 +77,32 @@ export const InventoryAllTabView = () => {
     },
     {
       label: "Description Stores Inventory",
-      roles: ["Director", "Accounts", "Accounts Executive"],
+      roles: [
+        "Director",
+        "Accounts",
+        "Accounts Executive",
+        "Operations & Supply Chain Manager",
+      ],
       component: <DescriptionStoreInventoryView />,
     },
     {
       label: "Job Worker Stores Inventory",
-      roles: ["Director", "Accounts", "Accounts Executive"],
+      roles: [
+        "Director",
+        "Accounts",
+        "Operations & Supply Chain Manager",
+        "Accounts Executive",
+      ],
       component: <JobWorkerStoreInventoryView />,
     },
     {
       label: "Production Inventory",
-      roles: ["Director", "Accounts", "Accounts Executive"],
+      roles: [
+        "Director",
+        "Accounts",
+        "Operations & Supply Chain Manager",
+        "Accounts Executive",
+      ],
       component: <ProductionInventoryView />,
     },
     {
@@ -82,6 +111,7 @@ export const InventoryAllTabView = () => {
         "Director",
         "Accounts",
         "Purchase",
+        "Operations & Supply Chain Manager",
         "Stores Delhi",
         "Production Delhi",
         "Production",
