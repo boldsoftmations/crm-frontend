@@ -20,8 +20,8 @@ import FileSaver from "file-saver";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { tableCellClasses } from "@mui/material/TableCell";
-import { CustomPagination } from "./../../Components/CustomPagination";
-import { CustomLoader } from "./../../Components/CustomLoader";
+import { CustomPagination } from "../../Components/CustomPagination";
+import { CustomLoader } from "../../Components/CustomLoader";
 import moment from "moment";
 import { CSVLink } from "react-csv";
 import CustomTextField from "../../Components/CustomTextField";
@@ -31,18 +31,19 @@ import SearchComponent from "../../Components/SearchComponent ";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import { useSelector } from "react-redux";
 
-export const BlankLrView = () => {
+export const UploadedPODs = () => {
   const [open, setOpen] = useState(false);
-  const [LR_Pending, setLRPending] = useState("pending lr");
-
+  const [LR_Pending, setLRPending] = useState("");
+  const [userName, setUserName] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [salesRegisterData, setsalesRegisterData] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
   const [endDate, setEndDate] = useState(new Date()); // set endDate as one week ahead of startDate
   const [startDate, setStartDate] = useState(
-    new Date(endDate.getTime() - 30 * 24 * 60 * 60 * 1000)
+    new Date(endDate.getTime() - 1 * 24 * 60 * 60 * 1000)
   );
-
+  const name = ["Komal", "Reshma"];
+  const [allSalesRegisterData, setAllSalesRegisterData] = useState([]);
   const email = "";
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
@@ -55,7 +56,7 @@ export const BlankLrView = () => {
   const handleStartDateChange = (event) => {
     const date = new Date(event.target.value);
     setStartDate(date);
-    setEndDate(new Date(date.getTime() + 30 * 24 * 60 * 60 * 1000));
+    setEndDate(new Date(date.getTime() + 1 * 24 * 60 * 60 * 1000));
   };
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -63,26 +64,30 @@ export const BlankLrView = () => {
     try {
       setOpen(true);
       const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
-      const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
       const response = await InvoiceServices.getAllSaleRegisterData(
         StartDate,
-        EndDate,
+        "",
         "all",
         searchQuery,
         "",
-        LR_Pending
+        "completed pod"
       );
-      const data = response.data.map((item) => {
-        return {
-          date: moment(item.date).format("DD-MM-YYYY"),
-          sales_invoice: item.sales_invoice,
-          customer: item.customer,
-          dispatch_location: item.dispatch_location,
-          transporter: item.transporter,
-          lr_copy: item.lr_copy,
-          pod_copy: item.pod_copy,
-        };
-      });
+      const data = (
+        userName
+          ? response.data.filter((item) => item.pod_uploaded_by === userName)
+          : response.data
+      ).map((item) => ({
+        date: moment(item.date).format("DD-MM-YYYY"),
+        sales_invoice: item.sales_invoice,
+        customer: item.customer,
+        dispatch_location: item.dispatch_location,
+        transporter: item.transporter,
+        pod_uploaded_date: item.pod_uploaded_date,
+        pod_uploaded_by: item.pod_uploaded_by,
+        lr_copy: item.lr_copy,
+        pod_copy: item.pod_copy,
+      }));
+
       setOpen(false);
       return data;
     } catch (error) {
@@ -97,27 +102,27 @@ export const BlankLrView = () => {
     try {
       setOpen(true);
       const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
-      const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
       const response = await InvoiceServices.getAllSaleRegisterData(
         StartDate,
-        EndDate,
+        "",
         currentPage,
         searchQuery,
         email,
-        LR_Pending
+        "completed pod"
       );
       setsalesRegisterData(response.data.results);
+      setAllSalesRegisterData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
     } catch (error) {
       handleError(error);
     } finally {
       setOpen(false);
     }
-  }, [startDate, currentPage, searchQuery, LR_Pending]); // Ensure dependencies are correctly listed
+  }, [startDate, currentPage, searchQuery]); // Ensure dependencies are correctly listed
 
   useEffect(() => {
     getSalesRegisterData();
-  }, [startDate, currentPage, searchQuery, LR_Pending]);
+  }, [startDate, currentPage, searchQuery]);
 
   const handleSearch = (query) => {
     setSearchQuery(query);
@@ -144,7 +149,22 @@ export const BlankLrView = () => {
   };
   const handleAutoCompleteChange = (event, newValue) => {
     setLRPending(newValue);
+    if (!newValue) {
+      setsalesRegisterData(allSalesRegisterData);
+      setUserName("");
+      return;
+    }
+    let filteredDataNewvalue =
+      allSalesRegisterData &&
+      allSalesRegisterData.filter((item) => item.pod_uploaded_by === newValue);
+    console.log(newValue);
+    setUserName(newValue);
+    setsalesRegisterData(filteredDataNewvalue || []);
   };
+  useEffect(() => {
+    console.log(salesRegisterData);
+  }, [salesRegisterData]);
+
   const groups = Array.isArray(userData.groups)
     ? userData.groups
     : [userData.groups && userData.groups.toString()];
@@ -177,7 +197,7 @@ export const BlankLrView = () => {
                   id="Pending Status"
                   value={LR_Pending}
                   onChange={handleAutoCompleteChange}
-                  options={["pending lr", "pending pod"].map((item) => item)}
+                  options={name.map((item) => item)}
                   disabled={!userShows}
                 />
               </Grid>
@@ -210,7 +230,7 @@ export const BlankLrView = () => {
                   }
                   onChange={handleStartDateChange}
                 />
-                <CustomTextField
+                {/* <CustomTextField
                   sx={{ width: "300px" }}
                   label="End Date"
                   variant="outlined"
@@ -229,7 +249,7 @@ export const BlankLrView = () => {
                       : maxDate
                   }
                   disabled={!startDate}
-                />
+                /> */}
               </Grid>
 
               <Grid item xs={12} sm={3}>
@@ -251,7 +271,7 @@ export const BlankLrView = () => {
                     fontWeight: 800,
                   }}
                 >
-                  Pending Copy's
+                  Uploaded PODs
                 </h3>
               </Grid>
 
@@ -318,8 +338,14 @@ export const BlankLrView = () => {
                     Sales Invoice
                   </StyledTableCell>
                   <StyledTableCell align="center">Customer</StyledTableCell>
-                  <StyledTableCell>TransPort Name</StyledTableCell>
+                  <StyledTableCell align="center">
+                    PodUploadDate
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    TransPort Name
+                  </StyledTableCell>
 
+                  <StyledTableCell align="center">Uploaded BY</StyledTableCell>
                   <StyledTableCell align="center">
                     Dispatch Location
                   </StyledTableCell>
@@ -392,9 +418,11 @@ function Row(props) {
         </TableCell>
         <TableCell align="center">{row.sales_invoice}</TableCell>
         <TableCell align="center">{row.customer}</TableCell>
+        <TableCell align="center">{row.pod_uploaded_date}</TableCell>
         <TableCell align="center">{row.transporter}</TableCell>
-
+        <TableCell align="center">{row.pod_uploaded_by}</TableCell>
         <TableCell align="center">{row.dispatch_location}</TableCell>
+
         <TableCell align="center">
           {row.lr_copy !== null && (
             <Button
@@ -491,9 +519,11 @@ const headers = [
   { label: "Customer", key: "customer" },
   { label: "Unit", key: "unit" },
   { label: "Dispatch Location", key: "dispatch_location" },
-  { label: "Transporter", key: "transporter" },
+  { label: "Transport Name", key: "transporter" },
+  { label: "POD Uploaded Date", key: "pod_uploaded_date" },
+  { label: "POD Uploaded By", key: "pod_uploaded_by" },
   { label: "LR Copy", key: "lr_copy" },
   { label: "POD Copy", key: "pod_copy" },
 ];
 
-export default BlankLrView;
+export default UploadedPODs;

@@ -6,6 +6,7 @@ import { Dispatched } from "./Dispatched";
 import { SalesRegisterView } from "./SalesRegisterView";
 import { ExportView } from "./ExportView";
 import BlankLrView from "./BlankLrView";
+import { UploadedPODs } from "./UploadedPOD";
 
 export const AllDispatchTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
@@ -60,6 +61,7 @@ export const AllDispatchTabView = () => {
       visible: allTabs || twoTabs || customerServiceTab,
       index: 1,
     },
+
     {
       label: "Export Invoice",
       visible: allTabs || twoTabs || customerServiceTab,
@@ -76,6 +78,11 @@ export const AllDispatchTabView = () => {
       visible: "admin" || "operations & supply chain manager",
       index: 4,
     },
+    {
+      label: "Uploaded POD",
+      visible: "admin" || "operations & supply chain manager",
+      index: 5,
+    },
   ];
 
   const visibleTabs = tabs.filter((tab) => tab.visible);
@@ -87,6 +94,7 @@ export const AllDispatchTabView = () => {
     2: <ExportView />,
     3: <SalesRegisterView />,
     4: <BlankLrView />,
+    5: <UploadedPODs />,
   };
 
   return (
