@@ -74,7 +74,7 @@ export const UploadedPODs = () => {
       );
       const data = (
         userName
-          ? response.data.filter((item) => item.pod_uploaded_by === userName)
+          ? response.data.filter((item) => item.pod_uploaded_by_name === userName)
           : response.data
       ).map((item) => ({
         date: moment(item.date).format("DD-MM-YYYY"),
@@ -83,7 +83,7 @@ export const UploadedPODs = () => {
         dispatch_location: item.dispatch_location,
         transporter: item.transporter,
         pod_uploaded_date: item.pod_uploaded_date,
-        pod_uploaded_by: item.pod_uploaded_by,
+        pod_uploaded_by_name: item.pod_uploaded_by_name,
         lr_copy: item.lr_copy,
         pod_copy: item.pod_copy,
       }));
@@ -156,7 +156,7 @@ export const UploadedPODs = () => {
     }
     let filteredDataNewvalue =
       allSalesRegisterData &&
-      allSalesRegisterData.filter((item) => item.pod_uploaded_by === newValue);
+      allSalesRegisterData.filter((item) => item.pod_uploaded_by_name === newValue);
     console.log(newValue);
     setUserName(newValue);
     setsalesRegisterData(filteredDataNewvalue || []);
@@ -420,7 +420,7 @@ function Row(props) {
         <TableCell align="center">{row.customer}</TableCell>
         <TableCell align="center">{row.pod_uploaded_date}</TableCell>
         <TableCell align="center">{row.transporter}</TableCell>
-        <TableCell align="center">{row.pod_uploaded_by}</TableCell>
+        <TableCell align="center">{row.pod_uploaded_by_name}</TableCell>
         <TableCell align="center">{row.dispatch_location}</TableCell>
 
         <TableCell align="center">
@@ -521,7 +521,7 @@ const headers = [
   { label: "Dispatch Location", key: "dispatch_location" },
   { label: "Transport Name", key: "transporter" },
   { label: "POD Uploaded Date", key: "pod_uploaded_date" },
-  { label: "POD Uploaded By", key: "pod_uploaded_by" },
+  { label: "POD Uploaded By", key: "pod_uploaded_by_name" },
   { label: "LR Copy", key: "lr_copy" },
   { label: "POD Copy", key: "pod_copy" },
 ];

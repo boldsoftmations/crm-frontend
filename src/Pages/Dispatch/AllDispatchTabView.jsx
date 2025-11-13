@@ -39,6 +39,7 @@ export const AllDispatchTabView = () => {
     "Factory-Mumbai-Dispatch",
     "Factory-Delhi-Dispatch"
   );
+  const adminTab = isInGroups("Director", "Operations & Supply Chain Manager");
   const customerServiceTab = isInGroups("Customer Service");
   const salesRegisterTab = isInGroups("Accounts Billing Department");
 
@@ -74,12 +75,12 @@ export const AllDispatchTabView = () => {
     },
     {
       label: "Pending LR Copy",
-      visible: "admin" || "operations & supply chain manager",
+      visible: adminTab || dispatchPODPending,
       index: 4,
     },
     {
       label: "Uploaded POD",
-      visible: "admin" || "operations & supply chain manager",
+      visible: adminTab,
       index: 5,
     },
   ];
