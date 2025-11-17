@@ -31,6 +31,8 @@ export const CustomerNoWhatsappGroup = () => {
     customerNotHavingWhatsappGroupData,
     setCustomerNotHavingWhatsappGroupData,
   ] = useState([]);
+  // const [isStatus, setIsStatus] = useState("");
+  const [status, setstatus] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [openPopupKycUpdate, setOpenPopupKycUpdate] = useState(false);
@@ -57,9 +59,11 @@ export const CustomerNoWhatsappGroup = () => {
         const res = await CustomerServices.getCustomerNotHavingWhatsappGroup(
           page,
           searchValue,
-          filterCustomer
+          filterCustomer,
+          status
         );
         setCustomerNotHavingWhatsappGroupData(res.data.results);
+
         setTotalPages(Math.ceil(res.data.count / 25));
         if (currentPage > Math.ceil(res.data.count / 25)) {
           setCurrentPage(1);
@@ -71,7 +75,7 @@ export const CustomerNoWhatsappGroup = () => {
         setOpen(false);
       }
     },
-    [searchQuery, filterCustomer]
+    [searchQuery, filterCustomer, status]
   );
 
   useEffect(() => {
@@ -97,18 +101,23 @@ export const CustomerNoWhatsappGroup = () => {
     setCurrentPage(1);
   };
 
+  const handleStatus = (event, value) => {
+    setstatus(value);
+  };
+
   const refreshData = async () => {
     await getAllCustomerNotHavingWhatsappGroup(currentPage, searchQuery);
   };
 
   const Tabledata = Array.isArray(customerNotHavingWhatsappGroupData)
     ? customerNotHavingWhatsappGroupData.map((row) => ({
-      name: row.name,
-      id: row.id,
-    }))
+        name: row.name,
+        status: row.active_status,
+        id: row.id,
+      }))
     : [];
 
-  const Tableheaders = ["Company", "Action"];
+  const Tableheaders = ["Company", "Status", "Action"];
 
   const handleKycUpdate = (data) => {
     setSelectedCustomerData(data.id);
@@ -191,6 +200,18 @@ export const CustomerNoWhatsappGroup = () => {
                   label="Filter By Type of Customer"
                 />
               </Grid>
+
+              <Grid item xs={12} sm={3}>
+                <CustomAutocomplete
+                  size="small"
+                  fullWidth
+                  value={status}
+                  onChange={handleStatus}
+                  options={["active", "inactive"]}
+                  getOptionLabel={(option) => option}
+                  label="Filter by Status"
+                />
+              </Grid>
             </Grid>
           </Box>
           <TableContainer
@@ -226,7 +247,9 @@ export const CustomerNoWhatsappGroup = () => {
                 {Tabledata.map((row, i) => (
                   <StyledTableRow key={i}>
                     <StyledTableCell align="center">{row.name}</StyledTableCell>
-
+                    <StyledTableCell align="center">
+                      {row.status}
+                    </StyledTableCell>
                     <StyledTableCell align="center">
                       <Box
                         display="flex"

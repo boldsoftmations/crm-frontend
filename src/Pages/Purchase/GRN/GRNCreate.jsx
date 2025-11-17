@@ -33,6 +33,8 @@ export const GRNCreate = memo(
         qa_accepted: "",
       }))
     );
+    console.log(products.map((data) => data.order_quantity));
+
     const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
       useNotificationHandling();
 
@@ -46,6 +48,8 @@ export const GRNCreate = memo(
       const { name, value } = event.target;
       console.log("name", name);
       console.log("value", value);
+      // console.log(products && products.order_quantity, products.qa_rejected);
+
       const updatedProducts = products.map((item, idx) =>
         idx === index
           ? {
@@ -65,6 +69,27 @@ export const GRNCreate = memo(
     const createGrnDetails = useCallback(
       async (e) => {
         e.preventDefault();
+        console.log(products.order_quantity, products.qa_rejected);
+        // if (products.order_quantity === products.qa_rejected) {
+        //   handleError("This is not valid method to reject all the quantity");
+        //   return;
+        // }
+        const invalid = products.some(
+          (item) => Number(item.qa_rejected) === Number(item.order_quantity)
+        );
+        const greater = products.some(
+          (item) => Number(item.qa_rejected) > Number(item.order_quantity)
+        );
+        if (greater) {
+          handleError("Rejected quantity should be less than order quantity");
+          return;
+        }
+
+        if (invalid) {
+          handleError("This is not valid method to reject all the quantity");
+          return; // STOP execution
+        }
+
         setOpen(true);
 
         const payload = {

@@ -22,6 +22,7 @@ import { useSelector } from "react-redux";
 import CustomTextField from "../../Components/CustomTextField";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import CallDashboard from "./CallStatusDashboard";
+// import Diversity1Icon from "@mui/icons-material/Diversity1";
 
 export const SalesPersonAnalytics = (props) => {
   // Destructuring the props passed to this component
@@ -234,15 +235,18 @@ export const SalesPersonAnalytics = (props) => {
 
   // Define additional color palette
   const COLORS = [
+    "#ffe2e6",
+    "#fff4de",
+    "#dcfce7",
+    "#f4e8ff",
     "#8884d8",
     "#83a6ed",
     "#8dd1e1",
-    "#82ca9d",
     "#ffbb00",
-    "#ff7f50",
+
     "#ff69b4",
     "#ba55d3",
-    "#cd5c5c",
+
     "#ffa500",
     "#adff2f",
     "#008080",
@@ -405,7 +409,7 @@ export const SalesPersonAnalytics = (props) => {
             container
             spacing={{ xs: 2, md: 3 }}
             columns={{ xs: 4, sm: 8, md: 12 }}
-            sx={{ margin: "20px" }}
+            sx={{ margin: "20px", p: 2 }}
           >
             {pieChartData.map((data, index) => {
               let percentage = 0;
@@ -418,41 +422,84 @@ export const SalesPersonAnalytics = (props) => {
                   item
                   xs={1}
                   sm={2}
-                  md={3}
-                  lg={3}
+                  md={2}
+                  lg={2}
                   key={index}
-                  sx={{ marginTop: "20px" }}
+                  bgcolor={"white"}
+                  sx={{
+                    marginTop: "20px",
+                    // bgcolor: "red",
+
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    borderRadius: "10px",
+                  }}
                 >
                   <Box
                     sx={{
                       backgroundColor: COLORS[index % COLORS.length],
-                      textAlign: "center",
+                      textAlign: "start",
+                      padding: 2,
+                      width: "150px",
+                      borderRadius: "10px",
+                      justifyContent: "center",
+                      alignItems: "center",
                     }}
                   >
                     <Box
                       display="flex"
-                      flexDirection="row"
-                      justifyContent="space-around"
+                      flexDirection="column"
+                      justifyContent="center"
+                      gap="10px"
                     >
                       <Box sx={{ marginTop: "10px" }}>
+                        {/*                        
                         <CircularProgressWithLabel
                           variant="determinate"
                           value={percentage}
                           // sx={{ backgroundColor: "#ccc" }}
-                        />
+                        /> */}
+                        <span
+                          style={{
+                            background: data.bgcolor,
+                            padding: "10px",
+                            borderRadius: "50%",
+                            color: "white",
+                          }}
+                        >
+                          {data.logo}
+                        </span>
                       </Box>
                       <Box sx={{ marginTop: "10px" }}>
                         <Typography
+                          variant="h6"
+                          sx={{
+                            color: "black",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          {data.value}
+                        </Typography>
+                        <Typography
                           variant="subtitle1"
-                          sx={{ color: "white", fontWeight: "bold" }}
+                          sx={{
+                            color: "black",
+                            fontSize: "12px",
+                            fontWeight: "bold",
+                          }}
                         >
                           {data.label}
                         </Typography>
                         <Typography
-                          variant="h6"
-                          sx={{ color: "white", fontWeight: "bold" }}
+                          variant="subtitle1"
+                          sx={{
+                            color: "blue",
+                            fontSize: "10px",
+                            fontWeight: "semibold",
+                          }}
                         >
-                          {data.value}
+                          +{percentage.toFixed(2)}%
                         </Typography>
                       </Box>
                     </Box>
@@ -460,6 +507,33 @@ export const SalesPersonAnalytics = (props) => {
                 </Grid>
               );
             })}
+            <Grid item xs={12} sm={4} sx={{}}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" color="primary">
+                    Description
+                  </Typography>
+                  <Divider />
+                  <CustomChart
+                    chartType="PieChart"
+                    data={[
+                      ["Product Description", "Quantity"],
+                      ...descriptionQuantity.map((item) => [
+                        item.name,
+                        item.value,
+                      ]),
+                    ]}
+                    options={{
+                      // title: "Description Wise Sales Quantity",
+                      width: "100%",
+                      height: "150px",
+                    }}
+                    widthStyle={"100%"}
+                    heightStyle={"150px"}
+                  />
+                </CardContent>
+              </Card>
+            </Grid>
           </Grid>
 
           {/* Filter By Sales Person */}

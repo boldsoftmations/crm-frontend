@@ -499,6 +499,28 @@ const getCandidates = () => {
 const getRevisedDataHrFollowup = () => {
   return CustomAxios.get("/api/hr/applicant-followup/revised_followup_date/");
 };
+
+export const createWarningLetter = (data) => {
+  return CustomAxios.post(`/api/user/employee-warning/`, data);
+};
+
+export const viewWarningLetter = (page, search, filter) => {
+  const params = new URLSearchParams();
+
+  if (page) {
+    params.append("page", page);
+  }
+
+  if (search) {
+    params.append("search", search);
+  }
+
+  if (filter) {
+    params.append("employee__user__first_name", filter);
+  }
+  return CustomAxios.get(`/api/user/employee-warning/?${params.toString()}`);
+};
+
 const Hr = {
   getDesignationsData,
   addDesignation,

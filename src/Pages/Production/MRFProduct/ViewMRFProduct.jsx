@@ -188,7 +188,8 @@ export const ViewMRFProduct = () => {
                   searchValue={searchValue}
                   setSearchValue={setSearchValue}
                   onSearch={handleSearch}
-                  handleReset={handleReset}
+                  onReset={handleReset}
+                  // onReset={""}
                 />
                 <CustomAutocomplete
                   size="small"

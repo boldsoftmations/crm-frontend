@@ -21,10 +21,12 @@ import UpdateUser from "./UpdateUser";
 import { SignUp } from "../Auth/SignUp";
 import UserProfileService from "../../services/UserProfileService";
 import CustomSnackbar from "../../Components/CustomerSnackbar";
+import CreateWarningLetter from "./WarningLetter/CreateWarningLetter";
 
 export const ActiveUsers = () => {
   const [open, setOpen] = useState(false);
   const [openAddEmployeesPopUp, setOpenAddEmployeesPopUp] = useState(false);
+  const [openWarningLetterOpup, setOpenWarningLetterOpup] = useState(false);
   const [activeUsersData, setActiveUsersData] = useState([]);
   const [groupsData, setGroupsData] = useState([]);
   const [editData, setEditData] = useState([]);
@@ -116,6 +118,11 @@ export const ActiveUsers = () => {
     } finally {
       setOpen(false);
     }
+  };
+
+  const handleOpenWarningLetterPopup = (data) => {
+    setOpenWarningLetterOpup(true);
+    setEditData(data);
   };
   return (
     <>
@@ -216,22 +223,32 @@ export const ActiveUsers = () => {
                       {row.ref_user}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      <Button
-                        variant="text"
-                        color="info"
-                        size="small"
-                        onClick={() => openInPopup(row)}
-                      >
-                        View
-                      </Button>
-                      <Button
-                        variant="text"
-                        color="success"
-                        size="small"
-                        onClick={() => handlChangePassword(row)}
-                      >
-                        Change password
-                      </Button>
+                      <Box display="flex" alignItems="center">
+                        <Button
+                          variant="text"
+                          color="info"
+                          size="small"
+                          onClick={() => openInPopup(row)}
+                        >
+                          View
+                        </Button>
+                        <Button
+                          variant="text"
+                          color="success"
+                          size="small"
+                          onClick={() => handlChangePassword(row)}
+                        >
+                          Reset Password
+                        </Button>
+                        <Button
+                          variant="text"
+                          color="warning"
+                          size="small"
+                          onClick={() => handleOpenWarningLetterPopup(row)}
+                        >
+                          Warning
+                        </Button>
+                      </Box>
                     </StyledTableCell>
                   </StyledTableRow>
                 ))}
@@ -262,6 +279,18 @@ export const ActiveUsers = () => {
       >
         <SignUp
           setOpenPopup={setOpenAddEmployeesPopUp}
+          refreshPageFunction={getAllUsersDetails}
+        />
+      </Popup>
+      <Popup
+        maxWidth="md"
+        title={"Send Warning Letter"}
+        openPopup={openWarningLetterOpup}
+        setOpenPopup={setOpenWarningLetterOpup}
+      >
+        <CreateWarningLetter
+          setOpenPopup={setOpenWarningLetterOpup}
+          editData={editData}
           refreshPageFunction={getAllUsersDetails}
         />
       </Popup>

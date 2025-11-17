@@ -308,7 +308,8 @@ const getAllWhatsappGroupData = (page = 1, searchValue) => {
 const getCustomerNotHavingWhatsappGroup = (
   page,
   searchValue,
-  customerFilter
+  customerFilter,
+  sale_invoice_status
 ) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
@@ -324,6 +325,9 @@ const getCustomerNotHavingWhatsappGroup = (
   }
   if (customerFilter) {
     params.append("type_of_customer", customerFilter);
+  }
+  if (sale_invoice_status) {
+    params.append("sale_invoice_status", sale_invoice_status);
   }
 
   // Sending a GET request with query parameters
@@ -525,6 +529,26 @@ const getAllDescription = () => {
   return CustomAxios.get("/api/customer/description-product/");
 };
 
+const getAllProductDescription = () => {
+  return CustomAxios.get(`/api/product/description/`);
+};
+const getDiscription = (desc_id) => {
+  const params = new URLSearchParams();
+  if (desc_id) {
+    params.append("desc_id", desc_id);
+  }
+  return CustomAxios.get(
+    `/api/customer/description-product/?${params.toString()}`
+  );
+};
+const getproductToDescription = (desc_id) => {
+  const params = new URLSearchParams();
+  if (desc_id) {
+    params.append("desc_id", desc_id);
+  }
+  return CustomAxios.get(`/api/product/product/?${params.toString()}`);
+};
+
 //capa api
 
 const CreateCapa = (data) => {
@@ -693,6 +717,9 @@ const getNewCustomers = (
 };
 
 const CustomerServices = {
+  getproductToDescription,
+  getDiscription,
+  getAllProductDescription,
   getAllCustomerData,
   getIncompleteKycCustomerData,
   getInActiveCustomerData,

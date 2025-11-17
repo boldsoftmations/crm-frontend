@@ -1,4 +1,4 @@
-import { Box, Button, Grid, } from "@mui/material";
+import { Box, Button, Grid } from "@mui/material";
 import React, { memo, useEffect, useState } from "react";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import InventoryServices from "../../../services/InventoryService";
@@ -11,7 +11,7 @@ import { MessageAlert } from "../../../Components/MessageAlert";
 export const MaterialTransferNoteCreate = memo((props) => {
   const {
     setOpenCreatePopup,
-    sellerOption,
+
     getAllMaterialTransferNoteDetails,
     currentPage,
     searchQuery,
@@ -36,6 +36,7 @@ export const MaterialTransferNoteCreate = memo((props) => {
       );
       if (selectedProduct) {
         updates.product__unit = selectedProduct.product__unit;
+        updates.seller_account = selectedProduct.seller_account;
       }
     }
 
@@ -78,7 +79,7 @@ export const MaterialTransferNoteCreate = memo((props) => {
     setOpen(true);
 
     const requestPayload = {
-      seller_account: materialTransferNoteDetails.seller_account,
+      // seller_account: materialTransferNoteDetails.seller_account,
       user: users.email,
       product: materialTransferNoteDetails.product,
       quantity: materialTransferNoteDetails.quantity,
@@ -119,21 +120,6 @@ export const MaterialTransferNoteCreate = memo((props) => {
         onSubmit={(e) => createMaterialTransferNoteDetails(e)}
       >
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={6} md={3}>
-            <CustomAutocomplete
-              size="small"
-              disablePortal
-              id="seller-account-combo-box"
-              onChange={(event, value) =>
-                handleSelectChange("seller_account", value)
-              }
-              options={sellerOption.map((option) => option.unit)}
-              getOptionLabel={(option) => option}
-              sx={{ minWidth: 120 }}
-              label="Seller Account"
-            />
-          </Grid>
-
           {/* Product Name */}
           <Grid item xs={12} sm={6} md={6}>
             <CustomAutocomplete
@@ -145,6 +131,16 @@ export const MaterialTransferNoteCreate = memo((props) => {
               getOptionLabel={(option) => option}
               sx={{ minWidth: 120 }}
               label="Product Name"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <CustomTextField
+              fullWidth
+              name="unit"
+              size="small"
+              label="seller account"
+              variant="outlined"
+              value={materialTransferNoteDetails.seller_account || ""}
             />
           </Grid>
 

@@ -4,6 +4,10 @@ import { useNavigate } from "react-router-dom";
 import DashboardService from "../../services/DashboardService";
 import { CustomLoader } from "../../Components/CustomLoader";
 import { SalesPersonAnalytics } from "./SalesPersonAnalytics";
+import InterpreterModeIcon from "@mui/icons-material/InterpreterMode";
+import PersonOffOutlinedIcon from "@mui/icons-material/PersonOffOutlined";
+import PersonAddAltOutlinedIcon from "@mui/icons-material/PersonAddAltOutlined";
+import StickyNote2OutlinedIcon from "@mui/icons-material/StickyNote2Outlined";
 
 export const SalesPersonDashboard = () => {
   const navigate = useNavigate();
@@ -120,20 +124,29 @@ export const SalesPersonDashboard = () => {
 
       const CustomerData = [
         {
-          label: "Active Customers",
-          value: CustomeDetail.active_customers,
-        },
-        {
           label: "Dead Customers",
           value: CustomeDetail.dead_customers,
+          logo: <PersonOffOutlinedIcon />,
+          bgcolor: "#ff3f68",
         },
+        {
+          label: "Active Customers",
+          value: CustomeDetail.active_customers,
+          logo: <InterpreterModeIcon />,
+          bgcolor: "#fe9c84",
+        },
+
         {
           label: "New Customers",
           value: CustomeDetail.new_customers,
+          logo: <PersonAddAltOutlinedIcon />,
+          bgcolor: "#3cd755",
         },
         {
           label: "Total",
           value: CustomeDetail.total_customers,
+          logo: <StickyNote2OutlinedIcon />,
+          bgcolor: "#c086fe",
         },
       ];
 
