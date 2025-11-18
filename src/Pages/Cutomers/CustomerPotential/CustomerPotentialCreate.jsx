@@ -71,7 +71,7 @@ export const CustomerPotentialCreate = ({
   const handleProductChange = (event, value) => {
     setPotential((prev) => ({
       ...prev,
-      product: value ? value.name : null,
+      product: value,
     }));
   };
 
@@ -90,7 +90,7 @@ export const CustomerPotentialCreate = ({
 
       const payload = {
         company: recordForEdit,
-        product: potential.product, // ID only
+        product: potential.product.name, // ID only
         current_buying_quantity: potential.current_buying_quantity,
       };
       console.log(payload);
