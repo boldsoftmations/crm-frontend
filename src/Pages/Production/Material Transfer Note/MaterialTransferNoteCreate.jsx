@@ -79,7 +79,7 @@ export const MaterialTransferNoteCreate = memo((props) => {
     setOpen(true);
 
     const requestPayload = {
-      // seller_account: materialTransferNoteDetails.seller_account,
+      seller_account: materialTransferNoteDetails.seller_account,
       user: users.email,
       product: materialTransferNoteDetails.product,
       quantity: materialTransferNoteDetails.quantity,
