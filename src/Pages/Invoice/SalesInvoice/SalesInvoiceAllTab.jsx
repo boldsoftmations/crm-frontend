@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { TallyInvoice } from "./TallyInvoice";
 import { SalesInvoiceView } from "./SalesInvoiceView";
 import { CustomTabs } from "../../../Components/CustomTabs";
+import { SalesHistoryView } from "./SalesHistory/SalesHistoryView";
 
 export const SalesInvoiceAllTab = () => {
   const userData = useSelector((state) => state.auth.profile);
@@ -20,6 +21,11 @@ export const SalesInvoiceAllTab = () => {
       label: "Tally Invoice Export",
       roles: ["Director", "Accounts", "Accounts Billing Department"],
       component: <TallyInvoice />,
+    },
+    {
+      label: "Sales History",
+      roles: ["Director", "Accounts"],
+      component: <SalesHistoryView />,
     },
   ];
 
