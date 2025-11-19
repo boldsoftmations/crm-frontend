@@ -85,22 +85,23 @@ export const SalesHistoryView = () => {
 
       // Map the filtered data to the desired export format
       filteredData.forEach((item) => {
-        item.products_si.map((product) => {
-          const exportData = {
-            date: item.generation_date,
-            seller_unit: item.seller_unit,
-            product: product.product,
-            quantity: product.quantity,
-            invoice_type: item.invoice_type,
-            invoice_no: item.invoice_no,
-            proforma_invoice: item.proforma_invoice_list.join(", "),
-            customer: item.company,
-            taxabale_amount: item.amount,
-          };
+        const rowData = {
+          date: item.generation_date,
+          seller_unit: item.seller_unit,
+          invoice_type: item.invoice_type,
+          invoice_no: item.invoice_no,
+          proforma_invoice: item.proforma_invoice_list.join(", "),
+          customer: item.company,
+          taxabale_amount: item.amount,
+        };
 
-          // Check if item.cancelled is not true and then add data
-          data.push(exportData);
+        // Add dynamic product columns (product_0, product_1...)
+        item.products_si.forEach((p, i) => {
+          rowData[`product_${i + 1}`] = p.product;
+          rowData[`quantity_${i + 1}`] = p.quantity;
         });
+
+        data.push(rowData);
       });
 
       setOpen(false);

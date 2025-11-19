@@ -62,7 +62,14 @@ export const ViewUnit = () => {
     setOpenPopup(true);
   };
 
-  const TableHeader = ["ID", "UNIT", "SHORT NAME", "ACTION"];
+  const TableHeader = [
+    "ID",
+    "UNIT",
+    "SHORT NAME",
+    "TYPE OF UNIT",
+    "DECIMAL DIGIT",
+    "ACTION",
+  ];
   const TableData = unit.map((value) => value);
 
   return (

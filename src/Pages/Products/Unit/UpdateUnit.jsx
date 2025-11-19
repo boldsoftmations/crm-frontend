@@ -1,5 +1,5 @@
 import { Box, Button, Grid } from "@mui/material";
-import React, { memo, useCallback, useState } from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import ProductService from "../../../services/ProductService";
 import CustomTextField from "../../../Components/CustomTextField";
 import { CustomLoader } from "../../../Components/CustomLoader";
@@ -13,9 +13,18 @@ export const UpdateUnit = memo((props) => {
   const [unit, setUnit] = useState(recordForEdit);
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
-
+  const [isDecimal, setIsDecimal] = useState(true);
+  console.log(recordForEdit);
+  useEffect(() => {
+    if (recordForEdit.type_of_unit === "decimal") {
+      setIsDecimal(false);
+    } else {
+      setIsDecimal(true);
+    }
+  }, [recordForEdit]);
   const handleInputChange = (event) => {
     const { name, value } = event.target;
+
     setUnit({ ...unit, [name]: value });
   };
 
@@ -23,10 +32,27 @@ export const UpdateUnit = memo((props) => {
     async (e) => {
       try {
         e.preventDefault();
+        if (unit.max_decimal_digit < 1) {
+          handleError("Digits must be greater than 0");
+          return;
+        }
+        if (unit.max_decimal_digit > 6) {
+          handleError("Digits must be less than or equal to 6");
+          return;
+        }
+        if (
+          Number(unit.max_decimal_digit) ===
+          Number(recordForEdit.max_decimal_digit)
+        ) {
+          handleError("its equal to previous value");
+          return;
+        }
         setOpen(true);
         const data = {
           name: unit.name,
           short_name: unit.short_name,
+          type_of_unit: unit.type_of_unit,
+          max_decimal_digit: unit.max_decimal_digit,
         };
         if (recordForEdit) {
           const response = await ProductService.updateUnit(unit.id, data);
@@ -89,6 +115,35 @@ export const UpdateUnit = memo((props) => {
               variant="outlined"
               value={unit.short_name || ""}
               onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <CustomTextField
+              fullWidth
+              name="type_of_unit"
+              size="small"
+              label="Type"
+              variant="outlined"
+              value={recordForEdit.type_of_unit || ""}
+              onChange={handleInputChange}
+              disabled={true}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <CustomTextField
+              fullWidth
+              type="number"
+              name="max_decimal_digit"
+              size="small"
+              label="Decimal Digits"
+              variant="outlined"
+              value={
+                recordForEdit.type_of_unit === "decimal"
+                  ? unit.max_decimal_digit
+                  : 0
+              }
+              onChange={handleInputChange}
+              disabled={isDecimal}
             />
           </Grid>
         </Grid>
