@@ -143,20 +143,22 @@ export const CompanyDetails = () => {
           type: row.type,
           status: row.status,
           contacts: row.contacts
-            .map((item) => item?.contact || "")
+            .map((item) => (item.contact && item.contact) || "")
             .filter(Boolean)
             .join(", "),
 
           alternate_contact: row.contacts
-            .map((item) => item?.alternate_contact || "")
+            .map(
+              (item) => (item.alternate_contact && item.alternate_contact) || ""
+            )
             .filter(Boolean),
 
           alternate_email: row.contacts
-            .map((item) => item?.alternate_email || "")
+            .map((item) => (item.alternate_email && item.alternate_email) || "")
             .filter(Boolean),
 
           designation: row.contacts
-            .map((item) => item?.designation || "")
+            .map((item) => (item.designation && item.designation) || "")
             .filter(Boolean),
         };
       });
