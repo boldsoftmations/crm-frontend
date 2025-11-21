@@ -106,13 +106,6 @@ export const CompanyDetails = () => {
     { label: "BUSINESS TYPE", key: "business_type" },
     { label: "CATEGORY", key: "category" },
     { label: "EST. DATE", key: "est_date" },
-    { label: "TYPE", key: "designation" },
-    { label: "CONTACT NAME", key: "contact_name" },
-
-    { label: "ALTERNATE CONTACT", key: "alternate_contact" },
-    { label: "EMAIL", key: "email" },
-    { label: "ALTERNATE EMAIL", key: "alternate_email" },
-
     { label: "CONTACTS", key: "contacts" },
   ];
 
@@ -140,25 +133,12 @@ export const CompanyDetails = () => {
           business_type: row.business_type,
           category: row.category,
           est_date: row.est_date,
-          total_sales_turnover: row.total_sales_turnover,
-          type: row.type,
-          status: row.status,
           contacts: row.contacts
             .map((item) => item.contact && item.contact)
             .join(", "),
-          alternate_contact: row.contacts.map(
-            (item) => item.alternate_contact && item.alternate_contact
-          ),
-          alternate_email: row.contacts.map((item) => item.alternate_email),
-          designation: row.contacts.map((item) => item.designation),
-          contact_name: row.contacts.map((item) => item.name),
         };
       });
 
-      console.log(
-        "data",
-        data.map((item) => item.contacts)
-      );
       setOpen(false);
       return data;
     } catch (error) {
