@@ -35,8 +35,8 @@ export const CustomerPotentialCreate = ({
     const fetchProducts = async () => {
       try {
         setOpen(true);
-        const res = await CustomerServices.getAllProductDescription();
-        setProductList(res.data.results || []);
+        const res = await CustomerServices.getAllProductDescription("all");
+        setProductList(res.data || []);
       } catch (err) {
         console.error("Error fetching product list:", err);
       } finally {

@@ -529,8 +529,12 @@ const getAllDescription = () => {
   return CustomAxios.get("/api/customer/description-product/");
 };
 
-const getAllProductDescription = () => {
-  return CustomAxios.get(`/api/product/description/`);
+const getAllProductDescription = (page) => {
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+  return CustomAxios.get(`/api/product/description/?${params.toString()}`);
 };
 const getDiscription = (desc_id) => {
   const params = new URLSearchParams();
