@@ -69,27 +69,40 @@ export const GRNCreate = memo(
     const createGrnDetails = useCallback(
       async (e) => {
         e.preventDefault();
-        console.log(products.order_quantity, products.qa_rejected);
-        // if (products.order_quantity === products.qa_rejected) {
-        //   handleError("This is not valid method to reject all the quantity");
-        //   return;
-        // }
-        const invalid = products.some(
-          (item) => Number(item.qa_rejected) === Number(item.order_quantity)
+
+        // If any product has non-zero order quantity
+        const hasValidOrderQty = products.some(
+          (item) => Number(item.order_quantity) !== 0
         );
-        const greater = products.some(
-          (item) => Number(item.qa_rejected) > Number(item.order_quantity)
+
+        // Rejecting FULL quantity is not allowed
+        const isInvalidFullReject = products.some(
+          (item) =>
+            Number(item.qa_rejected) === Number(item.order_quantity) &&
+            Number(item.order_quantity) !== 0
         );
-        if (greater) {
-          handleError("Rejected quantity should be less than order quantity");
-          return;
+
+        // Debug
+        console.log("hasValidOrderQty", hasValidOrderQty);
+
+        if (hasValidOrderQty) {
+          // Rejected > Ordered → INVALID
+          const isGreater = products.some(
+            (item) => Number(item.qa_rejected) > Number(item.order_quantity)
+          );
+
+          if (isGreater) {
+            handleError("Rejected quantity should be less than order quantity");
+            return;
+          }
+
+          if (isInvalidFullReject) {
+            handleError("This is not valid method to reject all the quantity");
+            return;
+          }
         }
 
-        if (invalid) {
-          handleError("This is not valid method to reject all the quantity");
-          return; // STOP execution
-        }
-
+        // Continue processing
         setOpen(true);
 
         const payload = {
@@ -109,6 +122,7 @@ export const GRNCreate = memo(
           const successMessage =
             response.data.message || "GRN Created successfully";
           handleSuccess(successMessage);
+
           setTimeout(() => {
             setOpenPopup(false);
             getAllPackingListDetails(currentPage, acceptedFilter, searchQuery);
