@@ -269,7 +269,9 @@ export const SaleReturnInventory = () => {
                       {row.description}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {row.quantity}
+                      {row.type_of_unit === "decimal"
+                        ? row.quantity
+                        : Math.round(row.quantity)}
                     </StyledTableCell>
                     {(users.groups.includes("Director") ||
                       users.groups.includes("Accounts")) && (

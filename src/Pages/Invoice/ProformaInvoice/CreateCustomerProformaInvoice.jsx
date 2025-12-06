@@ -29,6 +29,7 @@ import { useNotificationHandling } from "../../../Components/useNotificationHand
 import useDynamicFormFields from "../../../Components/useDynamicFormFields ";
 import ProductService from "../../../services/ProductService";
 import InventoryServices from "../../../services/InventoryService";
+import { DecimalValidation } from "../../../Components/Header/DecimalValidation";
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -75,6 +76,8 @@ export const CreateCustomerProformaInvoice = (props) => {
         quantity: "",
         rate: "",
         unit: "",
+        max_decimal_digit: "",
+        type_of_unit: "",
         requested_date: values.someDate,
         special_instructions: "",
       },
@@ -156,6 +159,7 @@ export const CreateCustomerProformaInvoice = (props) => {
     try {
       const res = await ProductService.getProductPriceList();
       setProductOption(res.data.products);
+      console.log(res.data);
     } catch (err) {
       console.error("error potential", err);
     }
@@ -269,6 +273,27 @@ export const CreateCustomerProformaInvoice = (props) => {
       warehouseData.city !== null &&
       warehouseData.pincode !== null;
 
+    console.log(products, "products");
+    console.log(productOption);
+
+    const numTypes = products.map((item) => item.type_of_unit);
+    const quantities = products.map((item) => item.quantity);
+    const decimalCounts = products.map((item) =>
+      String(item.max_decimal_digit)
+    );
+    const unit = products.map((item) => item.unit);
+    const isvalid = DecimalValidation({
+      numTypes,
+      quantities,
+      decimalCounts,
+      unit,
+      handleError,
+    });
+    if (!isvalid) {
+      setOpen(false);
+      return;
+    }
+
     const payload = {
       type: "Customer",
       raised_by: users.email,
@@ -331,11 +356,13 @@ export const CreateCustomerProformaInvoice = (props) => {
       products: constructPayload(),
       warehouse_person_name: warehouseData.contact_name,
     };
+
     if (rowData.origin_type === "International") {
       payload.currency = inputValue.currency;
     } else {
       payload.currency = "INR";
     }
+    console.log(inputValue);
 
     try {
       setOpen(true);
@@ -515,8 +542,8 @@ export const CreateCustomerProformaInvoice = (props) => {
                 contactData && contactData.contact
                   ? contactData.contact
                   : customerLastPiData && customerLastPiData.contact
-                    ? customerLastPiData.contact
-                    : ""
+                  ? customerLastPiData.contact
+                  : ""
               }
               InputLabelProps={{
                 shrink: true, // This will ensure the label stays above the field
@@ -597,7 +624,8 @@ export const CreateCustomerProformaInvoice = (props) => {
               <InputLabel id="demo-simple-select-label">
                 Shipping Address
               </InputLabel>
-              {rowData.type_of_customer === "Exclusive Distribution Customer" ? (
+              {rowData.type_of_customer ===
+              "Exclusive Distribution Customer" ? (
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
@@ -711,8 +739,8 @@ export const CreateCustomerProformaInvoice = (props) => {
                 checked === true
                   ? "Verbal"
                   : inputValue.buyer_order_no
-                    ? inputValue.buyer_order_no
-                    : ""
+                  ? inputValue.buyer_order_no
+                  : ""
               }
               onChange={handleInputChange}
               InputLabelProps={{
@@ -815,6 +843,7 @@ export const CreateCustomerProformaInvoice = (props) => {
                             await CustomerServices.getProductLastPi(
                               rowData && rowData.name,
                               selectedSellerData.unit,
+
                               value
                             );
 
@@ -887,8 +916,8 @@ export const CreateCustomerProformaInvoice = (props) => {
                         : productDetails &&
                           productDetails[index] &&
                           productDetails[index].rate
-                          ? parseFloat(productDetails[index].rate).toFixed(2) // Use productDetails if not edited
-                          : ""
+                        ? parseFloat(productDetails[index].rate).toFixed(2) // Use productDetails if not edited
+                        : ""
                     }
                     variant="outlined"
                     onChange={(event) => {
@@ -921,10 +950,10 @@ export const CreateCustomerProformaInvoice = (props) => {
                         : input.quantity &&
                           productDetails[index] &&
                           productDetails[index].rate
-                          ? (input.quantity * productDetails[index].rate).toFixed(
+                        ? (input.quantity * productDetails[index].rate).toFixed(
                             2
                           )
-                          : "0.00"
+                        : "0.00"
                     }
                     disabled // The amount is calculated, so it should not be manually editable.
                   />

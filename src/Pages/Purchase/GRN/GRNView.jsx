@@ -21,7 +21,6 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { Popup } from "../../../Components/Popup";
 import InventoryServices from "../../../services/InventoryService";
-import { GRNUpdate } from "./GRNUpdate";
 import { useSelector } from "react-redux";
 import { PurchaseInvoiceCreate } from "../Purchase Invoice/PurchaseInvoiceCreate";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
@@ -31,14 +30,12 @@ import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import { CustomPagination } from "../../../Components/CustomPagination";
 
 export const GRNView = () => {
-  const [openPopupUpdate, setOpenPopupUpdate] = useState(false);
   const [openPopupCreatePI, setOpenPopupCreatePI] = useState(false);
   const [open, setOpen] = useState(false);
   const [grnData, setGRNData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
-  const [idForEdit, setIDForEdit] = useState();
   const [recordForEdit, setRecordForEdit] = useState();
   const [acceptedFilter, setAcceptedFilter] = useState(false);
   const userData = useSelector((state) => state.auth.profile);
@@ -88,11 +85,6 @@ export const GRNView = () => {
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
-  };
-
-  const openInPopup = (item) => {
-    setIDForEdit(item);
-    setOpenPopupUpdate(true);
   };
 
   const handlePurchaseInvoice = (item) => {
@@ -197,7 +189,6 @@ export const GRNView = () => {
                   <Row
                     key={i}
                     row={row}
-                    openInPopup={openInPopup}
                     handlePurchaseInvoice={handlePurchaseInvoice}
                     userData={userData}
                   />
@@ -212,21 +203,7 @@ export const GRNView = () => {
           />
         </Paper>
       </Grid>
-      <Popup
-        fullScreen={true}
-        title={"Update GRN Details"}
-        openPopup={openPopupUpdate}
-        setOpenPopup={setOpenPopupUpdate}
-      >
-        <GRNUpdate
-          setOpenPopup={setOpenPopupUpdate}
-          getAllGRNDetails={getAllGRNDetails}
-          idForEdit={idForEdit}
-          currentPage={currentPage}
-          acceptedFilter={acceptedFilter}
-          searchQuery={searchQuery}
-        />
-      </Popup>
+
       <Popup
         fullScreen={true}
         title={"Purchase Invoice Create"}
@@ -246,6 +223,9 @@ export const GRNView = () => {
 function Row(props) {
   const { row, userData, handlePurchaseInvoice } = props;
   const [open, setOpen] = useState(false);
+  console.log("row", row);
+
+  console.log(userData);
 
   return (
     <>
@@ -314,13 +294,19 @@ function Row(props) {
                         {ProductsData.description}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {ProductsData.order_quantity}
+                        {ProductsData.type_of_unit === "decimal"
+                          ? ProductsData.order_quantity
+                          : Math.floor(ProductsData.order_quantity)}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {ProductsData.qa_rejected}
+                        {ProductsData.type_of_unit === "decimal"
+                          ? ProductsData.qa_rejected
+                          : Math.floor(ProductsData.qa_rejected)}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {ProductsData.qa_accepted}
+                        {ProductsData.type_of_unit === "decimal"
+                          ? ProductsData.qa_accepted
+                          : Math.floor(ProductsData.qa_accepted)}
                       </StyledTableCell>
                     </StyledTableRow>
                   ))}

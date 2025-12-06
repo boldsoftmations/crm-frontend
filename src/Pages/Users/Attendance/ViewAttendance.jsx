@@ -213,9 +213,9 @@ export const ViewEmployeesAttendance = () => {
                 <Box display="flex" justifyContent="center" marginBottom="10px">
                   <h3
                     style={{
-                      fontSize: "24px",
+                      fontSize: "20px",
                       color: "rgb(34, 34, 34)",
-                      fontWeight: 800,
+                      fontWeight: 700,
                       textAlign: "center",
                     }}
                   >

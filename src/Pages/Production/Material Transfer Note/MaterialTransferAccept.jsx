@@ -79,7 +79,11 @@ export const MaterialTransferAccept = memo(
                 <td>
                   <strong>Quantity</strong>
                 </td>
-                <td>{materialTransferNoteByID.quantity}</td>
+                <td>
+                  {materialTransferNoteByID.type_of_unit === "decimal"
+                    ? materialTransferNoteByID.quantity
+                    : Math.floor(materialTransferNoteByID.quantity)}
+                </td>
               </tr>
               <tr>
                 <td>

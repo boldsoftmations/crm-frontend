@@ -6,6 +6,7 @@ import { MessageAlert } from "../../Components/MessageAlert";
 import { CustomLoader } from "../../Components/CustomLoader";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import CustomTextField from "../../Components/CustomTextField";
+import { DecimalValidation } from "../../Components/Header/DecimalValidation";
 
 export const CreatePriceList = memo((props) => {
   const {
@@ -28,42 +29,72 @@ export const CreatePriceList = memo((props) => {
   }, []);
 
   const validate = inputValue.slab1 < inputValue.slab2;
-
   const createPriceListDetails = useCallback(
     async (e) => {
+      setOpen(true);
       try {
         e.preventDefault();
-        let validate = inputValue.slab1 < inputValue.slab2;
+
+        // slab1 must be < slab2
+        const validate = Number(inputValue.slab1) < Number(inputValue.slab2);
         setValidation(validate);
-        console.log("validate", validation);
+        console.log("validate", validation); // ← correct logging
+
+        if (!validate) {
+          handleError("Slab 1 must be less than Slab 2");
+          setOpen(false);
+          return;
+        }
+
+        // Extract decimal validation values
+        const quantities = [inputValue.slab1, inputValue.slab2];
+        const numTypes = product.map((item) => item.type_of_unit);
+        const unit = product.map((item) => item.unit); // FIXED
+        const decimalCounts = product.map((item) =>
+          String(item.max_decimal_digit)
+        );
+
+        const isValid = DecimalValidation({
+          numTypes,
+          quantities,
+          decimalCounts,
+          unit,
+          handleError,
+        });
+
+        if (!isValid) {
+          setOpen(false);
+          return;
+        }
+
+        // Build request payload
         const req = {
           product: inputValue.product,
-          slab1: inputValue.slab1,
-          slab1_price: inputValue.slab1_price,
-          slab2: inputValue.slab2,
-          slab2_price: inputValue.slab2_price,
-          slab3_price: inputValue.slab3_price,
+          slab1: Number(inputValue.slab1),
+          slab1_price: Number(inputValue.slab1_price),
+          slab2: Number(inputValue.slab2),
+          slab2_price: Number(inputValue.slab2_price),
+          slab3_price: Number(inputValue.slab3_price),
           validity: inputValue.validity,
           discontinued: false,
         };
 
-        setOpen(true);
-        const response = await ProductService.createPriceList(req);
-        const successMessage =
-          response.data.message || "Price List Updated successfully";
-        handleSuccess(successMessage);
+        console.log("Final Request Payload:", req);
 
+        await ProductService.createPriceList(req);
+
+        handleSuccess("Price list created successfully");
         setTimeout(() => {
           setOpenPopup(false);
           getPriceList(currentPage, filterQuery, searchQuery);
         }, 300);
       } catch (error) {
-        handleError(error); // Handle errors from the API call
+        handleError(error);
       } finally {
-        setOpen(false); // Always close the loader
+        setOpen(false);
       }
     },
-    [inputValue, currentPage, searchQuery]
+    [inputValue, product]
   );
 
   return (

@@ -7,7 +7,7 @@ import { useSelector } from "react-redux";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
-
+import { DecimalValidation } from "../../../Components/Header/DecimalValidation";
 export const MaterialTransferNoteCreate = memo((props) => {
   const {
     setOpenCreatePopup,
@@ -15,6 +15,7 @@ export const MaterialTransferNoteCreate = memo((props) => {
     getAllMaterialTransferNoteDetails,
     currentPage,
     searchQuery,
+
     acceptedFilter,
   } = props;
   const [open, setOpen] = useState(false);
@@ -37,7 +38,10 @@ export const MaterialTransferNoteCreate = memo((props) => {
       if (selectedProduct) {
         updates.product__unit = selectedProduct.product__unit;
         updates.seller_account = selectedProduct.seller_account;
+        updates.type_of_unit = selectedProduct.type_of_unit;
+        updates.max_decimal_digit = selectedProduct.max_decimal_digit;
       }
+      console.log(selectedProduct);
     }
 
     setMaterialTransferNoteDetails((prevDetails) => ({
@@ -84,6 +88,26 @@ export const MaterialTransferNoteCreate = memo((props) => {
       product: materialTransferNoteDetails.product,
       quantity: materialTransferNoteDetails.quantity,
     };
+    const quantities = [materialTransferNoteDetails.quantity];
+
+    const numTypes = [materialTransferNoteDetails.type_of_unit];
+    const unit = [materialTransferNoteDetails.product__unit];
+    const decimalCounts = [
+      String(materialTransferNoteDetails.max_decimal_digit),
+    ];
+    console.log(materialTransferNoteDetails);
+    console.log(numTypes);
+    const isvalid = DecimalValidation({
+      numTypes,
+      quantities,
+      decimalCounts,
+      unit,
+      handleError,
+    });
+    if (!isvalid) {
+      setOpen(false);
+      return;
+    }
 
     try {
       await InventoryServices.createMaterialTransferNoteData(requestPayload);

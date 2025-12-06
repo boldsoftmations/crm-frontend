@@ -331,7 +331,9 @@ export const TallyInvoice = () => {
                         {row.product}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {row.quantity}
+                        {row.type_of_unit === "decimal"
+                          ? row.quantity
+                          : Math.floor(row.quantity)}
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         {row.rate}

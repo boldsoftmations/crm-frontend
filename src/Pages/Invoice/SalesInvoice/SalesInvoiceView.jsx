@@ -475,6 +475,7 @@ export const SalesInvoiceView = () => {
         <SalesInvoiceCreate
           getSalesInvoiceDetails={getSalesInvoiceDetails}
           setOpenPopup={setOpenPopup}
+          handleError={handleError}
         />
       </Popup>
       <Popup
@@ -648,14 +649,14 @@ function Row(props) {
             )}
           {(userData.groups.includes("Accounts") ||
             userData.groups.includes("Accounts Billing Department")) && (
-              <Button
-                variant="text"
-                color="error"
-                onClick={() => openInPopup2(row)}
-              >
-                Cancel
-              </Button>
-            )}
+            <Button
+              variant="text"
+              color="error"
+              onClick={() => openInPopup2(row)}
+            >
+              Cancel
+            </Button>
+          )}
         </StyledTableCell>
       </StyledTableRow>
       <TableRow>
@@ -682,7 +683,9 @@ function Row(props) {
                         {historyRow.product}
                       </TableCell>
                       <TableCell align="center">
-                        {historyRow.quantity}
+                        {historyRow.type_of_unit === "decimal"
+                          ? historyRow.quantity
+                          : Math.floor(historyRow.quantity)}
                       </TableCell>
                       <TableCell align="center">{historyRow.amount}</TableCell>
                       <TableCell align="center">
@@ -739,7 +742,6 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     border: 0,
   },
 }));
-
 
 const Invoice_Type_Options = ["unit", "customer", "Scrap", "Supplier"];
 

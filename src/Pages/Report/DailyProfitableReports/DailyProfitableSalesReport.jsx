@@ -26,6 +26,7 @@ export const DailyProfitableSalesReport = (props) => {
           idForEdit.unit
         );
       setDailyProfitableReportsData(response.data);
+      console.log(response.data);
     } catch (error) {
       handleError(error);
     } finally {
@@ -71,7 +72,10 @@ export const DailyProfitableSalesReport = (props) => {
     invoice_no: row.sales_invoice,
     product: row.product__name,
     company: row.sales_invoice__order_book__company__name,
-    quantity: row.quantity,
+    quantity:
+      row.product__unit__type_of_unit === "decimal"
+        ? row.quantity
+        : Math.floor(row.quantity),
     rate: row.rate,
     amount: row.amount,
     cost: row.cost,

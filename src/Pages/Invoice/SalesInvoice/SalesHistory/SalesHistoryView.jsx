@@ -536,7 +536,7 @@ function Row(props) {
           </StyledTableCell>
 
           <StyledTableCell key={`q-${index}`} align="center">
-            {p.quantity}
+            {p.type_of_unit === "decimal" ? p.quantity : Math.floor(p.quantity)}
           </StyledTableCell>
 
           <StyledTableCell align="center">{row.amount}</StyledTableCell>

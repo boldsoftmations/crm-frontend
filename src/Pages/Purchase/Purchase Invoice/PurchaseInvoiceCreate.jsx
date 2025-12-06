@@ -1,5 +1,5 @@
 import { Box, Button, Chip, Divider, Grid } from "@mui/material";
-import React, { memo, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import CustomTextField from "../../../Components/CustomTextField";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import InventoryServices from "../../../services/InventoryService";
@@ -43,12 +43,14 @@ export const PurchaseInvoiceCreate = memo(
           quantity: product.qa_accepted,
           unit: product.unit,
           order_date: product.order_date,
+          type_of_unit: product.type_of_unit,
           po_no: product.po_no,
           amount: "",
           rate: "",
         };
       })
     );
+    console.log("recordForEdit", recordForEdit);
     console.log("products", products);
 
     const handleFormChange = (index, event) => {
@@ -164,6 +166,7 @@ export const PurchaseInvoiceCreate = memo(
         setOpen(false);
       }
     };
+    console.log(products);
 
     const handleSure = async (e) => {
       e.preventDefault();
@@ -190,6 +193,11 @@ export const PurchaseInvoiceCreate = memo(
         setOpen(false);
       }
     };
+    useEffect(() => {
+      if (openPopup) {
+        console.log("openPopup", openPopup);
+      }
+    }, [openPopup]);
 
     return (
       <>
@@ -294,7 +302,11 @@ export const PurchaseInvoiceCreate = memo(
                       size="small"
                       label="Quantity"
                       variant="outlined"
-                      value={input.quantity || ""}
+                      value={
+                        input.type_of_unit === "decimal"
+                          ? input.quantity
+                          : Math.floor(input.quantity) || ""
+                      }
                       disabled
                     />
                   </Grid>

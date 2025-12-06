@@ -12,6 +12,7 @@ export const CustomerActivityCreate = (props) => {
   const [customerStatus, setCustomerStatus] = useState([]);
   const [activityRequiresFollowup, setActivityRequiresFollowup] =
     useState(false);
+
   useEffect(() => {
     const getCustomerStatus = async () => {
       try {
@@ -40,6 +41,8 @@ export const CustomerActivityCreate = (props) => {
         status: followUp.status,
         activity: followUp.activity,
       };
+      console.log(data);
+
       await CustomerServices.createFollowUpCustomer(data);
       setOpenModal(false);
       getFollowUp();

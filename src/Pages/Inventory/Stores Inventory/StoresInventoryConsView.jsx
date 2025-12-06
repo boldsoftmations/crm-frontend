@@ -69,7 +69,10 @@ export const StoresInventoryConsView = () => {
       size: row.size,
       seller_account: row.seller_account,
       unit: row.product__unit,
-      quantity: row.quantity,
+      quantity:
+        row.type_of_unit === "decimal"
+          ? row.quantity
+          : Math.floor(row.quantity),
     };
   });
 

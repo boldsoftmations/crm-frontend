@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Button, Box, Grid } from "@mui/material";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import CustomTextField from "../../../Components/CustomTextField";
@@ -14,6 +14,8 @@ const LeaveForm = ({ setOpenLeaveRequest, getEmployeesLeaveForm }) => {
     reason: "",
   });
 
+  const [typeLeaveOptions, setTypeLeaveOptions] = useState([]);
+
   const [open, setOpen] = useState(false);
   const [alertmsg, setAlertMsg] = useState({
     message: "",
@@ -27,6 +29,27 @@ const LeaveForm = ({ setOpenLeaveRequest, getEmployeesLeaveForm }) => {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
+  //getting leave options from master activity
+  const getMasterActivityOptions = useCallback(async () => {
+    setOpen(true);
+    try {
+      const { data } = await MasterService.getMasterActivityOptions("Leave");
+      setTypeLeaveOptions(data);
+    } catch (error) {
+      console.error(error);
+      setAlertMsg({
+        message: "Failed to fetch warning type options.",
+        severity: "error",
+        open: true,
+      });
+    } finally {
+      setOpen(false);
+    }
+  }, []);
+  React.useEffect(() => {
+    getMasterActivityOptions();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -114,12 +137,7 @@ const LeaveForm = ({ setOpenLeaveRequest, getEmployeesLeaveForm }) => {
               size="small"
               disablePortal
               id="combo-box-description"
-              options={[
-                "Casual Leave",
-                "Sick Leave",
-                "Maternity Leave",
-                "Paternity Leave",
-              ]}
+              options={typeLeaveOptions.map((option) => option.name)}
               value={formData.leave_type}
               onChange={(e, value) =>
                 setFormData({ ...formData, leave_type: value })

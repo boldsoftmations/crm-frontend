@@ -9,6 +9,7 @@ import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import useDynamicFormFields from "../../../Components/useDynamicFormFields ";
 import { MessageAlert } from "../../../Components/MessageAlert";
+import { DecimalValidation } from "../../../Components/Header/DecimalValidation";
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -36,6 +37,8 @@ export const MaterialRequisitionFormUpdate = memo((props) => {
         product: data.product__name,
         unit: data.product__unit,
         quantity: data.quantity,
+        type_of_unit: data.type_of_unit,
+        max_decimal_digit: data.max_decimal_digit,
       })),
     [storesInventoryData]
   );
@@ -44,7 +47,9 @@ export const MaterialRequisitionFormUpdate = memo((props) => {
       idForEdit.products_data.map((data) => ({
         product: data.product,
         unit: data.unit, // Assuming this correction is needed
-        quantity: data.quantity, // Assuming this correction is needed
+        quantity: data.quantity,
+        type_of_unit: data.type_of_unit,
+        max_decimal_digit: data.max_decimal_digit, // Assuming this correction is needed
       })),
     [idForEdit]
   );
@@ -68,6 +73,27 @@ export const MaterialRequisitionFormUpdate = memo((props) => {
         user: users.email,
         products_data: products,
       };
+      const quantities = products.map((item) => item.quantity);
+
+      const numTypes = products.map((item) => item.type_of_unit);
+      const unit = products.map((item) => item.unit);
+      const decimalCounts = products.map((item) =>
+        String(item.max_decimal_digit)
+      );
+
+      console.log(products, "products");
+      console.log(productOption, "productiotio");
+      const isvalid = DecimalValidation({
+        numTypes,
+        quantities,
+        decimalCounts,
+        unit,
+        handleError,
+      });
+      if (!isvalid) {
+        setOpen(false);
+        return;
+      }
       await InventoryServices.updateMaterialRequisitionFormData(
         idForEdit.id,
         payload
@@ -161,7 +187,11 @@ export const MaterialRequisitionFormUpdate = memo((props) => {
                     size="small"
                     label="Quantity"
                     variant="outlined"
-                    value={input.quantity || ""}
+                    value={
+                      input.type_of_unit === "decimal"
+                        ? input.quantity
+                        : Math.floor(input.quantity) || ""
+                    }
                     onChange={(event) => handleFormChange(index, event)}
                   />
                 </Grid>

@@ -372,7 +372,11 @@ export const SalesInvoice = (props) => {
                             </td>
                             <td className="text-center">{row.hsn_code}</td>
 
-                            <td className="text-center">{row.quantity}</td>
+                            <td className="text-center">
+                              {row.type_of_unit === "decimal"
+                                ? row.quantity
+                                : Math.round(row.quantity)}
+                            </td>
                             <td className="text-center">{row.unit}</td>
                             <td className="text-center">{row.rate}</td>
                             <td className="text-center">{row.amount}</td>

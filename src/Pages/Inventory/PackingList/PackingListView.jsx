@@ -401,7 +401,9 @@ function Row({
                         {historyRow.unit}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {historyRow.quantity}
+                        {historyRow.type_of_unit === "decimal"
+                          ? historyRow.quantity
+                          : Math.round(historyRow.quantity)}
                       </StyledTableCell>
                     </StyledTableRow>
                   ))}

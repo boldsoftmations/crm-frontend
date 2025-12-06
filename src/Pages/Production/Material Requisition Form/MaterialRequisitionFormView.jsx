@@ -604,7 +604,11 @@ export const MaterialRequisitionFormView = () => {
                       <div style={styles.row} key={i}>
                         <div style={styles.cell}>{historyRow.product}</div>
                         <div style={styles.cell}>{historyRow.unit}</div>
-                        <div style={styles.cell}>{historyRow.quantity}</div>
+                        <div style={styles.cell}>
+                          {historyRow.type_of_unit === "decimal"
+                            ? historyRow.quantity
+                            : Math.floor(historyRow.quantity)}
+                        </div>
                       </div>
                     )
                   )}
@@ -732,7 +736,9 @@ function Row(props) {
                         {historyRow.unit}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {historyRow.quantity}
+                        {historyRow.type_of_unit === "decimal"
+                          ? historyRow.quantity
+                          : Math.floor(historyRow.quantity)}
                       </StyledTableCell>
                     </StyledTableRow>
                   ))}

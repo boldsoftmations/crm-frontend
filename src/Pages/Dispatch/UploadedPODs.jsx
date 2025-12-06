@@ -74,7 +74,9 @@ export const UploadedPODs = () => {
       );
       const data = (
         userName
-          ? response.data.filter((item) => item.pod_uploaded_by_name === userName)
+          ? response.data.filter(
+              (item) => item.pod_uploaded_by_name === userName
+            )
           : response.data
       ).map((item) => ({
         date: moment(item.date).format("DD-MM-YYYY"),
@@ -156,7 +158,9 @@ export const UploadedPODs = () => {
     }
     let filteredDataNewvalue =
       allSalesRegisterData &&
-      allSalesRegisterData.filter((item) => item.pod_uploaded_by_name === newValue);
+      allSalesRegisterData.filter(
+        (item) => item.pod_uploaded_by_name === newValue
+      );
     console.log(newValue);
     setUserName(newValue);
     setsalesRegisterData(filteredDataNewvalue || []);
@@ -472,7 +476,9 @@ function Row(props) {
                       </TableCell>
                       <TableCell align="center">{historyRow.product}</TableCell>
                       <TableCell align="center">
-                        {historyRow.quantity}
+                        {historyRow.type_of_unit === "decimal"
+                          ? historyRow.quantity
+                          : Math.floor(historyRow.quantity)}
                       </TableCell>
                       <TableCell align="center">{historyRow.rate}</TableCell>
                       <TableCell align="center">{historyRow.amount}</TableCell>

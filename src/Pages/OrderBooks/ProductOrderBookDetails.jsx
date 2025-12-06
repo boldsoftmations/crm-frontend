@@ -443,10 +443,14 @@ export const ProductOrderBookDetails = () => {
                       {row.product}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {row.quantity}
+                      {row.type_of_unit
+                        ? row.quantity
+                        : Math.floor(row.quantity)}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {row.pending_quantity}
+                      {row.type_of_unit === "decimal"
+                        ? row.pending_quantity
+                        : Math.floor(row.pending_quantity)}
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.estimated_date}

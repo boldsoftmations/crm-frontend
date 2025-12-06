@@ -46,6 +46,7 @@ import { AllSRFTab } from "../Pages/Cutomers/SRF/AllSRFTab";
 import { ViewMasterBeat } from "../Pages/FieldSales/BeatMaster/ViewMasterBeat";
 import LeadSummary from "../Pages/MasterLeadSummary/LeadSummary";
 import FactoryMaster from "../Pages/MasterFactory/FactoryMaster";
+import Maintaince from "../Pages/Maintanace/Maintaince";
 
 const PrivateRoute = ({ children, redirectTo = "/" }) => {
   const tokenData = useSelector((state) => state.auth);
@@ -347,7 +348,7 @@ export const RouteScreen = () => {
               </PrivateRoute>
             }
           />
-              <Route
+          <Route
             path="/master/factory"
             element={
               <PrivateRoute>
@@ -381,7 +382,7 @@ export const RouteScreen = () => {
               </PrivateRoute>
             }
           />
-       
+
           <Route
             path="/master/customer-visit"
             element={
@@ -390,7 +391,7 @@ export const RouteScreen = () => {
               </PrivateRoute>
             }
           />
-             <Route
+          <Route
             path="/lead/list-references"
             element={
               <PrivateRoute>
@@ -399,21 +400,19 @@ export const RouteScreen = () => {
             }
           />
 
-      
-          
           <Route
             path="/customer/srf"
             element={
               <PrivateRoute>
-                <AllSRFTab/>
+                <AllSRFTab />
               </PrivateRoute>
             }
           />
-            <Route
+          <Route
             path="/master/beat"
             element={
               <PrivateRoute>
-                <ViewMasterBeat/>
+                <ViewMasterBeat />
               </PrivateRoute>
             }
           />
@@ -423,6 +422,7 @@ export const RouteScreen = () => {
           {/* Public and authentication routes */}
           <Route path="/" exact element={<Auths />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/maintainance" element={<Maintaince />} />
         </>
       )}
       {/* Redirect unknown routes to login or analytics based on token presence */}

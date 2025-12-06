@@ -99,7 +99,11 @@ export const UpdatePriceList = memo((props) => {
               size="small"
               label="Slab 1"
               variant="outlined"
-              value={inputValue.slab1 || ""}
+              value={
+                (inputValue.type_of_unit === "decimal"
+                  ? inputValue.slab1
+                  : Number(inputValue.slab1)) || ""
+              }
               error={inputValue.slab1 === ""}
               helperText={
                 inputValue.slab1 === "" ? "this field is required." : ""
@@ -125,7 +129,11 @@ export const UpdatePriceList = memo((props) => {
               size="small"
               label="Slab 2"
               variant="outlined"
-              value={inputValue.slab2 || ""}
+              value={
+                (inputValue.type_of_unit === "decimal"
+                  ? inputValue.slab2
+                  : Number(inputValue.slab2)) || ""
+              }
               error={validate === false || validate === ""}
               helperText={
                 validate === false || inputValue.slab2 === ""

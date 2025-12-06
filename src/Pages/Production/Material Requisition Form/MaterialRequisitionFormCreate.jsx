@@ -9,6 +9,7 @@ import useDynamicFormFields from "../../../Components/useDynamicFormFields ";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
 import InvoiceServices from "../../../services/InvoiceService";
+// import { DecimalValidation } from "../../../Components/Header/DecimalValidation";
 export const MaterialRequisitionFormCreate = memo((props) => {
   const {
     setOpenPopup,
@@ -23,6 +24,8 @@ export const MaterialRequisitionFormCreate = memo((props) => {
         product: data.product__name,
         unit: data.product__unit,
         quantity: data.quantity,
+        type_of_unit: data.type_of_unit,
+        max_decimal_digit: data.max_decimal_digit,
       })),
     [storesInventoryData]
   );
@@ -40,10 +43,13 @@ export const MaterialRequisitionFormCreate = memo((props) => {
         product: "",
         unit: "",
         quantity: "",
+        max_decimal_digit: "",
+        type_of_unit: "",
       },
     ],
     productOption
   );
+
   const [open, setOpen] = useState(false);
   const [selectedSellerData, setSelectedSellerData] = useState(null);
   const [sellerOption, setSellerOption] = useState(null);
@@ -51,6 +57,7 @@ export const MaterialRequisitionFormCreate = memo((props) => {
 
   useEffect(() => {
     getAllSellerAccountsDetails();
+    // console.log(getAllMaterialRequisitionFormDetails);
   }, []);
 
   const getAllSellerAccountsDetails = async () => {
@@ -69,12 +76,35 @@ export const MaterialRequisitionFormCreate = memo((props) => {
   const createMaterialRequisitionFormDetails = async (e) => {
     try {
       e.preventDefault();
+
       setOpen(true);
+
       const payload = {
         seller_account: selectedSellerData,
         user: users.email,
         products_data: products,
       };
+      // const quantities = products.map((item) => item.quantity);
+
+      // const numTypes = products.map((item) => item.type_of_unit);
+      // const unit = products.map((item) => item.unit);
+      // const decimalCounts = products.map((item) =>
+      //   String(item.max_decimal_digit)
+      // );
+
+      // console.log(products, "products");
+      // console.log(productOption, "productiotio");
+      // const isvalid = DecimalValidation({
+      //   numTypes,
+      //   quantities,
+      //   decimalCounts,
+      //   unit,
+      //   handleError,
+      // });
+      // if (!isvalid) {
+      //   setOpen(false);
+      //   return;
+      // }
       await InventoryServices.createMaterialRequisitionFormData(payload);
       handleSuccess("MRF Created Successfully");
       setTimeout(() => {
@@ -161,11 +191,19 @@ export const MaterialRequisitionFormCreate = memo((props) => {
                 <Grid item xs={12} sm={3}>
                   <CustomTextField
                     fullWidth
+                    type="number"
                     name="quantity"
+                    inputProps={{
+                      step: input.type_of_unit === "decimal" ? 0.01 : 1,
+                    }}
                     size="small"
-                    label="Quantity"
+                    label="Quantitys"
                     variant="outlined"
-                    value={input.quantity || ""}
+                    value={
+                      (input.type_of_unit === "decimal"
+                        ? input.quantity
+                        : Math.floor(input.quantity)) || ""
+                    }
                     onChange={(event) => handleFormChange(index, event)}
                   />
                 </Grid>

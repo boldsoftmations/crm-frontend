@@ -42,7 +42,7 @@ const PLApproveListView = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [acceptedFilter, setAcceptedFilter] = useState(false);
   const [idForEdit, setIDForEdit] = useState("");
-  const { handleError, handleCloseSnackbar, alertInfo } =
+  const { handleError, handleCloseSnackbar, alertInfo, handleSuccess } =
     useNotificationHandling();
 
   useEffect(() => {
@@ -259,6 +259,8 @@ const PLApproveListView = () => {
       >
         <PLApprovelListUpdate
           currentPage={currentPage}
+          handleError={handleError}
+          handleSuccess={handleSuccess}
           searchQuery={searchQuery}
           acceptedFilter={acceptedFilter}
           setOpenPopup={setOpenPopupCreateGrn}
@@ -276,6 +278,7 @@ function Row({ row, handleCreateGrn, userData }) {
   return (
     <>
       {/* <CustomLoader open={open} /> */}
+
       <StyledTableRow sx={{ "& > *": { borderBottom: "unset" } }}>
         <StyledTableCell>
           <IconButton
@@ -371,7 +374,9 @@ function Row({ row, handleCreateGrn, userData }) {
                         {historyRow.unit}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {historyRow.quantity}
+                        {historyRow.type_of_unit === "decimal"
+                          ? historyRow.quantity
+                          : Math.floor(historyRow.quantity)}
                       </StyledTableCell>
                     </StyledTableRow>
                   ))}

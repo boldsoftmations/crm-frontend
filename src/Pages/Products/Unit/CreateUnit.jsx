@@ -10,7 +10,7 @@ import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 export const CreateUnit = memo((props) => {
   const { setOpenPopup, getUnits, currentPage, searchQuery } = props;
-  const [unit, setUnit] = useState({});
+  const [unit, setUnit] = useState({ digits: 0 });
   const [open, setOpen] = useState(false);
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();

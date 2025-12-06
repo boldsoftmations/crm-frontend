@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
+import { DecimalValidation } from "../../../Components/Header/DecimalValidation";
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -20,6 +21,8 @@ const Root = styled("div")(({ theme }) => ({
 
 export const PurchaseOrderCreate = ({
   recordForEdit,
+  setVendorData,
+  vendorData,
   setOpenPopup,
   getAllVendorDetails,
 }) => {
@@ -27,6 +30,7 @@ export const PurchaseOrderCreate = ({
     sellerData: state.auth.sellerAccount,
     userData: state.auth.profile,
   }));
+
   const today = new Date().toISOString().slice(0, 10);
   const [inputValues, setInputValues] = useState({
     created_by: userData.email,
@@ -69,7 +73,7 @@ export const PurchaseOrderCreate = ({
     (fieldName, value) => {
       setInputValues((prevValues) => {
         const newValues = { ...prevValues, [fieldName]: value };
-
+        console.log(selectedProducts);
         if (fieldName === "vendor_contact_person") {
           const selectedContact = recordForEdit.contacts.find(
             (contact) => contact.name === value
@@ -146,8 +150,11 @@ export const PurchaseOrderCreate = ({
             ...product,
             product: selectedProductName,
             unit: productObj.unit,
+            type_of_unit: productObj.type_of_unit,
+            max_decimal_digit: productObj.max_decimal_digit,
           };
         }
+        console.log("inputValues.type_of_unit", inputValues.type_of_unit);
         return product;
       });
 
@@ -232,9 +239,30 @@ export const PurchaseOrderCreate = ({
   };
 
   const createPurchaseOrderDetails = async (e) => {
+    console.log(vendorData);
     try {
       e.preventDefault();
+
       setLoading(true);
+      const numTypes = inputValues.products.map((item) => item.type_of_unit);
+      const quantities = inputValues.products.map((item) => item.quantity);
+      const decimalCounts = inputValues.products.map((item) =>
+        String(item.max_decimal_digit)
+      );
+      const unit = inputValues.products.map((item) => item.unit);
+
+      const isvalid = DecimalValidation({
+        numTypes,
+        quantities,
+        decimalCounts,
+        unit,
+        handleError,
+      });
+      if (!isvalid) {
+        setLoading(false);
+        return;
+      }
+
       const req = {
         created_by: inputValues.created_by,
         vendor: inputValues.vendor,
@@ -252,9 +280,11 @@ export const PurchaseOrderCreate = ({
       };
 
       const response = await InventoryServices.createPurchaseOrderData(req);
+
       if (response) {
         getAllVendorDetails();
       }
+
       handleSuccess("Purchase Order Created Successfully");
       setTimeout(() => {
         setOpenPopup(false);
@@ -262,7 +292,7 @@ export const PurchaseOrderCreate = ({
       setLoading(false);
     } catch (error) {
       handleError(error);
-      console.log("createing Packing list error", error);
+      console.log("creating Purchase Order error", error);
       setLoading(false);
     }
   };
@@ -445,10 +475,15 @@ export const PurchaseOrderCreate = ({
                   <CustomTextField
                     fullWidth
                     name="quantity"
+                    step={input.type_of_unit === "decimal" ? "0.01" : "1"}
                     size="small"
                     label="Quantity"
                     variant="outlined"
-                    value={input.quantity || ""}
+                    value={
+                      input.type_of_unit === "decimal"
+                        ? input.quantity || ""
+                        : Math.floor(input.quantity || "")
+                    }
                     onChange={(event) =>
                       handleProductChange(index, "quantity", event.target.value)
                     }

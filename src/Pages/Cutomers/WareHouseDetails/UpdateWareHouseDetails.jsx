@@ -5,6 +5,8 @@ import CustomerServices from "../../../services/CustomerService";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomTextField from "../../../Components/CustomTextField";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import MasterService from "../../../services/MasterService";
+import CustomSnackbar from "../../../Components/CustomerSnackbar";
 
 export const UpdateWareHouseDetails = (props) => {
   const { IDForEdit, getAllCompanyDetailsByID, setOpenPopup, contactData } =
@@ -12,6 +14,11 @@ export const UpdateWareHouseDetails = (props) => {
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState([]);
   const data = useSelector((state) => state.auth);
+  const [alertmsg, setAlertMsg] = useState({
+    message: "",
+    severity: "",
+    open: false,
+  });
 
   const [selectedcontact, setSelectedContact] = useState("");
   const handleInputChange = (event) => {
@@ -23,6 +30,10 @@ export const UpdateWareHouseDetails = (props) => {
     getWareHouseDataByID();
   }, []);
 
+  const handleClose = () => {
+    setAlertMsg({ open: false });
+  };
+
   const getWareHouseDataByID = async () => {
     try {
       setOpen(true);
@@ -32,6 +43,50 @@ export const UpdateWareHouseDetails = (props) => {
     } catch (err) {
       setOpen(false);
       console.log("company data by id error", err);
+    }
+  };
+
+  const validatePinCode = async () => {
+    try {
+      setOpen(true);
+      const PINCODE = inputValue.pincode;
+      const response = await MasterService.getCountryDataByPincode(
+        "India",
+        PINCODE
+      );
+      if (response.data.length === 0) {
+        setAlertMsg({
+          message:
+            "This Pin Code does not exist ! First Create the Pin code in the master country",
+          severity: "warning",
+          open: true,
+        });
+        setInputValue({
+          ...inputValue,
+          state: "",
+          city: "",
+        });
+      } else {
+        setAlertMsg({
+          message: "Pin code is valid",
+          severity: "success",
+          open: true,
+        });
+        setInputValue({
+          ...inputValue,
+          state: response.data[0].state,
+          city: response.data[0].city_name,
+        });
+      }
+    } catch (error) {
+      console.log("error", error);
+      setAlertMsg({
+        message: "Error fetching country data by pincode",
+        severity: "error",
+        open: true,
+      });
+    } finally {
+      setOpen(false);
     }
   };
 
@@ -60,7 +115,12 @@ export const UpdateWareHouseDetails = (props) => {
   return (
     <div>
       <CustomLoader open={open} />
-
+      <CustomSnackbar
+        open={alertmsg.open}
+        message={alertmsg.message}
+        severity={alertmsg.severity}
+        onClose={handleClose}
+      />
       <Box
         component="form"
         noValidate
@@ -94,6 +154,7 @@ export const UpdateWareHouseDetails = (props) => {
               label="Update Contact"
             />
           </Grid>
+
           <Grid item xs={12}>
             <CustomTextField
               fullWidth
@@ -116,6 +177,7 @@ export const UpdateWareHouseDetails = (props) => {
               variant="outlined"
               value={inputValue.pincode || ""}
             />
+
             {/* <Button
               onClick={() => validatePinCode()}
               variant="contained"
@@ -123,6 +185,15 @@ export const UpdateWareHouseDetails = (props) => {
             >
               Validate
             </Button> */}
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Button
+              onClick={validatePinCode}
+              variant="contained"
+              sx={{ marginLeft: "1rem" }}
+            >
+              Validate
+            </Button>
           </Grid>
           <Grid item xs={12} sm={6}>
             <CustomTextField

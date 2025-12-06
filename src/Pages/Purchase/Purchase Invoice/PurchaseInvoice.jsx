@@ -280,7 +280,11 @@ export const PurchaseInvoice = (props) => {
                               {row.product}
                             </td>
                             <td className="text-center">{row.hsn}</td>
-                            <td className="text-center">{row.quantity}</td>
+                            <td className="text-center">
+                              {row.type_of_unit === "decimal"
+                                ? row.quantity
+                                : Math.floor(row.quantity)}
+                            </td>
                             <td className="text-center">{row.unit}</td>
                             <td className="text-center">{row.rate}</td>
                             <td className="text-center">{row.amount}</td>

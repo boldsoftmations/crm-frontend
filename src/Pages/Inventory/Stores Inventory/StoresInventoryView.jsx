@@ -145,8 +145,12 @@ export const StoresInventoryView = () => {
     seller_account: row.seller_account,
     description: row.description,
     unit: row.unit,
-    quantity: row.quantity,
-    pending_quantity: row.pending_quantity,
+    quantity:
+      row.type_of_unit === "decimal" ? row.quantity : Math.floor(row.quantity),
+    pending_quantity:
+      row.type_of_unit === "decimal"
+        ? row.pending_quantity
+        : Math.floor(row.pending_quantity),
     created_on: row.created_on,
     expiry_date: row.expiry_date,
     rate: row.rate,

@@ -426,12 +426,16 @@ function Row(props) {
                           {historyRow.unit}
                         </StyledTableCell>
                         <StyledTableCell align="center">
-                          {historyRow.quantity}
+                          {historyRow.type_of_unit === "decimal"
+                            ? historyRow.quantity
+                            : Math.floor(historyRow.quantity)}
                         </StyledTableCell>
                         <StyledTableCell align="center">
                           {row.close_short === true
                             ? 0
-                            : historyRow.pending_quantity}
+                            : historyRow.type_of_unit === "decimal"
+                            ? historyRow.pending_quantity
+                            : Math.floor(historyRow.pending_quantity)}
                         </StyledTableCell>
                       </StyledTableRow>
                     ))}

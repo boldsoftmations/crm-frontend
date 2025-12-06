@@ -11,6 +11,8 @@ import { MessageAlert } from "../../Components/MessageAlert";
 import InvoiceServices from "../../services/InvoiceService";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 
+import { DecimalValidation } from "../../Components/Header/DecimalValidation";
+
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
   ...theme.typography.body2,
@@ -44,8 +46,9 @@ export const SalesReturnCreate = (props) => {
 
   const handleFormChange = (index, event) => {
     let data = [...products];
-    data[index][event.target.name] = parseFloat(event.target.value) || 0;
+    data[index][event.target.name] = event.target.value;
     setProducts(data);
+    console.log(products);
   };
 
   const removeFields = (index) => {
@@ -111,6 +114,9 @@ export const SalesReturnCreate = (props) => {
             quantity: data.quantity,
             rate: data.rate,
             amount: data.amount,
+            max_decimal_digit: data.max_decimal_digit,
+            type_of_unit: data.type_of_unit,
+            unit: data.unit,
             cost: data.cost,
           };
 
@@ -128,6 +134,9 @@ export const SalesReturnCreate = (props) => {
         quantity: fruit.quantity,
         rate: fruit.rate,
         amount: fruit.amount,
+        max_decimal_digit: fruit.max_decimal_digit,
+        type_of_unit: fruit.type_of_unit,
+        unit: fruit.unit,
         cost: fruit.cost,
       }));
       // Update state with new array of product objects
@@ -148,11 +157,31 @@ export const SalesReturnCreate = (props) => {
       // Map through the products to include only specific details
       const formattedProducts = products.map((product) => ({
         product: product.product,
-        quantity: product.quantity,
+        quantity: String(product.quantity),
         rate: product.rate,
         amount: product.rate * product.quantity,
         cost: product.cost,
       }));
+      console.log(products);
+      const quantites = formattedProducts.map((item) => item.quantity);
+      const decimalcounts = products.map((item) => item.max_decimal_digit);
+      const numtypes = products.map((item) => item.type_of_unit);
+      const unit = products.map((item) => item.unit);
+      // const numtypes=
+      console.log(quantites, decimalcounts, numtypes, unit);
+      const hashDecimal = numtypes.some((item) => item === "decimal");
+      if (hashDecimal) {
+        const isValid = DecimalValidation({
+          numTypes: numtypes,
+          quantities: quantites,
+          decimalCounts: decimalcounts,
+          unit,
+          handleError,
+        });
+        if (!isValid) {
+          return;
+        }
+      }
 
       const req = {
         invoice_type: "Sales Return",
@@ -400,9 +429,14 @@ export const SalesReturnCreate = (props) => {
                       fullWidth
                       name="quantity"
                       size="small"
+                      type="number"
                       label="Quantity"
                       variant="outlined"
-                      value={input.quantity}
+                      value={
+                        input.type_of_unit === "decimal"
+                          ? input.quantity
+                          : Math.round(input.quantity)
+                      }
                       onChange={(event) => handleFormChange(index, event)}
                       error={input.pending_quantity < input.quantity}
                       helperText={

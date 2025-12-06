@@ -12,6 +12,7 @@ import CustomTextField from "../../../Components/CustomTextField";
 import InventoryServices from "../../../services/InventoryService";
 import { styled } from "@mui/material/styles";
 import { CustomLoader } from "./../../../Components/CustomLoader";
+// import { DecimalValidation } from "../../../Components/Header/DecimalValidation";
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -27,12 +28,13 @@ export const PLApprovelListUpdate = ({
   currentPage,
   searchQuery,
   idForEdit,
+  handleSuccess,
+  handleError,
   acceptedFilter,
 }) => {
-  const [open, setOpen] = useState(false);
   const [error, setError] = useState(null);
   const [products, setProducts] = useState([]);
-
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     // Initialize products state with packingListDetails data
     if (idForEdit && idForEdit.products) {
@@ -49,12 +51,29 @@ export const PLApprovelListUpdate = ({
       idx === index ? { ...product, quantity: newQuantity } : product
     );
     setProducts(updatedProducts);
+    console.log(products.map((item) => item.quantity));
   };
 
   const updatePackingListDetails = async (e) => {
     e.preventDefault();
     try {
-      setOpen(true);
+      setLoading(true);
+
+      // const quantities = products.map((p) => p.quantity);
+      // const numTypes = products.map((p) => p.type_of_unit);
+      // const decimalCounts = products.map((p) => String(p.max_decimal_digit));
+      // const unit = products.map((p) => p.unit);
+      // const isvalid = DecimalValidation({
+      //   numTypes,
+      //   quantities,
+      //   decimalCounts,
+      //   unit,
+      //   handleError,
+      // });
+      // if (!isvalid) {
+      //   setLoading(false);
+      //   return;
+      // }
       const req = {
         id: idForEdit.id,
         created_on: idForEdit.created_on,
@@ -74,11 +93,13 @@ export const PLApprovelListUpdate = ({
       await InventoryServices.updatePLApproveListData(idForEdit.id, req);
       setOpenPopup(false);
       getAllPackingListDetails(currentPage, acceptedFilter, searchQuery);
+      handleSuccess("Packing List updated successfully");
     } catch (error) {
       console.error("Updating Packing List Error:", error);
+      handleError(error);
       setError(error || "An error occurred");
     } finally {
-      setOpen(false);
+      setLoading(false);
     }
   };
 
@@ -88,7 +109,7 @@ export const PLApprovelListUpdate = ({
 
   return (
     <div>
-      <CustomLoader open={open} />
+      <CustomLoader open={loading} />
       <Box component="form" noValidate onSubmit={updatePackingListDetails}>
         <Snackbar
           open={Boolean(error)}
@@ -188,7 +209,12 @@ export const PLApprovelListUpdate = ({
                   label="Quantity"
                   variant="outlined"
                   type="number"
-                  value={idForEdit.products[index].quantity}
+                  // value={Math.floor(idForEdit.products[index].quantity)}
+                  value={
+                    product.type_of_unit === "decimal"
+                      ? idForEdit.products[index].quantity
+                      : Math.floor(idForEdit.products[index].quantity) || ""
+                  }
                   disabled={true}
                 />
               </Grid>
@@ -197,14 +223,21 @@ export const PLApprovelListUpdate = ({
                   fullWidth
                   size="small"
                   name="quantity"
+                  step={product.type_of_unit === "decimal" ? 0.01 : 1}
                   label="Quantity"
                   variant="outlined"
                   type="number"
                   value={
-                    (0 <= product.quantity &&
-                      Number(product.quantity) &&
-                      product.quantity) ||
-                    ""
+                    product.type_of_unit === "decimal"
+                      ? (0 <= product.quantity &&
+                          Number(product.quantity) &&
+                          product.quantity) ||
+                        ""
+                      : Math.floor(
+                          0 <= product.quantity &&
+                            Number(product.quantity) &&
+                            product.quantity
+                        ) || ""
                   }
                   onChange={(e) =>
                     handleQuantityChange(index, Number(e.target.value))

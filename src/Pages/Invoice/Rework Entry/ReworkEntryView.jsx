@@ -203,7 +203,9 @@ export const ReworkEntryView = () => {
                       {row.creation_date}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {row.quantity}
+                      {row.ytpe_of_unit === "decimal"
+                        ? row.quantity
+                        : Math.round(row.quantity)}
                     </StyledTableCell>
                     {(users.groups.includes("Director") ||
                       users.groups.includes("Accounts")) && (

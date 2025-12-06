@@ -8,6 +8,7 @@ import ProductService from "../../../services/ProductService";
 import CustomerServices from "../../../services/CustomerService";
 import { useNavigate } from "react-router-dom";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
+import { DecimalValidation } from "../../../Components/Header/DecimalValidation";
 
 const tfStyle = {
   "& .MuiButtonBase-root.MuiAutocomplete-clearIndicator": {
@@ -24,7 +25,7 @@ const Root = styled("div")(({ theme }) => ({
   },
 }));
 export const CreateSRF = (props) => {
-  const { customerData, setOpenModal, type } = props;
+  const { customerData, setOpenModal, type, handleError } = props;
   const [productOption, setProductOption] = useState([]);
   const [recordForEdit, setRecordForEdit] = useState(customerData);
   const [filterSellerAcount, setFilterSellerAcount] = useState("");
@@ -39,6 +40,8 @@ export const CreateSRF = (props) => {
       product: "",
       quantity: "",
       unit: "",
+      max_decimal_digit: "",
+      type_of_unit: "",
       special_instructions: "",
     },
   ]);
@@ -52,8 +55,13 @@ export const CreateSRF = (props) => {
         ...data[index],
         product: value,
         unit: productObj ? productObj.unit__name : "",
+        max_decimal_digit: productObj ? productObj.unit__max_decimal_digit : "",
+        type_of_unit: productObj ? productObj.unit__type_of_unit : "",
       };
+
+      console.log(productObj);
       setProducts(data);
+      console.log(data);
     },
     [products, productOption]
   );
@@ -166,6 +174,25 @@ export const CreateSRF = (props) => {
         message: "Please add at least one valid product with quantity!",
         severity: "warning",
       });
+      return;
+    }
+
+    //decimal validation
+    const quantities = products.map((pro) => pro.quantity);
+    const numTypes = products.map((item) => item.type_of_unit);
+    const unit = products.map((item) => item.unit);
+    const decimalCounts = products.map((item) =>
+      String(item.max_decimal_digit)
+    );
+    console.log(quantities, numTypes, unit, decimalCounts);
+    const isvalid = DecimalValidation({
+      numTypes,
+      quantities,
+      decimalCounts,
+      unit,
+      handleError,
+    });
+    if (!isvalid) {
       return;
     }
 

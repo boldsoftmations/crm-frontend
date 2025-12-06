@@ -26,7 +26,6 @@ import { useNotificationHandling } from "../../../Components/useNotificationHand
 import { MessageAlert } from "../../../Components/MessageAlert";
 import SearchComponent from "../../../Components/SearchComponent ";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
-import InvoiceServices from "../../../services/InvoiceService";
 import { Popup } from "../../../Components/Popup";
 
 export const GRNRegisterView = () => {
@@ -352,7 +351,9 @@ export const GRNRegisterView = () => {
                     {row.invoice_quantity}
                   </StyledTableCell>
                   <StyledTableCell align="center">
-                    {row.qa_rejected}
+                    {row.type_of_unit === "decimal"
+                      ? row.qa_rejected
+                      : Math.floor(row.qa_rejected)}
                   </StyledTableCell>
                   <StyledTableCell align="center">
                     {row.qa_recieved}

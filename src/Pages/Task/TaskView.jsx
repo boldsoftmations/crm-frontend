@@ -47,7 +47,7 @@ export const TaskView = () => {
     setOpenModalActivity(true);
   };
 
-  const getAssignedData = async (id) => {
+  const getAssignedData = useCallback(async () => {
     try {
       setOpen(true);
       const res = await LeadServices.getAllAssignedUser();
@@ -57,7 +57,7 @@ export const TaskView = () => {
     } finally {
       setOpen(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     getAssignedData();

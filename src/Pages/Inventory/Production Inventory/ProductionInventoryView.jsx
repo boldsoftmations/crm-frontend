@@ -138,7 +138,8 @@ export const ProductionInventoryView = () => {
     source_key: row.source_key,
     created_on: row.created_on,
     unit: row.unit,
-    quantity: row.quantity,
+    quantity:
+      row.type_of_unit === "decimal" ? row.quantity : Math.floor(row.quantity),
     pending_quantity: row.pending_quantity,
     rate: row.rate,
     amount: row.amount,

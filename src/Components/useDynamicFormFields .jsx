@@ -29,6 +29,13 @@ const useDynamicFormFields = (
         ...data[index],
         product: value,
         unit: productObj ? productObj.unit : "",
+        type_of_unit: productObj
+          ? productObj.product__unit__type_of_unit || productObj.type_of_unit
+          : "",
+        max_decimal_digit: productObj
+          ? productObj.product__unit__max_decimal_digit ||
+            productObj.max_decimal_digit
+          : "",
       };
       setProducts(data);
     },

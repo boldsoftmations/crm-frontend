@@ -16,7 +16,7 @@ import Chip from "@mui/material/Chip";
 import InvoiceServices from "../../../services/InvoiceService";
 import { CustomLoader } from "./../../../Components/CustomLoader";
 import CustomTextField from "../../../Components/CustomTextField";
-
+import { DecimalValidation } from "../../../Components/Header/DecimalValidation";
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
   ...theme.typography.body2,
@@ -26,7 +26,7 @@ const Root = styled("div")(({ theme }) => ({
 }));
 
 export const SalesInvoiceCreate = (props) => {
-  const { setOpenPopup, getSalesInvoiceDetails } = props;
+  const { setOpenPopup, getSalesInvoiceDetails, handleError } = props;
   const [open, setOpen] = useState(false);
   const [errorOpen, setErrorOpen] = useState(false);
   const [errMsg, setErrMsg] = useState("");
@@ -40,6 +40,7 @@ export const SalesInvoiceCreate = (props) => {
       pending_quantity: "",
       quantity: "",
       rate: "",
+      type_of_unit: "",
       proforma_invoice: "",
       id: "",
       user: "",
@@ -51,12 +52,12 @@ export const SalesInvoiceCreate = (props) => {
       .filter((product) => product.pending_quantity > 0)
       .reduce((acc, current) => {
         if (customerorderBookData.origin_type === "international") {
-          const quantity = Number(current.quantity) || 0;
+          const quantity = Number(current.quantity) || "";
           const rate = Number(current.rate) || 0;
           const exchange_rate = Number(inputValue.exchange_rate) || 0;
           return acc + exchange_rate * rate * quantity;
         } else {
-          const quantity = Number(current.quantity) || 0;
+          const quantity = Number(current.quantity) || "";
           const rate = Number(current.rate) || 0;
           return acc + quantity * rate;
         }
@@ -66,7 +67,7 @@ export const SalesInvoiceCreate = (props) => {
   const [totalAmount, setTotalAmount] = useState(0);
   const handleFormChange = (index, event) => {
     let data = [...products];
-    data[index][event.target.name] = parseFloat(event.target.value) || 0;
+    data[index][event.target.name] = event.target.value;
 
     setProducts(data);
 
@@ -145,6 +146,7 @@ export const SalesInvoiceCreate = (props) => {
             rate: data.rate,
             proforma_invoice: data.proforma_invoice,
             id: data.id,
+            type_of_unit: data.type_of_unit,
             raised_by: data.raised_by,
             ready_date: data.ready_date,
           };
@@ -164,6 +166,7 @@ export const SalesInvoiceCreate = (props) => {
         requested_date: fruit.requested_date,
         rate: fruit.rate,
         proforma_invoice: fruit.proforma_invoice,
+        type_of_unit: fruit.type_of_unit,
         id: fruit.id,
         user: fruit.raised_by,
         ready_date: fruit.ready_date,
@@ -184,16 +187,44 @@ export const SalesInvoiceCreate = (props) => {
   const createSalesInvoiceDetails = async (e) => {
     try {
       e.preventDefault();
+
       const PRODUCTS = products
         .filter(
           (product) =>
             Number(product.pending_quantity) > 0 && Number(product.quantity) > 0
         ) // Keep products where both pending_quantity and quantity are > 0
         .map(
-          ({ pending_quantity, rate, requested_date, ready_date, ...rest }) =>
-            rest
-        ); // Exclude specified fields
+          ({
+            pending_quantity,
+            type_of_unit,
+            rate,
+            requested_date,
+            ready_date,
+            ...rest
+          }) => rest
+        );
+      console.log(PRODUCTS);
 
+      const decimalCounts = customerorderBookData.products.map(
+        (item) => item.max_decimal_digit
+      );
+      console.log("products", products);
+      const unit = customerorderBookData.products.map((item) => item.unit);
+      const numTypes = customerorderBookData.products.map(
+        (item) => item.type_of_unit
+      );
+      console.log(numTypes);
+
+      const isvalid = DecimalValidation({
+        numTypes,
+        quantities: PRODUCTS.map((item) => item.quantity),
+        decimalCounts,
+        unit,
+        handleError,
+      });
+      if (!isvalid) {
+        return;
+      }
       const req = {
         invoice_type: "customer",
         order_book: customerorderBookData.id,
@@ -216,6 +247,7 @@ export const SalesInvoiceCreate = (props) => {
             : "",
         exchange_rate: inputValue.exchange_rate || null,
       };
+
       setOpen(true);
       if (inputValue.length !== 0) {
         await InvoiceServices.createSalesinvoiceData(req);
@@ -566,7 +598,11 @@ export const SalesInvoiceCreate = (props) => {
                       size="small"
                       label="Pending Quantity"
                       variant="outlined"
-                      value={input.pending_quantity}
+                      value={
+                        input.type_of_unit === "decimal"
+                          ? input.pending_quantity
+                          : Math.round(input.pending_quantity)
+                      }
                     />
                   </Grid>
                   <Grid item xs={12} sm={2}>
@@ -578,7 +614,9 @@ export const SalesInvoiceCreate = (props) => {
                       variant="outlined"
                       value={input.quantity}
                       onChange={(event) => handleFormChange(index, event)}
-                      error={input.pending_quantity < input.quantity}
+                      error={
+                        Number(input.pending_quantity) < Number(input.quantity)
+                      }
                       helperText={
                         input.pending_quantity < input.quantity
                           ? "Quantity must be less than or equal to pending quantity"

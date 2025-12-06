@@ -8,6 +8,8 @@ import { MessageAlert } from "../../../Components/MessageAlert";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import ProductService from "../../../services/ProductService";
+import { DecimalValidation } from "../../../Components/Header/DecimalValidation";
+// import { DecimalValidation } from "../../../Components/Header/DecimalValidation";
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -32,11 +34,46 @@ export const PurchaseOrderUpdate = memo(
     const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
       useNotificationHandling();
 
+    // useEffect(() => {
+    //   selectedRow = selectedRow.products.map((p) => ({
+    //     ...p,
+    //     quantity:
+    //       p.type_of_unit === "decimal"
+    //         ? p.quantity // keep as decimal
+    //         : Math.floor(Number(p.quantity)),
+    //   }));
+    // });
+
     const createPurchaseOrderDetails = useCallback(
       async (e) => {
         try {
           e.preventDefault();
           setLoading(true);
+
+          const numTypes = inputValues.products.map(
+            (item) => item.type_of_unit
+          );
+          const quantities = inputValues.products.map((item) => item.quantity);
+          const decimalCounts = inputValues.products.map((item) =>
+            String(item.max_decimal_digit)
+          );
+          const unit = inputValues.products.map((item) => item.unit);
+          console.log(numTypes);
+
+          if (numTypes.includes("decimal")) {
+            const isvalid = DecimalValidation({
+              numTypes,
+              quantities,
+              decimalCounts,
+              unit,
+              handleError,
+            });
+            if (!isvalid) {
+              setLoading(false);
+              return;
+            }
+          }
+
           const req = {
             created_by: inputValues.created_by,
             vendor: inputValues.vendor,
@@ -72,7 +109,8 @@ export const PurchaseOrderUpdate = memo(
             );
           }, 300);
         } catch (error) {
-          handleError(error); // Handle errors from the API call
+          handleError(error);
+          console.log(error); // Handle errors from the API call
         } finally {
           setLoading(false); // Always close the loader
         }
@@ -80,17 +118,49 @@ export const PurchaseOrderUpdate = memo(
       [inputValues, currentPage, acceptedFilter, searchQuery]
     );
 
+    const handleProductChange = (newValue, index) => {
+      const selectedProduct = productList.find(
+        (product) => product.name === newValue
+      );
+
+      const newUnit = selectedProduct ? selectedProduct.unit : "";
+
+      setInputValues((prev) => {
+        const updatedProducts = [...prev.products];
+
+        updatedProducts[index] = {
+          ...updatedProducts[index],
+          product: newValue,
+          unit: newUnit,
+          type_of_unit: selectedProduct ? selectedProduct.type_of_unit : "",
+          max_decimal_digit: selectedProduct
+            ? selectedProduct.max_decimal_digit
+            : "",
+        };
+
+        return {
+          ...prev,
+          products: updatedProducts,
+        };
+      });
+    };
+
     const productListData = async () => {
       try {
         const response = await ProductService.getAllProduct();
         setProductList(response.data);
+        console.log(response.data);
       } catch (error) {
         handleError(error); // Handle errors from the API call
       }
     };
 
     useEffect(() => {
+      console.log("Updated inputValues:", inputValues);
+    }, [inputValues]);
+    useEffect(() => {
       productListData();
+      console.log(productList);
     }, []);
 
     return (
@@ -237,8 +307,8 @@ export const PurchaseOrderUpdate = memo(
             </Grid>
             {inputValues.products.map((input, index) => {
               return (
-                <>
-                  <Grid key={index} item xs={12} sm={3}>
+                <React.Fragment key={index}>
+                  <Grid item xs={12} sm={3}>
                     {/* <CustomTextField
                       fullWidth
                       size="small"
@@ -260,22 +330,13 @@ export const PurchaseOrderUpdate = memo(
                       variant="outlined"
                       value={input.product || ""}
                       options={productList.map((product) => product.name)}
-                      onChange={(event, newValue) => {
-                        setInputValues((prev) => {
-                          const updatedProducts = [...prev.products];
-                          updatedProducts[index] = {
-                            ...updatedProducts[index],
-                            product: newValue,
-                          };
-                          return {
-                            ...prev,
-                            products: updatedProducts,
-                          };
-                        });
-                      }}
+                      onChange={(event, newValue) =>
+                        handleProductChange(newValue, index)
+                      }
                       disabled={selectedRow && selectedRow.is_package_list}
                     />
                   </Grid>
+
                   <Grid item xs={12} sm={1}>
                     <CustomTextField
                       fullWidth
@@ -290,10 +351,16 @@ export const PurchaseOrderUpdate = memo(
                     <CustomTextField
                       fullWidth
                       name="quantity"
+                      type="number"
+                      step={input.type_of_unit === "decimal" ? 0.01 : 1}
                       size="small"
                       label="Quantity"
                       variant="outlined"
-                      value={input.quantity || ""}
+                      value={
+                        input.type_of_unit === "decimal"
+                          ? input.quantity
+                          : Math.floor(input.quantity)
+                      }
                       onChange={(event) => {
                         setInputValues((prev) => {
                           const updatedProducts = [...prev.products];
@@ -315,9 +382,14 @@ export const PurchaseOrderUpdate = memo(
                     <CustomTextField
                       fullWidth
                       size="small"
+                      type="number"
                       label="Pending Quantity"
                       variant="outlined"
-                      value={input.pending_quantity || ""}
+                      value={
+                        input.type_of_unit === "decimal"
+                          ? input.pending_quantity
+                          : Math.floor(input.pending_quantity || "")
+                      }
                       disabled
                     />
                   </Grid>
@@ -357,7 +429,7 @@ export const PurchaseOrderUpdate = memo(
                     />
                   </Grid>
                   {/* <Grid item xs={12} sm={1} alignContent="right"></Grid> */}
-                </>
+                </React.Fragment>
               );
             })}
 

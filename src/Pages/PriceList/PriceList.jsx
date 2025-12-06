@@ -143,9 +143,9 @@ export const PriceList = () => {
   const Tabledata = priceListData.map((row) => ({
     id: row.id,
     product: row.product,
-    slab1: row.slab1,
+    slab1: row.type_of_unit === "decimal" ? row.slab1 : Math.floor(row.slab1),
     slab1_price: row.slab1_price,
-    slab2: row.slab2,
+    slab2: row.type_of_unit === "decimal" ? row.slab2 : Math.floor(row.slab2),
     slab2_price: row.slab2_price,
     slab3_price: row.slab3_price,
     validity: row.validity,

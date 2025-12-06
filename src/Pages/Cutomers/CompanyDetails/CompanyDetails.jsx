@@ -613,6 +613,7 @@ export const CompanyDetails = () => {
           type="customer"
           customerData={recordForEdit}
           setOpenModal={setOpenSRF}
+          handleError={handleError}
         />
       </Popup>
     </>

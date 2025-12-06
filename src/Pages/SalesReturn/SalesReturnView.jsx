@@ -244,7 +244,11 @@ function Row(props) {
                         {historyRow.product}
                       </TableCell>
                       <TableCell align="center">
-                        {historyRow.quantity}
+                        {historyRow.type_of_unit
+                          ? historyRow.quantity
+                            ? Math.floor(historyRow.quantity)
+                            : 0
+                          : 0}
                       </TableCell>
                       <TableCell align="center">{historyRow.amount}</TableCell>
                     </TableRow>

@@ -103,6 +103,8 @@ export const Login = () => {
         setErrMsg("Unauthorized");
       } else if (err.response.status === 404) {
         setErrMsg(err.response.data.errors.non_field_errors);
+      } else if (err.response.status === 503) {
+        navigate("/maintainance");
       } else {
         setErrMsg("Login Failed");
       }

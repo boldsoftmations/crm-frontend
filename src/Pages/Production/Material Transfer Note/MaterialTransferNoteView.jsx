@@ -431,7 +431,9 @@ export const MaterialTransferNoteView = () => {
                         {mtnData.unit}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {mtnData.quantity}
+                        {mtnData.type_of_unit === "decimal"
+                          ? mtnData.quantity
+                          : Math.round(mtnData.quantity)}
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         {mtnData.created_on}
@@ -499,6 +501,7 @@ export const MaterialTransferNoteView = () => {
           getAllMaterialTransferNoteDetails={getAllMaterialTransferNoteDetails}
           setOpenCreatePopup={setOpenCreatePopup}
           sellerOption={sellerOption}
+          handleError={handleError}
         />
       </Popup>
 

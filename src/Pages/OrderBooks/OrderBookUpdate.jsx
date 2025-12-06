@@ -97,9 +97,11 @@ export const OrderBookUpdate = (props) => {
               label="Pending Quantity"
               variant="outlined"
               value={
-                recordForEdit.pending_quantity
+                recordForEdit.type_of_unit === "decimal"
                   ? recordForEdit.pending_quantity
-                  : ""
+                    ? recordForEdit.pending_quantity
+                    : ""
+                  : Math.floor(recordForEdit.pending_quantity || "")
               }
             />
           </Grid>
@@ -214,6 +216,7 @@ export const OrderBookPeningQuantityUpdate = (props) => {
         total: recordForEdit.total,
         remark: recordForEdit.remark,
         pending_quantity: pendingQuantity,
+
         revision: recordForEdit.revision + 1,
       };
 
@@ -267,7 +270,11 @@ export const OrderBookPeningQuantityUpdate = (props) => {
               size="small"
               label="Pending Quantity by Product"
               variant="outlined"
-              value={pendingQuantity || ""}
+              value={
+                (recordForEdit.type_of_unit === "decimal"
+                  ? pendingQuantity
+                  : Math.floor(pendingQuantity)) || ""
+              }
               onChange={(event) => {
                 const newValue = event.target.value;
 

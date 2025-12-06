@@ -5,6 +5,7 @@ import InventoryServices from "../../../services/InventoryService";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
+// import { DecimalValidation } from "../../../Components/Header/DecimalValidation";
 
 export const PackingListCreate = memo(
   ({ selectedRow, setOpenPopup, getAllPurchaseOrderDetails }) => {
@@ -21,6 +22,7 @@ export const PackingListCreate = memo(
         product: product.product,
         unit: product.unit,
         quantity: product.pending_quantity,
+        max_decimal_digit: product.max_decimal_digit,
       })),
     }));
     const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
@@ -40,6 +42,8 @@ export const PackingListCreate = memo(
           quantity:
             (details.products[index] && details.products[index].quantity) ||
             product.pending_quantity,
+          type_of_unit: product.type_of_unit,
+          // max_decimal_digit: product.max_decimal_digit
         })),
       });
     }, [selectedRow]);
@@ -60,12 +64,33 @@ export const PackingListCreate = memo(
 
     const createPackingListDetails = async (e) => {
       e.preventDefault();
+
       try {
+        // const numTypes = selectedRow.products.map((item) => item.type_of_unit);
+        // const quantities = details.products.map((item) => item.quantity);
+        // const decimalCounts = selectedRow.products.map((item) =>
+        //   String(item.max_decimal_digit)
+        // );
+        // console.log(quantities);
+        // const unit = selectedRow.products.map((item) => item.unit);
+
+        // const isvalid = DecimalValidation({
+        //   numTypes,
+        //   quantities,
+        //   decimalCounts,
+        //   unit,
+        //   handleError,
+        // });
+        // if (!isvalid) {
+        //   setLoading(false);
+        //   return;
+        // }
         setLoading(true);
         const dataToSend = {
           ...details,
           purchase_order: details.purchase_order, // This is already an array
         };
+
         await InventoryServices.createPackingListData(dataToSend);
         handleSuccess("Packing list created successfully");
         setTimeout(() => {
@@ -79,6 +104,7 @@ export const PackingListCreate = memo(
         setLoading(false);
       }
     };
+    console.log(details);
 
     return (
       <>
@@ -173,10 +199,19 @@ export const PackingListCreate = memo(
                     fullWidth
                     size="small"
                     name="quantity"
+                    step={
+                      selectedRow.products[index].type_of_unit === "decimal"
+                        ? 0.01
+                        : 1
+                    }
                     label="Quantity"
                     variant="outlined"
                     type="number"
-                    value={product.quantity || ""}
+                    value={
+                      product.type_of_unit === "decimal"
+                        ? product.quantity
+                        : Math.floor(product.quantity)
+                    }
                     onChange={(e) =>
                       handleQuantityChange(index, e.target.value)
                     }

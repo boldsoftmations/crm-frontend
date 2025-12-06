@@ -642,7 +642,11 @@ function Row({ row, getCustomerSRF, handleError, handleSuccess }) {
                     >
                       <TableCell align="center">{rows.product}</TableCell>
                       <TableCell align="center">{rows.unit}</TableCell>
-                      <TableCell align="center">{rows.quantity}</TableCell>
+                      <TableCell align="center">
+                        {rows.type_of_unit === "decimal"
+                          ? rows.quantity
+                          : Math.floor(rows.quantity)}
+                      </TableCell>
                       <TableCell align="center">{rows.status}</TableCell>
                       <TableCell align="center">
                         {rows.special_instructions}

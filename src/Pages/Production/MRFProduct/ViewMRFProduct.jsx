@@ -300,7 +300,9 @@ export const ViewMRFProduct = () => {
                         {mtnData.unit}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {mtnData.quantity}
+                        {mtnData.type_of_unit === "decimal"
+                          ? mtnData.quantity
+                          : Math.floor(mtnData.quantity)}
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         {mtnData.branch}

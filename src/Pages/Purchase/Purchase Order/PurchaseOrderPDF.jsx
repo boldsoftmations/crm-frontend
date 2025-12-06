@@ -5,7 +5,6 @@ import ISO from "../../../Images/ISO.png";
 import AllLogo from "../../../Images/allLogo.jpg";
 import MSME from "../../../Images/MSME.jpeg";
 
-
 export const PurchaseOrderPDF = ({ purchaseOrderData, AMOUNT_IN_WORDS }) => {
   console.log("purchaseOrderData", purchaseOrderData);
   // Calculate the number of pages required to display all products

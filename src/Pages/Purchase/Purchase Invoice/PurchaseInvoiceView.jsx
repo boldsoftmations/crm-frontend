@@ -299,7 +299,9 @@ function Row(props) {
                         {ProductsData.unit}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {ProductsData.quantity}
+                        {ProductsData.type_of_unit === "decimal"
+                          ? ProductsData.quantity
+                          : Math.floor(ProductsData.quantity)}
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         {ProductsData.rate}

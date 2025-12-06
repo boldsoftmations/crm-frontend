@@ -223,7 +223,7 @@ export const ViewProductDetails = ({
                         <Button
                           sx={{ color: "#28a745" }}
                           onClick={() => openInPopupInvoice(row)}
-                          disabled={userData.groups.includes(
+                              disabled={userData.groups.includes(
                             "Operations & Supply Chain Manager"
                           )}
                         >

@@ -444,7 +444,9 @@ function Row(props) {
                       </TableCell>
                       <TableCell align="center">{historyRow.product}</TableCell>
                       <TableCell align="center">
-                        {historyRow.quantity}
+                        {historyRow.type_of_unit === "decimal"
+                          ? historyRow.quantity
+                          : Math.floor(historyRow.quantity)}
                       </TableCell>
                       <TableCell align="center">{historyRow.rate}</TableCell>
                       <TableCell align="center">{historyRow.amount}</TableCell>
