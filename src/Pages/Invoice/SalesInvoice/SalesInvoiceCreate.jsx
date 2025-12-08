@@ -207,30 +207,30 @@ export const SalesInvoiceCreate = (props) => {
             ...rest
           }) => rest
         );
-      console.log(PRODUCTS);
+      // console.log(PRODUCTS);
 
-      // const decimalCounts = customerorderBookData.products.map(
-      //   (item) => item.max_decimal_digit
-      // );
-      // console.log(decimalCounts);
-      // console.log(customerorderBookData);
-      // console.log("products", products);
-      // const unit = customerorderBookData.products.map((item) => item.unit);
-      // const numTypes = customerorderBookData.products.map(
-      //   (item) => item.type_of_unit
-      // );
+      const decimalCounts = customerorderBookData.products.map(
+        (item) => item.max_decimal_digit
+      );
+
+      // console.log("customerorderBookData", customerorderBookData);
+      console.log("products", products);
+      const unit = customerorderBookData.products.map((item) => item.unit);
+      const numTypes = customerorderBookData.products.map(
+        (item) => item.type_of_unit
+      );
       // console.log(numTypes);
 
-      // const isvalid = DecimalValidation({
-      //   numTypes,
-      //   quantities: PRODUCTS.map((item) => item.quantity),
-      //   decimalCounts,
-      //   unit,
-      //   handleError,
-      // });
-      // if (!isvalid) {
-      //   return;
-      // }
+      const isvalid = DecimalValidation({
+        numTypes,
+        quantities: PRODUCTS.map((item) => item.quantity),
+        decimalCounts,
+        unit,
+        handleError,
+      });
+      if (!isvalid) {
+        return;
+      }
       const req = {
         invoice_type: "customer",
         order_book: customerorderBookData.id,

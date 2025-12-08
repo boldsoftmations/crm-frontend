@@ -6,7 +6,7 @@ import { Dispatched } from "./Dispatched";
 import { SalesRegisterView } from "./SalesRegisterView";
 import { ExportView } from "./ExportView";
 import BlankLrView from "./BlankLrView";
-import UploadedPODs from "./Uploadedpods";
+import { UploadedPODs } from "./UploadedPODs";
 export const AllDispatchTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
 
