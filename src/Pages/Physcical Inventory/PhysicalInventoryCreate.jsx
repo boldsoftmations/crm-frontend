@@ -9,6 +9,7 @@ import { CustomLoader } from "../../Components/CustomLoader";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import CustomTextField from "../../Components/CustomTextField";
 import { useSelector } from "react-redux";
+import { DecimalValidation } from "../../Components/Header/DecimalValidation";
 
 export const PhysicalInventoryCreate = memo((props) => {
   const { currentPage, searchQuery, setOpenPopup, getPhysicalInventoryData } =
@@ -80,6 +81,10 @@ export const PhysicalInventoryCreate = memo((props) => {
     });
   }, []);
 
+  // useEffect(() => {
+  // );
+  // });
+
   const handleProductChange = useCallback(
     (event, value) => {
       const selectedProduct = inventoryData.find(
@@ -87,6 +92,7 @@ export const PhysicalInventoryCreate = memo((props) => {
           data.product__name === value &&
           data.seller_account === formData.seller_unit
       );
+      // console.log(selectedProduct);
       setFormData((prevState) => ({
         ...prevState,
         product: value,
@@ -119,6 +125,7 @@ export const PhysicalInventoryCreate = memo((props) => {
       physical_quantity: newPhysicalQuantity,
     }));
   };
+  // console.log(formData);
 
   const calculateGNL = (physicalQuantity, pendingQuantity) => {
     const physical = parseInt(physicalQuantity, 10);
@@ -142,6 +149,22 @@ export const PhysicalInventoryCreate = memo((props) => {
     async (e) => {
       e.preventDefault();
       setOpen(true);
+      const numTypes = inventoryData.map((item) => item.type_of_unit);
+      const quantities = formData.physical_quantity;
+      const unit = inventoryData.map((item) => item.unit);
+      const decimalCount = inventoryData.map((item) => item.max_decimal_digit);
+      const isvalid = DecimalValidation({
+        numTypes,
+        quantities,
+        decimalCount,
+        unit,
+        handleError,
+      });
+      if (!isvalid) {
+        setOpen(false);
+        return;
+      }
+
       try {
         const payload = {
           ...formData,
@@ -170,6 +193,7 @@ export const PhysicalInventoryCreate = memo((props) => {
   const isAuthorizedAndPendingZero =
     users.groups.includes("Accounts") ||
     (users.groups.includes("Director") && formData.pending_quantity === "0");
+  console.log(isAuthorizedAndPendingZero);
   return (
     <>
       <MessageAlert
