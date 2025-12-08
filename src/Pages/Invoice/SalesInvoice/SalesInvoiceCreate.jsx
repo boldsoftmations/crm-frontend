@@ -41,6 +41,7 @@ export const SalesInvoiceCreate = (props) => {
       quantity: "",
       rate: "",
       type_of_unit: "",
+      max_decimal_digit: "",
       proforma_invoice: "",
       id: "",
       user: "",
@@ -147,6 +148,7 @@ export const SalesInvoiceCreate = (props) => {
             proforma_invoice: data.proforma_invoice,
             id: data.id,
             type_of_unit: data.type_of_unit,
+            max_decimal_digit: data.max_decimal_digit,
             raised_by: data.raised_by,
             ready_date: data.ready_date,
           };
@@ -167,6 +169,7 @@ export const SalesInvoiceCreate = (props) => {
         rate: fruit.rate,
         proforma_invoice: fruit.proforma_invoice,
         type_of_unit: fruit.type_of_unit,
+        max_decimal_digit: fruit.max_decimal_digit,
         id: fruit.id,
         user: fruit.raised_by,
         ready_date: fruit.ready_date,
@@ -197,6 +200,7 @@ export const SalesInvoiceCreate = (props) => {
           ({
             pending_quantity,
             type_of_unit,
+            max_decimal_digit,
             rate,
             requested_date,
             ready_date,
@@ -208,6 +212,8 @@ export const SalesInvoiceCreate = (props) => {
       const decimalCounts = customerorderBookData.products.map(
         (item) => item.max_decimal_digit
       );
+      console.log(decimalCounts);
+      console.log(customerorderBookData);
       console.log("products", products);
       const unit = customerorderBookData.products.map((item) => item.unit);
       const numTypes = customerorderBookData.products.map(
