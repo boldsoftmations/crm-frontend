@@ -16,7 +16,7 @@ import Chip from "@mui/material/Chip";
 import InvoiceServices from "../../../services/InvoiceService";
 import { CustomLoader } from "./../../../Components/CustomLoader";
 import CustomTextField from "../../../Components/CustomTextField";
-import { DecimalValidation } from "../../../Components/Header/DecimalValidation";
+// import { DecimalValidation } from "../../../Components/Header/DecimalValidation";
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
   ...theme.typography.body2,
@@ -221,16 +221,16 @@ export const SalesInvoiceCreate = (props) => {
       );
       // console.log(numTypes);
 
-      const isvalid = DecimalValidation({
-        numTypes,
-        quantities: PRODUCTS.map((item) => item.quantity),
-        decimalCounts,
-        unit,
-        handleError,
-      });
-      if (!isvalid) {
-        return;
-      }
+      // const isvalid = DecimalValidation({
+      //   numTypes,
+      //   quantities: PRODUCTS.map((item) => item.quantity),
+      //   decimalCounts,
+      //   unit,
+      //   handleError,
+      // });
+      // if (!isvalid) {
+      //   return;
+      // }
       const req = {
         invoice_type: "customer",
         order_book: customerorderBookData.id,
