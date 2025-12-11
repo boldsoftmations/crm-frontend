@@ -469,7 +469,7 @@ const getAllCCFData = (page, searchValue) => {
   }
 
   return CustomAxios.get(
-    `/api/customer/ccf/?is_closed=false&${params.toString()}`
+    `/api/customer/ccf/?is_closed=false${params.toString()}`
   );
 };
 
