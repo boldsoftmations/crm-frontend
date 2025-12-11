@@ -469,7 +469,7 @@ const getAllCCFData = (page, searchValue) => {
   }
 
   return CustomAxios.get(
-    `/api/customer/ccf/?is_closed=false${params.toString()}`
+    `/api/customer/ccf/?is_closed=false&${params.toString()}`
   );
 };
 
@@ -482,7 +482,7 @@ const getAllClosedCCF = (page, search) => {
     params.append("search", search);
   }
   return CustomAxios.get(
-    `/api/customer/ccf/?is_closed=true${params.toString()}`
+    `/api/customer/ccf/?is_closed=true&${params.toString()}`
   );
 };
 const getAllComplaintsList = (page, department) => {
