@@ -109,12 +109,6 @@ export const ListItems = ({ setOpen }) => {
       items: [
         renderListItem("/user/report", <AssessmentIcon />, "Report"),
         renderListItem("/user/analytics", <DashboardIcon />, "Analytics"),
-        renderListItem("/customer/srf", <StickyNote2Icon />, "SRF"),
-        renderListItem(
-          "/master/customer-visit",
-          <DirectionsRunIcon />,
-          "Field Sales"
-        ),
         renderSubmenu("master", <BusinessIcon />, "Master", [
           { to: "/products/all-product", text: "Inventory Master" },
           { to: "/invoice/seller-account", text: "Company Master" },
@@ -140,13 +134,10 @@ export const ListItems = ({ setOpen }) => {
           },
           { to: "lead/list-references", text: "Lead Master" },
         ]),
-        renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
-          { to: "/invoice/performa-invoice-tab", text: "Performa Invoice" },
-          { to: "/invoice/sales-invoice", text: "Sales Invoice" },
-        ]),
-        renderSubmenu("accounts", <AttachMoneyIcon />, "Accounts", [
-          { to: "/invoice/credit-debit-note", text: "Debit-Credit" },
-          { to: "/products/view-price-list", text: "Price List" },
+
+        renderSubmenu("purchase", <PurchaseIcon />, "Purchase", [
+          { to: "/inventory/view-vendor", text: "Vendor" },
+          { to: "/inventory/view-purchase", text: "Purchase" },
         ]),
         renderSubmenu("inventory", <InventoryIcon />, "Inventory", [
           { to: "/inventory/view-inventory", text: "Inventory" },
@@ -155,12 +146,10 @@ export const ListItems = ({ setOpen }) => {
         renderSubmenu("production", <FactoryIcon />, "Production", [
           { to: "/inventory/view-production", text: "Production" },
         ]),
-        renderSubmenu(
-          "customer_complaint",
-          <ComplaintIcon />,
-          "Customer Complaint",
-          [{ to: "/customer/complaints/ccp-capa", text: "CCF-CAPA" }]
-        ),
+        renderSubmenu("accounts", <AttachMoneyIcon />, "Accounts", [
+          { to: "/invoice/credit-debit-note", text: "Debit-Credit" },
+          { to: "/products/view-price-list", text: "Price List" },
+        ]),
         renderSubmenu("sales", <TrendingUpIcon />, "Sales", [
           { to: "/leads/all-lead", text: "Leads" },
           { to: "/customers/all-customer", text: "Customer" },
@@ -168,16 +157,32 @@ export const ListItems = ({ setOpen }) => {
           { to: "/forecast/view-product-forecast", text: "Forecast" },
           { to: "/market-analysis/competitor", text: "Market Analysis" },
         ]),
-        renderSubmenu("purchase", <PurchaseIcon />, "Purchase", [
-          { to: "/inventory/view-vendor", text: "Vendor" },
-          { to: "/inventory/view-purchase", text: "Purchase" },
-        ]),
+        renderListItem("/customer/srf", <StickyNote2Icon />, "SRF"),
         renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
+
+        renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
+          { to: "/invoice/performa-invoice-tab", text: "Performa Invoice" },
+          { to: "/invoice/sales-invoice", text: "Sales Invoice" },
+        ]),
+
         renderListItem("/dispatch/tab-view", <LocalShippingIcon />, "Dispatch"),
+
+        renderSubmenu(
+          "customer_complaint",
+          <ComplaintIcon />,
+          "Customer Complaint",
+          [{ to: "/customer/complaints/ccp-capa", text: "CCF-CAPA" }]
+        ),
         renderListItem(
           "/inventory/sales-return",
           <DescriptionIcon />,
           "Sales Return"
+        ),
+
+        renderListItem(
+          "/master/customer-visit",
+          <DirectionsRunIcon />,
+          "Field Sales"
         ),
         renderListItem("/task/view-task", <AssignmentTurnedInIcon />, "Task"),
         renderListItem("/user/faq", <HelpOutlineIcon />, "Script"),
@@ -671,10 +676,7 @@ export const ListItems = ({ setOpen }) => {
 
     //Business Development Manager Menus and Excutive Menus
     {
-      condition: isInGroups(
-        "Business Development Manager",
-        "Business Development Executive"
-      ),
+      condition: isInGroups("Business Development Executive"),
       items: [
         renderListItem("/user/analytics", <DashboardIcon />, "Analytics"),
         renderSubmenu("master", <BusinessIcon />, "Master", [
@@ -696,6 +698,23 @@ export const ListItems = ({ setOpen }) => {
         renderListItem("/dispatch/tab-view", <LocalShippingIcon />, "Dispatch"),
         renderListItem("/task/view-task", <AssignmentTurnedInIcon />, "Task"),
         renderListItem("/user/faq", <HelpOutlineIcon />, "Script"),
+      ],
+    },
+
+    //business development manager
+    {
+      condition: isInGroups("Business Development Manager"),
+      items: [
+        renderListItem("/user/analytics", <DashboardIcon />, "Analytics"),
+        renderSubmenu("master", <BusinessIcon />, "Master", [
+          { to: "/user/profile-tab", text: "Employees Master" },
+        ]),
+
+        renderSubmenu("sales", <TrendingUpIcon />, "Sales", [
+          { to: "/leads/all-lead", text: "Leads" },
+
+          // { to: "/market-analysis/competitor", text: "Market Analysis" },
+        ]),
       ],
     },
     //Customer Relationship Manager
@@ -756,7 +775,6 @@ export const ListItems = ({ setOpen }) => {
         renderSubmenu("master", <BusinessIcon />, "Master", [
           { to: "/user/profile-tab", text: "Employees Master" },
         ]),
-
         renderSubmenu("sales", <TrendingUpIcon />, "Sales", [
           { to: "/leads/all-lead", text: "Leads" },
           { to: "/customers/all-customer", text: "Customer" },

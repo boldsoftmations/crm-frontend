@@ -38,6 +38,10 @@ export const AllLeadsTabView = () => {
   const isSalesManagerWithLeads = isInGroups("Sales Manager with Leads");
   const isCustomerService = isInGroups("Customer Service");
   const isAdminAndDM = isInGroups("Director", "Digital Marketing");
+  const bdTeam = isInGroups(
+    "Business Development Manager",
+    "Sales Manager(Retailer)"
+  );
   const onlyAdmin = isInGroups("Director");
   const digitalManager = isInGroups("Digital Marketing");
   const tabs = useMemo(
@@ -114,13 +118,13 @@ export const AllLeadsTabView = () => {
       },
       {
         label: "Assign Leads",
-        visible: isAdminAndDM,
+        visible: isAdminAndDM || bdTeam,
         index: 7,
         component: <CreateJustDialLead />,
       },
       {
         label: "Leads Record",
-        visible: isAdminAndDM,
+        visible: isAdminAndDM || bdTeam,
         index: 8,
         component: <LeadsTracking />,
       },
