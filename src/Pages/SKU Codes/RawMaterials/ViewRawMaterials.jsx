@@ -223,7 +223,7 @@ export const ViewRawMaterials = () => {
             }}
           >
             {/* Search Component on the left */}
-            <Box sx={{ flexGrow: 1, flexBasis: "40%", minWidth: "300px" }}>
+            <Box sx={{ flexGrow: 1, flexBasis: "20%", minWidth: "300px" }}>
               <SearchComponent onSearch={handleSearch} onReset={handleReset} />
             </Box>
 

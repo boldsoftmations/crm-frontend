@@ -242,6 +242,7 @@ export const StoresInventoryView = () => {
         <CustomTable
           headers={Tableheaders}
           data={Tabledata}
+          Isviewable={false}
           openInPopup={null}
           openInPopup2={null}
         />

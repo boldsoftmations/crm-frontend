@@ -1,91 +1,158 @@
-import { Box, Button, Grid } from "@mui/material";
-import React, { memo, useCallback, useState } from "react";
+import React, { memo, useCallback, useMemo, useState } from "react";
 import ProductService from "../../../services/ProductService";
 import { useSelector } from "react-redux";
-import { CustomLoader } from "../../../Components/CustomLoader";
+import { Box, Grid, Button } from "@mui/material";
 import CustomTextField from "../../../Components/CustomTextField";
+import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
+import { DecimalValidation } from "../../../Components/Header/DecimalValidation";
 
-function searchArrayByKey(array, key, searchValue, returnValue) {
-  for (let i = 0; i < array.length; i++) {
-    if (array[i][key] === searchValue) {
-      return array[i][returnValue];
-    }
-  }
-}
+// 🔍 Utility
+const searchArrayValue = (array, key, value, returnKey) => {
+  const found = array.find((item) => item[key] === value);
+  return found ? found[returnKey] : "";
+};
 
-export const CreateRawMaterials = memo((props) => {
-  const { setOpenPopup, getRawMaterials, currentPage, searchQuery } = props;
-  const [open, setOpen] = useState(false);
-  const [formData, setFormData] = useState([]);
+export const UpdateRawMaterials = memo((props) => {
+  const {
+    recordForEdit,
+    setOpenPopup,
+    getRawMaterials,
+    currentPage,
+    searchQuery,
+  } = props;
+
   const { brandAllData, colourAllData, productCodeAllData, unitAllData } =
     useSelector((state) => state.auth);
+
+  const productUnit = unitAllData;
+
+  const [formData, setFormData] = useState(recordForEdit);
+  const [open, setOpen] = useState(false);
+  const [unitType, setUnitType] = useState(recordForEdit.unit);
+
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
-  const shortName = searchArrayByKey(
-    brandAllData,
-    "name",
-    formData.brand || null,
-    "short_name"
+  // 🔍 🔥 MEMOIZED – avoids recalculating every render
+  const shortName = useMemo(
+    () => searchArrayValue(brandAllData, "name", formData.brand, "short_name"),
+    [formData.brand, brandAllData]
   );
 
-  const description = searchArrayByKey(
-    productCodeAllData,
-    "code",
-    formData.productcode,
-    "description"
+  const description = useMemo(
+    () =>
+      searchArrayValue(
+        productCodeAllData,
+        "code",
+        formData.productcode,
+        "description"
+      ),
+    [formData.productcode, productCodeAllData]
   );
 
-  const productName = `${formData.productcode || ""}-${formData.color || ""}-${
-    shortName ? shortName : ""
-  }-${formData.size || ""}`;
+  const productName = useMemo(
+    () =>
+      `${formData.productcode || ""}-${formData.color || ""}-${
+        shortName || ""
+      }-${formData.size || ""}`,
+    [formData.productcode, formData.color, shortName, formData.size]
+  );
 
-  const handleInputChange = useCallback((event) => {
-    const { name, value } = event.target;
-    setFormData((prevFormData) => ({ ...prevFormData, [name]: value }));
+  const GST = useMemo(
+    () => (formData.gst ? formData.gst / 2 : 0),
+    [formData.gst]
+  );
+
+  const handleInputChange = useCallback((e) => {
+    const { name, value } = e.target;
+    setFormData((p) => ({ ...p, [name]: value }));
   }, []);
 
-  const GST = formData.gst / 2;
+  // 🔥 Cleaner Autocomplete handler
+  const handleAutoChange = useCallback((name, value) => {
+    setFormData((p) => ({ ...p, [name]: value }));
+  }, []);
 
-  const createrawMaterials = useCallback(
+  const updateRawMaterial = useCallback(
     async (e) => {
+      e.preventDefault();
       try {
-        e.preventDefault();
         setOpen(true);
-        const data = {
+
+        const selectedUnit = productUnit.find(
+          (item) => item.name === formData.unit
+        );
+
+        const safeUnitType = selectedUnit ? selectedUnit.type_of_unit : "";
+        const maxDecimal = selectedUnit ? selectedUnit.max_decimal_digit : "";
+
+        setUnitType(safeUnitType);
+
+        if (safeUnitType === "decimal") {
+          const isValid = DecimalValidation({
+            numTypes: [safeUnitType],
+            quantities: [formData.minimum_stock_limit],
+            decimalCounts: [maxDecimal],
+            unit: [formData.unit],
+            handleError,
+          });
+
+          if (!isValid) {
+            setOpen(false);
+            return;
+          }
+        }
+
+        const payload = {
           name: productName,
-          size: formData.size,
           unit: formData.unit,
+          size: formData.size,
           color: formData.color,
           brand: formData.brand,
           productcode: formData.productcode,
-          description: description,
+          description,
           shelf_life: formData.shelf_life,
+          minimum_stock_limit: formData.minimum_stock_limit,
           hsn_code: formData.hsn_code,
           gst: formData.gst,
           cgst: GST,
           sgst: GST,
           type: "raw-materials",
         };
-        const response = await ProductService.createRawMaterials(data);
-        const successMessage =
-          response.data.message || "Raw Materials Created successfully";
-        handleSuccess(successMessage);
 
-        setTimeout(() => {
-          setOpenPopup(false);
-          getRawMaterials(currentPage, searchQuery);
-        }, 300);
-      } catch (error) {
-        handleError(error); // Handle errors from the API call
+        if (recordForEdit) {
+          const res = await ProductService.updateRawMaterials(
+            formData.id,
+            payload
+          );
+
+          handleSuccess(
+            res.data.message || "Raw Materials updated successfully"
+          );
+
+          setTimeout(() => {
+            setOpenPopup(false);
+            getRawMaterials(currentPage, searchQuery);
+          }, 300);
+        }
+      } catch (err) {
+        handleError(err);
       } finally {
-        setOpen(false); // Always close the loader
+        setOpen(false);
       }
     },
-    [formData, productName, GST, currentPage, searchQuery]
+    [
+      formData,
+      productName,
+      GST,
+      description,
+      productUnit,
+      currentPage,
+      searchQuery,
+    ]
   );
 
   return (
@@ -98,160 +165,177 @@ export const CreateRawMaterials = memo((props) => {
       />
       <CustomLoader open={open} />
 
-      <Box component="form" noValidate onSubmit={(e) => createrawMaterials(e)}>
+      <Box component="form" noValidate onSubmit={updateRawMaterial}>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={4}>
             <CustomTextField
               fullWidth
-              name="Name"
               size="small"
-              label="Name"
-              variant="outlined"
-              value={productName}
-              onChange={handleInputChange}
+              label="Raw Material"
+              value={formData.name || ""}
             />
           </Grid>
+
+          <Grid item xs={12} sm={4}>
+            <CustomTextField
+              fullWidth
+              size="small"
+              label="Update Raw Material"
+              value={productName}
+            />
+          </Grid>
+
           <Grid item xs={12} sm={4}>
             <CustomTextField
               fullWidth
               name="size"
               size="small"
               label="Size"
-              variant="outlined"
-              value={formData.size}
+              value={formData.size || ""}
               onChange={handleInputChange}
             />
           </Grid>
+
+          {/* Unit */}
           <Grid item xs={12} sm={4}>
             <CustomAutocomplete
-              sx={{
-                minWidth: 220,
-              }}
               size="small"
               value={formData.unit || ""}
-              onChange={(event, newValue) => {
-                setFormData((prev) => ({ ...prev, unit: newValue }));
+              options={unitAllData.map((o) => o.name)}
+              label="Unit"
+              onChange={(e, v) => {
+                handleAutoChange("unit", v);
+                const u = productUnit.find((item) => item.name === v);
+                setUnitType(u ? u.type_of_unit : "");
               }}
-              options={unitAllData.map((option) => option.name)}
-              getOptionLabel={(option) => `${option}`}
-              label={"Unit"}
-            />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <CustomAutocomplete
-              sx={{
-                minWidth: 220,
-              }}
-              size="small"
-              value={formData.color || ""}
-              onChange={(event, newValue) => {
-                setFormData((prev) => ({ ...prev, color: newValue }));
-              }}
-              options={colourAllData.map((option) => option.name)}
-              getOptionLabel={(option) => `${option}`}
-              label="Colour"
             />
           </Grid>
 
+          {/* Colour */}
           <Grid item xs={12} sm={4}>
             <CustomAutocomplete
-              sx={{
-                minWidth: 220,
-              }}
+              size="small"
+              value={formData.color || ""}
+              options={colourAllData.map((o) => o.name)}
+              label="Colour"
+              onChange={(e, v) => handleAutoChange("color", v)}
+            />
+          </Grid>
+
+          {/* Brand */}
+          <Grid item xs={12} sm={4}>
+            <CustomAutocomplete
               size="small"
               value={formData.brand || ""}
-              onChange={(event, newValue) => {
-                setFormData((prev) => ({ ...prev, brand: newValue }));
-              }}
-              options={brandAllData.map((option) => option.name)}
-              getOptionLabel={(option) => `${option}`}
-              label="brand"
+              options={brandAllData.map((o) => o.name)}
+              label="Brand"
+              onChange={(e, v) => handleAutoChange("brand", v)}
             />
           </Grid>
+
+          {/* Product Code */}
           <Grid item xs={12} sm={4}>
             <CustomAutocomplete
-              sx={{
-                minWidth: 220,
-              }}
               size="small"
               value={formData.productcode || ""}
-              onChange={(event, newValue) => {
-                setFormData((prev) => ({ ...prev, productcode: newValue }));
-              }}
-              options={productCodeAllData.map((option) => option.code)}
-              getOptionLabel={(option) => `${option}`}
+              options={productCodeAllData.map((o) => o.code)}
               label="Product Code"
+              onChange={(e, v) => handleAutoChange("productcode", v)}
             />
           </Grid>
+
+          {/* Description */}
           <Grid item xs={12} sm={4}>
             <CustomTextField
               fullWidth
               size="small"
               label="Description"
-              variant="outlined"
-              value={description || ""}
+              value={description}
             />
           </Grid>
+
+          {/* Shelf Life */}
           <Grid item xs={12} sm={4}>
             <CustomTextField
               fullWidth
-              size="small"
               name="shelf_life"
+              size="small"
               label="Shelf Life (Month)"
-              variant="outlined"
               value={formData.shelf_life || ""}
               onChange={handleInputChange}
             />
           </Grid>
+
+          {/* HSN Code */}
           <Grid item xs={12} sm={4}>
             <CustomTextField
               fullWidth
               name="hsn_code"
               size="small"
-              label="Hsn Code"
-              variant="outlined"
-              value={formData.hsn_code}
+              label="HSN Code"
+              value={formData.hsn_code || ""}
               onChange={handleInputChange}
             />
           </Grid>
+
+          {/* Minimum Stock */}
+          <Grid item xs={12} sm={4}>
+            <CustomTextField
+              fullWidth
+              name="minimum_stock_limit"
+              size="small"
+              label="Minimum Stock Limit"
+              value={
+                unitType === "decimal"
+                  ? formData.minimum_stock_limit
+                  : Math.round(formData.minimum_stock_limit) || ""
+              }
+              onChange={handleInputChange}
+            />
+          </Grid>
+
+          {/* GST */}
           <Grid item xs={12} sm={4}>
             <CustomTextField
               fullWidth
               name="gst"
-              type={"number"}
               size="small"
+              type="number"
               label="IGST %"
-              variant="outlined"
-              value={formData.gst}
+              value={formData.gst || ""}
               onChange={handleInputChange}
             />
           </Grid>
+
+          {/* CGST */}
           <Grid item xs={12} sm={4}>
             <CustomTextField
               fullWidth
               size="small"
               label="CGST"
-              variant="outlined"
-              value={GST ? `${GST}%` : ""}
+              value={`${GST}%`}
             />
           </Grid>
+
+          {/* SGST */}
           <Grid item xs={12} sm={4}>
             <CustomTextField
               fullWidth
               size="small"
               label="SGST"
-              variant="outlined"
-              value={GST ? `${GST}%` : ""}
+              value={`${GST}%`}
             />
           </Grid>
         </Grid>
+
         <Button
-          type="submit"
           fullWidth
+          type="submit"
+          size="small"
           variant="contained"
           sx={{ mt: 3, mb: 2 }}
         >
-          Submit
+          Update
         </Button>
       </Box>
     </>

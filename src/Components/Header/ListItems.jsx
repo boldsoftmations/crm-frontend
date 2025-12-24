@@ -120,6 +120,9 @@ export const ListItems = ({ setOpen }) => {
             to: "/customer/complaints/ccp-capa/master",
             text: "CCF Complaint Master",
           },
+          // {
+          //   to: "/",
+          // },
           {
             to: "/county-state-city/master-tab",
             text: "Country Master",
@@ -142,6 +145,7 @@ export const ListItems = ({ setOpen }) => {
         renderSubmenu("inventory", <InventoryIcon />, "Inventory", [
           { to: "/inventory/view-inventory", text: "Inventory" },
           { to: "/inventory/physical", text: "Physical Inventory" },
+          { to: "inventory/stock-alert", text: "Stock Alert" },
         ]),
         renderSubmenu("production", <FactoryIcon />, "Production", [
           { to: "/inventory/view-production", text: "Production" },

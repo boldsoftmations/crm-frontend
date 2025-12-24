@@ -40,8 +40,10 @@ export const StoresInventoryConsView = () => {
   };
 
   // Filter the productionInventoryData based on the search query
-  const filteredData = storesInventoryData.filter((row) =>
-    row.product__name.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredData = storesInventoryData.filter(
+    (row) =>
+      row.product__name &&
+      row.product__name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const Tableheaders = [
@@ -133,7 +135,7 @@ export const StoresInventoryConsView = () => {
             </CSVLink>
           </Box>
         </Box>
-        <CustomTable headers={Tableheaders} data={data} />
+        <CustomTable Isviewable={false} headers={Tableheaders} data={data} />
       </Paper>
     </>
   );

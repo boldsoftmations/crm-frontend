@@ -16,6 +16,7 @@ export const CustomTable = ({
   openInPopup2,
   openInPopup3,
   openInPopup4,
+  Isviewable = true,
   isLastRow,
   Styles,
   handleClickLRCOPY,
@@ -176,7 +177,7 @@ export const CustomTable = ({
                   ) : (
                     <div
                       style={{
-                        display: "inline-block",
+                        display: Isviewable ? "inline-block" : "none",
                         // padding: "6px 12px",
                         // border: "1px solid #1976d2",
                         // borderRadius: "4px",

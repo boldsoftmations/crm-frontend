@@ -75,9 +75,11 @@ const getAllPurchaseOrderData = (page, acceptedToFilter, searchValue) => {
   return CustomAxios.get(`/api/inventory/purchase-order/?${params.toString()}`);
 };
 
-
 const isPLApproveReject = (id, data) => {
-  return CustomAxios.patch(`/api/inventory/list-packing-list-rejected/${id}`, data);
+  return CustomAxios.patch(
+    `/api/inventory/list-packing-list-rejected/${id}`,
+    data
+  );
 };
 
 const createPurchaseOrderData = (data) => {
@@ -147,8 +149,7 @@ const getAllGRNData = (page, acceptedToFilter, searchValue) => {
 };
 
 const createGRNData = (data) => {
-  
-  return CustomAxios.post("/api/inventory/list-grn/", data) ;
+  return CustomAxios.post("/api/inventory/list-grn/", data);
 };
 
 const getGRNDataById = (id) => {
@@ -160,7 +161,7 @@ const updateGRNData = (id, data) => {
 };
 
 // GRN Register
-const getAllGRNRegisterDetails = (StartDate,EndDate, page, searchValue) => {
+const getAllGRNRegisterDetails = (StartDate, EndDate, page, searchValue) => {
   const params = new URLSearchParams();
 
   if (StartDate) {
@@ -170,7 +171,6 @@ const getAllGRNRegisterDetails = (StartDate,EndDate, page, searchValue) => {
   if (EndDate) {
     params.append("end_date", EndDate);
   }
-  
 
   if (page) {
     params.append("page", page);
@@ -450,7 +450,7 @@ const getAllMaterialTransferNoteData = (
   );
 };
 
-const getAllMrfProducts = (date, start_date, end_date,product) => {
+const getAllMrfProducts = (date, start_date, end_date, product) => {
   const params = new URLSearchParams();
   if (date) {
     params.append("date", date);
@@ -461,8 +461,8 @@ const getAllMrfProducts = (date, start_date, end_date,product) => {
   if (end_date) {
     params.append("end_date", end_date);
   }
-  if(product){
-    params.append("product",product)
+  if (product) {
+    params.append("product", product);
   }
   return CustomAxios.get(`api/inventory/mrf-product/?${params.toString()}`);
 };
@@ -701,6 +701,9 @@ const getReworkinvoiceData = (page, searchValue) => {
 const updateReworkInvoiceData = (id, data) => {
   return CustomAxios.patch(`api/inventory/rework-entry/${id}/`, data);
 };
+const getStockAlertData = () => {
+  return CustomAxios.get(`api/inventory/inventory-stock-availability`);
+};
 
 const InventoryServices = {
   isPLApproveReject,
@@ -776,6 +779,7 @@ const InventoryServices = {
   createReworkinvoiceData,
   getReworkinvoiceData,
   updateReworkInvoiceData,
+  getStockAlertData,
 };
 
 export default InventoryServices;
