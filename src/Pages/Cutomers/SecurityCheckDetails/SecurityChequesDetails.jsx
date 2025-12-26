@@ -104,6 +104,7 @@ export const SecurityChequesDetails = ({ recordForEdit }) => {
           </Box>
           <Box flexGrow={0.5} align="right">
             {(userData.groups.includes("Accounts") ||
+              userData.groups.includes("Accounts Billing Department") ||
               userData.groups.includes("Director")) && (
               <Button
                 onClick={() => setOpenPopup2(true)}
@@ -164,6 +165,9 @@ export const SecurityChequesDetails = ({ recordForEdit }) => {
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         {(userData.groups.includes("Accounts") ||
+                          userData.groups.includes(
+                            "Accounts Billing Department"
+                          ) ||
                           userData.groups.includes("Director")) && (
                           <Button
                             variant="contained"

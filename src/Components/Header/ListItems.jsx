@@ -145,7 +145,8 @@ export const ListItems = ({ setOpen }) => {
         renderSubmenu("inventory", <InventoryIcon />, "Inventory", [
           { to: "/inventory/view-inventory", text: "Inventory" },
           { to: "/inventory/physical", text: "Physical Inventory" },
-          { to: "inventory/stock-alert", text: "Stock Alert" },
+          { to: "/inventory/stock-alert", text: "Stock Alert" },
+          // { to: "/inventory/stock-Report", text: "Stock Reprts" },
         ]),
         renderSubmenu("production", <FactoryIcon />, "Production", [
           { to: "/inventory/view-production", text: "Production" },
@@ -388,6 +389,7 @@ export const ListItems = ({ setOpen }) => {
         renderSubmenu("purchase", <PurchaseIcon />, "Purchase", [
           { to: "/inventory/view-vendor", text: "Vendor" },
           { to: "/inventory/view-purchase", text: "Purchase" },
+          { to: "/inventory/stock-alert", text: "Stock Alert" },
         ]),
         renderListItem("/user/analytics", <DashboardIcon />, "Analytics"),
 

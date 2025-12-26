@@ -86,6 +86,7 @@ export const AnalyticsAllTabView = () => {
         "Director",
         "Customer Relationship Manager",
         "Customer Relationship Executive",
+        "Sales Manager(Retailer)",
       ],
       component: <TopCustomerView />,
     },
