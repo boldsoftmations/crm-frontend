@@ -389,6 +389,7 @@ export const ListItems = ({ setOpen }) => {
         renderSubmenu("purchase", <PurchaseIcon />, "Purchase", [
           { to: "/inventory/view-vendor", text: "Vendor" },
           { to: "/inventory/view-purchase", text: "Purchase" },
+
           { to: "/inventory/stock-alert", text: "Stock Alert" },
         ]),
         renderListItem("/user/analytics", <DashboardIcon />, "Analytics"),
