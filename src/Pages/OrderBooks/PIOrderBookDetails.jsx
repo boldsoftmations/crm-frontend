@@ -73,18 +73,19 @@ export const PIOrderBookDetails = () => {
       let data = response.data.map((item) => {
         if (
           userData.groups.includes("Factory-Mumbai-OrderBook") ||
+          userData.groups.includes("Production") ||
           userData.groups.includes("Factory-Delhi-OrderBook")
         ) {
           return {
             proforma_invoice: item.proforma_invoice,
             order_book_date: item.order_book_date,
-            pi_date: item.pi_date,
+            // pi_date: item.pi_date,
             company: item.company,
-            billing_city: item.billing_city,
-            shipping_city: item.shipping_city,
+            // billing_city: item.billing_city,
+            // shipping_city: item.shipping_city,
             product: item.product,
-            quantity: item.quantity,
-            pending_amount: item.pending_amount,
+            // quantity: item.quantity,
+            // pending_amount: item.pending_amount,
             pending_quantity: item.pending_quantity,
             seller_state: item.seller_state,
             estimated_date: item.estimated_date,
@@ -233,6 +234,125 @@ export const PIOrderBookDetails = () => {
     "Revision",
     "ACTION",
   ];
+  const StateOption = ["Delhi", "Maharashtra"];
+  const readyDateOption = [
+    {
+      label: "Ready",
+      value: true,
+    },
+    {
+      label: "Not Ready",
+      value: false,
+    },
+  ];
+  const EstimatedDateOption = [
+    {
+      label: "Esimated",
+      value: true,
+    },
+    {
+      label: "Not Esimated",
+      value: false,
+    },
+  ];
+  const headers =
+    userData.groups.includes("Factory-Mumbai-OrderBook") ||
+    userData.groups.includes("Production") ||
+    userData.groups.includes("Factory-Delhi-OrderBook")
+      ? [
+          { label: "PI Number", key: "proforma_invoice" },
+          { label: "Approval Date", key: "order_book_date" },
+          { label: "Customer", key: "company" },
+
+          { label: "Product", key: "product" },
+
+          {
+            label: "Pending Quantity",
+            key: "pending_quantity",
+          },
+          {
+            label: "Seller State",
+            key: "seller_state",
+          },
+          {
+            label: "Estimated Date",
+            key: "estimated_date",
+          },
+          { label: "Ready Date", key: "ready_date" },
+          {
+            label: "Requested Date",
+            key: "requested_date",
+          },
+          {
+            label: "Special Instruction",
+            key: "special_instructions",
+          },
+          {
+            label: "Remarks",
+            key: "remark",
+          },
+        ]
+      : [
+          { label: "PI Number", key: "proforma_invoice" },
+          { label: "Approval Date", key: "order_book_date" },
+          { label: "PI Date", key: "pi_date" },
+          { label: "Customer", key: "company" },
+          { label: "Billing City", key: "billing_city" },
+          { label: "Shipping City", key: "shipping_city" },
+          { label: "Shipping Pincode", key: "shipping_pincode" },
+          { label: "Billing Pincode", key: "billing_pincode" },
+          { label: "Product", key: "product" },
+          { label: "Quantity", key: "quantity" },
+          { label: "Amount", key: "amount" },
+          { label: "Pending Amount", key: "pending_amount" },
+          {
+            label: "Pending Quantity",
+            key: "pending_quantity",
+          },
+          {
+            label: "Seller State",
+            key: "seller_state",
+          },
+          {
+            label: "Estimated Date",
+            key: "estimated_date",
+          },
+          { label: "Ready Date", key: "ready_date" },
+          {
+            label: "Requested Date",
+            key: "requested_date",
+          },
+          {
+            label: "Special Instruction",
+            key: "special_instructions",
+          },
+          {
+            label: "Remarks",
+            key: "remark",
+          },
+        ];
+
+  const StyledTableCell = styled(TableCell)(({ theme }) => ({
+    [`&.${tableCellClasses.head}`]: {
+      fontSize: 12,
+      backgroundColor: "#006BA1",
+      color: theme.palette.common.white,
+      fontWeight: "bold",
+      textTransform: "uppercase",
+    },
+    [`&.${tableCellClasses.body}`]: {
+      fontSize: 13,
+    },
+  }));
+
+  const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    "&:nth-of-type(odd)": {
+      backgroundColor: theme.palette.action.hover,
+    },
+    "&:last-child td, &:last-child th": {
+      border: 0,
+    },
+  }));
 
   return (
     <>
@@ -516,86 +636,5 @@ export const PIOrderBookDetails = () => {
     </>
   );
 };
-
-const StateOption = ["Delhi", "Maharashtra"];
-const readyDateOption = [
-  {
-    label: "Ready",
-    value: true,
-  },
-  {
-    label: "Not Ready",
-    value: false,
-  },
-];
-const EstimatedDateOption = [
-  {
-    label: "Esimated",
-    value: true,
-  },
-  {
-    label: "Not Esimated",
-    value: false,
-  },
-];
-const headers = [
-  { label: "PI Number", key: "proforma_invoice" },
-  { label: "Approval Date", key: "order_book_date" },
-  { label: "PI Date", key: "pi_date" },
-  { label: "Customer", key: "company" },
-  { label: "Billing City", key: "billing_city" },
-  { label: "Shipping City", key: "shipping_city" },
-  { label: "Shipping Pincode", key: "shipping_pincode" },
-  { label: "Billing Pincode", key: "billing_pincode" },
-  { label: "Product", key: "product" },
-  { label: "Quantity", key: "quantity" },
-  { label: "Amount", key: "amount" },
-  { label: "Pending Amount", key: "pending_amount" },
-  {
-    label: "Pending Quantity",
-    key: "pending_quantity",
-  },
-  {
-    label: "Seller State",
-    key: "seller_state",
-  },
-  {
-    label: "Estimated Date",
-    key: "estimated_date",
-  },
-  { label: "Ready Date", key: "ready_date" },
-  {
-    label: "Requested Date",
-    key: "requested_date",
-  },
-  {
-    label: "Special Instruction",
-    key: "special_instructions",
-  },
-  {
-    label: "Remarks",
-    key: "remark",
-  },
-];
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    fontSize: 12,
-    backgroundColor: "#006BA1",
-    color: theme.palette.common.white,
-    fontWeight: "bold",
-    textTransform: "uppercase",
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 13,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
+// const dataList = useSelector((state) => state.auth);
+// const userData = dataList.profile;
