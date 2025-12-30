@@ -242,6 +242,7 @@ export const ListItems = ({ setOpen }) => {
         renderListItem("/customer/srf", <StickyNote2Icon />, "SRF"),
         renderSubmenu("inventory", <InventoryIcon />, "Inventory", [
           { to: "/inventory/view-inventory", text: "Inventory" },
+          { to: "/inventory/stock-alert", text: "Stock Alert" },
         ]),
         renderSubmenu("production", <FactoryIcon />, "Production", [
           { to: "/inventory/view-production", text: "Production" },
@@ -308,6 +309,9 @@ export const ListItems = ({ setOpen }) => {
       items: [
         renderSubmenu("master", <BusinessIcon />, "Master", [
           { to: "/user/profile-tab", text: "Employees Master" },
+        ]),
+        renderSubmenu("inventory", <FactoryIcon />, "Inventory", [
+          { to: "/inventory/stock-alert", text: "Stock Alert" },
         ]),
       ],
     },
@@ -377,6 +381,7 @@ export const ListItems = ({ setOpen }) => {
         renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
         renderSubmenu("inventory", <InventoryIcon />, "Inventory", [
           { to: "/inventory/view-inventory", text: "Inventory" },
+          { to: "/inventory/stock-alert", text: "Stock Alert" },
         ]),
         renderSubmenu("production", <FactoryIcon />, "Production", [
           { to: "/inventory/view-production", text: "Production" },
@@ -389,7 +394,6 @@ export const ListItems = ({ setOpen }) => {
         renderSubmenu("purchase", <PurchaseIcon />, "Purchase", [
           { to: "/inventory/view-vendor", text: "Vendor" },
           { to: "/inventory/view-purchase", text: "Purchase" },
-
           { to: "/inventory/stock-alert", text: "Stock Alert" },
         ]),
         renderListItem("/user/analytics", <DashboardIcon />, "Analytics"),
