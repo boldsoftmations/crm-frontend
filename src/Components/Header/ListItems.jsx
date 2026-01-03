@@ -233,6 +233,7 @@ export const ListItems = ({ setOpen }) => {
       ),
       items: [
         renderSubmenu("master", <BusinessIcon />, "Master", [
+          { to: "/products/all-product", text: "Inventory Master" },
           {
             to: "/customer/complaints/ccp-capa/master",
             text: "CCF Complaint Master",

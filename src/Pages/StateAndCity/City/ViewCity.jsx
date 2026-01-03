@@ -148,6 +148,7 @@ export const ViewCity = () => {
               <TableHead>
                 <TableRow>
                   <StyledTableCell align="center">County </StyledTableCell>
+                  <StyledTableCell align="center">Zone </StyledTableCell>
                   <StyledTableCell align="center">State </StyledTableCell>
                   <StyledTableCell align="center">City</StyledTableCell>
                   <StyledTableCell align="center">Action</StyledTableCell>
@@ -159,6 +160,9 @@ export const ViewCity = () => {
                     <StyledTableRow key={i}>
                       <StyledTableCell align="center">
                         {row.country}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.zone}
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         {row.state_name}

@@ -148,6 +148,7 @@ export const ViewState = () => {
               <TableHead>
                 <TableRow>
                   <StyledTableCell align="center">Country Name</StyledTableCell>
+                  <StyledTableCell align="center">Zone Name</StyledTableCell>
                   <StyledTableCell align="center">State Name</StyledTableCell>
                   <StyledTableCell align="center">Action</StyledTableCell>
                 </TableRow>
@@ -158,6 +159,9 @@ export const ViewState = () => {
                     <StyledTableRow key={i}>
                       <StyledTableCell align="center">
                         {row.country}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.zone}
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         {row.name}

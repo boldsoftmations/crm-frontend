@@ -5,7 +5,7 @@ import { CreateRawMaterials } from "./CreateRawMaterials";
 import { UpdateRawMaterials } from "./UpdateRawMaterials";
 import { Popup } from "./../../../Components/Popup";
 import { CustomLoader } from "./../../../Components/CustomLoader";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getBrandData, getUnitData } from "../../../Redux/Action/Action";
 import { CustomPagination } from "./../../../Components/CustomPagination";
 import {
@@ -32,6 +32,10 @@ export const ViewRawMaterials = () => {
     useNotificationHandling();
   const [exportData, setExportData] = useState([]);
   const csvLinkRef = useRef(null);
+  const UserData = useSelector((state) => state.auth.profile);
+
+  const isInGroups = (...groups) =>
+    groups.some((group) => UserData.groups.includes(group));
 
   const handleDownload = async () => {
     try {
@@ -256,6 +260,7 @@ export const ViewRawMaterials = () => {
                 onClick={() => setOpenPopup2(true)}
                 variant="contained"
                 color="success"
+                disabled={isInGroups("Stores")}
               >
                 Add
               </Button>

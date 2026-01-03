@@ -5,6 +5,7 @@ import { ViewCountry } from "./ViewCountry";
 import { ViewState } from "./State/ViewState";
 import { ViewCity } from "./City/ViewCity";
 import { ViewPincode } from "./Pincode/ViewPincode";
+import ZoneListView from "./ZoneList/ZoneListView";
 
 export const AllTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
@@ -17,6 +18,11 @@ export const AllTabView = () => {
       label: "Country",
       roles: ["Director", "Accounts"],
       component: <ViewCountry />,
+    },
+    {
+      label: "Zone",
+      roles: ["Director", "Accounts"],
+      component: <ZoneListView />,
     },
     {
       label: "State",

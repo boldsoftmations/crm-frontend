@@ -147,6 +147,7 @@ export const ViewPincode = () => {
               <TableHead>
                 <TableRow>
                   <StyledTableCell align="center">County </StyledTableCell>
+                  <StyledTableCell align="center">Zone </StyledTableCell>
                   <StyledTableCell align="center">State </StyledTableCell>
                   <StyledTableCell align="center">City</StyledTableCell>
                   <StyledTableCell align="center">Pincode</StyledTableCell>
@@ -159,6 +160,9 @@ export const ViewPincode = () => {
                     <StyledTableRow key={i}>
                       <StyledTableCell align="center">
                         {row.country}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.zone}
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         {row.state}

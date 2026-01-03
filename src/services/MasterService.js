@@ -121,32 +121,20 @@ const getMasterActivityOptions = (model_master__name) => {
 };
 
 const getLeadSummaryDetails = () => {
-
-  return CustomAxios.get(
-    `/api/lead/list-references`
-  );
+  return CustomAxios.get(`/api/lead/list-references`);
 };
 
 const createLeadSummary = (data) => {
- 
-  return CustomAxios.post(
-    `/api/lead/list-references/`,data
-  );
+  return CustomAxios.post(`/api/lead/list-references/`, data);
 };
 
-const getFactoryModelName=()=>{
+const getFactoryModelName = () => {
+  return CustomAxios.get(`/api/master/machine-model/`);
+};
 
-  return CustomAxios.get(
-    `/api/master/machine-model/`
-  );
-}
-
-const getStageList=()=>{
-
-  return CustomAxios.get(
-    `/api/master/approval-stage/`
-  );
-}
+const getStageList = () => {
+  return CustomAxios.get(`/api/master/approval-stage/`);
+};
 const CreateFactoryModel = (data) => {
   return CustomAxios.post(`/api/master/machine-model/`, data);
 };
@@ -162,7 +150,7 @@ const createMasterBeat = (data) => {
   return CustomAxios.post(`/api/master/beat/`, data);
 };
 
-const getMasterBeat = (page,search) => {
+const getMasterBeat = (page, search) => {
   const params = new URLSearchParams();
   if (page) {
     params.append("page", page);
@@ -173,8 +161,7 @@ const getMasterBeat = (page,search) => {
   return CustomAxios.get(`/api/master/beat/?${params.toString()}`);
 };
 
-
-const getBeatCustomers = (page,search)=>{
+const getBeatCustomers = (page, search) => {
   const params = new URLSearchParams();
   if (page) {
     params.append("page", page);
@@ -183,8 +170,8 @@ const getBeatCustomers = (page,search)=>{
     params.append("search", search);
   }
   return CustomAxios.get(`/api/customer/customer-beat/?${params.toString()}`);
-}
-const getBeatLeads = (page,search)=>{
+};
+const getBeatLeads = (page, search) => {
   const params = new URLSearchParams();
   if (page) {
     params.append("page", page);
@@ -193,56 +180,97 @@ const getBeatLeads = (page,search)=>{
     params.append("filter", search);
   }
   return CustomAxios.get(`/api/lead/lead-beat/?${params.toString()}`);
-}
+};
 
-const removeCustomterBeatList = (id,data)=>{
- return CustomAxios.post(`/api/customer/customer-beat/${id}/remove_customer/`,data)
-}
+const removeCustomterBeatList = (id, data) => {
+  return CustomAxios.post(
+    `/api/customer/customer-beat/${id}/remove_customer/`,
+    data
+  );
+};
 
-const removeLeadsBeatList = (id,data)=>{
-  return CustomAxios.post(`/api/lead/lead-beat/${id}/remove_lead/`,data)
- }
+const removeLeadsBeatList = (id, data) => {
+  return CustomAxios.post(`/api/lead/lead-beat/${id}/remove_lead/`, data);
+};
 
-const getBeatlist= ()=>{
-  return CustomAxios.get("/api/customer/customer-beat/beat_list/")
-}
+const getBeatlist = () => {
+  return CustomAxios.get("/api/customer/customer-beat/beat_list/");
+};
 
-const getLeadBeatlist= ()=>{
-  return CustomAxios.get("/api/lead/lead-beat/beat_list/")
-}
+const getLeadBeatlist = () => {
+  return CustomAxios.get("/api/lead/lead-beat/beat_list/");
+};
 
-const EmployeesAttendance = (page,user__name,user__groups__name)=>{
+const EmployeesAttendance = (page, user__name, user__groups__name) => {
   const params = new URLSearchParams();
-  if (page)  params.append("page", page);
-  if(user__name) params.append("user__name", user__name);
-  if(user__groups__name) params.append("user__groups__name", user__groups__name);
+  if (page) params.append("page", page);
+  if (user__name) params.append("user__name", user__name);
+  if (user__groups__name)
+    params.append("user__groups__name", user__groups__name);
   return CustomAxios.get(`/api/user/attendance/?${params.toString()}`);
-  
-}
+};
 
-const getEmployeesLeaveForm = (page,status,search)=>{
-   const params = new URLSearchParams();
-  if (page)  params.append("page", page);
-  if(status) params.append("status", status);
-  if (search)  params.append("search", search);
+const getEmployeesLeaveForm = (page, status, search) => {
+  const params = new URLSearchParams();
+  if (page) params.append("page", page);
+  if (status) params.append("status", status);
+  if (search) params.append("search", search);
 
   return CustomAxios.get(`/api/user/leave/?${params.toString()}`);
-}
+};
 
+const createLeaveApplication = (data) => {
+  return CustomAxios.post(`/api/user/leave/`, data);
+};
 
-const createLeaveApplication= (data)=>{
-  return CustomAxios.post(`/api/user/leave/`,data)
-}
-
-const leaveApproval = (data)=>{
-  return CustomAxios.post(`/api/user/leave-approval/`,data)
-}
-const getLeavapproval = ()=>{
- 
+const leaveApproval = (data) => {
+  return CustomAxios.post(`/api/user/leave-approval/`, data);
+};
+const getLeavapproval = () => {
   return CustomAxios.get(`/api/user/leave-approval/`);
-}
+};
 
+const getZoneMasterList = (page, search) => {
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+  if (search) {
+    params.append("search", search);
+  }
+  return CustomAxios.get(`/api/master/zone/?${params.toString()}`);
+};
+const createZoneMaster = (data) => {
+  return CustomAxios.post("/api/master/zone/", data);
+};
 
+const UpdateZoneMaster = (id, data) => {
+  // const params = new URLSearchParams();
+
+  return CustomAxios.patch(`/api/master/zone/${id}/`, data);
+};
+
+const getStateZoneMaster = (country__name) => {
+  const params = new URLSearchParams();
+  if (country__name) {
+    params.append("country__name", country__name);
+  }
+  return CustomAxios.get(`/api/master/state/?${params.toString()}`);
+};
+const createSateZoneMaster = (id, data) => {
+  return CustomAxios.patch(`/api/master/state/${id}`, data);
+};
+
+const getCityZoneMaster = (country, state) => {
+  const params = new URLSearchParams();
+  if (country) {
+    params.append("state__country__name", country);
+  }
+  if (state) {
+    params.append("state__name", state);
+  }
+  return CustomAxios.get(`/api/master/city/${params.toString()}`);
+};
 const MasterService = {
   getLeavapproval,
   updateApprovalStage,
@@ -280,6 +308,12 @@ const MasterService = {
   EmployeesAttendance,
   getEmployeesLeaveForm,
   createLeaveApplication,
-  leaveApproval
+  leaveApproval,
+  getZoneMasterList,
+  createZoneMaster,
+  UpdateZoneMaster,
+  getStateZoneMaster,
+  createSateZoneMaster,
+  getCityZoneMaster,
 };
 export default MasterService;

@@ -5,13 +5,18 @@ import CustomSnackbar from "../../../Components/CustomerSnackbar";
 import MasterService from "../../../services/MasterService";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
-export const CreateState = ({ setOpenPopup, getAllMasterStates }) => {
+export const CreateState = ({
+  setOpenPopup,
+  getAllMasterStates,
+  StateData,
+}) => {
   const [open, setOpen] = useState(false);
   const [alertmsg, setAlertMsg] = useState({
     message: "",
     severity: "",
     open: false,
   });
+  const [zoneOptions, setZoneOptions] = useState([]);
   const [countryOptions, setCountryOptions] = useState([]);
   const handleClose = () => {
     setAlertMsg({ open: false });
@@ -19,6 +24,7 @@ export const CreateState = ({ setOpenPopup, getAllMasterStates }) => {
   const [inputValue, setInputValue] = useState({
     country: "",
     name: "",
+    zone: "",
   });
 
   const handleInputChange = (event) => {
@@ -44,6 +50,27 @@ export const CreateState = ({ setOpenPopup, getAllMasterStates }) => {
       setOpen(false);
     }
   };
+  const getZoneStateMaster = async () => {
+    try {
+      setOpen(true);
+      const response = await MasterService.getStateZoneMaster(
+        inputValue.country
+      );
+      setZoneOptions(response.data.results);
+      console.log(response.data);
+    } catch (e) {
+      setAlertMsg({
+        message: e.response.data.message || "Error fetching states",
+        severity: "error",
+        open: true,
+      });
+    } finally {
+      setOpen(false);
+    }
+  };
+  useEffect(() => {
+    getZoneStateMaster();
+  }, [inputValue.country]);
   useEffect(() => {
     getAllMasterCountries();
   }, []);
@@ -120,6 +147,21 @@ export const CreateState = ({ setOpenPopup, getAllMasterStates }) => {
               getOptionLabel={(option) => option}
               fullWidth
               label="Country"
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <CustomAutocomplete
+              name="zone"
+              size="small"
+              disablePortal
+              id="combo-box-demo"
+              options={zoneOptions && zoneOptions.map((option) => option.name)}
+              onChange={(e, value) => {
+                setInputValue((prev) => ({ ...prev, zone: value }));
+              }}
+              getOptionLabel={(option) => option}
+              fullWidth
+              label="Zone"
             />
           </Grid>
           <Grid item xs={12}>

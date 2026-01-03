@@ -1,5 +1,5 @@
 import { Box, Button, Grid, TextField } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
 import MasterService from "../../../services/MasterService";
@@ -16,9 +16,11 @@ export const UpdateState = ({
     severity: "",
     open: false,
   });
+  const [zoneOptions, setZoneOptions] = useState([]);
   const [inputValue, setInputValue] = useState({
     country: recordForEdit.country || "",
     name: recordForEdit.name || "",
+    zone: recordForEdit.zone || "",
   });
 
   // Close the Snackbar
@@ -34,6 +36,27 @@ export const UpdateState = ({
       [name]: value,
     }));
   };
+  const getZoneStateMaster = async () => {
+    try {
+      setOpen(true);
+      const response = await MasterService.getStateZoneMaster(
+        recordForEdit.country
+      );
+      setZoneOptions(response.data.results);
+      console.log(response.data);
+    } catch (e) {
+      setAlertMsg({
+        message: e.response.data.message || "Error fetching states",
+        severity: "error",
+        open: true,
+      });
+    } finally {
+      setOpen(false);
+    }
+  };
+  useEffect(() => {
+    getZoneStateMaster();
+  }, []);
 
   // Function to update the state in the master list
   const updateMasterState = async (e) => {
@@ -100,9 +123,8 @@ export const UpdateState = ({
           <Grid item xs={12}>
             {/* Autocomplete for displaying country, disabled as it's non-editable */}
             <CustomAutocomplete
-              name="country"
+              name="zone"
               size="small"
-              disablePortal
               id="country-select"
               value={inputValue.country}
               options={[recordForEdit.country || ""]}
@@ -110,6 +132,23 @@ export const UpdateState = ({
               fullWidth
               label="Country"
               disabled={true}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            {/* Autocomplete for displaying country, disabled as it's non-editable */}
+            <CustomAutocomplete
+              name="zone"
+              size="small"
+              id="zone-select"
+              value={inputValue.zone}
+              onChange={(e, newValue) =>
+                setInputValue({ ...inputValue, zone: newValue })
+              }
+              options={zoneOptions && zoneOptions.map((option) => option.name)}
+              getOptionLabel={(option) => option}
+              fullWidth
+              label="Zone"
+              // disabled={true}
             />
           </Grid>
 
