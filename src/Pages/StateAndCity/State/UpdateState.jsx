@@ -39,9 +39,7 @@ export const UpdateState = ({
   const getZoneStateMaster = async () => {
     try {
       setOpen(true);
-      const response = await MasterService.getStateZoneMaster(
-        recordForEdit.country
-      );
+      const response = await MasterService.getZoneMasterList();
       setZoneOptions(response.data.results);
       console.log(response.data);
     } catch (e) {

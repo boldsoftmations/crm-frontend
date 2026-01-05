@@ -250,27 +250,6 @@ const UpdateZoneMaster = (id, data) => {
   return CustomAxios.patch(`/api/master/zone/${id}/`, data);
 };
 
-const getStateZoneMaster = (country__name) => {
-  const params = new URLSearchParams();
-  if (country__name) {
-    params.append("country__name", country__name);
-  }
-  return CustomAxios.get(`/api/master/state/?${params.toString()}`);
-};
-const createSateZoneMaster = (id, data) => {
-  return CustomAxios.patch(`/api/master/state/${id}`, data);
-};
-
-const getCityZoneMaster = (country, state) => {
-  const params = new URLSearchParams();
-  if (country) {
-    params.append("state__country__name", country);
-  }
-  if (state) {
-    params.append("state__name", state);
-  }
-  return CustomAxios.get(`/api/master/city/${params.toString()}`);
-};
 const MasterService = {
   getLeavapproval,
   updateApprovalStage,
@@ -312,8 +291,5 @@ const MasterService = {
   getZoneMasterList,
   createZoneMaster,
   UpdateZoneMaster,
-  getStateZoneMaster,
-  createSateZoneMaster,
-  getCityZoneMaster,
 };
 export default MasterService;

@@ -53,7 +53,7 @@ export const CreateState = ({
   const getZoneStateMaster = async () => {
     try {
       setOpen(true);
-      const response = await MasterService.getStateZoneMaster(
+      const response = await MasterService.getZoneMasterList(
         inputValue.country
       );
       setZoneOptions(response.data.results);
