@@ -29,6 +29,7 @@ export const AllLeadsTabView = () => {
   const isSaleDevelopmentExecutive = isInGroups(
     "Business Development Executive"
   );
+  // const digitalMarkating = isInGroups("Digital Marketing");
   const isSalesExecutive = isInGroups(
     "Sales Executive",
     "Business Development Executive",
@@ -117,7 +118,7 @@ export const AllLeadsTabView = () => {
         component: <IndiaMartLeads />,
       },
       {
-        label: "Assign Leads",
+        label: digitalManager ? "Create Lead" : "Assign Lead",
         visible: isAdminAndDM || bdTeam,
         index: 7,
         component: <CreateJustDialLead />,

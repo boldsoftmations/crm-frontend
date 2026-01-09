@@ -12,8 +12,10 @@ const CreateJustDialLead = () => {
     references: "",
     contact: "",
     name: "",
+    company: "",
     stage: "new",
     city: "",
+    state: "",
     query_product_name: "",
   });
   const [alertmsg, setAlertMsg] = useState({
@@ -96,6 +98,8 @@ const CreateJustDialLead = () => {
             contact: "",
             name: "",
             city: "",
+            state: "",
+            company: "",
             query_product_name: "",
           };
         });
@@ -130,7 +134,7 @@ const CreateJustDialLead = () => {
         <Grid item xs={12} sm={8} md={6}>
           <Paper elevation={3} style={{ padding: "1rem" }}>
             <Typography variant="h5" align="center" gutterBottom>
-            Assign lead 
+              Assign lead
             </Typography>
             <form onSubmit={handleSubmit}>
               <Grid container spacing={3}>
@@ -161,6 +165,17 @@ const CreateJustDialLead = () => {
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
+                    label="Company"
+                    name="company"
+                    variant="outlined"
+                    size="small"
+                    value={formData.company}
+                    onChange={handleChange}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
                     label="Contact"
                     type="number"
                     name="contact"
@@ -179,6 +194,17 @@ const CreateJustDialLead = () => {
                     variant="outlined"
                     size="small"
                     value={formData.city}
+                    onChange={handleChange}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="State"
+                    name="state"
+                    variant="outlined"
+                    size="small"
+                    value={formData.state}
                     onChange={handleChange}
                   />
                 </Grid>

@@ -101,6 +101,15 @@ const CapaDownload = ({ recordForEdit }) => {
               </Grid>
               <Grid item xs={12} sm={6}>
                 <Typography variant="body1" fontWeight="bold">
+                  Comapany Name :
+                </Typography>
+                <Typography variant="body2">
+                  {recordForEdit.ccf_details.customer}
+                </Typography>
+                <Divider sx={{ marginY: 1 }} />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Typography variant="body1" fontWeight="bold">
                   Date :
                 </Typography>
                 <Typography variant="body2">
@@ -126,7 +135,7 @@ const CapaDownload = ({ recordForEdit }) => {
                 </Typography>
                 <Divider sx={{ marginY: 1 }} />
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={12} md={6}>
                 <Typography variant="body1" fontWeight="bold">
                   Customer Complaint :
                 </Typography>
@@ -135,7 +144,16 @@ const CapaDownload = ({ recordForEdit }) => {
                 </Typography>
                 <Divider sx={{ marginY: 1 }} />
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={12} md={6}>
+                <Typography variant="body1" fontWeight="bold">
+                  InVoice No. :
+                </Typography>
+                <Typography variant="body2">
+                  {recordForEdit.ccf_details.invoices.join(", ")}
+                </Typography>
+                <Divider sx={{ marginY: 1 }} />
+              </Grid>
+              <Grid item xs={12} md={6}>
                 <Typography variant="body1" fontWeight="bold">
                   Root Cause :
                 </Typography>

@@ -21,6 +21,7 @@ import CustomerServices from "../../../services/CustomerService";
 import { Popup } from "../../../Components/Popup";
 import { ViewAssignCustomers } from "./ViewAssignCustomer";
 import { ViewLeadCustomer } from "./ViewLeadCustomer";
+import { useSelector } from "react-redux";
 
 export const ExclusiveDistributionCustomer = () => {
   const [open, setOpen] = useState(false);
@@ -35,6 +36,9 @@ export const ExclusiveDistributionCustomer = () => {
 
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
+  const userData = useSelector((state) => state.auth.profile);
+  const isInGroups = (...groups) =>
+    groups.some((group) => userData.groups.includes(group));
 
   const getAllEDC = async () => {
     try {
@@ -81,7 +85,6 @@ export const ExclusiveDistributionCustomer = () => {
     getAllEDC();
   }, []);
 
-
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
@@ -104,7 +107,6 @@ export const ExclusiveDistributionCustomer = () => {
             }}
           >
             <Grid container spacing={2} alignItems="center">
-
               {/* Title Text centered */}
               <Grid
                 item
@@ -190,7 +192,9 @@ export const ExclusiveDistributionCustomer = () => {
                         size="small"
                         onClick={() => handleLeadCustomer(row)}
                       >
-                        Assign Lead
+                        {isInGroups.includes("Digital Marketing")
+                          ? "Create Lead"
+                          : "Assigne Lead"}
                       </Button>
                     </StyledTableCell>
                   </StyledTableRow>
