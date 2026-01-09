@@ -57,7 +57,7 @@ export const ProductionEntryCreate = memo((props) => {
   ]);
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
-
+  const [remark, setRemark] = useState("");
   const handleFormChange = (index, event) => {
     let data = [...products];
     let value = event.target.value;
@@ -84,6 +84,7 @@ export const ProductionEntryCreate = memo((props) => {
   const fetchProductOptions = async (value) => {
     try {
       setOpen(true);
+      setRemark("");
       const response = await InventoryServices.getAllBillofMaterialsData(
         "all",
         "true",
@@ -91,22 +92,32 @@ export const ProductionEntryCreate = memo((props) => {
         value
       );
       setSelectedProduct(response.data);
+      // setRemark(response.data.remark);
+      // console.log(response.data.remark);
       setOpen(false);
     } catch (err) {
       setOpen(false);
       console.log("err all vendor", err);
     }
   };
+  console.log("BOM");
 
   const getProductByBOM = (value) => {
+    console.log("BOM");
+
     setSelectedBOM(value);
+    console.log(value);
+    console.log(value && value.remark);
+    setRemark(value && value.remark);
     var arr = value.products_data.map((fruit) => ({
       product: fruit.product,
       unit: fruit.unit,
       quantity: fruit.quantity,
       expected_quantity: fruit.quantity,
+      // remark: fruit.remark,
     }));
     setProducts(arr);
+    console.log("BOM", arr);
   };
 
   const createMaterialRequisitionFormDetails = async (e) => {
@@ -225,6 +236,7 @@ export const ProductionEntryCreate = memo((props) => {
           }))
         : products.map((product) => {
             const productQuantity = parseFloat(product.quantity);
+            console.log(product);
             const totalQuantity = parseFloat(quantity.quantity) || 0;
             return {
               product: product.product,
@@ -277,7 +289,7 @@ export const ProductionEntryCreate = memo((props) => {
         onSubmit={(e) => createMaterialRequisitionFormDetails(e)}
       >
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={4}>
             <CustomAutocomplete
               name="seller_account"
               size="small"
@@ -322,6 +334,39 @@ export const ProductionEntryCreate = memo((props) => {
               label="Bill of Material"
             />
           </Grid>
+
+          <Grid item xs={12} sm={2}>
+            <CustomTextField
+              fullWidth
+              size="small"
+              label="Unit"
+              variant="outlined"
+              // value={input.remark ? input.remark : ""}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={4}>
+            <CustomTextField
+              fullWidth
+              name="quantity"
+              size="small"
+              label="Quantity"
+              variant="outlined"
+              value={quantity.quantity}
+              onChange={(event) => handleQuantityChange(event)}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <CustomTextField
+              fullWidth
+              size="small"
+              label="Remark"
+              variant="outlined"
+              value={remark}
+              InputLabelProps={{ shrink: true }}
+              disabled
+            />
+          </Grid>
           {(users.email === "amol@glutape.com" ||
             users.groups.includes("Director")) && (
             <Grid item xs={12} sm={4}>
@@ -338,17 +383,7 @@ export const ProductionEntryCreate = memo((props) => {
               />
             </Grid>
           )}
-          <Grid item xs={12} sm={4}>
-            <CustomTextField
-              fullWidth
-              name="quantity"
-              size="small"
-              label="Quantity"
-              variant="outlined"
-              value={quantity.quantity}
-              onChange={(event) => handleQuantityChange(event)}
-            />
-          </Grid>
+
           <Grid item xs={12}>
             <Root>
               <Divider>
@@ -377,6 +412,7 @@ export const ProductionEntryCreate = memo((props) => {
                     value={input.unit ? input.unit : ""}
                   />
                 </Grid>
+
                 {checked === false ? (
                   <Grid item xs={12} sm={3}>
                     <CustomTextField
