@@ -26,7 +26,7 @@ export const CreateAllCompanyDetails = ({ recordForEdit }) => {
     { label: "Security Cheques" },
   ];
   // const dispatch = useDispatch();
-  // All Company Details Api
+
   useEffect(() => {
     if (recordForEdit) getAllCompanyDetailsByID();
   }, [recordForEdit]);
