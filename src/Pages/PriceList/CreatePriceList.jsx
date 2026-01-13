@@ -1,5 +1,5 @@
 import { Box, Button, Grid } from "@mui/material";
-import React, { memo, useCallback, useState } from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
 import ProductService from "../../services/ProductService";
 import { MessageAlert } from "../../Components/MessageAlert";
@@ -7,6 +7,7 @@ import { CustomLoader } from "../../Components/CustomLoader";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import CustomTextField from "../../Components/CustomTextField";
 import { DecimalValidation } from "../../Components/Header/DecimalValidation";
+import MasterService from "../../services/MasterService";
 
 export const CreatePriceList = memo((props) => {
   const {
@@ -16,8 +17,10 @@ export const CreatePriceList = memo((props) => {
     currentPage,
     filterQuery,
     searchQuery,
+    selectedZone,
   } = props;
   const [inputValue, setInputValue] = useState([]);
+  // const [zoneOption, setZoneOptions] = useState([]);
   const [open, setOpen] = useState(false);
   const [validation, setValidation] = useState();
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
@@ -25,10 +28,27 @@ export const CreatePriceList = memo((props) => {
 
   const handleInputChange = useCallback((event) => {
     const { name, value } = event.target;
-    setInputValue((prevFormData) => ({ ...prevFormData, [name]: value }));
+    setInputValue((prev) => ({ ...prev, [name]: value }));
   }, []);
 
   const validate = inputValue.slab1 < inputValue.slab2;
+
+  const [zoneOption, setZoneOptions] = useState([]);
+
+  const zoneMasterList = useCallback(async () => {
+    try {
+      const response = await MasterService.getZoneMasterList();
+      setZoneOptions(response.data.results);
+      console.log(response.data);
+    } catch (error) {
+      handleError(error);
+    }
+  }, [handleError]);
+
+  useEffect(() => {
+    zoneMasterList();
+  }, [zoneMasterList]);
+
   const createPriceListDetails = useCallback(
     async (e) => {
       setOpen(true);
@@ -69,6 +89,7 @@ export const CreatePriceList = memo((props) => {
 
         // Build request payload
         const req = {
+          zone: selectedZone ? selectedZone.name : "",
           product: inputValue.product,
           slab1: Number(inputValue.slab1),
           slab1_price: Number(inputValue.slab1_price),
@@ -112,6 +133,30 @@ export const CreatePriceList = memo((props) => {
         onSubmit={(e) => createPriceListDetails(e)}
       >
         <Grid container spacing={2}>
+          <Grid item xs={12}>
+            {/* <CustomAutocomplete
+              sx={{
+                minWidth: 180,
+              }}
+              size="small"
+              onChange={(event, newValue) => {
+                setInputValue((prev) => ({ ...prev, zone: newValue }));
+              }}
+              value={inputValue.zone}
+              options={zoneOption.map((option) => option.name)}
+              getOptionLabel={(option) => `${option ? option : "No Options"}`}
+              label="Zone"
+            /> */}
+            <CustomTextField
+              sx={{
+                minWidth: 180,
+              }}
+              fullWidth
+              value={(selectedZone && selectedZone.name) || ""}
+              label="Zone"
+              disabled={true}
+            />
+          </Grid>
           <Grid item xs={12}>
             <CustomAutocomplete
               sx={{

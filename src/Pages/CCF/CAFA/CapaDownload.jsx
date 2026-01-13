@@ -171,6 +171,15 @@ const CapaDownload = ({ recordForEdit }) => {
               </Grid>
               <Grid item xs={12}>
                 <Typography variant="body1" fontWeight="bold">
+                  Batch NO :
+                </Typography>
+                <Typography variant="body2">
+                  {recordForEdit.batch_no.replace(/\[''\]/g, "") || ""}
+                </Typography>
+                <Divider sx={{ marginY: 1 }} />
+              </Grid>
+              <Grid item xs={12}>
+                <Typography variant="body1" fontWeight="bold">
                   Preventive Action Plan :
                 </Typography>
                 <Typography variant="body2">{recordForEdit.pap}</Typography>

@@ -174,8 +174,7 @@ const getAllFinishGoods = (page, searchQuery) => {
 const createSampleProduct = (data) => {
   return CustomAxios.post("/api/product/sample/", data);
 };
-const getAllSampleProduct =(page,searchQuery)=>{
- 
+const getAllSampleProduct = (page, searchQuery) => {
   const params = new URLSearchParams();
   if (page) {
     params.append("page", page);
@@ -184,7 +183,7 @@ const getAllSampleProduct =(page,searchQuery)=>{
     params.append("search", searchQuery);
   }
   return CustomAxios.get(`api/product/sample/?${params.toString()}`);
-}
+};
 const createFinishGoods = (data) => {
   return CustomAxios.post("/api/product/finished-goods/", data);
 };
@@ -216,11 +215,15 @@ const updateRawMaterials = (id, data) => {
   return CustomAxios.patch(`/api/product/raw-materials/${id}`, data);
 };
 
-const getAllPriceList = (page, filterQuery, searchQuery) => {
+const getAllPriceList = (page, filterQuery, searchQuery, zone = "") => {
   const params = new URLSearchParams();
   if (page) {
     params.append("page", page);
   }
+  params.append("zone", zone ? zone : "");
+
+  params.append("zone", zone);
+
   if (filterQuery) {
     params.append("validity", filterQuery);
   }
@@ -258,10 +261,9 @@ const uploadCSVFile = (file) => {
   return CustomAxios.post("/api/product/upload-csv/", file);
 };
 
-
-const getSampleProduct = ()=>{
-  return CustomAxios.get("/api/product/sample/product_list/")
-}
+const getSampleProduct = () => {
+  return CustomAxios.get("/api/product/sample/product_list/");
+};
 
 const updateSampleProduct = (id, data) => {
   return CustomAxios.patch(`/api/product/sample/${id}/`, data);
@@ -312,7 +314,7 @@ const ProductService = {
   uploadCSVFile,
   getSampleProduct,
   updateSampleProduct,
-  updatePriceListValidity
+  updatePriceListValidity,
 };
 
 export default ProductService;

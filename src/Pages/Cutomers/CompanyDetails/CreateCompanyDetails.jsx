@@ -127,6 +127,7 @@ export const CreateCompanyDetails = (props) => {
           city: response.data[0].city_name,
           country: response.data[0].country,
           pin_code: response.data[0].id,
+          zone: response.data[0].zone,
         });
       }
     } catch (error) {
@@ -176,6 +177,7 @@ export const CreateCompanyDetails = (props) => {
         pincode: inputValue.pincode,
         country: inputValue.country,
         state: inputValue.state,
+        zone: inputValue.zone,
         city: inputValue.city,
         pin_code: inputValue.pin_code,
         gst_number: inputValue.gst_number || null,
@@ -300,7 +302,7 @@ export const CreateCompanyDetails = (props) => {
             </Button>
           </Grid>
           {inputValue.origin_type === "International" ? (
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={3}>
               <CustomAutocomplete
                 sx={{ minWidth: 220 }}
                 size="small"
@@ -315,7 +317,7 @@ export const CreateCompanyDetails = (props) => {
               />
             </Grid>
           ) : (
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={3}>
               <CustomTextField
                 fullWidth
                 size="small"
@@ -327,7 +329,7 @@ export const CreateCompanyDetails = (props) => {
               />
             </Grid>
           )}
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={3}>
             <CustomTextField
               fullWidth
               size="small"
@@ -337,7 +339,17 @@ export const CreateCompanyDetails = (props) => {
               disabled
             />
           </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={3}>
+            <CustomTextField
+              fullWidth
+              size="small"
+              label="Zone"
+              variant="outlined"
+              value={inputValue.zone || ""}
+              disabled
+            />
+          </Grid>
+          <Grid item xs={12} sm={3}>
             <CustomTextField
               fullWidth
               size="small"

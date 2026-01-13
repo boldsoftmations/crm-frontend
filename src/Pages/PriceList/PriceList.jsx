@@ -15,6 +15,7 @@ import { CSVLink } from "react-csv";
 import UploadCSV from "./UploadCSV";
 import CustomTextField from "../../Components/CustomTextField";
 import CustomSnackbar from "../../Components/CustomerSnackbar";
+import MasterService from "../../services/MasterService";
 
 export const PriceList = () => {
   const [priceListData, setPriceListData] = useState([]);
@@ -56,6 +57,9 @@ export const PriceList = () => {
       setOpen(false);
     }
   };
+  const [ZoneOption, setZoneOption] = useState([]);
+  const [selectedZone, setSelectedZone] = useState(null); // UI
+  const [zoneFilter, setZoneFilter] = useState(""); // ID
 
   useEffect(() => {
     getProduct();
@@ -67,12 +71,14 @@ export const PriceList = () => {
       const response = await ProductService.getAllPriceList(
         "all",
         filterQuery,
-        searchQuery
+        searchQuery,
+        zoneFilter
       );
       const data = response.data.map((row) => {
         return {
           id: row.id,
           product: row.product,
+          zone: row.zone,
           slab1: row.slab1,
           slab1_price: row.slab1_price,
           slab2: row.slab2,
@@ -95,13 +101,22 @@ export const PriceList = () => {
     }
   };
 
+  const handleZone = async () => {
+    const res = await MasterService.getZoneMasterList();
+    setZoneOption(res.data.results);
+  };
+  useEffect(() => {
+    handleZone();
+  }, []);
+
   const getPriceList = useCallback(async () => {
     try {
       setOpen(true);
       const response = await ProductService.getAllPriceList(
         currentPage,
         filterQuery,
-        searchQuery
+        searchQuery,
+        zoneFilter
       );
       setPriceListData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -110,11 +125,11 @@ export const PriceList = () => {
     } finally {
       setOpen(false);
     }
-  }, [currentPage, filterQuery, searchQuery]);
+  }, [currentPage, filterQuery, searchQuery, zoneFilter]);
 
   useEffect(() => {
     getPriceList();
-  }, [currentPage, filterQuery, searchQuery]);
+  }, [currentPage, filterQuery, searchQuery, zoneFilter]);
 
   const handleSearch = (query) => {
     setSearchQuery(query);
@@ -143,6 +158,7 @@ export const PriceList = () => {
   const Tabledata = priceListData.map((row) => ({
     id: row.id,
     product: row.product,
+    zone: row.zone,
     slab1: row.type_of_unit === "decimal" ? row.slab1 : Math.floor(row.slab1),
     slab1_price: row.slab1_price,
     slab2: row.type_of_unit === "decimal" ? row.slab2 : Math.floor(row.slab2),
@@ -156,10 +172,11 @@ export const PriceList = () => {
   const Tableheaders = [
     "ID",
     "Product",
+    "Zone",
     "Slab1",
-    "Slab1 Price",
+    "Price1",
     "Slab2",
-    "Slab2 Price",
+    "Price2",
     "Slab3 Price",
     "Validity",
     "Discontinued",
@@ -169,10 +186,11 @@ export const PriceList = () => {
   const headers = [
     { label: "ID", key: "id" },
     { label: "Product", key: "product" },
+    { label: "Zone", key: "zone" },
     { label: "Slab1", key: "slab1" },
-    { label: "Slab1 Price", key: "slab1_price" },
+    { label: "Price1", key: "slab1_price" },
     { label: "Slab2", key: "slab2" },
-    { label: "Slab2 Price", key: "slab2_price" },
+    { label: "Price2", key: "slab2_price" },
     { label: "Slab3 Price", key: "slab3_price" },
     { label: "Validity", key: "validity" },
     { label: "Discontinued", key: "discontinued" },
@@ -213,6 +231,12 @@ export const PriceList = () => {
     } catch (error) {
       handleError(error); // Handle errors from the API call
     }
+  };
+  const handleZoneFilter = (selectedOption) => {
+    setSelectedZone(selectedOption); // 👈 keep object for UI
+    setZoneFilter((selectedOption && selectedOption.id) || ""); // 👈 store ID for API
+
+    console.log("Selected ID:", selectedOption && selectedOption.id);
   };
 
   return (
@@ -259,101 +283,128 @@ export const PriceList = () => {
                     getOptionLabel={(option) => option}
                     label="Filter By Description"
                   />
-                  <SearchComponent
-                    sx={{ flexGrow: 1 }} // Allow SearchComponent to also take up available space
-                    onSearch={handleSearch}
-                    onReset={handleReset}
-                  />
                 </Box>
               </Grid>
 
               {/* Title Text */}
-              <Grid
-                item
-                xs={12}
-                sm={2}
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
+              <Grid item xs={12} sm={4} md={4} lg={4}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    width: "100%",
+                    mt: 1,
+                    alignItems: "center",
+                  }}
+                >
+                  <CustomAutocomplete
+                    sx={{ flexGrow: 1, mr: 1 }}
+                    size="small"
+                    value={selectedZone} // 👈 object, not ID
+                    onChange={(event, value) => handleZoneFilter(value)}
+                    options={ZoneOption}
+                    getOptionLabel={(option) => option.name || ""}
+                    isOptionEqualToValue={(option, value) =>
+                      option.id === value.id
+                    }
+                    label="Filter By Zone"
+                  />
+                </Box>
+              </Grid>
+
+              {/* Add Button */}
+              <Grid item xs={12} sm={4}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "end",
+                    alignItems: "center",
+                    gap: 2,
+                  }}
+                >
+                  <Button
+                    type="button"
+                    variant="contained"
+                    color="info"
+                    size="small"
+                    onClick={() => setOpenCSVFile(true)}
+                    // style={{ marginRight: "10px" }}
+                  >
+                    Upload CSV File
+                  </Button>
+
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    size="small"
+                    className="mx-3"
+                    onClick={handleDownload}
+                  >
+                    DownLoad CSV
+                  </Button>
+
+                  {exportData.length > 0 && (
+                    <CSVLink
+                      data={exportData}
+                      headers={headers}
+                      ref={csvLinkRef}
+                      filename="Price List.csv"
+                      target="_blank"
+                      style={{
+                        textDecoration: "none",
+                        outline: "none",
+                        visibility: "hidden",
+                      }}
+                    />
+                  )}
+                </Box>
+              </Grid>
+
+              <Grid item xs={12} sm={4}>
+                <SearchComponent
+                  sx={{ flexGrow: 1 }} // Allow SearchComponent to also take up available space
+                  onSearch={handleSearch}
+                  onReset={handleReset}
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
                 <h3
                   style={{
                     margin: 0,
                     fontSize: "24px",
                     color: "rgb(34, 34, 34)",
                     fontWeight: 800,
+                    textAlign: "center",
                   }}
                 >
                   Price List
                 </h3>
               </Grid>
-
-              {/* Add Button */}
-              <Grid
-                item
-                xs={12}
-                sm={6}
-                sx={{
-                  display: "flex",
-                  justifyContent: "end",
-                  alignItems: "center",
-                  gap: "10px",
-                }}
-              >
-                <Button
-                  type="button"
-                  variant="contained"
-                  color="info"
-                  size="small"
-                  onClick={() => setOpenCSVFile(true)}
-                  style={{ marginRight: "10px" }}
+              <Grid item xs={12} sm={4}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "end",
+                    gap: 2,
+                  }}
                 >
-                  Upload CSV File
-                </Button>
-
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  size="small"
-                  className="mx-3"
-                  onClick={handleDownload}
-                >
-                  DownLoad CSV
-                </Button>
-
-                {exportData.length > 0 && (
-                  <CSVLink
-                    data={exportData}
-                    headers={headers}
-                    ref={csvLinkRef}
-                    filename="Price List.csv"
-                    target="_blank"
-                    style={{
-                      textDecoration: "none",
-                      outline: "none",
-                      visibility: "hidden",
-                    }}
-                  />
-                )}
-
-                <Button
-                  variant="contained"
-                  color="success"
-                  size="small"
-                  onClick={() => setOpenPopup2(true)}
-                >
-                  Add
-                </Button>
-                <Button
-                  variant="contained"
-                  color="inherit"
-                  size="small"
-                  onClick={() => setOpenPopupUpdateValidity(true)}
-                >
-                  Update Validity
-                </Button>
+                  <Button
+                    variant="contained"
+                    color="success"
+                    size="small"
+                    onClick={() => setOpenPopup2(true)}
+                  >
+                    Add
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="inherit"
+                    size="small"
+                    onClick={() => setOpenPopupUpdateValidity(true)}
+                  >
+                    Update Validity
+                  </Button>
+                </Box>
               </Grid>
             </Grid>
           </Box>
@@ -380,6 +431,7 @@ export const PriceList = () => {
           getPriceList={getPriceList}
           setOpenPopup={setOpenPopup2}
           product={product}
+          selectedZone={selectedZone}
           currentPage={currentPage}
           filterQuery={filterQuery}
           searchQuery={searchQuery}

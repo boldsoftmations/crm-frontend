@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useState } from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import { Box, Button, FormControlLabel, Grid, Switch } from "@mui/material";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
 import ProductService from "../../services/ProductService";
@@ -6,6 +6,7 @@ import { MessageAlert } from "../../Components/MessageAlert";
 import { CustomLoader } from "../../Components/CustomLoader";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import CustomTextField from "../../Components/CustomTextField";
+import MasterService from "../../services/MasterService";
 
 export const UpdatePriceList = memo((props) => {
   const {
@@ -26,6 +27,7 @@ export const UpdatePriceList = memo((props) => {
     const { name, value } = event.target;
     setInputValue((prevFormData) => ({ ...prevFormData, [name]: value }));
   }, []);
+  console.log("Zone Name", recordForEdit.zone);
 
   const validate = inputValue.slab1 < inputValue.slab2;
   const updatePriceList = useCallback(
@@ -34,6 +36,7 @@ export const UpdatePriceList = memo((props) => {
         e.preventDefault();
         setOpen(true);
         const req = {
+          zone: inputValue.zone,
           product: inputValue.product,
           slab1: inputValue.slab1,
           slab1_price: inputValue.slab1_price,
@@ -43,6 +46,7 @@ export const UpdatePriceList = memo((props) => {
           validity: inputValue.validity,
           discontinued: inputValue.discontinued,
         };
+        console.log(req);
         if (recordForEdit) {
           const response = await ProductService.updatePriceList(
             inputValue.id,
@@ -65,6 +69,21 @@ export const UpdatePriceList = memo((props) => {
     },
     [inputValue, currentPage, searchQuery]
   );
+  const [zoneOption, setZoneOptions] = useState([]);
+
+  const zoneMasterList = useCallback(async () => {
+    try {
+      const response = await MasterService.getZoneMasterList();
+      setZoneOptions(response.data.results);
+      // console.log(response.data);
+    } catch (error) {
+      handleError(error);
+    }
+  }, [handleError]);
+
+  useEffect(() => {
+    zoneMasterList();
+  }, [zoneMasterList]);
 
   return (
     <>
@@ -77,6 +96,21 @@ export const UpdatePriceList = memo((props) => {
       <CustomLoader open={open} />
       <Box component="form" noValidate onSubmit={(e) => updatePriceList(e)}>
         <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <CustomAutocomplete
+              sx={{
+                minWidth: 180,
+              }}
+              size="small"
+              value={inputValue.zone || ""}
+              onChange={(event, newValue) => {
+                setInputValue((prev) => ({ ...prev, zone: newValue }));
+              }}
+              options={zoneOption.map((option) => option.name)}
+              getOptionLabel={(option) => option}
+              label="Zone Name"
+            />
+          </Grid>
           <Grid item xs={12}>
             <CustomAutocomplete
               sx={{

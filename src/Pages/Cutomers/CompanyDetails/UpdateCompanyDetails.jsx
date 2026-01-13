@@ -92,6 +92,7 @@ export const UpdateCompanyDetails = (props) => {
           state: "",
           city: "",
           country: "",
+          zone: "",
         });
       } else {
         setAlertMsg({
@@ -105,6 +106,7 @@ export const UpdateCompanyDetails = (props) => {
           city: response.data[0].city_name,
           country: response.data[0].country,
           pin_code: response.data[0].pin_code,
+          zone: response.data[0].zone,
         });
       }
     } catch (error) {
@@ -167,6 +169,7 @@ export const UpdateCompanyDetails = (props) => {
         pincode: inputValue.pincode || null,
         country: inputValue.country || null,
         state: inputValue.state || null,
+        zone: inputValue.zone || null,
         city: inputValue.city || null,
         pin_code: inputValue.pin_code,
         gst_number: inputValue.gst_number || null,
@@ -366,7 +369,7 @@ export const UpdateCompanyDetails = (props) => {
               Validate
             </Button>
           </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={3}>
             <CustomTextField
               fullWidth
               size="small"
@@ -377,7 +380,7 @@ export const UpdateCompanyDetails = (props) => {
               disabled
             />
           </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={3}>
             <CustomTextField
               fullWidth
               size="small"
@@ -387,7 +390,18 @@ export const UpdateCompanyDetails = (props) => {
               disabled
             />
           </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={3}>
+            <CustomTextField
+              fullWidth
+              size="small"
+              label="Zone"
+              name="zone"
+              variant="outlined"
+              value={inputValue.zone || ""}
+              disabled
+            />
+          </Grid>
+          <Grid item xs={12} sm={3}>
             <CustomTextField
               fullWidth
               size="small"

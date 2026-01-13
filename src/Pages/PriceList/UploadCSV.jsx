@@ -46,6 +46,47 @@ const UploadCSV = ({ setOpenCSVFile, getProduct }) => {
       setOpen(false);
     }
   };
+
+  const downloadCSVTemplate = () => {
+    const csvData = [
+      [
+        "ID",
+        "Product",
+        "Slab1",
+        "Slab1 Price",
+        "Slab2",
+        "Slab2 Price",
+        "Slab3 Price",
+        "Validity",
+        "Zone",
+      ],
+      [
+        1,
+        "39C08-GREY-GPX-10X10-240-P-1",
+        100,
+        1200,
+        200,
+        1000,
+        700,
+        "31-12-2025",
+        "East",
+      ],
+      [2, "Blister-1001-NOB", 50, 1500, 25, 1000, 500, "31-12-2025", "South"],
+    ];
+
+    const csvContent = csvData.map((row) => row.join(",")).join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "price_list_template.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <>
       <MessageAlert
@@ -78,9 +119,21 @@ const UploadCSV = ({ setOpenCSVFile, getProduct }) => {
               <Divider></Divider>
             </Grid>
 
-            <Grid item xs={12} sm={12}>
+            <Grid
+              item
+              xs={12}
+              sm={12}
+              sx={{ display: "flex", justifyContent: "space-around" }}
+            >
               <Button type="submit" variant="contained" color="primary">
                 Upload CSV
+              </Button>
+              <Button
+                variant="contained"
+                color="success"
+                onClick={downloadCSVTemplate}
+              >
+                Template
               </Button>
             </Grid>
           </Grid>

@@ -166,7 +166,7 @@ export const ViewRawMaterials = () => {
 
   const handleSearch = (query) => {
     setSearchQuery(query);
-    setCurrentPage(1); // Reset to first page with new search
+    setCurrentPage(1);
   };
 
   const handleReset = () => {
