@@ -1,4 +1,4 @@
-import { Autocomplete, Box, Button, Grid } from "@mui/material";
+import { Autocomplete, Box, Button, Grid, linkClasses } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import Divider from "@mui/material/Divider";
@@ -155,13 +155,21 @@ export const SalesReturnCreate = (props) => {
       e.preventDefault();
 
       // Map through the products to include only specific details
-      const formattedProducts = products.map((product) => ({
-        product: product.product,
-        quantity: String(product.quantity),
-        rate: product.rate,
-        amount: product.rate * product.quantity,
-        cost: product.cost,
-      }));
+      const formattedProducts = products.map((product) => {
+        const rate = Number(product.rate);
+        const quantity = Number(product.quantity);
+        console.log(!isNaN(rate), !isNaN(quantity));
+        const amount = Math.round(rate * quantity * 100) / 100;
+
+        return {
+          product: product.product,
+          quantity: product.quantity,
+          rate,
+          amount,
+          cost: product.cost,
+        };
+      });
+
       console.log(products);
       const quantites = formattedProducts.map((item) => item.quantity);
       const decimalcounts = products.map((item) => item.max_decimal_digit);
