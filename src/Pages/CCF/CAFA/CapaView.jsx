@@ -11,6 +11,7 @@ import {
   TableRow,
   TableBody,
   Table,
+  Switch,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
 import CustomerServices from "../../../services/CustomerService";
@@ -53,7 +54,7 @@ export const CapaView = () => {
       setLoader(true);
       const response = await CustomerServices.getAllCapaData(
         currentPage,
-        searchQuery
+        searchQuery,
       );
       setCCFData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -118,6 +119,36 @@ export const CapaView = () => {
       setLoader(false);
     }
   };
+  const handleCheck = async (row, checked) => {
+    try {
+      // payload
+      const payload = {
+        is_accepted: checked,
+      };
+
+      await CustomerServices.UpdateCapa(row.id, payload);
+
+      // Optimistically update UI
+      setCCFData((prev) =>
+        prev.map((item) =>
+          item.id === row.id ? { ...item, is_accepted: checked } : item,
+        ),
+      );
+
+      setMessage("CAPA acceptance updated successfully");
+      setSeverity("success");
+      setOpen(true);
+    } catch (error) {
+      console.error(error);
+      setMessage("Failed to update acceptance");
+      setSeverity("error");
+      setOpen(true);
+    }
+  };
+  const canAcceptCapa =
+    userData.groups.includes("Production") ||
+    userData.groups.includes("Director") ||
+    userData.groups.includes("Factory-Mumbai-OrderBook");
   return (
     <>
       <CustomLoader open={loader} />
@@ -185,20 +216,23 @@ export const CapaView = () => {
             >
               <TableHead>
                 <TableRow>
-                  {[
-                    "Complaint No.",
-                    "Customer",
-                    "Created By",
-                    "Date",
-                    "Complaint Type",
-                    "Status",
-                    "Updated By",
-                    "Action",
-                  ].map((head, index) => (
-                    <StyledTableCell key={index} align="center">
-                      {head}
-                    </StyledTableCell>
-                  ))}
+                  <StyledTableCell align="center">
+                    Complaint No.
+                  </StyledTableCell>
+                  <StyledTableCell align="center">Customer</StyledTableCell>
+                  <StyledTableCell align="center">Created By</StyledTableCell>
+                  <StyledTableCell align="center">Date</StyledTableCell>
+                  <StyledTableCell align="center">
+                    Complaint Type
+                  </StyledTableCell>
+                  <StyledTableCell align="center">Status</StyledTableCell>
+                  <StyledTableCell align="center">Updated By</StyledTableCell>
+
+                  {canAcceptCapa && (
+                    <StyledTableCell align="center">Accept</StyledTableCell>
+                  )}
+
+                  <StyledTableCell align="center">Action</StyledTableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -224,6 +258,14 @@ export const CapaView = () => {
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.updated_by}
+                    </StyledTableCell>
+                    <StyledTableCell align="center" hidden={!canAcceptCapa}>
+                      <Switch
+                        checked={Boolean(row.is_accepted)}
+                        disabled={row.is_accepted}
+                        onChange={(e) => handleCheck(row, e.target.checked)}
+                        color="primary"
+                      />
                     </StyledTableCell>
 
                     <StyledTableCell align="center">
@@ -284,6 +326,7 @@ export const CapaView = () => {
                               onClick={() =>
                                 handlePopup(setUpdateCAPAPopup, row)
                               }
+                              disabled={!row.is_accepted}
                             >
                               Update
                             </Button>
