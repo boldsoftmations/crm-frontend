@@ -41,15 +41,16 @@ export const DescriptionStoreInventoryView = () => {
       const response =
         await InventoryServices.getDescriptionStoresInventoryDetails(
           unitFilter,
-          searchQuery
+          searchQuery,
         );
+      console.log(unitFilter);
       setInventoryData(response.data);
     } catch (err) {
       handleError(err);
     } finally {
       setOpen(false);
     }
-  }, []);
+  }, [unitFilter, searchQuery, handleError]);
 
   const handleRowClick = (item) => {
     setIDForEdit(item);
@@ -64,9 +65,8 @@ export const DescriptionStoreInventoryView = () => {
   const getAllSellerAccountsDetails = async () => {
     try {
       setOpen(true);
-      const response = await InvoiceServices.getAllPaginateSellerAccountData(
-        "all"
-      );
+      const response =
+        await InvoiceServices.getAllPaginateSellerAccountData("all");
       setSellerOption(response.data);
       setOpen(false);
     } catch (err) {
@@ -115,8 +115,11 @@ export const DescriptionStoreInventoryView = () => {
                   value={unitFilter}
                   onChange={handleUnitChange}
                   options={
-                    sellerOption && sellerOption.map((option) => option.unit)
+                    sellerOption
+                      ? [...new Set(sellerOption.map((option) => option.unit))]
+                      : []
                   }
+                  isOptionEqualToValue={(option, value) => option === value}
                   renderInput={(params) => (
                     <CustomTextField
                       {...params}
@@ -180,7 +183,7 @@ export const DescriptionStoreInventoryView = () => {
               </TableHead>
               <TableBody>
                 {inventoryData.map((row, i) => (
-                  <StyledTableRow>
+                  <StyledTableRow key={i}>
                     <StyledTableCell align="center">
                       {row.description}
                     </StyledTableCell>

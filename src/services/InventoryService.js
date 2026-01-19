@@ -78,7 +78,7 @@ const getAllPurchaseOrderData = (page, acceptedToFilter, searchValue) => {
 const isPLApproveReject = (id, data) => {
   return CustomAxios.patch(
     `/api/inventory/list-packing-list-rejected/${id}`,
-    data
+    data,
   );
 };
 
@@ -111,7 +111,7 @@ const getAllPackingListData = (page, acceptedToFilter, searchValue) => {
 
   // Sending a GET request with query parameters
   return CustomAxios.get(
-    `/api/inventory/list-packing-list/?${params.toString()}`
+    `/api/inventory/list-packing-list/?${params.toString()}`,
   );
 };
 
@@ -204,7 +204,7 @@ const getAllPurchaseInvoiceData = (yearMonthFilter, page, searchValue) => {
 
   // Sending a GET request with query parameters
   return CustomAxios.get(
-    `api/inventory/list-purchase-invoice/?${params.toString()}`
+    `api/inventory/list-purchase-invoice/?${params.toString()}`,
   );
 };
 
@@ -229,7 +229,7 @@ const getAllStoresInventoryDetails = (page, searchValue) => {
   }
 
   return CustomAxios.get(
-    `api/inventory/list-stores-inventory/?${params.toString()}`
+    `api/inventory/list-stores-inventory/?${params.toString()}`,
   );
 };
 
@@ -246,15 +246,15 @@ const getDescriptionStoresInventoryDetails = (filter, searchValue) => {
   const params = new URLSearchParams();
 
   if (filter) {
-    params.append("unit", filter);
+    params.append("seller_account", filter);
   }
 
   if (searchValue) {
-    params.append("search", searchValue);
+    params.append("description", searchValue);
   }
 
   return CustomAxios.get(
-    `api/inventory/description-stores-inventory/?${params.toString()}`
+    `api/inventory/description-stores-inventory/?${params.toString()}`,
   );
 };
 
@@ -266,14 +266,14 @@ const getJobWorkerInventoryData = () => {
 const getProductCodeStoresInventoryDetails = (data) => {
   return CustomAxios.post(
     "api/inventory/description-stores-inventory/cons_store_product/",
-    data
+    data,
   );
 };
 
 const getAllProductStoresInventoryDetails = (data) => {
   return CustomAxios.post(
     "api/inventory/description-stores-inventory/store_product/",
-    data
+    data,
   );
 };
 
@@ -285,7 +285,7 @@ const getAllMaterialRequisitionFormData = (
   filterValue,
   date,
   start_date,
-  end_date
+  end_date,
 ) => {
   const params = new URLSearchParams();
 
@@ -312,21 +312,21 @@ const getAllMaterialRequisitionFormData = (
 
   // Sending a GET request with query parameters
   return CustomAxios.get(
-    `api/inventory/list-material-requisition-form/?${params.toString()}`
+    `api/inventory/list-material-requisition-form/?${params.toString()}`,
   );
 };
 
 const createMaterialRequisitionFormData = (data) => {
   return CustomAxios.post(
     "/api/inventory/list-material-requisition-form/",
-    data
+    data,
   );
 };
 
 const updateMaterialRequisitionFormData = (id, data) => {
   return CustomAxios.patch(
     `/api/inventory/list-material-requisition-form/${id}`,
-    data
+    data,
   );
 };
 
@@ -336,7 +336,7 @@ const getAllBillofMaterialsData = (
   page,
   approvedToFilter,
   is_deactivated,
-  searchValue
+  searchValue,
 ) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
@@ -359,7 +359,7 @@ const getAllBillofMaterialsData = (
 
   // Sending a GET request with query parameters
   return CustomAxios.get(
-    `api/inventory/list-bill-of-materials/?${params.toString()}`
+    `api/inventory/list-bill-of-materials/?${params.toString()}`,
   );
 };
 
@@ -378,7 +378,7 @@ const getAllProductionEntryData = (
   searchValue,
   start_date,
   end_date,
-  date
+  date,
 ) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
@@ -403,7 +403,7 @@ const getAllProductionEntryData = (
 
   // Sending a GET request with query parameters
   return CustomAxios.get(
-    `api/inventory/list-production-entry/?${params.toString()}`
+    `api/inventory/list-production-entry/?${params.toString()}`,
   );
 };
 
@@ -418,7 +418,7 @@ const getAllMaterialTransferNoteData = (
   searchValue,
   date,
   start_date,
-  end_date
+  end_date,
 ) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
@@ -446,7 +446,7 @@ const getAllMaterialTransferNoteData = (
 
   // Sending a GET request with query parameters
   return CustomAxios.get(
-    `/api/inventory/list-material-transfer-note/?${params.toString()}`
+    `/api/inventory/list-material-transfer-note/?${params.toString()}`,
   );
 };
 
@@ -474,7 +474,7 @@ const createMaterialTransferNoteData = (data) => {
 const updateMaterialTransferNoteData = (id, data) => {
   return CustomAxios.patch(
     `/api/inventory/list-material-transfer-note/${id}`,
-    data
+    data,
   );
 };
 
@@ -494,7 +494,7 @@ const getProductionInventoryData = (page, searchQuery = "") => {
     params.append("search", searchQuery);
   }
   return CustomAxios.get(
-    `/api/inventory/list-production-inventory/?${params.toString()}`
+    `/api/inventory/list-production-inventory/?${params.toString()}`,
   );
 };
 
@@ -513,7 +513,7 @@ const getAllProductionGAndLInventoryData = (page, searchValue) => {
 
   // Sending a GET request with query parameters
   return CustomAxios.get(
-    `api/inventory/list-production-gnl/?${params.toString()}`
+    `api/inventory/list-production-gnl/?${params.toString()}`,
   );
 };
 
@@ -527,7 +527,7 @@ const getAllDailyProductionReport = (
   startDate,
   endDate,
   page = 1,
-  searchValue = ""
+  searchValue = "",
 ) => {
   // Construct query parameters
   const params = new URLSearchParams();
@@ -538,7 +538,7 @@ const getAllDailyProductionReport = (
 
   // Make GET request with all parameters
   return CustomAxios.get(
-    `api/inventory/list-daily-production-report/?${params.toString()}`
+    `api/inventory/list-daily-production-report/?${params.toString()}`,
   );
 };
 
@@ -546,7 +546,7 @@ const getAllDailyProductionReport = (
 
 const getWeeklyProductionReportFilterData = (month, year) => {
   return CustomAxios.get(
-    `/api/inventory/list-weekly-product-quantity/?month=${month}&year=${year}`
+    `/api/inventory/list-weekly-product-quantity/?month=${month}&year=${year}`,
   );
 };
 
@@ -599,7 +599,7 @@ const getChallanInvoice = (page) => {
     params.append("page", page);
   }
   return CustomAxios.get(
-    `/api/inventory/challan-invoice/?${params.toString()}`
+    `/api/inventory/challan-invoice/?${params.toString()}`,
   );
 };
 const createChalanInvoice = (data) => {
@@ -616,7 +616,7 @@ const getPhysical = (page, searchQuery) => {
     params.append("search", searchQuery);
   }
   return CustomAxios.get(
-    `/api/inventory/physical-inventory/?${params.toString()}`
+    `/api/inventory/physical-inventory/?${params.toString()}`,
   );
 };
 const createPhysical = (data) => {
@@ -643,7 +643,7 @@ const getSalesReturnData = (page, searchValue) => {
 
   // Sending a GET request with query parameters
   return CustomAxios.get(
-    `api/inventory/list-purchase-invoice/?${params.toString()}`
+    `api/inventory/list-purchase-invoice/?${params.toString()}`,
   );
 };
 
@@ -670,7 +670,7 @@ const getSalesReturnInventoryData = (page, searchValue) => {
 
   // Sending a GET request with query parameters
   return CustomAxios.get(
-    `api/inventory/sales-return-inventory/?${params.toString()}`
+    `api/inventory/sales-return-inventory/?${params.toString()}`,
   );
 };
 
@@ -703,6 +703,17 @@ const updateReworkInvoiceData = (id, data) => {
 };
 const getStockAlertData = () => {
   return CustomAxios.get(`api/inventory/inventory-stock-availability`);
+};
+
+const getDailyReportData = (id) => {
+  const params = new URLSearchParams();
+
+  if (id) {
+    params.append("production_id", id);
+  }
+  return CustomAxios.get(
+    `api/inventory/production-product-details/?${params.toString()}`,
+  );
 };
 
 const InventoryServices = {
@@ -780,6 +791,7 @@ const InventoryServices = {
   getReworkinvoiceData,
   updateReworkInvoiceData,
   getStockAlertData,
+  getDailyReportData,
 };
 
 export default InventoryServices;

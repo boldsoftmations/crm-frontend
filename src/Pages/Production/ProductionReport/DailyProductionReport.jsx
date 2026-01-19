@@ -3,12 +3,26 @@ import InventoryServices from "./../../../services/InventoryService";
 import { CSVLink } from "react-csv";
 import { CustomTable } from "../../../Components/CustomTable";
 import { CustomPagination } from "../../../Components/CustomPagination";
-import { Box, Button, Grid, Paper } from "@mui/material";
+import {
+  Box,
+  Button,
+  Grid,
+  Paper,
+  styled,
+  Table,
+  TableBody,
+  TableCell,
+  tableCellClasses,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from "@mui/material";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomTextField from "../../../Components/CustomTextField";
 import SearchComponent from "../../../Components/SearchComponent ";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
+import { Popup } from "../../../Components/Popup";
 
 export const DailyProductionReport = () => {
   const [open, setOpen] = useState(false);
@@ -24,6 +38,8 @@ export const DailyProductionReport = () => {
   const csvLinkRef = useRef(null);
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
+  const [openDetailsPopup, setOpenDetailsPopup] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
 
   // Headers for CSV export
   const headers = [
@@ -47,7 +63,7 @@ export const DailyProductionReport = () => {
         startDate.toISOString().split("T")[0],
         endDate.toISOString().split("T")[0],
         "all",
-        searchQuery
+        searchQuery,
       );
       const data = response.data.map((row) => ({
         created_on: row.created_on,
@@ -80,7 +96,7 @@ export const DailyProductionReport = () => {
           startDate.toISOString().split("T")[0],
           endDate.toISOString().split("T")[0],
           page,
-          search
+          search,
         );
         setDailyProductionReport(response.data.results);
         setTotalPages(Math.ceil(response.data.count / 25));
@@ -90,7 +106,7 @@ export const DailyProductionReport = () => {
         setOpen(false);
       }
     },
-    [searchQuery, startDate, endDate, currentPage]
+    [searchQuery, startDate, endDate, currentPage],
   );
 
   useEffect(() => {
@@ -116,6 +132,7 @@ export const DailyProductionReport = () => {
     setEndDate(new Date(event.target.value));
 
   const Tabledata = dailyProductionReport.map((row) => ({
+    id: row.id,
     created_on: row.created_on,
     seller_account: row.seller_account,
     bom: row.bom,
@@ -129,6 +146,7 @@ export const DailyProductionReport = () => {
   }));
 
   const Tableheaders = [
+    "Id",
     "Date",
     "Seller Account",
     "BOM",
@@ -140,6 +158,15 @@ export const DailyProductionReport = () => {
     "Rate",
     "Amount",
   ];
+  const handleViewPopup = (row) => {
+    setSelectedRow(row);
+    setOpenDetailsPopup(true);
+  };
+
+  const handleClosePopup = () => {
+    setOpenDetailsPopup(false);
+    setSelectedRow(null);
+  };
 
   return (
     <>
@@ -263,7 +290,7 @@ export const DailyProductionReport = () => {
           <CustomTable
             headers={Tableheaders}
             data={Tabledata}
-            openInPopup={null}
+            openInPopup={handleViewPopup}
             openInPopup2={null}
             openInPopup3={null}
             openInPopup4={null}
@@ -275,6 +302,131 @@ export const DailyProductionReport = () => {
           />
         </Paper>
       </Grid>
+      <Popup
+        openPopup={openDetailsPopup}
+        maxWidth="xl"
+        setOpenPopup={setOpenDetailsPopup}
+        title="Daily Production Report Details"
+      >
+        <Row row={selectedRow} setOpen={setOpen} />
+        {/* <CustomTable
+          headers={Tableheaders}
+          data={[selectedRow]}
+          openInPopup={null}
+          openInPopup2={null}
+          openInPopup3={null}
+          openInPopup4={null}
+        /> */}
+      </Popup>
     </>
   );
 };
+
+const Row = ({ row, setOpen }) => {
+  const [data, setData] = useState(null);
+  const [allData, setAllData] = useState(null);
+  const getDailyRepoert = async () => {
+    setOpen(true);
+    const response = await InventoryServices.getDailyReportData(row.id);
+    setData(response.data.products);
+    setAllData(response.data);
+    setOpen(false);
+    // console.log(response.data);
+  };
+  useEffect(() => {
+    getDailyRepoert();
+  }, []);
+  // getDailyRepoert();
+  const Tableheaders2 = [
+    "Production Entry ID",
+    "Product Name",
+    "Quantity",
+    "Rate",
+    "Amount",
+  ];
+
+  return (
+    <>
+      <TableContainer
+        sx={{
+          maxHeight: 440,
+          "&::-webkit-scrollbar": {
+            width: 0,
+          },
+          "&::-webkit-scrollbar-track": {
+            backgroundColor: "#f2f2f2",
+          },
+          "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "#aaa9ac",
+          },
+        }}
+      >
+        <Table sx={{ minWidth: 1200 }} stickyHeader aria-label="sticky table">
+          <TableHead>
+            <TableRow>
+              {Tableheaders2.map((header, i) => {
+                return (
+                  <StyledTableCell key={i} align="center">
+                    {header}
+                  </StyledTableCell>
+                );
+              })}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {data &&
+              data.map((row, i) => (
+                <StyledTableRow key={i}>
+                  <StyledTableCell align="center">
+                    {row.production_entry_id}
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    {row.product__name}
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    {row.quantity}
+                  </StyledTableCell>
+                  <StyledTableCell align="center">{row.rate}</StyledTableCell>
+                  <StyledTableCell align="center">{row.amount}</StyledTableCell>
+                </StyledTableRow>
+              ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <Box
+        style={{
+          marginTop: "10px",
+          display: "flex",
+          alignContent: "center",
+          justifyContent: "end",
+          paddingRight: "50px",
+        }}
+      >
+        <p>
+          <b>Total Amount</b> : {allData && allData.total_amount}
+        </p>
+      </Box>
+    </>
+  );
+};
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    fontSize: 12,
+    backgroundColor: "#006BA1",
+    color: theme.palette.common.white,
+    fontWeight: "bold",
+    textTransform: "uppercase",
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 13,
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  "&:nth-of-type(odd)": {
+    backgroundColor: theme.palette.action.hover,
+  },
+  "&:last-child td, &:last-child th": {
+    border: 0,
+  },
+}));
