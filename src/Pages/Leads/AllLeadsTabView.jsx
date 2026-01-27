@@ -23,17 +23,18 @@ export const AllLeadsTabView = () => {
     "Sales Manager",
     "Sales Manager(Retailer)",
     "Sales Deputy Manager",
-    "Business Development Manager"
+    "Business Development Manager",
+    "Accounts Executive",
   );
   const isSalesADManager = isInGroups("Sales Assistant Deputy Manager");
   const isSaleDevelopmentExecutive = isInGroups(
-    "Business Development Executive"
+    "Business Development Executive",
   );
   // const digitalMarkating = isInGroups("Digital Marketing");
   const isSalesExecutive = isInGroups(
     "Sales Executive",
     "Business Development Executive",
-    "Customer Service"
+    "Customer Service",
   );
   const isSalesManagerWithoutLeads = isInGroups("Sales Manager without Leads");
   const isSalesManagerWithLeads = isInGroups("Sales Manager with Leads");
@@ -41,7 +42,7 @@ export const AllLeadsTabView = () => {
   const isAdminAndDM = isInGroups("Director", "Digital Marketing");
   const bdTeam = isInGroups(
     "Business Development Manager",
-    "Sales Manager(Retailer)"
+    "Sales Manager(Retailer)",
   );
   const onlyAdmin = isInGroups("Director");
   const digitalManager = isInGroups("Digital Marketing");
@@ -144,13 +145,13 @@ export const AllLeadsTabView = () => {
       isSalesManagerWithLeads,
       isCustomerService,
       isAdminAndDM,
-    ]
+    ],
   );
 
   const visibleTabs = useMemo(() => tabs.filter((tab) => tab.visible), [tabs]);
   const visibleTabIndexes = useMemo(
     () => visibleTabs.map((tab) => tab.index),
-    [visibleTabs]
+    [visibleTabs],
   );
 
   const [activeTab, setActiveTab] = useState(visibleTabIndexes[0] || 0);

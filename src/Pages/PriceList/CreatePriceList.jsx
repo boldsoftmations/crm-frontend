@@ -1,5 +1,5 @@
 import { Box, Button, Grid } from "@mui/material";
-import React, { memo, useCallback, useEffect, useState } from "react";
+import React, { memo, useCallback, useState } from "react";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
 import ProductService from "../../services/ProductService";
 import { MessageAlert } from "../../Components/MessageAlert";
@@ -7,7 +7,6 @@ import { CustomLoader } from "../../Components/CustomLoader";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import CustomTextField from "../../Components/CustomTextField";
 import { DecimalValidation } from "../../Components/Header/DecimalValidation";
-import MasterService from "../../services/MasterService";
 
 export const CreatePriceList = memo((props) => {
   const {
@@ -33,21 +32,19 @@ export const CreatePriceList = memo((props) => {
 
   const validate = inputValue.slab1 < inputValue.slab2;
 
-  const [zoneOption, setZoneOptions] = useState([]);
+  // const zoneMasterList = useCallback(async () => {
+  //   try {
+  //     const response = await MasterService.getZoneMasterList();
 
-  const zoneMasterList = useCallback(async () => {
-    try {
-      const response = await MasterService.getZoneMasterList();
-      setZoneOptions(response.data.results);
-      console.log(response.data);
-    } catch (error) {
-      handleError(error);
-    }
-  }, [handleError]);
+  //     console.log(response.data);
+  //   } catch (error) {
+  //     handleError(error);
+  //   }
+  // }, [handleError]);
 
-  useEffect(() => {
-    zoneMasterList();
-  }, [zoneMasterList]);
+  // useEffect(() => {
+  //   zoneMasterList();
+  // }, [zoneMasterList]);
 
   const createPriceListDetails = useCallback(
     async (e) => {
@@ -71,7 +68,7 @@ export const CreatePriceList = memo((props) => {
         const numTypes = product.map((item) => item.type_of_unit);
         const unit = product.map((item) => item.unit); // FIXED
         const decimalCounts = product.map((item) =>
-          String(item.max_decimal_digit)
+          String(item.max_decimal_digit),
         );
 
         const isValid = DecimalValidation({
@@ -115,7 +112,7 @@ export const CreatePriceList = memo((props) => {
         setOpen(false);
       }
     },
-    [inputValue, product]
+    [inputValue, product],
   );
 
   return (

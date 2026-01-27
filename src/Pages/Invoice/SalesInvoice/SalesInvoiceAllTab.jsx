@@ -14,17 +14,27 @@ export const SalesInvoiceAllTab = () => {
   const tabs = [
     {
       label: "Sales Invoice",
-      roles: ["Director", "Accounts", "Accounts Billing Department"],
+      roles: [
+        "Director",
+        "Accounts",
+        "Accounts Billing Department",
+        "Accounts Executive",
+      ],
       component: <SalesInvoiceView />,
     },
     {
       label: "Tally Invoice Export",
-      roles: ["Director", "Accounts", "Accounts Billing Department"],
+      roles: [
+        "Director",
+        "Accounts",
+        "Accounts Billing Department",
+        "Accounts Executive",
+      ],
       component: <TallyInvoice />,
     },
     {
       label: "Sales History",
-      roles: ["Director", "Accounts"],
+      roles: ["Director", "Accounts", "Accounts Executive"],
       component: <SalesHistoryView />,
     },
   ];

@@ -1,4 +1,4 @@
-import { Autocomplete, Box, Button, Grid, linkClasses } from "@mui/material";
+import { Autocomplete, Box, Button, Grid } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import Divider from "@mui/material/Divider";
@@ -59,9 +59,8 @@ export const SalesReturnCreate = (props) => {
 
   const getAllSellerAccountsDetails = async () => {
     try {
-      const response = await InvoiceServices.getAllPaginateSellerAccountData(
-        "all"
-      );
+      const response =
+        await InvoiceServices.getAllPaginateSellerAccountData("all");
       setSellerUnitOptions(response.data);
     } catch (error) {
       console.log("Error fetching seller account data:", error);
@@ -79,7 +78,7 @@ export const SalesReturnCreate = (props) => {
 
       const response = await InvoiceServices.getSalesReturnBySearchCompany(
         inputValue.seller_unit,
-        inputValue.company
+        inputValue.company,
       );
       setInvoiceNoOption(response.data);
     } catch (error) {

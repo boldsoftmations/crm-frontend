@@ -16,28 +16,28 @@ export const AllTabView = () => {
   const tabs = [
     {
       label: "Country",
-      roles: ["Director", "Accounts"],
+      roles: ["Director", "Accounts", "Accounts Executive"],
       component: <ViewCountry />,
     },
     {
       label: "Zone",
-      roles: ["Director", "Accounts"],
+      roles: ["Director", "Accounts", "Accounts Executive"],
       component: <ZoneListView />,
     },
     {
       label: "State",
-      roles: ["Director", "Accounts"],
+      roles: ["Director", "Accounts", "Accounts Executive"],
       component: <ViewState />,
     },
     {
       label: "City",
-      roles: ["Director", "Accounts"],
+      roles: ["Director", "Accounts", "Accounts Executive"],
       component: <ViewCity />,
     },
 
     {
       label: "Pin Code",
-      roles: ["Director", "Accounts"],
+      roles: ["Director", "Accounts", "Accounts Executive"],
       component: <ViewPincode />,
     },
   ];

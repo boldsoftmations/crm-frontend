@@ -28,12 +28,13 @@ export const AllOrderBookTabView = () => {
     "Accounts",
     "Accounts Billing Department",
     "Production",
+    "Accounts Executive",
     "Business Development Manager",
-    "Business Development Executive"
+    "Business Development Executive",
   );
   const orderBookUsers = isInGroups(
     "Factory-Mumbai-OrderBook",
-    "Factory-Delhi-OrderBook"
+    "Factory-Delhi-OrderBook",
   );
 
   const isDispatch = isInGroups("Factory-Mumbai-Dispatch");

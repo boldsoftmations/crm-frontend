@@ -163,10 +163,10 @@ export const DailyProductionReport = () => {
     setOpenDetailsPopup(true);
   };
 
-  const handleClosePopup = () => {
-    setOpenDetailsPopup(false);
-    setSelectedRow(null);
-  };
+  // const handleClosePopup = () => {
+  //   setOpenDetailsPopup(false);
+  //   setSelectedRow(null);
+  // };
 
   return (
     <>

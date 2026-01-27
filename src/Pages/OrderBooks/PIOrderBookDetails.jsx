@@ -68,7 +68,7 @@ export const PIOrderBookDetails = () => {
         filterRaisedByEmail,
         searchQuery,
         filterReadyDate,
-        filterEstimateData
+        filterEstimateData,
       );
       let data = response.data.map((item) => {
         if (
@@ -132,7 +132,7 @@ export const PIOrderBookDetails = () => {
   const openInPopup = (item) => {
     try {
       const matchedODBData = orderBookData.find(
-        (ODBData) => ODBData.id === item.id
+        (ODBData) => ODBData.id === item.id,
       );
       setRecordForEdit(matchedODBData);
       if (
@@ -148,7 +148,7 @@ export const PIOrderBookDetails = () => {
   const openInPopup2 = (item) => {
     try {
       const matchedODBData = orderBookData.find(
-        (ODBData) => ODBData.id === item.id
+        (ODBData) => ODBData.id === item.id,
       );
       setRecordForEdit(matchedODBData);
       if (
@@ -173,7 +173,7 @@ export const PIOrderBookDetails = () => {
         filterRaisedByEmail,
         searchQuery,
         filterReadyDate,
-        filterEstimateData
+        filterEstimateData,
       );
       setOrderBookData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -384,7 +384,7 @@ export const PIOrderBookDetails = () => {
                   fullWidth
                   value={
                     readyDateOption.find(
-                      (option) => option.value === filterReadyDate
+                      (option) => option.value === filterReadyDate,
                     ) || null
                   }
                   onChange={(event, value) =>
@@ -400,7 +400,7 @@ export const PIOrderBookDetails = () => {
                   size="small"
                   fullWidth
                   value={assigned.find(
-                    (option) => option.email === filterRaisedByEmail
+                    (option) => option.email === filterRaisedByEmail,
                   )}
                   onChange={(event, value) =>
                     setFilterRaisedByEmail(value ? value.email : null)
@@ -416,7 +416,7 @@ export const PIOrderBookDetails = () => {
                   fullWidth
                   value={
                     EstimatedDateOption.find(
-                      (option) => option.value === filterEstimateData
+                      (option) => option.value === filterEstimateData,
                     ) || null
                   }
                   onChange={(event, value) =>
@@ -565,7 +565,7 @@ export const PIOrderBookDetails = () => {
                     <StyledTableCell align="center">
                       {(userData.groups.includes("Accounts") ||
                         userData.groups.includes(
-                          "Operations & Supply Chain Manager"
+                          "Operations & Supply Chain Manager",
                         ) ||
                         userData.groups.includes("Director")) && (
                         <Button
@@ -573,9 +573,11 @@ export const PIOrderBookDetails = () => {
                           color="info"
                           size="small"
                           onClick={() => openInPopup(row)}
-                          disabled={userData.groups.includes(
-                            "Operations & Supply Chain Manager"
-                          )}
+                          disabled={
+                            userData.groups.includes(
+                              "Operations & Supply Chain Manager",
+                            ) || userData.groups.includes("Accounts Executive")
+                          }
                         >
                           Account View
                         </Button>
@@ -583,7 +585,7 @@ export const PIOrderBookDetails = () => {
                       {(userData.groups.includes("Production") ||
                         userData.groups.includes("Production Delhi") ||
                         userData.groups.includes(
-                          "Operations & Supply Chain Manager"
+                          "Operations & Supply Chain Manager",
                         ) ||
                         userData.groups.includes("Director")) && (
                         <Button
@@ -592,7 +594,7 @@ export const PIOrderBookDetails = () => {
                           size="small"
                           onClick={() => openInPopup2(row)}
                           disabled={userData.groups.includes(
-                            "Operations & Supply Chain Manager"
+                            "Operations & Supply Chain Manager",
                           )}
                         >
                           Production View

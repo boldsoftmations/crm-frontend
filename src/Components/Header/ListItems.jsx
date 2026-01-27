@@ -92,7 +92,7 @@ export const ListItems = ({ setOpen }) => {
               selected={isActive(to)}
               activeClassName="Mui-selected"
               sx={{ pl: 8 }}
-              key={to}
+              key={index}
             >
               <ListItemText primary={text} />
             </ListItem>
@@ -145,7 +145,7 @@ export const ListItems = ({ setOpen }) => {
         renderSubmenu("inventory", <InventoryIcon />, "Inventory", [
           { to: "/inventory/view-inventory", text: "Inventory" },
           { to: "/inventory/physical", text: "Physical Inventory" },
-          { to: "/inventory/stock-alert", text: "Stock Alert" },
+          { to: "/inventory/stock-alert", text: "Stock Summary" },
           // { to: "/inventory/stock-Report", text: "Stock Reprts" },
         ]),
         renderSubmenu("production", <FactoryIcon />, "Production", [
@@ -176,25 +176,25 @@ export const ListItems = ({ setOpen }) => {
           "customer_complaint",
           <ComplaintIcon />,
           "Customer Complaint",
-          [{ to: "/customer/complaints/ccp-capa", text: "CCF-CAPA" }]
+          [{ to: "/customer/complaints/ccp-capa", text: "CCF-CAPA" }],
         ),
         renderListItem(
           "/inventory/sales-return",
           <DescriptionIcon />,
-          "Sales Return"
+          "Sales Return",
         ),
 
         renderListItem(
           "/master/customer-visit",
           <DirectionsRunIcon />,
-          "Field Sales"
+          "Field Sales",
         ),
         renderListItem("/task/view-task", <AssignmentTurnedInIcon />, "Task"),
         renderListItem("/user/faq", <HelpOutlineIcon />, "Script"),
         renderListItem(
           "/customers/whatsapp-tabs",
           <WhatsAppIcon />,
-          "Whatsapp"
+          "Whatsapp",
         ),
         renderListItem("/hr-model", <WorkIcon />, "Recruitment"),
       ],
@@ -229,7 +229,7 @@ export const ListItems = ({ setOpen }) => {
         "Stores",
         "Production",
         "Stores Delhi",
-        "Production Delhi"
+        "Production Delhi",
       ),
       items: [
         renderSubmenu("master", <BusinessIcon />, "Master", [
@@ -252,13 +252,13 @@ export const ListItems = ({ setOpen }) => {
         renderListItem(
           "/inventory/sales-return",
           <DescriptionIcon />,
-          "Sales Return"
+          "Sales Return",
         ),
         renderSubmenu(
           "customer_complaint",
           <ComplaintIcon />,
           "Customer Complaint",
-          [{ to: "/customer/complaints/ccp-capa", text: "CCF-CAPA" }]
+          [{ to: "/customer/complaints/ccp-capa", text: "CCF-CAPA" }],
         ),
       ],
     },
@@ -267,7 +267,7 @@ export const ListItems = ({ setOpen }) => {
     {
       condition: isInGroups(
         "Factory-Delhi-Dispatch",
-        "Factory-Mumbai-Dispatch"
+        "Factory-Mumbai-Dispatch",
       ),
       items: [
         renderSubmenu("master", <BusinessIcon />, "Master", [
@@ -295,7 +295,7 @@ export const ListItems = ({ setOpen }) => {
           "customer_complaint",
           <ComplaintIcon />,
           "Customer Complaint",
-          [{ to: "/customer/complaints/ccp-capa", text: "CCF-CAPA" }]
+          [{ to: "/customer/complaints/ccp-capa", text: "CCF-CAPA" }],
         ),
       ],
     },
@@ -305,7 +305,7 @@ export const ListItems = ({ setOpen }) => {
     {
       condition: isInGroups(
         "Factory-Delhi-OrderBook",
-        "Factory-Mumbai-OrderBook"
+        "Factory-Mumbai-OrderBook",
       ),
       items: [
         renderSubmenu("master", <BusinessIcon />, "Master", [
@@ -321,7 +321,7 @@ export const ListItems = ({ setOpen }) => {
     {
       condition: isInGroups(
         "Factory-Delhi-Dispatch",
-        "Factory-Mumbai-Dispatch"
+        "Factory-Mumbai-Dispatch",
       ),
       items: [
         renderSubmenu("master", <BusinessIcon />, "Master", [
@@ -357,7 +357,7 @@ export const ListItems = ({ setOpen }) => {
           "customer_complaint",
           <ComplaintIcon />,
           "Customer Complaint",
-          [{ to: "/customer/complaints/ccp-capa", text: "CCF-CAPA" }]
+          [{ to: "/customer/complaints/ccp-capa", text: "CCF-CAPA" }],
         ),
         renderListItem("/customer/srf", <StickyNote2Icon />, "SRF"),
         renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
@@ -367,7 +367,7 @@ export const ListItems = ({ setOpen }) => {
         renderListItem(
           "/customers/whatsapp-tabs",
           <WhatsAppIcon />,
-          "Whatsapp"
+          "Whatsapp",
         ),
       ],
     },
@@ -403,12 +403,12 @@ export const ListItems = ({ setOpen }) => {
           "customer_complaint",
           <ComplaintIcon />,
           "Customer Complaint",
-          [{ to: "/customer/complaints/ccp-capa", text: "CCF-CAPA" }]
+          [{ to: "/customer/complaints/ccp-capa", text: "CCF-CAPA" }],
         ),
         renderListItem(
           "/customers/whatsapp-tabs",
           <WhatsAppIcon />,
-          "Whatsapp"
+          "Whatsapp",
         ),
       ],
     },
@@ -438,7 +438,7 @@ export const ListItems = ({ setOpen }) => {
         renderListItem(
           "/inventory/view-currency",
           <AttachMoneyIcon />,
-          "Currency"
+          "Currency",
         ),
         renderListItem("/task/view-task", <AssignmentTurnedInIcon />, "Task"),
       ],
@@ -479,7 +479,7 @@ export const ListItems = ({ setOpen }) => {
           "customer_complaint",
           <ComplaintIcon />,
           "Customer Complaint",
-          [{ to: "/customer/complaints/ccp-capa", text: "CCF-CAPA" }]
+          [{ to: "/customer/complaints/ccp-capa", text: "CCF-CAPA" }],
         ),
         renderSubmenu("production", <FactoryIcon />, "Production", [
           { to: "/inventory/view-production", text: "Production" },
@@ -497,7 +497,7 @@ export const ListItems = ({ setOpen }) => {
         renderListItem(
           "/inventory/sales-return",
           <DescriptionIcon />,
-          "Sales Return"
+          "Sales Return",
         ),
         renderListItem("/task/view-task", <AssignmentTurnedInIcon />, "Task"),
       ],
@@ -511,7 +511,10 @@ export const ListItems = ({ setOpen }) => {
         renderListItem("/user/analytics", <DashboardIcon />, "Analytics"),
         renderSubmenu("master", <BusinessIcon />, "Master", [
           { to: "/products/all-product", text: "Inventory Master" },
-          { to: "/invoice/seller-account", text: "Company Master" },
+          {
+            to: "/county-state-city/master-tab",
+            text: "Country Master",
+          },
           { to: "/user/profile-tab", text: "Employees Master" },
         ]),
         renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
@@ -519,35 +522,38 @@ export const ListItems = ({ setOpen }) => {
           { to: "/invoice/sales-invoice", text: "Sales Invoice" },
         ]),
         renderSubmenu("accounts", <AttachMoneyIcon />, "Accounts", [
-          { to: "/invoice/credit-debit-note", text: "Debit-Credit" },
+          { to: "/products/view-price-list", text: "Price List" },
         ]),
         renderSubmenu("inventory", <InventoryIcon />, "Inventory", [
           { to: "/inventory/view-inventory", text: "Inventory" },
         ]),
-        renderSubmenu(
-          "customer_complaint",
-          <ComplaintIcon />,
-          "Customer Complaint",
-          [{ to: "/customer/complaints/ccp-capa", text: "CCF-CAPA" }]
-        ),
+        // renderSubmenu(
+        //   "customer_complaint",
+        //   <ComplaintIcon />,
+        //   "Customer Complaint",
+        //   [{ to: "/customer/complaints/ccp-capa", text: "CCF-CAPA" }],
+        // ),
         renderSubmenu("production", <FactoryIcon />, "Production", [
           { to: "/inventory/view-production", text: "Production" },
         ]),
         renderSubmenu("sales", <TrendingUpIcon />, "Sales", [
+          // { to: "/leads/all-lead", text: "Leads" },
           { to: "/customers/all-customer", text: "Customer" },
-          { to: "/forecast/view-product-forecast", text: "Forecast" },
+          // { to: "/followp/view-followup", text: "Followup" },
+
+          // { to: "/market-analysis/competitor", text: "Market Analysis" },
         ]),
-        renderSubmenu("purchase", <PurchaseIcon />, "Purchase", [
-          { to: "/inventory/view-vendor", text: "Vendor" },
-          { to: "/inventory/view-purchase", text: "Purchase" },
-        ]),
+        // renderSubmenu("purchase", <PurchaseIcon />, "Purchase", [
+        //   { to: "/inventory/view-vendor", text: "Vendor" },
+        //   { to: "/inventory/view-purchase", text: "Purchase" },
+        // ]),
         renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
         renderListItem("/dispatch/tab-view", <LocalShippingIcon />, "Dispatch"),
-        renderListItem(
-          "/inventory/sales-return",
-          <DescriptionIcon />,
-          "Sales Return"
-        ),
+        // renderListItem(
+        //   "/inventory/sales-return",
+        //   <DescriptionIcon />,
+        //   "Sales Return",
+        // ),
         renderListItem("/task/view-task", <AssignmentTurnedInIcon />, "Task"),
       ],
     },
@@ -577,7 +583,7 @@ export const ListItems = ({ setOpen }) => {
         renderListItem(
           "/inventory/sales-return",
           <DescriptionIcon />,
-          "Sales Return"
+          "Sales Return",
         ),
         renderListItem("/task/view-task", <AssignmentTurnedInIcon />, "Task"),
       ],
@@ -607,7 +613,7 @@ export const ListItems = ({ setOpen }) => {
         renderListItem(
           "/master/customer-visit",
           <DirectionsRunIcon />,
-          "Field Sales"
+          "Field Sales",
         ),
         renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
           { to: "/invoice/performa-invoice-tab", text: "Performa Invoice" },
@@ -624,7 +630,7 @@ export const ListItems = ({ setOpen }) => {
           "customer_complaint",
           <ComplaintIcon />,
           "Customer Complaint",
-          [{ to: "/customer/complaints/ccp-capa", text: "CCF-CAPA" }]
+          [{ to: "/customer/complaints/ccp-capa", text: "CCF-CAPA" }],
         ),
         renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
         renderListItem("/dispatch/tab-view", <LocalShippingIcon />, "Dispatch"),
@@ -659,7 +665,7 @@ export const ListItems = ({ setOpen }) => {
         renderListItem(
           "/master/customer-visit",
           <DirectionsRunIcon />,
-          "Field Sales"
+          "Field Sales",
         ),
         renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
           { to: "/invoice/performa-invoice-tab", text: "Performa Invoice" },
@@ -676,7 +682,7 @@ export const ListItems = ({ setOpen }) => {
           "customer_complaint",
           <ComplaintIcon />,
           "Customer Complaint",
-          [{ to: "/customer/complaints/ccp-capa", text: "CCF-CAPA" }]
+          [{ to: "/customer/complaints/ccp-capa", text: "CCF-CAPA" }],
         ),
         renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
         renderListItem("/dispatch/tab-view", <LocalShippingIcon />, "Dispatch"),
@@ -836,7 +842,7 @@ export const ListItems = ({ setOpen }) => {
           "customer_complaint",
           <ComplaintIcon />,
           "Customer Complaint",
-          [{ to: "/customer/complaints/ccp-capa", text: "CCF-CAPA" }]
+          [{ to: "/customer/complaints/ccp-capa", text: "CCF-CAPA" }],
         ),
         renderSubmenu("production", <FactoryIcon />, "Production", [
           { to: "/inventory/view-production", text: "Production" },
@@ -854,7 +860,7 @@ export const ListItems = ({ setOpen }) => {
         renderListItem(
           "/inventory/sales-return",
           <DescriptionIcon />,
-          "Sales Return"
+          "Sales Return",
         ),
         renderListItem("/task/view-task", <AssignmentTurnedInIcon />, "Task"),
       ],
@@ -903,8 +909,8 @@ export const ListItems = ({ setOpen }) => {
       {menuItems.map(
         (menu, index) =>
           menu.condition && (
-            <React.Fragment key={menu.to}>{menu.items}</React.Fragment>
-          )
+            <React.Fragment key={index}>{menu.items}</React.Fragment>
+          ),
       )}
     </div>
   );

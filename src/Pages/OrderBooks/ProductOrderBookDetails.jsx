@@ -69,7 +69,7 @@ export const ProductOrderBookDetails = () => {
         filterRaisedByEmail,
         searchQuery,
         filterReadyDate,
-        filterEstimateData
+        filterEstimateData,
       );
       let data = response.data.map((item) => {
         if (
@@ -155,7 +155,7 @@ export const ProductOrderBookDetails = () => {
   const openInPopup = (item) => {
     try {
       const matchedODBData = orderBookData.find(
-        (ODBData) => ODBData.id === item.id
+        (ODBData) => ODBData.id === item.id,
       );
       setRecordForEdit(matchedODBData);
       if (
@@ -172,7 +172,7 @@ export const ProductOrderBookDetails = () => {
   const openInPopup2 = (item) => {
     try {
       const matchedODBData = orderBookData.find(
-        (ODBData) => ODBData.id === item.id
+        (ODBData) => ODBData.id === item.id,
       );
       setRecordForEdit(matchedODBData);
       if (
@@ -197,7 +197,7 @@ export const ProductOrderBookDetails = () => {
         filterRaisedByEmail,
         searchQuery,
         filterReadyDate,
-        filterEstimateData
+        filterEstimateData,
       );
       setOrderBookData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -288,7 +288,7 @@ export const ProductOrderBookDetails = () => {
                   fullWidth
                   value={
                     readyDateOption.find(
-                      (option) => option.value === filterReadyDate
+                      (option) => option.value === filterReadyDate,
                     ) || null
                   }
                   onChange={(event, value) =>
@@ -304,7 +304,7 @@ export const ProductOrderBookDetails = () => {
                   size="small"
                   fullWidth
                   value={assigned.find(
-                    (option) => option.email === filterRaisedByEmail
+                    (option) => option.email === filterRaisedByEmail,
                   )}
                   onChange={(event, value) =>
                     setFilterRaisedByEmail(value ? value.email : null)
@@ -320,7 +320,7 @@ export const ProductOrderBookDetails = () => {
                   fullWidth
                   value={
                     EsimatedDateOption.find(
-                      (option) => option.value === filterEstimateData
+                      (option) => option.value === filterEstimateData,
                     ) || null
                   }
                   onChange={(event, value) =>
@@ -346,7 +346,7 @@ export const ProductOrderBookDetails = () => {
                     headers={
                       userData.groups.includes("Customer Service") ||
                       userData.groups.includes(
-                        "Operations & Supply Chain Manager"
+                        "Operations & Supply Chain Manager",
                       ) ||
                       userData.groups.includes("Sales Executive")
                         ? Customerheaders
@@ -470,7 +470,7 @@ export const ProductOrderBookDetails = () => {
                     <StyledTableCell>
                       {(userData.groups.includes("Accounts") ||
                         userData.groups.includes(
-                          "Operations & Supply Chain Manager"
+                          "Operations & Supply Chain Manager",
                         ) ||
                         userData.groups.includes("Director")) && (
                         <Button
@@ -478,9 +478,11 @@ export const ProductOrderBookDetails = () => {
                           color="info"
                           size="small"
                           onClick={() => openInPopup(row)}
-                          disabled={userData.groups.includes(
-                            "Operations & Supply Chain Manager"
-                          )}
+                          disabled={
+                            userData.groups.includes(
+                              "Operations & Supply Chain Manager",
+                            ) || userData.groups.includes("Accounts Executive")
+                          }
                         >
                           Account View
                         </Button>
@@ -488,7 +490,7 @@ export const ProductOrderBookDetails = () => {
                       {(userData.groups.includes("Production") ||
                         userData.groups.includes("Production Delhi") ||
                         userData.groups.includes(
-                          "Operations & Supply Chain Manager"
+                          "Operations & Supply Chain Manager",
                         ) ||
                         userData.groups.includes("Director")) && (
                         <Button
@@ -497,7 +499,7 @@ export const ProductOrderBookDetails = () => {
                           size="small"
                           onClick={() => openInPopup2(row)}
                           disabled={userData.groups.includes(
-                            "Operations & Supply Chain Manager"
+                            "Operations & Supply Chain Manager",
                           )}
                         >
                           Production View

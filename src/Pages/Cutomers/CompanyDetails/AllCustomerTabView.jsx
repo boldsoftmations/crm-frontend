@@ -22,7 +22,8 @@ export const AllCustomerTabView = () => {
     "Accounts",
     "Customer Relationship Manager",
     "Business Development Manager",
-    "Operations & Supply Chain Manager"
+    "Operations & Supply Chain Manager",
+    "Accounts Executive",
   );
 
   const BdeAndManager = isInGroups(
@@ -31,11 +32,12 @@ export const AllCustomerTabView = () => {
     "Sales Manager(Retailer)",
     "Sales Executive",
     "Accounts",
+    "Accounts Executive",
     "Sales Deputy Manager",
     "Business Development Manager",
     "Business Development Executive",
     "Customer Relationship Manager",
-    "Customer Relationship Executive"
+    "Customer Relationship Executive",
   );
 
   const isDirectorandSalesManager = isInGroups(
@@ -43,12 +45,12 @@ export const AllCustomerTabView = () => {
     "Sales Manager",
     "Sales Manager(Retailer)",
     "Customer Relationship Manager",
-    "Business Development Manager"
+    "Business Development Manager",
   );
   const isDirectorandCRMandCRE = isInGroups(
     "Director",
     "Customer Relationship Manager",
-    "Customer Relationship Executive"
+    "Customer Relationship Executive",
   );
 
   const isSalesDManager = isInGroups("Sales Deputy Manager");
@@ -56,11 +58,12 @@ export const AllCustomerTabView = () => {
   const isSalesExecutive = isInGroups(
     "Sales Executive",
     "Customer Relationship Executive",
-    "Business Development Executive"
+    "Business Development Executive",
   );
   const isSalesManagerWithoutLeads = isInGroups("Sales Manager without Leads");
   const isSalesManagerWithLeads = isInGroups("Sales Manager with Leads");
   const isCustomerService = isInGroups("Customer Service");
+  // const isAccountExecutive = isInGroups("Accounts Executive");
   const isAccountBillingDepartment = isInGroups("Accounts Billing Department");
   const tabs = useMemo(
     () => [
@@ -75,6 +78,7 @@ export const AllCustomerTabView = () => {
           isSalesManagerWithLeads ||
           isCustomerService ||
           isAccountBillingDepartment,
+
         index: 0,
         component: <CompanyDetails />,
       },
@@ -137,13 +141,13 @@ export const AllCustomerTabView = () => {
       isCustomerService,
       isAccountBillingDepartment,
       BdeAndManager,
-    ]
+    ],
   );
 
   const visibleTabs = useMemo(() => tabs.filter((tab) => tab.visible), [tabs]);
   const visibleTabIndexes = useMemo(
     () => visibleTabs.map((tab) => tab.index),
-    [visibleTabs]
+    [visibleTabs],
   );
 
   // Set the first visible tab as active by default

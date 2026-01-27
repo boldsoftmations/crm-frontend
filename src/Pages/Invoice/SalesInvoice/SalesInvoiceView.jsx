@@ -82,11 +82,11 @@ export const SalesInvoiceView = () => {
         EndDate,
         "all",
         filterSelectedQuery,
-        searchQuery
+        searchQuery,
       );
       // Filter out items with 'cancelled' as true from the response
       const filteredData = response.data.filter(
-        (item) => item.cancelled !== true
+        (item) => item.cancelled !== true,
       );
 
       // Initialize the data array
@@ -187,9 +187,8 @@ export const SalesInvoiceView = () => {
   const getAllSellerAccountsDetails = async () => {
     try {
       setOpen(true);
-      const response = await InvoiceServices.getAllPaginateSellerAccountData(
-        "all"
-      );
+      const response =
+        await InvoiceServices.getAllPaginateSellerAccountData("all");
       setSellerUnitOption(response.data);
 
       setOpen(false);
@@ -213,7 +212,7 @@ export const SalesInvoiceView = () => {
         EndDate,
         currentPage,
         filterSelectedQuery,
-        searchQuery
+        searchQuery,
       );
       setSalesInvoiceData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -436,9 +435,9 @@ export const SalesInvoiceView = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {salesInvoiceData.map((row) => (
+                {salesInvoiceData.map((row, key) => (
                   <Row
-                    key={row.id}
+                    key={key}
                     row={row}
                     openInPopup={openInPopup}
                     openInPopup2={openInPopup2}

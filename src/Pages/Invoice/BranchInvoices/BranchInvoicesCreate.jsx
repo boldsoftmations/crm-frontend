@@ -49,7 +49,7 @@ const BranchInvoicesCreate = ({ getSalesInvoiceDetails, setOpenPopup }) => {
       },
     ],
     productOption,
-    true
+    true,
   );
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState({
@@ -91,12 +91,12 @@ const BranchInvoicesCreate = ({ getSalesInvoiceDetails, setOpenPopup }) => {
 
   const getAllSellerAccountsDetails = async () => {
     try {
-      const response = await InvoiceServices.getAllPaginateSellerAccountData(
-        "all"
-      );
+      const response =
+        await InvoiceServices.getAllPaginateSellerAccountData("all");
       setSellerData(response.data);
     } catch (error) {
       console.log("Error fetching seller account data:", error);
+      console.log("error");
     }
   };
 
@@ -259,7 +259,7 @@ const BranchInvoicesCreate = ({ getSalesInvoiceDetails, setOpenPopup }) => {
                       handleAutocompleteChange(index, event, value)
                     }
                     options={productOption.map(
-                      (option) => option.product__name
+                      (option) => option.product__name,
                     )}
                     getOptionLabel={(option) => option}
                     sx={{ minWidth: 300 }}

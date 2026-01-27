@@ -715,7 +715,36 @@ const getDailyReportData = (id) => {
     `api/inventory/production-product-details/?${params.toString()}`,
   );
 };
+const getStockReportData = (
+  // page,
+  seller_account,
+  productType,
+  StartDate,
+  EndDate,
+  searchQuery,
+) => {
+  const params = new URLSearchParams();
 
+  // if (page) {
+  //   params.append("page", page);
+  // }
+  if (seller_account) {
+    params.append("seller_account", seller_account);
+  }
+  if (productType) {
+    params.append("product_type", productType);
+  }
+  if (StartDate) {
+    params.append("start_date", StartDate);
+  }
+  if (EndDate) {
+    params.append("end_date", EndDate);
+  }
+  if (searchQuery) {
+    params.append("search", searchQuery);
+  }
+  return CustomAxios.get(`api/inventory/day-wise-stock/?${params.toString()}`);
+};
 const InventoryServices = {
   isPLApproveReject,
   updatePLApproveListData,
@@ -792,6 +821,7 @@ const InventoryServices = {
   updateReworkInvoiceData,
   getStockAlertData,
   getDailyReportData,
+  getStockReportData,
 };
 
 export default InventoryServices;

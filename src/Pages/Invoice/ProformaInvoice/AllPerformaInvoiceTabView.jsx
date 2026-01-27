@@ -19,26 +19,26 @@ export const AllPerformaInvoiceTabView = () => {
 
   const roles = useMemo(
     () => ({
-      allTabs: isInGroups("Director", "Accounts"),
+      allTabs: isInGroups("Director", "Accounts", "Accounts Executive"),
       isSalesManager: isInGroups(
         "Sales Manager",
         "Sales Manager(Retailer)",
         "Customer Relationship Manager",
-        "Business Development Manager"
+        "Business Development Manager",
       ),
       isSalesDManager: isInGroups("Sales Deputy Manager"),
       isSalesADManager: isInGroups("Sales Assistant Deputy Manager"),
       isSalesExecutive: isInGroups(
         "Sales Executive",
         "Customer Relationship Executive",
-        "Business Development Executive"
+        "Business Development Executive",
       ),
       isSalesManagerWithoutLeads: isInGroups("Sales Manager without Leads"),
       isSalesManagerWithLeads: isInGroups("Sales Manager with Leads"),
       isCustomerService: isInGroups("Customer Service"),
       isAccountBillingDepartment: isInGroups("Accounts Billing Department"),
     }),
-    [userData]
+    [userData],
   );
 
   const tabs = useMemo(
@@ -85,7 +85,7 @@ export const AllPerformaInvoiceTabView = () => {
         component: <AllProformaInvoice />,
       },
     ],
-    [roles]
+    [roles],
   );
 
   const visibleTabs = useMemo(() => {
@@ -95,12 +95,12 @@ export const AllPerformaInvoiceTabView = () => {
   }, [tabs]);
   const visibleTabIndexes = useMemo(
     () => visibleTabs.map((tab) => tab.index),
-    [visibleTabs]
+    [visibleTabs],
   );
 
   // Set the first visible tab as active by default
   const [activeTab, setActiveTab] = useState(
-    visibleTabs.length > 0 ? visibleTabs[0].index : 0
+    visibleTabs.length > 0 ? visibleTabs[0].index : 0,
   );
 
   useEffect(() => {
@@ -119,7 +119,7 @@ export const AllPerformaInvoiceTabView = () => {
       />
       {visibleTabs.map(
         (tab) =>
-          tab.index === activeTab && <div key={tab.index}>{tab.component}</div>
+          tab.index === activeTab && <div key={tab.index}>{tab.component}</div>,
       )}
     </div>
   );

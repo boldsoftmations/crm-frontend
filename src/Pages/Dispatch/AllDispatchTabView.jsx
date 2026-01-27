@@ -6,7 +6,7 @@ import { Dispatched } from "./Dispatched";
 import { SalesRegisterView } from "./SalesRegisterView";
 import { ExportView } from "./ExportView";
 import BlankLrView from "./BlankLrView";
-import { UploadedPODs } from "./UploadedPODs";
+import UploadedPODs from "./UploadedPOD";
 export const AllDispatchTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
 
@@ -25,23 +25,24 @@ export const AllDispatchTabView = () => {
     "Sales Assistant Deputy Manager",
     "Business Development Manager",
     "Business Development Executive",
-    "Operations & Supply Chain Manager"
+    "Operations & Supply Chain Manager",
   );
 
   const twoTabs = isInGroups(
     "Factory-Delhi-Dispatch",
     "Factory-Mumbai-Dispatch",
     "Stores Delhi",
-    "Production Delhi"
+    "Production Delhi",
   );
   const dispatchPODPending = isInGroups("Customer Service");
   const dispatchLRPending = isInGroups(
     "Factory-Mumbai-Dispatch",
-    "Factory-Delhi-Dispatch"
+    "Factory-Delhi-Dispatch",
   );
   const adminTab = isInGroups("Director", "Operations & Supply Chain Manager");
   const customerServiceTab = isInGroups("Customer Service");
   const salesRegisterTab = isInGroups("Accounts Billing Department");
+  const isAccpuntExecutive = isInGroups("Accounts Executive");
 
   const [activeTab, setActiveTab] = useState(allTabs ? 0 : 4);
 
@@ -56,8 +57,8 @@ export const AllDispatchTabView = () => {
       label: dispatchPODPending
         ? "Dispatch-POD Pending"
         : dispatchLRPending
-        ? "Dispatched-LR Pending"
-        : "Dispatch",
+          ? "Dispatched-LR Pending"
+          : "Dispatch",
       visible: allTabs || twoTabs || customerServiceTab,
       index: 1,
     },
@@ -70,7 +71,8 @@ export const AllDispatchTabView = () => {
 
     {
       label: "Sales Register",
-      visible: allTabs || customerServiceTab || salesRegisterTab,
+      visible:
+        allTabs || customerServiceTab || salesRegisterTab || isAccpuntExecutive,
       index: 3,
     },
     {

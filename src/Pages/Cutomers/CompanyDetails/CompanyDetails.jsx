@@ -125,7 +125,7 @@ export const CompanyDetails = () => {
         "all",
         filterSelectedQuery,
         searchQuery,
-        fillertedData
+        fillertedData,
       );
       const data = response.data.map((row) => {
         return {
@@ -182,7 +182,7 @@ export const CompanyDetails = () => {
         currentPage,
         filterSelectedQuery,
         searchQuery,
-        fillertedData
+        fillertedData,
       );
       setCompanyData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -489,6 +489,8 @@ export const CompanyDetails = () => {
                       {row.gst_number}
                     </StyledTableCell>
                     <StyledTableCell align="center">{row.city}</StyledTableCell>
+                    <StyledTableCell align="center">{row.zone}</StyledTableCell>
+
                     <StyledTableCell align="center">
                       {row.state}
                     </StyledTableCell>
@@ -503,7 +505,7 @@ export const CompanyDetails = () => {
                         View
                       </Button>
                       {!userData.groups.includes(
-                        "Accounts Billing Department"
+                        "Accounts Billing Department",
                       ) &&
                         row.status === "Active" && (
                           <Button
@@ -514,7 +516,7 @@ export const CompanyDetails = () => {
                           </Button>
                         )}
                       {!userData.groups.includes(
-                        "Accounts Billing Department"
+                        "Accounts Billing Department",
                       ) && (
                         <Button
                           size="small"
