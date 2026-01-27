@@ -243,7 +243,7 @@ export const ListItems = ({ setOpen }) => {
         renderListItem("/customer/srf", <StickyNote2Icon />, "SRF"),
         renderSubmenu("inventory", <InventoryIcon />, "Inventory", [
           { to: "/inventory/view-inventory", text: "Inventory" },
-          { to: "/inventory/stock-alert", text: "Stock Alert" },
+          { to: "/inventory/stock-alert", text: "Stock Summary" },
         ]),
         renderSubmenu("production", <FactoryIcon />, "Production", [
           { to: "/inventory/view-production", text: "Production" },

@@ -14,7 +14,13 @@ export const AllInventoryReportTabs = () => {
   const tabs = [
     {
       label: "Stock Alert",
-      roles: ["Director", "Accounts", "Operations and Supply"],
+      roles: [
+        "Director",
+        "Accounts",
+        "Operations and Supply",
+        "Stores",
+        "Production",
+      ],
       component: <StocklimitView />,
     },
     {
