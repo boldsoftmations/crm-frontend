@@ -26,6 +26,7 @@ export const AllPerformaInvoiceTabView = () => {
         "Customer Relationship Manager",
         "Business Development Manager",
       ),
+      isAccountBillingDepartment: isInGroups("Accounts Billing Department"),
       isSalesDManager: isInGroups("Sales Deputy Manager"),
       isSalesADManager: isInGroups("Sales Assistant Deputy Manager"),
       isSalesExecutive: isInGroups(
@@ -66,7 +67,10 @@ export const AllPerformaInvoiceTabView = () => {
       {
         label: "Price Approval PI",
         visible:
-          roles.allTabs || roles.isSalesManager || roles.isSalesExecutive,
+          roles.allTabs ||
+          roles.isSalesManager ||
+          roles.isSalesExecutive ||
+          roles.isAccountBillingDepartment,
         index: 2,
         component: <PriceApprovalPI />,
       },
