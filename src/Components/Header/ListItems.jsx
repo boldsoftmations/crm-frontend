@@ -312,7 +312,7 @@ export const ListItems = ({ setOpen }) => {
           { to: "/user/profile-tab", text: "Employees Master" },
         ]),
         renderSubmenu("inventory", <FactoryIcon />, "Inventory", [
-          { to: "/inventory/stock-alert", text: "Stock Alert" },
+          { to: "/inventory/stock-alert", text: "Stock Summary" },
         ]),
       ],
     },
@@ -382,7 +382,7 @@ export const ListItems = ({ setOpen }) => {
         renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
         renderSubmenu("inventory", <InventoryIcon />, "Inventory", [
           { to: "/inventory/view-inventory", text: "Inventory" },
-          { to: "/inventory/stock-alert", text: "Stock Alert" },
+          { to: "/inventory/stock-alert", text: "Stock Summary" },
         ]),
         renderSubmenu("production", <FactoryIcon />, "Production", [
           { to: "/inventory/view-production", text: "Production" },
@@ -395,7 +395,7 @@ export const ListItems = ({ setOpen }) => {
         renderSubmenu("purchase", <PurchaseIcon />, "Purchase", [
           { to: "/inventory/view-vendor", text: "Vendor" },
           { to: "/inventory/view-purchase", text: "Purchase" },
-          { to: "/inventory/stock-alert", text: "Stock Alert" },
+          { to: "/inventory/stock-alert", text: "Stock Summary" },
         ]),
         renderListItem("/user/analytics", <DashboardIcon />, "Analytics"),
 

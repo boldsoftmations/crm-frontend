@@ -17,7 +17,7 @@ export const AllInventoryReportTabs = () => {
       roles: [
         "Director",
         "Accounts",
-        "Operations and Supply",
+        "Operations & Supply Chain Manager",
         "Stores",
         "Production",
       ],
@@ -25,7 +25,7 @@ export const AllInventoryReportTabs = () => {
     },
     {
       label: "Stock Report",
-      roles: ["Director", "Accounts", "Operations and Supply"],
+      roles: ["Director", "Accounts", "Operations & Supply Chain Manager"],
       component: <StockRportView />,
     },
   ];

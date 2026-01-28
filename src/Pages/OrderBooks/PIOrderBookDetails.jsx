@@ -107,6 +107,7 @@ export const PIOrderBookDetails = () => {
             shipping_pincode: item.shipping_pincode,
             product: item.product,
             quantity: item.quantity,
+            rate: item.rate,
             amount: item.amount,
 
             pending_amount: item.pending_amount,
@@ -225,6 +226,7 @@ export const PIOrderBookDetails = () => {
     "Billing City",
     "Shipping City",
     "Product",
+    "Rate",
     "Quantity",
     "Pending Quantity",
     "EST DATE",
@@ -303,6 +305,8 @@ export const PIOrderBookDetails = () => {
           { label: "Billing Pincode", key: "billing_pincode" },
           { label: "Product", key: "product" },
           { label: "Quantity", key: "quantity" },
+          { label: "Rate", key: "rate" },
+
           { label: "Amount", key: "amount" },
           { label: "Pending Amount", key: "pending_amount" },
           {

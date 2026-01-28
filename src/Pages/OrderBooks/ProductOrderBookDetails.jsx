@@ -105,6 +105,7 @@ export const ProductOrderBookDetails = () => {
             pi_date: item.pi_date,
             proforma_invoice: item.proforma_invoice,
             quantity: item.quantity,
+            rate: item.rate,
             amount: item.amount,
             pending_quantity: item.pending_quantity,
             company: item.company,
@@ -249,6 +250,7 @@ export const ProductOrderBookDetails = () => {
     "Shipping City",
     "Product",
     "Quantity",
+    "Rate",
     "Pending Quantity",
     "EST DATE",
     "Ready Date",
@@ -610,6 +612,7 @@ const Customerheaders = [
   { label: "Approval Date", key: "order_book_date" },
   { label: "PI Date", key: "pi_date" },
   { label: "PI Number", key: "proforma_invoice" },
+  { label: "Rate", key: "rate" },
   {
     label: "Quantity",
     key: "quantity",

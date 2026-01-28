@@ -52,7 +52,7 @@ export const CustomerOrderBookDetails = () => {
   const openInPopup = (item) => {
     try {
       const matchedODBData = orderBookData.find(
-        (ODBData) => ODBData.id === item.id
+        (ODBData) => ODBData.id === item.id,
       );
       setRecordForEdit(matchedODBData);
       if (userData.groups.includes("Accounts")) {
@@ -89,7 +89,7 @@ export const CustomerOrderBookDetails = () => {
         filterRaisedByEmail,
         searchQuery,
         filterReadyDate,
-        filterEstimateData
+        filterEstimateData,
       );
       let data = response.data.map((item) => {
         if (
@@ -159,6 +159,7 @@ export const CustomerOrderBookDetails = () => {
             shipping_pincode: item.shipping_pincode,
             product: item.product,
             quantity: item.quantity,
+            rate: item.rate,
             amount: item.amount,
             pending_quantity: item.pending_quantity,
             seller_state: item.seller_state,
@@ -190,7 +191,7 @@ export const CustomerOrderBookDetails = () => {
         filterRaisedByEmail,
         searchQuery,
         filterReadyDate,
-        filterEstimateData
+        filterEstimateData,
       );
       setOrderBookData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -275,7 +276,7 @@ export const CustomerOrderBookDetails = () => {
                   fullWidth
                   value={
                     readyDateOption.find(
-                      (option) => option.value === filterReadyDate
+                      (option) => option.value === filterReadyDate,
                     ) || null
                   }
                   onChange={(event, value) =>
@@ -292,7 +293,7 @@ export const CustomerOrderBookDetails = () => {
                   size="small"
                   fullWidth
                   value={assigned.find(
-                    (option) => option.email === filterRaisedByEmail
+                    (option) => option.email === filterRaisedByEmail,
                   )}
                   onChange={(event, value) =>
                     setFilterRaisedByEmail(value ? value.email : null)
@@ -309,7 +310,7 @@ export const CustomerOrderBookDetails = () => {
                   fullWidth
                   value={
                     EstimatedDateOption.find(
-                      (option) => option.value === filterEstimateData
+                      (option) => option.value === filterEstimateData,
                     ) || null
                   }
                   onChange={(event, value) =>
@@ -458,7 +459,7 @@ export const CustomerOrderBookDetails = () => {
                         size="small"
                         onClick={() => openInPopup(row)}
                         disabled={userData.groups.includes(
-                          "Operations & Supply Chain Manager"
+                          "Operations & Supply Chain Manager",
                         )}
                       >
                         Production View
@@ -615,6 +616,10 @@ const headers2 = [
   {
     label: "Quantity",
     key: "quantity",
+  },
+  {
+    label: "Rate",
+    key: "rate",
   },
   {
     label: "Amount",
