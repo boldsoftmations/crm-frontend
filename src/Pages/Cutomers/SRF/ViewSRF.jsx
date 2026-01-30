@@ -662,6 +662,9 @@ function Row({ row, getCustomerSRF, handleError, handleSuccess }) {
                             size="small"
                             color="success"
                             onClick={() => handleUpdateProductStatusPopup(rows)}
+                            disabled={userData.groups.includes(
+                              "Operations & Supply Chain Manager",
+                            )}
                           >
                             View
                           </Button>

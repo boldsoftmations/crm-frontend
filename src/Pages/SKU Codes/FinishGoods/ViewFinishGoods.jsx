@@ -5,7 +5,7 @@ import ProductService from "../../../services/ProductService";
 import { Popup } from "./../../../Components/Popup";
 import { CreateFinishGoods } from "./CreateFinishGoods";
 import { UpdateFinishGoods } from "./UpdateFinishGoods";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   getBasicUnitData,
   getBrandData,
@@ -36,7 +36,9 @@ export const ViewFinishGoods = () => {
     useNotificationHandling();
   const [exportData, setExportData] = useState([]);
   const csvLinkRef = useRef(null);
-
+  const userData = useSelector((state) => state.auth.profile);
+  const isInGroups = (...groups) =>
+    groups.some((group) => userData.groups.includes(group));
   const handleDownload = async () => {
     try {
       const data = await handleExport();
@@ -181,7 +183,7 @@ export const ViewFinishGoods = () => {
       setOpen(true);
       const response = await ProductService.getAllFinishGoods(
         currentPage,
-        searchQuery
+        searchQuery,
       );
       setFinishGood(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -295,6 +297,7 @@ export const ViewFinishGoods = () => {
                 onClick={() => setOpenPopup2(true)}
                 variant="contained"
                 color="success"
+                disabled={isInGroups("Stores")}
               >
                 Add
               </Button>

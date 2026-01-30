@@ -5,7 +5,7 @@ import { Popup } from "../../../Components/Popup";
 import { CreateConsumable } from "./CreateConsumable";
 import { UpdateConsumable } from "./UpdateConsumable";
 import { CustomLoader } from "./../../../Components/CustomLoader";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getBrandData, getUnitData } from "../../../Redux/Action/Action";
 import { CustomPagination } from "./../../../Components/CustomPagination";
 import { CustomTable } from "../../../Components/CustomTable";
@@ -29,6 +29,9 @@ export const ViewConsumable = () => {
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
   const csvLinkRef = useRef(null);
+  const userData = useSelector((state) => state.auth.profile);
+  const isInGroups = (...groups) =>
+    groups.some((group) => userData.groups.includes(group));
 
   const handleDownload = async () => {
     try {
@@ -133,7 +136,7 @@ export const ViewConsumable = () => {
       setOpen(true);
       const response = await ProductService.getAllConsumable(
         currentPage,
-        searchQuery
+        searchQuery,
       );
       setConsumable(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -247,6 +250,7 @@ export const ViewConsumable = () => {
                 onClick={() => setOpenPopup2(true)}
                 variant="contained"
                 color="success"
+                disabled={isInGroups("Stores")}
               >
                 Add
               </Button>
