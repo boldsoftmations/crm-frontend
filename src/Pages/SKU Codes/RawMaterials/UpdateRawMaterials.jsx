@@ -28,6 +28,10 @@ export const UpdateRawMaterials = memo((props) => {
     useSelector((state) => state.auth);
 
   const productUnit = unitAllData;
+  const userData = useSelector((state) => state.auth.profile || { groups: [] });
+
+  const isInGroups = (...groups) =>
+    groups.some((group) => userData.groups.includes(group));
 
   const [formData, setFormData] = useState(recordForEdit);
   const [open, setOpen] = useState(false);
@@ -39,7 +43,7 @@ export const UpdateRawMaterials = memo((props) => {
   // 🔍 🔥 MEMOIZED – avoids recalculating every render
   const shortName = useMemo(
     () => searchArrayValue(brandAllData, "name", formData.brand, "short_name"),
-    [formData.brand, brandAllData]
+    [formData.brand, brandAllData],
   );
 
   const description = useMemo(
@@ -48,9 +52,9 @@ export const UpdateRawMaterials = memo((props) => {
         productCodeAllData,
         "code",
         formData.productcode,
-        "description"
+        "description",
       ),
-    [formData.productcode, productCodeAllData]
+    [formData.productcode, productCodeAllData],
   );
 
   const productName = useMemo(
@@ -58,12 +62,12 @@ export const UpdateRawMaterials = memo((props) => {
       `${formData.productcode || ""}-${formData.color || ""}-${
         shortName || ""
       }-${formData.size || ""}`,
-    [formData.productcode, formData.color, shortName, formData.size]
+    [formData.productcode, formData.color, shortName, formData.size],
   );
 
   const GST = useMemo(
     () => (formData.gst ? formData.gst / 2 : 0),
-    [formData.gst]
+    [formData.gst],
   );
 
   const handleInputChange = useCallback((e) => {
@@ -83,7 +87,7 @@ export const UpdateRawMaterials = memo((props) => {
         setOpen(true);
 
         const selectedUnit = productUnit.find(
-          (item) => item.name === formData.unit
+          (item) => item.name === formData.unit,
         );
 
         const safeUnitType = selectedUnit ? selectedUnit.type_of_unit : "";
@@ -126,11 +130,11 @@ export const UpdateRawMaterials = memo((props) => {
         if (recordForEdit) {
           const res = await ProductService.updateRawMaterials(
             formData.id,
-            payload
+            payload,
           );
 
           handleSuccess(
-            res.data.message || "Raw Materials updated successfully"
+            res.data.message || "Raw Materials updated successfully",
           );
 
           setTimeout(() => {
@@ -152,7 +156,7 @@ export const UpdateRawMaterials = memo((props) => {
       productUnit,
       currentPage,
       searchQuery,
-    ]
+    ],
   );
 
   return (
@@ -173,6 +177,7 @@ export const UpdateRawMaterials = memo((props) => {
               size="small"
               label="Raw Material"
               value={formData.name || ""}
+              disabled={isInGroups("Stores")}
             />
           </Grid>
 
@@ -182,6 +187,7 @@ export const UpdateRawMaterials = memo((props) => {
               size="small"
               label="Update Raw Material"
               value={productName}
+              disabled={isInGroups("Stores")}
             />
           </Grid>
 
@@ -193,6 +199,7 @@ export const UpdateRawMaterials = memo((props) => {
               label="Size"
               value={formData.size || ""}
               onChange={handleInputChange}
+              disabled={isInGroups("Stores")}
             />
           </Grid>
 
@@ -208,6 +215,7 @@ export const UpdateRawMaterials = memo((props) => {
                 const u = productUnit.find((item) => item.name === v);
                 setUnitType(u ? u.type_of_unit : "");
               }}
+              disabled={isInGroups("Stores")}
             />
           </Grid>
 
@@ -219,6 +227,7 @@ export const UpdateRawMaterials = memo((props) => {
               options={colourAllData.map((o) => o.name)}
               label="Colour"
               onChange={(e, v) => handleAutoChange("color", v)}
+              disabled={isInGroups("Stores")}
             />
           </Grid>
 
@@ -230,6 +239,7 @@ export const UpdateRawMaterials = memo((props) => {
               options={brandAllData.map((o) => o.name)}
               label="Brand"
               onChange={(e, v) => handleAutoChange("brand", v)}
+              disabled={isInGroups("Stores")}
             />
           </Grid>
 
@@ -241,6 +251,7 @@ export const UpdateRawMaterials = memo((props) => {
               options={productCodeAllData.map((o) => o.code)}
               label="Product Code"
               onChange={(e, v) => handleAutoChange("productcode", v)}
+              disabled={isInGroups("Stores")}
             />
           </Grid>
 
@@ -251,6 +262,7 @@ export const UpdateRawMaterials = memo((props) => {
               size="small"
               label="Description"
               value={description}
+              disabled={isInGroups("Stores")}
             />
           </Grid>
 
@@ -263,6 +275,7 @@ export const UpdateRawMaterials = memo((props) => {
               label="Shelf Life (Month)"
               value={formData.shelf_life || ""}
               onChange={handleInputChange}
+              disabled={isInGroups("Stores")}
             />
           </Grid>
 
@@ -275,6 +288,7 @@ export const UpdateRawMaterials = memo((props) => {
               label="HSN Code"
               value={formData.hsn_code || ""}
               onChange={handleInputChange}
+              disabled={isInGroups("Stores")}
             />
           </Grid>
 
@@ -304,6 +318,7 @@ export const UpdateRawMaterials = memo((props) => {
               label="IGST %"
               value={formData.gst || ""}
               onChange={handleInputChange}
+              disabled={isInGroups("Stores")}
             />
           </Grid>
 
@@ -314,6 +329,7 @@ export const UpdateRawMaterials = memo((props) => {
               size="small"
               label="CGST"
               value={`${GST}%`}
+              disabled={isInGroups("Stores")}
             />
           </Grid>
 
@@ -324,6 +340,7 @@ export const UpdateRawMaterials = memo((props) => {
               size="small"
               label="SGST"
               value={`${GST}%`}
+              disabled={isInGroups("Stores")}
             />
           </Grid>
         </Grid>

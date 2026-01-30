@@ -60,7 +60,7 @@ export const ViewSRF = () => {
         searchQuery,
         filterByStatus,
         StartDate,
-        EndDate
+        EndDate,
       );
       setSrfData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -88,7 +88,7 @@ export const ViewSRF = () => {
         searchQuery,
         filterByStatus,
         StartDate,
-        EndDate
+        EndDate,
       );
 
       const data = [];
@@ -427,7 +427,7 @@ function Row({ row, getCustomerSRF, handleError, handleSuccess }) {
 
     const wrapAddress = doc.splitTextToSize(
       `Address: ${address.address}`,
-      120 // Wider wrap area
+      120, // Wider wrap area
     );
 
     const customerLines = [
@@ -438,7 +438,7 @@ function Row({ row, getCustomerSRF, handleError, handleSuccess }) {
       `Country: ${address.country}`,
       `Pincode: ${address.pincode}`,
       `Spacial Instructions: ${srf_products.map(
-        (item) => item.special_instructions || "N/A"
+        (item) => item.special_instructions || "N/A",
       )}`,
     ];
 
@@ -468,7 +468,7 @@ function Row({ row, getCustomerSRF, handleError, handleSuccess }) {
     const headers = [["#", "Product", "Unit", "Quantity"]];
 
     const filterProduct = data.srf_products.filter(
-      (item, id) => item.status === "Available"
+      (item, id) => item.status === "Available",
     );
 
     const rows = filterProduct.map((item, index) => [
@@ -568,6 +568,7 @@ function Row({ row, getCustomerSRF, handleError, handleSuccess }) {
           {(userData.groups.includes("Production") ||
             userData.groups.includes("Director") ||
             userData.groups.includes("QA") ||
+            userData.groups.includes("Operations & Supply Chain Manager") ||
             userData.groups.includes("Sales Executive") ||
             userData.groups.includes("Customer Service")) && (
             <>
@@ -576,6 +577,9 @@ function Row({ row, getCustomerSRF, handleError, handleSuccess }) {
                 size="small"
                 color="primary"
                 onClick={() => handleOpenPop(row)}
+                disabled={userData.groups.includes(
+                  "Operations & Supply Chain Manager",
+                )}
               >
                 View
               </Button>
@@ -734,7 +738,7 @@ function Row({ row, getCustomerSRF, handleError, handleSuccess }) {
             updateSRFProduct(
               recordData && recordData.id,
               inputValue,
-              setOpenUpdateProductStatusPopup
+              setOpenUpdateProductStatusPopup,
             )
           }
           fullWidth

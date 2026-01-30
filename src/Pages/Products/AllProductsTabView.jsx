@@ -25,12 +25,12 @@ export const AllProductsTabView = () => {
     "Director",
     "Accounts",
     "Accounts Billing Department",
-    "Accounts Executive"
+    "Accounts Executive",
   );
   const isStore = isInGroups("Stores");
 
   // Initial active tab based on user role
-  const [activeTab, setActiveTab] = useState(isAdmin ? 0 : 4);
+  const [activeTab, setActiveTab] = useState(isAdmin || isStore ? 0 : 4);
 
   // Define all possible tabs with visibility conditions
   const tabs = [
@@ -41,12 +41,12 @@ export const AllProductsTabView = () => {
     },
     {
       label: "Finish Goods",
-      visible: isAdmin,
+      visible: isAdmin || isStore,
       index: 1,
     },
     {
       label: "Consumable",
-      visible: isAdmin,
+      visible: isAdmin || isStore,
       index: 2,
     },
     {
