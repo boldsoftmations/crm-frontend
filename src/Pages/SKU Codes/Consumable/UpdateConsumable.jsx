@@ -270,7 +270,7 @@ export const UpdateConsumable = memo((props) => {
               label="Additional Description"
               value={formData.additional_description || ""}
               onChange={handleInputChange}
-              disabled={isInGroups("Stores")}
+              // disabled={isInGroups("Stores")}
             />
           </Grid>
 
