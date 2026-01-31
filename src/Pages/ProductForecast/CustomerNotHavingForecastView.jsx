@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   Button,
   Box,
@@ -12,8 +12,10 @@ import {
   TableRow,
   TableCell,
 } from "@mui/material";
+import Papa from "papaparse";
+
 import { tableCellClasses } from "@mui/material/TableCell";
-import { CSVLink } from "react-csv";
+// import { CSVLink } from "react-csv";
 import { CustomPagination } from "../../Components/CustomPagination";
 import { CustomLoader } from "../../Components/CustomLoader";
 import ProductForecastService from "../../services/ProductForecastService";
@@ -36,12 +38,11 @@ export const CustomerNotHavingForecastView = () => {
   const [customerNotHavingForecast, setCustomerNotHavingForecast] = useState(
     [],
   );
-  const [exportData, setExportData] = useState([]);
+
   const [forecastDataByID, setForecastDataByID] = useState(null);
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
-  const csvLinkRef = useRef(null);
-  const [isDownloadReady, setIsDownloadReady] = useState(false);
+
   const [isPrinting, setIsPrinting] = useState(false);
   const UserData = useSelector((state) => state.auth.profile);
   const assignedOption = UserData.sales_users || [];
@@ -59,6 +60,28 @@ export const CustomerNotHavingForecastView = () => {
   const nextMonth1 = (currentMonth + 1) % 12;
   const nextMonth2 = (currentMonth + 2) % 12;
   const nextMonth3 = (currentMonth + 3) % 12;
+  const chunkArray = (array, size) => {
+    const result = [];
+    for (let i = 0; i < array.length; i += size) {
+      result.push(array.slice(i, i + size));
+    }
+    return result;
+  };
+  const downloadCSVFile = (data, fileName) => {
+    const csv = Papa.unparse(data);
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url); // <-- important
+  };
 
   // Define the months array
   const months = [
@@ -129,26 +152,29 @@ export const CustomerNotHavingForecastView = () => {
 
   const headers = generateHeaders();
 
-  useEffect(() => {
-    if (isDownloadReady && exportData.length > 0) {
-      csvLinkRef.current.link.click();
-      setIsDownloadReady(false); // Reset the flag after download
-    }
-  }, [isDownloadReady, exportData]);
-
   const handleDownload = async () => {
     try {
       setOpen(true);
+
       const data = await handleExport();
-      setExportData(data);
-      // Using a small delay to ensure state update
-      setTimeout(() => {
-        csvLinkRef.current.link.click();
-      }, 0);
-      handleSuccess("CSV Download successfully");
+      if (!data || data.length === 0) return;
+
+      const chunks = chunkArray(data, 2000);
+
+      for (let i = 0; i < chunks.length; i++) {
+        downloadCSVFile(
+          chunks[i],
+          `Customer_Not_Having_Forecast_Part_${i + 1}.csv`,
+        );
+
+        // delay to avoid browser blocking
+        await new Promise((res) => setTimeout(res, 700));
+      }
+
+      handleSuccess("CSV Downloaded Successfully");
     } catch (error) {
       handleError(error);
-      console.error("CSVLink Download error", error);
+      console.error("CSV Download error", error);
     } finally {
       setOpen(false);
     }
@@ -156,7 +182,6 @@ export const CustomerNotHavingForecastView = () => {
 
   const handleExport = async () => {
     try {
-      setOpen(true);
       const response = await ProductForecastService.getAllCustomerNotHavingData(
         "all",
         salesPersonByFilter,
@@ -190,7 +215,6 @@ export const CustomerNotHavingForecastView = () => {
     } catch (err) {
       console.error("Error in handleExport", err);
     } finally {
-      setOpen(false);
     }
   };
 
@@ -327,15 +351,6 @@ export const CustomerNotHavingForecastView = () => {
                 >
                   Download CSV
                 </Button>
-                {exportData.length > 0 && (
-                  <CSVLink
-                    data={exportData}
-                    headers={headers}
-                    ref={csvLinkRef}
-                    filename={"Customer Not Having forecast.csv"}
-                    style={{ display: "none" }} // Hide the link
-                  />
-                )}
               </Grid>
             </Grid>
           </Box>
