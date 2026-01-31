@@ -25,10 +25,12 @@ import CustomSelect from "../../../Components/CustomSelect";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
 import SearchComponent from "../../../Components/SearchComponent ";
+import UpdateProformaInvoice from "./UpdateProformaInvoice";
 
 export const AllProformaInvoice = () => {
   const dispatch = useDispatch();
   const [openPopup2, setOpenPopup2] = useState(false);
+  const [openPopup3, setOpenPopup3] = useState(false);
   const [idForEdit, setIDForEdit] = useState();
   const [open, setOpen] = useState(false);
   const [invoiceData, setInvoiceData] = useState([]);
@@ -60,6 +62,11 @@ export const AllProformaInvoice = () => {
       : []),
   ];
 
+  const userData = useSelector((state) => state.auth.profile);
+  const isInGroups = (...groups) => {
+    return groups.some((group) => userData.groups.includes(group));
+  };
+
   const AssignedOptions = assigned.map((user) => ({
     label: user.name,
     value: user.email,
@@ -84,12 +91,12 @@ export const AllProformaInvoice = () => {
         newStartDate = new Date(
           today.getFullYear(),
           today.getMonth(),
-          firstDayOfWeek
+          firstDayOfWeek,
         );
         newEndDate = new Date(
           today.getFullYear(),
           today.getMonth(),
-          firstDayOfWeek + 6
+          firstDayOfWeek + 6,
         );
         break;
       case "today":
@@ -114,13 +121,16 @@ export const AllProformaInvoice = () => {
     setIDForEdit(item);
     setOpenPopup2(true);
   };
+  const openInPopup2 = (item) => {
+    setIDForEdit(item);
+    setOpenPopup3(true);
+  };
 
   const getAllSellerAccountsDetails = async () => {
     try {
       setOpen(true);
-      const response = await InvoiceServices.getAllPaginateSellerAccountData(
-        "all"
-      );
+      const response =
+        await InvoiceServices.getAllPaginateSellerAccountData("all");
       dispatch(getSellerAccountData(response.data));
     } catch (error) {
       handleError(error);
@@ -145,7 +155,7 @@ export const AllProformaInvoice = () => {
         currentPage,
         filterType,
         filterValue,
-        searchValue
+        searchValue,
       );
       setInvoiceData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -211,7 +221,15 @@ export const AllProformaInvoice = () => {
     "Payment Terms",
     "ACTION",
   ];
+  const allowedGroups = [
+    "Sales Manager(Retailer)",
+    "Director",
+    "Sales Manager",
+  ];
+  console.log(userData);
 
+  const isAllowed = allowedGroups.some(isInGroups);
+  console.log(isAllowed);
   return (
     <>
       <MessageAlert
@@ -386,6 +404,17 @@ export const AllProformaInvoice = () => {
                         >
                           View
                         </Button>
+
+                        <Button
+                          style={{ fontSize: "12px" }}
+                          variant="outlined"
+                          color="info"
+                          size="small"
+                          onClick={() => openInPopup2(row)}
+                          disabled={!isAllowed}
+                        >
+                          Update
+                        </Button>
                       </Box>
                     </StyledTableCell>
                   </StyledTableRow>
@@ -411,6 +440,17 @@ export const AllProformaInvoice = () => {
           idForEdit={idForEdit}
           getProformaInvoiceData={getProformaInvoiceData}
           setOpenPopup={setOpenPopup2}
+        />
+      </Popup>
+      <Popup
+        title={"Update Proforma Invoice"}
+        openPopup={openPopup3}
+        setOpenPopup={setOpenPopup3}
+      >
+        <UpdateProformaInvoice
+          idForEdit={idForEdit}
+          getProformaInvoiceData={getProformaInvoiceData}
+          setOpenPopup={setOpenPopup3}
         />
       </Popup>
     </>

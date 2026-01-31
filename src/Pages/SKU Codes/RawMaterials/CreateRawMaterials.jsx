@@ -32,14 +32,14 @@ export const CreateRawMaterials = memo((props) => {
     brandAllData,
     "name",
     formData.brand || null,
-    "short_name"
+    "short_name",
   );
 
   const description = searchArrayByKey(
     productCodeAllData,
     "code",
     formData.productcode,
-    "description"
+    "description",
   );
   // useEffect(() => {
   // }, []);
@@ -114,7 +114,7 @@ export const CreateRawMaterials = memo((props) => {
         setOpen(false); // Always close the loader
       }
     },
-    [formData, productName, GST, currentPage, searchQuery]
+    [formData, productName, GST, currentPage, searchQuery],
   );
 
   return (

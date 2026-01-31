@@ -18,7 +18,7 @@ const getAllSearchSellerAccountData = (search) => {
 
 const getAllSellerAccountDataPaginate = (currentPage, search) => {
   return CustomAxios.get(
-    `/api/ invoice/list-seller-account/?page=${currentPage}&search=${search}`
+    `/api/ invoice/list-seller-account/?page=${currentPage}&search=${search}`,
   );
 };
 
@@ -41,7 +41,7 @@ const getAllPIWithDateRange = (
   page,
   filterType,
   filterValue,
-  searchValue
+  searchValue,
 ) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
@@ -71,7 +71,7 @@ const getAllPIWithDateRange = (
 
   // Sending a GET request with query parameters
   return CustomAxios.get(
-    `api/invoice/list-proforma-invoice/?${params.toString()}`
+    `api/invoice/list-proforma-invoice/?${params.toString()}`,
   );
 };
 
@@ -96,7 +96,7 @@ const getAllPIData = (piType, page, filterType, filterValue, searchValue) => {
 
   // Sending a GET request with query parameters
   return CustomAxios.get(
-    `api/invoice/list-proforma-invoice/?${params.toString()}`
+    `api/invoice/list-proforma-invoice/?${params.toString()}`,
   );
 };
 
@@ -154,7 +154,7 @@ const getOrderBookData = (
   filterBySellerEmail,
   searchValue,
   isReady,
-  is_estimated
+  is_estimated,
 ) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
@@ -169,14 +169,14 @@ const getOrderBookData = (
   if (filterBySellerUnit) {
     params.append(
       "orderbook__proforma_invoice__seller_account__state",
-      filterBySellerUnit
+      filterBySellerUnit,
     );
   }
 
   if (filterBySellerEmail) {
     params.append(
       "orderbook__proforma_invoice__raised_by__email",
-      filterBySellerEmail
+      filterBySellerEmail,
     );
   }
 
@@ -207,7 +207,7 @@ const getTotalPendingQuantity = () => {
 
 const getAllOrderBookDataWithSearch = (data, type, searchvalue) => {
   return CustomAxios.get(
-    `/api/invoice/list-order-book-company/?page=${data}&ordering=${type}&search=${searchvalue}`
+    `/api/invoice/list-order-book-company/?page=${data}&ordering=${type}&search=${searchvalue}`,
   );
 };
 
@@ -218,7 +218,7 @@ const getSalesInvoiceData = (
   endDate,
   page,
   filterValue,
-  searchValue
+  searchValue,
 ) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
@@ -241,7 +241,7 @@ const getSalesInvoiceData = (
   if (filterValue) {
     params.append(
       "order_book__proforma_invoice__seller_account__unit",
-      filterValue
+      filterValue,
     );
   }
 
@@ -251,7 +251,7 @@ const getSalesInvoiceData = (
 
   // Sending a GET request with query parameters
   return CustomAxios.get(
-    `api/invoice/list-sales-invoice/?${params.toString()}`
+    `api/invoice/list-sales-invoice/?${params.toString()}`,
   );
 };
 
@@ -269,7 +269,7 @@ const getTallyInvoiceData = (startDate, endDate, filterValue) => {
   if (filterValue) {
     params.append(
       "sales_invoice__order_book__proforma_invoice__seller_account__unit",
-      filterValue
+      filterValue,
     );
   }
 
@@ -300,7 +300,7 @@ const getAllSaleRegisterData = (
   page,
   searchValue,
   filterByperson,
-  status
+  status,
 ) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
@@ -323,7 +323,7 @@ const getAllSaleRegisterData = (
   if (filterByperson) {
     params.append(
       "sales_invoice__order_book__proforma_invoice__raised_by__email",
-      filterByperson
+      filterByperson,
     );
   }
   if (status) {
@@ -331,7 +331,7 @@ const getAllSaleRegisterData = (
   }
   // Sending a GET request with query parameters
   return CustomAxios.get(
-    `api/invoice/list-sales-register/?${params.toString()}`
+    `api/invoice/list-sales-register/?${params.toString()}`,
   );
 };
 
@@ -341,7 +341,7 @@ const getDispatchData = (
   searchValue,
   filterByperson,
 
-  display_tab
+  display_tab,
 ) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
@@ -359,7 +359,7 @@ const getDispatchData = (
   if (filterByperson) {
     params.append(
       "sales_invoice__order_book__proforma_invoice__raised_by__email",
-      filterByperson
+      filterByperson,
     );
   }
 
@@ -368,7 +368,7 @@ const getDispatchData = (
   }
   // Sending a GET request with query parameters
   return CustomAxios.get(
-    `api/invoice/list-dispatch-book/?${params.toString()}`
+    `api/invoice/list-dispatch-book/?${params.toString()}`,
   );
 };
 
@@ -382,7 +382,7 @@ const getAllDashboardData = () => {
 
 const getFilterDashboardData = (startDate, endDate) => {
   return CustomAxios.get(
-    `/api/invoice/list-dashboard/?start_date=${startDate}&end_date=${endDate}`
+    `/api/invoice/list-dashboard/?start_date=${startDate}&end_date=${endDate}`,
   );
 };
 
@@ -392,19 +392,19 @@ const getDispatchDashboardData = () => {
 
 const getLRCopyDashboardData = (pageNumber, boolean, isNull, unit) => {
   return CustomAxios.get(
-    `/api/invoice/list-dispatch-book/?page=${pageNumber}&dispatched=${boolean}&lr_copy__isnull=${isNull}&sales_invoice__order_book__proforma_invoice__seller_account__unit=${unit}`
+    `/api/invoice/list-dispatch-book/?page=${pageNumber}&dispatched=${boolean}&lr_copy__isnull=${isNull}&sales_invoice__order_book__proforma_invoice__seller_account__unit=${unit}`,
   );
 };
 
 const getPODCopyDashboardData = (pageNumber, boolean, isNull, unit) => {
   return CustomAxios.get(
-    `/api/invoice/list-dispatch-book/?page=${pageNumber}&dispatched=${boolean}&pod_copy__isnull=${isNull}&sales_invoice__order_book__proforma_invoice__seller_account__unit=${unit}`
+    `/api/invoice/list-dispatch-book/?page=${pageNumber}&dispatched=${boolean}&pod_copy__isnull=${isNull}&sales_invoice__order_book__proforma_invoice__seller_account__unit=${unit}`,
   );
 };
 
 const checkPrice = (pi_number) => {
   return CustomAxios.get(
-    `/api/invoice/check-price-list/?pi_number=${pi_number}`
+    `/api/invoice/check-price-list/?pi_number=${pi_number}`,
   );
 };
 
@@ -423,7 +423,7 @@ const getSalesReturnBySearchCompany = (unitValue, companyValue) => {
 
   // Sending a GET request with query parameters
   return CustomAxios.get(
-    `api/invoice/company-sales-invoice/?${params.toString()}`
+    `api/invoice/company-sales-invoice/?${params.toString()}`,
   );
 };
 
@@ -436,7 +436,7 @@ const getSalesReturnByCCF = (complain_no) => {
   }
   // Sending a GET request with query parameters
   return CustomAxios.get(
-    `/api/invoice/ccf-sales-invoice/?${params.toString()}`
+    `/api/invoice/ccf-sales-invoice/?${params.toString()}`,
   );
 };
 
@@ -455,7 +455,7 @@ const getDebitCreditnotes = (page, searchValue) => {
   }
 
   return CustomAxios.get(
-    `/api/invoice/credit-debit-note/?${params.toString()}`
+    `/api/invoice/credit-debit-note/?${params.toString()}`,
   );
 };
 
@@ -476,7 +476,7 @@ const getInvoiceByCustomerAndSellerUnit = (customer, unit) => {
     params.append("unit", unit);
   }
   return CustomAxios.get(
-    `/api/invoice/six-month-invoice/?${params.toString()}`
+    `/api/invoice/six-month-invoice/?${params.toString()}`,
   );
 };
 const getBillingAddressbyCustomer = (data) => {
@@ -485,6 +485,9 @@ const getBillingAddressbyCustomer = (data) => {
 
 const uploadSalesinvoice = (data) => {
   return CustomAxios.post(`/api/invoice/invoice-upload/`, data);
+};
+const updateAllPerformaInvoiceData = (id, data) => {
+  return CustomAxios.patch(`/api/invoice/update-proforma-invoice/${id}`, data);
 };
 const InvoiceServices = {
   getAllSellerAccountData,
@@ -537,6 +540,7 @@ const InvoiceServices = {
   getBillingAddressbyCustomer,
   uploadSalesinvoice,
   createSalesinvoiceData,
+  updateAllPerformaInvoiceData,
 };
 
 export default InvoiceServices;

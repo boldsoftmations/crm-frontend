@@ -257,7 +257,7 @@ export const UpdateConsumable = memo((props) => {
               options={brandAllData.map((o) => o.name)}
               label="Brand"
               onChange={(e, v) => handleAutoChange("brand", v)}
-              disabled={isInGroups("Stores")}
+              // disabled={isInGroups("Stores")}
             />
           </Grid>
 
