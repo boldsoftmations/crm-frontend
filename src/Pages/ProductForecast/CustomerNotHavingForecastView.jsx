@@ -34,7 +34,7 @@ export const CustomerNotHavingForecastView = () => {
   const [salesPersonByFilter, setSalesPersonByFilter] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [customerNotHavingForecast, setCustomerNotHavingForecast] = useState(
-    []
+    [],
   );
   const [exportData, setExportData] = useState([]);
   const [forecastDataByID, setForecastDataByID] = useState(null);
@@ -115,8 +115,8 @@ export const CustomerNotHavingForecastView = () => {
             ? currentYear
             : currentYear - 1
           : monthIndex < currentMonth
-          ? currentYear + 1
-          : currentYear;
+            ? currentYear + 1
+            : currentYear;
       const monthName = months[monthIndex];
       forecastHeaders.push({
         label: `${monthName} - ${year} Actual-Forecast`,
@@ -160,7 +160,7 @@ export const CustomerNotHavingForecastView = () => {
       const response = await ProductForecastService.getAllCustomerNotHavingData(
         "all",
         salesPersonByFilter,
-        searchQuery
+        searchQuery,
       );
 
       const data = response.data.map((row) => {
@@ -200,7 +200,7 @@ export const CustomerNotHavingForecastView = () => {
       const response = await ProductForecastService.getAllCustomerNotHavingData(
         currentPage,
         salesPersonByFilter,
-        searchQuery
+        searchQuery,
       );
       setCustomerNotHavingForecast(response.data.results);
       const total = response.data.count;
@@ -234,23 +234,23 @@ export const CustomerNotHavingForecastView = () => {
   const handleEditClick = useCallback(
     (item) => {
       const matchedForecast = customerNotHavingForecast.find(
-        (forecast) => forecast.id === item.id
+        (forecast) => forecast.id === item.id,
       );
       setForecastDataByID(matchedForecast);
       setOpenPopup(true);
     },
-    [customerNotHavingForecast]
+    [customerNotHavingForecast],
   );
 
   const handleAssignTo = useCallback(
     (item) => {
       const matchedForecast = customerNotHavingForecast.find(
-        (forecast) => forecast.id === item.id
+        (forecast) => forecast.id === item.id,
       );
       setForecastDataByID(matchedForecast);
       setOpenPopup2(true);
     },
-    [customerNotHavingForecast]
+    [customerNotHavingForecast],
   );
 
   const handleFilterChange = (value) => {
@@ -263,8 +263,8 @@ export const CustomerNotHavingForecastView = () => {
     ...new Set(
       customerNotHavingForecast &&
         customerNotHavingForecast.flatMap((row) =>
-          row.product_forecast.map((rowData) => rowData.index_position)
-        )
+          row.product_forecast.map((rowData) => rowData.index_position),
+        ),
     ),
   ];
 
@@ -426,14 +426,14 @@ export const CustomerNotHavingForecastView = () => {
                         {row.company}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {row.sales_person}
+                        {row.assign_to_email.join(", ")}
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         {row.product}
                       </StyledTableCell>
                       {indexPositions.map((position) => {
                         const rowData = row.product_forecast.find(
-                          (data) => data.index_position === position
+                          (data) => data.index_position === position,
                         );
 
                         if (rowData) {
