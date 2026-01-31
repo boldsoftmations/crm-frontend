@@ -9,7 +9,9 @@ const UpdateProformaInvoice = ({
   idForEdit,
   setOpenPopup3,
 }) => {
-  const [transporter, setTransporter] = useState(idForEdit.transporter || "");
+  const [transporter, setTransporter] = useState(
+    idForEdit.transporter_name || "",
+  );
   const userData = useSelector((state) => state.auth.profile);
   const isInGroups = (...groups) => {
     groups.some((group) => userData.groups.includes(group));
