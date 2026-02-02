@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import {
   Button,
   Box,
@@ -12,10 +12,8 @@ import {
   TableRow,
   TableCell,
 } from "@mui/material";
-import Papa from "papaparse";
-
 import { tableCellClasses } from "@mui/material/TableCell";
-// import { CSVLink } from "react-csv";
+import { CSVLink } from "react-csv";
 import { CustomPagination } from "../../Components/CustomPagination";
 import { CustomLoader } from "../../Components/CustomLoader";
 import ProductForecastService from "../../services/ProductForecastService";
@@ -38,11 +36,12 @@ export const CustomerNotHavingForecastView = () => {
   const [customerNotHavingForecast, setCustomerNotHavingForecast] = useState(
     [],
   );
-
+  const [exportData, setExportData] = useState([]);
   const [forecastDataByID, setForecastDataByID] = useState(null);
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
-
+  const csvLinkRef = useRef(null);
+  const [isDownloadReady, setIsDownloadReady] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
   const UserData = useSelector((state) => state.auth.profile);
   const assignedOption = UserData.sales_users || [];
@@ -53,35 +52,6 @@ export const CustomerNotHavingForecastView = () => {
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
   const currentYear = currentDate.getFullYear();
-
-  // Calculate the previous and next months
-  const lastMonth1 = (currentMonth - 2 + 12) % 12;
-  const lastMonth2 = (currentMonth - 1 + 12) % 12;
-  const nextMonth1 = (currentMonth + 1) % 12;
-  const nextMonth2 = (currentMonth + 2) % 12;
-  const nextMonth3 = (currentMonth + 3) % 12;
-  const chunkArray = (array, size) => {
-    const result = [];
-    for (let i = 0; i < array.length; i += size) {
-      result.push(array.slice(i, i + size));
-    }
-    return result;
-  };
-  const downloadCSVFile = (data, fileName) => {
-    const csv = Papa.unparse(data);
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-
-    const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-
-    link.href = url;
-    link.download = fileName;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    URL.revokeObjectURL(url); // <-- important
-  };
 
   // Define the months array
   const months = [
@@ -99,6 +69,24 @@ export const CustomerNotHavingForecastView = () => {
     "December",
   ];
 
+  // HELPER FUNCTION: Calculate month and year for offset
+  const getMonthYear = (monthOffset) => {
+    const targetMonth = currentMonth + monthOffset;
+    const monthIndex = ((targetMonth % 12) + 12) % 12; // Handle negative months
+    const yearOffset = Math.floor(targetMonth / 12);
+    const year = currentYear + yearOffset;
+
+    return { monthIndex, year };
+  };
+
+  // Calculate the previous and next months with correct years
+  const lastMonth1Data = getMonthYear(-2);
+  const lastMonth2Data = getMonthYear(-1);
+  const currentMonthData = getMonthYear(0);
+  const nextMonth1Data = getMonthYear(1);
+  const nextMonth2Data = getMonthYear(2);
+  const nextMonth3Data = getMonthYear(3);
+
   useEffect(() => {
     const beforePrint = () => {
       setIsPrinting(true);
@@ -107,7 +95,6 @@ export const CustomerNotHavingForecastView = () => {
 
     const afterPrint = () => {
       setIsPrinting(false);
-      // Fetch the data again and update the companyData state
       getAllCustomerNotHavingForecastDetails();
     };
 
@@ -120,27 +107,21 @@ export const CustomerNotHavingForecastView = () => {
     };
   }, []);
 
+  // FIXED: Correct header generation with proper year calculation
   const generateHeaders = () => {
-    // Basic headers
     const basicHeaders = [
       { label: "Company", key: "company" },
       { label: "Sales Person", key: "sales_person" },
       { label: "Product", key: "product" },
     ];
 
-    // Generating headers for each forecast month
     const forecastHeaders = [];
+
+    // Generate headers for months from -2 to +3
     for (let i = -2; i <= 3; i++) {
-      const monthIndex = (currentMonth + i + 12) % 12;
-      const year =
-        i < 0
-          ? monthIndex > currentMonth
-            ? currentYear
-            : currentYear - 1
-          : monthIndex < currentMonth
-            ? currentYear + 1
-            : currentYear;
+      const { monthIndex, year } = getMonthYear(i);
       const monthName = months[monthIndex];
+
       forecastHeaders.push({
         label: `${monthName} - ${year} Actual-Forecast`,
         key: `${monthName}-${year} Actual-Forecast`,
@@ -152,26 +133,35 @@ export const CustomerNotHavingForecastView = () => {
 
   const headers = generateHeaders();
 
+  useEffect(() => {
+    if (isDownloadReady) {
+      csvLinkRef.current.link.click();
+      setIsDownloadReady(false);
+    }
+  }, [isDownloadReady, exportData]);
+
   const handleDownload = async () => {
     try {
       setOpen(true);
 
-      const data = await handleExport();
-      if (!data || data.length === 0) return;
+      const response =
+        await ProductForecastService.downloadCustomerNotHavingData("csv");
 
-      const chunks = chunkArray(data, 2000);
+      const blob = new Blob([response.data], {
+        type: "text/csv;charset=utf-8;",
+      });
 
-      for (let i = 0; i < chunks.length; i++) {
-        downloadCSVFile(
-          chunks[i],
-          `Customer_Not_Having_Forecast_Part_${i + 1}.csv`,
-        );
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
 
-        // delay to avoid browser blocking
-        await new Promise((res) => setTimeout(res, 700));
-      }
+      link.href = url;
+      link.download = "customer_not_having_data.csv";
 
-      handleSuccess("CSV Downloaded Successfully");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      handleSuccess("CSV downloaded successfully");
     } catch (error) {
       handleError(error);
       console.error("CSV Download error", error);
@@ -182,39 +172,28 @@ export const CustomerNotHavingForecastView = () => {
 
   const handleExport = async () => {
     try {
-      const response = await ProductForecastService.getAllCustomerNotHavingData(
-        "all",
-        salesPersonByFilter,
-        searchQuery,
-      );
+      setOpen(true);
 
-      const data = response.data.map((row) => {
-        const obj = {
-          company: row.company,
-          sales_person: row.sales_person,
-          product: row.product,
-        };
+      const response =
+        await ProductForecastService.downloadCustomerNotHavingData("csv");
 
-        row.product_forecast.forEach((forecast) => {
-          // Convert month number to month name and create the key
-          const monthName = months[parseInt(forecast.month) - 1];
-          const forecastKey = `${monthName}-${forecast.year} Actual-Forecast`;
-
-          // Assign the actual-forecast data to the corresponding month-year key
-          obj[forecastKey] =
-            forecast.actual !== null
-              ? `${forecast.actual}--${forecast.forecast}`
-              : `-${forecast.forecast}`;
-        });
-
-        return obj;
+      const blob = new Blob([response.data], {
+        type: "text/csv;charset=utf-8;",
       });
 
-      console.log("Export Data: ", data); // This line is for debugging, you can remove it later
-      return data;
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.setAttribute("download", "customer_not_having_data.csv");
+
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
     } catch (err) {
       console.error("Error in handleExport", err);
     } finally {
+      setOpen(false);
     }
   };
 
@@ -243,12 +222,12 @@ export const CustomerNotHavingForecastView = () => {
 
   const handleSearch = (query) => {
     setSearchQuery(query);
-    setCurrentPage(1); // Reset to first page with new search
+    setCurrentPage(1);
   };
 
   const handleReset = () => {
     setSearchQuery("");
-    setCurrentPage(1); // Reset to first page with no search query
+    setCurrentPage(1);
   };
 
   const handlePageChange = (event, value) => {
@@ -292,7 +271,6 @@ export const CustomerNotHavingForecastView = () => {
     ),
   ];
 
-  // Sort the index_positions array in ascending order
   indexPositions.sort((a, b) => a - b);
 
   return (
@@ -392,41 +370,32 @@ export const CustomerNotHavingForecastView = () => {
                   <StyledTableCell align="center">SALES PERSON</StyledTableCell>
                   <StyledTableCell align="center">PRODUCT</StyledTableCell>
                   <StyledTableCell align="center">
-                    {` ${months[lastMonth1]} - ${
-                      lastMonth1 < currentMonth ? currentYear : currentYear - 1
-                    }`}
+                    {`${months[lastMonth1Data.monthIndex]} - ${lastMonth1Data.year}`}
                     <br />
                     ACTUAL - FORECAST
                   </StyledTableCell>
                   <StyledTableCell align="center">
-                    {` ${months[lastMonth2]} - ${
-                      lastMonth2 < currentMonth ? currentYear : currentYear - 1
-                    }`}{" "}
+                    {`${months[lastMonth2Data.monthIndex]} - ${lastMonth2Data.year}`}
                     <br />
                     ACTUAL - FORECAST
                   </StyledTableCell>
                   <StyledTableCell align="center">
-                    {`${months[currentMonth]} - ${currentYear}`} <br />
-                    ACTUAL - FORECAST
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    {` ${months[nextMonth1]} - ${
-                      nextMonth1 > currentMonth ? currentYear : currentYear + 1
-                    }`}{" "}
+                    {`${months[currentMonthData.monthIndex]} - ${currentMonthData.year}`}
                     <br />
                     ACTUAL - FORECAST
                   </StyledTableCell>
                   <StyledTableCell align="center">
-                    {` ${months[nextMonth2]} - ${
-                      nextMonth2 > currentMonth ? currentYear : currentYear + 1
-                    }`}{" "}
+                    {`${months[nextMonth1Data.monthIndex]} - ${nextMonth1Data.year}`}
                     <br />
                     ACTUAL - FORECAST
                   </StyledTableCell>
                   <StyledTableCell align="center">
-                    {` ${months[nextMonth3]} - ${
-                      nextMonth3 > currentMonth ? currentYear : currentYear + 1
-                    }`}{" "}
+                    {`${months[nextMonth2Data.monthIndex]} - ${nextMonth2Data.year}`}
+                    <br />
+                    ACTUAL - FORECAST
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    {`${months[nextMonth3Data.monthIndex]} - ${nextMonth3Data.year}`}
                     <br />
                     ACTUAL - FORECAST
                   </StyledTableCell>
@@ -436,7 +405,7 @@ export const CustomerNotHavingForecastView = () => {
               <TableBody>
                 {customerNotHavingForecast &&
                   customerNotHavingForecast.map((row) => (
-                    <StyledTableRow>
+                    <StyledTableRow key={row.id}>
                       <StyledTableCell align="center">
                         {row.company}
                       </StyledTableCell>
@@ -466,7 +435,6 @@ export const CustomerNotHavingForecastView = () => {
                             );
                           }
                         } else {
-                          // Render an empty cell if no matching rowData is found
                           return (
                             <TableCell key={position} align="center">
                               N/A
@@ -530,11 +498,11 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.common.black,
     color: theme.palette.common.white,
-    padding: 0, // Remove padding from header cells
+    padding: 0,
   },
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
-    padding: 0, // Remove padding from body cells
+    padding: 0,
   },
 }));
 
@@ -542,7 +510,6 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   "&:nth-of-type(odd)": {
     backgroundColor: theme.palette.action.hover,
   },
-  // hide last border
   "&:last-child td, &:last-child th": {
     border: 0,
   },

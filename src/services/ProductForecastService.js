@@ -8,7 +8,7 @@ const getProductForecast = () => {
 
 const getByFilterProductForecast = (type, data) => {
   return CustomAxios.get(
-    `/api/forecast/list-product-forecast/?${type}=${data}`
+    `/api/forecast/list-product-forecast/?${type}=${data}`,
   );
 };
 
@@ -18,25 +18,25 @@ const getAllPaginateProductForecast = (all) => {
 
 const getAllPaginateProductForecastWithSearch = (all, type, search) => {
   return CustomAxios.get(
-    `/api/forecast/list-product-forecast/?page=${all}&${type}=${search}`
+    `/api/forecast/list-product-forecast/?page=${all}&${type}=${search}`,
   );
 };
 
 const getAllSearchProductForecast = (type, search) => {
   return CustomAxios.get(
-    `/api/forecast/list-product-forecast/?${type}=${search}`
+    `/api/forecast/list-product-forecast/?${type}=${search}`,
   );
 };
 
 const getAllProductForecastPaginate = (currentPage, type, search) => {
   return CustomAxios.get(
-    `/api/forecast/list-product-forecast/?page=${currentPage}&${type}=${search}`
+    `/api/forecast/list-product-forecast/?page=${currentPage}&${type}=${search}`,
   );
 };
 
 const getProductForecastPaginateData = (currentPage) => {
   return CustomAxios.get(
-    `/api/forecast/list-product-forecast/?page=${currentPage}`
+    `/api/forecast/list-product-forecast/?page=${currentPage}`,
   );
 };
 
@@ -63,7 +63,7 @@ const getAllCurrentMonthData = (page, assignToFilter, searchValue) => {
 
   // Sending a GET request with query parameters
   return CustomAxios.get(
-    `/api/forecast/list-current-month-forecast/?${params.toString()}`
+    `/api/forecast/list-current-month-forecast/?${params.toString()}`,
   );
 };
 
@@ -90,7 +90,32 @@ const getAllCustomerNotHavingData = (page, assignToFilter, searchValue) => {
 
   // Sending a GET request with query parameters
   return CustomAxios.get(
-    `/api/forecast/list-product-not-having-forecast/?${params.toString()}`
+    `/api/forecast/list-product-not-having-forecast/?${params.toString()}`,
+  );
+};
+
+const downloadCustomerNotHavingData = (download) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
+
+  if (download) {
+    params.append("download", download);
+  }
+  // if (page) {
+  //   params.append("page", page);
+  // }
+
+  // if (assignToFilter) {
+  //   params.append("sales_person__email", assignToFilter);
+  // }
+
+  // if (searchValue) {
+  //   params.append("search", searchValue);
+  // }
+
+  // Sending a GET request with query parameters
+  return CustomAxios.get(
+    `/api/forecast/list-product-not-having-forecast-csv/?${params.toString()}`,
   );
 };
 
@@ -113,7 +138,7 @@ const getAllCustomerHavingData = (page, assignToFilter, searchValue) => {
 
   // Sending a GET request with query parameters
   return CustomAxios.get(
-    `/api/forecast/list-product-having-forecast/?${params.toString()}`
+    `/api/forecast/list-product-having-forecast/?${params.toString()}`,
   );
 };
 
@@ -136,7 +161,7 @@ const getAllDeadCustomerData = (page, assignToFilter, searchValue) => {
 
   // Sending a GET request with query parameters
   return CustomAxios.get(
-    `/api/forecast/list-dead-customers/?${params.toString()}`
+    `/api/forecast/list-dead-customers/?${params.toString()}`,
   );
 };
 
@@ -155,7 +180,7 @@ const getAllProductWiseForecastData = (page, searchValue) => {
 
   // Sending a GET request with query parameters
   return CustomAxios.get(
-    `/api/forecast/list-product-wise-forecast/?${params.toString()}`
+    `/api/forecast/list-product-wise-forecast/?${params.toString()}`,
   );
 };
 
@@ -174,7 +199,7 @@ const getAllDescriptionWiseForecastData = (page, searchValue) => {
 
   // Sending a GET request with query parameters
   return CustomAxios.get(
-    `/api/forecast/list-description-wise-forecast/?${params.toString()}`
+    `/api/forecast/list-description-wise-forecast/?${params.toString()}`,
   );
 };
 
@@ -185,13 +210,13 @@ const getLastThreeMonthForecastData = () => {
 
 const getConsLastThreeMonthForecastData = () => {
   return CustomAxios.get(
-    `/api/forecast/consolidated-last-three-month-forecast/`
+    `/api/forecast/consolidated-last-three-month-forecast/`,
   );
 };
 
 const getLastThreeMonthForecastDataByFilter = (filter) => {
   return CustomAxios.get(
-    `/api/forecast/last-three-month-forecast/?product_forecast__sales_person__email=${filter}`
+    `/api/forecast/last-three-month-forecast/?product_forecast__sales_person__email=${filter}`,
   );
 };
 
@@ -205,14 +230,15 @@ const getProductWiseTurnoverForecast = (page, filterValue) => {
 
   // Sending a GET request with query parameters
   return CustomAxios.get(
-    `api/forecast/productwise-turnover/?${params.toString()}`
+    `api/forecast/productwise-turnover/?${params.toString()}`,
   );
 };
 
-const uploadForecastInCSV=(data)=>{
-  return CustomAxios.post(`/api/forecast/customer-forecast/`,data);
-}
+const uploadForecastInCSV = (data) => {
+  return CustomAxios.post(`/api/forecast/customer-forecast/`, data);
+};
 const ProductForecastService = {
+  downloadCustomerNotHavingData,
   getProductForecast,
   getByFilterProductForecast,
   getAllPaginateProductForecast,
@@ -232,7 +258,7 @@ const ProductForecastService = {
   getConsLastThreeMonthForecastData,
   getLastThreeMonthForecastDataByFilter,
   getProductWiseTurnoverForecast,
-  uploadForecastInCSV
+  uploadForecastInCSV,
 };
 
 export default ProductForecastService;
