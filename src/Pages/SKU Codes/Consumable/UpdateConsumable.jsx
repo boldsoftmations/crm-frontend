@@ -30,9 +30,7 @@ export const UpdateConsumable = memo((props) => {
   const [formData, setFormData] = useState(recordForEdit);
   console.log(recordForEdit);
 
-  const { brandAllData, unitAllData, productCodeAllData } = useSelector(
-    (state) => state.auth,
-  );
+  const { brandAllData, unitAllData } = useSelector((state) => state.auth);
   const productUnit = unitAllData;
 
   const userData = useSelector((state) => state.auth.profile || { groups: [] });

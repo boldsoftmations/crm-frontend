@@ -37,7 +37,6 @@ export const AllPerformaInvoiceTabView = () => {
       isSalesManagerWithoutLeads: isInGroups("Sales Manager without Leads"),
       isSalesManagerWithLeads: isInGroups("Sales Manager with Leads"),
       isCustomerService: isInGroups("Customer Service"),
-      isAccountBillingDepartment: isInGroups("Accounts Billing Department"),
     }),
     [userData],
   );

@@ -254,6 +254,7 @@ export const ListItems = ({ setOpen }) => {
           <DescriptionIcon />,
           "Sales Return",
         ),
+        renderListItem("/dispatch/tab-view", <LocalShippingIcon />, "Dispatch"),
         renderSubmenu(
           "customer_complaint",
           <ComplaintIcon />,

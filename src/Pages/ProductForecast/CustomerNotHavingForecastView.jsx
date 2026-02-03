@@ -13,7 +13,7 @@ import {
   TableCell,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
-import { CSVLink } from "react-csv";
+
 import { CustomPagination } from "../../Components/CustomPagination";
 import { CustomLoader } from "../../Components/CustomLoader";
 import ProductForecastService from "../../services/ProductForecastService";
@@ -36,7 +36,6 @@ export const CustomerNotHavingForecastView = () => {
   const [customerNotHavingForecast, setCustomerNotHavingForecast] = useState(
     [],
   );
-  const [exportData, setExportData] = useState([]);
   const [forecastDataByID, setForecastDataByID] = useState(null);
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
@@ -108,37 +107,13 @@ export const CustomerNotHavingForecastView = () => {
   }, []);
 
   // FIXED: Correct header generation with proper year calculation
-  const generateHeaders = () => {
-    const basicHeaders = [
-      { label: "Company", key: "company" },
-      { label: "Sales Person", key: "sales_person" },
-      { label: "Product", key: "product" },
-    ];
-
-    const forecastHeaders = [];
-
-    // Generate headers for months from -2 to +3
-    for (let i = -2; i <= 3; i++) {
-      const { monthIndex, year } = getMonthYear(i);
-      const monthName = months[monthIndex];
-
-      forecastHeaders.push({
-        label: `${monthName} - ${year} Actual-Forecast`,
-        key: `${monthName}-${year} Actual-Forecast`,
-      });
-    }
-
-    return [...basicHeaders, ...forecastHeaders];
-  };
-
-  const headers = generateHeaders();
 
   useEffect(() => {
     if (isDownloadReady) {
       csvLinkRef.current.link.click();
       setIsDownloadReady(false);
     }
-  }, [isDownloadReady, exportData]);
+  }, [isDownloadReady]);
 
   const handleDownload = async () => {
     try {
@@ -165,33 +140,6 @@ export const CustomerNotHavingForecastView = () => {
     } catch (error) {
       handleError(error);
       console.error("CSV Download error", error);
-    } finally {
-      setOpen(false);
-    }
-  };
-
-  const handleExport = async () => {
-    try {
-      setOpen(true);
-
-      const response =
-        await ProductForecastService.downloadCustomerNotHavingData("csv");
-
-      const blob = new Blob([response.data], {
-        type: "text/csv;charset=utf-8;",
-      });
-
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-
-      link.href = url;
-      link.setAttribute("download", "customer_not_having_data.csv");
-
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (err) {
-      console.error("Error in handleExport", err);
     } finally {
       setOpen(false);
     }

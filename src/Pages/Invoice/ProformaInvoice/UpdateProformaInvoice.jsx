@@ -2,20 +2,18 @@ import { Box, Button, Grid } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import CustomTextField from "../../../Components/CustomTextField";
 import InvoiceService from "../../../services/InvoiceService";
-import { useSelector } from "react-redux";
+// import { useSelector } from "react-redux";
 
 const UpdateProformaInvoice = ({
   getProformaInvoiceData,
   idForEdit,
   setOpenPopup3,
 }) => {
-  const [transporter, setTransporter] = useState(
-    idForEdit.transporter_name || "",
-  );
-  const userData = useSelector((state) => state.auth.profile);
-  const isInGroups = (...groups) => {
-    groups.some((group) => userData.groups.includes(group));
-  };
+  const [transporter, setTransporter] = useState(idForEdit.transporter || "");
+
+  // const isInGroups = (...groups) => {
+  //   groups.some((group) => userData.groups.includes(group));
+  // };
 
   // ✅ Set initial value when edit data comes
   useEffect(() => {

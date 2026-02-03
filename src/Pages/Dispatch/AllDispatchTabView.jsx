@@ -6,7 +6,6 @@ import { Dispatched } from "./Dispatched";
 import { SalesRegisterView } from "./SalesRegisterView";
 import { ExportView } from "./ExportView";
 import BlankLrView from "./BlankLrView";
-// import UploadedPODs from "./UploadedPOD";
 import { UploadedPODs } from "./UploadedPODs";
 export const AllDispatchTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
@@ -44,7 +43,7 @@ export const AllDispatchTabView = () => {
   const customerServiceTab = isInGroups("Customer Service");
   const salesRegisterTab = isInGroups("Accounts Billing Department");
   const isAccpuntExecutive = isInGroups("Accounts Executive");
-
+  const isStores = isInGroups("Stores");
   const [activeTab, setActiveTab] = useState(allTabs ? 0 : 4);
 
   const tabs = [
@@ -73,12 +72,16 @@ export const AllDispatchTabView = () => {
     {
       label: "Sales Register",
       visible:
-        allTabs || customerServiceTab || salesRegisterTab || isAccpuntExecutive,
+        allTabs ||
+        customerServiceTab ||
+        salesRegisterTab ||
+        isAccpuntExecutive ||
+        isStores,
       index: 3,
     },
     {
       label: "Pending LR Copy",
-      visible: adminTab || dispatchPODPending,
+      visible: adminTab || dispatchPODPending || isStores,
       index: 4,
     },
     {
