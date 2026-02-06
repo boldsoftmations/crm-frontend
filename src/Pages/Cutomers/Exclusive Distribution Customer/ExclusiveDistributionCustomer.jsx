@@ -37,6 +37,7 @@ export const ExclusiveDistributionCustomer = () => {
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
   const userData = useSelector((state) => state.auth.profile);
+
   const isInGroups = (...groups) =>
     groups.some((group) => userData.groups.includes(group));
 
@@ -192,7 +193,7 @@ export const ExclusiveDistributionCustomer = () => {
                         size="small"
                         onClick={() => handleLeadCustomer(row)}
                       >
-                        {isInGroups.includes("Digital Marketing")
+                        {isInGroups("Digital Marketing")
                           ? "Create Lead"
                           : "Assigne Lead"}
                       </Button>
