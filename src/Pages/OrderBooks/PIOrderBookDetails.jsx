@@ -543,6 +543,7 @@ export const PIOrderBookDetails = () => {
                     <StyledTableCell align="center">
                       {row.product}
                     </StyledTableCell>
+                    <StyledTableCell align="center">{row.rate}</StyledTableCell>
                     <StyledTableCell align="center">
                       {row.type_of_unit === "decimal"
                         ? row.unit
