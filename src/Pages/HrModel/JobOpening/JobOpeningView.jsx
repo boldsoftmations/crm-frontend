@@ -64,7 +64,7 @@ export const JobOpeningView = () => {
         setIsLoading(false);
       }
     },
-    [searchQuery, filterValue]
+    [searchQuery, filterValue],
   );
 
   useEffect(() => {
@@ -227,6 +227,7 @@ export const JobOpeningView = () => {
                   <StyledTableCell align="center">
                     No Of Vacancies
                   </StyledTableCell>
+                  <StyledTableCell align="center">Status</StyledTableCell>
                   <StyledTableCell align="center">
                     Pending Vacancies{" "}
                   </StyledTableCell>
@@ -262,6 +263,9 @@ export const JobOpeningView = () => {
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.no_of_openings}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.is_inactive ? "Inactive" : "Active"}
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.pending_openings}

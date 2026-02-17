@@ -127,7 +127,7 @@ const StockRportView = () => {
     "DATE",
     "UNIT",
     "PRODUCT",
-    "OPEING STOCK",
+    "OPENING STOCK",
     "ORDERBOOK STOCK",
     "INVOICED STOCK",
     "CLOSE STOCK",

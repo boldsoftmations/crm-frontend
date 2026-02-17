@@ -12,6 +12,7 @@ import {
   TableBody,
   Table,
   tableCellClasses,
+  TextField,
 } from "@mui/material";
 import { Popup } from "../../../Components/Popup";
 import { ApplicantListCreate } from "./ApplicantListCreate";
@@ -30,18 +31,27 @@ export const ApplicantListView = () => {
   const [applicants, setApplicants] = useState([]);
   const [openCreatePopup, setOpenCreatePopup] = useState(false);
   const [openUpdatePopup, setOpenUpdatePopup] = useState(false);
+  const [updatedesignation, setUpdatedesignation] = useState(false);
   const [recordForEdit, setRecordForEdit] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [designations, setDesignations] = useState([]);
   const [department, setDepartment] = useState([]);
+  const [jobOption, setJobOption] = useState([]);
   const [scheduleInterviewpopup, setScheduleInterviewpopup] = useState(false);
+  const [jobs, setJobs] = useState(
+    recordForEdit
+      ? jobOption.find((j) => j.id === recordForEdit.id) || null
+      : null,
+  );
   const [alertmsg, setAlertMsg] = useState({
     message: "",
     severity: "",
     open: false,
   });
+  console.log("applicant ", applicants);
+  console.log("record", recordForEdit);
   const handleClose = () => {
     setAlertMsg({ open: false });
   };
@@ -58,7 +68,7 @@ export const ApplicantListView = () => {
     const fetchDesignations = async () => {
       try {
         const response = await CustomAxios.get(
-          "/api/hr/designation/?type=list"
+          "/api/hr/designation/?type=list",
         );
         console.log("API Response:", response.data);
         setDesignations(response.data);
@@ -71,7 +81,7 @@ export const ApplicantListView = () => {
       try {
         const response = await CustomAxios.get("/api/hr/department/");
         const validDepartments = response.data.filter(
-          (d) => d.department != null
+          (d) => d.department != null,
         );
         setDepartment(validDepartments);
       } catch (error) {
@@ -91,6 +101,11 @@ export const ApplicantListView = () => {
     setOpenUpdatePopup(true);
   };
 
+  const openInPopup2 = (item) => {
+    setRecordForEdit(item);
+    setUpdatedesignation(true);
+  };
+
   const fetchApplicants = async () => {
     try {
       setIsLoading(true);
@@ -101,7 +116,7 @@ export const ApplicantListView = () => {
         filters.department,
         filters.stage,
         filters.status,
-        filters.date
+        filters.date,
       );
       setApplicants(response.data.results);
       const total = response.data.count;
@@ -117,7 +132,39 @@ export const ApplicantListView = () => {
       setIsLoading(false);
     }
   };
+  // const [updateApplicant, setUpdateApplicant] = useState({
+  //   job_ids: recordForEdit ? recordForEdit.job : "",
+  // });
 
+  const UpdateDesignation = async (e) => {
+    try {
+      e.preventDefault();
+      const response = await Hr.UpdateApplicantDesignation(recordForEdit.id, {
+        job_ids: [jobs.id],
+      });
+
+      if (response.status === 200) {
+        setAlertMsg({
+          message: "Designation has been updated successfully",
+          severity: "success",
+          open: true,
+        });
+        fetchApplicants();
+      }
+    } catch (error) {
+      // console.log(error)
+      setAlertMsg({
+        message:
+          (error && error.response.data.message) ||
+          "Error updating designation",
+        severity: "error",
+        open: true,
+      });
+      console.error("Error updating designation:", error);
+    } finally {
+      setUpdatedesignation(false);
+    }
+  };
   useEffect(() => {
     fetchApplicants();
   }, [
@@ -199,6 +246,15 @@ export const ApplicantListView = () => {
       setIsLoading(false);
     }
   };
+  const jobIds = async () => {
+    const response = await Hr.getJobOpening();
+
+    setJobOption(response.data.results);
+    console.log(response);
+  };
+  useEffect(() => {
+    jobIds();
+  }, []);
 
   const sendEmailMessage = async (data) => {
     try {
@@ -442,6 +498,8 @@ export const ApplicantListView = () => {
                             Schedule Interview
                           </Button>
                         )}
+
+                      <Button onClick={() => openInPopup2(row)}>update</Button>
                     </StyledTableCell>
                   </StyledTableRow>
                 ))}
@@ -464,7 +522,6 @@ export const ApplicantListView = () => {
             />
           </Popup>
           <Popup
-            fullScreen={true}
             title="Candidate Details"
             openPopup={openUpdatePopup}
             setOpenPopup={setOpenUpdatePopup}
@@ -485,6 +542,66 @@ export const ApplicantListView = () => {
               contact={recordForEdit}
               getInterviewData={fetchApplicants}
             />
+          </Popup>
+          <Popup
+            title="Update Designation"
+            openPopup={updatedesignation}
+            setOpenPopup={setUpdatedesignation}
+          >
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  name="status"
+                  size="small"
+                  disablePortal
+                  id="combo-box-status"
+                  value={recordForEdit ? recordForEdit.name : ""}
+                  label="Employee Name"
+                  disabled={true}
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  name="status"
+                  size="small"
+                  disablePortal
+                  id="combo-box-status"
+                  value={recordForEdit ? recordForEdit.designation : ""}
+                  label="Designation"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <CustomAutocomplete
+                  fullWidth
+                  name="job"
+                  size="small"
+                  disablePortal
+                  id="combo-box-job"
+                  value={jobs}
+                  onChange={(e, value) => setJobs(value)}
+                  options={jobOption}
+                  getOptionLabel={(option) => option.job_id || ""}
+                  isOptionEqualToValue={(option, value) =>
+                    option.id === value.id
+                  }
+                  label="Job"
+                />
+              </Grid>
+
+              <Grid item xs={12}>
+                <Button
+                  variant="contained"
+                  color="success"
+                  size="small"
+                  onClick={(e) => UpdateDesignation(e)}
+                >
+                  Update
+                </Button>
+              </Grid>
+            </Grid>
           </Popup>
         </Paper>
       </Grid>

@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Box, TextField, Button, Grid } from "@mui/material";
+import {
+  Box,
+  TextField,
+  Button,
+  Grid,
+  FormControl,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+} from "@mui/material";
 import CustomAxios from "../../../services/api";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
@@ -15,7 +25,7 @@ export const JobOpeningUpdate = ({
     const fetchEmails = async () => {
       try {
         const response = await CustomAxios.get(
-          `/api/user/users/?is_active=True`
+          `/api/user/users/?is_active=True`,
         );
         if (Array.isArray(response.data.users)) {
           setEmails(response.data.users.map((user) => user.email));
@@ -144,6 +154,36 @@ export const JobOpeningUpdate = ({
               }}
             />
           )}
+        </Grid>
+        <Grid item xs={12}>
+          <FormControl>
+            <FormLabel>Status</FormLabel>
+
+            <RadioGroup
+              row
+              name="is_inactive"
+              value={values.is_inactive}
+              onChange={(e) =>
+                handleInputChange({
+                  target: {
+                    name: "is_inactive",
+                    value: e.target.value === "true",
+                  },
+                })
+              }
+            >
+              <FormControlLabel
+                value="false"
+                control={<Radio />}
+                label="Active"
+              />
+              <FormControlLabel
+                value="true"
+                control={<Radio />}
+                label="Inactive"
+              />
+            </RadioGroup>
+          </FormControl>
         </Grid>
 
         <Grid item xs={12}>

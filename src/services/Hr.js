@@ -99,7 +99,7 @@ const getJobOpening = (page, search, stage) => {
     params.append("stage", stage);
   }
   return CustomAxios.get(
-    `/api/hr/job-opening/?stage=Open&${params.toString()}`
+    `/api/hr/job-opening/?stage=Open&${params.toString()}`,
   );
 };
 
@@ -123,7 +123,7 @@ const getApplicants = (
   job__department__department,
   stage = "Screening", // Default stage
   status = "Open", // Default status
-  date
+  date,
 ) => {
   const params = new URLSearchParams();
 
@@ -138,7 +138,7 @@ const getApplicants = (
   if (job__designation__designation) {
     params.append(
       "job__designation__designation",
-      job__designation__designation
+      job__designation__designation,
     );
   }
 
@@ -187,7 +187,7 @@ const getCompetitorCandidates = (page, search) => {
     params.append("search", search);
   }
   return CustomAxios.get(
-    `/api/hr/applicant/?is_competitor=true&${params.toString()}`
+    `/api/hr/applicant/?is_competitor=true&${params.toString()}`,
   );
 };
 const getInterviewDate = (page, stage, status) => {
@@ -210,7 +210,7 @@ const addInterviewDate = (newInterviewDate) => {
 const updateInterviewDate = (id, updatedInterviewDate) => {
   return CustomAxios.patch(
     `/api/hr/interview-details/${id}/`,
-    updatedInterviewDate
+    updatedInterviewDate,
   );
 };
 
@@ -233,7 +233,7 @@ const getOfferStatus = (page, searchValue) => {
 const updateOfferStatus = (id, updatedOfferStatus) => {
   return CustomAxios.patch(
     `/api/hr/interview-details/${id}/?stage=Selected`,
-    updatedOfferStatus
+    updatedOfferStatus,
   );
 };
 
@@ -249,7 +249,7 @@ const getRejectedCandidates = (
   page,
   searchValue,
   status = "Rejected",
-  filterValue
+  filterValue,
 ) => {
   const params = new URLSearchParams();
 
@@ -275,7 +275,7 @@ const getRejectedCandidates = (
 const updateRejectedCandidates = (updatedRejectedCandidates) => {
   return CustomAxios.post(
     `/api/hr/interview-details/`,
-    updatedRejectedCandidates
+    updatedRejectedCandidates,
   );
 };
 
@@ -492,7 +492,7 @@ const CandidateDoneFollowup = (id, data) => {
 
 const getCandidates = () => {
   return CustomAxios.get(
-    "/api/master/model-option/?page=all&model_master__name=Applicant Followup Status"
+    "/api/master/model-option/?page=all&model_master__name=Applicant Followup Status",
   );
 };
 
@@ -500,11 +500,11 @@ const getRevisedDataHrFollowup = () => {
   return CustomAxios.get("/api/hr/applicant-followup/revised_followup_date/");
 };
 
-export const createWarningLetter = (data)=>{
-  return CustomAxios.post(`/api/user/employee-warning/`,data);
-}
+export const createWarningLetter = (data) => {
+  return CustomAxios.post(`/api/user/employee-warning/`, data);
+};
 
-export const viewWarningLetter = (page,search,filter)=>{
+export const viewWarningLetter = (page, search, filter) => {
   const params = new URLSearchParams();
 
   if (page) {
@@ -519,8 +519,11 @@ export const viewWarningLetter = (page,search,filter)=>{
     params.append("employee__user__first_name", filter);
   }
   return CustomAxios.get(`/api/user/employee-warning/?${params.toString()}`);
-}
- 
+};
+
+const UpdateApplicantDesignation = (id, data) => {
+  return CustomAxios.patch(`/api/hr/applicant-job-update/${id}/`, data);
+};
 const Hr = {
   getDesignationsData,
   addDesignation,
@@ -588,6 +591,7 @@ const Hr = {
   CandidateDoneFollowup,
   getCandidates,
   getRevisedDataHrFollowup,
+  UpdateApplicantDesignation,
 };
 
 export default Hr;
