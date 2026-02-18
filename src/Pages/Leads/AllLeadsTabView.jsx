@@ -25,6 +25,7 @@ export const AllLeadsTabView = () => {
     "Sales Deputy Manager",
     "Business Development Manager",
     "Accounts Executive",
+    "Digital Marketing",
   );
   const isSalesADManager = isInGroups("Sales Assistant Deputy Manager");
   const isSaleDevelopmentExecutive = isInGroups(
@@ -45,7 +46,7 @@ export const AllLeadsTabView = () => {
     "Sales Manager(Retailer)",
   );
   const onlyAdmin = isInGroups("Director");
-  const digitalManager = isInGroups("Digital Marketing");
+  // const digitalManager = isInGroups("Digital Marketing");
   const tabs = useMemo(
     () => [
       {
@@ -104,22 +105,19 @@ export const AllLeadsTabView = () => {
       },
       {
         label: "Unassigned Leads",
-        visible:
-          isAdmin ||
-          isSalesADManager ||
-          isSalesManagerWithLeads ||
-          digitalManager,
+        visible: isAdmin || isSalesADManager || isSalesManagerWithLeads,
+
         index: 5,
         component: <UnassignedLead />,
       },
       {
         label: "Indiamart Leads",
-        visible: isAdmin || digitalManager,
+        visible: isAdmin,
         index: 6,
         component: <IndiaMartLeads />,
       },
       {
-        label: digitalManager ? "Create Lead" : "Assign Lead",
+        label: "Assign Lead",
         visible: isAdminAndDM || bdTeam,
         index: 7,
         component: <CreateJustDialLead />,
