@@ -72,9 +72,12 @@ export const SalesTeamAnalytics = (props) => {
         "Sales Manager(Retailer)",
         "Sales Manager",
         "Sales Deputy Manager",
+        "Field Sales Executive",
+        "Digital Marketing",
         "Sales Assistant Deputy Manager",
         "Director",
-      ].includes(user.groups__name)
+        "Business Development Manager",
+      ].includes(user.groups__name),
     );
   }
 
@@ -87,13 +90,13 @@ export const SalesTeamAnalytics = (props) => {
   });
 
   const selectedOption = displayOptions.find(
-    (option) => option.email === assign
+    (option) => option.email === assign,
   );
 
   // Custom sorting function
   const sortOptions = (a, b) => {
     const order = [
-      "Slaes Manager(Retailer)",
+      "Sales Manager(Retailer)",
       "Sales Manager",
       "Sales Deputy Manager",
       "Sales Assistant Deputy Manager",
@@ -167,12 +170,12 @@ export const SalesTeamAnalytics = (props) => {
 
   // Map the dailyInvoiceQuantity to get description options
   const descriptionOptionsForInvoice = dailyInvoiceQuantity.map(
-    (entry) => Object.keys(entry)[0]
+    (entry) => Object.keys(entry)[0],
   );
 
   // Map the dailyOrderBookQuantity to get description options
   const descriptionOptionsForOrderBook = dailyOrderBookQuantity.map(
-    (entry) => Object.keys(entry)[0]
+    (entry) => Object.keys(entry)[0],
   );
 
   // Handler function to set data for invoice
@@ -180,7 +183,7 @@ export const SalesTeamAnalytics = (props) => {
     setSelectedDIQData(value); // Update the selected option
 
     const filteredData = dailyInvoiceQuantity.find((entry) =>
-      entry.hasOwnProperty(value)
+      entry.hasOwnProperty(value),
     );
 
     if (filteredData && filteredData[value]) {
@@ -193,7 +196,7 @@ export const SalesTeamAnalytics = (props) => {
     setSelectedDOBQData(value); // Update the selected option
 
     const filteredData = dailyOrderBookQuantity.find((entry) =>
-      entry.hasOwnProperty(value)
+      entry.hasOwnProperty(value),
     );
 
     if (filteredData && filteredData[value]) {
