@@ -21,7 +21,6 @@ import { CurrencyView } from "../Pages/Currency/CurrencyView";
 import { PhysicalInventoryView } from "../Pages/Physcical Inventory/PhysicalInventoryView";
 import { AllLeadsTabView } from "../Pages/Leads/AllLeadsTabView";
 import { AllProductsTabView } from "../Pages/Products/AllProductsTabView";
-import { PriceList } from "../Pages/PriceList/PriceList";
 import { AllCustomerTabView } from "../Pages/Cutomers/CompanyDetails/AllCustomerTabView";
 import { AllPerformaInvoiceTabView } from "../Pages/Invoice/ProformaInvoice/AllPerformaInvoiceTabView";
 import { PurchaseAllTabView } from "../Pages/Purchase/PurchaseAllTabView";
@@ -48,6 +47,7 @@ import LeadSummary from "../Pages/MasterLeadSummary/LeadSummary";
 import FactoryMaster from "../Pages/MasterFactory/FactoryMaster";
 import Maintaince from "../Pages/Maintanace/Maintaince";
 import { AllInventoryReportTabs } from "../Pages/InventoryReport/AllInventoryReportTabs";
+import { AllPriceListTabView } from "../Pages/PriceList/AllPriceListTabView";
 
 const PrivateRoute = ({ children, redirectTo = "/" }) => {
   const tokenData = useSelector((state) => state.auth);
@@ -120,7 +120,7 @@ export const RouteScreen = () => {
             path="/products/view-price-list"
             element={
               <PrivateRoute>
-                <PriceList />
+                <AllPriceListTabView />
               </PrivateRoute>
             }
           />

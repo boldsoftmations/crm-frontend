@@ -269,6 +269,19 @@ const updateSampleProduct = (id, data) => {
   return CustomAxios.patch(`/api/product/sample/${id}/`, data);
 };
 
+//price comparision api
+
+const getPriceComparision = (searchValue) => {
+  const params = new URLSearchParams();
+
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+  return CustomAxios.get(
+    `/api/product/product-price-rate/?${params.toString()}`,
+  );
+};
+
 const ProductService = {
   getAllColour,
   createColour,
@@ -315,6 +328,7 @@ const ProductService = {
   getSampleProduct,
   updateSampleProduct,
   updatePriceListValidity,
+  getPriceComparision,
 };
 
 export default ProductService;
