@@ -11,7 +11,7 @@ export const OrderBookUpdate = (props) => {
   const { recordForEdit, setOpenPopup, getAllOrderBook } = props;
   const [open, setOpen] = useState(false);
   const [estimateDate, setEstimateDate] = useState(
-    recordForEdit.estimated_date
+    recordForEdit.estimated_date,
   );
   const [remark, setRemark] = useState(recordForEdit.remark || "");
   const [readyDate, setReadyDate] = useState(recordForEdit.ready_date);
@@ -32,7 +32,7 @@ export const OrderBookUpdate = (props) => {
         amount: recordForEdit.amount,
         gst: recordForEdit.gst,
         total: recordForEdit.total,
-        remark: recordForEdit.remark,
+        remark: remark,
       };
       // Add estimated_date only if readyDate is not present and estimateDate is valid
       if (!recordForEdit.estimated_date) {
@@ -47,7 +47,7 @@ export const OrderBookUpdate = (props) => {
       }
       const response = await InvoiceServices.updateOrderBookData(
         recordForEdit.id,
-        data
+        data,
       );
       const successMessage =
         response.data.message || "Customer OrderBook updated successfully";
@@ -193,7 +193,7 @@ export const OrderBookPeningQuantityUpdate = (props) => {
   const { recordForEdit, setOpenPopup, getAllOrderBook } = props;
   const [open, setOpen] = useState(false);
   const [pendingQuantity, setPendingQuantity] = useState(
-    recordForEdit.pending_quantity
+    recordForEdit.pending_quantity,
   );
   const [remark, setRemark] = useState(recordForEdit.remark || "");
 
@@ -214,7 +214,7 @@ export const OrderBookPeningQuantityUpdate = (props) => {
         amount: recordForEdit.amount,
         gst: recordForEdit.gst,
         total: recordForEdit.total,
-        remark: recordForEdit.remark,
+        remark: remark,
         pending_quantity: pendingQuantity,
 
         revision: recordForEdit.revision + 1,
@@ -222,7 +222,7 @@ export const OrderBookPeningQuantityUpdate = (props) => {
 
       const response = await InvoiceServices.updateOrderBookData(
         recordForEdit.id,
-        data
+        data,
       );
       const successMessage =
         response.data.message || "Customer OrderBook updated successfully";
