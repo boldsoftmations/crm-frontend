@@ -13,8 +13,7 @@ import {
   TableCell,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
-// import { CustomDownloadLoader } from "../../Components/CustomDownloadLoader";
-import { CustomDownloadLoader } from "../../Components/CustomDownloadLoader";
+
 import { CustomPagination } from "../../Components/CustomPagination";
 import { CustomLoader } from "../../Components/CustomLoader";
 import ProductForecastService from "../../services/ProductForecastService";
@@ -37,15 +36,9 @@ export const CustomerNotHavingForecastView = () => {
   const [customerNotHavingForecast, setCustomerNotHavingForecast] = useState(
     [],
   );
-  const [downloadProgress, setDownloadProgress] = useState(0);
-  const [downloadedMB, setDownloadedMB] = useState(0);
-  const [totalMB, setTotalMB] = useState(0);
-  const [isDisabled, setIsDisabled] = useState(false);
-  const [countdown, setCountdown] = useState(0);
   const [forecastDataByID, setForecastDataByID] = useState(null);
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
-  const [DownloadOpen, setDownloadOpen] = useState(false);
   const csvLinkRef = useRef(null);
   const [isDownloadReady, setIsDownloadReady] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
@@ -53,7 +46,7 @@ export const CustomerNotHavingForecastView = () => {
   const assignedOption = UserData.sales_users || [];
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
-  const your_token = useSelector((state) => state.auth.user.token);
+
   // Get the current date, month, and year
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
@@ -78,9 +71,10 @@ export const CustomerNotHavingForecastView = () => {
   // HELPER FUNCTION: Calculate month and year for offset
   const getMonthYear = (monthOffset) => {
     const targetMonth = currentMonth + monthOffset;
-    const monthIndex = ((targetMonth % 12) + 12) % 12;
+    const monthIndex = ((targetMonth % 12) + 12) % 12; // Handle negative months
     const yearOffset = Math.floor(targetMonth / 12);
     const year = currentYear + yearOffset;
+
     return { monthIndex, year };
   };
 
@@ -91,39 +85,6 @@ export const CustomerNotHavingForecastView = () => {
   const nextMonth1Data = getMonthYear(1);
   const nextMonth2Data = getMonthYear(2);
   const nextMonth3Data = getMonthYear(3);
-
-  // Restore countdown from localStorage on page refresh
-  useEffect(() => {
-    const savedEndTime = localStorage.getItem("csvDownloadEndTime");
-    if (savedEndTime) {
-      const remaining = Math.floor(
-        (parseInt(savedEndTime) - Date.now()) / 1000,
-      );
-      if (remaining > 0) {
-        setIsDisabled(true);
-        setCountdown(remaining);
-      } else {
-        localStorage.removeItem("csvDownloadEndTime");
-      }
-    }
-  }, []);
-
-  // Run countdown interval whenever isDisabled becomes true
-  useEffect(() => {
-    if (!isDisabled) return;
-    const interval = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          setIsDisabled(false);
-          localStorage.removeItem("csvDownloadEndTime");
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [isDisabled]);
 
   useEffect(() => {
     const beforePrint = () => {
@@ -145,6 +106,8 @@ export const CustomerNotHavingForecastView = () => {
     };
   }, []);
 
+  // FIXED: Correct header generation with proper year calculation
+
   useEffect(() => {
     if (isDownloadReady) {
       csvLinkRef.current.link.click();
@@ -154,83 +117,34 @@ export const CustomerNotHavingForecastView = () => {
 
   const handleDownload = async () => {
     try {
-      setDownloadOpen(true);
-      setIsDisabled(true);
-      setDownloadProgress(0);
-      setDownloadedMB(0);
-      setTotalMB(0);
+      setOpen(true);
 
-      await new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        console.log(process.env.REACT_APP_DEPLOY_BACKEND_URL, "urls");
-        xhr.open(
-          "GET",
-          `${process.env.REACT_APP_DEPLOY_BACKEND_URL}/api/forecast/list-product-not-having-forecast/`,
-        ); // replace with your actual URL
-        xhr.responseType = "blob";
-        xhr.setRequestHeader("Authorization", `Bearer ${your_token}`); // if needed
+      const response =
+        await ProductForecastService.downloadCustomerNotHavingData("csv");
 
-        xhr.onprogress = (event) => {
-          if (event.lengthComputable) {
-            const percent = Math.round((event.loaded / event.total) * 100);
-            const loaded = (event.loaded / 1024 / 1024).toFixed(2);
-            const total = (event.total / 1024 / 1024).toFixed(2);
-            setDownloadProgress(percent);
-            setDownloadedMB(loaded);
-            setTotalMB(total);
-          } else {
-            const loaded = (event.loaded / 1024 / 1024).toFixed(2);
-            setDownloadedMB(loaded);
-          }
-        };
-
-        xhr.onload = () => {
-          console.log("Status:", xhr.status);
-          console.log(
-            "URL used:",
-            `${process.env.REACT_APP_TESTING_BACKEND_URL}/api/forecast/list-product-not-having-forecast/?format=csv`,
-          );
-          console.log("Token:", your_token);
-
-          // Read blob as text to see actual error message from server
-          if (xhr.status !== 200) {
-            const reader = new FileReader();
-            reader.onload = () => {
-              console.log("Server error response:", reader.result); // 👈 this will show exact backend error
-            };
-            reader.readAsText(xhr.response);
-            reject(new Error(`Download failed with status: ${xhr.status}`));
-            return;
-          }
-
-          const url = window.URL.createObjectURL(xhr.response);
-          const link = document.createElement("a");
-          link.href = url;
-          link.download = "customer_not_having_data.csv";
-          document.body.appendChild(link);
-          link.click();
-          link.remove();
-          resolve();
-        };
-
-        xhr.onerror = () => reject(new Error("Network error"));
-        xhr.send();
+      const blob = new Blob([response.data], {
+        type: "text/csv;charset=utf-8;",
       });
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.download = "customer_not_having_data.csv";
+
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
 
       handleSuccess("CSV downloaded successfully");
     } catch (error) {
       handleError(error);
       console.error("CSV Download error", error);
     } finally {
-      setDownloadOpen(false);
-      setDownloadProgress(0);
+      setOpen(false);
     }
-
-    const endTime = Date.now() + 1800 * 1000;
-    localStorage.setItem("csvDownloadEndTime", endTime.toString());
-    setCountdown(10);
-    setIsDisabled(true);
   };
+
   const getAllCustomerNotHavingForecastDetails = useCallback(async () => {
     try {
       setOpen(true);
@@ -327,12 +241,6 @@ export const CustomerNotHavingForecastView = () => {
         message={alertInfo.message}
       />
       <CustomLoader open={open} />
-      <CustomDownloadLoader
-        open={DownloadOpen}
-        downloadedMB={downloadedMB}
-        totalMB={totalMB}
-        downloadProgress={downloadProgress}
-      />
       <Grid item xs={12}>
         <Paper sx={{ p: 2, m: 4, display: "flex", flexDirection: "column" }}>
           <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
@@ -366,15 +274,8 @@ export const CustomerNotHavingForecastView = () => {
                   variant="contained"
                   color="primary"
                   onClick={handleDownload}
-                  disabled={isDisabled}
                 >
-                  {downloadProgress > 0 && downloadProgress < 100
-                    ? totalMB > 0
-                      ? `Downloading... ${downloadedMB} MB / ${totalMB} MB (${downloadProgress}%)`
-                      : `Downloading... ${downloadedMB} MB`
-                    : isDisabled
-                      ? `Download available in ${String(Math.floor(countdown / 60)).padStart(2, "0")}:${String(countdown % 60).padStart(2, "0")}`
-                      : "Download CSV"}
+                  Download CSV
                 </Button>
               </Grid>
             </Grid>
