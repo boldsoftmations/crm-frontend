@@ -162,10 +162,10 @@ export const CustomerNotHavingForecastView = () => {
 
       await new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
-        console.log(process.env.REACT_APP_TESTING_BACKEND_URL, "urls");
+        console.log(process.env.REACT_APP_DEPLOY_BACKEND_URL, "urls");
         xhr.open(
           "GET",
-          `${process.env.REACT_APP_TESTING_BACKEND_URL}/api/forecast/list-product-not-having-forecast/`,
+          `${process.env.REACT_APP_DEPLOY_BACKEND_URL}/api/forecast/list-product-not-having-forecast/`,
         ); // replace with your actual URL
         xhr.responseType = "blob";
         xhr.setRequestHeader("Authorization", `Bearer ${your_token}`); // if needed
