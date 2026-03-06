@@ -19,6 +19,7 @@ export const ProductWiseForecastView = () => {
   const csvLinkRef = useRef(null);
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
+  const [isLength, setislenght] = useState(true);
 
   // Get the current date
   const currentDate = new Date();
@@ -114,7 +115,7 @@ export const ProductWiseForecastView = () => {
       const response =
         await ProductForecastService.getAllProductWiseForecastData(
           "all",
-          searchQuery
+          searchQuery,
         );
 
       const data = response.data
@@ -135,7 +136,7 @@ export const ProductWiseForecastView = () => {
                       : ""
                   } -- ${
                     filteredData.actual !== null ? filteredData.actual : ""
-                  }`
+                  }`,
               ),
             lastMonth2: row.qty_forecast
               .filter((data) => data.index_position === 1)
@@ -147,7 +148,7 @@ export const ProductWiseForecastView = () => {
                       : ""
                   } -- ${
                     filteredData.actual !== null ? filteredData.actual : ""
-                  }`
+                  }`,
               ),
             currentMonth: row.qty_forecast
               .filter((data) => data.index_position === 2)
@@ -159,7 +160,7 @@ export const ProductWiseForecastView = () => {
                       : ""
                   } -- ${
                     filteredData.actual !== null ? filteredData.actual : ""
-                  }`
+                  }`,
               ),
             nextMonth1: row.qty_forecast
               .filter((data) => data.index_position === 3)
@@ -187,10 +188,16 @@ export const ProductWiseForecastView = () => {
       const response =
         await ProductForecastService.getAllProductWiseForecastData(
           currentPage,
-          searchQuery
+          searchQuery,
         );
       setProductWiseForecast(response.data.results);
       const total = response.data.count;
+      console.log(response.data.count);
+      const data = response.data.results.filter(
+        (row) => row.qty_forecast.length > 0,
+      );
+      console.log(data);
+      if (data.length <= 0) setislenght(false);
       setTotalPages(Math.ceil(total / 25));
     } catch (error) {
       handleError(error);
@@ -233,7 +240,7 @@ export const ProductWiseForecastView = () => {
                 filteredData.total_forecast !== null
                   ? filteredData.total_forecast
                   : ""
-              } -- ${filteredData.actual !== null ? filteredData.actual : ""}`
+              } -- ${filteredData.actual !== null ? filteredData.actual : ""}`,
           ),
         lastMonth2: row.qty_forecast
           .filter((data) => data.index_position === 1)
@@ -243,7 +250,7 @@ export const ProductWiseForecastView = () => {
                 filteredData.total_forecast !== null
                   ? filteredData.total_forecast
                   : ""
-              } -- ${filteredData.actual !== null ? filteredData.actual : ""}`
+              } -- ${filteredData.actual !== null ? filteredData.actual : ""}`,
           ),
         currentMonth: row.qty_forecast
           .filter((data) => data.index_position === 2)
@@ -253,7 +260,7 @@ export const ProductWiseForecastView = () => {
                 filteredData.total_forecast !== null
                   ? filteredData.total_forecast
                   : ""
-              } -- ${filteredData.actual !== null ? filteredData.actual : ""}`
+              } -- ${filteredData.actual !== null ? filteredData.actual : ""}`,
           ),
         nextMonth1: row.qty_forecast
           .filter((data) => data.index_position === 3)
@@ -358,11 +365,13 @@ export const ProductWiseForecastView = () => {
             openInPopup4={null}
             Styles={{ paddingLeft: "10px", paddingRight: "10px" }}
           />
-          <CustomPagination
-            totalPages={totalPages}
-            currentPage={currentPage}
-            handlePageChange={handlePageChange}
-          />
+          {isLength && (
+            <CustomPagination
+              totalPages={totalPages}
+              currentPage={currentPage}
+              handlePageChange={handlePageChange}
+            />
+          )}
         </Paper>
       </Grid>
     </>
