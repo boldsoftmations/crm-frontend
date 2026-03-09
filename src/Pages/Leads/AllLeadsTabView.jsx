@@ -117,7 +117,7 @@ export const AllLeadsTabView = () => {
         component: <IndiaMartLeads />,
       },
       {
-        label: "Assign Lead",
+        label: "Create Lead",
         visible: isAdminAndDM || bdTeam,
         index: 7,
         component: <CreateJustDialLead />,
