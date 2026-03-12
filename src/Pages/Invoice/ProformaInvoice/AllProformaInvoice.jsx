@@ -48,7 +48,7 @@ export const AllProformaInvoice = () => {
   };
   const [startDate, setStartDate] = useState(getFirstDayOfMonth(new Date()));
   const [selectedTimeRange, setSelectedTimeRange] = useState("monthly");
-  const { handleError, handleCloseSnackbar, alertInfo } =
+  const { handleError, handleCloseSnackbar, handleSuccess, alertInfo } =
     useNotificationHandling();
 
   const clearFilterType = () => setFilterType("");
@@ -158,6 +158,7 @@ export const AllProformaInvoice = () => {
         searchValue,
       );
       setInvoiceData(response.data.results);
+      console.log("Transport Data", response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
     } catch (error) {
       handleError(error);
@@ -205,6 +206,7 @@ export const AllProformaInvoice = () => {
     round_off_total: row.round_off_total,
     balance_amount: row.balance_amount,
     payment_terms: row.payment_terms,
+    transporter_name: row.transporter_name,
   }));
 
   const Tableheaders = [
@@ -451,6 +453,8 @@ export const AllProformaInvoice = () => {
           idForEdit={idForEdit}
           getProformaInvoiceData={getProformaInvoiceData}
           setOpenPopup={setOpenPopup3}
+          handleSuccess={handleSuccess}
+          handleError={handleError}
         />
       </Popup>
     </>

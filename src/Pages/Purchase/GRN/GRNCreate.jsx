@@ -35,8 +35,8 @@ export const GRNCreate = memo(
           qa_accepted: "",
           max_decimal_digit,
           type_of_unit,
-        })
-      )
+        }),
+      ),
     );
     console.log(products.map((data) => data.order_quantity));
 
@@ -57,18 +57,20 @@ export const GRNCreate = memo(
       console.log("value", value);
       // console.log(products && products.order_quantity, products.qa_rejected);
 
-      const updatedProducts = products.map((item, idx) =>
-        idx === index
-          ? {
-              ...item,
-              [name]: value,
-              qa_accepted:
-                name === "qa_rejected"
-                  ? calculateQA(item.order_quantity, value, item.type_of_unit)
-                  : item.qa_accepted,
-            }
-          : item
-      );
+      const updatedProducts = products
+        .filter((item) => item.order_quantity > 0)
+        .map((item, idx) =>
+          idx === index
+            ? {
+                ...item,
+                [name]: value,
+                qa_accepted:
+                  name === "qa_rejected"
+                    ? calculateQA(item.order_quantity, value, item.type_of_unit)
+                    : item.qa_accepted,
+              }
+            : item,
+        );
       console.log("updatedProducts", updatedProducts);
 
       setProducts(updatedProducts);
@@ -81,14 +83,14 @@ export const GRNCreate = memo(
 
         // If any product has non-zero order quantity
         const hasValidOrderQty = products.some(
-          (item) => Number(item.order_quantity) !== 0
+          (item) => Number(item.order_quantity) !== 0,
         );
 
         // Rejecting FULL quantity is not allowed
         const isInvalidFullReject = products.some(
           (item) =>
             Number(item.qa_rejected) === Number(item.order_quantity) &&
-            Number(item.order_quantity) !== 0
+            Number(item.order_quantity) !== 0,
         );
 
         // Debug
@@ -97,7 +99,7 @@ export const GRNCreate = memo(
         if (hasValidOrderQty) {
           // Rejected > Ordered → INVALID
           const isGreater = products.some(
-            (item) => Number(item.qa_rejected) > Number(item.order_quantity)
+            (item) => Number(item.qa_rejected) > Number(item.order_quantity),
           );
 
           if (isGreater) {
@@ -117,7 +119,7 @@ export const GRNCreate = memo(
         const numTypes = products.map((item) => item.type_of_unit);
         const unit = products.map((item) => item.unit);
         const decimalCounts = products.map((item) =>
-          String(item.max_decimal_digit)
+          String(item.max_decimal_digit),
         );
 
         console.log(numTypes);
@@ -172,7 +174,7 @@ export const GRNCreate = memo(
         searchQuery,
         setOpen,
         setOpenPopup,
-      ]
+      ],
     );
 
     return (
@@ -233,85 +235,87 @@ export const GRNCreate = memo(
                 </Divider>
               </Root>
             </Grid>
-            {products.map((input, index) => {
-              return (
-                <>
-                  <Grid key={index} item xs={12} sm={4}>
-                    <CustomTextField
-                      fullWidth
-                      size="small"
-                      label="Products"
-                      variant="outlined"
-                      value={input.products || ""}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={2}>
-                    <CustomTextField
-                      fullWidth
-                      size="small"
-                      label="Unit"
-                      variant="outlined"
-                      value={input.unit || ""}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={2}>
-                    <CustomTextField
-                      fullWidth
-                      name="order_quantity"
-                      size="small"
-                      label="Quantity"
-                      variant="outlined"
-                      value={
-                        input.type_of_unit === "decimal"
-                          ? input.order_quantity
-                          : Math.floor(input.order_quantity) || ""
-                      }
-                      onChange={(event) => handleFormChange(index, event)}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={2}>
-                    <CustomTextField
-                      fullWidth
-                      name="qa_rejected"
-                      size="small"
-                      label="QA Rejected"
-                      variant="outlined"
-                      value={input.qa_rejected}
-                      onChange={(event) => handleFormChange(index, event)}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={2}>
-                    <CustomTextField
-                      fullWidth
-                      name="qa_accepted"
-                      size="small"
-                      label="QA Accepted"
-                      variant="outlined"
-                      value={(() => {
-                        const oq = input.order_quantity;
-                        const qr = input.qa_rejected;
-
-                        // Common validation
-                        const isValid =
-                          oq !== "" && qr !== "" && !isNaN(oq) && !isNaN(qr);
-
-                        if (!isValid) return "";
-
-                        const diff = Number(oq) - Number(qr);
-
-                        // Decimal unit → return as is
-                        if (input.type_of_unit === "decimal") {
-                          return diff.toFixed(input.max_decimal_digit);
+            {products
+              .filter((item) => item.order_quantity > 0)
+              .map((input, index) => {
+                return (
+                  <>
+                    <Grid key={index} item xs={12} sm={4}>
+                      <CustomTextField
+                        fullWidth
+                        size="small"
+                        label="Products"
+                        variant="outlined"
+                        value={input.products || ""}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={2}>
+                      <CustomTextField
+                        fullWidth
+                        size="small"
+                        label="Unit"
+                        variant="outlined"
+                        value={input.unit || ""}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={2}>
+                      <CustomTextField
+                        fullWidth
+                        name="order_quantity"
+                        size="small"
+                        label="Quantity"
+                        variant="outlined"
+                        value={
+                          input.type_of_unit === "decimal"
+                            ? input.order_quantity
+                            : Math.floor(input.order_quantity) || ""
                         }
+                        onChange={(event) => handleFormChange(index, event)}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={2}>
+                      <CustomTextField
+                        fullWidth
+                        name="qa_rejected"
+                        size="small"
+                        label="QA Rejected"
+                        variant="outlined"
+                        value={input.qa_rejected}
+                        onChange={(event) => handleFormChange(index, event)}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={2}>
+                      <CustomTextField
+                        fullWidth
+                        name="qa_accepted"
+                        size="small"
+                        label="QA Accepted"
+                        variant="outlined"
+                        value={(() => {
+                          const oq = input.order_quantity;
+                          const qr = input.qa_rejected;
 
-                        // Non-decimal unit → round whole number
-                        return Math.round(diff);
-                      })()}
-                    />
-                  </Grid>
-                </>
-              );
-            })}
+                          // Common validation
+                          const isValid =
+                            oq !== "" && qr !== "" && !isNaN(oq) && !isNaN(qr);
+
+                          if (!isValid) return "";
+
+                          const diff = Number(oq) - Number(qr);
+
+                          // Decimal unit → return as is
+                          if (input.type_of_unit === "decimal") {
+                            return diff.toFixed(input.max_decimal_digit);
+                          }
+
+                          // Non-decimal unit → round whole number
+                          return Math.round(diff);
+                        })()}
+                      />
+                    </Grid>
+                  </>
+                );
+              })}
           </Grid>
           <Button
             type="submit"
@@ -324,5 +328,5 @@ export const GRNCreate = memo(
         </Box>
       </div>
     );
-  }
+  },
 );

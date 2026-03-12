@@ -17,7 +17,6 @@ import {
 } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import FileSaver from "file-saver";
 import { tableCellClasses } from "@mui/material/TableCell";
 import InvoiceServices from "../../services/InvoiceService";
 import { CustomLoader } from "./../../Components/CustomLoader";
@@ -70,7 +69,7 @@ export const Dispatched = () => {
         currentPage,
         searchQuery,
         unitFilter,
-        userData.groups.includes("Customer Service") ? "dispatch_tab" : ""
+        userData.groups.includes("Customer Service") ? "dispatch_tab" : "",
       );
       setDispatchData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -104,7 +103,7 @@ export const Dispatched = () => {
         searchQuery,
         unitFilter,
         "",
-        "dispatch_tab"
+        "dispatch_tab",
       );
       if (!response || !response.data) {
         throw new Error("No data returned from API");
@@ -192,9 +191,9 @@ export const Dispatched = () => {
                   {userData.groups.includes("Customer Service")
                     ? "Dispatch-POD Pending"
                     : userData.groups.includes("Factory-Mumbai-Dispatch") ||
-                      userData.groups.includes("Factory-Delhi-Dispatch")
-                    ? "Dispatch-LR Pending"
-                    : "Dispatch"}
+                        userData.groups.includes("Factory-Delhi-Dispatch")
+                      ? "Dispatch-LR Pending"
+                      : "Dispatch"}
                 </h3>
               </Grid>
               <Grid item xs={12} sm={3}>
@@ -272,11 +271,7 @@ export const Dispatched = () => {
                   <StyledTableCell align="center">
                     Dispatch Location
                   </StyledTableCell>
-                  {userData.groups.toString() === "Customer Service" ||
-                    (userData.groups.toString() ===
-                      "Operations & Supply Chain Manager" && (
-                      <StyledTableCell align="center">LR COPY</StyledTableCell>
-                    ))}
+
                   <StyledTableCell align="center">ACTION</StyledTableCell>
                 </StyledTableRow>
               </TableHead>
@@ -315,11 +310,6 @@ function Row(props) {
     setOpenModal(true);
   };
 
-  const handleClickLRCOPY = async (data) => {
-    let url = data.lr_copy ? data.lr_copy : "";
-    FileSaver.saveAs(url, "image");
-  };
-
   return (
     <>
       <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
@@ -346,19 +336,7 @@ function Row(props) {
           {moment(row.date).format("DD-MM-YYYY")}
         </TableCell>
         <TableCell align="center">{row.dispatch_location}</TableCell>
-        {userData.groups.toString() === "Customer Service" ||
-          (userData.groups.toString() ===
-            "Operations & Supply Chain Manager" && (
-            <TableCell align="center">
-              <Button
-                color="success"
-                variant="outlined"
-                onClick={() => handleClickLRCOPY(row)}
-              >
-                Download
-              </Button>
-            </TableCell>
-          ))}
+
         {(userData.groups.includes("Factory-Delhi-Dispatch") ||
           userData.groups.includes("Factory-Mumbai-Dispatch") ||
           userData.groups.includes("Director") ||

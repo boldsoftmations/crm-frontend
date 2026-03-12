@@ -41,7 +41,7 @@ const CreateCCF = ({ getAllCCFData, setOpenCCF }) => {
   const [departmentData, setDepartmentData] = useState([]);
   const [batch_no, setBatch_no] = useState([]);
   const [documentId, setDocumentId] = useState([]);
-  const [products, setProducts] = useState(null);
+  const [products, setProducts] = useState([]);
   const [documents, setDocuments] = useState([]);
   const [inputValue, setInputValue] = useState({
     department: "",
@@ -66,9 +66,8 @@ const CreateCCF = ({ getAllCCFData, setOpenCCF }) => {
   const getAllSellerAccountsDetails = async () => {
     try {
       setOpen(true);
-      const response = await InvoiceServices.getAllPaginateSellerAccountData(
-        "all"
-      );
+      const response =
+        await InvoiceServices.getAllPaginateSellerAccountData("all");
       setseller_units(response.data);
     } catch (error) {
       console.log("Error fetching seller account data:", error);
@@ -98,7 +97,7 @@ const CreateCCF = ({ getAllCCFData, setOpenCCF }) => {
     const newFiles = Array.from(e.target.files);
     const existingFiles = files.map((file) => file.name);
     const uniqueFiles = newFiles.filter(
-      (file) => !existingFiles.includes(file.name)
+      (file) => !existingFiles.includes(file.name),
     );
     setFiles([...files, ...uniqueFiles]);
     e.target.value = null;
@@ -127,7 +126,7 @@ const CreateCCF = ({ getAllCCFData, setOpenCCF }) => {
       setOpen(true);
       const response = await InvoiceServices.getInvoiceByCustomerAndSellerUnit(
         inputValue.customer,
-        value
+        value,
       );
       setInvoiceNoOption(response.data.data);
     } catch (error) {
@@ -142,7 +141,7 @@ const CreateCCF = ({ getAllCCFData, setOpenCCF }) => {
       setOpen(true);
       const response = await CustomerServices.getAllComplaintsListData(
         "list",
-        value
+        value,
       );
       setDepartmentData(response.data);
     } catch (e) {
@@ -159,11 +158,11 @@ const CreateCCF = ({ getAllCCFData, setOpenCCF }) => {
         product: product.product,
         quantity: product.quantity,
         source_list: product.source_list.map((source) => source.source_key), // Extracting only the 'source' key
-      }))
+      })),
     );
 
     const batch_nos = selectedProducts.flatMap(
-      (product) => product.source_list
+      (product) => product.source_list,
     );
     setBatch_no(batch_nos);
     setProducts(selectedProducts);
@@ -674,8 +673,8 @@ const CreateCCF = ({ getAllCCFData, setOpenCCF }) => {
                               prevProducts.map((p, i) =>
                                 i === index
                                   ? { ...p, product: event.target.value }
-                                  : p
-                              )
+                                  : p,
+                              ),
                             )
                           }
                         />
@@ -693,8 +692,8 @@ const CreateCCF = ({ getAllCCFData, setOpenCCF }) => {
                               prevProducts.map((p, i) =>
                                 i === index
                                   ? { ...p, quantity: event.target.value }
-                                  : p
-                              )
+                                  : p,
+                              ),
                             )
                           }
                         />

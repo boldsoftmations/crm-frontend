@@ -5,11 +5,13 @@ import InventoryServices from "../../../services/InventoryService";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
+import { Popup } from "../../../Components/Popup";
 // import { DecimalValidation } from "../../../Components/Header/DecimalValidation";
 
 export const PackingListCreate = memo(
   ({ selectedRow, setOpenPopup, getAllPurchaseOrderDetails }) => {
     console.log("selectedRow", selectedRow);
+    const [openAlert, setOpenAlert] = useState(false);
     const [loading, setLoading] = useState(false);
     const today = new Date().toISOString().slice(0, 10);
     const [details, setDetails] = useState(() => ({
@@ -57,14 +59,18 @@ export const PackingListCreate = memo(
       setDetails((current) => ({
         ...current,
         products: current.products.map((product, idx) =>
-          idx === index ? { ...product, quantity: newQuantity } : product
+          idx === index ? { ...product, quantity: newQuantity } : product,
         ),
       }));
     }, []);
 
+    const OpeningAlert = (e) => {
+      e.preventDefault();
+      setOpenAlert(true);
+    };
+
     const createPackingListDetails = async (e) => {
       e.preventDefault();
-
       try {
         // const numTypes = selectedRow.products.map((item) => item.type_of_unit);
         // const quantities = details.products.map((item) => item.quantity);
@@ -115,7 +121,7 @@ export const PackingListCreate = memo(
           message={alertInfo.message}
         />
         <CustomLoader open={loading} />
-        <Box component="form" noValidate onSubmit={createPackingListDetails}>
+        <Box component="form" noValidate onSubmit={OpeningAlert}>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={3}>
               <CustomTextField
@@ -229,7 +235,62 @@ export const PackingListCreate = memo(
             Submit
           </Button>
         </Box>
+
+        <Popup
+          setOpenPopup={setOpenAlert}
+          openPopup={openAlert}
+          title="Confirm Packing List Creation"
+        >
+          <Box sx={{ mb: 2 }}>
+            <p style={{ fontWeight: 500, marginBottom: "10px", color: "#444" }}>
+              Please review the following products before creating the packing
+              list. Once submitted, the quantities will be processed.
+            </p>
+
+            {details.products.length > 0 ? (
+              details.products.map((item) => (
+                <Box
+                  key={item.id}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    padding: "8px 12px",
+                    border: "1px solid #e0e0e0",
+                    borderRadius: "6px",
+                    mb: 1,
+                    background: "#fafafa",
+                  }}
+                >
+                  <span style={{ fontWeight: 500 }}>{item.product}</span>
+                  <span style={{ color: "#1976d2", fontWeight: 600 }}>
+                    Qty: {item.quantity}
+                  </span>
+                </Box>
+              ))
+            ) : (
+              <p style={{ color: "red" }}>No products added.</p>
+            )}
+          </Box>
+
+          <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
+            <Button
+              variant="outlined"
+              color="inherit"
+              onClick={() => setOpenAlert(false)}
+            >
+              Cancel
+            </Button>
+
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={createPackingListDetails}
+            >
+              Confirm & Create
+            </Button>
+          </Box>
+        </Popup>
       </>
     );
-  }
+  },
 );

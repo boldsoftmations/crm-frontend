@@ -25,6 +25,7 @@ import ImageView from "./ImageView";
 import ComplainPdf from "./ComplaintPdf";
 import CreateCapa from "./CAFA/CreateCapa";
 import { useSelector } from "react-redux";
+import UpdateCCF from "./UpdateCCF";
 
 export const CCFView = () => {
   const [open, setOpen] = useState(false);
@@ -33,12 +34,15 @@ export const CCFView = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [openCCF, setOpenCCF] = useState(false);
+  const [updateCCF, setUpdateCCF] = useState(false);
   const [imageShow, setImageShow] = useState(false);
   const [openPdf, setOpenPdf] = useState(false);
   const [openCapa, setOpenCapa] = useState(false);
   const [recordForEdit, setRecordForEdit] = useState(null);
   const [pdfData, setPdfData] = useState(null);
   const [imagesData, setImagesData] = useState(null);
+  const [ViewData, setViewData] = useState(null);
+
   const userData = useSelector((state) => state.auth.profile);
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
@@ -48,7 +52,7 @@ export const CCFView = () => {
       setOpen(true);
       const response = await CustomerServices.getAllCCFData(
         currentPage,
-        searchQuery
+        searchQuery,
       );
       setCCFData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -75,6 +79,10 @@ export const CCFView = () => {
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
+  };
+  const updateCCFData = (row) => {
+    setViewData(row);
+    setUpdateCCF(true);
   };
 
   const handleImageShow = (data) => {
@@ -196,70 +204,86 @@ export const CCFView = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {CCFData.map((row, i) => (
-                  <StyledTableRow key={i}>
-                    <StyledTableCell align="center">
-                      {row.complain_no}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.department}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.customer}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.complain_type}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.creation_date}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.complaint}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">{row.unit}</StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.invoices.map((invoice, index) => (
-                        <span key={index}>
-                          {invoice}
-                          {index < row.invoices.length - 1 && (
-                            <span style={{ margin: "0 5px" }}>|</span>
-                          )}
-                        </span>
-                      ))}
-                    </StyledTableCell>
+                {CCFData &&
+                  CCFData.map((row, i) => (
+                    <StyledTableRow key={i}>
+                      <StyledTableCell align="center">
+                        {row.complain_no}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.department}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.customer}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.complain_type}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.creation_date}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.complaint}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.unit}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.invoices.map((invoice, index) => (
+                          <span key={index}>
+                            {invoice}
+                            {index < row.invoices.length - 1 && (
+                              <span style={{ margin: "0 5px" }}>|</span>
+                            )}
+                          </span>
+                        ))}
+                      </StyledTableCell>
 
-                    <StyledTableCell align="center">
-                      <Button
-                        color="info"
-                        variant="text"
-                        size="small"
-                        onClick={() => handleImageShow(row.document)}
-                      >
-                        Document View
-                      </Button>
-                      <Button
-                        color="secondary"
-                        variant="text"
-                        size="small"
-                        onClick={() => handledownloadpdf(row)}
-                      >
-                        DownLoad
-                      </Button>
-                      {(userData.groups.includes("Director") ||
-                        userData.groups.includes("Production") ||
-                        userData.groups.includes("QA")) &&
-                        row.is_closed === false && (
+                      <StyledTableCell align="center">
+                        <Button
+                          color="info"
+                          variant="text"
+                          size="small"
+                          onClick={() => handleImageShow(row.document)}
+                        >
+                          Document View
+                        </Button>
+                        {(userData.groups.includes("Director") ||
+                          userData.groups.includes(
+                            "Operation & Supply Chain Manager",
+                          ) ||
+                          userData.groups.includes("Customer Service")) && (
                           <Button
-                            color="success"
-                            size="small"
-                            onClick={() => handledOpenCapa(row)}
+                            color="primary"
+                            variant="text"
+                            onClick={() => updateCCFData(row)}
                           >
-                            Create CAPA
+                            Update
                           </Button>
                         )}
-                    </StyledTableCell>
-                  </StyledTableRow>
-                ))}
+                        <Button
+                          color="secondary"
+                          variant="text"
+                          size="small"
+                          onClick={() => handledownloadpdf(row)}
+                        >
+                          DownLoad
+                        </Button>
+                        {(userData.groups.includes("Director") ||
+                          userData.groups.includes("Production") ||
+                          userData.groups.includes("QA")) &&
+                          row.is_closed === false && (
+                            <Button
+                              color="success"
+                              size="small"
+                              onClick={() => handledOpenCapa(row)}
+                            >
+                              Create CAPA
+                            </Button>
+                          )}
+                      </StyledTableCell>
+                    </StyledTableRow>
+                  ))}
               </TableBody>
             </Table>
           </TableContainer>
@@ -277,7 +301,18 @@ export const CCFView = () => {
         >
           <CreateCCF getAllCCFData={getAllCCFData} setOpenCCF={setOpenCCF} />
         </Popup>
-
+        <Popup
+          fullScreen={true}
+          title="Create CCF"
+          openPopup={updateCCF}
+          setOpenPopup={setUpdateCCF}
+        >
+          <UpdateCCF
+            ViewData={ViewData}
+            getAllCCFData={getAllCCFData}
+            setOpenCCF={setUpdateCCF}
+          />
+        </Popup>
         <Popup
           fullScreen={true}
           title="Document Preview"

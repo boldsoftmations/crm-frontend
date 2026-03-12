@@ -6,7 +6,7 @@ const getAllCustomerData = (
   page,
   assignToFilter,
   searchValue,
-  type_of_customer
+  type_of_customer,
 ) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
@@ -64,7 +64,7 @@ const addLeadsintoBeatName = (data) => {
 const updateCustomerBeatPlan = (id, data) => {
   return CustomAxios.post(
     `/api/customer/customer-beat/${id}/add_customer/`,
-    data
+    data,
   );
 };
 
@@ -132,7 +132,7 @@ const getCompanyDataByIdWithType = (id, typeValue) => {
 
 const getSalesHistoryDataByIdWithType = (id, typeValue, filterValue) => {
   return CustomAxios.get(
-    `/api/customer/list-company/${id}?type=${typeValue}&year_month=${filterValue}`
+    `/api/customer/list-company/${id}?type=${typeValue}&year_month=${filterValue}`,
   );
 };
 
@@ -272,7 +272,7 @@ const getAllCompetitors = (page, searchValue) => {
     params.append("search", searchValue);
   }
   return CustomAxios.get(
-    `api/customer/list-main-distribution/?${params.toString()}`
+    `api/customer/list-main-distribution/?${params.toString()}`,
   );
 };
 
@@ -286,7 +286,7 @@ const updateCompetitors = (id, data) => {
 
 const getAllGroupCompanies = (type) => {
   return CustomAxios.get(
-    `/api/customer/list-group-company/?type_of_customer=${type}`
+    `/api/customer/list-group-company/?type_of_customer=${type}`,
   );
 };
 
@@ -301,7 +301,7 @@ const getAllWhatsappGroupData = (page = 1, searchValue) => {
     params.append("search", searchValue);
   }
   return CustomAxios.get(
-    `/api/customer/whatsapp-group-list/?${params.toString()}`
+    `/api/customer/whatsapp-group-list/?${params.toString()}`,
   );
 };
 
@@ -309,7 +309,7 @@ const getCustomerNotHavingWhatsappGroup = (
   page,
   searchValue,
   customerFilter,
-  sale_invoice_status
+  sale_invoice_status,
 ) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
@@ -332,7 +332,7 @@ const getCustomerNotHavingWhatsappGroup = (
 
   // Sending a GET request with query parameters
   return CustomAxios.get(
-    `api/customer/whatsapp-group-list/?${params.toString()}`
+    `api/customer/whatsapp-group-list/?${params.toString()}`,
   );
 };
 
@@ -354,7 +354,7 @@ const getCustomerNotInGroupData = (page, searchValue, customerFilter) => {
 
   // Sending a GET request with query parameters
   return CustomAxios.get(
-    `api/customer/whatsapp-customer/?${params.toString()}`
+    `api/customer/whatsapp-customer/?${params.toString()}`,
   );
 };
 
@@ -402,7 +402,7 @@ const resendWhatsappMessage = (data) => {
 const bulkResendMessage = (data) => {
   return CustomAxios.post(
     `/api/customer/whatsapp-image/unsent_bulk_message/`,
-    data
+    data,
   );
 };
 
@@ -416,7 +416,7 @@ const getAutomatioData = (page = 1, isScheduledFilter = "") => {
   }
 
   return CustomAxios.get(
-    `/api/whatsapp/whatsapp-automation/?${params.toString()}`
+    `/api/whatsapp/whatsapp-automation/?${params.toString()}`,
   );
 };
 
@@ -469,7 +469,7 @@ const getAllCCFData = (page, searchValue) => {
   }
 
   return CustomAxios.get(
-    `/api/customer/ccf/?is_closed=false&${params.toString()}`
+    `/api/customer/ccf/?is_closed=false&${params.toString()}`,
   );
 };
 
@@ -482,7 +482,7 @@ const getAllClosedCCF = (page, search) => {
     params.append("search", search);
   }
   return CustomAxios.get(
-    `/api/customer/ccf/?is_closed=true&${params.toString()}`
+    `/api/customer/ccf/?is_closed=true&${params.toString()}`,
   );
 };
 const getAllComplaintsList = (page, department) => {
@@ -521,7 +521,7 @@ const getProductBaseCustomer = (description, customerName, product) => {
   }
 
   return CustomAxios.get(
-    `/api/customer/product-customer/?${params.toString()}`
+    `/api/customer/product-customer/?${params.toString()}`,
   );
 };
 
@@ -542,7 +542,7 @@ const getDiscription = (desc_id) => {
     params.append("desc_id", desc_id);
   }
   return CustomAxios.get(
-    `/api/customer/description-product/?${params.toString()}`
+    `/api/customer/description-product/?${params.toString()}`,
   );
 };
 const getproductToDescription = (desc_id) => {
@@ -576,7 +576,7 @@ const getAllCapaData = (page, search) => {
 
 const getCustomerLastPi = (company, seller_account) => {
   return CustomAxios.get(
-    `/api/invoice/customer-last-pi/?company=${company}&seller_account=${seller_account}`
+    `/api/invoice/customer-last-pi/?company=${company}&seller_account=${seller_account}`,
   );
 };
 
@@ -616,7 +616,7 @@ const updateCustomerscheme = (id, data) => {
 };
 const getCustomerStatus = () => {
   return CustomAxios.get(
-    "/api/master/model-option/?page=all&model_master__name=Customer Followup"
+    "/api/master/model-option/?page=all&model_master__name=Customer Followup",
   );
 };
 
@@ -626,14 +626,14 @@ const getFieldsSalesPersonVisitPlan = (
   page,
   search,
   visited_by__name,
-  is_completed = true
+  is_completed = true,
 ) => {
   const params = new URLSearchParams();
   if (page) params.append("page", page);
   if (search) params.append("search", search);
   if (visited_by__name) params.append("visited_by__name", visited_by__name);
   return CustomAxios.get(
-    `/api/field-sales/visit-plan/?is_completed=${is_completed}&${params.toString()}`
+    `/api/field-sales/visit-plan/?is_completed=${is_completed}&${params.toString()}`,
   );
 };
 
@@ -641,14 +641,14 @@ const getFieldsSalesPersonLeadVisitPlan = (
   page,
   search,
   visited_by__name,
-  is_completed = true
+  is_completed = true,
 ) => {
   const params = new URLSearchParams();
   if (page) params.append("page", page);
   if (search) params.append("search", search);
   if (visited_by__name) params.append("visited_by__name", visited_by__name);
   return CustomAxios.get(
-    `/api/field-sales/lead-visit-plan/?is_completed=${is_completed}&${params.toString()}`
+    `/api/field-sales/lead-visit-plan/?is_completed=${is_completed}&${params.toString()}`,
   );
 };
 
@@ -666,7 +666,7 @@ const createCustomerSRF = (data) => {
 
 const getCustomerAddressType = (customer_name) => {
   return CustomAxios.get(
-    `/api/srf/customer-address/?customer=${customer_name}`
+    `/api/srf/customer-address/?customer=${customer_name}`,
   );
 };
 
@@ -704,20 +704,24 @@ const getNewCustomers = (
   filterPerson,
   custom_date,
   start_date,
-  end_date
+  end_date,
 ) => {
   const params = new URLSearchParams();
   if (page) params.append("page", page);
   if (filterPerson)
     params.append(
       "order_book__proforma_invoice__lead__assigned_to__name",
-      filterPerson
+      filterPerson,
     );
   if (custom_date) params.append("custom_date", custom_date);
   if (start_date) params.append("start_date", start_date);
   if (end_date) params.append("end_date", end_date);
 
   return CustomAxios.get(`/api/customer/new-customer/?${params.toString()}`);
+};
+
+const CCFUpdate = (id, data) => {
+  return CustomAxios.patch(`/api/customer/ccf/${id}/`, data);
 };
 
 const CustomerServices = {
@@ -818,6 +822,7 @@ const CustomerServices = {
   getNewCustomers,
   getLeadsMasterListByPincode,
   getCustomerAddressType,
+  CCFUpdate,
 };
 
 export default CustomerServices;

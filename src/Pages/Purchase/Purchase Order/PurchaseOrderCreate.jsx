@@ -10,6 +10,7 @@ import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
 import { DecimalValidation } from "../../../Components/Header/DecimalValidation";
+import { Popup } from "../../../Components/Popup";
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -30,7 +31,7 @@ export const PurchaseOrderCreate = ({
     sellerData: state.auth.sellerAccount,
     userData: state.auth.profile,
   }));
-
+  const [openAlert, setOpenAlert] = useState(false);
   const today = new Date().toISOString().slice(0, 10);
   const [inputValues, setInputValues] = useState({
     created_by: userData.email,
@@ -76,7 +77,7 @@ export const PurchaseOrderCreate = ({
         console.log(selectedProducts);
         if (fieldName === "vendor_contact_person") {
           const selectedContact = recordForEdit.contacts.find(
-            (contact) => contact.name === value
+            (contact) => contact.name === value,
           );
           if (selectedContact) {
             newValues.vendor_contact = selectedContact.contact;
@@ -95,7 +96,7 @@ export const PurchaseOrderCreate = ({
         return newValues;
       });
     },
-    [recordForEdit.type, recordForEdit.contacts]
+    [recordForEdit.type, recordForEdit.contacts],
   );
 
   const handleProductChange = (index, field, value) => {
@@ -128,7 +129,7 @@ export const PurchaseOrderCreate = ({
 
     // Find the product object based on the selected value
     const productObj = productOption.find(
-      (item) => item.name === selectedProductName
+      (item) => item.name === selectedProductName,
     );
 
     // Early exit if the product object is not found
@@ -174,7 +175,7 @@ export const PurchaseOrderCreate = ({
 
       // Update the selected products list: remove the product that is being deleted
       setSelectedProducts(
-        selectedProducts.filter((item) => item !== removedProduct)
+        selectedProducts.filter((item) => item !== removedProduct),
       );
 
       return { ...prevValues, products };
@@ -204,7 +205,7 @@ export const PurchaseOrderCreate = ({
         if (recordForEdit.type === "International") {
           // Exclude INR for international vendors
           filteredCurrencyOptions = filteredCurrencyOptions.filter(
-            (option) => option.name !== "INR"
+            (option) => option.name !== "INR",
           );
         }
         setCurrencyOption(filteredCurrencyOptions);
@@ -237,6 +238,10 @@ export const PurchaseOrderCreate = ({
       setLoading(false);
     }
   };
+  const openAlertPopup = (e) => {
+    e.preventDefault();
+    setOpenAlert(true);
+  };
 
   const createPurchaseOrderDetails = async (e) => {
     console.log(vendorData);
@@ -247,7 +252,7 @@ export const PurchaseOrderCreate = ({
       const numTypes = inputValues.products.map((item) => item.type_of_unit);
       const quantities = inputValues.products.map((item) => item.quantity);
       const decimalCounts = inputValues.products.map((item) =>
-        String(item.max_decimal_digit)
+        String(item.max_decimal_digit),
       );
       const unit = inputValues.products.map((item) => item.unit);
 
@@ -307,11 +312,7 @@ export const PurchaseOrderCreate = ({
       />
       <CustomLoader open={loading} />
 
-      <Box
-        component="form"
-        noValidate
-        onSubmit={(e) => createPurchaseOrderDetails(e)}
-      >
+      <Box component="form" noValidate onSubmit={(e) => openAlertPopup(e)}>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={3}>
             <CustomTextField
@@ -548,6 +549,86 @@ export const PurchaseOrderCreate = ({
           Submit
         </Button>
       </Box>
+
+      <Popup
+        openPopup={openAlert}
+        setOpenPopup={setOpenAlert}
+        title="PO Confirmation"
+      >
+        <Box sx={{ mb: 2 }}>
+          <p
+            style={{ fontWeight: 500, marginBottom: "10px", color: "#ff2121" }}
+          >
+            Note: Please review the following products before creating the
+            packing list.{" "}
+            <p>Once submitted, the quantities will be processed.</p>
+          </p>
+
+          {inputValues.products.length > 0 ? (
+            inputValues.products.map((item) => (
+              <Box
+                key={item.id}
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  padding: "10px 14px",
+                  border: "1px solid #e0e0e0",
+                  borderRadius: "6px",
+                  mb: 1,
+                  background: "#f9fafb",
+                }}
+              >
+                <span style={{ fontWeight: 500, color: "#333" }}>
+                  {item.product}
+                </span>
+
+                <span style={{ color: "#1976d2", fontWeight: 600 }}>
+                  Qty: {item.quantity}
+                </span>
+              </Box>
+            ))
+          ) : (
+            <p style={{ color: "#d32f2f" }}>No products added.</p>
+          )}
+        </Box>
+
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "flex-end",
+            gap: 2,
+          }}
+        >
+          <Button
+            variant="outlined"
+            sx={{
+              backgroundColor: "#fd0000",
+              color: "#ffffff",
+              border: "none",
+              "&:hover": {
+                borderColor: "#616161",
+                backgroundColor: "#ff3d3d",
+              },
+            }}
+            onClick={() => setOpenAlert(false)}
+          >
+            Cancel
+          </Button>
+
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: "#1976d2",
+              "&:hover": {
+                backgroundColor: "#115293",
+              },
+            }}
+            onClick={createPurchaseOrderDetails}
+          >
+            Confirm & Create
+          </Button>
+        </Box>
+      </Popup>
     </>
   );
 };

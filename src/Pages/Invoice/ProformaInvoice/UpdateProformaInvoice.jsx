@@ -7,18 +7,24 @@ import InvoiceService from "../../../services/InvoiceService";
 const UpdateProformaInvoice = ({
   getProformaInvoiceData,
   idForEdit,
-  setOpenPopup3,
+  setOpenPopup,
+  handleError,
+  handleSuccess,
 }) => {
-  const [transporter, setTransporter] = useState(idForEdit.transporter || "");
+  const [transporter, setTransporter] = useState(
+    idForEdit.transporter_name || "",
+  );
 
+  console.log("Transporter name", idForEdit.transporter_name);
+  console.log(idForEdit);
   // const isInGroups = (...groups) => {
   //   groups.some((group) => userData.groups.includes(group));
   // };
 
   // ✅ Set initial value when edit data comes
   useEffect(() => {
-    if (idForEdit.transporter) {
-      setTransporter(idForEdit.transporter);
+    if (idForEdit.transporter_name) {
+      setTransporter(idForEdit.transporter_name);
     }
   }, [idForEdit]);
 
@@ -29,13 +35,21 @@ const UpdateProformaInvoice = ({
   const handleSubmit = async () => {
     try {
       const payload = { transporter_name: transporter };
-      await InvoiceService.updateAllPerformaInvoiceData(
+
+      const response = await InvoiceService.updateAllPerformaInvoiceData(
         idForEdit.pi_number,
         payload,
       );
+      const successMessage =
+        response.data.message || "Transport Name updated successfully";
+      handleSuccess(successMessage);
+      // console.log(response.data.message);
+
       getProformaInvoiceData();
-      setOpenPopup3(false);
+
+      setOpenPopup(false); // move here
     } catch (error) {
+      handleError(error);
       console.log("Error while updating Proforma Invoice", error);
     }
   };
@@ -59,7 +73,7 @@ const UpdateProformaInvoice = ({
             size="small"
             name="transporter"
             label="Transporter Name"
-            value={transporter}
+            value={transporter || ""}
             onChange={handleChange}
           />
         </Grid>
