@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Chip,
   Divider,
   Grid,
   IconButton,
@@ -9,6 +10,7 @@ import {
   ListItemText,
   Paper,
   Typography,
+  styled,
 } from "@mui/material";
 import React, { useRef, useState } from "react";
 import logo from "../../Images/glutape logo.jpg";
@@ -18,6 +20,7 @@ import { MessageAlert } from "../../Components/MessageAlert";
 import { CustomLoader } from "../../Components/CustomLoader";
 import CustomerServices from "../../services/CustomerService";
 import CustomTextField from "../../Components/CustomTextField";
+// import styled from "styled-components";
 
 const UpdateCCF = ({ getAllCCFData, setOpenCCF, ViewData }) => {
   const [open, setOpen] = useState(false);
@@ -29,9 +32,15 @@ const UpdateCCF = ({ getAllCCFData, setOpenCCF, ViewData }) => {
   console.log(ViewData.document);
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
-
+  console.log("ViewData:", ViewData);
   // ================= FILE HANDLING =================
-
+  const Root = styled("div")(({ theme }) => ({
+    width: "100%",
+    ...theme.typography.body2,
+    "& > :not(style) + :not(style)": {
+      marginTop: theme.spacing(2),
+    },
+  }));
   const handleFileChange = (e) => {
     const newFiles = Array.from(e.target.files);
     const existingFiles = files.map((file) => file.name);
@@ -440,6 +449,57 @@ const UpdateCCF = ({ getAllCCFData, setOpenCCF, ViewData }) => {
                   Upload Document
                 </Button>
               </Grid>
+              <Grid item xs={12}></Grid>
+              <Grid item xs={12}>
+                <Root>
+                  <Divider>
+                    <Chip label="PRODUCT" />
+                  </Divider>
+                </Root>
+              </Grid>
+              {ViewData &&
+                ViewData.products.length > 0 &&
+                ViewData.products.map((input, index) => {
+                  return (
+                    <React.Fragment key={index}>
+                      {" "}
+                      {/* Use React.Fragment with a key for each item */}
+                      <Grid item xs={12} sm={4}>
+                        <CustomTextField
+                          fullWidth
+                          name="product"
+                          size="small"
+                          label="Product"
+                          variant="outlined"
+                          value={input.product}
+                          disabled={true}
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={4}>
+                        <CustomTextField
+                          fullWidth
+                          name="quantity"
+                          size="small"
+                          label="Quantity"
+                          variant="outlined"
+                          value={input.quantity}
+                          disabled={true}
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={4}>
+                        <CustomTextField
+                          fullWidth
+                          name="quantity"
+                          size="small"
+                          label="Quantity"
+                          variant="outlined"
+                          value={input.unit}
+                          disabled={true}
+                        />
+                      </Grid>
+                    </React.Fragment>
+                  );
+                })}
               <Grid item xs={12}>
                 <Button
                   variant="contained"

@@ -43,6 +43,11 @@ export const CCFView = () => {
   const [imagesData, setImagesData] = useState(null);
   const [ViewData, setViewData] = useState(null);
 
+  const allowedRoles = [
+    "Director",
+    "Operations & Supply Chain Manager",
+    "Customer Service",
+  ];
   const userData = useSelector((state) => state.auth.profile);
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
@@ -248,11 +253,10 @@ export const CCFView = () => {
                         >
                           Document View
                         </Button>
-                        {(userData.groups.includes("Director") ||
-                          userData.groups.includes(
-                            "Operation & Supply Chain Manager",
-                          ) ||
-                          userData.groups.includes("Customer Service")) && (
+
+                        {allowedRoles.some(function (role) {
+                          return userData.groups.includes(role);
+                        }) && (
                           <Button
                             color="primary"
                             variant="text"
