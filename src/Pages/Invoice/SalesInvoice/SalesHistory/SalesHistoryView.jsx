@@ -20,7 +20,6 @@ import { tableCellClasses } from "@mui/material/TableCell";
 import { Popup } from "../../../../Components/Popup";
 
 import { CSVLink } from "react-csv";
-import CustomTextField from "../../../../Components/CustomTextField";
 
 import { useNotificationHandling } from "../../../../Components/useNotificationHandling ";
 import SearchComponent from "../../../../Components/SearchComponent ";
@@ -28,6 +27,7 @@ import { MessageAlert } from "../../../../Components/MessageAlert";
 import CustomAutocomplete from "../../../../Components/CustomAutocomplete";
 
 import { CustomPagination } from "../../../../Components/CustomPagination";
+import CustomDateFilterPopup from "../../../../Components/CustomDateFilterPopup";
 export const SalesHistoryView = () => {
   const [open, setOpen] = useState(false);
   const [salesInvoiceData, setSalesInvoiceData] = useState([]);
@@ -73,11 +73,11 @@ export const SalesHistoryView = () => {
         EndDate,
         "all",
         filterSelectedQuery,
-        searchQuery
+        searchQuery,
       );
       // Filter out items with 'cancelled' as true from the response
       const filteredData = response.data.filter(
-        (item) => item.cancelled !== true
+        (item) => item.cancelled !== true,
       );
 
       // Initialize the data array
@@ -119,17 +119,6 @@ export const SalesHistoryView = () => {
     setTimeout(() => {
       csvLinkRef.current.link.click();
     });
-  };
-
-  const handleStartDateChange = (event) => {
-    const date = new Date(event.target.value);
-    setStartDate(date);
-    setEndDate(new Date());
-  };
-
-  const handleEndDateChange = (event) => {
-    const date = new Date(event.target.value);
-    setEndDate(date);
   };
 
   const handleChange = (value) => {
@@ -175,17 +164,11 @@ export const SalesHistoryView = () => {
     }
   };
 
-  const getResetDate = () => {
-    setStartDate(new Date());
-    setEndDate(new Date());
-  };
-
   const getAllSellerAccountsDetails = async () => {
     try {
       setOpen(true);
-      const response = await InvoiceServices.getAllPaginateSellerAccountData(
-        "all"
-      );
+      const response =
+        await InvoiceServices.getAllPaginateSellerAccountData("all");
       setSellerUnitOption(response.data);
 
       setOpen(false);
@@ -209,7 +192,7 @@ export const SalesHistoryView = () => {
         EndDate,
         currentPage,
         filterSelectedQuery,
-        searchQuery
+        searchQuery,
       );
       setSalesInvoiceData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -229,14 +212,7 @@ export const SalesHistoryView = () => {
 
   useEffect(() => {
     getSalesInvoiceDetails();
-  }, [
-    filterInvoiceType,
-    startDate,
-    endDate,
-    currentPage,
-    filterSelectedQuery,
-    searchQuery,
-  ]);
+  }, [filterInvoiceType, currentPage, filterSelectedQuery, searchQuery]);
 
   const handleSearch = (query) => {
     setSearchQuery(query);
@@ -442,58 +418,20 @@ export const SalesHistoryView = () => {
         title="Date Filter"
         maxWidth="md"
       >
-        <Box
-          sx={{
-            backgroundColor: "white",
-            borderRadius: "8px",
-            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-            margin: "10px",
-            padding: "20px",
+        <CustomDateFilterPopup
+          startDate={startDate}
+          endDate={endDate}
+          setStartDate={setStartDate}
+          setEndDate={setEndDate}
+          minDate={minDate}
+          maxDate={maxDate}
+          open={openPopup4}
+          setOpen={setOpenPopup4}
+          onSubmit={() => {
+            setOpenPopup4(false);
+            getSalesInvoiceDetails();
           }}
-        >
-          <Grid container spacing={2}>
-            <Grid item xs={5} sm={5} md={5} lg={5}>
-              <CustomTextField
-                fullWidth
-                label="Start Date"
-                variant="outlined"
-                size="small"
-                type="date"
-                id="start-date"
-                value={startDate ? startDate.toISOString().split("T")[0] : ""}
-                min={minDate}
-                max={maxDate}
-                onChange={handleStartDateChange}
-              />
-            </Grid>
-            <Grid item xs={5} sm={5} md={5} lg={5}>
-              <CustomTextField
-                fullWidth
-                label="End Date"
-                variant="outlined"
-                size="small"
-                type="date"
-                id="end-date"
-                value={endDate ? endDate.toISOString().split("T")[0] : ""}
-                min={
-                  startDate ? startDate.toISOString().split("T")[0] : minDate
-                }
-                max={maxDate}
-                onChange={handleEndDateChange}
-                disabled={!startDate}
-              />
-            </Grid>
-            <Grid item xs={2} sm={2} md={2} lg={2}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={getResetDate}
-              >
-                Reset
-              </Button>
-            </Grid>
-          </Grid>
-        </Box>
+        />
       </Popup>
     </>
   );

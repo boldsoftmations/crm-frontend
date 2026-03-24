@@ -12,13 +12,12 @@ import { CustomPagination } from "../../Components/CustomPagination";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import { MessageAlert } from "../../Components/MessageAlert";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
-import CustomDate from "../../Components/CustomDate";
+import CustomDateFilterPopup from "../../Components/CustomDateFilterPopup";
 
 export const CustomerFollowup = () => {
   const [pendingFollowUp, setPendingFollowUp] = useState([]);
   const [open, setOpen] = useState(false);
-  // const [pendingFollowUpByID, setPendingFollowUpByID] = useState("");
-  // const [openModal, setOpenModal] = useState(false);
+
   const [popupCustomer, setPopupCustomer] = useState(false);
   const [customerId, setCustomerId] = useState(null);
   const [selectedCustomers, setSelectedCustomers] = useState(null);
@@ -60,7 +59,7 @@ export const CustomerFollowup = () => {
 
   useEffect(() => {
     getFollowUp();
-  }, [currentPage, filterSelectedQuery, filterFollowup, startDate, endDate]);
+  }, [currentPage, filterSelectedQuery, filterFollowup]);
 
   const getFollowUp = useCallback(async () => {
     try {
@@ -72,7 +71,7 @@ export const CustomerFollowup = () => {
         currentPage,
         filterSelectedQuery,
         StartDate,
-        EndDate
+        EndDate,
       );
       setPendingFollowUp(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -106,10 +105,10 @@ export const CustomerFollowup = () => {
         status: row.status,
         duration: row.duration,
         current_date: moment(
-          row.creation_date ? row.creation_date : "-"
+          row.creation_date ? row.creation_date : "-",
         ).format("DD/MM/YYYY h:mm:ss"),
         next_followup_date: moment(
-          row.next_followup_date ? row.next_followup_date : "-"
+          row.next_followup_date ? row.next_followup_date : "-",
         ).format("DD/MM/YYYY h:mm:ss"),
         notes: row.notes,
       }))
@@ -128,19 +127,6 @@ export const CustomerFollowup = () => {
     "ACTION",
   ];
 
-  const handleEndDateChange = (event) => {
-    const date = new Date(event.target.value);
-    setEndDate(date);
-  };
-  const getResetDate = () => {
-    setStartDate(new Date());
-    setEndDate(new Date());
-  };
-  const handleStartDateChange = (event) => {
-    const date = new Date(event.target.value);
-    setStartDate(date);
-    setEndDate(new Date());
-  };
   return (
     <>
       <MessageAlert
@@ -200,7 +186,7 @@ export const CustomerFollowup = () => {
                 }}
                 value={
                   followupOptions.find(
-                    (option) => option.value === filterFollowup
+                    (option) => option.value === filterFollowup,
                   ) || "today_followup"
                 } // Match the value with options
                 options={followupOptions}
@@ -238,22 +224,22 @@ export const CustomerFollowup = () => {
           />
         </Paper>
       </Grid>
-      <Popup
-        openPopup={customDataPopup}
-        setOpenPopup={setCustomDataPopup}
-        title="Date Filter"
-        maxWidth="md"
-      >
-        <CustomDate
-          startDate={startDate}
-          endDate={endDate}
-          minDate={minDate}
-          maxDate={maxDate}
-          handleStartDateChange={handleStartDateChange}
-          handleEndDateChange={handleEndDateChange}
-          resetDate={getResetDate}
-        />
-      </Popup>
+
+      <CustomDateFilterPopup
+        startDate={startDate}
+        endDate={endDate}
+        setStartDate={setStartDate}
+        setEndDate={setEndDate}
+        minDate={minDate}
+        maxDate={maxDate}
+        open={customDataPopup}
+        setOpen={setCustomDataPopup}
+        onSubmit={() => {
+          setCustomDataPopup(false);
+          getFollowUp();
+        }}
+      />
+
       <Popup
         maxWidth={"xl"}
         title={"Update customer"}

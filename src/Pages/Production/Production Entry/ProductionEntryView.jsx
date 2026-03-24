@@ -31,9 +31,9 @@ import { useNotificationHandling } from "../../../Components/useNotificationHand
 import { MessageAlert } from "../../../Components/MessageAlert";
 import SearchComponent from "../../../Components/SearchComponent ";
 import { CustomPagination } from "../../../Components/CustomPagination";
-import CustomDate from "../../../Components/CustomDate";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import { CSVLink } from "react-csv";
+import CustomDateFilterPopup from "../../../Components/CustomDateFilterPopup";
 
 export const ProductionEntryView = () => {
   const [openPopup2, setOpenPopup2] = useState(false);
@@ -92,7 +92,7 @@ export const ProductionEntryView = () => {
 
   useEffect(() => {
     getAllProductionEntryDetails(currentPage, searchQuery);
-  }, [currentPage, searchQuery, startDate, endDate, filterByDays]);
+  }, [currentPage, searchQuery, filterByDays]);
 
   const handleExport = async () => {
     try {
@@ -104,7 +104,7 @@ export const ProductionEntryView = () => {
         searchQuery,
         StartDate,
         EndDate,
-        filterByDays
+        filterByDays,
       );
       const data = response.data.map((row) => {
         return {
@@ -163,7 +163,7 @@ export const ProductionEntryView = () => {
           search,
           StartDate,
           EndDate,
-          filterByDays
+          filterByDays,
         );
         setProductionEntry(response.data.results);
         setTotalPages(Math.ceil(response.data.count / 25));
@@ -174,7 +174,7 @@ export const ProductionEntryView = () => {
         setOpen(false);
       }
     },
-    [currentPage, searchQuery, startDate, endDate, filterByDays]
+    [currentPage, searchQuery, startDate, endDate, filterByDays],
   );
 
   const handlePageChange = (event, value) => {
@@ -191,19 +191,11 @@ export const ProductionEntryView = () => {
     setCurrentPage(1);
   };
 
-  const handleEndDateChange = (event) => {
-    const date = new Date(event.target.value);
-    setEndDate(date);
-  };
   const getResetDate = () => {
     setStartDate(new Date());
     setEndDate(new Date());
   };
-  const handleStartDateChange = (event) => {
-    const date = new Date(event.target.value);
-    setStartDate(date);
-    setEndDate(new Date());
-  };
+
   const handleChange = (value) => {
     if (value === "custom_date") {
       setStartDate(new Date());
@@ -382,13 +374,8 @@ export const ProductionEntryView = () => {
           sellerOption={sellerOption}
         />
       </Popup>
-      <Popup
-        openPopup={customDataPopup}
-        setOpenPopup={setCustomDataPopup}
-        title="Date Filter"
-        maxWidth="md"
-      >
-        <CustomDate
+
+      {/* <CustomDate
           startDate={startDate}
           endDate={endDate}
           minDate={minDate}
@@ -396,8 +383,23 @@ export const ProductionEntryView = () => {
           handleStartDateChange={handleStartDateChange}
           handleEndDateChange={handleEndDateChange}
           resetDate={getResetDate}
-        />
-      </Popup>
+        /> */}
+
+      <CustomDateFilterPopup
+        open={customDataPopup}
+        setOpen={setCustomDataPopup}
+        startDate={startDate}
+        endDate={endDate}
+        minDate={minDate}
+        maxDate={maxDate}
+        setStartDate={setStartDate}
+        setEndDate={setEndDate}
+        onReset={getResetDate}
+        onSubmit={() => {
+          setCustomDataPopup(false);
+          getAllProductionEntryDetails(currentPage, searchQuery);
+        }}
+      />
     </>
   );
 };

@@ -25,7 +25,7 @@ const currentMonths = currentMonthStartDate.format("YYYY-MM");
 export const WeeklyProductionReport = () => {
   const [open, setOpen] = useState(false);
   const [weeklyProductionReportData, setWeeklyProductionReportData] = useState(
-    []
+    [],
   );
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
   const { handleError, handleCloseSnackbar, alertInfo } =
@@ -41,7 +41,7 @@ export const WeeklyProductionReport = () => {
       const response =
         await InventoryServices.getWeeklyProductionReportFilterData(
           month,
-          year
+          year,
         );
 
       setWeeklyProductionReportData(response.data);
@@ -94,43 +94,43 @@ export const WeeklyProductionReport = () => {
   let data = weeklyProductionReportData.flatMap((row) => {
     const week1 = row.data
       .filter(
-        (data) => data.index_position !== null && data.index_position === 0
+        (data) => data.index_position !== null && data.index_position === 0,
       )
       .reduce(
         (sum, filteredData) => sum + Number(filteredData.total_quantity),
-        0
+        0,
       );
     const week2 = row.data
       .filter(
-        (data) => data.index_position !== null && data.index_position === 1
+        (data) => data.index_position !== null && data.index_position === 1,
       )
       .reduce(
         (sum, filteredData) => sum + Number(filteredData.total_quantity),
-        0
+        0,
       );
     const week3 = row.data
       .filter(
-        (data) => data.index_position !== null && data.index_position === 2
+        (data) => data.index_position !== null && data.index_position === 2,
       )
       .reduce(
         (sum, filteredData) => sum + Number(filteredData.total_quantity),
-        0
+        0,
       );
     const week4 = row.data
       .filter(
-        (data) => data.index_position !== null && data.index_position === 3
+        (data) => data.index_position !== null && data.index_position === 3,
       )
       .reduce(
         (sum, filteredData) => sum + Number(filteredData.total_quantity),
-        0
+        0,
       );
     const week5 = row.data
       .filter(
-        (data) => data.index_position !== null && data.index_position === 4
+        (data) => data.index_position !== null && data.index_position === 4,
       )
       .reduce(
         (sum, filteredData) => sum + Number(filteredData.total_quantity),
-        0
+        0,
       );
 
     const total = week1 + week2 + week3 + week4 + week5;
@@ -163,43 +163,43 @@ export const WeeklyProductionReport = () => {
   const TableData = weeklyProductionReportData.flatMap((row) => {
     const week1 = row.data
       .filter(
-        (data) => data.index_position !== null && data.index_position === 0
+        (data) => data.index_position !== null && data.index_position === 0,
       )
       .reduce(
         (sum, filteredData) => sum + Number(filteredData.total_quantity),
-        0
+        0,
       );
     const week2 = row.data
       .filter(
-        (data) => data.index_position !== null && data.index_position === 1
+        (data) => data.index_position !== null && data.index_position === 1,
       )
       .reduce(
         (sum, filteredData) => sum + Number(filteredData.total_quantity),
-        0
+        0,
       );
     const week3 = row.data
       .filter(
-        (data) => data.index_position !== null && data.index_position === 2
+        (data) => data.index_position !== null && data.index_position === 2,
       )
       .reduce(
         (sum, filteredData) => sum + Number(filteredData.total_quantity),
-        0
+        0,
       );
     const week4 = row.data
       .filter(
-        (data) => data.index_position !== null && data.index_position === 3
+        (data) => data.index_position !== null && data.index_position === 3,
       )
       .reduce(
         (sum, filteredData) => sum + Number(filteredData.total_quantity),
-        0
+        0,
       );
     const week5 = row.data
       .filter(
-        (data) => data.index_position !== null && data.index_position === 4
+        (data) => data.index_position !== null && data.index_position === 4,
       )
       .reduce(
         (sum, filteredData) => sum + Number(filteredData.total_quantity),
-        0
+        0,
       );
 
     const total = week1 + week2 + week3 + week4 + week5;
@@ -230,70 +230,70 @@ export const WeeklyProductionReport = () => {
         sum +
         row.data
           .filter(
-            (data) => data.index_position !== null && data.index_position === 0
+            (data) => data.index_position !== null && data.index_position === 0,
           )
           .reduce(
             (total, filteredData) =>
               total + Number(filteredData.total_quantity),
-            0
+            0,
           ),
-      0
+      0,
     ),
     week2: weeklyProductionReportData.reduce(
       (sum, row) =>
         sum +
         row.data
           .filter(
-            (data) => data.index_position !== null && data.index_position === 1
+            (data) => data.index_position !== null && data.index_position === 1,
           )
           .reduce(
             (total, filteredData) =>
               total + Number(filteredData.total_quantity),
-            0
+            0,
           ),
-      0
+      0,
     ),
     week3: weeklyProductionReportData.reduce(
       (sum, row) =>
         sum +
         row.data
           .filter(
-            (data) => data.index_position !== null && data.index_position === 2
+            (data) => data.index_position !== null && data.index_position === 2,
           )
           .reduce(
             (total, filteredData) =>
               total + Number(filteredData.total_quantity),
-            0
+            0,
           ),
-      0
+      0,
     ),
     week4: weeklyProductionReportData.reduce(
       (sum, row) =>
         sum +
         row.data
           .filter(
-            (data) => data.index_position !== null && data.index_position === 3
+            (data) => data.index_position !== null && data.index_position === 3,
           )
           .reduce(
             (total, filteredData) =>
               total + Number(filteredData.total_quantity),
-            0
+            0,
           ),
-      0
+      0,
     ),
     week5: weeklyProductionReportData.reduce(
       (sum, row) =>
         sum +
         row.data
           .filter(
-            (data) => data.index_position !== null && data.index_position === 4
+            (data) => data.index_position !== null && data.index_position === 4,
           )
           .reduce(
             (total, filteredData) =>
               total + Number(filteredData.total_quantity),
-            0
+            0,
           ),
-      0
+      0,
     ),
     get total() {
       return this.week1 + this.week2 + this.week3 + this.week4 + this.week5;
@@ -364,6 +364,7 @@ export const WeeklyProductionReport = () => {
             headers={TableHeader}
             data={tableData}
             isLastRow={totalRow ? true : false}
+            Isviewable={false}
           />
         </Paper>
       </Grid>

@@ -95,7 +95,7 @@ export const ForecastView = ({ recordForEdit }) => {
       const forecastResponse =
         await CustomerServices.getCompanyDataByIdWithType(
           recordForEdit,
-          "forecast"
+          "forecast",
         );
       setForecastData(forecastResponse.data.forecast);
 
@@ -111,8 +111,8 @@ export const ForecastView = ({ recordForEdit }) => {
     ...new Set(
       forecastdata &&
         forecastdata.flatMap((row) =>
-          row.product_forecast.map((rowData) => rowData.month)
-        )
+          row.product_forecast.map((rowData) => rowData.month),
+        ),
     ),
   ].sort((a, b) => a - b);
 
@@ -174,9 +174,9 @@ export const ForecastView = ({ recordForEdit }) => {
           <Table sx={{ minWidth: 700 }} stickyHeader aria-label="sticky table">
             <TableHead>
               <StyledTableRow>
-                <StyledTableCell align="center">
+                {/* <StyledTableCell align="center">
                   LAST UPDATED BY{" "}
-                </StyledTableCell>
+                </StyledTableCell> */}
                 <StyledTableCell align="center">PRODUCT</StyledTableCell>
                 <StyledTableCell align="center">
                   {` ${months[lastMonth1]} - ${
@@ -224,15 +224,15 @@ export const ForecastView = ({ recordForEdit }) => {
               {forecastdata &&
                 forecastdata.map((row) => (
                   <StyledTableRow>
-                    <StyledTableCell align="center">
+                    {/* <StyledTableCell align="center">
                       {row.sales_person}
-                    </StyledTableCell>
+                    </StyledTableCell> */}
                     <StyledTableCell align="center">
                       {row.product}
                     </StyledTableCell>
                     {allForecastMonths.map((position) => {
                       const rowData = row.product_forecast.find(
-                        (data) => data.month === position
+                        (data) => data.month === position,
                       );
 
                       if (rowData) {

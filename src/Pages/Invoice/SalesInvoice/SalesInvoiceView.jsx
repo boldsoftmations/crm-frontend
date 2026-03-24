@@ -27,7 +27,6 @@ import { CustomPagination } from "../../../Components/CustomPagination";
 import { useSelector } from "react-redux";
 import { CancelSalesInvoice } from "./CancelSalesInvoice";
 import { CSVLink } from "react-csv";
-import CustomTextField from "../../../Components/CustomTextField";
 import BranchInvoicesCreate from "../BranchInvoices/BranchInvoicesCreate";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import SearchComponent from "../../../Components/SearchComponent ";
@@ -35,6 +34,7 @@ import { MessageAlert } from "../../../Components/MessageAlert";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import { SourceViewList } from "./SourceViewList";
 import UploadSalesInvoice from "./uploadSaleInvoice";
+import CustomDateFilterPopup from "../../../Components/CustomDateFilterPopup";
 
 export const SalesInvoiceView = () => {
   const [open, setOpen] = useState(false);
@@ -125,17 +125,6 @@ export const SalesInvoiceView = () => {
     });
   };
 
-  const handleStartDateChange = (event) => {
-    const date = new Date(event.target.value);
-    setStartDate(date);
-    setEndDate(new Date());
-  };
-
-  const handleEndDateChange = (event) => {
-    const date = new Date(event.target.value);
-    setEndDate(date);
-  };
-
   const handleChange = (value) => {
     const selectedValue = value;
 
@@ -177,11 +166,6 @@ export const SalesInvoiceView = () => {
       setEndDate(new Date());
       setOpenPopup4(true);
     }
-  };
-
-  const getResetDate = () => {
-    setStartDate(new Date());
-    setEndDate(new Date());
   };
 
   const getAllSellerAccountsDetails = async () => {
@@ -232,14 +216,7 @@ export const SalesInvoiceView = () => {
 
   useEffect(() => {
     getSalesInvoiceDetails();
-  }, [
-    filterInvoiceType,
-    startDate,
-    endDate,
-    currentPage,
-    filterSelectedQuery,
-    searchQuery,
-  ]);
+  }, [filterInvoiceType, currentPage, filterSelectedQuery, searchQuery]);
 
   const handleSearch = (query) => {
     setSearchQuery(query);
@@ -518,58 +495,20 @@ export const SalesInvoiceView = () => {
         title="Date Filter"
         maxWidth="md"
       >
-        <Box
-          sx={{
-            backgroundColor: "white",
-            borderRadius: "8px",
-            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-            margin: "10px",
-            padding: "20px",
+        <CustomDateFilterPopup
+          open={openPopup4}
+          setOpen={setOpenPopup4}
+          startDate={startDate}
+          endDate={endDate}
+          setStartDate={setStartDate}
+          setEndDate={setEndDate}
+          minDate={minDate}
+          maxDate={maxDate}
+          onSubmit={() => {
+            getSalesInvoiceDetails();
+            setOpenPopup4(false);
           }}
-        >
-          <Grid container spacing={2}>
-            <Grid item xs={5} sm={5} md={5} lg={5}>
-              <CustomTextField
-                fullWidth
-                label="Start Date"
-                variant="outlined"
-                size="small"
-                type="date"
-                id="start-date"
-                value={startDate ? startDate.toISOString().split("T")[0] : ""}
-                min={minDate}
-                max={maxDate}
-                onChange={handleStartDateChange}
-              />
-            </Grid>
-            <Grid item xs={5} sm={5} md={5} lg={5}>
-              <CustomTextField
-                fullWidth
-                label="End Date"
-                variant="outlined"
-                size="small"
-                type="date"
-                id="end-date"
-                value={endDate ? endDate.toISOString().split("T")[0] : ""}
-                min={
-                  startDate ? startDate.toISOString().split("T")[0] : minDate
-                }
-                max={maxDate}
-                onChange={handleEndDateChange}
-                disabled={!startDate}
-              />
-            </Grid>
-            <Grid item xs={2} sm={2} md={2} lg={2}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={getResetDate}
-              >
-                Reset
-              </Button>
-            </Grid>
-          </Grid>
-        </Box>
+        />
       </Popup>
     </>
   );

@@ -8,7 +8,7 @@ import ProductService from "../../../services/ProductService";
 import CustomerServices from "../../../services/CustomerService";
 import { useNavigate } from "react-router-dom";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
-import { DecimalValidation } from "../../../Components/Header/DecimalValidation";
+import { DecimalValidation } from "../../../utils/DecimalValidation";
 
 const tfStyle = {
   "& .MuiButtonBase-root.MuiAutocomplete-clearIndicator": {
@@ -63,7 +63,7 @@ export const CreateSRF = (props) => {
       setProducts(data);
       console.log(data);
     },
-    [products, productOption]
+    [products, productOption],
   );
 
   const handleFormChange = useCallback(
@@ -72,7 +72,7 @@ export const CreateSRF = (props) => {
       data[index][event.target.name] = event.target.value;
       setProducts(data);
     },
-    [products]
+    [products],
   );
 
   const addFields = useCallback(() => {
@@ -111,7 +111,7 @@ export const CreateSRF = (props) => {
     try {
       const res = await CustomerServices.getCompanyDataByIdWithType(
         id,
-        "contacts"
+        "contacts",
       );
       setContact(res.data.contacts);
     } catch (e) {
@@ -128,9 +128,8 @@ export const CreateSRF = (props) => {
 
   const getAllSellerAccountsDetails = async () => {
     try {
-      const response = await InvoiceServices.getAllPaginateSellerAccountData(
-        "all"
-      );
+      const response =
+        await InvoiceServices.getAllPaginateSellerAccountData("all");
       setSellerData(response.data);
     } catch (error) {
       console.log("Error fetching seller account data:", error);
@@ -166,7 +165,7 @@ export const CreateSRF = (props) => {
     if (
       products.length === 0 ||
       products.some(
-        (pro) => !pro.product.trim() || !pro.quantity.toString().trim()
+        (pro) => !pro.product.trim() || !pro.quantity.toString().trim(),
       )
     ) {
       setAlertMsg({
@@ -182,7 +181,7 @@ export const CreateSRF = (props) => {
     const numTypes = products.map((item) => item.type_of_unit);
     const unit = products.map((item) => item.unit);
     const decimalCounts = products.map((item) =>
-      String(item.max_decimal_digit)
+      String(item.max_decimal_digit),
     );
     console.log(quantities, numTypes, unit, decimalCounts);
     const isvalid = DecimalValidation({
@@ -219,8 +218,8 @@ export const CreateSRF = (props) => {
           ? recordForEdit.id
           : null
         : recordForEdit
-        ? recordForEdit.lead_id
-        : null;
+          ? recordForEdit.lead_id
+          : null;
 
     const payload = {
       unit: filterSellerAcount,
@@ -330,7 +329,7 @@ export const CreateSRF = (props) => {
     try {
       setOpen(true);
       const res = await CustomerServices.getCustomerAddressType(
-        recordForEdit && recordForEdit.name
+        recordForEdit && recordForEdit.name,
       );
       setCustomerAdressType(res.data);
     } catch (e) {
@@ -399,7 +398,7 @@ export const CreateSRF = (props) => {
                 onChange={handleAdressChange}
                 value={
                   addType.find(
-                    (item) => item.value === filterCustomerTypeAddress
+                    (item) => item.value === filterCustomerTypeAddress,
                   ) || ""
                 }
                 options={addType}
@@ -423,7 +422,7 @@ export const CreateSRF = (props) => {
                   options={
                     (recordForEdit &&
                       recordForEdit.address_type.map(
-                        (option) => option.address
+                        (option) => option.address,
                       )) ||
                     ""
                   }

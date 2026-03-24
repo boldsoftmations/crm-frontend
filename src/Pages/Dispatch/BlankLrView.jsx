@@ -16,6 +16,8 @@ import {
   Typography,
   Grid,
 } from "@mui/material";
+import DateRangeIcon from "@mui/icons-material/DateRange";
+
 import FileSaver from "file-saver";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -24,12 +26,12 @@ import { CustomPagination } from "./../../Components/CustomPagination";
 import { CustomLoader } from "./../../Components/CustomLoader";
 import moment from "moment";
 import { CSVLink } from "react-csv";
-import CustomTextField from "../../Components/CustomTextField";
 import { MessageAlert } from "../../Components/MessageAlert";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
 import SearchComponent from "../../Components/SearchComponent ";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import { useSelector } from "react-redux";
+import CustomDateFilterPopup from "../../Components/CustomDateFilterPopup";
 
 export const BlankLrView = () => {
   const [open, setOpen] = useState(false);
@@ -40,23 +42,19 @@ export const BlankLrView = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [endDate, setEndDate] = useState(new Date()); // set endDate as one week ahead of startDate
   const [startDate, setStartDate] = useState(
-    new Date(endDate.getTime() - 30 * 24 * 60 * 60 * 1000)
+    new Date(endDate.getTime() - 30 * 24 * 60 * 60 * 1000),
   );
 
   const email = "";
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
-  const minDate = new Date().toISOString().split("T")[0];
-  const maxDate = new Date("2030-12-31").toISOString().split("T")[0];
+
   const [exportData, setExportData] = useState([]);
   const csvLinkRef = useRef(null);
+  const [CustomDateOpen, setCustomDateOpen] = useState(false);
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
-  const handleStartDateChange = (event) => {
-    const date = new Date(event.target.value);
-    setStartDate(date);
-    setEndDate(new Date(date.getTime() + 30 * 24 * 60 * 60 * 1000));
-  };
+
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleExport = async () => {
@@ -70,7 +68,7 @@ export const BlankLrView = () => {
         "all",
         searchQuery,
         "",
-        LR_Pending
+        LR_Pending,
       );
       const data = response.data.map((item) => {
         return {
@@ -104,7 +102,7 @@ export const BlankLrView = () => {
         currentPage,
         searchQuery,
         email,
-        LR_Pending
+        LR_Pending,
       );
       setsalesRegisterData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -117,7 +115,7 @@ export const BlankLrView = () => {
 
   useEffect(() => {
     getSalesRegisterData();
-  }, [startDate, currentPage, searchQuery, LR_Pending]);
+  }, [currentPage, searchQuery, LR_Pending]);
 
   const handleSearch = (query) => {
     setSearchQuery(query);
@@ -168,9 +166,8 @@ export const BlankLrView = () => {
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
           <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={3}>
+              <Grid item xs={12} sm={4}>
                 <CustomAutocomplete
-                  sx={{ width: "300px" }}
                   label="Pending Status"
                   variant="outlined"
                   size="small"
@@ -181,79 +178,7 @@ export const BlankLrView = () => {
                   disabled={!userShows}
                 />
               </Grid>
-              <Grid
-                item
-                xs={12}
-                sm={6}
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  gap: "10px",
-                }}
-              >
-                <CustomTextField
-                  sx={{ width: "300px" }}
-                  label="Start Date"
-                  variant="outlined"
-                  size="small"
-                  type="date"
-                  id="start-date"
-                  value={startDate ? startDate.toISOString().split("T")[0] : ""}
-                  min={minDate}
-                  max={
-                    endDate
-                      ? new Date(endDate.getTime() - 7 * 24 * 60 * 60 * 1000)
-                          .toISOString()
-                          .split("T")[0]
-                      : maxDate
-                  }
-                  onChange={handleStartDateChange}
-                />
-                <CustomTextField
-                  sx={{ width: "300px" }}
-                  label="End Date"
-                  variant="outlined"
-                  size="small"
-                  type="date"
-                  id="end-date"
-                  value={endDate ? endDate.toISOString().split("T")[0] : ""}
-                  min={
-                    startDate ? startDate.toISOString().split("T")[0] : minDate
-                  }
-                  max={
-                    startDate
-                      ? new Date(startDate.getTime() + 7 * 24 * 60 * 60 * 1000)
-                          .toISOString()
-                          .split("T")[0]
-                      : maxDate
-                  }
-                  disabled={!startDate}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={3}>
-                <SearchComponent
-                  onSearch={handleSearch}
-                  onReset={handleReset}
-                />
-              </Grid>
               <Grid item xs={12} sm={4}></Grid>
-
-              <Grid item xs={12} sm={4}>
-                <h3
-                  style={{
-                    textAlign: "center",
-                    alignItems: "center",
-                    marginBottom: "1em",
-                    fontSize: "24px",
-                    color: "rgb(34, 34, 34)",
-                    fontWeight: 800,
-                  }}
-                >
-                  Pending Copy's
-                </h3>
-              </Grid>
 
               <Grid
                 item
@@ -261,6 +186,10 @@ export const BlankLrView = () => {
                 sm={4}
                 style={{
                   textAlign: "right",
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  alignItems: "center",
+                  gap: "10px",
                 }}
               >
                 {exportData.length > 0 && (
@@ -285,6 +214,39 @@ export const BlankLrView = () => {
                 >
                   Export to Excel
                 </Button>
+                <Button
+                  variant="contained"
+                  onClick={() => setCustomDateOpen(true)}
+                  sx={{
+                    display: "flex",
+                    gap: "5px",
+                  }}
+                >
+                  <DateRangeIcon fontSize="small" />
+                  Select Date
+                </Button>
+              </Grid>
+
+              <Grid item xs={12} sm={4}>
+                <SearchComponent
+                  onSearch={handleSearch}
+                  onReset={handleReset}
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={4}>
+                <h3
+                  style={{
+                    textAlign: "center",
+                    alignItems: "center",
+
+                    fontSize: "24px",
+                    color: "rgb(34, 34, 34)",
+                    fontWeight: 800,
+                  }}
+                >
+                  Pending Copy's
+                </h3>
               </Grid>
             </Grid>
           </Box>
@@ -347,6 +309,18 @@ export const BlankLrView = () => {
           />
         </Paper>
       </Grid>
+      <CustomDateFilterPopup
+        open={CustomDateOpen}
+        setOpen={setCustomDateOpen}
+        startDate={startDate}
+        endDate={endDate}
+        setStartDate={setStartDate}
+        setEndDate={setEndDate}
+        onSubmit={() => {
+          getSalesRegisterData();
+          setCustomDateOpen(false);
+        }}
+      />
     </>
   );
 };

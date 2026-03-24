@@ -7,7 +7,7 @@ import { useSelector } from "react-redux";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
-import { DecimalValidation } from "../../../Components/Header/DecimalValidation";
+import { DecimalValidation } from "../../../utils/DecimalValidation";
 export const MaterialTransferNoteCreate = memo((props) => {
   const {
     setOpenCreatePopup,
@@ -33,7 +33,7 @@ export const MaterialTransferNoteCreate = memo((props) => {
 
     if (name === "product") {
       const selectedProduct = productOption.find(
-        (item) => item.product__name === value
+        (item) => item.product__name === value,
       );
       if (selectedProduct) {
         updates.product__unit = selectedProduct.product__unit;
@@ -119,7 +119,7 @@ export const MaterialTransferNoteCreate = memo((props) => {
       getAllMaterialTransferNoteDetails(
         currentPage,
         searchQuery,
-        acceptedFilter
+        acceptedFilter,
       );
     } catch (error) {
       handleError(error);

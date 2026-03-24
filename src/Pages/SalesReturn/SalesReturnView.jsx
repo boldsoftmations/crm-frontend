@@ -42,7 +42,7 @@ export const SalesReturnView = () => {
       setOpen(true);
       const response = await InventoryServices.getSalesReturnData(
         currentPage,
-        searchQuery
+        searchQuery,
       );
       setSalesReturnData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));

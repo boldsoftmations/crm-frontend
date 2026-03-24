@@ -53,12 +53,12 @@ export const ProductionInventoryGAndLView = () => {
         response =
           await InventoryServices.getProductionGAndLInventoryPaginateData(
             "all",
-            searchQuery
+            searchQuery,
           );
       } else {
         response =
           await InventoryServices.getProductionGAndLInventoryPaginateData(
-            "all"
+            "all",
           );
       }
       const data = response.data.map((row) => {
@@ -89,7 +89,7 @@ export const ProductionInventoryGAndLView = () => {
         const response =
           await InventoryServices.getAllProductionGAndLInventoryData(
             page,
-            search
+            search,
           );
         setProductionInventoryData(response.data.results);
         setTotalPages(Math.ceil(response.data.count / 25));
@@ -100,7 +100,7 @@ export const ProductionInventoryGAndLView = () => {
         console.error("error", error);
       }
     },
-    [searchQuery]
+    [searchQuery],
   );
 
   useEffect(() => {
@@ -220,6 +220,7 @@ export const ProductionInventoryGAndLView = () => {
             data={Tabledata}
             openInPopup={null}
             openInPopup2={null}
+            Isviewable={false}
           />
 
           <CustomPagination

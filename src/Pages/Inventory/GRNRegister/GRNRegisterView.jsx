@@ -20,13 +20,14 @@ import {
   Typography,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
-import CustomTextField from "../../../Components/CustomTextField";
+// import CustomTextField from "../../../Components/CustomTextField";
 import { GRNPDFDownload } from "./GRNPDFDownload";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
 import SearchComponent from "../../../Components/SearchComponent ";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
-import { Popup } from "../../../Components/Popup";
+// import { Popup } from "../../../Components/Popup";
+import CustomDateFilterPopup from "../../../Components/CustomDateFilterPopup";
 
 export const GRNRegisterView = () => {
   const [open, setOpen] = useState(false);
@@ -82,7 +83,7 @@ export const GRNRegisterView = () => {
         StartDate,
         EndDate,
         "all",
-        searchQuery
+        searchQuery,
       );
       const formattedData = response.data.map((row) => ({
         invoice_date: row.invoice_date,
@@ -129,17 +130,9 @@ export const GRNRegisterView = () => {
       setOpen(false);
     }
   };
-  const handleEndDateChange = (event) => {
-    const date = new Date(event.target.value);
-    setEndDate(date);
-  };
+
   const getResetDate = () => {
     setStartDate(new Date());
-    setEndDate(new Date());
-  };
-  const handleStartDateChange = (event) => {
-    const date = new Date(event.target.value);
-    setStartDate(date);
     setEndDate(new Date());
   };
 
@@ -156,7 +149,7 @@ export const GRNRegisterView = () => {
         pdfDoc,
         {
           // set options here if needed
-        }
+        },
       ).toBlob();
 
       // create a temporary link element to trigger the download
@@ -185,9 +178,8 @@ export const GRNRegisterView = () => {
       const response = await InventoryServices.getAllGRNRegisterDetails(
         StartDate,
         EndDate,
-
         currentPage,
-        searchQuery
+        searchQuery,
       );
       setGRNRegisterData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -379,72 +371,25 @@ export const GRNRegisterView = () => {
         />
       </Paper>
 
-      <Popup
+      {/* <Popup
         openPopup={customDataPopup}
         setOpenPopup={setCustomDataPopup}
         title="Date Filter"
         maxWidth="md"
-      >
-        <Box
-          sx={{
-            backgroundColor: "white",
-            borderRadius: "8px",
-            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-            margin: "10px",
-            padding: "20px",
-          }}
-        >
-          <Grid container spacing={2}>
-            <Grid item xs={4} sm={4} md={4} lg={4}>
-              <CustomTextField
-                fullWidth
-                label="Start Date"
-                variant="outlined"
-                size="small"
-                type="date"
-                id="start-date"
-                value={startDate ? startDate.toISOString().split("T")[0] : ""}
-                min={minDate}
-                max={maxDate}
-                onChange={handleStartDateChange}
-              />
-            </Grid>
-            <Grid item xs={4} sm={4} md={4} lg={4}>
-              <CustomTextField
-                fullWidth
-                label="End Date"
-                variant="outlined"
-                size="small"
-                type="date"
-                id="end-date"
-                value={endDate ? endDate.toISOString().split("T")[0] : ""}
-                min={startDate ? startDate : minDate}
-                max={maxDate}
-                onChange={handleEndDateChange}
-                disabled={!startDate}
-              />
-            </Grid>
-            <Grid item xs={2} sm={2} md={2} lg={2}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={getSubmitDate}
-              >
-                Submit
-              </Button>
-            </Grid>
-            <Grid item xs={2} sm={2} md={2} lg={2}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={getResetDate}
-              >
-                Reset
-              </Button>
-            </Grid>
-          </Grid>
-        </Box>
-      </Popup>
+      > */}
+      <CustomDateFilterPopup
+        open={customDataPopup}
+        setOpen={setCustomDataPopup}
+        startDate={startDate}
+        endDate={endDate}
+        setStartDate={setStartDate}
+        setEndDate={setEndDate}
+        onSubmit={getSubmitDate}
+        onReset={getResetDate}
+        minDate={minDate}
+        maxDate={maxDate}
+      />
+      {/* </Popup> */}
     </>
   );
 };

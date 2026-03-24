@@ -9,7 +9,7 @@ import { CustomLoader } from "../../Components/CustomLoader";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import CustomTextField from "../../Components/CustomTextField";
 import { useSelector } from "react-redux";
-import { DecimalValidation } from "../../Components/Header/DecimalValidation";
+import { DecimalValidation } from "../../utils/DecimalValidation";
 
 export const PhysicalInventoryCreate = memo((props) => {
   const { currentPage, searchQuery, setOpenPopup, getPhysicalInventoryData } =
@@ -54,9 +54,8 @@ export const PhysicalInventoryCreate = memo((props) => {
   const getAllSellerAccountsDetails = async () => {
     try {
       setOpen(true);
-      const response = await InvoiceServices.getAllPaginateSellerAccountData(
-        "all"
-      );
+      const response =
+        await InvoiceServices.getAllPaginateSellerAccountData("all");
       setSellerUnitOption(response.data);
     } catch (error) {
       console.error("error Seller Account", error);
@@ -90,7 +89,7 @@ export const PhysicalInventoryCreate = memo((props) => {
       const selectedProduct = inventoryData.find(
         (data) =>
           data.product__name === value &&
-          data.seller_account === formData.seller_unit
+          data.seller_account === formData.seller_unit,
       );
       // console.log(selectedProduct);
       setFormData((prevState) => ({
@@ -99,7 +98,7 @@ export const PhysicalInventoryCreate = memo((props) => {
         pending_quantity: selectedProduct ? selectedProduct.quantity : "0",
       }));
     },
-    [inventoryData, formData.seller_unit]
+    [inventoryData, formData.seller_unit],
   );
 
   const handleSellerUnitChange = useCallback(
@@ -107,7 +106,7 @@ export const PhysicalInventoryCreate = memo((props) => {
       const selectedSellerUnit = inventoryData.find(
         (data) =>
           data.seller_account === value &&
-          data.product__name === formData.product
+          data.product__name === formData.product,
       );
       setFormData((prevState) => ({
         ...prevState,
@@ -115,7 +114,7 @@ export const PhysicalInventoryCreate = memo((props) => {
         pending_quantity: selectedSellerUnit ? selectedSellerUnit.quantity : 0,
       }));
     },
-    [inventoryData, formData.product]
+    [inventoryData, formData.product],
   );
 
   const handlePhysicalQuantityChange = (event) => {
@@ -137,7 +136,7 @@ export const PhysicalInventoryCreate = memo((props) => {
   useEffect(() => {
     const gnl = calculateGNL(
       formData.physical_quantity,
-      formData.pending_quantity
+      formData.pending_quantity,
     );
     setFormData((prevState) => ({
       ...prevState,
@@ -176,7 +175,7 @@ export const PhysicalInventoryCreate = memo((props) => {
         };
         const response = await InventoryServices.createPhysical(payload);
         handleSuccess(
-          response.data.message || "Physical Inventory Created successfully"
+          response.data.message || "Physical Inventory Created successfully",
         );
         setTimeout(() => {
           setOpenPopup(false);
@@ -188,7 +187,7 @@ export const PhysicalInventoryCreate = memo((props) => {
         setOpen(false);
       }
     },
-    [formData, currentPage, searchQuery]
+    [formData, currentPage, searchQuery],
   );
   const isAuthorizedAndPendingZero =
     users.groups.includes("Accounts") ||

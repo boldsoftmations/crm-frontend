@@ -18,11 +18,11 @@ import {
   TableRow,
 } from "@mui/material";
 import { CustomLoader } from "../../../Components/CustomLoader";
-import CustomTextField from "../../../Components/CustomTextField";
 import SearchComponent from "../../../Components/SearchComponent ";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
 import { Popup } from "../../../Components/Popup";
+import CustomDateFilterPopup from "../../../Components/CustomDateFilterPopup";
 
 export const DailyProductionReport = () => {
   const [open, setOpen] = useState(false);
@@ -33,14 +33,13 @@ export const DailyProductionReport = () => {
   const [exportData, setExportData] = useState([]);
   const [endDate, setEndDate] = useState(new Date());
   const [startDate, setStartDate] = useState(new Date()); // set default value as current date
-  const minDate = new Date().toISOString().split("T")[0];
-  const maxDate = new Date("2030-12-31").toISOString().split("T")[0];
+
   const csvLinkRef = useRef(null);
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
   const [openDetailsPopup, setOpenDetailsPopup] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
-
+  const [customDatePopup, setCustomDatePopup] = useState(false);
   // Headers for CSV export
   const headers = [
     { label: "Date", key: "created_on" },
@@ -111,7 +110,7 @@ export const DailyProductionReport = () => {
 
   useEffect(() => {
     getDailyProductionReport(currentPage, searchQuery);
-  }, [startDate, endDate, currentPage, searchQuery]);
+  }, [currentPage, searchQuery]);
 
   const handleSearch = (query) => {
     setSearchQuery(query);
@@ -124,12 +123,6 @@ export const DailyProductionReport = () => {
   };
 
   const handlePageChange = (event, value) => setCurrentPage(value);
-
-  const handleStartDateChange = (event) =>
-    setStartDate(new Date(event.target.value));
-
-  const handleEndDateChange = (event) =>
-    setEndDate(new Date(event.target.value));
 
   const Tabledata = dailyProductionReport.map((row) => ({
     id: row.id,
@@ -190,61 +183,22 @@ export const DailyProductionReport = () => {
               <Grid
                 item
                 xs={12}
-                sm={6}
+                sm={4}
                 display="flex"
                 alignItems="center"
                 gap={2}
               >
                 {/* Grid item for the start date */}
-                <Grid item>
-                  <CustomTextField
-                    label="Start Date"
-                    variant="outlined"
-                    size="small"
-                    type="date"
-                    id="start-date"
-                    value={
-                      startDate ? startDate.toISOString().split("T")[0] : ""
-                    }
-                    min={minDate}
-                    max={maxDate}
-                    onChange={handleStartDateChange}
-                    sx={{ width: "120px" }}
-                  />
-                </Grid>
-
-                {/* Grid item for the end date */}
-                <Grid item>
-                  <CustomTextField
-                    label="End Date"
-                    variant="outlined"
-                    size="small"
-                    type="date"
-                    id="end-date"
-                    value={endDate ? endDate.toISOString().split("T")[0] : ""}
-                    min={
-                      startDate
-                        ? startDate.toISOString().split("T")[0]
-                        : minDate
-                    }
-                    max={maxDate}
-                    onChange={handleEndDateChange}
-                    disabled={!startDate}
-                    sx={{ width: "120px" }}
-                  />
-                </Grid>
 
                 {/* Grid item for the SearchComponent */}
-                <Grid item>
-                  <SearchComponent
-                    onSearch={handleSearch}
-                    onReset={handleReset}
-                  />
-                </Grid>
+                <SearchComponent
+                  onSearch={handleSearch}
+                  onReset={handleReset}
+                />
               </Grid>
 
               {/* Center Section: Title */}
-              <Grid item xs={12} sm={3} display="flex" justifyContent="center">
+              <Grid item xs={12} sm={4} display="flex" justifyContent="center">
                 <h3
                   style={{
                     fontSize: "24px",
@@ -261,14 +215,17 @@ export const DailyProductionReport = () => {
               <Grid
                 item
                 xs={12}
-                sm={3}
+                sm={4}
                 display="flex"
                 justifyContent="flex-end"
                 alignItems="center"
+                gap={2}
               >
-                <Button variant="contained" onClick={handleDownload}>
-                  Download CSV
-                </Button>
+                <Grid item>
+                  <Button variant="contained" onClick={handleDownload}>
+                    Download CSV
+                  </Button>
+                </Grid>
                 {exportData.length > 0 && (
                   <CSVLink
                     data={exportData}
@@ -283,6 +240,14 @@ export const DailyProductionReport = () => {
                     }}
                   />
                 )}
+                <Grid item>
+                  <Button
+                    variant="contained"
+                    onClick={() => setCustomDatePopup(true)}
+                  >
+                    Select Date
+                  </Button>
+                </Grid>
               </Grid>
             </Grid>
           </Box>
@@ -294,6 +259,7 @@ export const DailyProductionReport = () => {
             openInPopup2={null}
             openInPopup3={null}
             openInPopup4={null}
+            Isviewable={false}
           />
           <CustomPagination
             currentPage={currentPage}
@@ -318,6 +284,19 @@ export const DailyProductionReport = () => {
           openInPopup4={null}
         /> */}
       </Popup>
+
+      <CustomDateFilterPopup
+        open={customDatePopup}
+        setOpen={setCustomDatePopup}
+        setEndDate={setEndDate}
+        setStartDate={setStartDate}
+        startDate={startDate}
+        endDate={endDate}
+        onSubmit={() => {
+          setCustomDatePopup(false);
+          getDailyProductionReport(1, searchQuery); // Fetch data for the first page with the new date range
+        }}
+      />
     </>
   );
 };

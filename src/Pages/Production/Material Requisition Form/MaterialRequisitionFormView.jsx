@@ -45,7 +45,7 @@ import { MessageAlert } from "../../../Components/MessageAlert";
 import { CustomPagination } from "../../../Components/CustomPagination";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import InvoiceServices from "../../../services/InvoiceService";
-import CustomDate from "../../../Components/CustomDate";
+import CustomDateFilterPopup from "../../../Components/CustomDateFilterPopup";
 
 export const MaterialRequisitionFormView = () => {
   const [openPopup, setOpenPopup] = useState(false);
@@ -104,12 +104,11 @@ export const MaterialRequisitionFormView = () => {
       if (searchQuery) {
         response = await InventoryServices.getAllMaterialRequisitionFormData(
           "all",
-          searchQuery
+          searchQuery,
         );
       } else {
-        response = await InventoryServices.getAllMaterialRequisitionFormData(
-          "all"
-        );
+        response =
+          await InventoryServices.getAllMaterialRequisitionFormData("all");
       }
       // Flatten the data structure
       const ArrayData = response.data.reduce((acc, item) => {
@@ -123,9 +122,11 @@ export const MaterialRequisitionFormView = () => {
           quantity: product.quantity, // Extract the quantity
           unit: product.unit, // Extract the unit
         }));
+        // console.table(productsFlattened);
         // Concatenate the flattened products to the accumulator
         return acc.concat(productsFlattened);
-      }, []); // Initial value of accumulator is an empty array
+      }, []);
+      // Initial value of accumulator is an empty array
       setOpen(false);
       return ArrayData;
     } catch (err) {
@@ -154,9 +155,8 @@ export const MaterialRequisitionFormView = () => {
   const getAllSellerAccountsDetails = async () => {
     try {
       setOpen(true);
-      const response = await InvoiceServices.getAllPaginateSellerAccountData(
-        "all"
-      );
+      const response =
+        await InvoiceServices.getAllPaginateSellerAccountData("all");
       setSellerAccountOption(response.data);
     } catch (error) {
       handleError(error);
@@ -181,9 +181,10 @@ export const MaterialRequisitionFormView = () => {
           filterByUnit,
           filterByDays,
           StartDate,
-          EndDate
+          EndDate,
         );
       setMaterialRequisitionData(response.data.results);
+
       setTotalPages(Math.ceil(response.data.count / 25));
       setOpen(false);
     } catch (error) {
@@ -207,8 +208,8 @@ export const MaterialRequisitionFormView = () => {
     searchQuery,
     filterByUnit,
     filterByDays,
-    startDate,
-    endDate,
+    // startDate,
+    // endDate,
   ]);
 
   const handleSearch = (query) => {
@@ -275,7 +276,7 @@ export const MaterialRequisitionFormView = () => {
         pdfDoc,
         {
           // set options here if needed
-        }
+        },
       ).toBlob();
 
       // create a temporary link element to trigger the download
@@ -298,19 +299,7 @@ export const MaterialRequisitionFormView = () => {
       setOpen(false);
     }
   };
-  const handleEndDateChange = (event) => {
-    const date = new Date(event.target.value);
-    setEndDate(date);
-  };
-  const getResetDate = () => {
-    setStartDate(new Date());
-    setEndDate(new Date());
-  };
-  const handleStartDateChange = (event) => {
-    const date = new Date(event.target.value);
-    setStartDate(date);
-    setEndDate(new Date());
-  };
+
   const handleChange = (value) => {
     if (value === "custom_date") {
       setStartDate(new Date());
@@ -507,7 +496,22 @@ export const MaterialRequisitionFormView = () => {
           </TableFooter>
         </Paper>
       </Grid>
-      <Popup
+
+      <CustomDateFilterPopup
+        open={customDataPopup}
+        setOpen={setCustomDataPopup}
+        startDate={startDate}
+        endDate={endDate}
+        minDate={minDate}
+        maxDate={maxDate}
+        setStartDate={setStartDate}
+        setEndDate={setEndDate}
+        onSubmit={() => {
+          getAllMaterialRequisitionFormDetails();
+          setCustomDataPopup(false);
+        }}
+      />
+      {/* <Popup
         openPopup={customDataPopup}
         setOpenPopup={setCustomDataPopup}
         title="Date Filter"
@@ -522,7 +526,7 @@ export const MaterialRequisitionFormView = () => {
           handleEndDateChange={handleEndDateChange}
           resetDate={getResetDate}
         />
-      </Popup>
+      </Popup> */}
       <Popup
         maxWidth="xl"
         title={"Create Material Requisition Details"}
@@ -610,14 +614,14 @@ export const MaterialRequisitionFormView = () => {
                             : Math.floor(historyRow.quantity)}
                         </div>
                       </div>
-                    )
+                    ),
                   )}
               </div>
             </div>
             <Button
               onClick={() =>
                 updateMaterialRequisitionFormDetails(
-                  materialRequisitionDataByID
+                  materialRequisitionDataByID,
                 )
               }
               variant="contained"
@@ -829,7 +833,7 @@ const MyDocument = ({ materialRequisitionDataByID, Total_qty }) => (
             <View style={style.cell}>
               <Text style={style.lightText}>
                 {moment(materialRequisitionDataByID.created_on).format(
-                  "DD-MM-YYYY"
+                  "DD-MM-YYYY",
                 )}
               </Text>
             </View>

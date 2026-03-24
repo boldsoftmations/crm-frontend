@@ -9,7 +9,7 @@ import { useSelector } from "react-redux";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
-import { DecimalValidation } from "../../../Components/Header/DecimalValidation";
+import { DecimalValidation } from "../../../utils/DecimalValidation";
 import { Popup } from "../../../Components/Popup";
 
 const Root = styled("div")(({ theme }) => ({

@@ -8,7 +8,7 @@ import { MessageAlert } from "../../../Components/MessageAlert";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import ProductService from "../../../services/ProductService";
-import { DecimalValidation } from "../../../Components/Header/DecimalValidation";
+import { DecimalValidation } from "../../../utils/DecimalValidation";
 // import { DecimalValidation } from "../../../Components/Header/DecimalValidation";
 
 const Root = styled("div")(({ theme }) => ({
@@ -51,11 +51,11 @@ export const PurchaseOrderUpdate = memo(
           setLoading(true);
 
           const numTypes = inputValues.products.map(
-            (item) => item.type_of_unit
+            (item) => item.type_of_unit,
           );
           const quantities = inputValues.products.map((item) => item.quantity);
           const decimalCounts = inputValues.products.map((item) =>
-            String(item.max_decimal_digit)
+            String(item.max_decimal_digit),
           );
           const unit = inputValues.products.map((item) => item.unit);
           console.log(numTypes);
@@ -94,7 +94,7 @@ export const PurchaseOrderUpdate = memo(
 
           const response = await InventoryServices.updatePurchaseOrderData(
             inputValues.id,
-            req
+            req,
           );
           const successMessage =
             response.data.message || "Purchase Order updated successfully";
@@ -105,7 +105,7 @@ export const PurchaseOrderUpdate = memo(
             getAllPurchaseOrderDetails(
               currentPage,
               acceptedFilter,
-              searchQuery
+              searchQuery,
             );
           }, 300);
         } catch (error) {
@@ -115,12 +115,12 @@ export const PurchaseOrderUpdate = memo(
           setLoading(false); // Always close the loader
         }
       },
-      [inputValues, currentPage, acceptedFilter, searchQuery]
+      [inputValues, currentPage, acceptedFilter, searchQuery],
     );
 
     const handleProductChange = (newValue, index) => {
       const selectedProduct = productList.find(
-        (product) => product.name === newValue
+        (product) => product.name === newValue,
       );
 
       const newUnit = selectedProduct ? selectedProduct.unit : "";
@@ -446,7 +446,7 @@ export const PurchaseOrderUpdate = memo(
         </Box>
       </>
     );
-  }
+  },
 );
 
 // Data structure for Payment Terms

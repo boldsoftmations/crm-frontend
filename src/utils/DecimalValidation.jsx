@@ -24,7 +24,7 @@ export function DecimalValidation({
       // Pure numbers not allowed — decimal required
       if (/^\d+$/.test(q)) {
         handleError(
-          `Numbers are not allowed in ${unit[i]} unit — only decimals`
+          `Numbers are not allowed in ${unit[i]} unit — only decimals`,
         );
         return false;
       }
@@ -34,7 +34,7 @@ export function DecimalValidation({
 
       if (!pattern.test(q)) {
         handleError(
-          `Only decimals with exactly ${decimalCount} digit(s) after decimal are allowed`
+          `Only decimals with exactly ${decimalCount} digit(s) after decimal are allowed`,
         );
         return false;
       }

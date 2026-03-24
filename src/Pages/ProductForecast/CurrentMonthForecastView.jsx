@@ -92,7 +92,7 @@ export const CurrentMonthForecastView = () => {
       const response = await ProductForecastService.getAllCurrentMonthData(
         "all",
         salesPersonByFilter,
-        searchQuery
+        searchQuery,
       );
       const data = response.data
         .filter((row) => row.forecast > 0)
@@ -109,6 +109,7 @@ export const CurrentMonthForecastView = () => {
             forecast_achieved: forecast_achieved > 0 ? forecast_achieved : 0,
           };
         });
+      console.table(data);
       return data;
     } catch (error) {
       console.log(error);
@@ -123,7 +124,7 @@ export const CurrentMonthForecastView = () => {
       const response = await ProductForecastService.getAllCurrentMonthData(
         currentPage,
         salesPersonByFilter,
-        searchQuery
+        searchQuery,
       );
       setCurrentMonthForecast(response.data.results);
       const total = response.data.count;
@@ -159,7 +160,7 @@ export const CurrentMonthForecastView = () => {
       setIdForEdit(item);
       setOpenPopup(true);
     },
-    [currentMonthForecast]
+    [currentMonthForecast],
   );
 
   const handleFilterChange = (value) => {
@@ -197,7 +198,7 @@ export const CurrentMonthForecastView = () => {
     anticipated.setHours(0, 0, 0, 0);
 
     console.log(
-      `Today: ${today.toISOString()}, Anticipated: ${anticipated.toISOString()}`
+      `Today: ${today.toISOString()}, Anticipated: ${anticipated.toISOString()}`,
     );
 
     if (anticipated.getTime() === today.getTime()) {

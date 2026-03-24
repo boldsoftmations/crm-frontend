@@ -24,13 +24,13 @@ import { CustomPagination } from "./../../Components/CustomPagination";
 import { CustomLoader } from "./../../Components/CustomLoader";
 import moment from "moment";
 import { CSVLink } from "react-csv";
-import CustomTextField from "../../Components/CustomTextField";
 import SearchComponent from "../../Components/SearchComponent ";
 import { MessageAlert } from "../../Components/MessageAlert";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import UserProfileService from "../../services/UserProfileService";
 import { useSelector } from "react-redux";
+import CustomDateFilterPopup from "../../Components/CustomDateFilterPopup";
 
 export const SalesRegisterView = () => {
   const [open, setOpen] = useState(false);
@@ -42,7 +42,7 @@ export const SalesRegisterView = () => {
   const [unitFilter, setUnitFilter] = useState("");
   const [endDate, setEndDate] = useState(new Date()); // set endDate as one week ahead of startDate
   const [startDate, setStartDate] = useState(
-    new Date(endDate.getTime() - 7 * 24 * 60 * 60 * 1000)
+    new Date(endDate.getTime() - 7 * 24 * 60 * 60 * 1000),
   ); // set default value as current date
   const minDate = new Date().toISOString().split("T")[0];
   const maxDate = new Date("2030-12-31").toISOString().split("T")[0];
@@ -50,11 +50,8 @@ export const SalesRegisterView = () => {
   const csvLinkRef = useRef(null);
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
-  const handleStartDateChange = (event) => {
-    const date = new Date(event.target.value);
-    setStartDate(date);
-    setEndDate(new Date(date.getTime() + 7 * 24 * 60 * 60 * 1000));
-  };
+  const [customDataPopup, setCustomDataPopup] = useState(false);
+
   const userData = useSelector((state) => state.auth.profile);
 
   const isInGroups = (...groups) =>
@@ -70,7 +67,7 @@ export const SalesRegisterView = () => {
         EndDate,
         "all",
         searchQuery,
-        unitFilter
+        unitFilter,
       );
       const data = response.data.map((item) => {
         return {
@@ -118,7 +115,7 @@ export const SalesRegisterView = () => {
         EndDate,
         currentPage,
         searchQuery,
-        unitFilter
+        unitFilter,
       );
       setsalesRegisterData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -131,7 +128,7 @@ export const SalesRegisterView = () => {
 
   useEffect(() => {
     getSalesRegisterData();
-  }, [startDate, currentPage, searchQuery, unitFilter]);
+  }, [currentPage, searchQuery, unitFilter]);
 
   const handleSearch = (query) => {
     setSearchQuery(query);
@@ -170,44 +167,9 @@ export const SalesRegisterView = () => {
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
           <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={4}>
-                <CustomTextField
-                  label="Start Date"
-                  variant="outlined"
-                  size="small"
-                  type="date"
-                  id="start-date"
-                  value={startDate ? startDate.toISOString().split("T")[0] : ""}
-                  min={minDate}
-                  max={
-                    endDate
-                      ? new Date(endDate.getTime() - 7 * 24 * 60 * 60 * 1000)
-                          .toISOString()
-                          .split("T")[0]
-                      : maxDate
-                  }
-                  onChange={handleStartDateChange}
-                />
-                <CustomTextField
-                  label="End Date"
-                  variant="outlined"
-                  size="small"
-                  // type="date"
-                  id="end-date"
-                  value={endDate ? endDate.toISOString().split("T")[0] : ""}
-                  min={
-                    startDate ? startDate.toISOString().split("T")[0] : minDate
-                  }
-                  max={
-                    startDate
-                      ? new Date(startDate.getTime() + 7 * 24 * 60 * 60 * 1000)
-                          .toISOString()
-                          .split("T")[0]
-                      : maxDate
-                  }
-                  disabled={!startDate}
-                />
-              </Grid>
+              {/* <Grid item xs={12} sm={4}>
+            
+              </Grid> */}
               <Grid item xs={12} sm={4}>
                 <CustomAutocomplete
                   sx={{ flexGrow: 1, mr: 1 }}
@@ -226,25 +188,15 @@ export const SalesRegisterView = () => {
                 />
               </Grid>
 
-              <Grid item xs={12} sm={7}>
-                <h3
-                  style={{
-                    textAlign: "right",
-                    marginBottom: "1em",
-                    fontSize: "24px",
-                    color: "rgb(34, 34, 34)",
-                    fontWeight: 800,
-                  }}
-                >
-                  Sales Register
-                </h3>
-              </Grid>
               <Grid
                 item
                 xs={12}
-                sm={5}
+                sm={4}
                 style={{
                   textAlign: "right",
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  gap: "10px",
                 }}
               >
                 {exportData.length > 0 && (
@@ -269,6 +221,29 @@ export const SalesRegisterView = () => {
                 >
                   Export to Excel
                 </Button>
+                <Button
+                  variant="contained"
+                  onClick={() => setCustomDataPopup(true)}
+                >
+                  Select Date
+                </Button>
+              </Grid>
+              <Grid item xs={12} sm={12}>
+                <h3
+                  style={{
+                    textAlign: "right",
+                    // marginBottom: "1em",
+                    fontSize: "24px",
+                    color: "rgb(34, 34, 34)",
+                    fontWeight: 800,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    display: "flex",
+                    textAlignLast: "center",
+                  }}
+                >
+                  Sales Register
+                </h3>
               </Grid>
             </Grid>
           </Box>
@@ -308,7 +283,7 @@ export const SalesRegisterView = () => {
                   <StyledTableCell align="center">Customer</StyledTableCell>
                   {isInGroups(
                     "Operations & Supply Chain Manager",
-                    "Director"
+                    "Director",
                   ) && (
                     <StyledTableCell align="center">
                       Type Of Customer
@@ -342,6 +317,20 @@ export const SalesRegisterView = () => {
           />
         </Paper>
       </Grid>
+      <CustomDateFilterPopup
+        open={customDataPopup}
+        setOpen={setCustomDataPopup}
+        startDate={startDate}
+        endDate={endDate}
+        minDate={minDate}
+        maxDate={maxDate}
+        setStartDate={setStartDate}
+        setEndDate={setEndDate}
+        onSubmit={() => {
+          getSalesRegisterData();
+          setCustomDataPopup(false);
+        }}
+      />
     </>
   );
 };

@@ -6,7 +6,7 @@ import { MessageAlert } from "../../Components/MessageAlert";
 import { CustomLoader } from "../../Components/CustomLoader";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import CustomTextField from "../../Components/CustomTextField";
-import { DecimalValidation } from "../../Components/Header/DecimalValidation";
+import { DecimalValidation } from "../../utils/DecimalValidation";
 
 export const CreatePriceList = memo((props) => {
   const {

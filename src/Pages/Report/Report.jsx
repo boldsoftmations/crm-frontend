@@ -11,7 +11,6 @@ import { CustomTabs } from "../../Components/CustomTabs";
 import { ProductWiseTurnover } from "./ProductWiseTurnover/ProductWiseTurnover";
 import {
   Box,
-  Button,
   FormControl,
   Grid,
   InputLabel,
@@ -21,10 +20,10 @@ import {
 import { DailyProfitableReports } from "./DailyProfitableReports/DailyProfitableReports";
 import DashboardService from "../../services/DashboardService";
 import { useSelector } from "react-redux";
-import { Popup } from "../../Components/Popup";
-import CustomTextField from "../../Components/CustomTextField";
+
 import { PotentialTurnover } from "./Potential Turnover/PotentialTurnover";
 import EmployeeReport from "./employeReport/EmployeeReport";
+import CustomDateFilterPopup from "../../Components/CustomDateFilterPopup";
 
 export function Report() {
   const [open, setOpen] = useState(false);
@@ -47,16 +46,16 @@ export function Report() {
     dailyProfitableReportsFilterData,
   } = state;
 
-  const handleStartDateChange = (event) => {
-    const date = new Date(event.target.value);
-    setStartDate(date);
-    setEndDate(new Date());
-  };
+  // const handleStartDateChange = (event) => {
+  //   const date = new Date(event.target.value);
+  //   setStartDate(date);
+  //   setEndDate(new Date());
+  // };
 
-  const handleEndDateChange = (event) => {
-    const date = new Date(event.target.value);
-    setEndDate(date);
-  };
+  // const handleEndDateChange = (event) => {
+  //   const date = new Date(event.target.value);
+  //   setEndDate(date);
+  // };
 
   const handleChange = (event) => {
     const selectedValue = event.target.value;
@@ -117,10 +116,10 @@ export function Report() {
   const hasSpecialAccess =
     specialAccessEmails.has(userData.email) ||
     userData.groups.some((group) =>
-      ["Accounts", "Accounts Executive", "Director"].includes(group)
+      ["Accounts", "Accounts Executive", "Director"].includes(group),
     );
   const onlyDirestorAccess = userData.groups.some((group) =>
-    ["Director"].includes(group)
+    ["Director"].includes(group),
   );
 
   const SpecialAccess =
@@ -145,11 +144,13 @@ export function Report() {
     getAllDashboardDetails();
   }, []);
 
-  useEffect(() => {
+  const onSubmitData = (e) => {
+    e.preventDefault();
     getFilterByDashboard();
     getFilterByDailyProfitableReports();
     getFilterByDescriptionWiseTurnover();
-  }, [startDate, endDate]);
+    setOpenPopup(false);
+  };
 
   const getFilterByDashboard = async () => {
     try {
@@ -158,7 +159,7 @@ export function Report() {
       const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
       let response = await InvoiceServices.getFilterDashboardData(
         StartDate,
-        EndDate
+        EndDate,
       );
       dispatch({
         type: "SET_ORDER_BOOK_SUMMARY",
@@ -196,7 +197,7 @@ export function Report() {
       let response =
         await DashboardService.getDailyProfitableReportsDataByFilter(
           StartDate,
-          EndDate
+          EndDate,
         );
       dispatch({
         type: "SET_DAILY_PROFITABLE_REPORTS_FILTER_DATA",
@@ -217,7 +218,7 @@ export function Report() {
       let response =
         await DashboardService.getDescriptionWiseTurnoverDataByFilter(
           StartDate,
-          EndDate
+          EndDate,
         );
       dispatch({
         type: "SET_DESCRIPTION_WISE_TURNOVER_FILTER_DATA",
@@ -374,65 +375,18 @@ export function Report() {
           )}
         </div>
       </div>
-      <Popup
-        openPopup={openPopup}
-        setOpenPopup={setOpenPopup}
-        title="Date Filter"
-        maxWidth="md"
-      >
-        <Box
-          sx={{
-            backgroundColor: "white",
-            borderRadius: "8px",
-            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-            margin: "10px",
-            padding: "20px",
-          }}
-        >
-          <Grid container spacing={2}>
-            <Grid item xs={5} sm={5} md={5} lg={5}>
-              <CustomTextField
-                fullWidth
-                label="Start Date"
-                variant="outlined"
-                size="small"
-                type="date"
-                id="start-date"
-                value={startDate ? startDate.toISOString().split("T")[0] : ""}
-                min={minDate}
-                max={maxDate}
-                onChange={handleStartDateChange}
-              />
-            </Grid>
-            <Grid item xs={5} sm={5} md={5} lg={5}>
-              <CustomTextField
-                fullWidth
-                label="End Date"
-                variant="outlined"
-                size="small"
-                type="date"
-                id="end-date"
-                value={endDate ? endDate.toISOString().split("T")[0] : ""}
-                min={
-                  startDate ? startDate.toISOString().split("T")[0] : minDate
-                }
-                max={maxDate}
-                onChange={handleEndDateChange}
-                disabled={!startDate}
-              />
-            </Grid>
-            <Grid item xs={2} sm={2} md={2} lg={2}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={getResetData}
-              >
-                Reset
-              </Button>
-            </Grid>
-          </Grid>
-        </Box>
-      </Popup>
+      <CustomDateFilterPopup
+        open={openPopup}
+        setOpen={setOpenPopup}
+        startDate={startDate}
+        endDate={endDate}
+        setStartDate={setStartDate}
+        setEndDate={setEndDate}
+        minDate={minDate}
+        maxDate={maxDate}
+        getResetData={getResetData}
+        onSubmit={(e) => onSubmitData(e)}
+      />
     </div>
   );
 }

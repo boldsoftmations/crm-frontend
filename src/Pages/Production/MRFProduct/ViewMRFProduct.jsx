@@ -18,10 +18,9 @@ import { CustomLoader } from "../../../Components/CustomLoader";
 import InventoryServices from "../../../services/InventoryService";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
-import { Popup } from "../../../Components/Popup";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
-import CustomDate from "../../../Components/CustomDate";
 import SearchComponent from "../../../Components/SearchComponent ";
+import CustomDateFilterPopup from "../../../Components/CustomDateFilterPopup";
 
 export const ViewMRFProduct = () => {
   const [open, setOpen] = useState(false);
@@ -71,7 +70,7 @@ export const ViewMRFProduct = () => {
         filterByDays ? filterByDays : "today",
         StartDate,
         EndDate,
-        searchValue
+        searchValue,
       );
 
       const data = response.data.map((row) => {
@@ -113,7 +112,7 @@ export const ViewMRFProduct = () => {
         filterByDays ? filterByDays : "today",
         StartDate,
         EndDate,
-        searchValue
+        searchValue,
       );
 
       setMRFData(response.data);
@@ -126,7 +125,7 @@ export const ViewMRFProduct = () => {
 
   useEffect(() => {
     getAllMrfProducts();
-  }, [filterByDays, startDate, endDate, searchValue]);
+  }, [filterByDays, searchValue]);
 
   const handleChange = (value) => {
     if (value === "custom_date") {
@@ -139,20 +138,6 @@ export const ViewMRFProduct = () => {
       setStartDate(null);
       setEndDate(null);
     }
-  };
-
-  const handleEndDateChange = (event) => {
-    const date = new Date(event.target.value);
-    setEndDate(date);
-  };
-  const getResetDate = () => {
-    setStartDate(new Date());
-    setEndDate(new Date());
-  };
-  const handleStartDateChange = (event) => {
-    const date = new Date(event.target.value);
-    setStartDate(date);
-    setEndDate(new Date());
   };
 
   return (
@@ -313,22 +298,20 @@ export const ViewMRFProduct = () => {
               </TableBody>
             </Table>
           </TableContainer>
-          <Popup
-            openPopup={customDataPopup}
-            setOpenPopup={setCustomDataPopup}
-            title="Date Filter"
-            maxWidth="md"
-          >
-            <CustomDate
-              startDate={startDate}
-              endDate={endDate}
-              minDate={minDate}
-              maxDate={maxDate}
-              handleStartDateChange={handleStartDateChange}
-              handleEndDateChange={handleEndDateChange}
-              resetDate={getResetDate}
-            />
-          </Popup>
+          <CustomDateFilterPopup
+            open={customDataPopup}
+            setOpen={setCustomDataPopup}
+            startDate={startDate}
+            endDate={endDate}
+            minDate={minDate}
+            maxDate={maxDate}
+            setStartDate={setStartDate}
+            setEndDate={setEndDate}
+            onSubmit={() => {
+              setCustomDataPopup(false);
+              getAllMrfProducts();
+            }}
+          />
         </Paper>
       </Grid>
     </>

@@ -16,7 +16,7 @@ import Chip from "@mui/material/Chip";
 import InvoiceServices from "../../../services/InvoiceService";
 import { CustomLoader } from "./../../../Components/CustomLoader";
 import CustomTextField from "../../../Components/CustomTextField";
-// import { DecimalValidation } from "../../../Components/Header/DecimalValidation";
+import { DecimalValidation } from "../../../utils/DecimalValidation";
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
   ...theme.typography.body2,
@@ -41,7 +41,6 @@ export const SalesInvoiceCreate = (props) => {
       quantity: "",
       rate: "",
       type_of_unit: "",
-      max_decimal_digit: "",
       proforma_invoice: "",
       id: "",
       user: "",
@@ -97,14 +96,14 @@ export const SalesInvoiceCreate = (props) => {
       const response = await InvoiceServices.getAllOrderBookDataWithSearch(
         "all",
         "customer",
-        inputValue.company
+        inputValue.company,
       );
 
       // Filter data where any product's pending_quantity is greater than 0
       const filteredData = response.data.filter(
         (order) =>
           order.products &&
-          order.products.some((product) => product.pending_quantity > 0)
+          order.products.some((product) => product.pending_quantity > 0),
       );
 
       setCustomerOrderBookOption(filteredData);
@@ -148,7 +147,6 @@ export const SalesInvoiceCreate = (props) => {
             proforma_invoice: data.proforma_invoice,
             id: data.id,
             type_of_unit: data.type_of_unit,
-            max_decimal_digit: data.max_decimal_digit,
             raised_by: data.raised_by,
             ready_date: data.ready_date,
           };
@@ -169,7 +167,6 @@ export const SalesInvoiceCreate = (props) => {
         rate: fruit.rate,
         proforma_invoice: fruit.proforma_invoice,
         type_of_unit: fruit.type_of_unit,
-        max_decimal_digit: fruit.max_decimal_digit,
         id: fruit.id,
         user: fruit.raised_by,
         ready_date: fruit.ready_date,
@@ -194,43 +191,41 @@ export const SalesInvoiceCreate = (props) => {
       const PRODUCTS = products
         .filter(
           (product) =>
-            Number(product.pending_quantity) > 0 && Number(product.quantity) > 0
+            Number(product.pending_quantity) > 0 &&
+            Number(product.quantity) > 0,
         ) // Keep products where both pending_quantity and quantity are > 0
         .map(
           ({
             pending_quantity,
             type_of_unit,
-            max_decimal_digit,
             rate,
             requested_date,
             ready_date,
             ...rest
-          }) => rest
+          }) => rest,
         );
-      // console.log(PRODUCTS);
+      console.log(PRODUCTS);
 
       const decimalCounts = customerorderBookData.products.map(
-        (item) => item.max_decimal_digit
+        (item) => item.max_decimal_digit,
       );
-
-      // console.log("customerorderBookData", customerorderBookData);
       console.log("products", products);
       const unit = customerorderBookData.products.map((item) => item.unit);
       const numTypes = customerorderBookData.products.map(
-        (item) => item.type_of_unit
+        (item) => item.type_of_unit,
       );
-      // console.log(numTypes);
+      console.log(numTypes);
 
-      // const isvalid = DecimalValidation({
-      //   numTypes,
-      //   quantities: PRODUCTS.map((item) => item.quantity),
-      //   decimalCounts,
-      //   unit,
-      //   handleError,
-      // });
-      // if (!isvalid) {
-      //   return;
-      // }
+      const isvalid = DecimalValidation({
+        numTypes,
+        quantities: PRODUCTS.map((item) => item.quantity),
+        decimalCounts,
+        unit,
+        handleError,
+      });
+      if (!isvalid) {
+        return;
+      }
       const req = {
         invoice_type: "customer",
         order_book: customerorderBookData.id,
@@ -243,14 +238,14 @@ export const SalesInvoiceCreate = (props) => {
           inputValue.place_of_supply !== undefined
             ? inputValue.place_of_supply
             : customerorderBookData
-            ? customerorderBookData.place_of_supply
-            : "",
+              ? customerorderBookData.place_of_supply
+              : "",
         transporter_name:
           inputValue.transporter_name !== undefined
             ? inputValue.transporter_name
             : customerorderBookData
-            ? customerorderBookData.transporter_name
-            : "",
+              ? customerorderBookData.transporter_name
+              : "",
         exchange_rate: inputValue.exchange_rate || null,
       };
 
@@ -496,8 +491,8 @@ export const SalesInvoiceCreate = (props) => {
                 inputValue.transporter_name !== undefined
                   ? inputValue.transporter_name
                   : customerorderBookData
-                  ? customerorderBookData.transporter_name
-                  : ""
+                    ? customerorderBookData.transporter_name
+                    : ""
               }
               error={inputValue.transporter_name === ""}
               // helperText={inputValue.transporter_name !== "" && "this field is required"}
@@ -515,8 +510,8 @@ export const SalesInvoiceCreate = (props) => {
                 inputValue.place_of_supply !== undefined
                   ? inputValue.place_of_supply
                   : customerorderBookData
-                  ? customerorderBookData.place_of_supply
-                  : ""
+                    ? customerorderBookData.place_of_supply
+                    : ""
               }
               onChange={handleInputChange}
             />
@@ -551,8 +546,8 @@ export const SalesInvoiceCreate = (props) => {
                     inputValue.exchange_rate !== undefined
                       ? inputValue.exchange_rate
                       : customerorderBookData
-                      ? customerorderBookData.exchange_rate
-                      : ""
+                        ? customerorderBookData.exchange_rate
+                        : ""
                   }
                   onChange={handleInputChange}
                 />

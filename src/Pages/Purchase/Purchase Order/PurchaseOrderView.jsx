@@ -68,7 +68,7 @@ export const PurchaseOrderView = () => {
         pdfDoc,
         {
           // set options here if needed
-        }
+        },
       ).toBlob();
 
       // create a temporary link element to trigger the download
@@ -111,10 +111,10 @@ export const PurchaseOrderView = () => {
   const getAllSellerAccountsDetails = async () => {
     try {
       setOpen(true);
-      const response = await InvoiceServices.getAllPaginateSellerAccountData(
-        "all"
-      );
+      const response =
+        await InvoiceServices.getAllPaginateSellerAccountData("all");
       dispatch(getSellerAccountData(response.data));
+      // console.table(response.data);
       setOpen(false);
     } catch (err) {
       setOpen(false);
@@ -128,7 +128,7 @@ export const PurchaseOrderView = () => {
         const response = await InventoryServices.getAllPurchaseOrderData(
           page,
           filter,
-          query
+          query,
         );
         setPurchaseOrderData(response.data.results);
         setTotalPages(Math.ceil(response.data.count / 25));
@@ -138,7 +138,7 @@ export const PurchaseOrderView = () => {
         setOpen(false);
       }
     },
-    []
+    [],
   );
 
   useEffect(() => {
@@ -193,7 +193,7 @@ export const PurchaseOrderView = () => {
                   sx={{ flexGrow: 1, mr: 1 }}
                   size="small"
                   value={AcceptedOption.find(
-                    (option) => option.value === acceptedFilter.toString()
+                    (option) => option.value === acceptedFilter.toString(),
                   )}
                   onChange={(event, newValue) => handleFilter(newValue)}
                   options={AcceptedOption}
@@ -215,7 +215,7 @@ export const PurchaseOrderView = () => {
                     setOpenMergePLPopup(true);
                   }}
                   disabled={userData.groups.includes(
-                    "Operations & Supply Chain Manager"
+                    "Operations & Supply Chain Manager",
                   )}
                 >
                   Merge PL
@@ -376,7 +376,7 @@ function Row(props) {
           <Button
             onClick={() => handleEdit(row)}
             disabled={userData.groups.includes(
-              "Operations & Supply Chain Manager"
+              "Operations & Supply Chain Manager",
             )}
           >
             Edit
@@ -385,7 +385,7 @@ function Row(props) {
             color="success"
             onClick={handleOpenCreatePLPopup}
             disabled={userData.groups.includes(
-              "Operations & Supply Chain Manager"
+              "Operations & Supply Chain Manager",
             )}
           >
             Create PL
@@ -434,8 +434,8 @@ function Row(props) {
                           {row.close_short === true
                             ? 0
                             : historyRow.type_of_unit === "decimal"
-                            ? historyRow.pending_quantity
-                            : Math.floor(historyRow.pending_quantity)}
+                              ? historyRow.pending_quantity
+                              : Math.floor(historyRow.pending_quantity)}
                         </StyledTableCell>
                       </StyledTableRow>
                     ))}

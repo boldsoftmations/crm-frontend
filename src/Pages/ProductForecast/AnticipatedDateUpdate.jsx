@@ -39,7 +39,7 @@ export const AnticipatedDateUpdate = ({
       };
       const response = await ProductForecastService.updateAnticipatedDate(
         anticipatedDate.id,
-        data
+        data,
       );
 
       if (response) {

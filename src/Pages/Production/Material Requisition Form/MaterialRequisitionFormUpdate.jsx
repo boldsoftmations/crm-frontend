@@ -9,7 +9,7 @@ import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import useDynamicFormFields from "../../../Components/useDynamicFormFields ";
 import { MessageAlert } from "../../../Components/MessageAlert";
-import { DecimalValidation } from "../../../Components/Header/DecimalValidation";
+import { DecimalValidation } from "../../../utils/DecimalValidation";
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -40,7 +40,7 @@ export const MaterialRequisitionFormUpdate = memo((props) => {
         type_of_unit: data.type_of_unit,
         max_decimal_digit: data.max_decimal_digit,
       })),
-    [storesInventoryData]
+    [storesInventoryData],
   );
   const initialFields = useMemo(
     () =>
@@ -51,7 +51,7 @@ export const MaterialRequisitionFormUpdate = memo((props) => {
         type_of_unit: data.type_of_unit,
         max_decimal_digit: data.max_decimal_digit, // Assuming this correction is needed
       })),
-    [idForEdit]
+    [idForEdit],
   );
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
@@ -78,7 +78,7 @@ export const MaterialRequisitionFormUpdate = memo((props) => {
       const numTypes = products.map((item) => item.type_of_unit);
       const unit = products.map((item) => item.unit);
       const decimalCounts = products.map((item) =>
-        String(item.max_decimal_digit)
+        String(item.max_decimal_digit),
       );
 
       console.log(products, "products");
@@ -98,7 +98,7 @@ export const MaterialRequisitionFormUpdate = memo((props) => {
       }
       await InventoryServices.updateMaterialRequisitionFormData(
         idForEdit.id,
-        payload
+        payload,
       );
       handleSuccess("Material Requisition Form Accepted");
       setTimeout(() => {
@@ -166,7 +166,7 @@ export const MaterialRequisitionFormUpdate = memo((props) => {
                       handleAutocompleteChange(index, event, value)
                     }
                     options={storesInventoryData.map(
-                      (option) => option.product__name
+                      (option) => option.product__name,
                     )}
                     getOptionLabel={(option) => option}
                     sx={{ minWidth: 300 }}

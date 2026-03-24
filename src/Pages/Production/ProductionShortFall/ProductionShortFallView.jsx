@@ -49,7 +49,7 @@ export const ProductionShortFallView = () => {
 
   // Filter the productionInventoryData based on the search query
   const filteredData = productionShortFallData.filter((row) =>
-    row.product.toLowerCase().includes(searchQuery.toLowerCase())
+    row.product.toLowerCase().includes(searchQuery.toLowerCase()),
   );
   // in type fist letter capitalized function
   productionShortFallData.forEach((product) => {
@@ -155,7 +155,11 @@ export const ProductionShortFallView = () => {
             </Box>
           </Box>
           {/* CustomTable */}
-          <CustomTable headers={TableHeader} data={TableData} />
+          <CustomTable
+            headers={TableHeader}
+            data={TableData}
+            Isviewable={false}
+          />
         </Paper>
       </Grid>
     </>

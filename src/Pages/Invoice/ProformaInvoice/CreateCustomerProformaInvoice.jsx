@@ -29,7 +29,7 @@ import { useNotificationHandling } from "../../../Components/useNotificationHand
 import useDynamicFormFields from "../../../Components/useDynamicFormFields ";
 import ProductService from "../../../services/ProductService";
 import InventoryServices from "../../../services/InventoryService";
-import { DecimalValidation } from "../../../Components/Header/DecimalValidation";
+import { DecimalValidation } from "../../../utils/DecimalValidation";
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -83,7 +83,7 @@ export const CreateCustomerProformaInvoice = (props) => {
       },
     ],
     productOption,
-    true
+    true,
   );
   const constructPayload = () => {
     return products.map((input, index) => {
@@ -151,7 +151,7 @@ export const CreateCustomerProformaInvoice = (props) => {
     const secs = seconds % 60;
     return `${String(minutes).padStart(2, "0")}:${String(secs).padStart(
       2,
-      "0"
+      "0",
     )}`;
   };
 
@@ -166,9 +166,8 @@ export const CreateCustomerProformaInvoice = (props) => {
   }, []);
   const getAllSellerAccountsDetails = async () => {
     try {
-      const response = await InvoiceServices.getAllPaginateSellerAccountData(
-        "all"
-      );
+      const response =
+        await InvoiceServices.getAllPaginateSellerAccountData("all");
       setSellerData(response.data);
     } catch (error) {
       console.log("Error fetching seller account data:", error);
@@ -177,7 +176,7 @@ export const CreateCustomerProformaInvoice = (props) => {
   const getBillingAddressbyCustomer = async () => {
     try {
       const response = await InvoiceServices.getBillingAddressbyCustomer(
-        rowData.name
+        rowData.name,
       );
       setEdcData(response.data);
     } catch (error) {
@@ -222,7 +221,7 @@ export const CreateCustomerProformaInvoice = (props) => {
       setOpen(true);
       const response = await CustomerServices.getCustomerLastPi(
         rowData && rowData.name,
-        value.unit
+        value.unit,
       );
 
       setCustomerLastPiData(response.data || {});
@@ -279,7 +278,7 @@ export const CreateCustomerProformaInvoice = (props) => {
     const numTypes = products.map((item) => item.type_of_unit);
     const quantities = products.map((item) => item.quantity);
     const decimalCounts = products.map((item) =>
-      String(item.max_decimal_digit)
+      String(item.max_decimal_digit),
     );
     const unit = products.map((item) => item.unit);
     const isvalid = DecimalValidation({
@@ -372,9 +371,8 @@ export const CreateCustomerProformaInvoice = (props) => {
       }
 
       // Perform the API call if data is valid
-      const response = await InvoiceServices.createCustomerProformaInvoiceData(
-        payload
-      );
+      const response =
+        await InvoiceServices.createCustomerProformaInvoiceData(payload);
       const successMessage =
         response.data.message || "Proforma Invoice created successfully!";
       handleSuccess(successMessage);
@@ -514,7 +512,7 @@ export const CreateCustomerProformaInvoice = (props) => {
                   contactOptions.find(
                     (option) =>
                       option.name === customerLastPiData &&
-                      customerLastPiData.contact_person_name
+                      customerLastPiData.contact_person_name,
                   ) // Default to customerLastPiData if contactData is not set
                 }
                 onChange={(e) => setContactData(e.target.value)} // Handle changes to update contactData
@@ -542,8 +540,8 @@ export const CreateCustomerProformaInvoice = (props) => {
                 contactData && contactData.contact
                   ? contactData.contact
                   : customerLastPiData && customerLastPiData.contact
-                  ? customerLastPiData.contact
-                  : ""
+                    ? customerLastPiData.contact
+                    : ""
               }
               InputLabelProps={{
                 shrink: true, // This will ensure the label stays above the field
@@ -739,8 +737,8 @@ export const CreateCustomerProformaInvoice = (props) => {
                 checked === true
                   ? "Verbal"
                   : inputValue.buyer_order_no
-                  ? inputValue.buyer_order_no
-                  : ""
+                    ? inputValue.buyer_order_no
+                    : ""
               }
               onChange={handleInputChange}
               InputLabelProps={{
@@ -844,7 +842,7 @@ export const CreateCustomerProformaInvoice = (props) => {
                               rowData && rowData.name,
                               selectedSellerData.unit,
 
-                              value
+                              value,
                             );
 
                           setProductDetails((prev) => ({
@@ -859,7 +857,7 @@ export const CreateCustomerProformaInvoice = (props) => {
                       }
                     }}
                     options={productOption.map(
-                      (option) => option.product__name
+                      (option) => option.product__name,
                     )}
                     getOptionLabel={(option) => option}
                     sx={{ minWidth: 300 }}
@@ -914,10 +912,10 @@ export const CreateCustomerProformaInvoice = (props) => {
                       input.rate // Use the rate if the user edited it
                         ? input.rate
                         : productDetails &&
-                          productDetails[index] &&
-                          productDetails[index].rate
-                        ? parseFloat(productDetails[index].rate).toFixed(2) // Use productDetails if not edited
-                        : ""
+                            productDetails[index] &&
+                            productDetails[index].rate
+                          ? parseFloat(productDetails[index].rate).toFixed(2) // Use productDetails if not edited
+                          : ""
                     }
                     variant="outlined"
                     onChange={(event) => {
@@ -948,12 +946,12 @@ export const CreateCustomerProformaInvoice = (props) => {
                       input.quantity && input.rate
                         ? (input.quantity * input.rate).toFixed(2)
                         : input.quantity &&
-                          productDetails[index] &&
-                          productDetails[index].rate
-                        ? (input.quantity * productDetails[index].rate).toFixed(
-                            2
-                          )
-                        : "0.00"
+                            productDetails[index] &&
+                            productDetails[index].rate
+                          ? (
+                              input.quantity * productDetails[index].rate
+                            ).toFixed(2)
+                          : "0.00"
                     }
                     disabled // The amount is calculated, so it should not be manually editable.
                   />
@@ -977,7 +975,7 @@ export const CreateCustomerProformaInvoice = (props) => {
                     }}
                     inputProps={{
                       min: new Date(
-                        new Date().setDate(new Date().getDate() + 1)
+                        new Date().setDate(new Date().getDate() + 1),
                       )
                         .toISOString()
                         .substring(0, 10), // Prevent selecting past and current dates

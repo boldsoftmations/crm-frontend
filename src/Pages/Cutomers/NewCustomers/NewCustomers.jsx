@@ -21,8 +21,8 @@ import { useNotificationHandling } from "./../../../Components/useNotificationHa
 import { CustomPagination } from "../../../Components/CustomPagination";
 import { useSelector } from "react-redux";
 import { CSVLink } from "react-csv";
-import { Popup } from "../../../Components/Popup";
-import CustomDate from "../../../Components/CustomDate";
+
+import CustomDateFilterPopup from "../../../Components/CustomDateFilterPopup";
 
 export const NewCustomerListView = () => {
   const [open, setOpen] = useState(false);
@@ -47,7 +47,7 @@ export const NewCustomerListView = () => {
   ];
 
   const filterBDEPerson = assigned.filter((group) =>
-    roles.includes(group.groups__name)
+    roles.includes(group.groups__name),
   );
 
   const { handleError, handleCloseSnackbar, alertInfo } =
@@ -65,7 +65,7 @@ export const NewCustomerListView = () => {
         filterValue,
         filterByDays,
         StartDate,
-        EndDate
+        EndDate,
       );
 
       const data = response.data.map((row) => {
@@ -122,7 +122,7 @@ export const NewCustomerListView = () => {
         filterValue,
         filterByDays,
         StartDate,
-        EndDate
+        EndDate,
       );
       setCustomerList(response.data.results);
       const total = response.data.count;
@@ -137,7 +137,7 @@ export const NewCustomerListView = () => {
   // Trigger API call when filters or filterValue changes
   useEffect(() => {
     getNewCustomers();
-  }, [currentPage, filterValue, filterByDays, endDate, startDate]);
+  }, [currentPage, filterValue, filterByDays]);
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
@@ -163,21 +163,6 @@ export const NewCustomerListView = () => {
     }
   };
 
-  const handleStartDateChange = (e) => {
-    let date = new Date(e.target.value);
-    setStartDate(date);
-    setEndDate(new Date());
-  };
-
-  const handleEndDateChange = (e) => {
-    let date = new Date(e.target.value);
-    setEndDate(date);
-  };
-
-  const resetDate = () => {
-    setStartDate(new Date());
-    setEndDate(new Date());
-  };
   return (
     <>
       <MessageAlert
@@ -346,21 +331,21 @@ export const NewCustomerListView = () => {
             handlePageChange={handlePageChange}
           />
         </Paper>
-        <Popup
-          maxWidth="md"
-          setOpenPopup={setOpenCustomDate}
-          openPopup={openCustomDate}
-        >
-          <CustomDate
-            startDate={startDate}
-            endDate={endDate}
-            minDate={minDate}
-            maxDate={maxDate}
-            handleStartDateChange={handleStartDateChange}
-            handleEndDateChange={handleEndDateChange}
-            resetDate={resetDate}
-          />
-        </Popup>
+
+        <CustomDateFilterPopup
+          open={openCustomDate}
+          setOpen={setOpenCustomDate}
+          startDate={startDate}
+          endDate={endDate}
+          setStartDate={setStartDate}
+          setEndDate={setEndDate}
+          minDate={minDate}
+          maxDate={maxDate}
+          onSubmit={() => {
+            setOpenCustomDate(false);
+            getNewCustomers();
+          }}
+        />
       </Grid>
     </>
   );

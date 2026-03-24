@@ -31,8 +31,8 @@ import CustomTextField from "../../../Components/CustomTextField";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import FileSaver from "file-saver";
-import CustomDate from "../../../Components/CustomDate";
 import { CSVLink } from "react-csv";
+import CustomDateFilterPopup from "../../../Components/CustomDateFilterPopup";
 export const ViewSRF = () => {
   const [open, setOpen] = useState(false);
   const [srfData, setSrfData] = useState([]);
@@ -147,7 +147,7 @@ export const ViewSRF = () => {
 
   useEffect(() => {
     getCustomerSRF();
-  }, [getCustomerSRF]);
+  }, [searchQuery, filterByStatus]);
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
@@ -178,19 +178,7 @@ export const ViewSRF = () => {
       setEndDate(null);
     }
   };
-  const handleEndDateChange = (event) => {
-    const date = new Date(event.target.value);
-    setEndDate(date);
-  };
-  const getResetDate = () => {
-    setStartDate(new Date());
-    setEndDate(new Date());
-  };
-  const handleStartDateChange = (event) => {
-    const date = new Date(event.target.value);
-    setStartDate(date);
-    setEndDate(new Date());
-  };
+
   //filter by status
   const handleFilterByStatus = (event, value) => {
     setFilterByStatus(value);
@@ -343,21 +331,21 @@ export const ViewSRF = () => {
             handlePageChange={handlePageChange}
           />
         </Paper>
-        <Popup
-          maxWidth="md"
-          setOpenPopup={setOpenCustomDate}
-          openPopup={openCustomDate}
-        >
-          <CustomDate
-            startDate={startDate}
-            endDate={endDate}
-            minDate={minDate}
-            maxDate={maxDate}
-            handleStartDateChange={handleStartDateChange}
-            handleEndDateChange={handleEndDateChange}
-            resetDate={getResetDate}
-          />
-        </Popup>
+
+        <CustomDateFilterPopup
+          startDate={startDate}
+          endDate={endDate}
+          minDate={minDate}
+          maxDate={maxDate}
+          setStartDate={setStartDate}
+          setEndDate={setEndDate}
+          open={openCustomDate}
+          setOpen={setOpenCustomDate}
+          onSubmit={() => {
+            setOpenCustomDate(false);
+            getCustomerSRF();
+          }}
+        />
       </Grid>
     </>
   );

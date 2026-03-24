@@ -30,7 +30,7 @@ import { useNotificationHandling } from "../../../Components/useNotificationHand
 import { MessageAlert } from "../../../Components/MessageAlert";
 import SearchComponent from "../../../Components/SearchComponent ";
 import CustomSelect from "../../../Components/CustomSelect";
-import CustomDate from "../../../Components/CustomDate";
+import CustomDateFilterPopup from "../../../Components/CustomDateFilterPopup";
 
 export const MaterialTransferNoteView = () => {
   const [openCreatePopup, setOpenCreatePopup] = useState(false);
@@ -90,7 +90,7 @@ export const MaterialTransferNoteView = () => {
         searchQuery,
         filterByDays,
         StartDate,
-        EndDate
+        EndDate,
       );
 
       const data = response.data.map((row) => {
@@ -126,7 +126,7 @@ export const MaterialTransferNoteView = () => {
         pdfDoc,
         {
           // set options here if needed
-        }
+        },
       ).toBlob();
 
       // create a temporary link element to trigger the download
@@ -187,7 +187,7 @@ export const MaterialTransferNoteView = () => {
         searchQuery,
         filterByDays,
         StartDate,
-        EndDate
+        EndDate,
       );
 
       setMaterialTransferNote(response.data.results);
@@ -214,8 +214,8 @@ export const MaterialTransferNoteView = () => {
     acceptedFilter,
     searchQuery,
     filterByDays,
-    startDate,
-    endDate,
+    // startDate,
+    // endDate,
   ]);
 
   const handleSearch = (query) => {
@@ -260,20 +260,6 @@ export const MaterialTransferNoteView = () => {
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
-  };
-
-  const handleEndDateChange = (event) => {
-    const date = new Date(event.target.value);
-    setEndDate(date);
-  };
-  const getResetDate = () => {
-    setStartDate(new Date());
-    setEndDate(new Date());
-  };
-  const handleStartDateChange = (event) => {
-    const date = new Date(event.target.value);
-    setStartDate(date);
-    setEndDate(new Date());
   };
 
   const isAcceptedView =
@@ -472,22 +458,21 @@ export const MaterialTransferNoteView = () => {
             totalPages={totalPages}
             handlePageChange={handlePageChange}
           />
-          <Popup
-            openPopup={customDataPopup}
-            setOpenPopup={setCustomDataPopup}
-            title="Date Filter"
-            maxWidth="md"
-          >
-            <CustomDate
-              startDate={startDate}
-              endDate={endDate}
-              minDate={minDate}
-              maxDate={maxDate}
-              handleStartDateChange={handleStartDateChange}
-              handleEndDateChange={handleEndDateChange}
-              resetDate={getResetDate}
-            />
-          </Popup>
+
+          <CustomDateFilterPopup
+            open={customDataPopup}
+            setOpen={setCustomDataPopup}
+            startDate={startDate}
+            endDate={endDate}
+            minDate={minDate}
+            maxDate={maxDate}
+            setStartDate={setStartDate}
+            setEndDate={setEndDate}
+            onSubmit={() => {
+              setCustomDataPopup(false);
+              getAllMaterialTransferNoteDetails();
+            }}
+          />
         </Paper>
       </Grid>
 
