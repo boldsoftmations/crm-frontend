@@ -45,9 +45,13 @@ export const ProductForecastViewAll = () => {
     userData.groups.includes("Customer Service");
   const [activeTab, setActiveTab] = useState(isAdmin ? 0 : 4);
 
+  const Supplychain =
+    userData.groups.includes("Director") ||
+    userData.groups.includes("Operations & Supply Chain Manager");
+
   const tabs = [
     { label: "Curr. Month Forecast", visible: isAdmin, index: 0 }, // Shortened "Current" to "Curr."
-    { label: "Customers w/ Forecast", visible: isAdmin, index: 1 }, // Used "w/" as shorthand for "with"
+    { label: "Customers w/ Forecast", visible: Supplychain, index: 1 }, // Used "w/" as shorthand for "with"
     { label: "Customers w/o Forecast", visible: isAdmin, index: 2 }, // Used "w/o" as shorthand for "without"
     { label: "Dead Customers", visible: isAdmin, index: 3 }, // Used "Inactive" as a clearer term for "Dead"
     { label: "Prod. Forecast", visible: isPurchase, index: 4 }, // Shortened "Product" to "Prod."
