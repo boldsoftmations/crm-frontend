@@ -51,7 +51,7 @@ const getMasterCities = (
   page,
   searchvalue,
   state__country__name,
-  state__name
+  state__name,
 ) => {
   const params = new URLSearchParams();
   if (page) {
@@ -94,7 +94,7 @@ const updateMasterPincode = (id, data) => {
 
 const getCountryDataByPincode = (country = "India", pincode) => {
   return CustomAxios.get(
-    `/api/master/pincode/?page=all&city__state__country__name=${country}&search=${pincode}`
+    `/api/master/pincode/?page=all&city__state__country__name=${country}&search=${pincode}`,
   );
 };
 
@@ -116,7 +116,7 @@ const createMasterActivityOption = (data) => {
 
 const getMasterActivityOptions = (model_master__name) => {
   return CustomAxios.get(
-    `/api/master/model-option/?page=all&model_master__name=${model_master__name}`
+    `/api/master/model-option/?page=all&model_master__name=${model_master__name}`,
   );
 };
 
@@ -185,7 +185,7 @@ const getBeatLeads = (page, search) => {
 const removeCustomterBeatList = (id, data) => {
   return CustomAxios.post(
     `/api/customer/customer-beat/${id}/remove_customer/`,
-    data
+    data,
   );
 };
 
