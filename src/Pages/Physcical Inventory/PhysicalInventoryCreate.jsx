@@ -87,18 +87,21 @@ export const PhysicalInventoryCreate = memo((props) => {
 
   const handleProductChange = useCallback(
     (event, value) => {
-      const selectedProduct = inventoryData.find(
-        (data) =>
-          data.product__name === value &&
-          data.seller_account === formData.seller_unit,
-      );
+      const selectedProduct =
+        inventoryData &&
+        inventoryData.find(
+          (data) =>
+            data.product__name === value &&
+            data.seller_account === formData.seller_unit,
+        );
 
       setFormData((prevState) => ({
         ...prevState,
         product: value,
-        pending_quantity: selectedProduct.quantity
-          ? Number(selectedProduct.quantity).toFixed(2)
-          : "0.00",
+        pending_quantity:
+          selectedProduct && selectedProduct.quantity
+            ? Number(selectedProduct.quantity).toFixed(2)
+            : "0.00",
       }));
     },
     [inventoryData, formData.seller_unit],
