@@ -9,7 +9,7 @@ import { CustomLoader } from "../../Components/CustomLoader";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import CustomTextField from "../../Components/CustomTextField";
 import { useSelector } from "react-redux";
-import { DecimalValidation } from "../../utils/DecimalValidation";
+import { DecimalValidation } from "../../utility/DecimalValidation";
 
 export const PhysicalInventoryCreate = memo((props) => {
   const { currentPage, searchQuery, setOpenPopup, getPhysicalInventoryData } =
@@ -91,11 +91,13 @@ export const PhysicalInventoryCreate = memo((props) => {
           data.product__name === value &&
           data.seller_account === formData.seller_unit,
       );
-      // console.log(selectedProduct);
+
       setFormData((prevState) => ({
         ...prevState,
         product: value,
-        pending_quantity: selectedProduct ? selectedProduct.quantity : "0",
+        pending_quantity: selectedProduct.quantity
+          ? Number(selectedProduct.quantity).toFixed(2)
+          : "0.00",
       }));
     },
     [inventoryData, formData.seller_unit],
@@ -108,10 +110,14 @@ export const PhysicalInventoryCreate = memo((props) => {
           data.seller_account === value &&
           data.product__name === formData.product,
       );
+
       setFormData((prevState) => ({
         ...prevState,
         seller_unit: value,
-        pending_quantity: selectedSellerUnit ? selectedSellerUnit.quantity : 0,
+        pending_quantity:
+          selectedSellerUnit && selectedSellerUnit.quantity
+            ? Number(selectedSellerUnit.quantity).toFixed(2)
+            : "0.00",
       }));
     },
     [inventoryData, formData.product],
@@ -127,9 +133,11 @@ export const PhysicalInventoryCreate = memo((props) => {
   // console.log(formData);
 
   const calculateGNL = (physicalQuantity, pendingQuantity) => {
-    const physical = parseInt(physicalQuantity, 10);
-    const pending = parseInt(pendingQuantity, 10);
+    const physical = parseFloat(physicalQuantity) || 0;
+    const pending = parseFloat(pendingQuantity) || 0;
+
     const diff = physical - pending;
+
     return diff > 0 ? "Gain" : diff < 0 ? "Loss" : "No Change";
   };
 
@@ -190,8 +198,8 @@ export const PhysicalInventoryCreate = memo((props) => {
     [formData, currentPage, searchQuery],
   );
   const isAuthorizedAndPendingZero =
-    users.groups.includes("Accounts") ||
-    (users.groups.includes("Director") && formData.pending_quantity === "0");
+    (users.groups.includes("Accounts") || users.groups.includes("Director")) &&
+    formData.pending_quantity === "0";
   console.log(isAuthorizedAndPendingZero);
   return (
     <>
