@@ -9,8 +9,9 @@ import { CustomLoader } from "../../Components/CustomLoader";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import CustomTextField from "../../Components/CustomTextField";
 import { useSelector } from "react-redux";
-import { DecimalValidation } from "../../utility/DecimalValidation";
+// import { DecimalValidation } from "../../utils/DecimalValidation";
 
+// import Decim
 export const PhysicalInventoryCreate = memo((props) => {
   const { currentPage, searchQuery, setOpenPopup, getPhysicalInventoryData } =
     props;
@@ -156,21 +157,6 @@ export const PhysicalInventoryCreate = memo((props) => {
     async (e) => {
       e.preventDefault();
       setOpen(true);
-      const numTypes = inventoryData.map((item) => item.type_of_unit);
-      const quantities = formData.physical_quantity;
-      const unit = inventoryData.map((item) => item.unit);
-      const decimalCount = inventoryData.map((item) => item.max_decimal_digit);
-      const isvalid = DecimalValidation({
-        numTypes,
-        quantities,
-        decimalCount,
-        unit,
-        handleError,
-      });
-      if (!isvalid) {
-        setOpen(false);
-        return;
-      }
 
       try {
         const payload = {
