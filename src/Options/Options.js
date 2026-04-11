@@ -230,6 +230,7 @@ const CategoryOption = [
     value: "Aluminium Hardware & Section",
   },
   { id: 14, label: "Signage", value: "Signage" },
+  { id: 25, label: "MRO", value: "mro" },
 ];
 
 const IndustriesList = [
