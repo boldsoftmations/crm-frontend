@@ -3,7 +3,7 @@ import { TextField, IconButton, Box, InputAdornment } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ClearIcon from "@mui/icons-material/Clear";
 
-const SearchComponent = ({ onSearch, onReset }) => {
+const SearchComponent = ({ onSearch, onReset, width }) => {
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleChange = (event) => {
@@ -33,7 +33,7 @@ const SearchComponent = ({ onSearch, onReset }) => {
   };
 
   return (
-    <Box sx={{ width: "100%" }}>
+    <Box sx={{ width: width || "100%" }}>
       {" "}
       {/* Ensured Box takes 100% width */}
       <TextField

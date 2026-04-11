@@ -71,9 +71,8 @@ export const ApprovePi = () => {
   const getAllSellerAccountsDetails = async () => {
     try {
       setOpen(true);
-      const response = await InvoiceServices.getAllPaginateSellerAccountData(
-        "all"
-      );
+      const response =
+        await InvoiceServices.getAllPaginateSellerAccountData("all");
       dispatch(getSellerAccountData(response.data));
       setOpen(false);
     } catch (err) {
@@ -93,9 +92,10 @@ export const ApprovePi = () => {
         currentPage,
         filterType,
         filterValue,
-        searchValue
+        searchValue,
       );
       setInvoiceData(response.data.results);
+
       setTotalPages(Math.ceil(response.data.count / 25));
       setTotalPiAmount(response.data.total_amount);
     } catch (error) {
@@ -154,6 +154,7 @@ export const ApprovePi = () => {
     "Contact",
     "Status",
     "PI Amount",
+    "Packaging Type",
     "Balance",
     "Payment Terms",
     "ACTION",
@@ -245,7 +246,7 @@ export const ApprovePi = () => {
                       >
                         {totalPiAmount
                           ? `₹ ${new Intl.NumberFormat("en-IN").format(
-                              totalPiAmount
+                              totalPiAmount,
                             )}`
                           : "₹ 0"}
                       </strong>
@@ -320,6 +321,15 @@ export const ApprovePi = () => {
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.round_off_total}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      <StyledTableCell align="center">
+                        {invoiceData[i].products.some(
+                          (item) => item.packaging_charges > 0,
+                        )
+                          ? "Special Packaging"
+                          : "Normal Packaging"}
+                      </StyledTableCell>
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.balance_amount}

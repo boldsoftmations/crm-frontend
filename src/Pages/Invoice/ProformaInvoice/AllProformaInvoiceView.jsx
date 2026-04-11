@@ -30,11 +30,12 @@ export const AllProformaInvoiceView = (props) => {
   const componentRef = useRef();
   const { handleError, handleSuccess, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
-
+  const [groupedData, setGroupedData] = useState([]);
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
     documentTitle: `PI Number ${invoiceData.pi_number}`,
   });
+
   const handleDownload = async (data) => {
     try {
       setOpen(true);
@@ -54,7 +55,7 @@ export const AllProformaInvoiceView = (props) => {
         pdfDoc,
         {
           // set options here if needed
-        }
+        },
       ).toBlob();
 
       // create a temporary link element to trigger the download
@@ -81,10 +82,10 @@ export const AllProformaInvoiceView = (props) => {
       const response =
         idForEdit.type === "Customer"
           ? await InvoiceServices.getCompanyPerformaInvoiceByIDData(
-              idForEdit.pi_number
+              idForEdit.pi_number,
             )
           : await InvoiceServices.getLeadsPerformaInvoiceByIDData(
-              idForEdit.pi_number
+              idForEdit.pi_number,
             );
       setInvoiceData(response.data);
       setProductData(response.data.products);
@@ -125,7 +126,7 @@ export const AllProformaInvoiceView = (props) => {
       if (req.type === "Customer") {
         const response = await InvoiceServices.sendForApprovalCompanyData(
           invoiceData.pi_number,
-          req
+          req,
         );
         const successMessage =
           response.data.message || "Pi Dropped successfully";
@@ -133,7 +134,7 @@ export const AllProformaInvoiceView = (props) => {
       } else {
         const response = await InvoiceServices.sendForApprovalLeadsData(
           invoiceData.pi_number,
-          req
+          req,
         );
         const successMessage =
           response.data.message || "Pi Dropped successfully";
@@ -160,6 +161,27 @@ export const AllProformaInvoiceView = (props) => {
 
   const TOTAL_GST_DATA = invoiceData.total - invoiceData.amount;
   const TOTAL_GST = TOTAL_GST_DATA.toFixed(2);
+  useEffect(() => {
+    const groupedResult = Object.values(
+      productData
+        .filter((row) => row.packaging_type === "Special Packaging")
+        .reduce((acc, row) => {
+          if (!acc[row.hsn_code]) {
+            acc[row.hsn_code] = {
+              ...row,
+              packaging_cost: 0,
+            };
+          }
+
+          acc[row.hsn_code].packaging_cost += Number(row.packaging_cost || 0);
+
+          return acc;
+        }, {}),
+    );
+
+    setGroupedData(groupedResult);
+  }, [productData]);
+
   return (
     <>
       <MessageAlert
@@ -536,6 +558,7 @@ export const AllProformaInvoiceView = (props) => {
                                 RATE
                               </strong>
                             </td>
+
                             <td className="text-center">
                               <strong style={{ ...typographyStyling }}>
                                 AMOUNT
@@ -564,9 +587,37 @@ export const AllProformaInvoiceView = (props) => {
                               </td>
                               <td className="text-center">{row.unit}</td>
                               <td className="text-center">{row.rate}</td>
+
                               <td className="text-center">{row.amount}</td>
                             </tr>
                           ))}
+                          {groupedData.length > 0 &&
+                            groupedData.map((row, i) => (
+                              <tr key={i}>
+                                <td className="text-start">
+                                  {productData.length + i + 1}
+                                </td>
+
+                                <td className="text-center">
+                                  {row.packaging_type}-
+                                  <br />
+                                  {row.hsn_code}
+                                </td>
+                                <td className="text-start">-</td>
+
+                                <td className="text-center">{row.hsn_code}</td>
+                                <td className="text-center">-</td>
+                                <td className="text-center">-</td>
+                                <td className="text-center">-</td>
+                                <td className="text-center">
+                                  {row.packaging_cost}
+                                </td>
+
+                                <td className="text-center">
+                                  {row.packaging_cost}
+                                </td>
+                              </tr>
+                            ))}
                           <tr>
                             <td colspan="4.5" className="text-start">
                               <strong style={{ ...typographyStyling }}>
@@ -751,6 +802,7 @@ export const AllProformaInvoiceView = (props) => {
                       </div>
                     </div>
                   )}
+
                   <div
                     className="row mb-4"
                     style={{

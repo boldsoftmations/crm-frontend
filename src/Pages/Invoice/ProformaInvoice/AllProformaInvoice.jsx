@@ -217,6 +217,7 @@ export const AllProformaInvoice = () => {
     "Customer",
     "Billing City",
     "Contact",
+    "Packaging Type",
     "Status",
     "PI Amount",
     "Balance",
@@ -376,6 +377,13 @@ export const AllProformaInvoice = () => {
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.contact}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {invoiceData[i].products.some(
+                        (item) => item.packaging_charges > 0,
+                      )
+                        ? "Special Packaging"
+                        : "Normal Packaging"}
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.status}

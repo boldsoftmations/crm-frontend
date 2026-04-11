@@ -6,7 +6,9 @@ import { Dispatched } from "./Dispatched";
 import { SalesRegisterView } from "./SalesRegisterView";
 import { ExportView } from "./ExportView";
 import BlankLrView from "./BlankLrView";
-import { UploadedPODs } from "./UploadedPODs";
+// import UploadedPODs from "./UploadedPOD";
+import UploadedPODs from "./UploadedPODs";
+import { DispatchPackagingView } from "./DispatchPackaging/DispatchPackagingView";
 export const AllDispatchTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
 
@@ -39,6 +41,7 @@ export const AllDispatchTabView = () => {
     "Factory-Mumbai-Dispatch",
     "Factory-Delhi-Dispatch",
   );
+  const isAdmin = isInGroups("Director", "Operations & Supply Chain Manager");
   const adminTab = isInGroups("Director", "Operations & Supply Chain Manager");
   const customerServiceTab = isInGroups("Customer Service");
   const salesRegisterTab = isInGroups("Accounts Billing Department");
@@ -89,6 +92,11 @@ export const AllDispatchTabView = () => {
       visible: adminTab,
       index: 5,
     },
+    {
+      label: "Packaging Consumption",
+      visible: isAdmin,
+      index: 6,
+    },
   ];
 
   const visibleTabs = tabs.filter((tab) => tab.visible);
@@ -101,6 +109,7 @@ export const AllDispatchTabView = () => {
     3: <SalesRegisterView />,
     4: <BlankLrView />,
     5: <UploadedPODs />,
+    6: <DispatchPackagingView />,
   };
 
   return (

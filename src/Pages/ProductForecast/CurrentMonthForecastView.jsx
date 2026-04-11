@@ -22,6 +22,7 @@ import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import SearchComponent from "../../Components/SearchComponent ";
 import { MessageAlert } from "../../Components/MessageAlert";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
+import CustomTextField from "../../Components/CustomTextField";
 
 export const CurrentMonthForecastView = () => {
   const [open, setOpen] = useState(false);
@@ -38,6 +39,7 @@ export const CurrentMonthForecastView = () => {
   const UserData = useSelector((state) => state.auth.profile);
   const assignedOption = UserData.sales_users || [];
   console.log(assignedOption);
+  const [startDate, setStartDate] = useState("");
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
@@ -93,6 +95,7 @@ export const CurrentMonthForecastView = () => {
         "all",
         salesPersonByFilter,
         searchQuery,
+        startDate,
       );
       const data = response.data
         .filter((row) => row.forecast >= 0)
@@ -109,6 +112,7 @@ export const CurrentMonthForecastView = () => {
             forecast_achieved: forecast_achieved > 0 ? forecast_achieved : 0,
           };
         });
+      console.log("data", data);
       return data;
     } catch (error) {
       console.log(error);
@@ -124,6 +128,7 @@ export const CurrentMonthForecastView = () => {
         currentPage,
         salesPersonByFilter,
         searchQuery,
+        startDate,
       );
       setCurrentMonthForecast(response.data.results);
       const total = response.data.count;
@@ -134,11 +139,11 @@ export const CurrentMonthForecastView = () => {
     } finally {
       setOpen(false);
     }
-  }, [currentPage, salesPersonByFilter, searchQuery]);
+  }, [currentPage, salesPersonByFilter, searchQuery, startDate]);
 
   useEffect(() => {
     getAllCurrentMonthForecastDetails();
-  }, [currentPage, salesPersonByFilter, searchQuery]);
+  }, [currentPage, salesPersonByFilter, searchQuery, startDate]);
 
   const handleSearch = (query) => {
     setSearchQuery(query);
@@ -215,6 +220,10 @@ export const CurrentMonthForecastView = () => {
     }
   };
 
+  const handleStartDateChange = (event) => {
+    setStartDate(event.target.value);
+  };
+
   // Example use:
   console.log(getColorForDate("2023-12-25")); // Future date example
 
@@ -257,11 +266,12 @@ export const CurrentMonthForecastView = () => {
               container
               spacing={2}
               alignItems="center"
-              sx={{ marginRight: 5, marginLeft: 5 }}
+              // sx={{ marginRight: 5, marginLeft: 5 }}
             >
               {!UserData.groups.includes("Sales Executive") && (
                 <Grid item xs={12} sm={3}>
                   <CustomAutocomplete
+                    fullWidth
                     size="small"
                     sx={{ minWidth: 150 }}
                     onChange={(event, value) => handleFilterChange(value)}
@@ -272,13 +282,32 @@ export const CurrentMonthForecastView = () => {
                   />
                 </Grid>
               )}
+
               <Grid item xs={12} sm={3}>
+                <CustomTextField
+                  sx={{ width: "300px" }}
+                  // label="Estimate date"
+                  variant="outlined"
+                  size="small"
+                  type="date"
+                  id="start-date"
+                  value={startDate}
+                  onChange={handleStartDateChange}
+                />
+              </Grid>
+              {/* <Grid item xs={12} sm={3}>
                 <SearchComponent
                   onSearch={handleSearch}
                   onReset={handleReset}
                 />
-              </Grid>
-              <Grid item xs={12} sm={2}>
+              </Grid> */}
+              <Grid item xs={12} sm={4}></Grid>
+              <Grid
+                item
+                xs={12}
+                sm={2}
+                sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}
+              >
                 <Button
                   variant="contained"
                   color="primary"
@@ -296,12 +325,28 @@ export const CurrentMonthForecastView = () => {
                   />
                 )}
               </Grid>
+              {/* <Grid item xs={12} sm={3}>
+                <SearchComponent
+                  onSearch={handleSearch}
+                  onReset={handleReset}
+                />
+              </Grid> */}
             </Grid>
           </Box>
-          <Box display="flex" justifyContent="center" marginBottom="10px">
+          <Box
+            display="flex"
+            gap={18}
+            justifyContent="start"
+            marginBottom="10px"
+          >
+            <SearchComponent
+              width={"300px"}
+              onSearch={handleSearch}
+              onReset={handleReset}
+            />
             <h3
               style={{
-                marginBottom: "1em",
+                marginBottom: "0.5em",
                 fontSize: "24px",
                 color: "rgb(34, 34, 34)",
                 fontWeight: 800,

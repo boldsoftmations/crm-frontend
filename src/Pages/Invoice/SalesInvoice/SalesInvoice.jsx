@@ -13,7 +13,7 @@ export const SalesInvoice = (props) => {
   const [productData, setProductData] = useState([]);
   const [hsnData, setHsnData] = useState([]);
   const [open, setOpen] = useState(false);
-
+  const [groupedData, setGroupedData] = useState([]);
   console.log("idforedit", idForEdit);
 
   const getSalesInvoiceByIDDetails = async () => {
@@ -148,6 +148,27 @@ export const SalesInvoice = (props) => {
   };
 
   // In your main JSX, call the function as needed:
+
+  useEffect(() => {
+    const groupedResult = Object.values(
+      productData
+        .filter((row) => row.packaging_type === "Special Packaging")
+        .reduce((acc, row) => {
+          if (!acc[row.hsn_code]) {
+            acc[row.hsn_code] = {
+              ...row,
+              packaging_cost: 0,
+            };
+          }
+
+          acc[row.hsn_code].packaging_cost += Number(row.packaging_cost || 0);
+
+          return acc;
+        }, {}),
+    );
+
+    setGroupedData(groupedResult);
+  }, [productData]);
 
   return (
     <>
@@ -382,6 +403,29 @@ export const SalesInvoice = (props) => {
                             <td className="text-center">{row.amount}</td>
                           </tr>
                         ))}
+                        {groupedData.length > 0 &&
+                          groupedData.map((row, i) => (
+                            <tr key={i}>
+                              <td className="text-start">
+                                {productData.length + i + 1}
+                              </td>
+                              <td className="text-center">
+                                {row.packaging_type}-
+                                <br />
+                                {row.hsn_code}
+                              </td>
+                              <td className="text-center">{row.hsn_code}</td>
+                              <td className="text-center">-</td>
+
+                              <td className="text-center">-</td>
+                              <td className="text-center">
+                                {row.packaging_cost}
+                              </td>
+                              <td className="text-center">
+                                {row.packaging_cost}
+                              </td>
+                            </tr>
+                          ))}
                         <tr>
                           <td colspan="3.5" className="text-start">
                             <strong style={{ ...typographyStyling }}>
@@ -511,6 +555,7 @@ export const SalesInvoice = (props) => {
                     </div>
                   </div>
                 )}
+
                 {salesInvoiceData.origin_type === "domestic" &&
                   hsnData.length > 0 && (
                     <div

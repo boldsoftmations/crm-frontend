@@ -10,7 +10,10 @@ import { CRReport } from "./CRreport";
 import { ViewSalesQuantityAnalysis } from "./Sales Quantity Analysis/ViewSalesQuantityAnalysis";
 import { SalesFieldDashboard } from "./SalesFieldDashboard";
 import SalesParchaseAnalaysis from "./Sales Quantity Analysis/SalesParchaseAnalaysis";
-
+// import { MisReportView } from "./MIS Report/MisReportView";
+// import { MisReportView } from "./MIS Report/MisReportView";
+// import { MisReportView } from "./Mis Report/MisReportView";
+import { MisReportView } from "./MisReportView";
 export const AnalyticsAllTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
 
@@ -122,8 +125,13 @@ export const AnalyticsAllTabView = () => {
       roles: ["Director", "Operations & Supply Chain Manager"],
       component: <SalesParchaseAnalaysis />,
     },
-  ];
 
+    {
+      label: "MIS Packaging Report",
+      roles: ["Director", "Operations & Supply Chain Manager"],
+      component: <MisReportView />,
+    },
+  ];
   const visibleTabs = tabs.filter((tab) => isInGroups(...tab.roles));
 
   // Simplified active tab state to always start with the first item of visibleTabs if available

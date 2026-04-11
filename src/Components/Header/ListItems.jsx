@@ -120,10 +120,10 @@ export const ListItems = ({ setOpen }) => {
             to: "/customer/complaints/ccp-capa/master",
             text: "CCF Complaint Master",
           },
-          // {
-          //   to: "/master/package-master",
-          //   text: "Package Master",
-          // },
+          {
+            to: "/master/package-master",
+            text: "Package Master",
+          },
 
           // {
           //   to: "/",
@@ -183,15 +183,10 @@ export const ListItems = ({ setOpen }) => {
           "Customer Complaint",
           [{ to: "/customer/complaints/ccp-capa", text: "CCF-CAPA" }],
         ),
-        // renderSubmenu("ReturnOrder", <DescriptionIcon />, "ReturnOrder", [
-        //   { to: "/inventory/sales-return", text: "Sales Return" },
-        //   { to: "/inventory/purchase-return", text: "Purchase Return" },
-        // ]),
-        renderListItem(
-          "/inventory/sales-return",
-          <LocalShippingIcon />,
-          "Sales Return",
-        ),
+        renderSubmenu("ReturnOrder", <DescriptionIcon />, "ReturnOrder", [
+          { to: "/inventory/sales-return", text: "Sales Return" },
+          { to: "/inventory/purchase-return", text: "Purchase Return" },
+        ]),
 
         renderListItem(
           "/master/customer-visit",
@@ -258,11 +253,10 @@ export const ListItems = ({ setOpen }) => {
           { to: "/inventory/view-production", text: "Production" },
         ]),
         renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
-        renderListItem(
-          "/inventory/sales-return",
-          <LocalShippingIcon />,
-          "Sales Return",
-        ),
+        renderSubmenu("ReturnOrder", <DescriptionIcon />, "ReturnOrder", [
+          { to: "/inventory/sales-return", text: "Sales Return" },
+          { to: "/inventory/purchase-return", text: "Purchase Return" },
+        ]),
         renderListItem("/dispatch/tab-view", <LocalShippingIcon />, "Dispatch"),
         renderSubmenu(
           "customer_complaint",
@@ -506,11 +500,10 @@ export const ListItems = ({ setOpen }) => {
         ]),
         renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
         renderListItem("/dispatch/tab-view", <LocalShippingIcon />, "Dispatch"),
-        renderListItem(
-          "/inventory/sales-return",
-          <LocalShippingIcon />,
-          "Sales Return",
-        ),
+        renderSubmenu("ReturnOrder", <DescriptionIcon />, "ReturnOrder", [
+          { to: "/inventory/sales-return", text: "Sales Return" },
+          { to: "/inventory/purchase-return", text: "Purchase Return" },
+        ]),
         renderListItem("/task/view-task", <AssignmentTurnedInIcon />, "Task"),
       ],
     },
@@ -527,10 +520,10 @@ export const ListItems = ({ setOpen }) => {
             to: "/county-state-city/master-tab",
             text: "Country Master",
           },
-          // {
-          //   to: "/master/package-master",
-          //   text: "Package Master",
-          // },
+          {
+            to: "/master/package-master",
+            text: "Package Master",
+          },
           { to: "/user/profile-tab", text: "Employees Master" },
         ]),
         renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
@@ -596,11 +589,10 @@ export const ListItems = ({ setOpen }) => {
         ]),
         renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
         renderListItem("/dispatch/tab-view", <LocalShippingIcon />, "Dispatch"),
-        renderListItem(
-          "/inventory/sales-return",
-          <LocalShippingIcon />,
-          "Sales Return",
-        ),
+        renderSubmenu("ReturnOrder", <DescriptionIcon />, "ReturnOrder", [
+          { to: "/inventory/sales-return", text: "Sales Return" },
+          { to: "/inventory/purchase-return", text: "Purchase Return" },
+        ]),
         renderListItem("/task/view-task", <AssignmentTurnedInIcon />, "Task"),
       ],
     },
@@ -873,11 +865,10 @@ export const ListItems = ({ setOpen }) => {
         ]),
         renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
         renderListItem("/dispatch/tab-view", <LocalShippingIcon />, "Dispatch"),
-        renderListItem(
-          "/inventory/sales-return",
-          <LocalShippingIcon />,
-          "Sales Return",
-        ),
+        renderSubmenu("ReturnOrder", <DescriptionIcon />, "ReturnOrder", [
+          { to: "/inventory/sales-return", text: "Sales Return" },
+          { to: "/inventory/purchase-return", text: "Purchase Return" },
+        ]),
         renderListItem("/task/view-task", <AssignmentTurnedInIcon />, "Task"),
       ],
     },

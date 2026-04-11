@@ -29,7 +29,9 @@ import { useNotificationHandling } from "../../../Components/useNotificationHand
 import useDynamicFormFields from "../../../Components/useDynamicFormFields ";
 import ProductService from "../../../services/ProductService";
 import InventoryServices from "../../../services/InventoryService";
+// import { DecimalValidation } from "../../../utility/DecimalValidation";
 import { DecimalValidation } from "../../../utils/DecimalValidation";
+import MasterService from "../../../services/MasterService";
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -76,6 +78,7 @@ export const CreateCustomerProformaInvoice = (props) => {
         quantity: "",
         rate: "",
         unit: "",
+        packaging_type: "",
         max_decimal_digit: "",
         type_of_unit: "",
         requested_date: values.someDate,
@@ -94,6 +97,9 @@ export const CreateCustomerProformaInvoice = (props) => {
         special_instructions:
           input.special_instructions ||
           (productDetails[index] && productDetails[index].special_instructions),
+        packaging_type: input.packaging_type
+          ? "Special Packaging"
+          : "Normal Packaging",
       };
     });
   };
@@ -117,7 +123,7 @@ export const CreateCustomerProformaInvoice = (props) => {
   const [currencyOption, setCurrencyOption] = useState([]);
   const [customerLastPiData, setCustomerLastPiData] = useState(null);
   const { profile: users } = useSelector((state) => state.auth);
-
+  const [packageList, setPackageList] = useState([]);
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setInputValue({ ...inputValue, [name]: value });
@@ -129,6 +135,15 @@ export const CreateCustomerProformaInvoice = (props) => {
   const openInPopup = () => {
     setOpenPopup3(true);
     setOpenPopup2(false);
+  };
+
+  const getAllMaterialDetailsByID = async () => {
+    try {
+      const response = await MasterService.getPackagingMaster("", "", false);
+      setPackageList(response.data.results);
+    } catch (err) {
+      console.log("material data error", err);
+    }
   };
 
   const [timeLeft, setTimeLeft] = useState(5 * 60); // 5 minutes in seconds
@@ -190,6 +205,7 @@ export const CreateCustomerProformaInvoice = (props) => {
   useEffect(() => {
     getAllSellerAccountsDetails();
     getProduct();
+    getAllMaterialDetailsByID();
   }, []);
 
   const getContactsDetailsByID = async () => {
@@ -290,6 +306,18 @@ export const CreateCustomerProformaInvoice = (props) => {
     });
     if (!isvalid) {
       setOpen(false);
+      return;
+    }
+    const unwantedInstructions = ["jhota", "jota", "shrink wrap", "strap"];
+
+    const hasInvalidInstruction = products.some((item) =>
+      unwantedInstructions.includes(
+        (item.special_instructions || "").trim().toLowerCase(),
+      ),
+    );
+
+    if (hasInvalidInstruction) {
+      handleError("Please change the instruction or select special packaging");
       return;
     }
 
@@ -942,20 +970,31 @@ export const CreateCustomerProformaInvoice = (props) => {
                     size="small"
                     label="Amount"
                     variant="outlined"
-                    value={
-                      input.quantity && input.rate
-                        ? (input.quantity * input.rate).toFixed(2)
-                        : input.quantity &&
+                    value={(() => {
+                      const qty = parseFloat(input.quantity || 0);
+                      const rate = parseFloat(
+                        input.rate ||
+                          (productDetails &&
                             productDetails[index] &&
-                            productDetails[index].rate
-                          ? (
-                              input.quantity * productDetails[index].rate
-                            ).toFixed(2)
-                          : "0.00"
-                    }
+                            productDetails[index].rate) ||
+                          0,
+                      );
+                      const charges = parseFloat(
+                        (
+                          packageList.find(
+                            (p) => p.name === input.packaging_type,
+                          ) || {}
+                        ).charges || 0,
+                      );
+                      const base = qty * rate;
+                      const total = base + (base * charges) / 100;
+
+                      return total.toFixed(2);
+                    })()}
                     disabled // The amount is calculated, so it should not be manually editable.
                   />
                 </Grid>
+
                 <Grid item xs={12} sm={2}>
                   <CustomTextField
                     fullWidth
@@ -1010,8 +1049,26 @@ export const CreateCustomerProformaInvoice = (props) => {
                     }}
                   />
                 </Grid>
+                <Grid item xs={12} sm={2}>
+                  <FormControlLabel
+                    label="Special Packaging"
+                    control={
+                      <Checkbox
+                        checked={input.packaging_type || false}
+                        onChange={(event) => {
+                          handleFormChange(index, {
+                            target: {
+                              name: "packaging_type",
+                              value: event.target.checked,
+                            },
+                          });
+                        }}
+                      />
+                    }
+                  />
+                </Grid>
 
-                <Grid item xs={12} sm={4} alignContent="right">
+                <Grid item xs={12} sm={2} alignContent="right">
                   {index !== 0 && (
                     <Button
                       disabled={index === 0}
@@ -1026,7 +1083,7 @@ export const CreateCustomerProformaInvoice = (props) => {
             );
           })}
 
-          <Grid item xs={12} sm={4} alignContent="right">
+          <Grid item xs={12} sm={2} alignContent="right">
             <Button
               onClick={addFields}
               variant="contained"

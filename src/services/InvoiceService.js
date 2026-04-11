@@ -489,6 +489,77 @@ const uploadSalesinvoice = (data) => {
 const updateAllPerformaInvoiceData = (id, data) => {
   return CustomAxios.patch(`/api/invoice/update-proforma-invoice/${id}`, data);
 };
+
+const createDispatchPackagingData = (data) => {
+  return CustomAxios.post(`/api/invoice/packaging-consumption/`, data);
+};
+const getDispatchPackagingData = (page, searchValue, year, month) => {
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+  if (year) {
+    params.append("year", year);
+  }
+  if (month) {
+    params.append("month", month);
+  }
+
+  return CustomAxios.get(
+    `/api/invoice/packaging-consumption/?${params.toString()}`,
+  );
+};
+
+const updateDispatchPackagingData = (id, data) => {
+  return CustomAxios.patch(`/api/invoice/packaging-consumption/${id}/`, data);
+};
+
+const getInvoiceCsvData = (startDate, endDate, fillterbyunit) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
+
+  if (startDate) {
+    params.append("start_date", startDate);
+  }
+
+  if (endDate) {
+    params.append("end_date", endDate);
+  }
+  if (fillterbyunit) {
+    params.append(
+      "sales_invoice__order_book__proforma_invoice__seller_account__unit",
+      fillterbyunit,
+    );
+  }
+
+  return CustomAxios.get(
+    `/api/invoice/tally-invoice/special-packaging-csv/?${params.toString()}`,
+  );
+};
+
+const getMisPackagingData = (page, searchValue, year, month) => {
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+  if (year) {
+    params.append("year", year);
+  }
+  if (month) {
+    params.append("month", month);
+  }
+
+  return CustomAxios.get(
+    `/api/invoice/packaging-mis-report/?${params.toString()}`,
+  );
+};
+
 const InvoiceServices = {
   getAllSellerAccountData,
   getfilterSellerAccountData,
@@ -541,6 +612,12 @@ const InvoiceServices = {
   uploadSalesinvoice,
   createSalesinvoiceData,
   updateAllPerformaInvoiceData,
+  createDispatchPackagingData,
+  getDispatchPackagingData,
+  updateDispatchPackagingData,
+  getInvoiceCsvData,
+
+  getMisPackagingData,
 };
 
 export default InvoiceServices;

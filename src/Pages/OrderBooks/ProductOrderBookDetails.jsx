@@ -93,6 +93,7 @@ export const ProductOrderBookDetails = () => {
             ready_date: item.ready_date,
             requested_date: item.requested_date,
             special_instructions: item.special_instructions,
+            packaging_type: item.packaging_type,
             remark: item.remark,
           };
         } else if (
@@ -118,6 +119,7 @@ export const ProductOrderBookDetails = () => {
             ready_date: item.ready_date,
             requested_date: item.requested_date,
             special_instructions: item.special_instructions,
+            packaging_type: item.packaging_type,
             remark: item.remark,
           };
         } else {
@@ -140,6 +142,7 @@ export const ProductOrderBookDetails = () => {
             ready_date: item.ready_date,
             requested_date: item.requested_date,
             special_instructions: item.special_instructions,
+            packaging_type: item.packaging_type,
             remark: item.remark,
           };
         }
@@ -252,6 +255,8 @@ export const ProductOrderBookDetails = () => {
     "Quantity",
     "Rate",
     "Pending Quantity",
+    "Packaging Type",
+
     "EST DATE",
     "Ready Date",
     "Request Date",
@@ -449,11 +454,16 @@ export const ProductOrderBookDetails = () => {
                         ? row.quantity
                         : Math.floor(row.quantity)}
                     </StyledTableCell>
+                    <StyledTableCell align="center">{row.rate}</StyledTableCell>
                     <StyledTableCell align="center">
                       {row.type_of_unit === "decimal"
                         ? row.pending_quantity
                         : Math.floor(row.pending_quantity)}
                     </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.packaging_type ? row.packaging_type : "-"}
+                    </StyledTableCell>
+
                     <StyledTableCell align="center">
                       {row.estimated_date}
                     </StyledTableCell>
@@ -599,6 +609,10 @@ const headers = [
     key: "special_instructions",
   },
   {
+    label: "Packaging Type",
+    key: "packaging_type",
+  },
+  {
     label: "Remarks",
     key: "remark",
   },
@@ -638,6 +652,10 @@ const Customerheaders = [
   {
     label: "Special Instruction",
     key: "special_instructions",
+  },
+  {
+    label: "Packaging Type",
+    key: "packaging_type",
   },
   {
     label: "Remarks",

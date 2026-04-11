@@ -282,6 +282,22 @@ const getPriceComparision = (searchValue) => {
   );
 };
 
+const getAllStoresInventoryDetails = (page, searchValue) => {
+  const params = new URLSearchParams();
+
+  if (page) {
+    params.append("page", page);
+  }
+
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+
+  return CustomAxios.get(
+    `api/inventory/list-stores-inventory/?${params.toString()}`,
+  );
+};
+
 const ProductService = {
   getAllColour,
   createColour,
@@ -329,6 +345,7 @@ const ProductService = {
   updateSampleProduct,
   updatePriceListValidity,
   getPriceComparision,
+  getAllStoresInventoryDetails,
 };
 
 export default ProductService;

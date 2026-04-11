@@ -93,6 +93,7 @@ export const PIOrderBookDetails = () => {
 
             requested_date: item.requested_date,
             special_instructions: item.special_instructions,
+            packaging_type: item.packaging_type,
             remark: item.remark,
           };
         } else {
@@ -117,6 +118,7 @@ export const PIOrderBookDetails = () => {
             ready_date: item.ready_date,
             requested_date: item.requested_date,
             special_instructions: item.special_instructions,
+            packaging_type: item.packaging_type,
             remark: item.remark,
           };
         }
@@ -229,6 +231,9 @@ export const PIOrderBookDetails = () => {
     "Rate",
     "Quantity",
     "Pending Quantity",
+
+    "Packaging Type",
+
     "EST DATE",
     "Ready Date",
     "Request Date",
@@ -290,6 +295,10 @@ export const PIOrderBookDetails = () => {
             key: "special_instructions",
           },
           {
+            label: "Packaging Type",
+            key: "packaging_type",
+          },
+          {
             label: "Remarks",
             key: "remark",
           },
@@ -329,6 +338,10 @@ export const PIOrderBookDetails = () => {
           {
             label: "Special Instruction",
             key: "special_instructions",
+          },
+          {
+            label: "Packaging Type",
+            key: "packaging_type",
           },
           {
             label: "Remarks",
@@ -554,6 +567,11 @@ export const PIOrderBookDetails = () => {
                         ? row.pending_quantity
                         : Math.floor(row.pending_quantity)}
                     </StyledTableCell>
+
+                    <StyledTableCell align="center">
+                      {row.packaging_type ? row.packaging_type : "-"}
+                    </StyledTableCell>
+
                     <StyledTableCell align="center">
                       {row.estimated_date}
                     </StyledTableCell>

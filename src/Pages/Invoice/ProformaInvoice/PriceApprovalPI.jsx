@@ -71,9 +71,8 @@ export const PriceApprovalPI = () => {
   const getAllSellerAccountsDetails = async () => {
     try {
       setOpen(true);
-      const response = await InvoiceServices.getAllPaginateSellerAccountData(
-        "all"
-      );
+      const response =
+        await InvoiceServices.getAllPaginateSellerAccountData("all");
       dispatch(getSellerAccountData(response.data));
       setOpen(false);
     } catch (err) {
@@ -94,7 +93,7 @@ export const PriceApprovalPI = () => {
           currentPage,
           filterType,
           filterValue,
-          searchValue
+          searchValue,
         );
         setInvoiceData(response.data.results);
         setTotalPages(Math.ceil(response.data.count / 25));
@@ -104,7 +103,7 @@ export const PriceApprovalPI = () => {
         setOpen(false);
       }
     },
-    [currentPage, filterType, filterValue, searchValue]
+    [currentPage, filterType, filterValue, searchValue],
   );
 
   useEffect(() => {
@@ -156,6 +155,7 @@ export const PriceApprovalPI = () => {
     "Customer",
     "Billing City",
     "Contact",
+    "Pakaging Type",
     "Status",
     "PI Amount",
     "Balance",
@@ -288,6 +288,13 @@ export const PriceApprovalPI = () => {
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.contact}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {invoiceData[i].products.some(
+                        (item) => item.packaging_charges > 0,
+                      )
+                        ? "Special Packaging"
+                        : "Normal Packaging"}
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.status}

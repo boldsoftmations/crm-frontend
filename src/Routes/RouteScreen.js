@@ -23,7 +23,6 @@ import { AllLeadsTabView } from "../Pages/Leads/AllLeadsTabView";
 import { AllProductsTabView } from "../Pages/Products/AllProductsTabView";
 import { AllCustomerTabView } from "../Pages/Cutomers/CompanyDetails/AllCustomerTabView";
 import { AllPerformaInvoiceTabView } from "../Pages/Invoice/ProformaInvoice/AllPerformaInvoiceTabView";
-import { PurchaseAllTabView } from "../Pages/Purchase/PurchaseAllTabView";
 import { ProductionAllTabView } from "../Pages/Production/ProductionAllTabView";
 import { InventoryAllTabView } from "../Pages/Inventory/InventoryAllTabView";
 import { HrMasterTabView } from "../Pages/HrModel/HrMasterTabView";
@@ -48,7 +47,9 @@ import FactoryMaster from "../Pages/MasterFactory/FactoryMaster";
 import Maintaince from "../Pages/Maintanace/Maintaince";
 import { AllInventoryReportTabs } from "../Pages/InventoryReport/AllInventoryReportTabs";
 import { AllPriceListTabView } from "../Pages/PriceList/AllPriceListTabView";
-
+import { PurchaseAllTabView } from "../Pages/Purchase/PurchaseAllTabView";
+import { ViewPackagingMaster } from "../Pages/MasterPackaging/ViewPackagingMaster";
+// import PurchaseReturnAllTabView from "../Pages/ReturnOrders/PurchaseReturn/PurchaseReturnAllTabView";
 const PrivateRoute = ({ children, redirectTo = "/" }) => {
   const tokenData = useSelector((state) => state.auth);
   const token = tokenData.user;
@@ -188,6 +189,7 @@ export const RouteScreen = () => {
               </PrivateRoute>
             }
           />
+
           <Route
             path="/invoice/orderbook-tab"
             element={
@@ -347,6 +349,10 @@ export const RouteScreen = () => {
                 <HrMasterTabView />
               </PrivateRoute>
             }
+          />
+          <Route
+            path="/master/package-master"
+            element={<ViewPackagingMaster />}
           />
 
           <Route

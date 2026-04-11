@@ -20,8 +20,8 @@ import FileSaver from "file-saver";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { tableCellClasses } from "@mui/material/TableCell";
-import { CustomPagination } from "../../Components/CustomPagination";
-import { CustomLoader } from "../../Components/CustomLoader";
+import { CustomPagination } from "./../../Components/CustomPagination";
+import { CustomLoader } from "./../../Components/CustomLoader";
 import moment from "moment";
 import { CSVLink } from "react-csv";
 import CustomTextField from "../../Components/CustomTextField";
@@ -40,7 +40,7 @@ export const UploadedPODs = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [endDate, setEndDate] = useState(new Date()); // set endDate as one week ahead of startDate
   const [startDate, setStartDate] = useState(
-    new Date(endDate.getTime() - 1 * 24 * 60 * 60 * 1000)
+    new Date(endDate.getTime() - 1 * 24 * 60 * 60 * 1000),
   );
   const name = ["Komal", "Reshma"];
   const [allSalesRegisterData, setAllSalesRegisterData] = useState([]);
@@ -70,12 +70,12 @@ export const UploadedPODs = () => {
         "all",
         searchQuery,
         "",
-        "completed pod"
+        "completed pod",
       );
       const data = (
         userName
           ? response.data.filter(
-              (item) => item.pod_uploaded_by_name === userName
+              (item) => item.pod_uploaded_by_name === userName,
             )
           : response.data
       ).map((item) => ({
@@ -110,7 +110,7 @@ export const UploadedPODs = () => {
         currentPage,
         searchQuery,
         email,
-        "completed pod"
+        "completed pod",
       );
       setsalesRegisterData(response.data.results);
       setAllSalesRegisterData(response.data.results);
@@ -159,7 +159,7 @@ export const UploadedPODs = () => {
     let filteredDataNewvalue =
       allSalesRegisterData &&
       allSalesRegisterData.filter(
-        (item) => item.pod_uploaded_by_name === newValue
+        (item) => item.pod_uploaded_by_name === newValue,
       );
     console.log(newValue);
     setUserName(newValue);
@@ -462,6 +462,7 @@ function Row(props) {
                 <TableHead>
                   <TableRow>
                     <TableCell align="center">DISPATCH ID</TableCell>
+                    <TableCell align="center">PACKAGING TYPE</TableCell>
                     <TableCell align="center">PRODUCT</TableCell>
                     <TableCell align="center">QUANTITY</TableCell>
                     <TableCell align="center">RATE</TableCell>
@@ -473,6 +474,9 @@ function Row(props) {
                     <TableRow key={historyRow.dispatch_book}>
                       <TableCell align="center">
                         {historyRow.dispatch_book}
+                      </TableCell>
+                      <TableCell align="center">
+                        {historyRow.packaging_type || "-"}
                       </TableCell>
                       <TableCell align="center">{historyRow.product}</TableCell>
                       <TableCell align="center">

@@ -67,7 +67,7 @@ export const ExportView = () => {
         currentPage,
         searchQuery,
         unitFilter,
-        "not_lr"
+        "not_lr",
       );
       setDispatchData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -284,6 +284,7 @@ function Row(props) {
                 <TableHead>
                   <TableRow>
                     <TableCell align="center">DISPATCH ID</TableCell>
+                    <TableCell align="center">PACKAGING TYPE</TableCell>
                     <TableCell align="center">PRODUCT</TableCell>
                     <TableCell align="center">QUANTITY</TableCell>
                   </TableRow>
@@ -293,6 +294,9 @@ function Row(props) {
                     <TableRow key={historyRow.dispatch_book}>
                       <TableCell align="center">
                         {historyRow.dispatch_book}
+                      </TableCell>
+                      <TableCell align="center">
+                        {historyRow.packaging_type || "-"}
                       </TableCell>
                       <TableCell align="center">{historyRow.product}</TableCell>
                       <TableCell align="center">

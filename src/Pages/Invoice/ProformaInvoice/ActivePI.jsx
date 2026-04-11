@@ -106,9 +106,8 @@ export const ActivePI = () => {
   const getAllSellerAccountsDetails = async () => {
     try {
       setOpen(true);
-      const response = await InvoiceServices.getAllPaginateSellerAccountData(
-        "all"
-      );
+      const response =
+        await InvoiceServices.getAllPaginateSellerAccountData("all");
       dispatch(getSellerAccountData(response.data));
       setOpen(false);
     } catch (err) {
@@ -128,9 +127,10 @@ export const ActivePI = () => {
         currentPage,
         filterType,
         filterValue,
-        searchValue
+        searchValue,
       );
       setInvoiceData(response.data.results);
+
       setTotalPages(Math.ceil(response.data.count / 25));
     } catch (error) {
       handleError(error);
@@ -173,7 +173,7 @@ export const ActivePI = () => {
         "all",
         filterType,
         filterValue,
-        searchValue
+        searchValue,
       );
       const data = response.data.map((row) => {
         return {
@@ -361,6 +361,10 @@ export const ActivePI = () => {
                   <StyledTableCell align="center">COMPANY</StyledTableCell>
                   <StyledTableCell align="center">BILLING CITY</StyledTableCell>
                   <StyledTableCell align="center">CONTACT</StyledTableCell>
+                  <StyledTableCell align="center">
+                    Packaging Type
+                  </StyledTableCell>
+
                   <StyledTableCell align="center">STATUS</StyledTableCell>
                   <StyledTableCell align="center">PI AMOUNT</StyledTableCell>
                   <StyledTableCell align="center">BALANCE</StyledTableCell>
@@ -394,6 +398,13 @@ export const ActivePI = () => {
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         {row.contact}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {invoiceData[i].products.some(
+                          (item) => item.packaging_charges > 0,
+                        )
+                          ? "Special Packaging"
+                          : "Normal Packaging"}
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         {row.status}

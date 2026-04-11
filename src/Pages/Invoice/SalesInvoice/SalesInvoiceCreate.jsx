@@ -26,7 +26,7 @@ const Root = styled("div")(({ theme }) => ({
 }));
 
 export const SalesInvoiceCreate = (props) => {
-  const { setOpenPopup, getSalesInvoiceDetails, handleError } = props;
+  const { setOpenPopup, getSalesInvoiceDetails } = props;
   const [open, setOpen] = useState(false);
   const [errorOpen, setErrorOpen] = useState(false);
   const [errMsg, setErrMsg] = useState("");
@@ -206,11 +206,6 @@ export const SalesInvoiceCreate = (props) => {
         );
       console.log(PRODUCTS);
 
-      const decimalCounts = customerorderBookData.products.map(
-        (item) => item.max_decimal_digit,
-      );
-      console.log("products", products);
-      const unit = customerorderBookData.products.map((item) => item.unit);
       const numTypes = customerorderBookData.products.map(
         (item) => item.type_of_unit,
       );

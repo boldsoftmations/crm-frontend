@@ -249,6 +249,30 @@ const UpdateZoneMaster = (id, data) => {
 
   return CustomAxios.patch(`/api/master/zone/${id}/`, data);
 };
+const getPackagingMaster = (page, search, is_inactive) => {
+  const params = new URLSearchParams();
+
+  if (page) {
+    params.append("page", page);
+  }
+
+  if (search) {
+    params.append("search", search);
+  }
+
+  if (is_inactive !== null && is_inactive !== undefined) {
+    params.append("is_inactive", is_inactive);
+  }
+
+  return CustomAxios.get(`/api/master/packaging-master/?${params.toString()}`);
+};
+const createPackagingMaster = (data) => {
+  return CustomAxios.post("/api/master/packaging-master/", data);
+};
+
+const updatePackagingMaster = (id, data) => {
+  return CustomAxios.patch(`/api/master/packaging-master/${id}/`, data);
+};
 
 const MasterService = {
   getLeavapproval,
@@ -291,5 +315,8 @@ const MasterService = {
   getZoneMasterList,
   createZoneMaster,
   UpdateZoneMaster,
+  getPackagingMaster,
+  createPackagingMaster,
+  updatePackagingMaster,
 };
 export default MasterService;

@@ -337,6 +337,8 @@ const getAllBillofMaterialsData = (
   approvedToFilter,
   is_deactivated,
   searchValue,
+  from_date,
+  to_date,
 ) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
@@ -356,7 +358,12 @@ const getAllBillofMaterialsData = (
   if (searchValue) {
     params.append("search", searchValue);
   }
-
+  if (from_date) {
+    params.append("from_date", from_date);
+  }
+  if (to_date) {
+    params.append("to_date", to_date);
+  }
   // Sending a GET request with query parameters
   return CustomAxios.get(
     `api/inventory/list-bill-of-materials/?${params.toString()}`,
@@ -647,6 +654,27 @@ const getSalesReturnData = (page, searchValue) => {
   );
 };
 
+const getPurchaseReturnData = (page, searchValue) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
+
+  params.append("invoice_type", "purchase_return");
+
+  if (page) {
+    params.append("page", page);
+  }
+
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+  console.log(params.toString());
+
+  // Sending a GET request with query parameters
+  return CustomAxios.get(
+    `api/inventory/list-purchase-invoice/?${params.toString()}`,
+  );
+};
+
 const getSalesReturnByIDData = (id) => {
   return CustomAxios.get(`api/invoice/list-sales-invoice/${id}`);
 };
@@ -660,6 +688,24 @@ const getSalesReturnInventoryData = (page, searchValue) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
 
+  if (page) {
+    params.append("page", page);
+  }
+
+  if (searchValue) {
+    params.append("search", searchValue);
+  }
+
+  // Sending a GET request with query parameters
+  return CustomAxios.get(
+    `api/inventory/sales-return-inventory/?${params.toString()}`,
+  );
+};
+
+const getPurchaseReturnInventoryData = (page, searchValue) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
+  params.append("invoice_type", "purchase_return");
   if (page) {
     params.append("page", page);
   }
@@ -822,6 +868,8 @@ const InventoryServices = {
   getStockAlertData,
   getDailyReportData,
   getStockReportData,
+  getPurchaseReturnData,
+  getPurchaseReturnInventoryData,
 };
 
 export default InventoryServices;
