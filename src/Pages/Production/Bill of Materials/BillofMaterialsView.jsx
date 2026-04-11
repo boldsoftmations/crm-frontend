@@ -20,6 +20,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  TextField,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
 import CloseIcon from "@mui/icons-material/Close";
@@ -66,7 +67,15 @@ export const BillofMaterialsView = () => {
 
   const [exportData, setExportData] = useState([]);
   const csvLinkRef = useRef(null);
-
+  // Replace the existing null defaults
+  const [startDate, setStartDate] = useState(() => {
+    const d = new Date();
+    d.setMonth(d.getMonth() - 6);
+    return d.toISOString().split("T")[0]; // "YYYY-MM-DD"
+  });
+  const [endDate, setEndDate] = useState(
+    () => new Date().toISOString().split("T")[0],
+  );
   const handleExport = async () => {
     try {
       setOpen(true);
@@ -74,7 +83,9 @@ export const BillofMaterialsView = () => {
       if (searchQuery) {
         response = await InventoryServices.getAllBillofMaterialsData(
           "all",
-          searchQuery
+          searchQuery,
+          startDate,
+          endDate,
         );
       } else {
         response = await InventoryServices.getAllBillofMaterialsData("all");
@@ -90,7 +101,7 @@ export const BillofMaterialsView = () => {
             item: productData.product, // Product from products_data
             godown: "", // Example static data
             qty: productData.quantity, // Quantity from products_data
-          })
+          }),
         );
         return processedProducts;
       });
@@ -171,31 +182,38 @@ export const BillofMaterialsView = () => {
     }
   };
 
-  useEffect(() => {
-    getAllBillofMaterialsDetails(currentPage);
-  }, [currentPage, searchQuery]);
-
   const getAllBillofMaterialsDetails = useCallback(
-    async (page, filter = filterApproved, search = searchQuery) => {
+    async (
+      page,
+      filter = filterApproved,
+      search = searchQuery,
+      from = startDate,
+      to = endDate,
+    ) => {
       try {
         setOpen(true);
         const response = await InventoryServices.getAllBillofMaterialsData(
           page,
           filter,
           null,
-          search
+          search,
+          from, // from_date
+          to, // to_date
         );
         setBillofMaterials(response.data.results);
         setTotalPages(Math.ceil(response.data.count / 25));
-        setOpen(false);
       } catch (error) {
         handleError(error);
+      } finally {
         setOpen(false);
-        console.error("error", error);
       }
     },
-    [filterApproved, searchQuery]
+    [filterApproved, searchQuery, startDate, endDate],
   );
+
+  useEffect(() => {
+    getAllBillofMaterialsDetails(currentPage);
+  }, [currentPage, searchQuery, startDate, endDate]);
 
   const handleSearch = (query) => {
     setSearchQuery(query);
@@ -236,6 +254,39 @@ export const BillofMaterialsView = () => {
       console.log("error Store Accepting", error);
       setOpen(false);
     }
+  };
+  const handleStartDateChange = (e) => {
+    const newStart = e.target.value;
+    setStartDate(newStart);
+    setCurrentPage(1);
+
+    // Always auto-set endDate to newStart + 6 months
+    const maxEnd = new Date(newStart);
+    maxEnd.setMonth(maxEnd.getMonth() + 6);
+    const maxEndStr = maxEnd.toISOString().split("T")[0];
+
+    // Clamp to today if 6 months exceeds today
+    const today = new Date().toISOString().split("T")[0];
+    setEndDate(maxEndStr > today ? today : maxEndStr);
+  };
+
+  const handleEndDateChange = (e) => {
+    const newEnd = e.target.value;
+
+    const maxEnd = new Date(startDate);
+    maxEnd.setMonth(maxEnd.getMonth() + 6);
+    const maxEndStr = maxEnd.toISOString().split("T")[0];
+
+    if (newEnd > maxEndStr) {
+      handleError({
+        message: "End date cannot exceed 6 months from start date",
+      });
+      setEndDate(maxEndStr); // clamp to max
+    } else {
+      setEndDate(newEnd); // valid — set as-is
+    }
+
+    setCurrentPage(1); // always runs now
   };
 
   const DeactivateBillofMaterialsDetails = async (data) => {
@@ -289,11 +340,12 @@ export const BillofMaterialsView = () => {
                 item
                 xs={12}
                 sm={6}
-                md={4}
+                md={5}
                 display="flex"
                 alignItems="center"
+                gap={2}
               >
-                <FormControl fullWidth size="small" sx={{ marginRight: 2 }}>
+                <FormControl fullWidth size="small">
                   <InputLabel id="demo-simple-select-label">
                     Filter By Approved
                   </InputLabel>
@@ -335,12 +387,73 @@ export const BillofMaterialsView = () => {
                 />
               </Grid>
 
+              <Grid item xs={12} sm={4}></Grid>
+
               {/* Center Section: Title */}
+
+              {/* Right Section: Add Button */}
               <Grid
                 item
                 xs={12}
                 sm={6}
-                md={4}
+                md={3}
+                display="flex"
+                justifyContent="flex-end"
+              >
+                <Button
+                  onClick={() => setOpenPopup2(true)}
+                  variant="contained"
+                  color="success"
+                >
+                  Add
+                </Button>
+              </Grid>
+
+              <Grid
+                item
+                xs={12}
+                sm={5}
+                sx={{
+                  display: "flex",
+                  gap: 2,
+                }}
+              >
+                {/* Date Range Pickers */}
+                <TextField
+                  label="From Date"
+                  type="date"
+                  fullWidth
+                  size="small"
+                  value={startDate}
+                  onChange={handleStartDateChange}
+                  InputLabelProps={{ shrink: true }}
+                  sx={{ marginRight: 1, minWidth: 150 }}
+                />
+                <TextField
+                  fullWidth
+                  label="To Date"
+                  type="date"
+                  size="small"
+                  value={endDate}
+                  onChange={handleEndDateChange}
+                  inputProps={{
+                    min: startDate, // can't pick before startDate
+                    max: (() => {
+                      const d = new Date(startDate);
+                      d.setMonth(d.getMonth() + 6);
+                      return d.toISOString().split("T")[0];
+                    })(),
+                  }}
+                  InputLabelProps={{ shrink: true }}
+                  sx={{ marginRight: 2, minWidth: 150 }}
+                />
+              </Grid>
+
+              <Grid
+                item
+                xs={12}
+                sm={6}
+                md={3}
                 display="flex"
                 justifyContent="center"
               >
@@ -355,15 +468,12 @@ export const BillofMaterialsView = () => {
                   Bill of Materials
                 </h3>
               </Grid>
-
-              {/* Right Section: Add Button */}
               <Grid
                 item
                 xs={12}
-                sm={6}
                 md={4}
-                display="flex"
-                justifyContent="flex-end"
+                sm={6}
+                sx={{ display: "flex", justifyContent: "end" }}
               >
                 {(users.groups.includes("Accounts") ||
                   users.groups.includes("Director")) && (
@@ -387,13 +497,6 @@ export const BillofMaterialsView = () => {
                     )}
                   </>
                 )}
-                <Button
-                  onClick={() => setOpenPopup2(true)}
-                  variant="contained"
-                  color="success"
-                >
-                  Add
-                </Button>
               </Grid>
             </Grid>
           </Box>

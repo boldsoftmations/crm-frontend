@@ -610,6 +610,7 @@ function Row(props) {
                     <TableCell align="center">PRODUCT CODE</TableCell>
                     <TableCell align="center">QUANTITY</TableCell>
                     <TableCell align="center">AMOUNT</TableCell>
+                    <TableCell align="center">PACKAGING_TYPE</TableCell>
                     <TableCell align="center">PROFIT/LOSS(PER UNIT)</TableCell>
                     <TableCell align="center">ACTION</TableCell>
                   </TableRow>
@@ -626,6 +627,9 @@ function Row(props) {
                           : Math.floor(historyRow.quantity)}
                       </TableCell>
                       <TableCell align="center">{historyRow.amount}</TableCell>
+                      <TableCell align="center">
+                        {historyRow.packaging_type || "-"}
+                      </TableCell>
                       <TableCell align="center">
                         {historyRow.profit_or_loss}
                       </TableCell>
