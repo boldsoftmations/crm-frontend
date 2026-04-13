@@ -52,6 +52,7 @@ export const CreateLeadsProformaInvoice = (props) => {
   const [currencyOption, setCurrencyOption] = useState([]);
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
+
   const {
     handleAutocompleteChange,
     handleFormChange,
@@ -67,10 +68,11 @@ export const CreateLeadsProformaInvoice = (props) => {
         unit: "",
         requested_date: values.someDate,
         special_instructions: "",
+        packaging_type: "Normal Packaging",
       },
     ],
     productOption,
-    true
+    true,
   );
   const navigate = useNavigate();
   const [openPopup2, setOpenPopup2] = useState(false);
@@ -112,7 +114,7 @@ export const CreateLeadsProformaInvoice = (props) => {
     const secs = seconds % 60;
     return `${String(minutes).padStart(2, "0")}:${String(secs).padStart(
       2,
-      "0"
+      "0",
     )}`;
   };
 
@@ -127,9 +129,8 @@ export const CreateLeadsProformaInvoice = (props) => {
 
   const getAllSellerAccountsDetails = async () => {
     try {
-      const response = await InvoiceServices.getAllPaginateSellerAccountData(
-        "all"
-      );
+      const response =
+        await InvoiceServices.getAllPaginateSellerAccountData("all");
       setSellerData(response.data);
     } catch (error) {
       console.log("Error fetching seller account data:", error);
@@ -243,9 +244,8 @@ export const CreateLeadsProformaInvoice = (props) => {
         setOpenPopup2(true); // Assuming this opens a popup to edit lead details
         return;
       }
-      const response = await InvoiceServices.createLeadsProformaInvoiceData(
-        payload
-      );
+      const response =
+        await InvoiceServices.createLeadsProformaInvoiceData(payload);
       const successMessage =
         response.data.message || "Proforma Invoice created successfully!";
       handleSuccess(successMessage);
@@ -405,7 +405,6 @@ export const CreateLeadsProformaInvoice = (props) => {
               value={leads.address ? leads.address : ""}
             />
           </Grid>
-
           <Grid item xs={12} sm={4}>
             <CustomTextField
               fullWidth
@@ -507,8 +506,8 @@ export const CreateLeadsProformaInvoice = (props) => {
                 checked === true
                   ? "Verbal"
                   : inputValue.buyer_order_no
-                  ? inputValue.buyer_order_no
-                  : ""
+                    ? inputValue.buyer_order_no
+                    : ""
               }
               onChange={handleInputChange}
               InputLabelProps={{
@@ -597,7 +596,7 @@ export const CreateLeadsProformaInvoice = (props) => {
                             await CustomerServices.getProductLastPi(
                               "",
                               selectedSellerData.unit,
-                              value
+                              value,
                             );
 
                           setProductDetails((prev) => ({
@@ -612,7 +611,7 @@ export const CreateLeadsProformaInvoice = (props) => {
                       }
                     }}
                     options={productOption.map(
-                      (option) => option.product__name
+                      (option) => option.product__name,
                     )}
                     getOptionLabel={(option) => option}
                     sx={{ minWidth: 300 }}
@@ -704,7 +703,30 @@ export const CreateLeadsProformaInvoice = (props) => {
                     onChange={(event) => handleFormChange(index, event)}
                   />
                 </Grid>
-                <Grid item xs={12} sm={4} alignContent="right">
+                <Grid item xs={12} sm={2}>
+                  <FormControlLabel
+                    label="Special Packaging"
+                    control={
+                      <Checkbox
+                        // BEFORE
+                        // checked={input.packaging_type || false}
+                        // AFTER
+                        checked={input.packaging_type === "Special Packaging"}
+                        onChange={(event) => {
+                          handleFormChange(index, {
+                            target: {
+                              name: "packaging_type",
+                              value: event.target.checked
+                                ? "Special Packaging"
+                                : "Normal Packaging",
+                            },
+                          });
+                        }}
+                      />
+                    }
+                  />
+                </Grid>
+                <Grid item xs={12} sm={2} alignContent="right">
                   {index !== 0 && (
                     <Button
                       disabled={index === 0}
@@ -718,11 +740,11 @@ export const CreateLeadsProformaInvoice = (props) => {
               </>
             );
           })}
+
           <Grid item xs={12} sm={4} alignContent="right">
             <Button
-              onClick={addFields}
+              onClick={() => addFields({ packaging_type: "Normal Packaging" })}
               variant="contained"
-              sx={{ marginRight: "1em" }}
             >
               Add More...
             </Button>

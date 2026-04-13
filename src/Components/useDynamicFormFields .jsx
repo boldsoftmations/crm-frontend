@@ -14,7 +14,7 @@ const values = {
 const useDynamicFormFields = (
   initialFields,
   productOption,
-  includeAmount = false
+  includeAmount = false,
 ) => {
   const [products, setProducts] = useState(initialFields);
 
@@ -22,7 +22,7 @@ const useDynamicFormFields = (
     (index, event, value) => {
       let data = [...products];
       const productObj = productOption.find(
-        (item) => item.product__name === value || item.product === value
+        (item) => item.product__name === value || item.product === value,
       );
 
       data[index] = {
@@ -39,7 +39,7 @@ const useDynamicFormFields = (
       };
       setProducts(data);
     },
-    [products, productOption]
+    [products, productOption],
   );
 
   const handleFormChange = useCallback(
@@ -48,10 +48,10 @@ const useDynamicFormFields = (
       data[index][event.target.name] = event.target.value;
       setProducts(data);
     },
-    [products]
+    [products],
   );
 
-  const addFields = useCallback(() => {
+  const addFields = useCallback((extraFields = {}) => {
     let newField = {
       product: "",
       unit: "",
@@ -59,6 +59,7 @@ const useDynamicFormFields = (
       rate: "",
       requested_date: values.someDate,
       special_instructions: "",
+      ...extraFields, // 👈 merge only what the caller passes
     };
     setProducts((prevProducts) => [...prevProducts, newField]);
   }, []);
