@@ -17,7 +17,6 @@ import InvoiceServices from "../../../services/InvoiceService";
 import { CustomLoader } from "./../../../Components/CustomLoader";
 import CustomTextField from "../../../Components/CustomTextField";
 // import { DecimalValidation } from "../../../utility/DecimalValidation";
-
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
   ...theme.typography.body2,
@@ -154,7 +153,10 @@ export const SalesInvoiceCreate = (props) => {
             raised_by: data.raised_by,
             ready_date: data.ready_date,
             packaging_charges: data.packaging_charges,
-            packaging_type: data.packaging_type,
+            packaging_type:
+              data.packaging_type !== null
+                ? data.packaging_type
+                : "Normal Packaging",
             packaging_cost: data.packaging_cost,
           };
 
@@ -178,7 +180,10 @@ export const SalesInvoiceCreate = (props) => {
         user: fruit.raised_by,
         ready_date: fruit.ready_date,
         packaging_charges: fruit.packaging_charges,
-        packaging_type: fruit.packaging_type,
+        packaging_type:
+          fruit.packaging_type !== null
+            ? fruit.packaging_type
+            : "Normal Packaging",
         packaging_cost: fruit.packaging_cost,
       }));
 
