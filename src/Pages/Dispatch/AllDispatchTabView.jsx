@@ -6,8 +6,7 @@ import { Dispatched } from "./Dispatched";
 import { SalesRegisterView } from "./SalesRegisterView";
 import { ExportView } from "./ExportView";
 import BlankLrView from "./BlankLrView";
-// import UploadedPODs from "./UploadedPOD";
-import UploadedPODs from "./UploadedPODs";
+import UploadedPODs from "./UploadedPOD";
 import { DispatchPackagingView } from "./DispatchPackaging/DispatchPackagingView";
 export const AllDispatchTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
@@ -41,7 +40,11 @@ export const AllDispatchTabView = () => {
     "Factory-Mumbai-Dispatch",
     "Factory-Delhi-Dispatch",
   );
-  const isAdmin = isInGroups("Director", "Operations & Supply Chain Manager");
+  const isAdmin = isInGroups(
+    "Director",
+    "Operations & Supply Chain Manager",
+    "Stores",
+  );
   const adminTab = isInGroups("Director", "Operations & Supply Chain Manager");
   const customerServiceTab = isInGroups("Customer Service");
   const salesRegisterTab = isInGroups("Accounts Billing Department");
