@@ -1085,7 +1085,7 @@ export const CreateCustomerProformaInvoice = (props) => {
 
           <Grid item xs={12} sm={2} alignContent="right">
             <Button
-              onClick={addFields}
+              onClick={() => addFields()}
               variant="contained"
               sx={{ marginRight: "1em" }}
             >
