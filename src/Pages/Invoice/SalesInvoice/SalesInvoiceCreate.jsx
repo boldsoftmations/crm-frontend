@@ -16,7 +16,7 @@ import Chip from "@mui/material/Chip";
 import InvoiceServices from "../../../services/InvoiceService";
 import { CustomLoader } from "./../../../Components/CustomLoader";
 import CustomTextField from "../../../Components/CustomTextField";
-// import { DecimalValidation } from "../../../utils/DecimalValidation";
+import { DecimalValidation } from "../../../utility/DecimalValidation";
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
   ...theme.typography.body2,
@@ -26,7 +26,7 @@ const Root = styled("div")(({ theme }) => ({
 }));
 
 export const SalesInvoiceCreate = (props) => {
-  const { setOpenPopup, getSalesInvoiceDetails } = props;
+  const { setOpenPopup, getSalesInvoiceDetails, handleError } = props;
   const [open, setOpen] = useState(false);
   const [errorOpen, setErrorOpen] = useState(false);
   const [errMsg, setErrMsg] = useState("");
@@ -45,6 +45,9 @@ export const SalesInvoiceCreate = (props) => {
       id: "",
       user: "",
       ready_date: "",
+      packaging_charges: "",
+      packaging_type: "",
+      packaging_cost: "",
     },
   ]);
   const calculateTotalAmount = (products) => {
@@ -149,6 +152,9 @@ export const SalesInvoiceCreate = (props) => {
             type_of_unit: data.type_of_unit,
             raised_by: data.raised_by,
             ready_date: data.ready_date,
+            packaging_charges: data.packaging_charges,
+            packaging_type: data.packaging_type,
+            packaging_cost: data.packaging_cost,
           };
 
           // Push product data to array
@@ -170,6 +176,9 @@ export const SalesInvoiceCreate = (props) => {
         id: fruit.id,
         user: fruit.raised_by,
         ready_date: fruit.ready_date,
+        packaging_charges: fruit.packaging_charges,
+        packaging_type: fruit.packaging_type,
+        packaging_cost: fruit.packaging_cost,
       }));
 
       // Update state with new array of product objects
@@ -204,23 +213,28 @@ export const SalesInvoiceCreate = (props) => {
             ...rest
           }) => rest,
         );
-      console.log(PRODUCTS);
+      console.log("products are :", PRODUCTS);
 
+      const decimalCounts = customerorderBookData.products.map(
+        (item) => item.max_decimal_digit,
+      );
+      console.log("products", products);
+      const unit = customerorderBookData.products.map((item) => item.unit);
       const numTypes = customerorderBookData.products.map(
         (item) => item.type_of_unit,
       );
       console.log(numTypes);
 
-      // const isvalid = DecimalValidation({
-      //   numTypes,
-      //   quantities: PRODUCTS.map((item) => item.quantity),
-      //   decimalCounts,
-      //   unit,
-      //   handleError,
-      // });
-      // if (!isvalid) {
-      //   return;
-      // }
+      const isvalid = DecimalValidation({
+        numTypes,
+        quantities: PRODUCTS.map((item) => item.quantity),
+        decimalCounts,
+        unit,
+        handleError,
+      });
+      if (!isvalid) {
+        return;
+      }
       const req = {
         invoice_type: "customer",
         order_book: customerorderBookData.id,
@@ -242,7 +256,9 @@ export const SalesInvoiceCreate = (props) => {
               ? customerorderBookData.transporter_name
               : "",
         exchange_rate: inputValue.exchange_rate || null,
+        // packaging_charges:products
       };
+      console.log(products);
 
       setOpen(true);
       if (inputValue.length !== 0) {
@@ -587,7 +603,7 @@ export const SalesInvoiceCreate = (props) => {
                       value={input.product}
                     />
                   </Grid>
-                  <Grid item xs={12} sm={2}>
+                  <Grid item xs={12} sm={1.5}>
                     <CustomTextField
                       fullWidth
                       name="pending_quantity"
@@ -601,7 +617,7 @@ export const SalesInvoiceCreate = (props) => {
                       }
                     />
                   </Grid>
-                  <Grid item xs={12} sm={2}>
+                  <Grid item xs={12} sm={1.5}>
                     <CustomTextField
                       fullWidth
                       name="quantity"
@@ -659,6 +675,18 @@ export const SalesInvoiceCreate = (props) => {
                     ) : (
                       <Typography variant="h6" sx={{ color: "green" }}>
                         <RuleIcon /> Ready
+                      </Typography>
+                    )}
+                  </Grid>
+                  <Grid item xs={12} sm={1}>
+                    {input.packaging_type === "Special Packaging" ? (
+                      <Typography variant="h6" sx={{ color: "success" }}>
+                        <RuleIcon />
+                        {"SP"}
+                      </Typography>
+                    ) : (
+                      <Typography variant="h6" sx={{ color: "error" }}>
+                        {""}
                       </Typography>
                     )}
                   </Grid>
