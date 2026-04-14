@@ -29,11 +29,11 @@ export const BillofMaterialsUpdate = memo((props) => {
   } = props;
   const [open, setOpen] = useState(false);
   const { consumableProduct, rawMaterialProduct } = useSelector(
-    (state) => state.auth
+    (state) => state.auth,
   );
   const RawAndConsumableProduct = useMemo(
     () => [...(consumableProduct || []), ...(rawMaterialProduct || [])],
-    [consumableProduct, rawMaterialProduct]
+    [consumableProduct, rawMaterialProduct],
   );
   const productOption = useMemo(
     () =>
@@ -42,7 +42,7 @@ export const BillofMaterialsUpdate = memo((props) => {
         unit: data.unit,
         quantity: data.quantity,
       })),
-    [RawAndConsumableProduct]
+    [RawAndConsumableProduct],
   );
   const initialFields = useMemo(
     () =>
@@ -51,7 +51,7 @@ export const BillofMaterialsUpdate = memo((props) => {
         unit: data.unit, // Assuming this correction is needed
         quantity: data.quantity, // Assuming this correction is needed
       })),
-    [idForEdit]
+    [idForEdit],
   );
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
@@ -146,7 +146,7 @@ export const BillofMaterialsUpdate = memo((props) => {
                     options={
                       RawAndConsumableProduct
                         ? RawAndConsumableProduct.map(
-                            (option) => option.product
+                            (option) => option.product,
                           )
                         : []
                     }
@@ -193,7 +193,7 @@ export const BillofMaterialsUpdate = memo((props) => {
           })}
           <Grid item xs={12} sm={4} alignContent="right">
             <Button
-              onClick={addFields}
+              onClick={() => addFields()}
               variant="contained"
               sx={{ marginRight: "1em" }}
             >

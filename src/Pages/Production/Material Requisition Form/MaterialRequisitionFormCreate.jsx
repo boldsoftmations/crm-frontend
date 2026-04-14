@@ -27,7 +27,7 @@ export const MaterialRequisitionFormCreate = memo((props) => {
         type_of_unit: data.type_of_unit,
         max_decimal_digit: data.max_decimal_digit,
       })),
-    [storesInventoryData]
+    [storesInventoryData],
   );
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
@@ -47,7 +47,7 @@ export const MaterialRequisitionFormCreate = memo((props) => {
         type_of_unit: "",
       },
     ],
-    productOption
+    productOption,
   );
 
   const [open, setOpen] = useState(false);
@@ -171,7 +171,7 @@ export const MaterialRequisitionFormCreate = memo((props) => {
                       handleAutocompleteChange(index, event, value)
                     }
                     options={storesInventoryData.map(
-                      (option) => option.product__name
+                      (option) => option.product__name,
                     )}
                     getOptionLabel={(option) => option}
                     sx={{ minWidth: 300 }}
@@ -224,7 +224,7 @@ export const MaterialRequisitionFormCreate = memo((props) => {
           })}
           <Grid item xs={12} sm={4} alignContent="right">
             <Button
-              onClick={addFields}
+              onClick={() => addFields()}
               variant="contained"
               sx={{ marginRight: "1em" }}
             >

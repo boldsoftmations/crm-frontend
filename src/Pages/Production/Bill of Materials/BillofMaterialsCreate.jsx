@@ -41,7 +41,7 @@ export const BillofMaterialsCreate = memo((props) => {
         unit: data.unit,
         quantity: data.quantity,
       })),
-    [RawAndConsumableProduct]
+    [RawAndConsumableProduct],
   );
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
@@ -60,7 +60,7 @@ export const BillofMaterialsCreate = memo((props) => {
         quantity: "",
       },
     ],
-    productOption
+    productOption,
   );
 
   const handleSelectChanges = (name, value) => {
@@ -179,7 +179,7 @@ export const BillofMaterialsCreate = memo((props) => {
                     options={
                       RawAndConsumableProduct
                         ? RawAndConsumableProduct.map(
-                            (option) => option.product
+                            (option) => option.product,
                           )
                         : []
                     }
@@ -227,7 +227,7 @@ export const BillofMaterialsCreate = memo((props) => {
 
           <Grid item xs={12} sm={4} alignContent="right">
             <Button
-              onClick={addFields}
+              onClick={() => addFields()}
               variant="contained"
               sx={{ marginRight: "1em" }}
             >

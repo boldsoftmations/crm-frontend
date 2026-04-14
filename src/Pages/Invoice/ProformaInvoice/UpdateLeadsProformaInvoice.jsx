@@ -103,7 +103,7 @@ export const UpdateLeadsProformaInvoice = (props) => {
     try {
       setOpen(true);
       const response = await InvoiceServices.getLeadsProformaInvoiceDataByID(
-        idForEdit.pi_number
+        idForEdit.pi_number,
       );
       setLeadPIdataByID(response.data);
       setPaymentTermData(response.data.payment_terms);
@@ -233,10 +233,10 @@ export const UpdateLeadsProformaInvoice = (props) => {
         buyer_order_no: checked
           ? "Verbal"
           : inputValue.buyer_order_no !== undefined
-          ? inputValue.buyer_order_no
-          : leadPIdataByID.buyer_order_no !== undefined
-          ? leadPIdataByID.buyer_order_no
-          : "",
+            ? inputValue.buyer_order_no
+            : leadPIdataByID.buyer_order_no !== undefined
+              ? leadPIdataByID.buyer_order_no
+              : "",
         buyer_order_date:
           inputValue.buyer_order_date ||
           leadPIdataByID.buyer_order_date ||
@@ -248,7 +248,7 @@ export const UpdateLeadsProformaInvoice = (props) => {
       };
       const response = await InvoiceServices.updateLeadsProformaInvoiceData(
         leadPIdataByID.pi_number,
-        req
+        req,
       );
       const successMessage =
         response.data.message ||
@@ -493,10 +493,10 @@ export const UpdateLeadsProformaInvoice = (props) => {
                 checked
                   ? "Verbal"
                   : inputValue.buyer_order_no !== undefined
-                  ? inputValue.buyer_order_no
-                  : leadPIdataByID.buyer_order_no !== undefined
-                  ? leadPIdataByID.buyer_order_no
-                  : ""
+                    ? inputValue.buyer_order_no
+                    : leadPIdataByID.buyer_order_no !== undefined
+                      ? leadPIdataByID.buyer_order_no
+                      : ""
               }
               onChange={handleInputChange}
               InputLabelProps={{
@@ -666,7 +666,7 @@ export const UpdateLeadsProformaInvoice = (props) => {
                 </Grid>
                 <Grid item xs={12} sm={4} alignContent="right">
                   <Button
-                    onClick={addFields}
+                    onClick={() => addFields()}
                     variant="contained"
                     sx={{ marginRight: "1em" }}
                   >

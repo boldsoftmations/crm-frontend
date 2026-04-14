@@ -34,7 +34,7 @@ export const UpdateCustomerProformaInvoice = (props) => {
   const [selectedSellerData, setSelectedSellerData] = useState("");
   const [customerData, setCustomerData] = useState([]);
   const [checked, setChecked] = useState(
-    customerPIdataByID.buyer_order_no === ""
+    customerPIdataByID.buyer_order_no === "",
   );
   const [productEdit, setProductEdit] = useState(false);
   const [warehouseOptions, setWarehouseOptions] = useState([]);
@@ -109,7 +109,7 @@ export const UpdateCustomerProformaInvoice = (props) => {
     try {
       setOpen(true);
       const response = await InvoiceServices.getCustomerProformaInvoiceDataByID(
-        idForEdit.pi_number
+        idForEdit.pi_number,
       );
       setCustomerPIdataByID(response.data);
       setPaymentTermData(response.data.payment_terms);
@@ -262,7 +262,7 @@ export const UpdateCustomerProformaInvoice = (props) => {
       };
       const response = await InvoiceServices.updateCustomerProformaInvoiceData(
         customerPIdataByID.pi_number,
-        req
+        req,
       );
 
       const successMessage =
@@ -710,7 +710,7 @@ export const UpdateCustomerProformaInvoice = (props) => {
                         ? (input.quantity * input.rate).toFixed(2)
                         : ""
                     }
-                  // onChange={(event) => handleFormChange(index, event)}
+                    // onChange={(event) => handleFormChange(index, event)}
                   />
                 </Grid>
                 <Grid item xs={12} sm={2}>
@@ -749,7 +749,7 @@ export const UpdateCustomerProformaInvoice = (props) => {
                 </Grid>
                 <Grid item xs={12} sm={4} alignContent="right">
                   <Button
-                    onClick={addFields}
+                    onClick={() => addFields}
                     variant="contained"
                     sx={{ marginRight: "1em" }}
                   >

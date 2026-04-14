@@ -577,7 +577,7 @@ export const CreateSRF = (props) => {
           })}
 
           <Grid item xs={12} sm={4} alignContent="right">
-            <Button onClick={addFields} variant="contained">
+            <Button onClick={() => addFields} variant="contained">
               Add More...
             </Button>
           </Grid>

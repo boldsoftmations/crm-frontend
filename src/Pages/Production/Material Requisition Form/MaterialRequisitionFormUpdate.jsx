@@ -214,7 +214,7 @@ export const MaterialRequisitionFormUpdate = memo((props) => {
           })}
           <Grid item xs={12} sm={4} alignContent="right">
             <Button
-              onClick={addFields}
+              onClick={() => addFields()}
               variant="contained"
               sx={{ marginRight: "1em" }}
             >
