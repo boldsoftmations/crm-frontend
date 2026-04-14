@@ -37,7 +37,7 @@ export const CurrentMonthForecastView = () => {
   const csvLinkRef = useRef(null);
   const [isPrinting, setIsPrinting] = useState(false);
   const UserData = useSelector((state) => state.auth.profile);
-  const assignedOption = UserData.sales_users || [];
+  const assignedOption = UserData.sales_customer_user || [];
   console.log(assignedOption);
   const [startDate, setStartDate] = useState("");
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =

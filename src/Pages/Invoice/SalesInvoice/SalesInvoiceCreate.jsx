@@ -26,7 +26,7 @@ const Root = styled("div")(({ theme }) => ({
 }));
 
 export const SalesInvoiceCreate = (props) => {
-  const { setOpenPopup, getSalesInvoiceDetails, handleError } = props;
+  const { setOpenPopup, getSalesInvoiceDetails } = props;
   const [open, setOpen] = useState(false);
   const [errorOpen, setErrorOpen] = useState(false);
   const [errMsg, setErrMsg] = useState("");

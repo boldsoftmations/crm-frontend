@@ -51,15 +51,15 @@ export const UpdateDispatch = (props) => {
         data.append("sales_invoice", idData.sales_invoice);
         data.append(
           "transporter",
-          inputValue.transporter ? inputValue.transporter : idData.transporter
+          inputValue.transporter ? inputValue.transporter : idData.transporter,
         );
         data.append(
           "lr_number",
-          inputValue.lr_number ? inputValue.lr_number : idData.lr_number
+          inputValue.lr_number ? inputValue.lr_number : idData.lr_number,
         );
         data.append(
           "lr_date",
-          inputValue.lr_date ? inputValue.lr_date : idData.lr_date
+          inputValue.lr_date ? inputValue.lr_date : idData.lr_date,
         );
         if (lrCopy !== "") {
           data.append("lr_copy", lrCopy ? lrCopy : "");
@@ -72,15 +72,15 @@ export const UpdateDispatch = (props) => {
         data.append("sales_invoice", idData.sales_invoice);
         data.append(
           "transporter",
-          inputValue.transporter ? inputValue.transporter : idData.transporter
+          inputValue.transporter ? inputValue.transporter : idData.transporter,
         );
         data.append(
           "lr_number",
-          inputValue.lr_number ? inputValue.lr_number : idData.lr_number
+          inputValue.lr_number ? inputValue.lr_number : idData.lr_number,
         );
         data.append(
           "lr_date",
-          inputValue.lr_date ? inputValue.lr_date : idData.lr_date
+          inputValue.lr_date ? inputValue.lr_date : idData.lr_date,
         );
         if (lrCopy !== "") {
           data.append("lr_copy", lrCopy ? lrCopy : "");

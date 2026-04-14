@@ -29,7 +29,7 @@ export const DeadCustomerView = () => {
   const csvLinkRef = useRef(null);
   const [isPrinting, setIsPrinting] = useState(false);
   const UserData = useSelector((state) => state.auth.profile);
-  const assignedOption = UserData.sales_users || [];
+  const assignedOption = UserData.sales_customer_user || [];
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
@@ -86,7 +86,7 @@ export const DeadCustomerView = () => {
       const response = await ProductForecastService.getAllDeadCustomerData(
         "all",
         salesPersonByFilter,
-        searchQuery
+        searchQuery,
       );
       const data = response.data.map((row) => {
         const salesPersons = row.assigned_to.map((email, index) => ({
@@ -136,7 +136,7 @@ export const DeadCustomerView = () => {
       const response = await ProductForecastService.getAllDeadCustomerData(
         currentPage,
         salesPersonByFilter,
-        searchQuery
+        searchQuery,
       );
       setDeadCustomer(response.data.results);
       const total = response.data.count;
@@ -172,7 +172,7 @@ export const DeadCustomerView = () => {
       setRecordForEdit(item.id);
       setOpenPopup(true);
     },
-    [deadCustomer]
+    [deadCustomer],
   );
 
   const handleFilterChange = (value) => {

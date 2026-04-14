@@ -6,7 +6,7 @@ import { Dispatched } from "./Dispatched";
 import { SalesRegisterView } from "./SalesRegisterView";
 import { ExportView } from "./ExportView";
 import BlankLrView from "./BlankLrView";
-import UploadedPODs from "./UploadedPOD";
+import UploadedPODs from "./UploadedPODs";
 
 import { DispatchPackagingView } from "./DispatchPackaging/DispatchPackagingView";
 export const AllDispatchTabView = () => {

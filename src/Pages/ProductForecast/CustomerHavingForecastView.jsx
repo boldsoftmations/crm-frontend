@@ -42,7 +42,8 @@ export const CustomerHavingForecastView = () => {
   const [isDownloadReady, setIsDownloadReady] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
   const UserData = useSelector((state) => state.auth.profile);
-  const assignedOption = UserData.sales_users || [];
+  const assignedOption = UserData.sales_customer_user || [];
+  console.log("userData is :", UserData);
   // Get the current date, month, and year
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
@@ -61,41 +62,32 @@ export const CustomerHavingForecastView = () => {
   );
   const emails = [
     "admin@glutape.com",
-    "sumit@glutape.com",
     "rajeev@glutape.com",
-    "devannsh@glutape.com",
-    "sales01@glutape.com",
-    "mahesh@glutape.com",
-    "divisa@glutape.com",
-    "cre04@glutape.com",
-    "bde05@glutape.com",
-    "cre06@glutape.com",
-    "cre01@glutape.com",
-    "bde09@glutape.com",
-    "bde06@glutape.com",
-    "cre05@glutape.com",
-    "bde01@glutape.com",
-    "ashish@glutape.com",
-    "amit@glutape.com",
-    "tl1@glutape.com",
-    "tl2@glutape.com",
-    "sales02@glutape.com",
-    "bde03@glutape.com",
+    "gaurav@glutape.com",
+    "arjun@glutape.com",
+    "pruthvi@glutape.com",
+    "anuradha@glutape.com",
+    "vivek_production@glutape.com",
+    "vivek2@glutape.com",
+    "managerwithoutlead@glutape.com",
+    "biraj@glutape.com",
+    "rushilsalian13@glutape.com",
+    "it1@glutape.com",
   ];
   // Define the months array
   const months = [
-    "January",
-    "February",
+    "Jan",
+    "Feb",
     "March",
     "April",
     "May",
     "June",
     "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
+    "Aug",
+    "Sept",
+    "Oct",
+    "Nov",
+    "Dec",
   ];
 
   useEffect(() => {
@@ -281,18 +273,19 @@ export const CustomerHavingForecastView = () => {
   };
 
   // Get the unique index_position values to use as column headers
-  const indexPositions = [
-    ...new Set(
-      customerHavingForecast &&
-        customerHavingForecast.flatMap((row) =>
-          row.product_forecast.map((rowData) => rowData.index_position),
-        ),
-    ),
-  ];
+  // const indexPositions = [
+  //   ...new Set(
+  //     customerHavingForecast &&
+  //       customerHavingForecast.flatMap((row) =>
+  //         row.product_forecast.map((rowData) => rowData.index_position),
+  //       ),
+  //   ),
+  // ];
+  // console.log("index position :", indexPositions);
 
-  // Sort the index_positions array in ascending order
-  indexPositions.sort((a, b) => a - b);
-
+  // // Sort the index_positions array in ascending order
+  // indexPositions.sort((a, b) => a - b);
+  const indexPositions = [0, 1, 2, 3, 4, 5];
   return (
     <div>
       <Helmet>
@@ -380,15 +373,18 @@ export const CustomerHavingForecastView = () => {
           </Box>
           <TableContainer
             sx={{
-              maxHeight: 440,
+              maxHeight: 520, // 👈 was 440, gives more breathing room
+              overflowX: "auto", // 👈 ensure horizontal scroll works
               "&::-webkit-scrollbar": {
                 width: 15,
+                height: 8, // 👈 add horizontal scrollbar height
               },
               "&::-webkit-scrollbar-track": {
                 backgroundColor: "#f2f2f2",
               },
               "&::-webkit-scrollbar-thumb": {
                 backgroundColor: "#aaa9ac",
+                borderRadius: 4, // 👈 subtle rounded scrollbar
               },
             }}
           >
@@ -399,62 +395,134 @@ export const CustomerHavingForecastView = () => {
             >
               <TableHead>
                 <StyledTableRow>
-                  <StyledTableCell align="center">COMPANY</StyledTableCell>
-                  <StyledTableCell align="center">SALES PERSON</StyledTableCell>
-                  <StyledTableCell align="center">PRODUCT</StyledTableCell>
-                  <StyledTableCell align="center">
+                  <StyledTableCell align="center" sx={{ minWidth: 80 }}>
+                    COMPANY
+                  </StyledTableCell>
+                  <StyledTableCell align="center" sx={{ minWidth: 80 }}>
+                    SALES PERSON
+                  </StyledTableCell>
+                  <StyledTableCell align="center" sx={{ minWidth: 80 }}>
+                    PRODUCT
+                  </StyledTableCell>
+                  <StyledTableCell align="center" sx={{ minWidth: 80 }}>
                     {` ${months[lastMonth1]} - ${
                       lastMonth1 < currentMonth ? currentYear : currentYear - 1
                     }`}
                     <br />
-                    ACTUAL - FORECAST
+                    ACTUAL
                   </StyledTableCell>
-                  <StyledTableCell align="center">
+                  <StyledTableCell
+                    align="center"
+                    sx={{
+                      minWidth: 80,
+                      borderRight: "2px solid #fff !important",
+                    }}
+                  >
+                    {` ${months[lastMonth1]} - ${
+                      lastMonth1 < currentMonth ? currentYear : currentYear - 1
+                    }`}
+                    <br />
+                    FORECAST
+                  </StyledTableCell>
+                  <StyledTableCell
+                    align="center"
+                    sx={{
+                      minWidth: 80,
+                    }}
+                  >
                     {` ${months[lastMonth2]} - ${
                       lastMonth2 < currentMonth ? currentYear : currentYear - 1
                     }`}{" "}
                     <br />
-                    ACTUAL - FORECAST
+                    ACTUAL
                   </StyledTableCell>
-                  <StyledTableCell align="center">
+                  <StyledTableCell
+                    align="center"
+                    sx={{
+                      minWidth: 80,
+                      borderRight: "2px solid #fff !important",
+                    }}
+                  >
+                    {` ${months[lastMonth2]} - ${
+                      lastMonth2 < currentMonth ? currentYear : currentYear - 1
+                    }`}{" "}
+                    <br />
+                    FORECAST
+                  </StyledTableCell>
+                  <StyledTableCell
+                    align="center"
+                    sx={{
+                      minWidth: 80,
+                    }}
+                  >
                     {`${months[currentMonth]} - ${currentYear}`} <br />
-                    ACTUAL - FORECAST
+                    ACTUAL
                   </StyledTableCell>
-                  <StyledTableCell align="center">
+                  <StyledTableCell
+                    align="center"
+                    sx={{
+                      minWidth: 80,
+                      borderRight: "2px solid #fff !important",
+                    }}
+                  >
+                    {`${months[currentMonth]} - ${currentYear}`} <br />
+                    FORECAST
+                  </StyledTableCell>
+                  <StyledTableCell
+                    align="center"
+                    sx={{
+                      minWidth: 80,
+                      borderRight: "2px solid #fff !important",
+                    }}
+                  >
                     {` ${months[nextMonth1]} - ${
                       nextMonth1 > currentMonth ? currentYear : currentYear + 1
                     }`}{" "}
                     <br />
-                    ACTUAL - FORECAST
+                    FORECAST
                   </StyledTableCell>
-                  <StyledTableCell align="center">
+                  <StyledTableCell
+                    align="center"
+                    sx={{
+                      minWidth: 80,
+                      borderRight: "2px solid #fff !important",
+                    }}
+                  >
                     {` ${months[nextMonth2]} - ${
                       nextMonth2 > currentMonth ? currentYear : currentYear + 1
                     }`}{" "}
                     <br />
-                    ACTUAL - FORECAST
+                    FORECAST
                   </StyledTableCell>
-                  <StyledTableCell align="center">
+                  <StyledTableCell
+                    align="center"
+                    sx={{ minWidth: 80, borderRight: "2px solid #fff" }}
+                  >
                     {` ${months[nextMonth3]} - ${
                       nextMonth3 > currentMonth ? currentYear : currentYear + 1
                     }`}{" "}
                     <br />
-                    ACTUAL - FORECAST
+                    FORECAST
                   </StyledTableCell>
-                  <StyledTableCell align="center">Action</StyledTableCell>
+                  <StyledTableCell
+                    align="center"
+                    sx={{ minWidth: 80, borderRight: "2px solid #fff" }}
+                  >
+                    Action
+                  </StyledTableCell>
                 </StyledTableRow>
               </TableHead>
               <TableBody>
                 {customerHavingForecast &&
                   customerHavingForecast.map((row) => (
                     <StyledTableRow>
-                      <StyledTableCell align="center">
+                      <StyledTableCell align="center" sx={{ minWidth: 80 }}>
                         {row.company}
                       </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.sales_person}
+                      <StyledTableCell align="center" sx={{ minWidth: 80 }}>
+                        {row.assign_to_email.join(",")}
                       </StyledTableCell>
-                      <StyledTableCell align="center">
+                      <StyledTableCell align="center" sx={{ minWidth: 80 }}>
                         {row.product}
                       </StyledTableCell>
                       {indexPositions.map((position) => {
@@ -462,30 +530,54 @@ export const CustomerHavingForecastView = () => {
                           (data) => data.index_position === position,
                         );
 
-                        if (rowData) {
-                          if (rowData.actual !== null) {
-                            return (
-                              <TableCell key={position} align="center">
-                                {rowData.actual} - {rowData.forecast}
-                              </TableCell>
-                            );
-                          } else {
-                            return (
-                              <TableCell key={position} align="center">
-                                - {rowData.forecast}
-                              </TableCell>
-                            );
-                          }
-                        } else {
-                          // Render an empty cell if no matching rowData is found
+                        if (position <= 2) {
                           return (
-                            <TableCell key={position} align="center">
-                              N/A
-                            </TableCell>
+                            <>
+                              <TableCell
+                                key={`${position}-actual`}
+                                align="center"
+                                sx={{ padding: "6px 8px", fontSize: 14 }}
+                              >
+                                {rowData
+                                  ? rowData.actual !== null
+                                    ? rowData.actual
+                                    : "N/A"
+                                  : "N/A"}
+                              </TableCell>
+                              <TableCell
+                                key={`${position}-forecast`}
+                                align="center"
+                                sx={{
+                                  padding: "6px 8px",
+                                  fontSize: 14,
+                                  borderRight: "2px solid #ccc !important", // 👈 border after each month group
+                                }}
+                              >
+                                {rowData ? rowData.forecast : "N/A"}
+                              </TableCell>
+                            </>
                           );
                         }
+
+                        // positions 3,4,5 — border on all except last (position 5)
+                        return (
+                          <TableCell
+                            key={`${position}-forecast`}
+                            align="center"
+                            sx={{
+                              padding: "6px 8px",
+                              fontSize: 14,
+                              borderRight:
+                                position < 5
+                                  ? "2px solid #ccc !important"
+                                  : "none", // 👈 no border on last
+                            }}
+                          >
+                            {rowData ? rowData.forecast : "N/A"}
+                          </TableCell>
+                        );
                       })}
-                      <StyledTableCell align="center">
+                      <StyledTableCell align="center" sx={{ minWidth: 80 }}>
                         <Button
                           sx={{ color: "#1976d2" }}
                           onClick={() => handleEditClick(row)}
@@ -541,11 +633,16 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.common.black,
     color: theme.palette.common.white,
-    padding: 0, // Remove padding from header cells
+    padding: "8px 6px", // 👈 was 0
+    fontSize: 12,
+    fontWeight: "bold",
+    lineHeight: 1.4,
+    whiteSpace: "nowrap",
   },
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
-    padding: 0, // Remove padding from body cells
+    padding: "6px 8px", // 👈 was 0
+    whiteSpace: "nowrap",
   },
 }));
 

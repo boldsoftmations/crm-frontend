@@ -48,7 +48,7 @@ export const CustomerNotHavingForecastView = () => {
 
   const [isPrinting, setIsPrinting] = useState(false);
   const UserData = useSelector((state) => state.auth.profile);
-  const assignedOption = UserData.sales_users || [];
+  const assignedOption = UserData.sales_customer_user || [];
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
