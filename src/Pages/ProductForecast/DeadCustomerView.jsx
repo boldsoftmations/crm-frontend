@@ -29,7 +29,7 @@ export const DeadCustomerView = () => {
   const csvLinkRef = useRef(null);
   const [isPrinting, setIsPrinting] = useState(false);
   const UserData = useSelector((state) => state.auth.profile);
-  const assignedOption = UserData.sales_customer_user || [];
+  const assignedOption = UserData.sales_customer_user_forecast || [];
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
@@ -242,16 +242,18 @@ export const DeadCustomerView = () => {
                     assignedOption
                       .filter(
                         (option) =>
-                          option.groups__name === "Sales Manager" ||
-                          option.groups__name === "Sales Executive" ||
-                          option.groups__name === "Sales Deputy Manager" ||
-                          option.groups__name ===
-                            "Sales Assistant Deputy Manager" ||
-                          option.groups__name === "Sales Manager(Retailer)" ||
-                          option.groups__name === "Customer Service" ||
-                          option.groups__name === "Director" ||
-                          option.groups__name ===
+                          option.groups.includes("Sales Manager") || // option.groups === "Sales Manager" ||
+                          option.groups.includes("Sales Executive") ||
+                          option.groups.includes("Sales Deputy Manager") ||
+                          option.groups.includes(
+                            "Sales Assistant Deputy Manager",
+                          ) ||
+                          option.groups.includes("Sales Manager(Retailer)") ||
+                          option.groups.includes("Customer Service") || // option.groups === "Customer Service" ||
+                          option.groups.includes("Director") ||
+                          option.groups.includes(
                             "Customer Relationship Executive",
+                          ),
                       )
                       .map((option) => option.email)
                   }
