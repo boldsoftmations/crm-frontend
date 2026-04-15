@@ -169,7 +169,7 @@ export const CurrentMonthForecastView = () => {
 
   const handleFilterChange = (value) => {
     setSalesPersonByFilter(value);
-    getAllCurrentMonthForecastDetails(currentPage, value, searchQuery);
+    // getAllCurrentMonthForecastDetails(currentPage, value, searchQuery);
   };
 
   const formatDate = (dateString) => {
@@ -276,7 +276,24 @@ export const CurrentMonthForecastView = () => {
                     sx={{ minWidth: 150 }}
                     onChange={(event, value) => handleFilterChange(value)}
                     value={salesPersonByFilter}
-                    options={assignedOption.map((option) => option.email)}
+                    options={
+                      assignedOption.length > 0 &&
+                      assignedOption
+                        .filter(
+                          (option) =>
+                            option.groups__name === "Sales Manager" ||
+                            option.groups__name === "Sales Executive" ||
+                            option.groups__name === "Sales Deputy Manager" ||
+                            option.groups__name ===
+                              "Sales Assistant Deputy Manager" ||
+                            option.groups__name === "Sales Manager(Retailer)" ||
+                            option.groups__name === "Customer Service" ||
+                            option.groups__name === "Director" ||
+                            option.groups__name ===
+                              "Customer Relationship Executive",
+                        )
+                        .map((option) => option.email)
+                    }
                     getOptionLabel={(option) => option}
                     label="Filter By Sales Person"
                   />

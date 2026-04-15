@@ -59,7 +59,10 @@ const getAllCurrentMonthData = (
   }
 
   if (assignToFilter) {
-    params.append("product_forecast__sales_person__email", assignToFilter);
+    params.append(
+      "product_forecast__company__assigned_to__email",
+      assignToFilter,
+    );
   }
 
   if (searchValue) {
@@ -89,7 +92,7 @@ const getAllCustomerNotHavingData = (page, assignToFilter, searchValue) => {
   }
 
   if (assignToFilter) {
-    params.append("sales_person__email", assignToFilter);
+    params.append("company__assigned_to__email", assignToFilter);
   }
 
   if (searchValue) {

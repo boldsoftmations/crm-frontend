@@ -6,6 +6,7 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Typography,
 } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import { CustomLoader } from "../../../Components/CustomLoader";
@@ -62,12 +63,12 @@ export const ForecastUpdate = (props) => {
         forecast: forecast
           ? forecast
           : selectedMonthForecast && selectedMonthForecast.forecast
-          ? selectedMonthForecast.forecast
-          : "",
+            ? selectedMonthForecast.forecast
+            : "",
       };
       await CustomerServices.updateProductForecastData(
         selectedMonthForecast.id,
-        req
+        req,
       );
       setOpenPopup(false);
       getAllCompanyDetailsByID();
@@ -88,6 +89,25 @@ export const ForecastUpdate = (props) => {
         onSubmit={(e) => updateProductForecastDetails(e)}
       >
         <Grid container spacing={2}>
+          {/* 🔶 Note Section */}
+          <Grid item xs={12}>
+            <Typography
+              sx={{
+                color: "#ED6C02",
+                background: "#FFF4E5",
+                padding: "8px 12px",
+                borderRadius: 1,
+                fontSize: 13,
+                fontWeight: 500,
+              }}
+            >
+              <span role="img" aria-label="warning">
+                ⚠️
+              </span>{" "}
+              Note: Forecast updates are allowed until the 20th of the current
+              month.
+            </Typography>
+          </Grid>
           <Grid item xs={12} sm={6}>
             <FormControl fullWidth size="small">
               <InputLabel id="demo-simple-select-label">Month</InputLabel>
@@ -99,7 +119,7 @@ export const ForecastUpdate = (props) => {
                 onChange={handleFormChange}
               >
                 {forecastDataByID.product_forecast
-                  .filter((option) => nextTwoMonths.includes(option.month - 1))
+                  .filter((option) => nextTwoMonths.includes(option.month - 2))
                   .map((option, i) => (
                     <MenuItem key={i} value={option}>
                       {months[option.month - 1]}
@@ -120,8 +140,8 @@ export const ForecastUpdate = (props) => {
                 forecast
                   ? forecast
                   : selectedMonthForecast && selectedMonthForecast.forecast
-                  ? selectedMonthForecast.forecast
-                  : ""
+                    ? selectedMonthForecast.forecast
+                    : ""
               }
               onChange={(event) => setForecast(event.target.value)}
             />

@@ -58,18 +58,18 @@ export const CustomerNotHavingForecastView = () => {
 
   // Define the months array
   const months = [
-    "January",
-    "February",
+    "Jan",
+    "Feb",
     "March",
     "April",
     "May",
     "June",
     "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
+    "Aug",
+    "Sept",
+    "Oct",
+    "Nov",
+    "Dec",
   ];
 
   // HELPER FUNCTION: Calculate month and year for offset
@@ -255,7 +255,7 @@ export const CustomerNotHavingForecastView = () => {
 
   const handleFilterChange = (value) => {
     setSalesPersonByFilter(value);
-    getAllCustomerNotHavingForecastDetails(currentPage, value, searchQuery);
+    // getAllCustomerNotHavingForecastDetails(currentPage, value, searchQuery);
   };
 
   // Get the unique index_position values to use as column headers
@@ -270,6 +270,11 @@ export const CustomerNotHavingForecastView = () => {
 
   indexPositions.sort((a, b) => a - b);
 
+  const formatToTwoDecimal = (value) => {
+    return value !== null && value !== undefined
+      ? Number(value).toFixed(2)
+      : "N/A";
+  };
   return (
     <div>
       <Helmet>
@@ -312,7 +317,24 @@ export const CustomerNotHavingForecastView = () => {
                     sx={{ minWidth: 150 }}
                     onChange={(event, value) => handleFilterChange(value)}
                     value={salesPersonByFilter}
-                    options={assignedOption.map((option) => option.email)}
+                    options={
+                      assignedOption.length > 0 &&
+                      assignedOption
+                        .filter(
+                          (option) =>
+                            option.groups__name === "Sales Manager" ||
+                            option.groups__name === "Sales Executive" ||
+                            option.groups__name === "Sales Deputy Manager" ||
+                            option.groups__name ===
+                              "Sales Assistant Deputy Manager" ||
+                            option.groups__name === "Sales Manager(Retailer)" ||
+                            option.groups__name === "Customer Service" ||
+                            option.groups__name === "Director" ||
+                            option.groups__name ===
+                              "Customer Relationship Executive",
+                        )
+                        .map((option) => option.email)
+                    }
                     getOptionLabel={(option) => option}
                     label="Filter By Sales Person"
                   />
@@ -382,32 +404,77 @@ export const CustomerNotHavingForecastView = () => {
                   <StyledTableCell align="center">
                     {`${months[lastMonth1Data.monthIndex]} - ${lastMonth1Data.year}`}
                     <br />
-                    ACTUAL - FORECAST
+                    ACTUAL
+                  </StyledTableCell>
+                  <StyledTableCell
+                    align="center"
+                    sx={{
+                      minWidth: 80,
+                      borderRight: "2px solid #fff !important",
+                    }}
+                  >
+                    {`${months[lastMonth1Data.monthIndex]} - ${lastMonth1Data.year}`}
+                    <br />
+                    FORECAST
                   </StyledTableCell>
                   <StyledTableCell align="center">
                     {`${months[lastMonth2Data.monthIndex]} - ${lastMonth2Data.year}`}
                     <br />
-                    ACTUAL - FORECAST
+                    ACTUAL
+                  </StyledTableCell>
+                  <StyledTableCell
+                    align="center"
+                    sx={{
+                      minWidth: 80,
+                      borderRight: "2px solid #fff !important",
+                    }}
+                  >
+                    {`${months[lastMonth2Data.monthIndex]} - ${lastMonth2Data.year}`}
+                    <br />
+                    FORECAST
                   </StyledTableCell>
                   <StyledTableCell align="center">
                     {`${months[currentMonthData.monthIndex]} - ${currentMonthData.year}`}
                     <br />
-                    ACTUAL - FORECAST
+                    ACTUAL
                   </StyledTableCell>
-                  <StyledTableCell align="center">
+                  <StyledTableCell
+                    align="center"
+                    sx={{
+                      minWidth: 80,
+                      borderRight: "2px solid #fff !important",
+                    }}
+                  >
+                    {`${months[currentMonthData.monthIndex]} - ${currentMonthData.year}`}
+                    <br />
+                    FORECAST
+                  </StyledTableCell>
+                  <StyledTableCell
+                    align="center"
+                    sx={{
+                      minWidth: 80,
+                      borderRight: "2px solid #fff !important",
+                    }}
+                  >
                     {`${months[nextMonth1Data.monthIndex]} - ${nextMonth1Data.year}`}
                     <br />
-                    ACTUAL - FORECAST
+                    FORECAST
                   </StyledTableCell>
-                  <StyledTableCell align="center">
+                  <StyledTableCell
+                    align="center"
+                    sx={{
+                      minWidth: 80,
+                      borderRight: "2px solid #fff !important",
+                    }}
+                  >
                     {`${months[nextMonth2Data.monthIndex]} - ${nextMonth2Data.year}`}
                     <br />
-                    ACTUAL - FORECAST
+                    FORECAST
                   </StyledTableCell>
                   <StyledTableCell align="center">
                     {`${months[nextMonth3Data.monthIndex]} - ${nextMonth3Data.year}`}
                     <br />
-                    ACTUAL - FORECAST
+                    FORECAST
                   </StyledTableCell>
                   <StyledTableCell align="center">Action</StyledTableCell>
                 </StyledTableRow>
@@ -430,27 +497,52 @@ export const CustomerNotHavingForecastView = () => {
                           (data) => data.index_position === position,
                         );
 
-                        if (rowData) {
-                          if (rowData.actual !== null) {
-                            return (
-                              <TableCell key={position} align="center">
-                                {rowData.actual} - {rowData.forecast}
-                              </TableCell>
-                            );
-                          } else {
-                            return (
-                              <TableCell key={position} align="center">
-                                - {rowData.forecast}
-                              </TableCell>
-                            );
-                          }
-                        } else {
+                        if (position <= 2) {
                           return (
-                            <TableCell key={position} align="center">
-                              N/A
-                            </TableCell>
+                            <React.Fragment key={position}>
+                              <TableCell
+                                align="center"
+                                sx={{ padding: "6px 8px", fontSize: 14 }}
+                              >
+                                {rowData
+                                  ? formatToTwoDecimal(rowData.actual)
+                                  : "N/A"}
+                              </TableCell>
+
+                              <TableCell
+                                align="center"
+                                sx={{
+                                  padding: "6px 8px",
+                                  fontSize: 14,
+                                  borderRight: "2px solid #ccc !important",
+                                }}
+                              >
+                                {rowData
+                                  ? formatToTwoDecimal(rowData.forecast)
+                                  : "N/A"}
+                              </TableCell>
+                            </React.Fragment>
                           );
                         }
+
+                        return (
+                          <TableCell
+                            key={`${position}-forecast`}
+                            align="center"
+                            sx={{
+                              padding: "6px 8px",
+                              fontSize: 14,
+                              borderRight:
+                                position < 5
+                                  ? "2px solid #ccc !important"
+                                  : "none",
+                            }}
+                          >
+                            {rowData
+                              ? formatToTwoDecimal(rowData.forecast)
+                              : "N/A"}
+                          </TableCell>
+                        );
                       })}
                       <StyledTableCell align="center">
                         <Button
@@ -508,11 +600,16 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.common.black,
     color: theme.palette.common.white,
-    padding: 0,
+    padding: "8px 6px", // 👈 was 0
+    fontSize: 12,
+    fontWeight: "bold",
+    lineHeight: 1.4,
+    whiteSpace: "nowrap",
   },
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
-    padding: 0,
+    padding: "6px 8px", // 👈 was 0
+    whiteSpace: "nowrap",
   },
 }));
 
@@ -520,6 +617,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   "&:nth-of-type(odd)": {
     backgroundColor: theme.palette.action.hover,
   },
+  // hide last border
   "&:last-child td, &:last-child th": {
     border: 0,
   },

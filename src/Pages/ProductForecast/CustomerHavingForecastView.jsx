@@ -57,23 +57,21 @@ export const CustomerHavingForecastView = () => {
   const nextMonth1 = (currentMonth + 1) % 12;
   const nextMonth2 = (currentMonth + 2) % 12;
   const nextMonth3 = (currentMonth + 3) % 12;
-  const isSupplyChain = UserData.groups.includes(
-    "Operations & Supply Chain Manager",
-  );
-  const emails = [
-    "admin@glutape.com",
-    "rajeev@glutape.com",
-    "gaurav@glutape.com",
-    "arjun@glutape.com",
-    "pruthvi@glutape.com",
-    "anuradha@glutape.com",
-    "vivek_production@glutape.com",
-    "vivek2@glutape.com",
-    "managerwithoutlead@glutape.com",
-    "biraj@glutape.com",
-    "rushilsalian13@glutape.com",
-    "it1@glutape.com",
-  ];
+
+  // const emails = [
+  //   "admin@glutape.com",
+  //   "rajeev@glutape.com",
+  //   "gaurav@glutape.com",
+  //   "arjun@glutape.com",
+  //   "pruthvi@glutape.com",
+  //   "anuradha@glutape.com",
+  //   "vivek_production@glutape.com",
+  //   "vivek2@glutape.com",
+  //   "managerwithoutlead@glutape.com",
+  //   "biraj@glutape.com",
+  //   "rushilsalian13@glutape.com",
+  //   "it1@glutape.com",
+  // ];
   // Define the months array
   const months = [
     "Jan",
@@ -110,6 +108,8 @@ export const CustomerHavingForecastView = () => {
       window.removeEventListener("afterprint", afterPrint);
     };
   }, []);
+  const date = new Date().getDate();
+  console.log("date is : ", date);
 
   const generateHeaders = () => {
     // Basic headers
@@ -269,7 +269,7 @@ export const CustomerHavingForecastView = () => {
 
   const handleFilterChange = (value) => {
     setSalesPersonByFilter(value);
-    getAllCustomerForecastDetails(currentPage, value, searchQuery);
+    // getAllCustomerForecastDetails(currentPage, value, searchQuery);
   };
 
   // Get the unique index_position values to use as column headers
@@ -286,6 +286,13 @@ export const CustomerHavingForecastView = () => {
   // // Sort the index_positions array in ascending order
   // indexPositions.sort((a, b) => a - b);
   const indexPositions = [0, 1, 2, 3, 4, 5];
+
+  //decimal helper function
+  const formatToTwoDecimal = (value) => {
+    return value !== null && value !== undefined
+      ? Number(value).toFixed(2)
+      : "N/A";
+  };
   return (
     <div>
       <Helmet>
@@ -323,9 +330,22 @@ export const CustomerHavingForecastView = () => {
                     onChange={(event, value) => handleFilterChange(value)}
                     value={salesPersonByFilter}
                     options={
-                      isSupplyChain
-                        ? emails
-                        : assignedOption.map((option) => option.email)
+                      assignedOption.length > 0 &&
+                      assignedOption
+                        .filter(
+                          (option) =>
+                            option.groups__name === "Sales Manager" ||
+                            option.groups__name === "Sales Executive" ||
+                            option.groups__name === "Sales Deputy Manager" ||
+                            option.groups__name ===
+                              "Sales Assistant Deputy Manager" ||
+                            option.groups__name === "Sales Manager(Retailer)" ||
+                            option.groups__name === "Customer Service" ||
+                            option.groups__name === "Director" ||
+                            option.groups__name ===
+                              "Customer Relationship Executive",
+                        )
+                        .map((option) => option.email)
                     }
                     getOptionLabel={(option) => option}
                     label="Filter By Sales Person"
@@ -532,34 +552,32 @@ export const CustomerHavingForecastView = () => {
 
                         if (position <= 2) {
                           return (
-                            <>
+                            <React.Fragment key={position}>
                               <TableCell
-                                key={`${position}-actual`}
                                 align="center"
                                 sx={{ padding: "6px 8px", fontSize: 14 }}
                               >
                                 {rowData
-                                  ? rowData.actual !== null
-                                    ? rowData.actual
-                                    : "N/A"
+                                  ? formatToTwoDecimal(rowData.actual)
                                   : "N/A"}
                               </TableCell>
+
                               <TableCell
-                                key={`${position}-forecast`}
                                 align="center"
                                 sx={{
                                   padding: "6px 8px",
                                   fontSize: 14,
-                                  borderRight: "2px solid #ccc !important", // 👈 border after each month group
+                                  borderRight: "2px solid #ccc !important",
                                 }}
                               >
-                                {rowData ? rowData.forecast : "N/A"}
+                                {rowData
+                                  ? formatToTwoDecimal(rowData.forecast)
+                                  : "N/A"}
                               </TableCell>
-                            </>
+                            </React.Fragment>
                           );
                         }
 
-                        // positions 3,4,5 — border on all except last (position 5)
                         return (
                           <TableCell
                             key={`${position}-forecast`}
@@ -570,10 +588,12 @@ export const CustomerHavingForecastView = () => {
                               borderRight:
                                 position < 5
                                   ? "2px solid #ccc !important"
-                                  : "none", // 👈 no border on last
+                                  : "none",
                             }}
                           >
-                            {rowData ? rowData.forecast : "N/A"}
+                            {rowData
+                              ? formatToTwoDecimal(rowData.forecast)
+                              : "N/A"}
                           </TableCell>
                         );
                       })}
@@ -581,6 +601,7 @@ export const CustomerHavingForecastView = () => {
                         <Button
                           sx={{ color: "#1976d2" }}
                           onClick={() => handleEditClick(row)}
+                          disabled={date >= 20}
                         >
                           View
                         </Button>

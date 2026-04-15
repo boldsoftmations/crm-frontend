@@ -12,7 +12,13 @@ import { LeadForecastView } from "../Leads/LeadForecast/LeadForecastView";
 export const ProductForecastViewAll = () => {
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
-
+  // const getInitialTab = () => {
+  //   if (isAdmin) return 0;
+  //   if (isPurchase) return 4;
+  //   if (isCustomerService) return 0; // 👈 add this
+  //   return (visibleTabs[0] && visibleTabs[0].index) || 0; // 👈 safe fallback
+  // };
+  // const [activeTab, setActiveTab] = useState(getInitialTab);
   const isAdmin =
     userData.groups.includes("Director") ||
     userData.groups.includes("Accounts") ||
@@ -43,8 +49,6 @@ export const ProductForecastViewAll = () => {
     userData.groups.includes("Sales Deputy Manager") ||
     userData.groups.includes("Sales Assistant Deputy Manager") ||
     userData.groups.includes("Customer Service");
-  const [activeTab, setActiveTab] = useState(isAdmin ? 0 : 4);
-
   const Supplychain =
     userData.groups.includes("Director") ||
     userData.groups.includes("Operations & Supply Chain Manager");
@@ -56,21 +60,29 @@ export const ProductForecastViewAll = () => {
       label: "Curr. Month Forecast",
       visible: isAdmin || Supplychain || isCustomerService,
       index: 0,
-    }, // Shortened "Current" to "Curr."
-    { label: "Customers w/ Forecast", visible: Supplychain, index: 1 }, // Used "w/" as shorthand for "with"
+    },
+    { label: "Customers w/ Forecast", visible: Supplychain, index: 1 },
     {
       label: "Customers w/o Forecast",
       visible: isAdmin || Supplychain,
       index: 2,
-    }, // Used "w/o" as shorthand for "without"
-    { label: "Dead Customers", visible: isAdmin, index: 3 }, // Used "Inactive" as a clearer term for "Dead"
-    { label: "Prod. Forecast", visible: isPurchase, index: 4 }, // Shortened "Product" to "Prod."
-    { label: "Desc. Forecast", visible: isPurchase, index: 5 }, // Shortened "Description" to "Desc."
+    },
+    { label: "Dead Customers", visible: isAdmin, index: 3 },
+    { label: "Prod. Forecast", visible: isPurchase, index: 4 },
+    { label: "Desc. Forecast", visible: isPurchase, index: 5 },
     { label: "Lead Forecast", visible: isVisible, index: 6 },
   ];
 
   const visibleTabs = tabs.filter((tab) => tab.visible);
   const visibleTabIndexes = visibleTabs.map((tab) => tab.index);
+
+  const getInitialTab = () => {
+    if (isAdmin) return 0;
+    if (isPurchase) return 4;
+    if (isCustomerService) return 0;
+    return visibleTabs.length > 0 ? visibleTabs[0].index : 0;
+  };
+  const [activeTab, setActiveTab] = useState(getInitialTab());
   const tabComponents = {
     0: <CurrentMonthForecastView />,
     1: <CustomerHavingForecastView />,
@@ -85,7 +97,7 @@ export const ProductForecastViewAll = () => {
     <div>
       <CustomTabs
         tabs={visibleTabs}
-        activeTab={activeTab}
+        activeTab={visibleTabIndexes.indexOf(activeTab)} // 👈 convert back to visual position
         onTabChange={(index) => {
           setActiveTab(visibleTabIndexes[index]);
         }}
