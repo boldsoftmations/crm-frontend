@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Button, Grid } from "@mui/material";
+import { Box, Button, Grid, Typography } from "@mui/material";
 import CustomTextField from "../../Components/CustomTextField";
 import ProductForecastService from "../../services/ProductForecastService";
 import { CustomLoader } from "../../Components/CustomLoader";
@@ -60,11 +60,14 @@ export const AnticipatedDateUpdate = ({
       <Box component="form" noValidate onSubmit={handleUpdate} sx={{ mt: 1 }}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
+            <Typography>Estimated Date</Typography>
+          </Grid>
+          <Grid item xs={12}>
             <CustomTextField
               fullWidth
               size="small"
               type="date"
-              label="Estimated Date"
+              // label="Estimated Date"
               name="anticipated_date"
               value={anticipatedDate.anticipated_date}
               onChange={handleInputChange}

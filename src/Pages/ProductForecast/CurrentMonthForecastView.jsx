@@ -66,7 +66,7 @@ export const CurrentMonthForecastView = () => {
 
   const headers = [
     { label: "Company", key: "company" },
-    { label: "Sales Person", key: "sales_person" },
+    { label: "Sales Person", key: "assign_to_email" },
     { label: "Product", key: "product" },
     { label: "Forecast", key: "forecast" },
     { label: "Actual", key: "actual" },
@@ -104,7 +104,7 @@ export const CurrentMonthForecastView = () => {
           const forecast_achieved = row.forecast - sumValue;
           return {
             company: row.company,
-            sales_person: row.sales_person,
+            assign_to_email: row.assign_to_email.join[","],
             product: row.product,
             forecast: row.forecast,
             actual: row.actual,
@@ -417,7 +417,7 @@ export const CurrentMonthForecastView = () => {
                         {row.company}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {row.sales_person}
+                        {row.assign_to_email.join(", ")}
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         {row.product}
