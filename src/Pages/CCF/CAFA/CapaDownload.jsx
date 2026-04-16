@@ -12,7 +12,7 @@ import {
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 import logo from "../../../../src/Images/glutape logo.jpg";
-import ISO from "../../../../src/Images/ISO.png";
+import ISO from "../../../../src/Images/ISO.jpg";
 import MSME from "../../../../src/Images/MSME.jpeg";
 import { CustomLoader } from "../../../Components/CustomLoader";
 
