@@ -42,7 +42,7 @@ const CapaDownload = ({ recordForEdit }) => {
           pdfWidth,
           pdfHeight,
           undefined,
-          "FAST"
+          "FAST",
         );
         pdf.save(`CAPA_form_No_${recordForEdit.id}.pdf`);
         setOpen(false);
@@ -52,6 +52,8 @@ const CapaDownload = ({ recordForEdit }) => {
         setOpen(false);
       });
   };
+  // let a = recordForEdit && recordForEdit.products.map((item) => item.product);
+  // console.log("product is : ", a);
 
   return (
     <Container maxWidth="md">
@@ -150,6 +152,20 @@ const CapaDownload = ({ recordForEdit }) => {
                 </Typography>
                 <Typography variant="body2">
                   {recordForEdit.ccf_details.invoices.join(", ")}
+                </Typography>
+                <Divider sx={{ marginY: 1 }} />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Typography variant="body1" fontWeight="bold">
+                  Product Code:
+                </Typography>
+                <Typography variant="body2">
+                  {recordForEdit.ccf_details.products &&
+                  recordForEdit.ccf_details.products.length > 0
+                    ? recordForEdit.ccf_details.products
+                        .map((p) => p.product)
+                        .join(", ")
+                    : "No products available"}
                 </Typography>
                 <Divider sx={{ marginY: 1 }} />
               </Grid>
