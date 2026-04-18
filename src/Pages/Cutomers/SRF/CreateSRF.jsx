@@ -8,7 +8,7 @@ import ProductService from "../../../services/ProductService";
 import CustomerServices from "../../../services/CustomerService";
 import { useNavigate } from "react-router-dom";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
-import { DecimalValidation } from "../../../utils/DecimalValidation";
+import { DecimalValidation } from "../../../utility/DecimalValidation";
 
 const tfStyle = {
   "& .MuiButtonBase-root.MuiAutocomplete-clearIndicator": {
@@ -577,7 +577,7 @@ export const CreateSRF = (props) => {
           })}
 
           <Grid item xs={12} sm={4} alignContent="right">
-            <Button onClick={() => addFields} variant="contained">
+            <Button onClick={() => addFields()} variant="contained">
               Add More...
             </Button>
           </Grid>
