@@ -131,7 +131,12 @@ const downloadCustomerNotHavingData = (download) => {
 };
 
 // Generic function to get product Forecast data
-const getAllCustomerHavingData = (page, assignToFilter, searchValue) => {
+const getAllCustomerHavingData = (
+  page,
+  assignToFilter,
+  searchValue,
+  download,
+) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
 
@@ -147,9 +152,33 @@ const getAllCustomerHavingData = (page, assignToFilter, searchValue) => {
     params.append("search", searchValue);
   }
 
+  if (download) {
+    params.append("download", download);
+  }
+
   // Sending a GET request with query parameters
   return CustomAxios.get(
     `/api/forecast/list-product-having-forecast/?${params.toString()}`,
+  );
+};
+
+/**
+ * Function to get all customer having forecast data in csv format
+ *
+ * @param {boolean} download - boolean to check if csv needs to be downloaded
+ * @returns {Promise} - Promise which resolves to the response from the server
+ */
+const getAllCustomerHavingDataCsv = (download) => {
+  // Constructing the query parameters
+  const params = new URLSearchParams();
+
+  if (download) {
+    params.append("download", download);
+  }
+
+  // Sending a GET request with query parameters
+  return CustomAxios.get(
+    `/api/forecast/list-product-having-forecast-csv/?${params.toString()}`,
   );
 };
 
@@ -270,6 +299,7 @@ const ProductForecastService = {
   getLastThreeMonthForecastDataByFilter,
   getProductWiseTurnoverForecast,
   uploadForecastInCSV,
+  getAllCustomerHavingDataCsv,
 };
 
 export default ProductForecastService;

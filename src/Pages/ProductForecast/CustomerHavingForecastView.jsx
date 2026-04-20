@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Paper,
   Box,
@@ -13,9 +13,9 @@ import {
   Button,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
-import { CSVLink } from "react-csv";
+
 import { CustomPagination } from "../../Components/CustomPagination";
-import { CustomLoader } from "../../Components/CustomLoader";
+
 import ProductForecastService from "../../services/ProductForecastService";
 import { Popup } from "./../../Components/Popup";
 import { ForecastUpdate } from "./../Cutomers/ForecastDetails/ForecastUpdate";
@@ -26,6 +26,7 @@ import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
 import SearchComponent from "../../Components/SearchComponent ";
 import { MessageAlert } from "../../Components/MessageAlert";
+import { CustomDownloadLoader } from "../../Components/CustomDownloadLoader";
 
 export const CustomerHavingForecastView = () => {
   const [open, setOpen] = useState(false);
@@ -34,15 +35,21 @@ export const CustomerHavingForecastView = () => {
   const [salesPersonByFilter, setSalesPersonByFilter] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [customerHavingForecast, setCustomerHavingForecast] = useState([]);
-  const [exportData, setExportData] = useState([]);
+
   const [forecastDataByID, setForecastDataByID] = useState(null);
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopup2, setOpenPopup2] = useState(false);
-  const csvLinkRef = useRef(null);
-  const [isDownloadReady, setIsDownloadReady] = useState(false);
+
   const [isPrinting, setIsPrinting] = useState(false);
   const UserData = useSelector((state) => state.auth.profile);
   const assignedOption = UserData.sales_customer_user_forecast || [];
+
+  const [downloadProgress, setDownloadProgress] = useState(0);
+  const [downloadedMB, setDownloadedMB] = useState(0);
+  const [totalMB, setTotalMB] = useState(0);
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [countdown, setCountdown] = useState(0);
+  const [DownloadOpen, setDownloadOpen] = useState(false);
   console.log("userData is :", UserData);
   // Get the current date, month, and year
   const currentDate = new Date();
@@ -57,23 +64,6 @@ export const CustomerHavingForecastView = () => {
   const nextMonth1 = (currentMonth + 1) % 12;
   const nextMonth2 = (currentMonth + 2) % 12;
   const nextMonth3 = (currentMonth + 3) % 12;
-
-  // const emails = [
-  //   "admin@glutape.com",
-  //   "rajeev@glutape.com",
-  //   "gaurav@glutape.com",
-  //   "arjun@glutape.com",
-  //   "pruthvi@glutape.com",
-  //   "anuradha@glutape.com",
-  //   "vivek_production@glutape.com",
-  //   "vivek2@glutape.com",
-  //   "managerwithoutlead@glutape.com",
-  //   "biraj@glutape.com",
-  //   "rushilsalian13@glutape.com",
-  //   "it1@glutape.com",
-  // ];
-  // Define the months array
-
   const isSupplyChain = UserData.groups.includes(
     "Operations & Supply Chain Manager",
   );
@@ -100,6 +90,7 @@ export const CustomerHavingForecastView = () => {
     "sales02@glutape.com",
     "bde03@glutape.com",
   ];
+  // Define the months array
   const months = [
     "Jan",
     "Feb",
@@ -171,67 +162,89 @@ export const CustomerHavingForecastView = () => {
   const headers = generateHeaders();
 
   useEffect(() => {
-    if (isDownloadReady && exportData.length > 0) {
-      csvLinkRef.current.link.click();
-      setIsDownloadReady(false); // Reset the flag after download
+    const savedEndTime = localStorage.getItem("csvDownloadEndTime_having"); // different key!
+    if (savedEndTime) {
+      const remaining = Math.floor(
+        (parseInt(savedEndTime) - Date.now()) / 1000,
+      );
+      if (remaining > 0) {
+        setIsDisabled(true);
+        setCountdown(remaining);
+      } else {
+        localStorage.removeItem("csvDownloadEndTime_having");
+      }
     }
-  }, [isDownloadReady, exportData]);
+  }, []);
+
+  useEffect(() => {
+    if (!isDisabled) return;
+    const interval = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          setIsDisabled(false);
+          localStorage.removeItem("csvDownloadEndTime_having");
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [isDisabled]);
+
+  // ❌ Remove handleExport entirely
+  // ✅ Replace handleDownload with this:
 
   const handleDownload = async () => {
     try {
-      setOpen(true);
-      const data = await handleExport();
-      setExportData(data);
-      // Using a small delay to ensure state update
-      setTimeout(() => {
-        csvLinkRef.current.link.click();
-      }, 0);
-      handleSuccess("CSV Download successfully");
+      setDownloadOpen(true);
+      setIsDisabled(true);
+      setDownloadProgress(0);
+      setDownloadedMB(0);
+      setTotalMB(0);
+
+      const response = await ProductForecastService.getAllCustomerHavingDataCsv(
+        "csv",
+        {
+          responseType: "blob",
+          onDownloadProgress: (event) => {
+            const loaded = (event.loaded / 1024 / 1024).toFixed(2);
+            setDownloadedMB(loaded);
+            if (event.total) {
+              const total = (event.total / 1024 / 1024).toFixed(2);
+              const percent = Math.round((event.loaded / event.total) * 100);
+              setTotalMB(total);
+              setDownloadProgress(percent);
+            }
+          },
+        },
+      );
+      console.log("Response is : ", response.data);
+
+      const blob = new Blob([response.data], {
+        type: "text/csv;charset=utf-8;",
+      });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "customer_having_forecast.csv";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+
+      handleSuccess("CSV downloaded successfully");
+
+      const endTime = Date.now() + 900 * 1000;
+      localStorage.setItem("csvDownloadEndTime_having", endTime.toString());
+      setCountdown(900);
+      setIsDisabled(true);
     } catch (error) {
       handleError(error);
-      console.error("CSVLink Download error", error);
+      setIsDisabled(false);
     } finally {
-      setOpen(false);
-    }
-  };
-
-  const handleExport = async () => {
-    try {
-      setOpen(true);
-      const response = await ProductForecastService.getAllCustomerHavingData(
-        "all",
-        salesPersonByFilter,
-        searchQuery,
-      );
-
-      const data = response.data.map((row) => {
-        const obj = {
-          company: row.company,
-          sales_person: row.sales_person,
-          product: row.product,
-        };
-
-        row.product_forecast.forEach((forecast) => {
-          // Convert month number to month name and create the key
-          const monthName = months[parseInt(forecast.month) - 1];
-          const forecastKey = `${monthName}-${forecast.year} Actual-Forecast`;
-
-          // Assign the actual-forecast data to the corresponding month-year key
-          obj[forecastKey] =
-            forecast.actual !== null
-              ? `${forecast.actual}--${forecast.forecast}`
-              : `-${forecast.forecast}`;
-        });
-
-        return obj;
-      });
-
-      console.log("Export Data: ", data); // This line is for debugging, you can remove it later
-      return data;
-    } catch (err) {
-      console.error("Error in handleExport", err);
-    } finally {
-      setOpen(false);
+      setDownloadOpen(false);
+      setDownloadProgress(0);
     }
   };
 
@@ -339,7 +352,12 @@ export const CustomerHavingForecastView = () => {
         severity={alertInfo.severity}
         message={alertInfo.message}
       />
-      <CustomLoader open={open} />
+      <CustomDownloadLoader
+        open={DownloadOpen}
+        downloadedMB={downloadedMB}
+        totalMB={totalMB}
+        downloadProgress={downloadProgress}
+      />
       <Grid item xs={12}>
         <Paper sx={{ p: 2, m: 3, display: "flex", flexDirection: "column" }}>
           <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
@@ -398,18 +416,16 @@ export const CustomerHavingForecastView = () => {
                   variant="contained"
                   color="primary"
                   onClick={handleDownload}
+                  disabled={isDisabled}
                 >
-                  Download CSV
+                  {downloadProgress > 0 && downloadProgress < 100
+                    ? totalMB > 0
+                      ? `Downloading... ${downloadedMB} MB / ${totalMB} MB (${downloadProgress}%)`
+                      : `Downloading... ${downloadedMB} MB`
+                    : isDisabled
+                      ? `Download available in ${String(Math.floor(countdown / 60)).padStart(2, "0")}:${String(countdown % 60).padStart(2, "0")}`
+                      : "Download CSV"}
                 </Button>
-                {exportData.length > 0 && (
-                  <CSVLink
-                    data={exportData}
-                    headers={headers}
-                    ref={csvLinkRef}
-                    filename={"Customer Having forecast.csv"}
-                    style={{ display: "none" }} // Hide the link
-                  />
-                )}
               </Grid>
             </Grid>
           </Box>

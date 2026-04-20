@@ -8,7 +8,7 @@ import ProductService from "../../../services/ProductService";
 import CustomerServices from "../../../services/CustomerService";
 import { useNavigate } from "react-router-dom";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
-import { DecimalValidation } from "../../../utility/DecimalValidation";
+import { DecimalValidation } from "../../../utils/DecimalValidation";
 
 const tfStyle = {
   "& .MuiButtonBase-root.MuiAutocomplete-clearIndicator": {

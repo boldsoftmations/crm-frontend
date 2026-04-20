@@ -165,6 +165,7 @@ export const CustomerNotHavingForecastView = () => {
             }
           },
         });
+      console.log(response.data);
 
       // Trigger file download
       const blob = new Blob([response.data], {
@@ -182,9 +183,9 @@ export const CustomerNotHavingForecastView = () => {
       handleSuccess("CSV downloaded successfully");
 
       // Start 30-min cooldown
-      const endTime = Date.now() + 1800 * 1000;
+      const endTime = Date.now() + 900 * 1000;
       localStorage.setItem("csvDownloadEndTime", endTime.toString());
-      setCountdown(1800);
+      setCountdown(900);
       setIsDisabled(true);
     } catch (error) {
       handleError(error);
@@ -222,26 +223,6 @@ export const CustomerNotHavingForecastView = () => {
     setSearchQuery(query);
     setCurrentPage(1);
   };
-
-  const handleReset = () => {
-    setSearchQuery("");
-    setCurrentPage(1);
-  };
-
-  const handlePageChange = (event, value) => {
-    setCurrentPage(value);
-  };
-
-  const handleEditClick = useCallback(
-    (item) => {
-      const matchedForecast = customerNotHavingForecast.find(
-        (forecast) => forecast.id === item.id,
-      );
-      setForecastDataByID(matchedForecast);
-      setOpenPopup(true);
-    },
-    [customerNotHavingForecast],
-  );
   const isSupplyChain = UserData.groups.includes(
     "Operations & Supply Chain Manager",
   );
@@ -268,6 +249,26 @@ export const CustomerNotHavingForecastView = () => {
     "sales02@glutape.com",
     "bde03@glutape.com",
   ];
+
+  const handleReset = () => {
+    setSearchQuery("");
+    setCurrentPage(1);
+  };
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
+
+  const handleEditClick = useCallback(
+    (item) => {
+      const matchedForecast = customerNotHavingForecast.find(
+        (forecast) => forecast.id === item.id,
+      );
+      setForecastDataByID(matchedForecast);
+      setOpenPopup(true);
+    },
+    [customerNotHavingForecast],
+  );
 
   const handleAssignTo = useCallback(
     (item) => {
