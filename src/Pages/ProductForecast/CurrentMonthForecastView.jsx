@@ -100,6 +100,7 @@ export const CurrentMonthForecastView = () => {
     "sales02@glutape.com",
     "bde03@glutape.com",
   ];
+
   const handleDownload = async () => {
     try {
       const data = await handleExport();
@@ -466,13 +467,14 @@ export const CurrentMonthForecastView = () => {
                         {row.product}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {row.forecast && row.forecast.toFixed(2)}
+                        {row.forecast && Number(row.forecast).toFixed(2)}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {row.actual && row.actual.toFixed(2)}
+                        {row.actual && Number(row.actual).toFixed(2)}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {row.orderbook_value && row.orderbook_value.toFixed(2)}
+                        {row.orderbook_value &&
+                          Number(row.orderbook_value).toFixed(2)}
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         {forecast_achieved > 0 ? forecast_achieved : 0}
