@@ -38,7 +38,9 @@ export const ProductForecastViewAll = () => {
     userData.groups.includes("Director") ||
     userData.groups.includes("Accounts") ||
     userData.groups.includes("Purchase");
-
+  const isSalesmanager =
+    userData.groups.includes("Sales Manager") ||
+    userData.groups.includes("Sales Manager(Retailer)");
   const isVisible =
     userData.groups.includes("Director") ||
     userData.groups.includes("Accounts") ||
@@ -61,7 +63,11 @@ export const ProductForecastViewAll = () => {
       visible: isAdmin || Supplychain || isCustomerService,
       index: 0,
     },
-    { label: "Customers w/ Forecast", visible: Supplychain, index: 1 },
+    {
+      label: "Customers w/ Forecast",
+      visible: Supplychain || isSalesmanager,
+      index: 1,
+    },
     {
       label: "Customers w/o Forecast",
       visible: isAdmin || Supplychain,
