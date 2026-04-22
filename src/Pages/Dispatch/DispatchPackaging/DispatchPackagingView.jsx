@@ -96,7 +96,8 @@ export const DispatchPackagingView = () => {
       setTotalPages(Math.ceil(response.data.count / 25));
     } catch (e) {
       setAlertMsg({
-        message: e.response.data.message || "Error fetching countries",
+        message:
+          e.response.data.message || "Error fetching Packaging Materials",
         severity: "error",
         open: true,
       });
@@ -136,7 +137,7 @@ export const DispatchPackagingView = () => {
       return data;
     } catch (e) {
       setAlertMsg({
-        message: e.response.data.message || "Error fetching countries",
+        message: e.response.data.message || "Error fetching Packaging Material",
         severity: "error",
         open: true,
       });
