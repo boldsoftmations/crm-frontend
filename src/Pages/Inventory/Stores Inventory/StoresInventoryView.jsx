@@ -55,7 +55,7 @@ export const StoresInventoryView = () => {
       if (searchQuery) {
         response = await InventoryServices.getAllStoresInventoryDetails(
           "all",
-          searchQuery
+          searchQuery,
         );
       } else {
         response = await InventoryServices.getAllStoresInventoryDetails("all");
@@ -70,7 +70,7 @@ export const StoresInventoryView = () => {
           quantity: row.quantity,
           pending_quantity: row.pending_quantity,
           rate: row.rate,
-          amount: row.amount,
+          amount: row.rate * row.pending_quantity,
         };
       });
       setOpen(false);
@@ -96,7 +96,7 @@ export const StoresInventoryView = () => {
         setOpen(true);
         const response = await InventoryServices.getAllStoresInventoryDetails(
           page,
-          search
+          search,
         );
         setStoresInventoryData(response.data.results);
         setTotalPages(Math.ceil(response.data.count / 25));
@@ -106,7 +106,7 @@ export const StoresInventoryView = () => {
         setOpen(false);
       }
     },
-    []
+    [],
   );
 
   const handleSearch = (query) => {
