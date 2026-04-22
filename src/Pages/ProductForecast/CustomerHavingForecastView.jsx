@@ -300,7 +300,7 @@ export const CustomerHavingForecastView = () => {
   const formatToTwoDecimal = (value) => {
     return value !== null && value !== undefined
       ? Number(value).toFixed(2)
-      : "N/A";
+      : "0.00";
   };
   return (
     <div>
@@ -580,7 +580,7 @@ export const CustomerHavingForecastView = () => {
                               >
                                 {rowData
                                   ? formatToTwoDecimal(rowData.actual)
-                                  : "N/A"}
+                                  : "0.00"}
                               </TableCell>
 
                               <TableCell
@@ -593,7 +593,7 @@ export const CustomerHavingForecastView = () => {
                               >
                                 {rowData
                                   ? formatToTwoDecimal(rowData.forecast)
-                                  : "N/A"}
+                                  : "0.00"}
                               </TableCell>
                             </React.Fragment>
                           );
@@ -614,7 +614,7 @@ export const CustomerHavingForecastView = () => {
                           >
                             {rowData
                               ? formatToTwoDecimal(rowData.forecast)
-                              : "N/A"}
+                              : "0.00"}
                           </TableCell>
                         );
                       })}
