@@ -207,7 +207,7 @@ const getTotalPendingQuantity = () => {
 
 const getAllOrderBookDataWithSearch = (data, type, searchvalue) => {
   return CustomAxios.get(
-    `/api/invoice/list-order-book-company/?page=${data}&ordering=${type}&search=${searchvalue}`,
+    `/api/invoice/list-order-book-company/?page=1${data}&ordering=${type}&search=${searchvalue}`,
   );
 };
 
