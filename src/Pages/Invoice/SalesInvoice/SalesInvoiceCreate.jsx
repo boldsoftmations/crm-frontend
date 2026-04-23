@@ -16,7 +16,7 @@ import Chip from "@mui/material/Chip";
 import InvoiceServices from "../../../services/InvoiceService";
 import { CustomLoader } from "./../../../Components/CustomLoader";
 import CustomTextField from "../../../Components/CustomTextField";
-// import { DecimalValidation } from "../../../utility/DecimalValidation";
+// import { DecimalValidation } from "../../../utils/DecimalValidation";
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
   ...theme.typography.body2,
@@ -26,7 +26,7 @@ const Root = styled("div")(({ theme }) => ({
 }));
 
 export const SalesInvoiceCreate = (props) => {
-  const { setOpenPopup, getSalesInvoiceDetails } = props;
+  const { setOpenPopup, getSalesInvoiceDetails, handleError } = props;
   const [open, setOpen] = useState(false);
   const [errorOpen, setErrorOpen] = useState(false);
   const [errMsg, setErrMsg] = useState("");
@@ -97,17 +97,19 @@ export const SalesInvoiceCreate = (props) => {
       e.preventDefault();
       setOpen(true);
       const response = await InvoiceServices.getAllOrderBookDataWithSearch(
-        "all",
+        "",
         "customer",
         inputValue.company,
       );
 
-      // Filter data where any product's pending_quantity is greater than 0
-      const filteredData = response.data.filter(
-        (order) =>
-          order.products &&
-          order.products.some((product) => product.pending_quantity > 0),
-      );
+      const filteredData =
+        response.data &&
+        response.data.results.filter(
+          (order) =>
+            order.products &&
+            order.products.some((product) => product.pending_quantity > 0),
+        );
+      // console.log("response is :")
 
       setCustomerOrderBookOption(filteredData);
 
@@ -115,7 +117,14 @@ export const SalesInvoiceCreate = (props) => {
     } catch (err) {
       setOpen(false);
       console.log("err", err);
-      alert(err.response.data.errors.proforma_invoice);
+      const msg =
+        (err.response &&
+          err.response.data &&
+          err.response.data.errors &&
+          err.response.data.errors.proforma_invoice) ||
+        err.message ||
+        "An unexpected error occurred.";
+      alert(msg);
     }
   };
 
