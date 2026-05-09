@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
+// import { DecimalValidation } from "../../../utility/DecimalValidation";
 import { DecimalValidation } from "../../../utils/DecimalValidation";
 export const MaterialTransferNoteCreate = memo((props) => {
   const {
@@ -121,6 +122,7 @@ export const MaterialTransferNoteCreate = memo((props) => {
         searchQuery,
         acceptedFilter,
       );
+      getProduct();
     } catch (error) {
       handleError(error);
     } finally {

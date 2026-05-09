@@ -23,6 +23,7 @@ import { AllLeadsTabView } from "../Pages/Leads/AllLeadsTabView";
 import { AllProductsTabView } from "../Pages/Products/AllProductsTabView";
 import { AllCustomerTabView } from "../Pages/Cutomers/CompanyDetails/AllCustomerTabView";
 import { AllPerformaInvoiceTabView } from "../Pages/Invoice/ProformaInvoice/AllPerformaInvoiceTabView";
+// import { PurchaseReturnAllTabView } from "../Pages/ReturnOrders/PurchaseReturn/PurchaseReturnAllTabView";
 import { ProductionAllTabView } from "../Pages/Production/ProductionAllTabView";
 import { InventoryAllTabView } from "../Pages/Inventory/InventoryAllTabView";
 import { HrMasterTabView } from "../Pages/HrModel/HrMasterTabView";
@@ -32,10 +33,12 @@ import { Report } from "../Pages/Report/Report";
 import { AnalyticsAllTabView } from "../Pages/Analytics/AnalyticsAllTabView";
 import { AllDispatchTabView } from "../Pages/Dispatch/AllDispatchTabView";
 import { AllProfileTabView } from "../Pages/Users/AllProfileTabView";
+// import { SalesReturnAllTabView } from "../Pages/ReturnOrders/SalesReturn/SalesReturnAllTabView";
 import { SalesReturnAllTabView } from "../Pages/SalesReturn/SalesReturnAllTabView";
 import { DebitCreditAllTabView } from "../Pages/DebitCredit/DebitCreditAllTabView";
 import { AllCCFtab } from "../Pages/CCF/AllCCFtab";
-import { AllComplaintListView } from "../Pages/CCF/AllComplaintListView";
+// import { AllComplaintListView } from "../Pages/CCF/AllComplaintListView";
+import { AllComplaintListView } from "../Pages/CCF/CCF_CAPA_Master/AllComplaintListView";
 import { SalesInvoiceAllTab } from "../Pages/Invoice/SalesInvoice/SalesInvoiceAllTab";
 import { AllTabView } from "../Pages/StateAndCity/AllTAbView";
 import { ViewMasterActivitiesList } from "../Pages/MasterActivityList/ViewMasterActivitiesList";
@@ -50,6 +53,7 @@ import { AllPriceListTabView } from "../Pages/PriceList/AllPriceListTabView";
 import { PurchaseAllTabView } from "../Pages/Purchase/PurchaseAllTabView";
 import { ViewPackagingMaster } from "../Pages/MasterPackaging/ViewPackagingMaster";
 // import PurchaseReturnAllTabView from "../Pages/ReturnOrders/PurchaseReturn/PurchaseReturnAllTabView";
+
 const PrivateRoute = ({ children, redirectTo = "/" }) => {
   const tokenData = useSelector((state) => state.auth);
   const token = tokenData.user;
@@ -189,7 +193,6 @@ export const RouteScreen = () => {
               </PrivateRoute>
             }
           />
-
           <Route
             path="/invoice/orderbook-tab"
             element={
@@ -270,6 +273,15 @@ export const RouteScreen = () => {
               </PrivateRoute>
             }
           />
+
+          {/* <Route
+            path="/inventory/purchase-return"
+            element={
+              <PrivateRoute>
+                <PurchaseReturnAllTabView />
+              </PrivateRoute>
+            }
+          /> */}
           <Route
             path="/invoice/credit-debit-note"
             element={
@@ -285,6 +297,10 @@ export const RouteScreen = () => {
                 <AllCCFtab />
               </PrivateRoute>
             }
+          />
+          <Route
+            path="/master/package-master"
+            element={<ViewPackagingMaster />}
           />
           <Route
             path="/customer/complaints/ccp-capa/master"
@@ -349,10 +365,6 @@ export const RouteScreen = () => {
                 <HrMasterTabView />
               </PrivateRoute>
             }
-          />
-          <Route
-            path="/master/package-master"
-            element={<ViewPackagingMaster />}
           />
 
           <Route

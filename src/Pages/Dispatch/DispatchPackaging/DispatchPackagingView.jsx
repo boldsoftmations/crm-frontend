@@ -20,7 +20,6 @@ import { CustomPagination } from "../../../Components/CustomPagination";
 import { Popup } from "../../../Components/Popup";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
 import { useRef } from "react";
-import { useSelector } from "react-redux";
 import { DispatchPackaginigUpdate } from "./DispatchPackaginigUpdate";
 import { DispatchPackaginigCreate } from "./DispatchPackaginigCreate";
 import InvoiceServices from "../../../services/InvoiceService";
@@ -29,7 +28,7 @@ import moment from "moment";
 import { CSVLink } from "react-csv";
 export const DispatchPackagingView = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [country, setCountry] = useState([]);
+  const [packagingData, setPackagingData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
@@ -37,9 +36,6 @@ export const DispatchPackagingView = () => {
   const [openPopup, setOpenPopup] = useState(false);
   const [openUpdatePopup, setOpenUpdatePopup] = useState(false);
 
-  const userData = useSelector((state) => state.auth.profile);
-  const a = userData.active_sales_user.map((item) => item.email);
-  console.log(a);
   const [alertmsg, setAlertMsg] = useState({
     message: "",
     severity: "",
@@ -79,7 +75,7 @@ export const DispatchPackagingView = () => {
     setOpenUpdatePopup(true);
   };
 
-  const getAllMasterCountries = async () => {
+  const getAllPackagingData = async () => {
     try {
       setIsLoading(true);
       const dateString = searchData;
@@ -92,7 +88,7 @@ export const DispatchPackagingView = () => {
         year,
         month,
       );
-      setCountry(response.data.results);
+      setPackagingData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
     } catch (e) {
       setAlertMsg({
@@ -106,7 +102,7 @@ export const DispatchPackagingView = () => {
     }
   };
   useEffect(() => {
-    getAllMasterCountries();
+    getAllPackagingData();
   }, [currentPage, searchQuery]);
 
   const handleExport = async () => {
@@ -302,8 +298,8 @@ export const DispatchPackagingView = () => {
                 </StyledTableCell>
               </TableHead>
               <TableBody>
-                {country &&
-                  country.map((row, i) => (
+                {packagingData &&
+                  packagingData.map((row, i) => (
                     <StyledTableRow key={i}>
                       <StyledTableCell align="center">{i + 1}</StyledTableCell>
 
@@ -360,7 +356,7 @@ export const DispatchPackagingView = () => {
           >
             <DispatchPackaginigCreate
               setOpenPopup={setOpenPopup}
-              getAllMasterCountries={getAllMasterCountries}
+              getAllPackagingData={getAllPackagingData}
             />
           </Popup>
           <Popup
@@ -371,7 +367,7 @@ export const DispatchPackagingView = () => {
             <DispatchPackaginigUpdate
               recordForEdit={recordForEdit}
               setOpenUpdatePopup={setOpenUpdatePopup}
-              getAllMasterCountries={getAllMasterCountries}
+              getAllPackagingData={getAllPackagingData}
             />
           </Popup>
         </Paper>

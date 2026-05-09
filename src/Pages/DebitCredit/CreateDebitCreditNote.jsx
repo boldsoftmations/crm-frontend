@@ -6,6 +6,7 @@ import { useNotificationHandling } from "../../Components/useNotificationHandlin
 import { MessageAlert } from "../../Components/MessageAlert";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import InvoiceServices from "../../services/InvoiceService";
+import CustomerServices from "../../services/CustomerService";
 
 export const CreateDebitCreditNote = (props) => {
   const { getDebitCreditNotesData, setOpenPopup } = props;
@@ -13,7 +14,7 @@ export const CreateDebitCreditNote = (props) => {
   const [customer, setCustomer] = useState([]);
   const [invoiceNoOption, setInvoiceNoOption] = useState([]);
   const [sellerUnitOptions, setSellerUnitOptions] = useState([]);
-
+  const [ccfNo, setCcfNo] = useState([]);
   const [inputValue, setInputValue] = useState({
     customer: "",
     seller_account: "",
@@ -24,6 +25,8 @@ export const CreateDebitCreditNote = (props) => {
     amount: null,
     total_amount: null,
     notes: "",
+    ccf: null,
+    ccf_status: "Closed",
   });
 
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
@@ -74,9 +77,17 @@ export const CreateDebitCreditNote = (props) => {
       setOpen(true);
       const response = await InvoiceServices.getSalesReturnBySearchCompany(
         inputValue.seller_account,
-        value
+        value,
       );
+      const res = await CustomerServices.getComplaintNo(
+        value,
+
+        inputValue.seller_account,
+      );
+      console.log("res is :", res);
+
       setInvoiceNoOption(response.data);
+      setCcfNo(res.data);
     } catch (error) {
       handleError(error);
     } finally {
@@ -146,6 +157,28 @@ export const CreateDebitCreditNote = (props) => {
               label="Customer"
             />
           </Grid>
+          {ccfNo && ccfNo.length > 0 && (
+            <Grid item xs={12} sm={4}>
+              <Autocomplete
+                fullWidth
+                size="small"
+                disablePortal
+                id="combo-box-demo"
+                onChange={(event, Option) => {
+                  setInputValue((prev) => ({
+                    ...prev,
+                    ccf: Option ? Option.id : null,
+                  }));
+                }}
+                options={ccfNo}
+                getOptionLabel={(option) => option.complain_no || ""}
+                renderInput={(params) => (
+                  <CustomTextField {...params} label="Complaint No" />
+                )}
+              />
+            </Grid>
+          )}
+
           {invoiceNoOption && invoiceNoOption.length > 0 && (
             <Grid item xs={12} sm={4}>
               <Autocomplete
@@ -240,7 +273,7 @@ export const CreateDebitCreditNote = (props) => {
                   amount: numericValue,
                   total_amount: calculateTotalAmount(
                     numericValue,
-                    prev.gst_percentage
+                    prev.gst_percentage,
                   ),
                 }));
               }}

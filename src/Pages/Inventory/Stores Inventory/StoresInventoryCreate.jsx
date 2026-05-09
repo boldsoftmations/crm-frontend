@@ -71,9 +71,8 @@ export const StoresInventoryCreate = memo((props) => {
   const getAllSellerAccountsDetails = async () => {
     try {
       setOpen(true);
-      const response = await InvoiceServices.getAllPaginateSellerAccountData(
-        "all"
-      );
+      const response =
+        await InvoiceServices.getAllPaginateSellerAccountData("all");
       console.log("response seller", response.data);
       setSellerData(response.data);
       setOpen(false);

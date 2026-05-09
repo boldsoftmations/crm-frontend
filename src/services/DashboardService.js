@@ -18,7 +18,7 @@ const getLastThreeMonthForecastData = () => {
 
 const getLastThreeMonthForecastDataByFilter = (filter) => {
   return CustomAxios.get(
-    `/api/dashboard/last-three-months-forecast/?email=${filter}`
+    `/api/dashboard/last-three-months-forecast/?email=${filter}`,
   );
 };
 
@@ -49,13 +49,13 @@ const getCallStatusDataByFilter = (type, email, team) => {
 
 const getCallPerformanceData = (startDate, endDate) => {
   return CustomAxios.get(
-    `/api/dashboard/call-performance/?start_date=${startDate}&end_date=${endDate}`
+    `/api/dashboard/call-performance/?start_date=${startDate}&end_date=${endDate}`,
   );
 };
 
 const getCallPerformanceDataByFilter = (filter, startDate, endDate) => {
   return CustomAxios.get(
-    `/api/dashboard/call-performance/?email=${filter}&start_date=${startDate}&end_date=${endDate}`
+    `/api/dashboard/call-performance/?email=${filter}&start_date=${startDate}&end_date=${endDate}`,
   );
 };
 
@@ -65,23 +65,23 @@ const getDailyProfitableReportsData = () => {
 
 const getDailyProfitableReportsDataByFilter = (startDate, endDate) => {
   return CustomAxios.get(
-    `/api/dashboard/daily-profitablity-report/?date_range_after=${startDate}&date_range_before=${endDate}`
+    `/api/dashboard/daily-profitablity-report/?date_range_after=${startDate}&date_range_before=${endDate}`,
   );
 };
 
 const getDescriptionWiseTurnoverDataByFilter = (startDate, endDate) => {
   return CustomAxios.get(
-    `/api/dashboard/description-wise-turnover/?start_date=${startDate}&end_date=${endDate}`
+    `/api/dashboard/description-wise-turnover/?start_date=${startDate}&end_date=${endDate}`,
   );
 };
 
 const getDailyProfitableSalesReportsDataByFilter = (
   startDate,
   endDate,
-  unit
+  unit,
 ) => {
   return CustomAxios.get(
-    `/api/dashboard/daily-profitablity-report-sales-invoice-wise/?date_range_after=${startDate}&date_range_before=${endDate}&sales_invoice__order_book__proforma_invoice__seller_account__unit=${unit}`
+    `/api/dashboard/daily-profitablity-report-sales-invoice-wise/?date_range_after=${startDate}&date_range_before=${endDate}&sales_invoice__order_book__proforma_invoice__seller_account__unit=${unit}`,
   );
 };
 
@@ -91,7 +91,7 @@ const getDailyInvoiceQuantityData = () => {
 
 const getDailyInvoiceQuantityDataByFilter = (filter) => {
   return CustomAxios.get(
-    `/api/dashboard/daily-invoice-quantity/?email=${filter}`
+    `/api/dashboard/daily-invoice-quantity/?email=${filter}`,
   );
 };
 
@@ -101,7 +101,7 @@ const getDailyOrderBookQuantityData = () => {
 
 const getDailyOrderBookQuantityDataByFilter = (filter) => {
   return CustomAxios.get(
-    `/api/dashboard/daily-order-book-quantity/?email=${filter}`
+    `/api/dashboard/daily-order-book-quantity/?email=${filter}`,
   );
 };
 
@@ -110,25 +110,25 @@ const getDailyOrderBookQuantityDataByFilter = (filter) => {
 // last Three Month Forecast End Point
 const getConsLastThreeMonthForecastData = () => {
   return CustomAxios.get(
-    `/api/dashboard/consolidated-last-three-months-forecast/`
+    `/api/dashboard/consolidated-last-three-months-forecast/`,
   );
 };
 
 const getConsLastThreeMonthForecastDataByFilter = (filter) => {
   return CustomAxios.get(
-    `/api/dashboard/consolidated-last-three-months-forecast/?email=${filter}`
+    `/api/dashboard/consolidated-last-three-months-forecast/?email=${filter}`,
   );
 };
 
 const getConsCallPerformanceData = (startDate, endDate) => {
   return CustomAxios.get(
-    `/api/dashboard/consolidated-call-performance/?start_date=${startDate}&end_date=${endDate}`
+    `/api/dashboard/consolidated-call-performance/?start_date=${startDate}&end_date=${endDate}`,
   );
 };
 
 const getConsCallPerformanceDataByFilter = (filter, startDate, endDate) => {
   return CustomAxios.get(
-    `/api/dashboard/consolidated-call-performance/?email=${filter}&start_date=${startDate}&end_date=${endDate}`
+    `/api/dashboard/consolidated-call-performance/?email=${filter}&start_date=${startDate}&end_date=${endDate}`,
   );
 };
 
@@ -138,19 +138,19 @@ const getConsDailyInvoiceQuantityData = () => {
 
 const getConsDailyInvoiceQuantityDataByFilter = (filter) => {
   return CustomAxios.get(
-    `/api/dashboard/consolidated-daily-invoice-quantity/?email=${filter}`
+    `/api/dashboard/consolidated-daily-invoice-quantity/?email=${filter}`,
   );
 };
 
 const getConsDailyOrderBookQuantityData = () => {
   return CustomAxios.get(
-    "/api/dashboard/consolidated-daily-order-book-quantity/"
+    "/api/dashboard/consolidated-daily-order-book-quantity/",
   );
 };
 
 const getConsDailyOrderBookQuantityDataByFilter = (filter) => {
   return CustomAxios.get(
-    `/api/dashboard/consolidated-daily-order-book-quantity/?email=${filter}`
+    `/api/dashboard/consolidated-daily-order-book-quantity/?email=${filter}`,
   );
 };
 
@@ -164,7 +164,7 @@ const getLeadRetailData = () => {
 
 const getActiveInactiveEmployees = () => {
   return CustomAxios.get("/api/dashboard/lead-summary/");
-}
+};
 
 const getTopCustomersMonthwise = (number = 25) => {
   return CustomAxios.get(`/api/dashboard/top-customer/?number=${number}`);
@@ -193,25 +193,29 @@ const getSalesQuatityAnalysis = (start_month, start_year, email) => {
   return CustomAxios.get(`/api/dashboard/sales-qty/?${params.toString()}`);
 };
 
-
-const getSalesAnalysis = (start_month, start_year,product_type,unit,description) => {
+const getSalesAnalysis = (
+  start_month,
+  start_year,
+  product_type,
+  unit,
+  description,
+) => {
   const params = new URLSearchParams();
   if (start_month) {
     params.append("start_month", start_month);
   }
-  if(description){
+  if (description) {
     params.append("description", description);
   }
-  if(unit){
+  if (unit) {
     params.append("unit", unit);
   }
   if (start_year) {
     params.append("start_year", start_year);
   }
-  if(product_type){
+  if (product_type) {
     params.append("product_type", product_type);
   }
-
 
   return CustomAxios.get(`/api/dashboard/sales-data/?${params.toString()}`);
 };
@@ -224,7 +228,13 @@ const getAllDescription = (page) => {
   return CustomAxios.get(`api/product/description/?${params.toString()}`);
 };
 
-const getPurchaseAnalysis = (start_month, start_year,product_type,unit,description) => {
+const getPurchaseAnalysis = (
+  start_month,
+  start_year,
+  product_type,
+  unit,
+  description,
+) => {
   const params = new URLSearchParams();
   if (start_month) {
     params.append("start_month", start_month);
@@ -232,20 +242,18 @@ const getPurchaseAnalysis = (start_month, start_year,product_type,unit,descripti
   if (start_year) {
     params.append("start_year", start_year);
   }
-  if(description){
+  if (description) {
     params.append("description", description);
   }
-  if(unit){
+  if (unit) {
     params.append("unit", unit);
   }
-  if(product_type){
+  if (product_type) {
     params.append("product_type", product_type);
   }
 
-
   return CustomAxios.get(`/api/inventory/purchase-data/?${params.toString()}`);
 };
-
 
 const getSalesQuatityAnalysisdetailsByproduct = (
   description,
@@ -253,7 +261,7 @@ const getSalesQuatityAnalysisdetailsByproduct = (
   unit,
   start_month,
   year,
-  email
+  email,
 ) => {
   const params = new URLSearchParams();
   if (description) {
@@ -276,7 +284,7 @@ const getSalesQuatityAnalysisdetailsByproduct = (
   }
 
   return CustomAxios.get(
-    `/api/dashboard/customers-sale-qty/?${params.toString()}`
+    `/api/dashboard/customers-sale-qty/?${params.toString()}`,
   );
 };
 const getFollowupCallDashboard = (
@@ -284,7 +292,7 @@ const getFollowupCallDashboard = (
   start_date,
   end_date,
   type,
-  sales_type = ""
+  sales_type = "",
 ) => {
   const params = new URLSearchParams();
   if (email) {
@@ -304,31 +312,38 @@ const getFollowupCallDashboard = (
   }
 
   return CustomAxios.get(
-    `/api/dashboard/followup-dashboard/?${params.toString()}`
+    `/api/dashboard/followup-dashboard/?${params.toString()}`,
   );
 };
 
-const getSalesFieldDashboardData=(email,start_date,end_date)=>{
+const getSalesFieldDashboardData = (email, start_date, end_date) => {
   const params = new URLSearchParams();
-  if(end_date) params.append("email",email);
-  if(start_date) params.append("start_date",start_date);
-  if(end_date) params.append("end_date",end_date);
-  return CustomAxios.get(`/api/field-sales/customer-visit-dashboard/?${params.toString()}`)
-}
+  if (end_date) params.append("email", email);
+  if (start_date) params.append("start_date", start_date);
+  if (end_date) params.append("end_date", end_date);
+  return CustomAxios.get(
+    `/api/field-sales/customer-visit-dashboard/?${params.toString()}`,
+  );
+};
 
+const SalesPersonCustomerVisitMap = (email, visit_date) => {
+  const params = new URLSearchParams();
+  if (email) params.append("email", email);
+  if (visit_date) params.append("visit_date", visit_date);
+  return CustomAxios.get(
+    `/api/field-sales/customer-visit-map/?${params.toString()}`,
+  );
+};
 
+const getEmployeesCurrentLocation = () => {
+  return CustomAxios.get(`/api/field-sales/current-location/`);
+};
 
-const SalesPersonCustomerVisitMap = (email,visit_date)=>{
-   const params = new URLSearchParams();
-  if(email) params.append("email",email);
-  if(visit_date) params.append("visit_date",visit_date);
-  return CustomAxios.get(`/api/field-sales/customer-visit-map/?${params.toString()}`)
-}
+const getCustomerComplaintDashboard = () => {
+  const params = new URLSearchParams();
 
-const getEmployeesCurrentLocation = ()=>{
-  return CustomAxios.get(`/api/field-sales/current-location/`)
-}
-
+  return CustomAxios.get(`/api/customer/ccf-operational-dashboard/`);
+};
 
 const DashboardService = {
   getAllDescription,
@@ -371,6 +386,7 @@ const DashboardService = {
   getSalesFieldDashboardData,
   SalesPersonCustomerVisitMap,
   getEmployeesCurrentLocation,
+  getCustomerComplaintDashboard,
 };
 
 export default DashboardService;

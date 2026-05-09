@@ -18,12 +18,19 @@ import {
 import { tableCellClasses } from "@mui/material/TableCell";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+// import SearchComponent from "../../../Components/SearchComponent ";
 import SearchComponent from "../../Components/SearchComponent ";
+// import { MessageAlert } from "../../../Components/MessageAlert";
 import { MessageAlert } from "../../Components/MessageAlert";
+// import InventoryServices from "../../../services/InventoryService";
 import InventoryServices from "../../services/InventoryService";
+// import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
+// import { CustomPagination } from "../../../Components/CustomPagination";
 import { CustomPagination } from "../../Components/CustomPagination";
+// import { CustomLoader } from "../../../Components/CustomLoader";
 import { CustomLoader } from "../../Components/CustomLoader";
+// import { Popup } from "../../../Components/Popup";
 import { Popup } from "../../Components/Popup";
 import { SalesReturnCreate } from "./SalesReturnCreate";
 
@@ -162,6 +169,7 @@ export const SalesReturnView = () => {
                   <StyledTableCell align="center">DATE</StyledTableCell>
                   <StyledTableCell align="center">INVOICE TYPE</StyledTableCell>
                   <StyledTableCell align="center">INVOICE NO</StyledTableCell>
+                  <StyledTableCell align="center">Complaint NO</StyledTableCell>
                   <StyledTableCell align="center">COMPANY</StyledTableCell>
                   <StyledTableCell align="center">TOTAL</StyledTableCell>
                 </TableRow>
@@ -219,6 +227,7 @@ function Row(props) {
         <StyledTableCell align="center">{row.invoice_date}</StyledTableCell>
         <StyledTableCell align="center">{row.invoice_type}</StyledTableCell>
         <StyledTableCell align="center">{row.invoice_no}</StyledTableCell>
+        <StyledTableCell align="center">{row.ccf_complain_no}</StyledTableCell>
         <StyledTableCell align="center">{row.supplier_name}</StyledTableCell>
         <StyledTableCell align="center">{row.total}</StyledTableCell>
       </StyledTableRow>
@@ -244,11 +253,9 @@ function Row(props) {
                         {historyRow.product}
                       </TableCell>
                       <TableCell align="center">
-                        {historyRow.type_of_unit
+                        {historyRow.type_of_unit === "decimal"
                           ? historyRow.quantity
-                            ? Math.floor(historyRow.quantity)
-                            : 0
-                          : 0}
+                          : Math.floor(historyRow.quantity)}
                       </TableCell>
                       <TableCell align="center">{historyRow.amount}</TableCell>
                     </TableRow>

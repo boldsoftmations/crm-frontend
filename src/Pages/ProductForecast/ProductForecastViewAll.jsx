@@ -12,13 +12,7 @@ import { LeadForecastView } from "../Leads/LeadForecast/LeadForecastView";
 export const ProductForecastViewAll = () => {
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
-  // const getInitialTab = () => {
-  //   if (isAdmin) return 0;
-  //   if (isPurchase) return 4;
-  //   if (isCustomerService) return 0; // 👈 add this
-  //   return (visibleTabs[0] && visibleTabs[0].index) || 0; // 👈 safe fallback
-  // };
-  // const [activeTab, setActiveTab] = useState(getInitialTab);
+
   const isAdmin =
     userData.groups.includes("Director") ||
     userData.groups.includes("Accounts") ||

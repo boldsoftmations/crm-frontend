@@ -85,7 +85,7 @@ export const SalesPersonAnalytics = (props) => {
       !userData.groups.includes("Customer Relationship Executive") &&
       !userData.groups.includes("Customer Relationship Manager") &&
       !userData.groups.includes("Business Development Executive") &&
-      !userData.groups.includes("Business Development Manager")
+      !userData.groups.includes("Business Development Manager"),
   );
   // Filtering sales users based on the team
   let SALES_PERSON_OPTIONS = assigned;
@@ -97,7 +97,7 @@ export const SalesPersonAnalytics = (props) => {
         "Sales Deputy Manager",
         "Sales Assistant Deputy Manager",
         "Director",
-      ].includes(user.groups__name)
+      ].includes(user.groups__name),
     );
   }
 
@@ -112,7 +112,7 @@ export const SalesPersonAnalytics = (props) => {
 
   // Find the currently selected option based on 'assign' prop
   const selectedOption = displayOptions.find(
-    (option) => option.email === assign
+    (option) => option.email === assign,
   );
 
   // Custom function to sort the display options
@@ -192,11 +192,11 @@ export const SalesPersonAnalytics = (props) => {
 
   // Map the dailyInvoiceQuantity to get description options
   const descriptionOptionsForInvoice = dailyInvoiceQuantity.map(
-    (entry) => Object.keys(entry)[0]
+    (entry) => Object.keys(entry)[0],
   );
   // Map the dailyOrderBookQuantity to get description options
   const descriptionOptionsForOrderBook = dailyOrderBookQuantity.map(
-    (entry) => Object.keys(entry)[0]
+    (entry) => Object.keys(entry)[0],
   );
 
   // Handler function to set data for invoice
@@ -204,7 +204,7 @@ export const SalesPersonAnalytics = (props) => {
     setSelectedDIQData(value); // Update the selected option
 
     const filteredData = dailyInvoiceQuantity.find((entry) =>
-      entry.hasOwnProperty(value)
+      entry.hasOwnProperty(value),
     );
     if (filteredData && filteredData[value]) {
       setDIQData(filteredData[value]);
@@ -215,7 +215,7 @@ export const SalesPersonAnalytics = (props) => {
     setSelectedDOBQData(value); // Update the selected option
 
     const filteredData = dailyOrderBookQuantity.find((entry) =>
-      entry.hasOwnProperty(value)
+      entry.hasOwnProperty(value),
     );
 
     if (filteredData && filteredData[value]) {

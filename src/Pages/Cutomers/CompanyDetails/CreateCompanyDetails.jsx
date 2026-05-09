@@ -13,6 +13,7 @@ import {
   Select,
   Chip,
   Divider,
+  TextField,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import CustomerServices from "../../../services/CustomerService";
@@ -100,7 +101,7 @@ export const CreateCompanyDetails = (props) => {
       const Country = inputValue.country;
       const response = await MasterService.getCountryDataByPincode(
         Country,
-        PINCODE
+        PINCODE,
       );
       if (response.data.length === 0) {
         setAlertMsg({
@@ -161,7 +162,7 @@ export const CreateCompanyDetails = (props) => {
 
   const GST_NO = (gst_no) =>
     /^[0-9]{2}[A-Za-z]{5}[0-9]{4}[A-Za-z]{1}[1-9A-Za-z]{1}Z[0-9A-Za-z]{1}$/.test(
-      gst_no
+      gst_no,
     );
 
   const PAN_NO = (pan_no) =>
@@ -171,6 +172,30 @@ export const CreateCompanyDetails = (props) => {
     try {
       e.preventDefault();
       setOpen(true);
+      if (
+        !inputValue.name ||
+        !inputValue.business_type ||
+        !inputValue.pincode ||
+        !inputValue.type_of_customer ||
+        !inputValue.origin_type ||
+        !inputValue.city ||
+        !inputValue.state ||
+        !inputValue.address ||
+        (inputValue.type_of_customer === "Industrial Customer" &&
+          !inputValue.industrial_list) ||
+        (inputValue.type_of_customer === "Distribution Customer" &&
+          !inputValue.distribution_type) ||
+        (inputValue.type_of_customer === "Distribution Customer" &&
+          inputValue.category.length === 0)
+      ) {
+        setAlertMsg({
+          message: "Please fill all the required fields",
+          severity: "error",
+          open: true,
+        });
+        setOpen(false);
+        return;
+      }
       const req = {
         name: inputValue.name,
         address: inputValue.address,
@@ -258,11 +283,12 @@ export const CreateCompanyDetails = (props) => {
               variant="outlined"
               value={inputValue.name}
               onChange={handleInputChange}
+              required
             />
           </Grid>
 
           <Grid item xs={12} sm={4}>
-            <FormControl fullWidth size="small">
+            <FormControl fullWidth size="small" required>
               <InputLabel id="demo-simple-select-label">
                 Business Type
               </InputLabel>
@@ -292,6 +318,7 @@ export const CreateCompanyDetails = (props) => {
               variant="outlined"
               value={inputValue.pincode}
               onChange={handleInputChange}
+              required
             />
             <Button
               onClick={validatePinCode}
@@ -314,6 +341,14 @@ export const CreateCompanyDetails = (props) => {
                   countryList && countryList.map((option) => option.name)
                 }
                 label="Country"
+                randerInput={(params) => (
+                  <CustomTextField
+                    {...params}
+                    label="Country"
+                    variant="outlined"
+                    required
+                  />
+                )}
               />
             </Grid>
           ) : (
@@ -326,6 +361,7 @@ export const CreateCompanyDetails = (props) => {
                 variant="outlined"
                 value={inputValue.country || ""}
                 disabled
+                required
               />
             </Grid>
           )}
@@ -337,6 +373,7 @@ export const CreateCompanyDetails = (props) => {
               variant="outlined"
               value={inputValue.state || ""}
               disabled
+              required
             />
           </Grid>
           <Grid item xs={12} sm={3}>
@@ -357,6 +394,7 @@ export const CreateCompanyDetails = (props) => {
               variant="outlined"
               value={inputValue.city || ""}
               disabled
+              required
             />
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -379,7 +417,6 @@ export const CreateCompanyDetails = (props) => {
           <Grid item xs={12} sm={4}>
             <CustomTextField
               fullWidth
-              required
               size="small"
               name="pan_number"
               label="Pan No."
@@ -429,6 +466,7 @@ export const CreateCompanyDetails = (props) => {
               variant="outlined"
               value={inputValue.address}
               onChange={handleInputChange}
+              required
             />
           </Grid>
           {/* kyc Details */}
@@ -441,7 +479,7 @@ export const CreateCompanyDetails = (props) => {
           </Grid>
           <Grid item xs={12}>
             <>
-              <FormControl>
+              <FormControl required>
                 <FormLabel id="demo-row-radio-buttons-group-label">
                   Customer Type
                 </FormLabel>
@@ -469,7 +507,7 @@ export const CreateCompanyDetails = (props) => {
             </>
           </Grid>
           <Grid item xs={12} sm={4}>
-            <FormControl>
+            <FormControl required>
               <FormLabel id="demo-row-radio-buttons-group-label">
                 Type of Customer
               </FormLabel>
@@ -542,6 +580,7 @@ export const CreateCompanyDetails = (props) => {
               variant="outlined"
               value={inputValue.name || ""}
               onChange={handleInputChange}
+              required
             />
           </Grid>
           {inputValue.type_of_customer === "Industrial Customer" && (
@@ -555,6 +594,14 @@ export const CreateCompanyDetails = (props) => {
                 value={inputValue.industrial_list || ""}
                 options={Option.IndustriesList.map((option) => option.label)}
                 label="Industrial List"
+                randerInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Industrial List"
+                    variant="outlined"
+                    required
+                  />
+                )}
               />
             </Grid>
           )}
@@ -568,9 +615,16 @@ export const CreateCompanyDetails = (props) => {
                 }}
                 value={inputValue.distribution_type || ""}
                 options={Option.DistributionTypeOption.map(
-                  (option) => option.label
+                  (option) => option.label,
                 )}
                 label="Distribution Type"
+                randerInput={(params) => (
+                  <CustomTextField
+                    {...params}
+                    label="Distribution Type"
+                    variant="outlined"
+                  />
+                )}
               />
             </Grid>
           )}

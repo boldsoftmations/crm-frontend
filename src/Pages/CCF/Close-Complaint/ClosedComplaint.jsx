@@ -3,7 +3,6 @@ import {
   styled,
   TableCell,
   Paper,
-  Button,
   Grid,
   Box,
   TableContainer,
@@ -11,75 +10,59 @@ import {
   TableRow,
   TableBody,
   Table,
-  Switch,
+  Button,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
+import { MessageAlert } from "../../../Components/MessageAlert";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { CustomPagination } from "../../../Components/CustomPagination";
-import { MessageAlert } from "../../../Components/MessageAlert";
 import SearchComponent from "../../../Components/SearchComponent ";
-import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
-import InventoryServices from "../../../services/InventoryService";
+import CustomerServices from "../../../services/CustomerService";
 import { Popup } from "../../../Components/Popup";
-import { ReworkEntryRawMaterial } from "./ReworkEntryRawMaterial";
-import { ReworkEntryConsumable } from "./ReworkEntryConsumable";
-import { useSelector } from "react-redux";
+import { CapaStatusView } from "../CCF/CapaStatusView";
+// import { Button } from "bootstrap";
 
-export const ReworkEntryView = () => {
+export const ClosedComplaint = () => {
   const [open, setOpen] = useState(false);
-  const [reworkInvoiceData, setReworkInvoiceData] = useState([]);
+  const [CCFData, setCCFData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedRowData, setSelectedRowData] = useState();
-  const [openConsumablePopUp, setOpenConsumablePopUp] = useState(false);
-  const [openRawMaterialPopUp, setOpenRawmaterialPopUp] = useState(false);
-  const { profile: users } = useSelector((state) => state.auth);
+  const [recordForEdit, setRecordForEdit] = useState();
+  const [openPopup1, setOpenPopup1] = useState(false);
 
-  const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
+  const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
-  const getReworkEntryData = useCallback(async () => {
+  const getAllClosedCCF = useCallback(async () => {
     try {
       setOpen(true);
-      const response = await InventoryServices.getReworkinvoiceData(
+      const response = await CustomerServices.getAllClosedCCF(
         currentPage,
         searchQuery,
       );
-      console.log("rework Data", response.data.results);
-      setReworkInvoiceData(response.data.results);
+      setCCFData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
     } catch (error) {
       handleError(error);
+      console.log(error);
     } finally {
       setOpen(false);
     }
   }, [currentPage, searchQuery]); // Ensure dependencies are correctly listed
 
   useEffect(() => {
-    getReworkEntryData();
+    getAllClosedCCF();
   }, [currentPage, searchQuery]);
-
-  const handleUpdateReworkInvoice = async (data) => {
-    try {
-      setOpen(true);
-      const req = {
-        is_accepted: true,
-      };
-      await InventoryServices.updateReworkInvoiceData(data.id, req);
-      handleSuccess("Product Accepted Successfully");
-      getReworkEntryData();
-    } catch (error) {
-      handleError(error);
-      console.log("error Store Accepting", error);
-    } finally {
-      setOpen(false);
-    }
-  };
 
   const handleSearch = (query) => {
     setSearchQuery(query);
     setCurrentPage(1); // Reset to first page with new search
+  };
+  const handleViewDetails = (row) => {
+    setOpenPopup1(true);
+    setRecordForEdit(row);
   };
 
   const handleReset = () => {
@@ -91,15 +74,6 @@ export const ReworkEntryView = () => {
     setCurrentPage(value);
   };
 
-  const handleOpenPop = (data) => {
-    setSelectedRowData(data);
-    setOpenConsumablePopUp(true);
-  };
-
-  const handleOpenPopUpRawMaterial = (data) => {
-    setSelectedRowData(data);
-    setOpenRawmaterialPopUp(true);
-  };
   return (
     <>
       <MessageAlert
@@ -130,7 +104,7 @@ export const ReworkEntryView = () => {
               <Grid
                 item
                 xs={12}
-                md={4}
+                md={6}
                 sx={{ textAlign: { xs: "center", md: "center" } }}
               >
                 <h3
@@ -141,7 +115,7 @@ export const ReworkEntryView = () => {
                     fontWeight: 800,
                   }}
                 >
-                  Rework Entry
+                  Closed Customers Complaints{" "}
                 </h3>
               </Grid>
             </Grid>
@@ -168,78 +142,62 @@ export const ReworkEntryView = () => {
             >
               <TableHead>
                 <TableRow>
-                  <StyledTableCell align="center">PRODUCT</StyledTableCell>
+                  <StyledTableCell align="center">No</StyledTableCell>
                   <StyledTableCell align="center">
-                    SELLER ACOUNT
+                    Complaint No.
                   </StyledTableCell>
-                  <StyledTableCell align="center">BATCH_NO</StyledTableCell>
-                  <StyledTableCell align="center">CREATED BY</StyledTableCell>
+                  <StyledTableCell align="center">Department</StyledTableCell>
+                  <StyledTableCell align="center">Customer</StyledTableCell>
                   <StyledTableCell align="center">
-                    CREATION DATE
+                    Complaint Type
                   </StyledTableCell>
-                  <StyledTableCell align="center">QUANTITY</StyledTableCell>
-                  <StyledTableCell align="center">RATE</StyledTableCell>
-                  <StyledTableCell align="center">AMOUNT</StyledTableCell>
-                  <StyledTableCell align="center">ACCEPT</StyledTableCell>
-                  <StyledTableCell align="center">ACTION</StyledTableCell>
+                  <StyledTableCell align="center">Complaint</StyledTableCell>
+                  <StyledTableCell align="center">CLosed Date</StyledTableCell>
+                  <StyledTableCell align="center">Unit</StyledTableCell>
+                  <StyledTableCell align="center">Invoices</StyledTableCell>
+                  <StyledTableCell align="center">Action</StyledTableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {reworkInvoiceData.map((row) => (
-                  <StyledTableRow>
+                {CCFData.map((row, i) => (
+                  <StyledTableRow key={i}>
+                    <StyledTableCell align="center">{i + 1}</StyledTableCell>
                     <StyledTableCell align="center">
-                      {row.product}
+                      {row.complain_no}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {row.seller_account}
+                      {row.department}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {row.batch}
+                      {row.customer}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {row.created_by}
+                      {row.complain_type}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {row.creation_date}
+                      {row.complaint}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {row.type_of_unit === "decimal"
-                        ? row.quantity
-                        : Math.round(row.quantity)}
+                      {row.updated_date}
                     </StyledTableCell>
-                    {(users.groups.includes("Director") ||
-                      users.groups.includes("Accounts")) && (
-                      <StyledTableCell align="center">
-                        {row.rate}
-                      </StyledTableCell>
-                    )}
-                    {(users.groups.includes("Director") ||
-                      users.groups.includes("Accounts")) && (
-                      <StyledTableCell align="center">
-                        {row.amount}
-                      </StyledTableCell>
-                    )}
+                    <StyledTableCell align="center">{row.unit}</StyledTableCell>
                     <StyledTableCell align="center">
-                      <Switch
-                        checked={row.is_accepted}
-                        inputProps={{ "aria-label": "controlled" }}
-                        onClick={() => handleUpdateReworkInvoice(row)}
-                      />
+                      {row.invoices.map((invoice, index) => (
+                        <span key={index}>
+                          {invoice}
+                          {index < row.invoices.length - 1 && (
+                            <span style={{ margin: "0 5px" }}>|</span>
+                          )}
+                        </span>
+                      ))}
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       <Button
-                        color="info"
-                        variant="text"
-                        onClick={() => handleOpenPopUpRawMaterial(row)}
+                        variant="outlined"
+                        color="primary"
+                        onClick={() => handleViewDetails(row)}
                       >
-                        Raw Materials
-                      </Button>
-                      <Button
-                        color="secondary"
-                        variant="text"
-                        onClick={() => handleOpenPop(row)}
-                      >
-                        Consumable
+                        View
                       </Button>
                     </StyledTableCell>
                   </StyledTableRow>
@@ -253,34 +211,22 @@ export const ReworkEntryView = () => {
             handlePageChange={handlePageChange}
           />
         </Paper>
-        <Popup
-          maxWidth="md"
-          title={"Consumable"}
-          openPopup={openConsumablePopUp}
-          setOpenPopup={setOpenConsumablePopUp}
-        >
-          <ReworkEntryConsumable
-            selectedRow={selectedRowData}
-            setOpenPopup={setOpenConsumablePopUp}
-          />
-        </Popup>
-
-        <Popup
-          maxWidth="md"
-          title={"Raw Material"}
-          openPopup={openRawMaterialPopUp}
-          setOpenPopup={setOpenRawmaterialPopUp}
-        >
-          <ReworkEntryRawMaterial
-            selectedRow={selectedRowData}
-            setOpenPopup={setOpenRawmaterialPopUp}
-          />
-        </Popup>
       </Grid>
+
+      <Popup
+        title="Complaint Details"
+        openPopup={openPopup1}
+        setOpenPopup={setOpenPopup1}
+        fullScreen={true}
+      >
+        <CapaStatusView
+          recordForEdit={recordForEdit}
+          setOpenCapa={setOpenPopup1}
+        />
+      </Popup>
     </>
   );
 };
-
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     fontSize: 12,
@@ -288,12 +234,13 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
     color: theme.palette.common.white,
     fontWeight: "bold",
     textTransform: "uppercase",
+    padding: 5,
   },
   [`&.${tableCellClasses.body}`]: {
     fontSize: 13,
+    padding: 5,
   },
 }));
-
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   "&:nth-of-type(odd)": {
     backgroundColor: theme.palette.action.hover,

@@ -1,4 +1,4 @@
-import { Box, Button, Grid } from "@mui/material";
+import { Box, Button, Grid, TextField } from "@mui/material";
 import React, { useState } from "react";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import { CustomLoader } from "../../../Components/CustomLoader";
@@ -21,13 +21,16 @@ export const CreateCreditNote = (props) => {
     seller_account: recordForEdit.ccf_details.unit
       ? recordForEdit.ccf_details.unit
       : "",
-    note_type: "Credit",
     sales_invoices: SalesInvoice || [],
     reason: "",
     gst_percentage: "",
     amount: null,
     total_amount: null,
     notes: "",
+    note_type: "",
+    ccf: recordForEdit.ccf,
+    ccf_status: "Closed",
+    capa: recordForEdit.id,
   });
 
   const [alertmsg, setAlertMsg] = useState({
@@ -54,7 +57,7 @@ export const CreateCreditNote = (props) => {
         name === "amount" || name === "gst_percentage"
           ? calculateTotalAmount(
               name === "amount" ? value : prev.amount,
-              name === "gst_percentage" ? value : prev.gst_percentage
+              name === "gst_percentage" ? value : prev.gst_percentage,
             )
           : prev.total_amount,
     }));
@@ -140,6 +143,31 @@ export const CreateCreditNote = (props) => {
               renderInput={(params) => (
                 <CustomTextField {...params} label="Invoice No" />
               )}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={4}>
+            <CustomAutocomplete
+              fullWidth
+              size="small"
+              label="Note Type"
+              name="note_type"
+              variant="outlined"
+              value={inputValue.note_type || ""}
+              options={["Credit", "Debit"]}
+              getOptionLabel={(option) => option}
+              onChange={(event, value) => handleInputChange("note_type", value)}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextField
+              fullWidth
+              size="small"
+              label="CCF No"
+              name="ccf_no"
+              variant="outlined"
+              value={recordForEdit.ccf_details.complain_no || ""}
+              InputProps={{ readOnly: true }}
             />
           </Grid>
 

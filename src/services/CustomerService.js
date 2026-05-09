@@ -457,7 +457,7 @@ const createCCFComplaintForm = (data) => {
   return CustomAxios.post("/api/customer/ccf/", data);
 };
 
-const getAllCCFData = (page, searchValue) => {
+const getAllCCFData = (page, searchValue, isActive) => {
   const params = new URLSearchParams();
 
   if (page) {
@@ -468,8 +468,12 @@ const getAllCCFData = (page, searchValue) => {
     params.append("search", searchValue);
   }
 
+  // Set is_active parameter - defaults to True if not provided (convert to Python format)
+  const activeParam =
+    isActive !== undefined ? (isActive ? "True" : "False") : "True";
+
   return CustomAxios.get(
-    `/api/customer/ccf/?is_closed=false&${params.toString()}`,
+    `/api/customer/ccf/?is_closed=false&is_active=${activeParam}&${params.toString()}`,
   );
 };
 
@@ -482,7 +486,7 @@ const getAllClosedCCF = (page, search) => {
     params.append("search", search);
   }
   return CustomAxios.get(
-    `/api/customer/ccf/?is_closed=true&${params.toString()}`,
+    `/api/customer/ccf/?is_closed=true&is_active=True&${params.toString()}`,
   );
 };
 const getAllComplaintsList = (page, department) => {
@@ -563,10 +567,16 @@ const UpdateCapa = (id, data) => {
   return CustomAxios.patch(`/api/customer/cpa/${id}/`, data);
 };
 
-const getAllCapaData = (page, search) => {
+const getAllCapaData = (page, search, status, training = false) => {
   const params = new URLSearchParams();
   if (page) {
     params.append("page", page);
+  }
+  if (status) {
+    params.append("status", status);
+  }
+  if (training) {
+    params.append("is_training", training);
   }
   if (search) {
     params.append("search", search);
@@ -724,6 +734,39 @@ const CCFUpdate = (id, data) => {
   return CustomAxios.patch(`/api/customer/ccf/${id}/`, data);
 };
 
+const DeleteCCFImage = (data) => {
+  return CustomAxios.delete(
+    `/api/customer/ccf-document-delete/delete_document/`,
+    {
+      data,
+    },
+  );
+};
+
+const getRootCauseList = () => {
+  return CustomAxios.get(`/api/customer/ccf-root-cause-list/`);
+};
+const getCategoryList = (id) => {
+  const params = new URLSearchParams();
+  if (id) {
+    params.append("category_id", id);
+  }
+  return CustomAxios.get(
+    `/api/customer/ccf-root-category-list?${params.toString()}`,
+  );
+};
+
+const getComplaintNo = (customer, seller_account) => {
+  const params = new URLSearchParams();
+  if (customer) params.append("customer", customer);
+  if (seller_account) params.append("seller_unit", seller_account);
+  return CustomAxios.get(`/api/invoice/company-ccf-list/?${params.toString()}`);
+};
+
+// const UpdateCapa = (id, data) => {
+//   return CustomAxios.patch(`/api/customer/cpa/${id}/`, data);
+// };
+
 const CustomerServices = {
   getproductToDescription,
   getDiscription,
@@ -823,6 +866,10 @@ const CustomerServices = {
   getLeadsMasterListByPincode,
   getCustomerAddressType,
   CCFUpdate,
+  DeleteCCFImage,
+  getRootCauseList,
+  getCategoryList,
+  getComplaintNo,
 };
 
 export default CustomerServices;

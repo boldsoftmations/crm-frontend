@@ -1,14 +1,24 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
 import { CustomTabs } from "../../Components/CustomTabs";
-import { CCFView } from "./CCFView";
-import { CapaView } from "./CAFA/CapaView";
-import { ClosedComplaint } from "./ClosedComplaint";
+import { CapaView } from "./CAPA/CapaView";
+import { ClosedComplaint } from "./Close-Complaint/ClosedComplaint";
+
+import { CCFView } from "./CCF/CCFView";
+import TrainingCapaView from "./TrainingCAPA/TrainingCapaView";
+
 export const AllCCFtab = () => {
   const userData = useSelector((state) => state.auth.profile);
+  const location = useLocation();
 
   const isInGroups = (...groups) =>
     groups.some((group) => userData.groups.includes(group));
+
+  // Read query params once
+  const params = new URLSearchParams(location.search);
+  const tabParam = parseInt(params.get("tab"), 10);
+  const statusParam = params.get("status") || "";
 
   const tabs = [
     {
@@ -17,10 +27,12 @@ export const AllCCFtab = () => {
         "Director",
         "Sales Manager",
         "Sales Manager(Retailer)",
+        "Accounts",
         "Production",
         "Customer Service",
         "QA",
         "Operations & Supply Chain Manager",
+        "Sales Executive",
       ],
       component: <CCFView />,
     },
@@ -28,15 +40,13 @@ export const AllCCFtab = () => {
       label: "CAPA",
       roles: [
         "Director",
-        "Sales Manager",
-        "Sales Manager(Retailer)",
         "Accounts",
         "Customer Service",
         "Production",
         "QA",
         "Operations & Supply Chain Manager",
       ],
-      component: <CapaView />,
+      component: <CapaView defaultStatus={statusParam} />, // 👈 pass status
     },
     {
       label: "Closed Complaints",
@@ -49,15 +59,32 @@ export const AllCCFtab = () => {
         "Production",
         "QA",
         "Operations & Supply Chain Manager",
+        "Sales Executive",
       ],
       component: <ClosedComplaint />,
+    },
+    {
+      label: "Training CAPA",
+      roles: [
+        "Director",
+        "Production",
+        "QA",
+        "Operations & Supply Chain Manager",
+      ],
+      component: <TrainingCapaView />,
     },
   ];
 
   const visibleTabs = tabs.filter((tab) => isInGroups(...tab.roles));
 
-  // Simplified active tab state to always start with the first item of visibleTabs if available
-  const [activeTab, setActiveTab] = useState(0);
+  const getInitialTab = () => {
+    if (!isNaN(tabParam) && tabParam >= 0 && tabParam < visibleTabs.length) {
+      return tabParam;
+    }
+    return 0;
+  };
+
+  const [activeTab, setActiveTab] = useState(getInitialTab);
 
   const onTabChange = (newIndex) => {
     setActiveTab(newIndex);

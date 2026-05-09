@@ -42,7 +42,7 @@ export const DebitCreditView = () => {
       setOpen(true);
       const response = await InvoiceServices.getDebitCreditnotes(
         currentPage,
-        searchQuery
+        searchQuery,
       );
       console.log("Debit/credit", response.data);
       setDebitCreditNotesData(response.data.results);
@@ -165,6 +165,7 @@ export const DebitCreditView = () => {
                   <StyledTableCell align="center">Note Type</StyledTableCell>
                   <StyledTableCell align="center">Voucher No</StyledTableCell>
                   <StyledTableCell align="center">Customer</StyledTableCell>
+                  <StyledTableCell align="center">Complaint NO</StyledTableCell>
                   <StyledTableCell align="center">Reason</StyledTableCell>
                   <StyledTableCell align="center">Total Amount</StyledTableCell>
                   <StyledTableCell align="center">ACTION</StyledTableCell>
@@ -184,6 +185,9 @@ export const DebitCreditView = () => {
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.customer}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.ccf_complain_no || "N/A"}
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.reason}

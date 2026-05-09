@@ -34,7 +34,7 @@ export const ReworkEntryCreate = ({
     selectedRow.products.map((product) => ({
       ...product,
       quantity: product.quantity || 0,
-    }))
+    })),
   );
 
   const [consumables, setConsumables] = useState([]);
@@ -85,8 +85,8 @@ export const ReworkEntryCreate = ({
               ...material,
               quantity: updatedValue, // Only updating the quantity, no conditions here.
             }
-          : material
-      )
+          : material,
+      ),
     );
   };
 
@@ -108,8 +108,8 @@ export const ReworkEntryCreate = ({
     const { name, value } = event.target;
     setConsumables((current) =>
       current.map((item, i) =>
-        i === index ? { ...item, [name]: value } : item
-      )
+        i === index ? { ...item, [name]: value } : item,
+      ),
     );
   };
 
@@ -129,13 +129,14 @@ export const ReworkEntryCreate = ({
       setOpen(true);
       const response = await InventoryServices.createReworkinvoiceData(payload);
       handleSuccess(
-        response.data.message || "Rework Entry created successfully!"
+        response.data.message || "Rework Entry created successfully!",
       );
-      setOpenPopup(false);
       getSalesReturnInventoryDetails();
     } catch (error) {
       handleError(error);
     } finally {
+      setOpenPopup(false);
+
       setOpen(false);
     }
   };
@@ -260,7 +261,7 @@ export const ReworkEntryCreate = ({
                   getOptionLabel={(option) => option.product || ""}
                   value={
                     consumableOptions.find(
-                      (opt) => opt.product === consumable.product
+                      (opt) => opt.product === consumable.product,
                     ) || null
                   }
                   onChange={(event, newValue) => {

@@ -19,7 +19,7 @@ export const DebitCreditInvoiceNote = (props) => {
     try {
       setOpen(true);
       const response = await InvoiceServices.getDebitCreditNoteById(
-        invoiceNoteData.id
+        invoiceNoteData.id,
       );
       setInvoices(response.data.sales_invoices);
       setOpen(false);
@@ -56,10 +56,10 @@ export const DebitCreditInvoiceNote = (props) => {
           pdfWidth,
           pdfHeight,
           undefined,
-          "FAST"
+          "FAST",
         );
         pdf.save(
-          `${invoiceNoteData.note_type} Invoice Note Number ${invoiceNoteData.id}.pdf`
+          `${invoiceNoteData.note_type} Invoice Note Number ${invoiceNoteData.id}.pdf`,
         ); // Specify the file name for the download
       })
       .catch((err) => {
@@ -165,6 +165,12 @@ export const DebitCreditInvoiceNote = (props) => {
                         <strong>Note : </strong>
                         <span>{invoiceNoteData.notes}</span>
                       </div>
+                      {invoiceNoteData.ccf_complain_no && (
+                        <div>
+                          <strong>CCF Complain No : </strong>
+                          <span>{invoiceNoteData.ccf_complain_no}</span>
+                        </div>
+                      )}
                     </div>
                     <div
                       className="col-md-5"

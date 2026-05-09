@@ -109,7 +109,7 @@ export const SalesPersonDashboard = () => {
     try {
       setOpen(true);
       const response = await DashboardService.getSalesAnalyticDashboard(
-        email ? email : ""
+        email ? email : "",
       );
       const CustomeDetail = response.data.customer_dashboard;
       const FunnelData = response.data.lead_dashboard;
@@ -181,7 +181,7 @@ export const SalesPersonDashboard = () => {
             combination: key,
             count: newCustomerDatas[key].count,
           };
-        }
+        },
       );
 
       const PendingFollowupDataFormat = [
@@ -220,7 +220,7 @@ export const SalesPersonDashboard = () => {
             name: item.product__description__name,
             value: item.total_quantity,
           };
-        }
+        },
       );
 
       const DescriptionWisePendingQautityFormat =
@@ -250,7 +250,7 @@ export const SalesPersonDashboard = () => {
         await DashboardService.getLastThreeMonthForecastData();
       const columnKeys = Object.keys(forecastResponse.data);
       const isAllColumnsEmpty = columnKeys.every(
-        (key) => forecastResponse.data[key].length === 0
+        (key) => forecastResponse.data[key].length === 0,
       );
 
       let Data = [];
@@ -261,7 +261,7 @@ export const SalesPersonDashboard = () => {
             combination: `${shortMonths[item.month - 1]}-${item.year}`,
             actual: item.actual || 0,
             forecast: item.total_forecast || 0,
-          }))
+          })),
         );
 
         Data.forEach((item) => {
@@ -308,7 +308,7 @@ export const SalesPersonDashboard = () => {
 
       const response = await DashboardService.getCallPerformanceData(
         StartDate,
-        EndDate
+        EndDate,
       );
       const Data = [
         {
@@ -375,7 +375,7 @@ export const SalesPersonDashboard = () => {
         value ? value : "",
         start_date,
         end_date,
-        type ? type : ""
+        type ? type : "",
       );
       setCallDashboardData(response.data);
     } catch {
@@ -454,7 +454,7 @@ export const SalesPersonDashboard = () => {
       setOpen(true);
       const response = await DashboardService.getCallStatusDataByFilter(
         type,
-        filterValue
+        filterValue,
       );
       const data = response.data;
       const Data = Object.keys(data).map((key) => {
@@ -483,7 +483,7 @@ export const SalesPersonDashboard = () => {
       const response = await DashboardService.getCallPerformanceDataByFilter(
         FilterData,
         StartDate,
-        EndDate
+        EndDate,
       );
       const Data = [
         {
@@ -561,7 +561,7 @@ export const SalesPersonDashboard = () => {
       const FilterData = value;
       const response =
         await DashboardService.getDailyOrderBookQuantityDataByFilter(
-          FilterData
+          FilterData,
         );
       setDailyOrderBookQuantity(response.data);
       setOpen(false);
