@@ -2,7 +2,7 @@ import React from "react";
 import { Box, Grid, Button } from "@mui/material";
 import { Popup } from "./Popup";
 import CustomTextField from "./CustomTextField";
-import { getMaxEndDate } from "../utils/dateUtils";
+import { getMaxEndDate } from "../utility/dateUtils";
 
 const CustomDateFilterPopup = ({
   open,
