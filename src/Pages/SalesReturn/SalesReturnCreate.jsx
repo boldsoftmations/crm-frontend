@@ -11,7 +11,7 @@ import { MessageAlert } from "../../Components/MessageAlert";
 import InvoiceServices from "../../services/InvoiceService";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 
-import { DecimalValidation } from "../../utils/DecimalValidation";
+import { DecimalValidation } from "../../utility/DecimalValidation";
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",

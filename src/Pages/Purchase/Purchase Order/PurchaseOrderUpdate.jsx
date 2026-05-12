@@ -8,7 +8,7 @@ import { MessageAlert } from "../../../Components/MessageAlert";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import ProductService from "../../../services/ProductService";
-import { DecimalValidation } from "../../../utils/DecimalValidation";
+import { DecimalValidation } from "../../../utility/DecimalValidation";
 // import { DecimalValidation } from "../../../Components/Header/DecimalValidation";
 
 const Root = styled("div")(({ theme }) => ({

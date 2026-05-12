@@ -9,7 +9,7 @@ import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import useDynamicFormFields from "../../../Components/useDynamicFormFields ";
 import { MessageAlert } from "../../../Components/MessageAlert";
-import { DecimalValidation } from "../../../utils/DecimalValidation";
+import { DecimalValidation } from "../../../utility/DecimalValidation";
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",

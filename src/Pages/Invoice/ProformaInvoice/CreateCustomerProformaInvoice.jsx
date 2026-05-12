@@ -30,7 +30,7 @@ import useDynamicFormFields from "../../../Components/useDynamicFormFields ";
 import ProductService from "../../../services/ProductService";
 import InventoryServices from "../../../services/InventoryService";
 // import { DecimalValidation } from "../../../utility/DecimalValidation";
-import { DecimalValidation } from "../../../utils/DecimalValidation";
+import { DecimalValidation } from "../../../utility/DecimalValidation";
 import MasterService from "../../../services/MasterService";
 
 const Root = styled("div")(({ theme }) => ({
