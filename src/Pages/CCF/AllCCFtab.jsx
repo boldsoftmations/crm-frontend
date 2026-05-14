@@ -4,7 +4,6 @@ import { useLocation } from "react-router-dom";
 import { CustomTabs } from "../../Components/CustomTabs";
 import { CapaView } from "./CAPA/CapaView";
 import { ClosedComplaint } from "./Close-Complaint/ClosedComplaint";
-
 import { CCFView } from "./CCF/CCFView";
 import TrainingCapaView from "./TrainingCAPA/TrainingCapaView";
 
@@ -71,9 +70,12 @@ export const AllCCFtab = () => {
         "QA",
         "Operations & Supply Chain Manager",
       ],
-      component: <TrainingCapaView />,
+      component: <TrainingCapaView defaultStatus={statusParam} />,
     },
   ];
+
+  ///tp/tp+fp
+  //tp/tp+fn
 
   const visibleTabs = tabs.filter((tab) => isInGroups(...tab.roles));
 
@@ -81,7 +83,7 @@ export const AllCCFtab = () => {
     if (!isNaN(tabParam) && tabParam >= 0 && tabParam < visibleTabs.length) {
       return tabParam;
     }
-    return 0;
+    return 0; //(2.2)/1.1-->1.1-
   };
 
   const [activeTab, setActiveTab] = useState(getInitialTab);

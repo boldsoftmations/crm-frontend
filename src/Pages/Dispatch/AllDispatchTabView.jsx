@@ -7,7 +7,6 @@ import { SalesRegisterView } from "./SalesRegisterView";
 import { ExportView } from "./ExportView";
 import BlankLrView from "./BlankLrView";
 import UploadedPODs from "./UploadedPODs";
-
 import { DispatchPackagingView } from "./DispatchPackaging/DispatchPackagingView";
 export const AllDispatchTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
@@ -46,6 +45,7 @@ export const AllDispatchTabView = () => {
     "Operations & Supply Chain Manager",
     "Stores",
   );
+  const factory = isInGroups("Factory-Mumbai-Dispatch");
   const adminTab = isInGroups("Director", "Operations & Supply Chain Manager");
   const customerServiceTab = isInGroups("Customer Service");
   const salesRegisterTab = isInGroups("Accounts Billing Department");
@@ -98,7 +98,7 @@ export const AllDispatchTabView = () => {
     },
     {
       label: "Packaging Consumption",
-      visible: isAdmin,
+      visible: isAdmin || factory,
       index: 6,
     },
   ];

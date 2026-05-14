@@ -15,6 +15,7 @@ import SalesParchaseAnalaysis from "./Sales Quantity Analysis/SalesParchaseAnala
 // import { MisReportView } from "./Mis Report/MisReportView";
 import { MisReportView } from "./MisReportView";
 import CCFDashbord from "./CCFDashbord";
+import ManagementReport from "./ManagementReport";
 export const AnalyticsAllTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
 
@@ -90,6 +91,16 @@ export const AnalyticsAllTabView = () => {
       component: <CCFDashbord />,
     },
     {
+      label: "Complaint Management Report",
+      roles: [
+        "Director",
+        "Operations & Supply Chain Manager",
+        "Sales Manager(Retailer)",
+        "Sales Manager",
+      ],
+      component: <ManagementReport />,
+    },
+    {
       label: "Top Customer",
       roles: [
         "Director",
@@ -109,6 +120,7 @@ export const AnalyticsAllTabView = () => {
       ],
       component: <CRReport />,
     },
+
     {
       label: "Sales Qty Analysis",
       roles: [

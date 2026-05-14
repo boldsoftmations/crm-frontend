@@ -14,7 +14,10 @@ import AssignmentNewIcon from "@mui/icons-material/FiberNew";
 import PendingActionsIcon from "@mui/icons-material/PendingActions";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import SchoolIcon from "@mui/icons-material/School"; // 👈 Pending Training
+import TaskAltIcon from "@mui/icons-material/TaskAlt"; // 👈 Completed Training
 import { useNavigate } from "react-router-dom";
+
 const CARD_CONFIG = [
   {
     key: "today_new_ccf",
@@ -32,7 +35,7 @@ const CARD_CONFIG = [
     color: "#ed6c02",
     bg: "#fff3e0",
     tabIndex: 1,
-    filterStatus: "Pending", // 👈 opens CAPA tab filtered by Pending
+    filterStatus: "Pending",
   },
   {
     key: "pending_accounts",
@@ -41,7 +44,7 @@ const CARD_CONFIG = [
     color: "#9c27b0",
     bg: "#f3e5f5",
     tabIndex: 1,
-    filterStatus: "Accept", // 👈 opens CAPA tab filtered by Accept
+    filterStatus: "Accept",
   },
   {
     key: "resolved_ccf",
@@ -51,6 +54,24 @@ const CARD_CONFIG = [
     bg: "#e8f5e9",
     tabIndex: 2,
     filterStatus: "",
+  },
+  {
+    key: "pending_capa_training", // 👈 new
+    label: "Pending CAPA Training",
+    icon: SchoolIcon,
+    color: "#0288d1",
+    bg: "#e1f5fe",
+    tabIndex: 3,
+    filterStatus: "Pending",
+  },
+  {
+    key: "completed_capa_training", // 👈 new
+    label: "Completed CAPA Training",
+    icon: TaskAltIcon,
+    color: "#558b2f",
+    bg: "#f1f8e9",
+    tabIndex: 3,
+    filterStatus: "Completed",
   },
 ];
 
@@ -64,7 +85,14 @@ const PIE_COLORS = [
   "#f57c00",
 ];
 
-const STATUS_COLORS = ["#ed6c02", "#9c27b0", "#2e7d32"];
+// Extended to cover all 5 status_chart entries
+const STATUS_COLORS = [
+  "#ed6c02", // Verifier Pending
+  "#9c27b0", // Accounts Pending
+  "#2e7d32", // Resolved CCF
+  "#0288d1", // Pending CAPA Training
+  "#558b2f", // Completed CAPA Training
+];
 
 function StatCard({ label, value, icon: Icon, color, bg, onClick }) {
   const [hovered, setHovered] = useState(false);
@@ -222,7 +250,7 @@ function CCFDashboard() {
     title: "Status Distribution",
     titleTextStyle: { fontSize: 15, bold: true, color: "#37474f" },
     pieHole: 0.4,
-    colors: STATUS_COLORS,
+    colors: STATUS_COLORS, // 👈 now covers all 5 slices
     legend: { position: "bottom", textStyle: { fontSize: 12 } },
     chartArea: { width: "90%", height: "70%" },
     tooltip: { showColorCode: true },
@@ -244,9 +272,42 @@ function CCFDashboard() {
         <Divider style={{ marginTop: 12 }} />
       </Box>
 
-      {/* Stat Cards */}
+      {/* Stat Cards — first row: 4 cards */}
+      <Grid container spacing={3} style={{ marginBottom: 20 }}>
+        {CARD_CONFIG.slice(0, 4).map(function (cfg) {
+          return (
+            <Grid item xs={12} sm={6} md={3} key={cfg.key}>
+              <StatCard
+                label={cfg.label}
+                value={cards[cfg.key]}
+                icon={cfg.icon}
+                color={cfg.color}
+                bg={cfg.bg}
+                onClick={() => handleCardClick(cfg.tabIndex, cfg.filterStatus)}
+              />
+            </Grid>
+          );
+        })}
+      </Grid>
+
+      {/* Training Cards — second row: 2 cards with section label */}
+      <Box mb={1} mt={1}>
+        <Typography
+          variant="caption"
+          style={{
+            fontWeight: 700,
+            color: "#9e9e9e",
+            letterSpacing: 1,
+            textTransform: "uppercase",
+            fontSize: 11,
+          }}
+        >
+          CAPA Training
+        </Typography>
+        <Divider style={{ marginTop: 4, marginBottom: 12 }} />
+      </Box>
       <Grid container spacing={3} style={{ marginBottom: 28 }}>
-        {CARD_CONFIG.map(function (cfg) {
+        {CARD_CONFIG.slice(4).map(function (cfg) {
           return (
             <Grid item xs={12} sm={6} md={3} key={cfg.key}>
               <StatCard
