@@ -444,7 +444,7 @@ export const MaterialTransferNoteView = () => {
                           color="primary"
                           onClick={() => handleDownloadPdf(mtnData)}
                         >
-                          Downlaod
+                          Download
                         </Button>
                       </StyledTableCell>
                     </StyledTableRow>

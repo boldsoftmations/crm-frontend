@@ -766,7 +766,7 @@ export const CreateLeadsProformaInvoice = (props) => {
         setOpenPopup={setOpenPopup2}
       >
         <Typography>
-          "Kindly update all Shipping Details & Laeds Details in required field"
+          "Kindly update all Shipping Details & Leads Details in required field"
         </Typography>
         <Button variant="contained" onClick={() => setOpenPopup(false)}>
           Update Leads
