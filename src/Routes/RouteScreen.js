@@ -23,7 +23,7 @@ import { AllLeadsTabView } from "../Pages/Leads/AllLeadsTabView";
 import { AllProductsTabView } from "../Pages/Products/AllProductsTabView";
 import { AllCustomerTabView } from "../Pages/Cutomers/CompanyDetails/AllCustomerTabView";
 import { AllPerformaInvoiceTabView } from "../Pages/Invoice/ProformaInvoice/AllPerformaInvoiceTabView";
-// import { PurchaseReturnAllTabView } from "../Pages/ReturnOrders/PurchaseReturn/PurchaseReturnAllTabView";
+import { PurchaseReturnAllTabView } from "../Pages/ReturnOrders/PurchaseReturn/PurchaseReturnAllTabView";
 import { ProductionAllTabView } from "../Pages/Production/ProductionAllTabView";
 import { InventoryAllTabView } from "../Pages/Inventory/InventoryAllTabView";
 import { HrMasterTabView } from "../Pages/HrModel/HrMasterTabView";
@@ -33,8 +33,7 @@ import { Report } from "../Pages/Report/Report";
 import { AnalyticsAllTabView } from "../Pages/Analytics/AnalyticsAllTabView";
 import { AllDispatchTabView } from "../Pages/Dispatch/AllDispatchTabView";
 import { AllProfileTabView } from "../Pages/Users/AllProfileTabView";
-// import { SalesReturnAllTabView } from "../Pages/ReturnOrders/SalesReturn/SalesReturnAllTabView";
-import { SalesReturnAllTabView } from "../Pages/SalesReturn/SalesReturnAllTabView";
+import { SalesReturnAllTabView } from "../Pages/ReturnOrders/SalesReturn/SalesReturnAllTabView";
 import { DebitCreditAllTabView } from "../Pages/DebitCredit/DebitCreditAllTabView";
 import { AllCCFtab } from "../Pages/CCF/AllCCFtab";
 // import { AllComplaintListView } from "../Pages/CCF/AllComplaintListView";
@@ -52,6 +51,8 @@ import { AllInventoryReportTabs } from "../Pages/InventoryReport/AllInventoryRep
 import { AllPriceListTabView } from "../Pages/PriceList/AllPriceListTabView";
 import { PurchaseAllTabView } from "../Pages/Purchase/PurchaseAllTabView";
 import { ViewPackagingMaster } from "../Pages/MasterPackaging/ViewPackagingMaster";
+// import { AllTransportMasterTabView } from "../Pages/MasterTransport/AllTransportMasterTabView";
+import { AllTransportMasterTabView } from "../Pages/MasterTransport/AllTransportMasterTabView.jsx";
 // import PurchaseReturnAllTabView from "../Pages/ReturnOrders/PurchaseReturn/PurchaseReturnAllTabView";
 
 const PrivateRoute = ({ children, redirectTo = "/" }) => {
@@ -274,14 +275,14 @@ export const RouteScreen = () => {
             }
           />
 
-          {/* <Route
+          <Route
             path="/inventory/purchase-return"
             element={
               <PrivateRoute>
                 <PurchaseReturnAllTabView />
               </PrivateRoute>
             }
-          /> */}
+          />
           <Route
             path="/invoice/credit-debit-note"
             element={
@@ -440,6 +441,14 @@ export const RouteScreen = () => {
             element={
               <PrivateRoute>
                 <ViewMasterBeat />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/master/transport"
+            element={
+              <PrivateRoute>
+                <AllTransportMasterTabView />
               </PrivateRoute>
             }
           />

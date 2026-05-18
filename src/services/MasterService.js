@@ -274,6 +274,26 @@ const updatePackagingMaster = (id, data) => {
   return CustomAxios.patch(`/api/master/packaging-master/${id}/`, data);
 };
 
+const getAllTransportMaster = (page, is_inactive) => {
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+
+  params.append("is_inactive", is_inactive);
+
+  return CustomAxios.get(
+    `/api/master/transporter-master/?${params.toString()}`,
+  );
+};
+const createTransportMaster = (data) => {
+  return CustomAxios.post("/api/master/transporter-master/", data);
+};
+
+const updateTransportMaster = (id, data) => {
+  return CustomAxios.patch(`/api/master/transporter-master/${id}/`, data);
+};
+
 const MasterService = {
   getLeavapproval,
   updateApprovalStage,
@@ -318,5 +338,8 @@ const MasterService = {
   getPackagingMaster,
   createPackagingMaster,
   updatePackagingMaster,
+  getAllTransportMaster,
+  createTransportMaster,
+  updateTransportMaster,
 };
 export default MasterService;
