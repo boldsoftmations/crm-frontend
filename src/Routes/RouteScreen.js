@@ -23,7 +23,7 @@ import { AllLeadsTabView } from "../Pages/Leads/AllLeadsTabView";
 import { AllProductsTabView } from "../Pages/Products/AllProductsTabView";
 import { AllCustomerTabView } from "../Pages/Cutomers/CompanyDetails/AllCustomerTabView";
 import { AllPerformaInvoiceTabView } from "../Pages/Invoice/ProformaInvoice/AllPerformaInvoiceTabView";
-import { PurchaseReturnAllTabView } from "../Pages/ReturnOrders/PurchaseReturn/PurchaseReturnAllTabView";
+// import { PurchaseReturnAllTabView } from "../Pages/ReturnOrders/PurchaseReturn/PurchaseReturnAllTabView";
 import { ProductionAllTabView } from "../Pages/Production/ProductionAllTabView";
 import { InventoryAllTabView } from "../Pages/Inventory/InventoryAllTabView";
 import { HrMasterTabView } from "../Pages/HrModel/HrMasterTabView";
@@ -275,14 +275,14 @@ export const RouteScreen = () => {
             }
           />
 
-          <Route
+          {/* <Route
             path="/inventory/purchase-return"
             element={
               <PrivateRoute>
                 <PurchaseReturnAllTabView />
               </PrivateRoute>
             }
-          />
+          /> */}
           <Route
             path="/invoice/credit-debit-note"
             element={
