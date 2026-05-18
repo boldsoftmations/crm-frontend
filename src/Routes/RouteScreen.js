@@ -33,7 +33,7 @@ import { Report } from "../Pages/Report/Report";
 import { AnalyticsAllTabView } from "../Pages/Analytics/AnalyticsAllTabView";
 import { AllDispatchTabView } from "../Pages/Dispatch/AllDispatchTabView";
 import { AllProfileTabView } from "../Pages/Users/AllProfileTabView";
-import { SalesReturnAllTabView } from "../Pages/ReturnOrders/SalesReturn/SalesReturnAllTabView";
+import { SalesReturnAllTabView } from "../Pages/SalesReturn/SalesReturnAllTabView.jsx";
 import { DebitCreditAllTabView } from "../Pages/DebitCredit/DebitCreditAllTabView";
 import { AllCCFtab } from "../Pages/CCF/AllCCFtab";
 // import { AllComplaintListView } from "../Pages/CCF/AllComplaintListView";
