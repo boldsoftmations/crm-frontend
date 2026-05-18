@@ -4,7 +4,7 @@ export const getMaxEndDate = (startDate) => {
   const start = new Date(startDate);
   const end = new Date(start);
 
-  end.setMonth(end.getMonth() + 3);
+  end.setMonth(end.getMonth() + 12);
 
   return end;
 };
