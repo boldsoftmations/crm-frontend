@@ -665,6 +665,7 @@ function Row(props) {
             </Button>
           ) : null}
           {(users.groups.includes("Production") ||
+            users.groups.includes("Operations & Supply Chain Manager") ||
             users.groups.includes("Director")) &&
           row.approved === false ? (
             <Button onClick={() => openInPopup(row)}>Edit</Button>

@@ -27,7 +27,7 @@ import CustomSnackbar from "../../../Components/CustomerSnackbar";
 import { CreateCreditNote } from "./CreateCreditNote";
 import { CreateMaterialReturn } from "./CreateMaterialReturn";
 import UpdateCAPAStatus from "./UpdateCAPAStatus";
-import UpdateCapa from "./UpdateCapa";
+import UpdateCapa from "./UpdateCapa.jsx";
 
 export const CapaView = ({ defaultStatus = "" }) => {
   // 👈 accept prop
@@ -256,6 +256,9 @@ export const CapaView = ({ defaultStatus = "" }) => {
                         justifyContent="center"
                       >
                         {(userData.groups.includes("Accounts") ||
+                          userData.groups.includes(
+                            "Accounts Billing Department",
+                          ) ||
                           userData.groups.includes("Director")) &&
                           row.status === "Accept" &&
                           row.sfcs === null && (
@@ -269,6 +272,9 @@ export const CapaView = ({ defaultStatus = "" }) => {
                             </Button>
                           )}
                         {(userData.groups.includes("Accounts") ||
+                          userData.groups.includes(
+                            "Accounts Billing Department",
+                          ) ||
                           userData.groups.includes("Director")) &&
                           row.status === "Accept" &&
                           row.sfcs === "Credit" && (
@@ -282,6 +288,9 @@ export const CapaView = ({ defaultStatus = "" }) => {
                             </Button>
                           )}
                         {(userData.groups.includes("Accounts") ||
+                          userData.groups.includes(
+                            "Accounts Billing Department",
+                          ) ||
                           userData.groups.includes("Director")) &&
                           row.status === "Accept" &&
                           row.sfcs === "Material Return" && (

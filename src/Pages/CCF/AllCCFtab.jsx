@@ -36,6 +36,7 @@ export const AllCCFtab = () => {
         "QA",
         "Operations & Supply Chain Manager",
         "Sales Executive",
+        "Accounts Billing Department",
       ],
       component: <CCFView />,
     },
@@ -48,6 +49,7 @@ export const AllCCFtab = () => {
         "Production",
         "QA",
         "Operations & Supply Chain Manager",
+        "Accounts Billing Department",
       ],
       component: <CapaView defaultStatus={statusParam} />, // 👈 pass status
     },
@@ -63,7 +65,9 @@ export const AllCCFtab = () => {
         "QA",
         "Operations & Supply Chain Manager",
         "Sales Executive",
+        "Accounts Billing Department",
       ],
+
       component: <ClosedComplaint />,
     },
     {

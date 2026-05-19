@@ -154,7 +154,7 @@ export const CreateCreditNote = (props) => {
               name="note_type"
               variant="outlined"
               value={inputValue.note_type || ""}
-              options={["Credit", "Debit"]}
+              options={["Credit", "Debit", "No Note"]}
               getOptionLabel={(option) => option}
               onChange={(event, value) => handleInputChange("note_type", value)}
             />
