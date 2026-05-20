@@ -43,9 +43,18 @@ export const CreateCreditNote = (props) => {
   };
 
   const calculateTotalAmount = (amount, gstPercentage) => {
-    if (!amount || !gstPercentage) return "";
+    if (
+      amount === "" ||
+      amount === null ||
+      gstPercentage === "" ||
+      gstPercentage === null
+    ) {
+      return "";
+    }
+
     const total =
       parseFloat(amount) + parseFloat(amount) * (gstPercentage / 100);
+
     return total.toFixed(2);
   };
 
@@ -195,11 +204,15 @@ export const CreateCreditNote = (props) => {
               name="amount"
               variant="outlined"
               type="number"
-              value={inputValue.amount || ""}
-              onChange={(e) =>
-                handleInputChange("amount", parseFloat(e.target.value) || "")
-              }
-              InputProps={{ inputProps: { min: 0 } }}
+              value={inputValue.amount === null ? "" : inputValue.amount}
+              onChange={(e) => {
+                const value = e.target.value;
+
+                handleInputChange(
+                  "amount",
+                  value === "" ? "" : parseFloat(value),
+                );
+              }}
             />
           </Grid>
 
