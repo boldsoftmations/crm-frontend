@@ -27,14 +27,14 @@ import CustomSnackbar from "../../../Components/CustomerSnackbar";
 import { CreateCreditNote } from "./CreateCreditNote";
 import { CreateMaterialReturn } from "./CreateMaterialReturn";
 import UpdateCAPAStatus from "./UpdateCAPAStatus";
-import UpdateCapa from "./UpdateCapa.jsx";
+import UpdateCapa from "./UpdateCapa";
 
-export const CapaView = ({ defaultStatus = "" }) => {
-  // 👈 accept prop
+export const CapaView = ({ defaultStatus = "", isClose = false }) => {
   const [open, setOpen] = useState(false);
   const [CCFData, setCCFData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [openPdf, setOpenPdf] = useState(false);
   const [recordForEdit, setRecordForEdit] = useState(null);
@@ -50,7 +50,7 @@ export const CapaView = ({ defaultStatus = "" }) => {
   const [message, setMessage] = useState("");
   const [severity, setSeverity] = useState("success");
   const [openNewPopup, setOpenNewPopup] = useState(false);
-  const [capaStatus, setCapaStatus] = useState(defaultStatus); // 👈 init with defaultStatus
+  const [capaStatus, setCapaStatus] = useState(defaultStatus);
   const [openRejectPopup, setOpenRejectPopup] = useState(false);
   const statusOptions = ["Reject", "Accept", "Pending", "Closed"];
 
@@ -61,15 +61,17 @@ export const CapaView = ({ defaultStatus = "" }) => {
         currentPage,
         searchQuery,
         capaStatus,
+        isClose, // false = non-closed records, true = closed records
       );
       setCCFData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
+      setTotalCount(response.data.count);
     } catch (error) {
       console.error("Error fetching CAPA data:", error);
     } finally {
       setLoader(false);
     }
-  }, [currentPage, searchQuery, capaStatus]);
+  }, [currentPage, searchQuery, capaStatus, isClose]);
 
   useEffect(() => {
     getAllCAPAData();
@@ -178,7 +180,7 @@ export const CapaView = ({ defaultStatus = "" }) => {
                   fullWidth
                   size="small"
                   options={statusOptions}
-                  value={capaStatus || null} // 👈 controlled value
+                  value={capaStatus || null}
                   getOptionLabel={(option) => option}
                   onChange={(e, value) => {
                     setCapaStatus(value || "");
@@ -226,7 +228,9 @@ export const CapaView = ({ defaultStatus = "" }) => {
                   return item.status !== "Closed";
                 }).map((row, i) => (
                   <StyledTableRow key={i}>
-                    <StyledTableCell align="center">{i + 1}</StyledTableCell>
+                    <StyledTableCell align="center">
+                      {totalCount - (currentPage - 1) * 25 - i}
+                    </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.ccf_details.complain_no}
                     </StyledTableCell>
@@ -354,7 +358,7 @@ export const CapaView = ({ defaultStatus = "" }) => {
                             variant="text"
                             className="mx-3"
                             size="small"
-                            onClick={() => handleImageShow(row.document)}
+                            onClick={() => handleImageShow(row)}
                           >
                             Document View
                           </Button>
@@ -380,7 +384,11 @@ export const CapaView = ({ defaultStatus = "" }) => {
         openPopup={imageShow}
         setOpenPopup={setImageShow}
       >
-        <CapaImageView imagesData={imagesData} setImageShow={setImageShow} />
+        <CapaImageView
+          imagesData={imagesData}
+          recordForEdit={recordForEdit}
+          setImageShow={setImageShow}
+        />
       </Popup>
       <Popup
         fullScreen={true}

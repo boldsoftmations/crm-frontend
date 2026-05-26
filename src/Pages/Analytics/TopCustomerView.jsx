@@ -21,6 +21,7 @@ import { Popup } from "../../Components/Popup";
 import { CreateCustomerProformaInvoice } from "../Invoice/ProformaInvoice/CreateCustomerProformaInvoice";
 import CustomerServices from "../../services/CustomerService";
 import { UpdateAllCompanyDetails } from "../Cutomers/CompanyDetails/UpdateAllCompanyDetails";
+import { useSelector } from "react-redux";
 
 const getLastThreeMonths = () => {
   const now = new Date();
@@ -56,9 +57,8 @@ export const TopCustomerView = () => {
   const getTopCustomers = async () => {
     setIsLoading(true);
     try {
-      const response = await DashboardService.getTopCustomersMonthwise(
-        filterValue
-      );
+      const response =
+        await DashboardService.getTopCustomersMonthwise(filterValue);
       setTopCustomerData(response.data.data);
     } catch (error) {
       setAlertMsg({
@@ -73,10 +73,18 @@ export const TopCustomerView = () => {
 
   useEffect(() => {
     getTopCustomers();
-  }, [filterValue]);
+  }, [filterValue, salesPersonByFilter]);
 
-  const handleFilterChange = (event, value) => {
-    setFilterValue(value.value);
+  const handleFilterChange = (event, value, type) => {
+    if (type === "topCustomer") {
+      if (value) {
+        setFilterValue(value.value);
+      }
+    }
+
+    if (type === "salesPerson") {
+      setSalesPersonByFilter(value);
+    }
   };
 
   // Create a number formatter to add commas to the total values
@@ -107,8 +115,8 @@ export const TopCustomerView = () => {
       overallTotal: numberFormatter.format(overallTotal),
     };
   };
-
-  const totals = useMemo(() => calculateTotals(), [topCustomerData]);
+  const [salesPersonByFilter, setSalesPersonByFilter] = useState(null);
+  const totals = useMemo(calculateTotals, [topCustomerData]);
   const openInPopupOfUpdateCustomer = (item) => {
     setRecordForEdit(item.order_book__company);
     setSelectedCustomers(item);
@@ -118,7 +126,7 @@ export const TopCustomerView = () => {
   const openInPopupInvoice = async (row) => {
     try {
       const response = await CustomerServices.getCompanyDataById(
-        row.order_book__company
+        row.order_book__company,
       );
       const data = response.data;
       setRecordForEdit(data.id);
@@ -128,6 +136,27 @@ export const TopCustomerView = () => {
       console.log("company data by id error", err);
     }
   };
+
+  const UserData = useSelector((state) => state.auth.profile);
+  const assignedOption = UserData.sales_customer_user_forecast || [];
+
+  const isSupplyChain = UserData.groups.includes(
+    "Operations & Supply Chain Manager",
+  );
+  const emails = [
+    "admin@glutape.com",
+    "rajeev@glutape.com",
+    "gaurav@glutape.com",
+    "arjun@glutape.com",
+    "pruthvi@glutape.com",
+    "anuradha@glutape.com",
+    "vivek_production@glutape.com",
+    "vivek2@glutape.com",
+    "managerwithoutlead@glutape.com",
+    "biraj@glutape.com",
+    "rushilsalian13@glutape.com",
+    "it1@glutape.com",
+  ];
   return (
     <>
       <CustomSnackbar
@@ -142,18 +171,55 @@ export const TopCustomerView = () => {
           <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
             <Grid container spacing={2} alignItems="center">
               <Grid item xs={12} sm={4}>
-                <Box display="flex" gap="2rem">
-                  <CustomAutocomplete
-                    fullWidth
-                    size="small"
-                    disablePortal
-                    id="combo-box-status"
-                    options={FilterbyTopCustomer}
-                    onChange={handleFilterChange}
-                    getOptionLabel={(option) => option.label}
-                    label="Filter By Top Customers"
-                  />
-                </Box>
+                <CustomAutocomplete
+                  fullWidth
+                  size="small"
+                  disablePortal
+                  id="combo-box-status"
+                  options={FilterbyTopCustomer}
+                  onChange={(event, value) =>
+                    handleFilterChange(event, value, "topCustomer")
+                  }
+                  getOptionLabel={(option) => option.label}
+                  label="Filter By Top Customers"
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <CustomAutocomplete
+                  fullWidth
+                  size="small"
+                  sx={{ minWidth: 150 }}
+                  onChange={(event, value) =>
+                    handleFilterChange(event, value, "salesPerson")
+                  }
+                  value={salesPersonByFilter}
+                  options={
+                    isSupplyChain
+                      ? emails
+                      : assignedOption.length > 0 &&
+                        assignedOption
+                          .filter(
+                            (option) =>
+                              option.groups.includes("Sales Manager") ||
+                              option.groups.includes("Sales Executive") ||
+                              option.groups.includes("Sales Deputy Manager") ||
+                              option.groups.includes(
+                                "Sales Assistant Deputy Manager",
+                              ) ||
+                              option.groups.includes(
+                                "Sales Manager(Retailer)",
+                              ) ||
+                              option.groups.includes("Customer Service") ||
+                              option.groups.includes("Director") ||
+                              option.groups.includes(
+                                "Customer Relationship Executive",
+                              ),
+                          )
+                          .map((option) => option.email)
+                  }
+                  getOptionLabel={(option) => option}
+                  label="Filter By Sales Person"
+                />
               </Grid>
             </Grid>
           </Box>

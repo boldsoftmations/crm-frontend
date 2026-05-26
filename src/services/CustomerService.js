@@ -473,7 +473,7 @@ const getAllCCFData = (page, searchValue, isActive) => {
     isActive !== undefined ? (isActive ? "True" : "False") : "True";
 
   return CustomAxios.get(
-    `/api/customer/ccf/?is_active=${activeParam}&${params.toString()}`,
+    `/api/customer/ccf/?is_closed=False&is_active=${activeParam}&${params.toString()}`,
   );
 };
 
@@ -761,6 +761,14 @@ const getComplaintNo = (customer, seller_account) => {
   if (customer) params.append("customer", customer);
   if (seller_account) params.append("seller_unit", seller_account);
   return CustomAxios.get(`/api/invoice/company-ccf-list/?${params.toString()}`);
+};
+
+const getTransportList = (pincode) => {
+  const params = new URLSearchParams();
+  if (pincode) params.append("pincode", pincode);
+  return CustomAxios.get(
+    `/api/master/pincode-transporter/?${params.toString()}`,
+  );
 };
 
 // const UpdateCapa = (id, data) => {

@@ -25,7 +25,7 @@ export const PerformanceUpdate = ({
       const data = { performance };
       await UserProfileService.updateDailySaleReviewData(
         recordForEdit.id,
-        data
+        data,
       );
       getDailySaleReviewData();
       setOpenPopup(false);

@@ -65,6 +65,7 @@ export const CreateCustomerProformaInvoice = (props) => {
   const [productDetails, setProductDetails] = useState(null);
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
+  const [transportList, setTransportList] = useState([]);
   const {
     handleAutocompleteChange,
     handleFormChange,
@@ -88,6 +89,19 @@ export const CreateCustomerProformaInvoice = (props) => {
     productOption,
     true,
   );
+
+  const getTranportList = async () => {
+    try {
+      const res = await CustomerServices.getTransportList(
+        warehouseData.pincode ? warehouseData.pincode : "",
+      );
+      setTransportList(res.data);
+      console.log("Res is:", res.data);
+    } catch (error) {}
+  };
+  useEffect(() => {
+    getTranportList();
+  }, []);
   const constructPayload = () => {
     return products.map((input, index) => {
       return {

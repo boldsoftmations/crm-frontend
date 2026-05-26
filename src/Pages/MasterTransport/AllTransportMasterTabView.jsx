@@ -3,6 +3,8 @@ import { useSelector } from "react-redux";
 import { CustomTabs } from "../../Components/CustomTabs";
 
 import { MasterTransportView } from "./TransportMaster/MasterTransportView";
+import TransPortMapping from "./TransPortMapping/TransPortMapping";
+import ContactTransportView from "./TransportContact/ContactTransportView";
 export const AllTransportMasterTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
 
@@ -28,6 +30,45 @@ export const AllTransportMasterTabView = () => {
         "Accounts Executive",
       ],
       component: <MasterTransportView />,
+    },
+    {
+      label: "Transport Mapping",
+      roles: [
+        "Director",
+        "Sales Manager",
+        "Sales Manager(Retailer)",
+        "Business Development Manager",
+        "Business Development Executive",
+        "Customer Relationship Executive",
+        "Customer Relationship Manager",
+        "Sales Deputy Manager",
+        "Sales Assistant Deputy Manager",
+        "Sales Executive",
+        "Sales Manager without Leads",
+        "Sales Manager with Lead",
+        "Accounts Executive",
+      ],
+      component: <TransPortMapping />,
+    },
+
+    {
+      label: "Transport Contact",
+      roles: [
+        "Director",
+        "Sales Manager",
+        "Sales Manager(Retailer)",
+        "Business Development Manager",
+        "Business Development Executive",
+        "Customer Relationship Executive",
+        "Customer Relationship Manager",
+        "Sales Deputy Manager",
+        "Sales Assistant Deputy Manager",
+        "Sales Executive",
+        "Sales Manager without Leads",
+        "Sales Manager with Lead",
+        "Accounts Executive",
+      ],
+      component: <ContactTransportView />,
     },
   ];
 

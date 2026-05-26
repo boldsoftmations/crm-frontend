@@ -655,6 +655,7 @@ function Row(props) {
 
         <StyledTableCell align="center">
           {(users.groups.includes("Accounts") ||
+            users.groups.includes("Operations & Supply Chain Manager") ||
             users.groups.includes("Director")) &&
           row.approved === false ? (
             <Button

@@ -34,6 +34,8 @@ export const AllDispatchTabView = () => {
     "Factory-Mumbai-Dispatch",
     "Stores Delhi",
     "Production Delhi",
+    "Account Billing Department",
+    "Accounts",
   );
   const dispatchPODPending = isInGroups("Customer Service");
   const dispatchLRPending = isInGroups(
