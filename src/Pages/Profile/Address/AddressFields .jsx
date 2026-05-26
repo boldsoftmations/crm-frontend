@@ -1,14 +1,10 @@
 import { Grid, FormControlLabel, Checkbox } from "@mui/material";
 import CustomTextField from "../../../Components/CustomTextField";
-import axios from "axios";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import React from "react";
-export const AddressFields = ({
-  type, // "current" or "permanent"
-  formData,
-  setFormData,
-  error,
-}) => {
+import { pincodes } from "../UserProfile/pincodeData";
+
+export const AddressFields = ({ type, formData, setFormData, error }) => {
   const [open, setOpen] = React.useState(false);
   const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
   const showError = error && error.address && error.address[type];
@@ -25,39 +21,61 @@ export const AddressFields = ({
     }));
   };
 
-  const handlePinChange = async (event) => {
+  const handlePinChange = (event) => {
     const pinCode = event.target.value;
     handleChange(event);
 
     if (pinCode.length === 6) {
-      handlePinBlur(event);
+      handlePinLookup(pinCode);
+    } else {
+      // Clear city and state if pin is incomplete
+      setFormData((prev) => ({
+        ...prev,
+        address: {
+          ...prev.address,
+          [type]: {
+            ...prev.address[type],
+            city: "",
+            state: "",
+          },
+        },
+      }));
     }
   };
 
-  const handlePinBlur = async (event) => {
-    const pinCode = event.target.value;
-    try {
-      setOpen(true);
-      const response = await axios.get(
-        `https://api.postalpincode.in/pincode/${pinCode}`
-      );
-      if (response.data[0].Status === "Success") {
-        let addressData = { ...formData.address };
-        addressData[type].city = response.data[0].PostOffice[0].District;
-        addressData[type].state = response.data[0].PostOffice[0].State;
+  const handlePinLookup = (pinCode) => {
+    setOpen(true);
 
-        setFormData((prev) => ({
-          ...prev,
-          address: addressData,
-        }));
-      } else {
-        console.log("Pincode not valid or data not found.");
-      }
-      setOpen(false);
-    } catch (error) {
-      console.log("Error validating pincode", error);
-      setOpen(false);
+    const match = pincodes.find((entry) => entry.pincode === pinCode);
+
+    if (match) {
+      setFormData((prev) => ({
+        ...prev,
+        address: {
+          ...prev.address,
+          [type]: {
+            ...prev.address[type],
+            city: match.city,
+            state: match.state,
+          },
+        },
+      }));
+    } else {
+      console.log("Pincode not valid or data not found.");
+      setFormData((prev) => ({
+        ...prev,
+        address: {
+          ...prev.address,
+          [type]: {
+            ...prev.address[type],
+            city: "",
+            state: "",
+          },
+        },
+      }));
     }
+
+    setOpen(false);
   };
 
   const onSameAsCurrentChange = (event) => {
@@ -116,12 +134,12 @@ export const AddressFields = ({
             disabled={["city", "state"].includes(field)}
             label={`${capitalize(type)} ${capitalize(field)}`}
             name={fieldPath(field)}
-            error={showError && !!showError[field]} // Fix: Replace fieldName with field
-            helperText={(showError && showError[field]) || ""} // Fix: Use correct field reference
+            error={showError && !!showError[field]}
+            helperText={(showError && showError[field]) || ""}
             value={formData.address[type][field] || ""}
             onChange={field === "pin" ? handlePinChange : handleChange}
             InputLabelProps={{
-              shrink: Boolean(formData.address[type][field]), // Ensures label shrinks when value exists
+              shrink: Boolean(formData.address[type][field]),
             }}
           />
         </Grid>
