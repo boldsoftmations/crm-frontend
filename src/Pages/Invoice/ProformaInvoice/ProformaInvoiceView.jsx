@@ -441,7 +441,7 @@ export const ProformaInvoiceView = (props) => {
           <div className="col-xs-6">
             {(users.groups.includes("Accounts") ||
               users.groups.includes("Director") ||
-              users.groups.includes("Accounts Billing Department")) &&
+              users.groups.includes("Accounts Executive")) &&
               invoiceData.status === "Price Approval" && (
                 <Button
                   variant="contained"
@@ -456,7 +456,7 @@ export const ProformaInvoiceView = (props) => {
               )}
             {(users.groups.includes("Accounts") ||
               users.groups.includes("Director") ||
-              users.groups.includes("Accounts Billing Department")) &&
+              users.groups.includes("Accounts Executive")) &&
               invoiceData.status === "Price Approval" && (
                 <Button
                   variant="contained"
@@ -485,7 +485,7 @@ export const ProformaInvoiceView = (props) => {
             {invoiceData.status === "Approved" &&
               (users.groups.includes("Accounts") ||
                 users.groups.includes("Director") ||
-                users.groups.includes("Accounts Billing Department")) && (
+                users.groups.includes("Accounts Executive")) && (
                 <Button
                   variant="contained"
                   color="success"
