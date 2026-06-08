@@ -81,7 +81,7 @@ export const ContactDetails = ({ recordForEdit }) => {
       prev.company = row.company;
       // Check if a contact with the same `id` already exists
       const contactIndex = prev.contacts.findIndex(
-        (item) => item.id === row.id
+        (item) => item.id === row.id,
       );
 
       if (contactIndex !== -1) {
@@ -158,7 +158,7 @@ export const ContactDetails = ({ recordForEdit }) => {
       setOpen(true);
       const contactResponse = await CustomerServices.getCompanyDataByIdWithType(
         recordForEdit,
-        "contacts"
+        "contacts",
       );
       setContactData(contactResponse.data.contacts);
       setOpen(false);
@@ -227,6 +227,7 @@ export const ContactDetails = ({ recordForEdit }) => {
           </Box>
           <Box flexGrow={0.5} align="right" mx={{ marginRight: 10 }}>
             {(userData.groups.includes("Accounts") ||
+              userData.groups.includes("Accounts Executive") ||
               userData.groups.includes("Director") ||
               userData.groups.includes("Customer Service") ||
               userData.groups.includes("Sales Deputy Manager") ||
@@ -326,7 +327,7 @@ export const ContactDetails = ({ recordForEdit }) => {
                                 disabled={row.is_primary} // Disable the checkbox if the contact is the primary contact
                                 checked={
                                   formData.contacts.some(
-                                    (item) => item.contact === row.contact
+                                    (item) => item.contact === row.contact,
                                   ) || row.is_primary
                                 } // Check if the primary contact is in the state
                                 onChange={() =>
@@ -351,13 +352,13 @@ export const ContactDetails = ({ recordForEdit }) => {
                                         item.contact ===
                                           row.alternate_contact || // If alternate contact is stored as `contact`
                                         item.alternate_contact ===
-                                          row.alternate_contact // If stored as `alternate_contact`
+                                          row.alternate_contact, // If stored as `alternate_contact`
                                     ) || row.is_alternative // If `row.is_alternate` is true, also check the box
                                   }
                                   onChange={() =>
                                     handleCheckboxChange(
                                       row.alternate_contact,
-                                      row
+                                      row,
                                     )
                                   } // Handle state toggle
                                 />
@@ -376,6 +377,7 @@ export const ContactDetails = ({ recordForEdit }) => {
                           gap={1}
                         >
                           {(userData.groups.includes("Accounts") ||
+                            userData.groups.includes("Accounts Executive") ||
                             userData.groups.includes("Customer Service") ||
                             userData.groups.includes("Director")) && (
                             <Button
@@ -387,6 +389,7 @@ export const ContactDetails = ({ recordForEdit }) => {
                             </Button>
                           )}
                           {(userData.groups.includes("Accounts") ||
+                            userData.groups.includes("Accounts Executive") ||
                             userData.groups.includes("Director")) && (
                             <Button
                               size="small"

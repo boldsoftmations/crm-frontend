@@ -66,7 +66,7 @@ export const SecurityChequesDetails = ({ recordForEdit }) => {
       const securitychequeResponse =
         await CustomerServices.getCompanyDataByIdWithType(
           recordForEdit,
-          "security_cheque"
+          "security_cheque",
         );
 
       setSecurityChequeData(securitychequeResponse.data.security_cheque);
@@ -104,7 +104,7 @@ export const SecurityChequesDetails = ({ recordForEdit }) => {
           </Box>
           <Box flexGrow={0.5} align="right">
             {(userData.groups.includes("Accounts") ||
-              userData.groups.includes("Accounts Billing Department") ||
+              userData.groups.includes("Accounts Executive") ||
               userData.groups.includes("Director")) && (
               <Button
                 onClick={() => setOpenPopup2(true)}
@@ -165,9 +165,7 @@ export const SecurityChequesDetails = ({ recordForEdit }) => {
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         {(userData.groups.includes("Accounts") ||
-                          userData.groups.includes(
-                            "Accounts Billing Department"
-                          ) ||
+                          userData.groups.includes("Accounts Executive") ||
                           userData.groups.includes("Director")) && (
                           <Button
                             variant="contained"
