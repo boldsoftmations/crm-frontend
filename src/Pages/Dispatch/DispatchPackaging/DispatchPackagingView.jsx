@@ -103,7 +103,7 @@ export const DispatchPackagingView = () => {
   };
   useEffect(() => {
     getAllPackagingData();
-  }, [currentPage, searchQuery]);
+  }, [currentPage, searchQuery, searchData]);
 
   const handleExport = async () => {
     try {

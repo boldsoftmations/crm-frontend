@@ -62,7 +62,7 @@ export const ViewProductDetails = ({
           product__unit__name,
           startMonth + 1,
           startYear,
-          filterValue
+          filterValue,
         );
       setSalesQuantityAnalysis(response.data);
     } catch (error) {
@@ -214,7 +214,7 @@ export const ViewProductDetails = ({
                           sx={{ color: "#1976d2" }}
                           onClick={() => openInPopupOfUpdateCustomer(row)}
                           disabled={userData.groups.includes(
-                            "Operations & Supply Chain Manager"
+                            "Operations & Supply Chain Manager",
                           )}
                         >
                           View
@@ -223,8 +223,8 @@ export const ViewProductDetails = ({
                         <Button
                           sx={{ color: "#28a745" }}
                           onClick={() => openInPopupInvoice(row)}
-                              disabled={userData.groups.includes(
-                            "Operations & Supply Chain Manager"
+                          disabled={userData.groups.includes(
+                            "Operations & Supply Chain Manager",
                           )}
                         >
                           Create PI
@@ -276,7 +276,7 @@ export const ViewProductDetails = ({
           </Popup>
           <Popup
             fullScreen={true}
-            title={"Create Customer Proforma Invoice"}
+            title={""}
             openPopup={openPopupInvoice}
             setOpenPopup={setOpenPopupInvoice}
           >

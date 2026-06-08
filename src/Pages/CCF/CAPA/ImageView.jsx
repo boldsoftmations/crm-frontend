@@ -24,10 +24,7 @@ const Media = styled.img`
   transition:
     width 0.5s ease-in-out,
     box-shadow 0.3s ease-in-out;
-  box-shadow: ${(props) =>
-    props.isEnlarged
-      ? "0px 2px 10px rgba(0, 0, 0, 0.3)"
-      : "0px 2px 10px rgba(0, 0, 0, 0.3)"};
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.3);
 `;
 
 const Video = styled.video`
@@ -37,10 +34,7 @@ const Video = styled.video`
   transition:
     width 0.5s ease-in-out,
     box-shadow 0.3s ease-in-out;
-  box-shadow: ${(props) =>
-    props.isEnlarged
-      ? "0px 2px 10px rgba(0, 0, 0, 0.3)"
-      : "0px 2px 10px rgba(0, 0, 0, 0.3)"};
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.3);
 `;
 
 const Message = styled.div`
@@ -55,15 +49,11 @@ const Heading = styled.div`
 `;
 
 const ImageView = ({ imagesData }) => {
-  console.log(imagesData);
   const [enlargedMedia, setEnlargedMedia] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 500); // Adjust the time as needed
-
+    const timer = setTimeout(() => setLoading(false), 500);
     return () => clearTimeout(timer);
   }, [imagesData]);
 
@@ -71,46 +61,93 @@ const ImageView = ({ imagesData }) => {
     setEnlargedMedia(enlargedMedia === media ? null : media);
   };
 
-  const renderMedia = (media, index) => {
-    console.log(media);
-    const isVideo = media.media_type && media.media_type.startsWith("Video");
+  const getMediaKind = (media) => {
+    const mediaType = media.media_type ? media.media_type.toLowerCase() : "";
+    const fileUrl = (media.file || "").toLowerCase();
 
-    if (isVideo) {
+    if (mediaType.startsWith("video")) return "video";
+
+    if (
+      mediaType === "application/pdf" ||
+      mediaType.includes("pdf") ||
+      fileUrl.endsWith(".pdf") ||
+      fileUrl.includes(".pdf?")
+    )
+      return "pdf";
+
+    // fallback: if mediaType is octet-stream but URL hints at PDF
+    if (mediaType === "application/octet-stream" && fileUrl.includes("pdf"))
+      return "pdf";
+
+    return "image";
+  };
+
+  const renderMedia = (media, index) => {
+    const kind = getMediaKind(media);
+    const fileUrl = media.file || "";
+
+    // 👇 keep this until you confirm media_type values from your API
+    console.log(
+      `[Media ${index + 1}] kind=${kind} | media_type=${media.media_type} | file=${fileUrl}`,
+    );
+
+    if (kind === "video") {
       return (
         <Video
           key={index}
-          src={media.file}
+          src={fileUrl}
           controls
+          controlsList="nodownload"
           isEnlarged={enlargedMedia === media}
           onClick={() => handleMediaClick(media)}
-          onLoadedData={() => setLoading(false)} // Ensure loading state is updated for videos
-        />
-      );
-    } else {
-      return (
-        <Media
-          key={index}
-          src={media.file}
-          alt={`Media ${index + 1}`}
-          isEnlarged={enlargedMedia === media}
-          onClick={() => handleMediaClick(media)}
-          onLoad={() => setLoading(false)} // Ensure loading state is updated for images
         />
       );
     }
+
+    if (kind === "pdf") {
+      return (
+        <iframe
+          key={index}
+          src={fileUrl}
+          title={`PDF-${index + 1}`}
+          width="500"
+          height="600"
+          style={{ border: "1px solid #ccc", borderRadius: "8px" }}
+        />
+      );
+    }
+
+    return (
+      <Media
+        key={index}
+        src={fileUrl}
+        alt={`Image ${index + 1}`}
+        isEnlarged={enlargedMedia === media}
+        onClick={() => handleMediaClick(media)}
+      />
+    );
+  };
+
+  const getLabel = (media) => {
+    const kind = getMediaKind(media);
+    if (kind === "video") return "Video";
+    if (kind === "pdf") return "PDF";
+    return "Image";
   };
 
   return (
     <StyledTableCell>
       {loading ? (
         <CustomLoader open={loading} />
-      ) : imagesData.length === 0 ? (
+      ) : !imagesData || imagesData.length === 0 ? (
         <Message>No media available</Message>
       ) : (
         <MediaContainer>
           {imagesData.map((media, index) => (
             <MediaWrapper key={index}>
-              <Heading>Media {index + 1}</Heading>
+              <Heading>
+                {getLabel(media)} {index + 1}
+              </Heading>
               {renderMedia(media, index)}
             </MediaWrapper>
           ))}

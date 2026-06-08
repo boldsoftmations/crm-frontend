@@ -100,10 +100,6 @@ export const CapaView = ({ defaultStatus = "", isClose = false }) => {
     setOpen(false);
   };
 
-  const handleReject = () => {
-    setOpenRejectPopup(true);
-  };
-
   const handlePopup = (setter, data = null) => {
     setRecordForEdit(data);
     setter(true);

@@ -55,77 +55,94 @@ const Heading = styled.div`
 
 const HeaderField = ({ label, value }) => (
   <Grid item xs={12} sm={6} md={4}>
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 0.3,
-      }}
-    >
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 0.3 }}>
       <Typography
         variant="caption"
-        sx={{
-          fontWeight: 700,
-          color: "#006BA1",
-          textTransform: "uppercase",
-        }}
+        sx={{ fontWeight: 700, color: "#006BA1", textTransform: "uppercase" }}
       >
         {label}
       </Typography>
-
-      <Typography
-        variant="body2"
-        sx={{
-          color: "rgb(34,34,34)",
-        }}
-      >
+      <Typography variant="body2" sx={{ color: "rgb(34,34,34)" }}>
         {value ? value : "—"}
       </Typography>
     </Box>
   </Grid>
 );
 
+// ── Media kind helper ──────────────────────────────────────────────────────────
+
+const getMediaKind = (media) => {
+  const mediaType = media.media_type ? media.media_type.toLowerCase() : "";
+  const fileUrl = (media.file || "").toLowerCase();
+
+  if (mediaType.startsWith("video")) return "video";
+
+  if (
+    mediaType === "application/pdf" ||
+    mediaType.includes("pdf") ||
+    fileUrl.endsWith(".pdf") ||
+    fileUrl.includes(".pdf?")
+  )
+    return "pdf";
+
+  // fallback for octet-stream served PDFs
+  if (mediaType === "application/octet-stream" && fileUrl.includes("pdf"))
+    return "pdf";
+
+  return "image";
+};
+
+const getLabel = (media) => {
+  const kind = getMediaKind(media);
+  if (kind === "video") return "Video";
+  if (kind === "pdf") return "PDF";
+  return "Image";
+};
+
 // ── Main component ─────────────────────────────────────────────────────────────
 
 const CapaImageView = ({ imagesData, setImageShow }) => {
   const [enlargedMedia, setEnlargedMedia] = useState(null);
-  console.log("ImageData is:", imagesData);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (imagesData && imagesData.length > 0) {
-      setLoading(false);
-    } else {
-      setLoading(false);
-    }
+    setLoading(false);
   }, [imagesData]);
 
   const handleMediaClick = (media) => {
-    if (enlargedMedia === media) {
-      setEnlargedMedia(null);
-    } else {
-      setEnlargedMedia(media);
-    }
+    setEnlargedMedia(enlargedMedia === media ? null : media);
   };
 
   const renderMedia = (media, index) => {
-    console.log("media item:", media);
-    console.log("media type:", media.media_type);
+    const kind = getMediaKind(media);
+    const fileUrl = media.file || "";
 
-    const mediaType = media.media_type ? media.media_type.toLowerCase() : "";
+    console.log(
+      `[Media ${index + 1}] kind=${kind} | media_type=${media.media_type} | file=${fileUrl}`,
+    );
 
-    const isVideo = mediaType.startsWith("video");
-
-    if (isVideo) {
+    if (kind === "video") {
       return (
         <Video
           key={index}
-          src={media.file}
+          src={fileUrl}
           controls
           controlsList="nodownload"
           isEnlarged={enlargedMedia === media}
           onClick={() => handleMediaClick(media)}
-          onLoadedData={() => setLoading(false)}
+        />
+      );
+    }
+
+    if (kind === "pdf") {
+      return (
+        <iframe
+          key={index}
+          src={fileUrl}
+          title={`PDF-${index + 1}`}
+          width="500"
+          height="600"
+          style={{ border: "1px solid #ccc", borderRadius: "8px" }}
         />
       );
     }
@@ -133,11 +150,10 @@ const CapaImageView = ({ imagesData, setImageShow }) => {
     return (
       <Media
         key={index}
-        src={media.file}
-        alt={`Media ${index + 1}`}
+        src={fileUrl}
+        alt={`Image ${index + 1}`}
         isEnlarged={enlargedMedia === media}
         onClick={() => handleMediaClick(media)}
-        onLoad={() => setLoading(false)}
       />
     );
   };
@@ -145,7 +161,6 @@ const CapaImageView = ({ imagesData, setImageShow }) => {
   return (
     <Box sx={{ p: 2 }}>
       {/* ── Header info ── */}
-
       {imagesData ? (
         <>
           <Box
@@ -175,32 +190,28 @@ const CapaImageView = ({ imagesData, setImageShow }) => {
                 value={
                   imagesData.ccf_details
                     ? imagesData.ccf_details.complain_no
-                    : ""
+                    : null
                 }
               />
-
               <HeaderField
                 label="Customer"
                 value={
-                  imagesData.ccf_details ? imagesData.ccf_details.customer : ""
+                  imagesData.ccf_details
+                    ? imagesData.ccf_details.customer
+                    : null
                 }
               />
-
               <HeaderField
                 label="Complaint Type"
-                value={imagesData && imagesData.complain_type}
+                value={imagesData.complain_type}
               />
-
               <HeaderField label="Status" value={imagesData.status} />
-
               <HeaderField label="Created By" value={imagesData.created_by} />
-
               <HeaderField label="Date" value={imagesData.creation_date} />
               <HeaderField
                 label="Current Status"
                 value={imagesData.ccfstatus}
               />
-
               <HeaderField label="Updated By" value={imagesData.updated_by} />
             </Grid>
           </Box>
@@ -212,31 +223,26 @@ const CapaImageView = ({ imagesData, setImageShow }) => {
       )}
 
       {/* ── Media Section ── */}
-
       <StyledTableCell>
         {loading ? (
           <CustomLoader open={loading} />
-        ) : !imagesData || imagesData.length === 0 ? (
+        ) : !imagesData ||
+          !imagesData.document ||
+          imagesData.document.length === 0 ? (
           <Message>No media available</Message>
         ) : (
           <MediaContainer>
             {imagesData.document.map((media, index) => (
               <MediaWrapper key={index}>
                 <Heading>
-                  {media.media_type &&
-                  media.media_type.toLowerCase().startsWith("video")
-                    ? "Video"
-                    : "Image"}{" "}
-                  {index + 1}
+                  {getLabel(media)} {index + 1}
                 </Heading>
-
                 {renderMedia(media, index)}
               </MediaWrapper>
             ))}
           </MediaContainer>
         )}
       </StyledTableCell>
-      {/* <h1>hello</h1> */}
     </Box>
   );
 };

@@ -552,9 +552,11 @@ export const CreateCustomerProformaInvoice = (props) => {
                 value={
                   contactData || // Use the selected contactData
                   contactOptions.find(
-                    (option) =>
+                    (
+                      option, // give ne by
+                    ) =>
                       option.name === customerLastPiData &&
-                      customerLastPiData.contact_person_name,
+                      customerLastPiData.contact_person_name, // Match with last PI data if contactData is not set
                   ) // Default to customerLastPiData if contactData is not set
                 }
                 onChange={(e) => setContactData(e.target.value)} // Handle changes to update contactData

@@ -10,7 +10,6 @@ import InventoryServices from "../../../services/InventoryService";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import TaskService from "../../../services/TaskService";
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
   ...theme.typography.body2,
@@ -33,31 +32,6 @@ export const CreateMaterialReturn = (props) => {
   console.log(UserData.emp_id); // Access emp_id from UserData
   console.log("UserData", UserData.profile.employee_id);
   const navigate = useNavigate();
-  const [activeUsersData, setActiveUsersData] = useState([]);
-
-  const employe_id = activeUsersData.find(
-    (user) => user.email === salesReturnData.user,
-  );
-  console.log("Employee id is:", employe_id && employe_id.employee_id);
-
-  const getAllUsersDetails = async () => {
-    try {
-      setOpen(true);
-      const response = await TaskService.getAllUsers("True");
-      // setGroupsData(response.data.groups);
-      setActiveUsersData(response.data.users);
-      console.log(response.data.users);
-      setOpen(false);
-    } catch (error) {
-      setAlertMsg({
-        message: error.message,
-        severity: "error",
-        open: true,
-      });
-    } finally {
-      setOpen(false);
-    }
-  };
 
   const getsearchByCompany = async () => {
     if (!recordForEdit || !recordForEdit.ccf_details) {

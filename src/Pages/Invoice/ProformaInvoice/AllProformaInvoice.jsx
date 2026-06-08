@@ -207,6 +207,7 @@ export const AllProformaInvoice = () => {
     balance_amount: row.balance_amount,
     payment_terms: row.payment_terms,
     transporter_name: row.transporter_name,
+    pincode: row.pincode,
   }));
 
   const Tableheaders = [
@@ -221,6 +222,7 @@ export const AllProformaInvoice = () => {
     "Status",
     "PI Amount",
     "Balance",
+    "PINCODE",
     "Payment Terms",
     "ACTION",
   ];
@@ -393,6 +395,9 @@ export const AllProformaInvoice = () => {
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.balance_amount}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.pincode}
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.payment_terms}

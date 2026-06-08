@@ -48,6 +48,7 @@ export const TopCustomerView = () => {
     severity: "",
     open: false,
   });
+  const [salesPersonByFilter, setSalesPersonByFilter] = useState(null);
 
   const handleClose = () => {
     setAlertMsg({ open: false });
@@ -115,7 +116,6 @@ export const TopCustomerView = () => {
       overallTotal: numberFormatter.format(overallTotal),
     };
   };
-  const [salesPersonByFilter, setSalesPersonByFilter] = useState(null);
   const totals = useMemo(calculateTotals, [topCustomerData]);
   const openInPopupOfUpdateCustomer = (item) => {
     setRecordForEdit(item.order_book__company);

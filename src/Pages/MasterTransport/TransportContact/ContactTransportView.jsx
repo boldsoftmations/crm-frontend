@@ -29,16 +29,20 @@ import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 import MasterService from "../../../services/MasterService";
 import ContactTransportCreate from "./ContactTransportCreate";
+import TransportContactUpdate from "./TransportContactUpdate";
+
 // import ContactTransportUpdate from "./ContactTransportUpdate";
 
 const ContactTransportView = () => {
+  const [openUpdatePopup, setOpenUpdatePopup] = useState(false); // ADD THIS
+  const [recordForEdit, setRecordForEdit] = useState(null); // ADD THIS
+
   const [transportContactData, setTransportContactData] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const [totalCount, setTotalCount] = useState(0);
 
   // false = Active, true = Inactive
   const [isInactiveFilter, setIsInactiveFilter] = useState(false);
@@ -48,9 +52,6 @@ const ContactTransportView = () => {
   const [selectedTransporter, setSelectedTransporter] = useState(null);
 
   const [openCreatePopup, setOpenCreatePopup] = useState(false);
-  const [openUpdatePopup, setOpenUpdatePopup] = useState(false);
-
-  const [recordForEdit, setRecordForEdit] = useState(null);
 
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
@@ -65,6 +66,13 @@ const ContactTransportView = () => {
     return groups.some((group) => userData.groups.includes(group));
   };
 
+  const openInPopup = (row) => {
+    const selectedData = transportContactData.find(
+      (data) => data.id === row.id,
+    );
+    setRecordForEdit(selectedData || null);
+    setOpenUpdatePopup(true);
+  };
   // Fetch transporter options
   const getTransporterOptions = async () => {
     try {
@@ -84,13 +92,11 @@ const ContactTransportView = () => {
     try {
       setLoading(true);
 
-      const transporterId = selectedTransporter ? selectedTransporter.id : "";
-
       const response = await MasterService.getAllTransportConstact(
-        // transporterId,
+        (selectedTransporter && selectedTransporter.transporter_name) || null,
         currentPage,
-        // searchQuery,
         isInactiveFilter,
+        searchQuery,
       );
 
       console.log("Data is:", response);
@@ -105,10 +111,8 @@ const ContactTransportView = () => {
 
       if (response && response.data && response.data.count) {
         setTotalPages(Math.ceil(response.data.count / 25));
-        setTotalCount(response.data.count);
       } else {
         setTotalPages(0);
-        setTotalCount(0);
       }
     } catch (error) {
       handleError(error);
@@ -152,16 +156,13 @@ const ContactTransportView = () => {
     }
   };
 
-  const openInPopup = (item) => {
-    const selectedData = transportContactData.find(
-      (data) =>
-        data.transporter_id === item.transporter_id &&
-        data.unit_id === item.unit_id,
-    );
-
-    setRecordForEdit(selectedData || null);
-    setOpenUpdatePopup(true);
-  };
+  // const openInPopup = (item) => {
+  //   const selectedData = transportContactData.find(
+  //     (data) =>
+  //       data.transporter_id === item.transporter_id &&
+  //       data.unit_id === item.unit_id,
+  //   );
+  // };
 
   const tableData =
     transportContactData &&
@@ -197,6 +198,7 @@ const ContactTransportView = () => {
     "OFFICE ADDRESS",
     "UPDATED DATE",
     "CREATION DATE",
+    "ACTIONS",
   ];
 
   return (
@@ -367,11 +369,7 @@ const ContactTransportView = () => {
               <TableBody>
                 {tableData &&
                   tableData.map((row, index) => (
-                    <StyledTableRow
-                      key={index}
-                      onClick={() => openInPopup(row)}
-                      sx={{ cursor: "pointer" }}
-                    >
+                    <StyledTableRow key={index} sx={{ cursor: "pointer" }}>
                       <StyledTableCell align="center">{row.id}</StyledTableCell>
 
                       <StyledTableCell align="center">
@@ -425,6 +423,9 @@ const ContactTransportView = () => {
                       <StyledTableCell align="center">
                         {row.creation_date}
                       </StyledTableCell>
+                      <StyledTableRow key={index} sx={{ cursor: "pointer" }}>
+                        <Button onClick={() => openInPopup(row)}>View</Button>
+                      </StyledTableRow>
                     </StyledTableRow>
                   ))}
               </TableBody>
@@ -453,20 +454,19 @@ const ContactTransportView = () => {
       </Popup>
 
       {/* Update Popup */}
-      {/* 
+
       <Popup
         maxWidth="xl"
         title="Update Contact Transport"
         openPopup={openUpdatePopup}
         setOpenPopup={setOpenUpdatePopup}
       >
-        <ContactTransportUpdate
+        <TransportContactUpdate
           recordForEdit={recordForEdit}
           setOpenPopup={setOpenUpdatePopup}
           getTransportContactData={getTransportContactData}
         />
-      </Popup> 
-      */}
+      </Popup>
     </>
   );
 };

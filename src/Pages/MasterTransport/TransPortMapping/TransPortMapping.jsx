@@ -16,15 +16,12 @@ import { CustomTable } from "../../../Components/CustomTable";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import SearchComponent from "../../../Components/SearchComponent ";
 import { MessageAlert } from "../../../Components/MessageAlert";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 import MasterService from "../../../services/MasterService";
-// import TransPortMappingCreate from "./TransPortMappingCreate";
 import TransportMappingUpdate from "./TransportMappingUpdate";
 import TransportMappingCreate from "./TransportMappingCreate";
-// import TransPortMappingUpdate from "./TransportMappingUpdate";
-// import TransportMappingUpdate from "./TransportMappingUpdate";
-// import TransportMappingCreate from "./TransportMappingCreate";
-// import TransportMappingCreate from "./TransportMappingCreate";
+import InvoiceServices from "../../../services/InvoiceService";
 
 const TransPortMapping = () => {
   const [mappingData, setMappingData] = useState([]);
@@ -35,6 +32,16 @@ const TransPortMapping = () => {
 
   // false = Active, true = Inactive
   const [isInactiveFilter, setIsInactiveFilter] = useState(false);
+
+  // Filter states
+  const [selectedTransporter, setSelectedTransporter] = useState(null);
+  const [selectedUnit, setSelectedUnit] = useState(null);
+  const [selectedPincode, setSelectedPincode] = useState(null);
+
+  // Filter options
+  const [transporterOptions, setTransporterOptions] = useState([]);
+  const [unitOptions, setUnitOptions] = useState([]);
+  const [pincodeOptions, setPincodeOptions] = useState([]);
 
   const [openCreatePopup, setOpenCreatePopup] = useState(false);
   const [openUpdatePopup, setOpenUpdatePopup] = useState(false);
@@ -67,6 +74,39 @@ const TransPortMapping = () => {
     "ACTION",
   ];
 
+  // ==============================
+  // Fetch Filter Options
+  // ==============================
+  const getFilterOptions = async () => {
+    try {
+      const transportRes = await MasterService.getAllTransportMaster();
+      console.log("trans is ", transportRes);
+
+      const pincodeRes = await MasterService.getMasterPincode("all", "");
+      const unitRes = await InvoiceServices.getAllSellerAccountData();
+
+      if (transportRes && transportRes.data && transportRes.data.results) {
+        setTransporterOptions(transportRes.data.results);
+      }
+      if (unitRes && unitRes.data && unitRes.data.results) {
+        setUnitOptions(unitRes.data.results);
+      }
+      if (pincodeRes && pincodeRes.data && pincodeRes.data) {
+        console.log("pincode is:", pincodeRes);
+        setPincodeOptions(pincodeRes.data);
+      }
+    } catch (error) {
+      handleError(error);
+    }
+  };
+
+  useEffect(() => {
+    getFilterOptions();
+  }, []);
+
+  // ==============================
+  // Fetch Table Data
+  // ==============================
   const getMappingData = useCallback(async () => {
     try {
       setLoading(true);
@@ -75,6 +115,9 @@ const TransPortMapping = () => {
         isInactiveFilter,
         currentPage,
         searchQuery,
+        selectedTransporter ? selectedTransporter.transporter_name : null,
+        selectedUnit ? selectedUnit.unit : null,
+        selectedPincode ? selectedPincode.pincode : null,
       );
 
       if (response && response.data && response.data.results) {
@@ -93,7 +136,15 @@ const TransPortMapping = () => {
     } finally {
       setLoading(false);
     }
-  }, [isInactiveFilter, currentPage, searchQuery, handleError]);
+  }, [
+    isInactiveFilter,
+    currentPage,
+    searchQuery,
+    selectedTransporter,
+    selectedUnit,
+    selectedPincode,
+    handleError,
+  ]);
 
   useEffect(() => {
     getMappingData();
@@ -120,6 +171,13 @@ const TransPortMapping = () => {
     }
   };
 
+  const handleClearFilters = () => {
+    setSelectedTransporter(null);
+    setSelectedUnit(null);
+    setSelectedPincode(null);
+    setCurrentPage(1);
+  };
+
   const openInPopup = (item) => {
     const selectedData = mappingData.find((data) => data.id === item.id);
     setRecordForEdit(selectedData || null);
@@ -139,6 +197,9 @@ const TransPortMapping = () => {
     updated_date: value.updated_date,
     is_inactive: value.is_inactive ? "Yes" : "No",
   }));
+
+  const hasActiveFilters =
+    selectedTransporter || selectedUnit || selectedPincode;
 
   return (
     <>
@@ -204,20 +265,101 @@ const TransPortMapping = () => {
             </Box>
           </Box>
 
-          {/* ── Active / Inactive filter ── */}
+          {/* ── Filter Row ── */}
           <Box
-            sx={{ display: "flex", justifyContent: "flex-end", px: 2, pb: 1 }}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+              px: 2,
+              pb: 2,
+              gap: 2,
+            }}
           >
-            <ToggleButtonGroup
-              value={isInactiveFilter}
-              exclusive
-              onChange={handleFilterChange}
-              size="small"
-              color="primary"
+            {/* Transporter Filter */}
+            <Box sx={{ minWidth: "200px", flexGrow: 1, maxWidth: "250px" }}>
+              <CustomAutocomplete
+                fullWidth
+                size="small"
+                options={transporterOptions}
+                value={selectedTransporter}
+                getOptionLabel={(option) =>
+                  option.transporter_name ? option.transporter_name : ""
+                }
+                onChange={(e, value) => {
+                  setSelectedTransporter(value || null);
+                  setCurrentPage(1);
+                }}
+                label="Filter by Transporter"
+              />
+            </Box>
+
+            {/* Unit Filter */}
+            <Box sx={{ minWidth: "180px", flexGrow: 1, maxWidth: "220px" }}>
+              <CustomAutocomplete
+                fullWidth
+                size="small"
+                options={unitOptions}
+                value={selectedUnit}
+                getOptionLabel={(option) => (option.unit ? option.unit : "")}
+                onChange={(e, value) => {
+                  setSelectedUnit(value || null);
+                  setCurrentPage(1);
+                }}
+                label="Filter by Unit"
+              />
+            </Box>
+
+            {/* Pincode Filter */}
+            <Box sx={{ minWidth: "180px", flexGrow: 1, maxWidth: "220px" }}>
+              <CustomAutocomplete
+                fullWidth
+                size="small"
+                options={pincodeOptions}
+                value={selectedPincode}
+                getOptionLabel={(option) =>
+                  option.pincode ? String(option.pincode) : ""
+                }
+                onChange={(e, value) => {
+                  setSelectedPincode(value || null);
+                  setCurrentPage(1);
+                }}
+                label="Filter by Pincode"
+              />
+            </Box>
+
+            {/* Clear Filters + Active/Inactive Toggle */}
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 2,
+                marginLeft: "auto",
+              }}
             >
-              <ToggleButton value={false}>Active</ToggleButton>
-              <ToggleButton value={true}>Inactive</ToggleButton>
-            </ToggleButtonGroup>
+              {hasActiveFilters && (
+                <Button
+                  size="small"
+                  variant="outlined"
+                  color="error"
+                  onClick={handleClearFilters}
+                >
+                  Clear Filters
+                </Button>
+              )}
+
+              <ToggleButtonGroup
+                value={isInactiveFilter}
+                exclusive
+                onChange={handleFilterChange}
+                size="small"
+                color="primary"
+              >
+                <ToggleButton value={false}>Active</ToggleButton>
+                <ToggleButton value={true}>Inactive</ToggleButton>
+              </ToggleButtonGroup>
+            </Box>
           </Box>
 
           <CustomTable
@@ -243,7 +385,7 @@ const TransPortMapping = () => {
       >
         <TransportMappingCreate
           recordForEdit={recordForEdit}
-          setOpenPopup={setOpenUpdatePopup}
+          setOpenPopup={setOpenCreatePopup}
           getMappingData={getMappingData}
           currentPage={currentPage}
           searchQuery={searchQuery}
@@ -259,7 +401,7 @@ const TransPortMapping = () => {
       >
         <TransportMappingUpdate
           getMappingData={getMappingData}
-          setOpenPopup={setOpenCreatePopup}
+          setOpenPopup={setOpenUpdatePopup}
           currentPage={currentPage}
           searchQuery={searchQuery}
           recordForEdit={recordForEdit}

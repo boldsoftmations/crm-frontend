@@ -10,7 +10,7 @@ const CustomerMap = ({ customerVisitMapData }) => {
     if (addressMap[index]) return;
     try {
       const res = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`
+        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`,
       );
       const data = await res.json();
       setAddressMap((prev) => ({
@@ -51,7 +51,7 @@ const CustomerMap = ({ customerVisitMapData }) => {
               handleMarkerHover(
                 index,
                 item.check_in_latitude,
-                item.check_in_longitude
+                item.check_in_longitude,
               )
             }
           />

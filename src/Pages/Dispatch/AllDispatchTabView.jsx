@@ -100,7 +100,7 @@ export const AllDispatchTabView = () => {
     },
     {
       label: "Packaging Consumption",
-      visible: isAdmin || factory,
+      visible: isAdmin || factory || isAccpuntExecutive,
       index: 6,
     },
   ];

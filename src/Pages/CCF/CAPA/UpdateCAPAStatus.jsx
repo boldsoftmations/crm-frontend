@@ -43,7 +43,6 @@ const UpdateCAPAStatus = ({
   const [loader, setLoader] = useState(false);
   const [message, setMessage] = useState("");
   const [severity, setSeverity] = useState("success");
-  const [isRemarkRequired, setisRemarkRequired] = useState(false);
 
   // const handleChange = (e) => {
   //   setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -199,9 +198,6 @@ const UpdateCAPAStatus = ({
                   options={CAPAstatus}
                   getOptionLabel={(option) => option}
                   onChange={(e, value) => {
-                    if (value === "Reject") {
-                      setisRemarkRequired(true);
-                    }
                     setFormData((prev) => ({ ...prev, status: value }));
                   }}
                   label="Complaint Status"

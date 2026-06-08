@@ -40,7 +40,7 @@ const CreateCCF = ({ getAllCCFData, setOpenCCF }) => {
   const fileInputRef = useRef(null);
   const [invoiceNoOption, setInvoiceNoOption] = useState([]);
   const [departmentData, setDepartmentData] = useState([]);
-  const [batch_no, setBatch_no] = useState([]);
+
   const [documentId, setDocumentId] = useState([]);
   const [products, setProducts] = useState([]);
   const [documents, setDocuments] = useState([]);
@@ -165,10 +165,6 @@ const CreateCCF = ({ getAllCCFData, setOpenCCF }) => {
       })),
     );
 
-    const batch_nos = selectedProducts.flatMap(
-      (product) => product.source_list,
-    );
-    setBatch_no(batch_nos);
     setProducts(selectedProducts);
     setInputValue((prev) => ({
       ...prev,
@@ -250,14 +246,14 @@ const CreateCCF = ({ getAllCCFData, setOpenCCF }) => {
         formData.append("file", file);
 
         // Determine media type based on the file MIME type or extension
-        const fileType = file.type.split("/")[0]; // This gives either "image" or "video"
+        const fileType = file.type.split("/")[0];
+
         const mediaType =
           fileType === "image"
             ? "Photo"
             : fileType === "video"
               ? "Video"
               : "Other";
-
         // Append media type for each file
         formData.append("media_type", mediaType);
       });
@@ -702,7 +698,7 @@ const CreateCCF = ({ getAllCCFData, setOpenCCF }) => {
                       multiple
                       onChange={handleFileChange}
                       style={{ display: "none" }}
-                      accept="image/*,video/*"
+                      accept="image/*,video/*,.pdf,application/pdf"
                       ref={fileInputRef}
                     />
                     <span
@@ -773,16 +769,35 @@ const CreateCCF = ({ getAllCCFData, setOpenCCF }) => {
                                 <DeleteIcon />
                               </IconButton>
                             </div>
-                            <img
-                              src={URL.createObjectURL(file)}
-                              alt={file.name}
-                              style={{
-                                width: "100px",
-                                height: "100px",
-                                objectFit: "cover",
-                                marginTop: "10px",
-                              }}
-                            />
+                            {file.type === "application/pdf" ? (
+                              <iframe
+                                src={URL.createObjectURL(file)}
+                                title={file.name}
+                                width="100"
+                                height="100"
+                                style={{
+                                  border: "1px solid #ddd",
+                                }}
+                              />
+                            ) : file.type.indexOf("video") === 0 ? (
+                              <video width="100" height="100" controls>
+                                <source
+                                  src={URL.createObjectURL(file)}
+                                  type={file.type}
+                                />
+                              </video>
+                            ) : (
+                              <img
+                                src={URL.createObjectURL(file)}
+                                alt={file.name}
+                                style={{
+                                  width: "100px",
+                                  height: "100px",
+                                  objectFit: "cover",
+                                  marginTop: "10px",
+                                }}
+                              />
+                            )}
                           </ListItem>
                         ))}
                       </List>
@@ -804,15 +819,28 @@ const CreateCCF = ({ getAllCCFData, setOpenCCF }) => {
                                   textAlign: "center",
                                 }}
                               >
-                                <img
-                                  src={doc.file}
-                                  alt={`Media ${index + 1}`}
-                                  style={{
-                                    width: "100%",
-                                    height: "auto",
-                                    cursor: "pointer",
-                                  }}
-                                />
+                                {doc.media_type === "PDF" ||
+                                (doc.file &&
+                                  doc.file.toLowerCase().endsWith(".pdf")) ? (
+                                  <iframe
+                                    src={doc.file}
+                                    title={`PDF-${index}`}
+                                    width="200"
+                                    height="200"
+                                    style={{
+                                      border: "1px solid #ddd",
+                                    }}
+                                  />
+                                ) : (
+                                  <img
+                                    src={doc.file}
+                                    alt={`Media ${index + 1}`}
+                                    style={{
+                                      width: "100%",
+                                      height: "auto",
+                                    }}
+                                  />
+                                )}
                               </div>
                             ))}
                         </div>

@@ -340,8 +340,6 @@ const getEmployeesCurrentLocation = () => {
 };
 
 const getCustomerComplaintDashboard = () => {
-  const params = new URLSearchParams();
-
   return CustomAxios.get(`/api/customer/ccf-operational-dashboard/`);
 };
 const getManagementComplaintDashboard = (start_date, end_date) => {

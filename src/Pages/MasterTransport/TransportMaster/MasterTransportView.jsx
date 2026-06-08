@@ -68,6 +68,7 @@ export const MasterTransportView = () => {
         currentPage,
 
         isInactiveFilter, // pass filter to service
+        searchQuery, // pass search query to service
       );
 
       if (response && response.data && response.data.results) {
@@ -186,7 +187,7 @@ export const MasterTransportView = () => {
                 variant="contained"
                 color="success"
                 onClick={() => setOpenCreatePopup(true)}
-                disabled={isInGroups("Stores")}
+                disabled={isInGroups("Operations & Supply Chain Manager")}
               >
                 Add
               </Button>

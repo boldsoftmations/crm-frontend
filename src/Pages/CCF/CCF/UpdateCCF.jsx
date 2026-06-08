@@ -26,7 +26,6 @@ import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 const UpdateCCF = ({ getAllCCFData, setOpenCCF, ViewData }) => {
   const [open, setOpen] = useState(false);
   const [files, setFiles] = useState([]);
-  const [documentId, setDocumentId] = useState([]);
   const [documents, setDocuments] = useState([]);
   const [products, setProducts] = useState(ViewData.products || []);
   const [openPopup1, setOpenPopup1] = useState(false);
@@ -117,15 +116,6 @@ const UpdateCCF = ({ getAllCCFData, setOpenCCF, ViewData }) => {
         const uploadedDocs = response.data.data;
 
         setDocuments(uploadedDocs);
-        const existingIds = ViewData.document.map(function (doc) {
-          return doc.id;
-        });
-
-        const newIds = uploadedDocs.map(function (doc) {
-          return doc.id;
-        });
-
-        setDocumentId(existingIds.concat(newIds));
 
         handleSuccess("Documents uploaded successfully");
 

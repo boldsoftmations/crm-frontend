@@ -141,17 +141,6 @@ export const CCFView = () => {
     setOpenCapa(true);
   };
 
-  const handleupdateInactive = async () => {
-    try {
-      setOpen(true);
-      await CustomerServices.CCFUpdate(ViewData.id, { is_active: true });
-      getAllCCFData();
-      setOpen(false);
-    } catch (error) {
-      handleError(error);
-    }
-  };
-
   return (
     <>
       <MessageAlert
@@ -228,10 +217,6 @@ export const CCFView = () => {
                 {(userData.groups.includes("Director") ||
                   userData.groups.includes("Sales Executive") ||
                   userData.groups.includes("Sales Manager") ||
-                  userData.groups.includes("Customer Relationship Manager") ||
-                  userData.groups.includes("Business Development Manager") ||
-                  userData.groups.includes("Customer Relationship Executive") ||
-                  userData.groups.includes("Business Development Executive") ||
                   userData.groups.includes("Sales Manager(Retailer)")) && (
                   <Button
                     color="primary"

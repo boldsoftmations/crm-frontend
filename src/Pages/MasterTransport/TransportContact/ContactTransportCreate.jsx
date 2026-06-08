@@ -13,9 +13,11 @@ import { useNotificationHandling } from "../../../Components/useNotificationHand
 import { MessageAlert } from "../../../Components/MessageAlert";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import { clear } from "@testing-library/user-event/dist/clear";
 
 const initialFormState = {
   transporter: "",
+  transporter_id: "", // FIX: store transporter_id so it can be sent in payload
   unit: "",
   city: "",
   contact_person: "",
@@ -29,6 +31,7 @@ const initialFormState = {
 
 function ContactTransportCreate({ getTransportContactData, setOpenPopup }) {
   const [formData, setFormData] = useState(initialFormState);
+
   const DESIGNATION_ROLE_CHOICES = [
     "Booking",
     "Delivery",
@@ -36,16 +39,11 @@ function ContactTransportCreate({ getTransportContactData, setOpenPopup }) {
     "Branch Manager",
     "Owner",
   ];
+
   const [loading, setLoading] = useState(false);
-
-  // transporter dropdown
   const [transporterOptions, setTransporterOptions] = useState([]);
-
-  // auto unit & city data
   const [unitCityData, setUnitCityData] = useState([]);
-
   const [unitOptions, setUnitOptions] = useState([]);
-
   const [cityOptions, setCityOptions] = useState([]);
 
   const { handleError, handleCloseSnackbar, alertInfo, handleSuccess } =
@@ -70,7 +68,6 @@ function ContactTransportCreate({ getTransportContactData, setOpenPopup }) {
 
   useEffect(() => {
     setLoading(true);
-
     getTransporterOptions().finally(() => setLoading(false));
   }, []);
 
@@ -81,6 +78,7 @@ function ContactTransportCreate({ getTransportContactData, setOpenPopup }) {
     setFormData((prev) => ({
       ...prev,
       transporter: value ? value.transporter_name : "",
+      transporter_id: value ? value.transporter_id : "", // FIX: persist transporter_id into formData
       unit: "",
       city: "",
     }));
@@ -90,16 +88,15 @@ function ContactTransportCreate({ getTransportContactData, setOpenPopup }) {
     setCityOptions([]);
 
     if (!value || !value.id) {
+      console.log("Invalid transporter selection");
       return;
     }
 
     try {
       setLoading(true);
 
-      const response = await MasterService.getTransportContact(
-        value.transporter_id,
-      );
-
+      const response = await MasterService.getTransportContact(value.id);
+      console.log(value.id, response);
       const results = Array.isArray(response.data) ? response.data : [];
 
       setUnitCityData(results);
@@ -108,13 +105,11 @@ function ContactTransportCreate({ getTransportContactData, setOpenPopup }) {
       // Unit Options
       // ==============================
       const seenUnits = {};
-
       const units = [];
 
       results.forEach((item) => {
         if (item.unit && !seenUnits[item.unit]) {
           seenUnits[item.unit] = true;
-
           units.push({
             unit_id: item.unit_id,
             unit: item.unit,
@@ -126,13 +121,11 @@ function ContactTransportCreate({ getTransportContactData, setOpenPopup }) {
       // City Options
       // ==============================
       const seenCities = {};
-
       const cities = [];
 
       results.forEach((item) => {
         if (item.city && !seenCities[item.city]) {
           seenCities[item.city] = true;
-
           cities.push({
             city_id: item.city_id,
             city: item.city,
@@ -141,7 +134,6 @@ function ContactTransportCreate({ getTransportContactData, setOpenPopup }) {
       });
 
       setUnitOptions(units);
-
       setCityOptions(cities);
 
       // ==============================
@@ -150,6 +142,7 @@ function ContactTransportCreate({ getTransportContactData, setOpenPopup }) {
       setFormData((prev) => ({
         ...prev,
         transporter: value.transporter_name,
+        transporter_id: value.transporter_id, // FIX: keep transporter_id when auto-filling
         unit: units.length === 1 ? units[0].unit : "",
         city: cities.length === 1 ? cities[0].city : "",
       }));
@@ -203,6 +196,7 @@ function ContactTransportCreate({ getTransportContactData, setOpenPopup }) {
 
       const payload = {
         transporter: formData.transporter,
+        transporter_id: formData.transporter_id, // FIX: now correctly sent to backend
         unit: formData.unit,
         city: formData.city,
         contact_person: formData.contact_person,
@@ -214,17 +208,13 @@ function ContactTransportCreate({ getTransportContactData, setOpenPopup }) {
         is_primary: formData.is_primary,
       };
 
-      console.log("payload", payload);
-
       await MasterService.createTransportContact(payload);
 
       handleSuccess("Transport contact created successfully");
 
       setTimeout(() => {
         setOpenPopup(false);
-
         getTransportContactData();
-
         handleReset();
       }, 1000);
     } catch (error) {
@@ -238,12 +228,9 @@ function ContactTransportCreate({ getTransportContactData, setOpenPopup }) {
   // Reset
   // ==============================
   const handleReset = () => {
-    setFormData(initialFormState);
-
+    setFormData(initialFormState); // transporter_id is "" in initialFormState — auto-reset
     setUnitCityData([]);
-
     setUnitOptions([]);
-
     setCityOptions([]);
   };
 
@@ -331,7 +318,6 @@ function ContactTransportCreate({ getTransportContactData, setOpenPopup }) {
             />
           </Grid>
 
-          {/* Designation */}
           {/* Designation / Role */}
           <Grid item xs={12} sm={6}>
             <CustomAutocomplete

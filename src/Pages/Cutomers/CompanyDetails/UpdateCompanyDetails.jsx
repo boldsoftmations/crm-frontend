@@ -78,7 +78,7 @@ export const UpdateCompanyDetails = (props) => {
       const Country = inputValue.country;
       const response = await MasterService.getCountryDataByPincode(
         Country,
-        PINCODE
+        PINCODE,
       );
       if (response.data.length === 0) {
         setAlertMsg({
@@ -140,7 +140,7 @@ export const UpdateCompanyDetails = (props) => {
 
   const GST_NO = (gst_no) =>
     /^[0-9]{2}[A-Za-z]{5}[0-9]{4}[A-Za-z]{1}[1-9A-Za-z]{1}Z[0-9A-Za-z]{1}$/.test(
-      gst_no
+      gst_no,
     );
 
   const PAN_NO = (pan_no) =>

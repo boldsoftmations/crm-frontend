@@ -273,7 +273,6 @@ const LightboxModal = ({ doc, allDocs, onClose }) => {
   );
   const current = allDocs[currentIndex];
 
-  // Close on Escape key
   React.useEffect(() => {
     const handleKey = (e) => {
       if (e.key === "Escape") onClose();
@@ -301,7 +300,6 @@ const LightboxModal = ({ doc, allDocs, onClose }) => {
         backdropFilter: "blur(6px)",
       }}
     >
-      {/* Modal box */}
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
@@ -316,7 +314,7 @@ const LightboxModal = ({ doc, allDocs, onClose }) => {
           minWidth: 320,
         }}
       >
-        {/* ── Header ── */}
+        {/* Header */}
         <div
           style={{
             display: "flex",
@@ -345,11 +343,10 @@ const LightboxModal = ({ doc, allDocs, onClose }) => {
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            {/* Open original */}
             <a
               href={current.file}
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
               style={{
                 display: "inline-flex",
                 alignItems: "center",
@@ -366,8 +363,6 @@ const LightboxModal = ({ doc, allDocs, onClose }) => {
             >
               ↗ Open original
             </a>
-
-            {/* Close */}
             <button
               onClick={onClose}
               style={{
@@ -389,7 +384,7 @@ const LightboxModal = ({ doc, allDocs, onClose }) => {
           </div>
         </div>
 
-        {/* ── Image area ── */}
+        {/* Image area */}
         <div
           style={{
             flex: 1,
@@ -418,14 +413,18 @@ const LightboxModal = ({ doc, allDocs, onClose }) => {
             />
           ) : (
             <div style={{ textAlign: "center", padding: 48 }}>
-              <div style={{ fontSize: 56, marginBottom: 16 }}>📄</div>
+              <div style={{ fontSize: 56, marginBottom: 16 }}>
+                <span role="img" aria-label="document">
+                  📄
+                </span>
+              </div>
               <div style={{ fontSize: 14, color: "#aaa", marginBottom: 20 }}>
                 Preview not available for this file type.
               </div>
               <a
                 href={current.file}
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 style={{
                   fontSize: 13,
                   fontWeight: 600,
@@ -439,7 +438,7 @@ const LightboxModal = ({ doc, allDocs, onClose }) => {
           )}
         </div>
 
-        {/* ── Navigation footer (only when multiple docs) ── */}
+        {/* Navigation footer */}
         {allDocs.length > 1 && (
           <div
             style={{
@@ -452,7 +451,6 @@ const LightboxModal = ({ doc, allDocs, onClose }) => {
               flexShrink: 0,
             }}
           >
-            {/* Prev */}
             <button
               onClick={() => setCurrentIndex((p) => Math.max(0, p - 1))}
               disabled={currentIndex === 0}
@@ -474,7 +472,6 @@ const LightboxModal = ({ doc, allDocs, onClose }) => {
               ← Previous
             </button>
 
-            {/* Thumbnail strip */}
             <div style={{ display: "flex", gap: 6 }}>
               {allDocs.map((d, idx) => (
                 <div
@@ -509,13 +506,18 @@ const LightboxModal = ({ doc, allDocs, onClose }) => {
                       }}
                     />
                   ) : (
-                    <span style={{ fontSize: 16 }}>📄</span>
+                    <span
+                      style={{ fontSize: 16 }}
+                      role="img"
+                      aria-label="document"
+                    >
+                      📄
+                    </span>
                   )}
                 </div>
               ))}
             </div>
 
-            {/* Next */}
             <button
               onClick={() =>
                 setCurrentIndex((p) => Math.min(allDocs.length - 1, p + 1))
@@ -579,6 +581,73 @@ export const transformRecordToCapaProps = (record) => {
   };
 };
 
+// ── Attachment Card (reusable) ───────────────────────────────────────────────
+const AttachmentItem = ({ doc, index, total, onClick }) => (
+  <div
+    onClick={onClick}
+    style={{
+      display: "flex",
+      alignItems: "center",
+      gap: 10,
+      padding: "10px 12px",
+      borderRadius: 8,
+      border: `1px solid ${C.divider}`,
+      marginBottom: index < total - 1 ? 8 : 0,
+      background: C.bgPage,
+      transition: "all 0.2s ease",
+      cursor: "pointer",
+    }}
+    onMouseEnter={(e) => {
+      e.currentTarget.style.background = C.primaryLight;
+      e.currentTarget.style.borderColor = C.primaryBorder;
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.background = C.bgPage;
+      e.currentTarget.style.borderColor = C.divider;
+    }}
+  >
+    <div
+      style={{
+        width: 40,
+        height: 40,
+        borderRadius: 6,
+        overflow: "hidden",
+        flexShrink: 0,
+        background: C.bgHover,
+        border: `1px solid ${C.divider}`,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      {doc.media_type === "Photo" ? (
+        <img
+          src={doc.file}
+          alt=""
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        />
+      ) : (
+        <span style={{ fontSize: 20 }} role="img" aria-label="document">
+          📄
+        </span>
+      )}
+    </div>
+    <div style={{ flex: 1, minWidth: 0 }}>
+      <div style={{ fontSize: 12, fontWeight: 600, color: C.primary }}>
+        {doc.media_type} #{index + 1}
+      </div>
+      <div style={{ fontSize: 11, color: C.text3 }}>Click to view</div>
+    </div>
+    <span
+      style={{ fontSize: 14, color: C.text3, flexShrink: 0 }}
+      role="img"
+      aria-label="view"
+    >
+      🔍
+    </span>
+  </div>
+);
+
 // ── Main component ───────────────────────────────────────────────────────────
 export const CapaStatusView = ({
   recordForEdit = {},
@@ -590,9 +659,9 @@ export const CapaStatusView = ({
   currentStatus,
   timelineData = [],
 }) => {
-  // ── Lightbox state ──
-
   const [invoices, setInvoices] = React.useState([]);
+  const [lightboxDoc, setLightboxDoc] = React.useState(null);
+  const [lightboxDocs, setLightboxDocs] = React.useState([]);
 
   const getInvoicesDetails = async () => {
     try {
@@ -606,9 +675,11 @@ export const CapaStatusView = ({
       console.log(e);
     }
   };
+
   useEffect(() => {
     getInvoicesDetails();
   }, []);
+
   console.log("data is :", recordForEdit);
 
   const invoiceNos = recordForEdit.invoices;
@@ -623,15 +694,10 @@ export const CapaStatusView = ({
 
   console.log("invoiceDates:", invoiceDates);
 
-  // console.log("invoice is :", inoviceDate);
-
-  const [lightboxDoc, setLightboxDoc] = React.useState(null);
-
   const derived = React.useMemo(() => {
     if (recordForEdit && recordForEdit.ccfstatus && !currentStatus) {
       return transformRecordToCapaProps(recordForEdit);
     }
-
     return null;
   }, [recordForEdit, currentStatus]);
 
@@ -684,7 +750,6 @@ export const CapaStatusView = ({
     _currentStatus === "Capa Revision Required";
   const daysOpen = moment().diff(moment(_createdDate), "days");
 
-  // Count occurrences of each main-flow status in history (for retry badge on stepper)
   const stepRetryCount = {};
   (_record.status_details || []).forEach((item) => {
     if (FLOW_STEPS.indexOf(item.status) !== -1) {
@@ -701,6 +766,19 @@ export const CapaStatusView = ({
 
   const allDocs = _record.document || [];
 
+  const capaDetails = _record.capa_details || {};
+  const capaDocs = capaDetails.document || [];
+
+  const openLightbox = (doc, docs) => {
+    setLightboxDoc(doc);
+    setLightboxDocs(docs);
+  };
+
+  const closeLightbox = () => {
+    setLightboxDoc(null);
+    setLightboxDocs([]);
+  };
+
   return (
     <div
       style={{
@@ -711,16 +789,16 @@ export const CapaStatusView = ({
         boxSizing: "border-box",
       }}
     >
-      {/* ── Lightbox ── */}
-      {lightboxDoc && (
+      {/* Lightbox */}
+      {lightboxDoc && lightboxDocs.length > 0 && (
         <LightboxModal
           doc={lightboxDoc}
-          allDocs={allDocs}
-          onClose={() => setLightboxDoc(null)}
+          allDocs={lightboxDocs}
+          onClose={closeLightbox}
         />
       )}
 
-      {/* ── Top bar ── */}
+      {/* Top bar */}
       <div
         style={{
           display: "flex",
@@ -755,7 +833,7 @@ export const CapaStatusView = ({
         </div>
       </div>
 
-      {/* ── Body grid ── */}
+      {/* Body grid */}
       <div
         style={{
           display: "grid",
@@ -765,7 +843,7 @@ export const CapaStatusView = ({
           boxSizing: "border-box",
         }}
       >
-        {/* ── LEFT column ── */}
+        {/* LEFT column */}
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
           {/* Stepper */}
           <Card>
@@ -866,7 +944,6 @@ export const CapaStatusView = ({
                       >
                         {label}
                       </div>
-                      {/* Retry badge on stepper bubble */}
                       {(stepRetryCount[label] || 0) > 1 && (
                         <div
                           style={{
@@ -1015,7 +1092,6 @@ export const CapaStatusView = ({
               </div>
             )}
             {(() => {
-              // Track how many times each status has appeared as we iterate
               const seenCount = {};
               return _timelineData.map((item, index) => {
                 const isLast = index === _timelineData.length - 1;
@@ -1028,7 +1104,6 @@ export const CapaStatusView = ({
 
                 return (
                   <div key={item.id} style={{ display: "flex", gap: 16 }}>
-                    {/* Dot + connector */}
                     <div
                       style={{
                         display: "flex",
@@ -1064,7 +1139,6 @@ export const CapaStatusView = ({
                       )}
                     </div>
 
-                    {/* Entry card */}
                     <div
                       style={{
                         flex: 1,
@@ -1076,7 +1150,6 @@ export const CapaStatusView = ({
                         borderLeft: `3px solid ${isRetry ? C.warning : sc.dot}`,
                       }}
                     >
-                      {/* Title row */}
                       <div
                         style={{
                           display: "flex",
@@ -1118,32 +1191,6 @@ export const CapaStatusView = ({
                         </span>
                       </div>
 
-                      {/* Re-attempt explanation */}
-                      {/* {isRetry && (
-                        <div
-                          style={{
-                            fontSize: 12,
-                            color: C.warningDark,
-                            background: "#fff8f0",
-                            border: `1px solid ${C.warningBorder}`,
-                            borderRadius: 6,
-                            padding: "6px 10px",
-                            marginBottom: 10,
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 6,
-                          }}
-                        >
-                          <span>⚠️</span>
-                          This step was revisited after a rejection — re-attempt{" "}
-                          {occurrence} for{" "}
-                          <strong style={{ marginLeft: 3 }}>
-                            &quot;{item.status}&quot;
-                          </strong>
-                          .
-                        </div>
-                      )} */}
-
                       <p
                         style={{
                           fontSize: 13,
@@ -1155,7 +1202,6 @@ export const CapaStatusView = ({
                         {item.description}
                       </p>
 
-                      {/* Remark block */}
                       {item.remark && (
                         <div
                           style={{
@@ -1285,7 +1331,7 @@ export const CapaStatusView = ({
           </Card>
         </div>
 
-        {/* ── RIGHT column ── */}
+        {/* RIGHT column */}
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           {/* Case details */}
           <Card>
@@ -1294,13 +1340,6 @@ export const CapaStatusView = ({
             <DetailRow label="Customer" value={_assignedTo} />
             <DetailRow
               label="Created"
-              value={moment(_createdDate, [
-                "YYYY-MM-DD",
-                "DD-MM-YYYY HH:mm:ss",
-              ]).format("DD MMM YYYY")}
-            />
-            <DetailRow
-              label="Updated"
               value={
                 _record.updated_date
                   ? moment(_record.updated_date, [
@@ -1309,6 +1348,13 @@ export const CapaStatusView = ({
                     ]).format("DD MMM YYYY")
                   : "—"
               }
+            />
+            <DetailRow
+              label="Updated"
+              value={moment(_createdDate, [
+                "YYYY-MM-DD",
+                "DD-MM-YYYY HH:mm:ss",
+              ]).format("DD MMM YYYY")}
             />
             <DetailRow label="Department" value={_record.department || "—"} />
             <DetailRow
@@ -1420,85 +1466,34 @@ export const CapaStatusView = ({
             />
           </Card>
 
-          {/* ── Attachments with lightbox ── */}
+          {/* CAPA Attachments */}
+          {capaDocs.length > 0 && (
+            <Card>
+              <SectionLabel>CAPA Attachments</SectionLabel>
+              {capaDocs.map((doc, i) => (
+                <AttachmentItem
+                  key={doc.id}
+                  doc={doc}
+                  index={i}
+                  total={capaDocs.length}
+                  onClick={() => openLightbox(doc, capaDocs)}
+                />
+              ))}
+            </Card>
+          )}
+
+          {/* Complaint Attachments */}
           {allDocs.length > 0 && (
             <Card>
               <SectionLabel>Attachments</SectionLabel>
               {allDocs.map((doc, i) => (
-                <div
+                <AttachmentItem
                   key={doc.id}
-                  onClick={() => setLightboxDoc(doc)}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 10,
-                    padding: "10px 12px",
-                    borderRadius: 8,
-                    border: `1px solid ${C.divider}`,
-                    marginBottom: i < allDocs.length - 1 ? 8 : 0,
-                    background: C.bgPage,
-                    transition: "all 0.2s ease",
-                    cursor: "pointer",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = C.primaryLight;
-                    e.currentTarget.style.borderColor = C.primaryBorder;
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = C.bgPage;
-                    e.currentTarget.style.borderColor = C.divider;
-                  }}
-                >
-                  {/* Thumbnail preview */}
-                  <div
-                    style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 6,
-                      overflow: "hidden",
-                      flexShrink: 0,
-                      background: C.bgHover,
-                      border: `1px solid ${C.divider}`,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {doc.media_type === "Photo" ? (
-                      <img
-                        src={doc.file}
-                        alt=""
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                        }}
-                      />
-                    ) : (
-                      <span style={{ fontSize: 20 }}>📄</span>
-                    )}
-                  </div>
-
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div
-                      style={{
-                        fontSize: 12,
-                        fontWeight: 600,
-                        color: C.primary,
-                      }}
-                    >
-                      {doc.media_type} #{i + 1}
-                    </div>
-                    <div style={{ fontSize: 11, color: C.text3 }}>
-                      Click to view
-                    </div>
-                  </div>
-
-                  {/* Zoom icon hint */}
-                  <span style={{ fontSize: 14, color: C.text3, flexShrink: 0 }}>
-                    🔍
-                  </span>
-                </div>
+                  doc={doc}
+                  index={i}
+                  total={allDocs.length}
+                  onClick={() => openLightbox(doc, allDocs)}
+                />
               ))}
             </Card>
           )}
