@@ -1,9 +1,8 @@
 import { Box, Button, Grid } from "@mui/material";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import CustomTextField from "../../../Components/CustomTextField";
-import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import InvoiceService from "../../../services/InvoiceService";
-import CustomerServices from "../../../services/CustomerService";
+// import { useSelector } from "react-redux";
 
 const UpdateProformaInvoice = ({
   getProformaInvoiceData,
@@ -15,10 +14,12 @@ const UpdateProformaInvoice = ({
   const [transporter, setTransporter] = useState(
     idForEdit.transporter_name || "",
   );
-  const [transportList, setTransportList] = useState([]);
 
   console.log("Transporter name", idForEdit.transporter_name);
   console.log(idForEdit);
+  // const isInGroups = (...groups) => {
+  //   groups.some((group) => userData.groups.includes(group));
+  // };
 
   // ✅ Set initial value when edit data comes
   useEffect(() => {
@@ -26,6 +27,10 @@ const UpdateProformaInvoice = ({
       setTransporter(idForEdit.transporter_name);
     }
   }, [idForEdit]);
+
+  const handleChange = (e) => {
+    setTransporter(e.target.value);
+  };
 
   const handleSubmit = async () => {
     try {
@@ -38,33 +43,16 @@ const UpdateProformaInvoice = ({
       const successMessage =
         response.data.message || "Transport Name updated successfully";
       handleSuccess(successMessage);
+      // console.log(response.data.message);
 
       getProformaInvoiceData();
-      setOpenPopup(false);
+
+      setOpenPopup(false); // move here
     } catch (error) {
       handleError(error);
       console.log("Error while updating Proforma Invoice", error);
     }
   };
-
-  const getTranportList = useCallback(async () => {
-    try {
-      const res = await CustomerServices.getTransportList(
-        idForEdit && idForEdit.pincode,
-      );
-      console.log("idforedit data is:", idForEdit);
-      console.log("data is :", res);
-      const data = res && res.data ? res.data.results : [];
-      setTransportList(Array.isArray(data) ? data : []);
-    } catch (error) {
-      console.error("Transport list error:", error);
-      setTransportList([]);
-    }
-  }, [idForEdit]);
-
-  useEffect(() => {
-    getTranportList();
-  }, []);
 
   return (
     <Box>
@@ -80,43 +68,13 @@ const UpdateProformaInvoice = ({
         </Grid>
 
         <Grid item xs={12}>
-          <CustomAutocomplete
+          <CustomTextField
             fullWidth
             size="small"
-            disablePortal
-            id="transporter-autocomplete"
-            options={transportList}
+            name="transporter"
+            label="Transporter Name"
             value={transporter || ""}
-            getOptionLabel={(option) =>
-              typeof option === "object" && option !== null
-                ? option.transporter || ""
-                : option || ""
-            }
-            isOptionEqualToValue={(option, value) => {
-              const optionVal =
-                typeof option === "object" && option !== null
-                  ? option.transporter || ""
-                  : option || "";
-              const selectedVal =
-                typeof value === "object" && value !== null
-                  ? value.transporter || ""
-                  : value || "";
-              return optionVal === selectedVal;
-            }}
-            onChange={(event, newValue) => {
-              if (newValue && typeof newValue === "object") {
-                setTransporter(newValue.transporter || "");
-              } else {
-                setTransporter(newValue || "");
-              }
-            }}
-            renderInput={(params) => (
-              <CustomTextField
-                {...params}
-                label="Transporter Name"
-                name="transporter"
-              />
-            )}
+            onChange={handleChange}
           />
         </Grid>
 
