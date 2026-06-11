@@ -64,6 +64,15 @@ export const CreateMaterialReturn = (props) => {
     }
   }, [recordForEdit]); // Added `recordForEdit` as a dependency
 
+  const handleQuantityChange = (index, value) => {
+    setSalesReturnData((prev) => ({
+      ...prev,
+      ccf_products: prev.ccf_products.map((item, i) =>
+        i === index ? { ...item, quantity: value } : item,
+      ),
+    }));
+  };
+
   const createSalesInvoiceDetails = async (e) => {
     e.preventDefault();
     setOpen(true);
@@ -314,7 +323,10 @@ export const CreateMaterialReturn = (props) => {
                       size="small"
                       label="Quantity"
                       variant="outlined"
-                      value={input.quantity}
+                      value={input.quantity || ""}
+                      onChange={(e) =>
+                        handleQuantityChange(index, e.target.value)
+                      }
                     />
                   </Grid>
                   <Grid item xs={12} sm={3}>

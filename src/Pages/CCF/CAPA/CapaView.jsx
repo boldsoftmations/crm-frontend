@@ -348,17 +348,16 @@ export const CapaView = ({ defaultStatus = "", isClose = false }) => {
                         >
                           View pdf
                         </Button>
-                        {!userData.groups.includes("Accounts") && (
-                          <Button
-                            color="inherit"
-                            variant="text"
-                            className="mx-3"
-                            size="small"
-                            onClick={() => handleImageShow(row)}
-                          >
-                            Document View
-                          </Button>
-                        )}
+
+                        <Button
+                          color="inherit"
+                          variant="text"
+                          className="mx-3"
+                          size="small"
+                          onClick={() => handleImageShow(row)}
+                        >
+                          Document View
+                        </Button>
                       </Box>
                     </StyledTableCell>
                   </StyledTableRow>

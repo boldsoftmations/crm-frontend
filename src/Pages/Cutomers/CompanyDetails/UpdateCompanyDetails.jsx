@@ -503,7 +503,7 @@ export const UpdateCompanyDetails = (props) => {
         {(userData.groups.includes("Director") ||
           userData.groups.includes("Accounts") ||
           userData.groups.includes("Sales Manager(Retailer)") ||
-          userData.groups.includes("Accounts Billing Department") ||
+          userData.groups.includes("Accounts Executive") ||
           userData.groups.includes("Sales Manager")) && (
           <Button
             type="submit"
