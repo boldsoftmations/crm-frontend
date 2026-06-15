@@ -217,6 +217,10 @@ export const CCFView = () => {
                 {(userData.groups.includes("Director") ||
                   userData.groups.includes("Sales Executive") ||
                   userData.groups.includes("Sales Manager") ||
+                  userData.groups.includes("Business Development Executive") ||
+                  userData.groups.includes("Customer Relationship Executive") ||
+                  userData.groups.includes("Business Development Manager") ||
+                  userData.groups.includes("Customer Relationship Manager") ||
                   userData.groups.includes("Sales Manager(Retailer)")) && (
                   <Button
                     color="primary"
