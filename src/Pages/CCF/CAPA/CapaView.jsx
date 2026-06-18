@@ -28,6 +28,7 @@ import { CreateCreditNote } from "./CreateCreditNote";
 import { CreateMaterialReturn } from "./CreateMaterialReturn";
 import UpdateCAPAStatus from "./UpdateCAPAStatus";
 import UpdateCapa from "./UpdateCapa";
+import Updatesettlement from "./Updatesettlement";
 
 export const CapaView = ({ defaultStatus = "", isClose = false }) => {
   const [open, setOpen] = useState(false);
@@ -42,6 +43,7 @@ export const CapaView = ({ defaultStatus = "", isClose = false }) => {
   const [imagesData, setImagesData] = useState(null);
   const [updateCAPAPopup, setUpdateCAPAPopup] = useState(false);
   const [openPopup, setOpenPopup] = useState(false);
+  const [openSettlement, setOpenSettlement] = useState(false);
   const [openCrediNote, setOpenCrediNote] = useState(false);
   const [openMaterialReturn, setOpenMaterialReturn] = useState(false);
   const [formData, setFormData] = useState("");
@@ -267,10 +269,28 @@ export const CapaView = ({ defaultStatus = "", isClose = false }) => {
                               color="primary"
                               size="small"
                               onClick={() => handlePopup(setOpenPopup, row)}
+                              disabled={
+                                row.ccfstatus === "Approval By Account Manager"
+                              }
                             >
                               View
                             </Button>
                           )}
+
+                        {(userData.groups.includes("Accounts") ||
+                          userData.groups.includes("Director")) && (
+                          <Button
+                            variant="text"
+                            color="primary"
+                            size="small"
+                            onClick={() => handlePopup(setOpenSettlement, row)}
+                            disabled={
+                              row.ccfstatus !== "Approval By Account Manager"
+                            }
+                          >
+                            Update Settlement
+                          </Button>
+                        )}
                         {(userData.groups.includes("Accounts") ||
                           userData.groups.includes(
                             "Accounts Billing Department",
@@ -483,6 +503,17 @@ export const CapaView = ({ defaultStatus = "", isClose = false }) => {
             </Button>
           </Grid>
         </Box>
+      </Popup>
+      <Popup
+        openPopup={openSettlement}
+        setOpenPopup={setOpenSettlement}
+        title="Update capa settlement"
+      >
+        <Updatesettlement
+          recordForEdit={recordForEdit}
+          setOpenSettlement={setOpenSettlement} // popup band karne ke liye
+          getAllCAPAData={getAllCAPAData} // table refresh karne ke liye
+        />
       </Popup>
     </>
   );

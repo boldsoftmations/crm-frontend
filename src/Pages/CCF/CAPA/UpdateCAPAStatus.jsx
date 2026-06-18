@@ -28,7 +28,7 @@ const UpdateCAPAStatus = ({
   useEffect(() => {
     const updatedStatus =
       formData.status === "Accept"
-        ? "Pending Note"
+        ? "Approval By Account Manager"
         : formData.status === "Reject"
           ? "Capa Revision Required"
           : "";
