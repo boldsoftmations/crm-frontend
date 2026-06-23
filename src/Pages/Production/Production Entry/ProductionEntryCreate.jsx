@@ -89,7 +89,7 @@ export const ProductionEntryCreate = memo((props) => {
         "all",
         "true",
         false,
-        value
+        value,
       );
       setSelectedProduct(response.data);
       // setRemark(response.data.remark);
@@ -167,7 +167,7 @@ export const ProductionEntryCreate = memo((props) => {
             setIcons(
               <span>
                 <TrendingUpIcon sx={{ fontSize: "3rem" }} color="success" />
-              </span>
+              </span>,
             );
             console.log("Above 10% range");
             isInvalid = true;
@@ -179,7 +179,7 @@ export const ProductionEntryCreate = memo((props) => {
             setIcons(
               <span>
                 <TrendingDownIcon sx={{ fontSize: "3rem" }} color="error" />
-              </span>
+              </span>,
             );
             console.log("Below 10% range");
             isInvalid = true;
@@ -368,6 +368,7 @@ export const ProductionEntryCreate = memo((props) => {
             />
           </Grid>
           {(users.email === "amol@glutape.com" ||
+            users.email === "productionwz1@glutape.com" ||
             users.groups.includes("Director")) && (
             <Grid item xs={12} sm={4}>
               <FormControlLabel
