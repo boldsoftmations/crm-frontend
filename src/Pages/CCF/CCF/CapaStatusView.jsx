@@ -42,6 +42,7 @@ const C = {
   shadowXl: "0 20px 25px -5px rgba(0, 0, 0, 0.1)",
 };
 
+// ── CHANGE 1: Added "Pending Approval by Account Manager" and "Approval By Account Manager" ──
 const STATUS_CFG = {
   "Under Review": {
     dot: C.info,
@@ -82,6 +83,24 @@ const STATUS_CFG = {
     border: C.successBorder,
     icon: "✓",
     label: "Approved",
+  },
+  // ── NEW STATUS 1 ──────────────────────────────────────────────────────────
+  "Pending Approval by Account Manager": {
+    dot: C.primary,
+    bg: C.primaryLight,
+    color: C.primaryDark,
+    border: C.primaryBorder,
+    icon: "⏳",
+    label: "Pending AM Approval",
+  },
+  // ── NEW STATUS 2 ──────────────────────────────────────────────────────────
+  "Approval By Account Manager": {
+    dot: C.success,
+    bg: C.successLight,
+    color: C.successDark,
+    border: C.successBorder,
+    icon: "✓",
+    label: "Approved by AM",
   },
   "Pending Note": {
     dot: C.info,
@@ -125,11 +144,14 @@ const STATUS_CFG = {
   },
 };
 
+// ── CHANGE 2: FLOW_STEPS now includes both new statuses between Approved and Pending Note ──
 const FLOW_STEPS = [
   "Under Review",
   "CAPA Created",
   "Pending Capa Approval",
   "Approved",
+  "Pending Approval by Account Manager",
+  "Approval By Account Manager",
   "Pending Note",
   "Closed",
 ];
@@ -562,7 +584,11 @@ export const transformRecordToCapaProps = (record) => {
       description:
         index === 0
           ? `Complaint logged: ${record.complaint || record.problem || "—"}. Complaint No: ${record.complain_no}`
-          : `Status updated to "${item.status}" by ${item.created_by_name || item.created_by}.`,
+          : item.status === "Pending Approval by Account Manager"
+            ? `CAPA approved and forwarded to Account Manager for final review by ${item.created_by_name || item.created_by}.`
+            : item.status === "Approval By Account Manager"
+              ? `Account Manager reviewed and approved the CAPA. Submitted by ${item.created_by_name || item.created_by}.`
+              : `Status updated to "${item.status}" by ${item.created_by_name || item.created_by}.`,
       remark: item.remark || null,
       user: item.created_by_name || item.created_by || "Unknown",
       role: item.created_by_designation || "—",
@@ -743,11 +769,12 @@ export const CapaStatusView = ({
       ? derived.recordForEdit
       : {};
 
-  const cfg = STATUS_CFG[_currentStatus] || STATUS_CFG["Under Review"];
-  const activeStep = FLOW_STEPS.indexOf(_currentStatus);
+  const _currentStatusNorm = (_currentStatus || "").trim();
+  const activeStep = FLOW_STEPS.indexOf(_currentStatusNorm);
+  const cfg = STATUS_CFG[_currentStatusNorm] || STATUS_CFG["Under Review"];
   const isRejected =
-    _currentStatus === "Rejected" ||
-    _currentStatus === "Capa Revision Required";
+    _currentStatusNorm === "Rejected" ||
+    _currentStatusNorm === "Capa Revision Required";
   const daysOpen = moment().diff(moment(_createdDate), "days");
 
   const stepRetryCount = {};
@@ -883,7 +910,7 @@ export const CapaStatusView = ({
               </div>
             )}
 
-            <div style={{ display: "flex", alignItems: "center" }}>
+            <div style={{ display: "flex", alignItems: "flex-start" }}>
               {FLOW_STEPS.map((label, i) => {
                 const done = activeStep !== -1 && i < activeStep;
                 const active = i === activeStep;
@@ -901,29 +928,50 @@ export const CapaStatusView = ({
                     >
                       <div
                         style={{
+                          position: "relative",
                           width: 34,
                           height: 34,
-                          borderRadius: "50%",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontSize: done ? 14 : 12,
-                          fontWeight: 700,
-                          zIndex: 1,
-                          background: done
-                            ? C.success
-                            : active
-                              ? scfg.dot
-                              : C.bgPage,
-                          border: done
-                            ? "none"
-                            : active
-                              ? `2px solid ${scfg.dot}`
-                              : `1px solid ${C.divider}`,
-                          color: done ? "#fff" : active ? "#fff" : C.text3,
+                          flexShrink: 0,
                         }}
                       >
-                        {done ? "✓" : active && isRejected ? "✕" : scfg.icon}
+                        <div
+                          style={{
+                            width: 34,
+                            height: 34,
+                            borderRadius: "50%",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontSize: 14,
+                            fontWeight: 700,
+                            position: "relative",
+                            zIndex: 1,
+                            background: done
+                              ? C.success
+                              : active
+                                ? isRejected
+                                  ? C.error
+                                  : scfg.dot
+                                : C.bgPage,
+                            border:
+                              done || active
+                                ? "none"
+                                : "1px solid " + C.divider,
+                            color: done || active ? "#fff" : C.text3,
+                            boxShadow: active
+                              ? "0 0 0 4px " +
+                                (isRejected ? C.errorLight : scfg.bg)
+                              : "none",
+                          }}
+                        >
+                          {done
+                            ? "\u2713"
+                            : active && isRejected
+                              ? "\u2715"
+                              : active && scfg.dot === C.success
+                                ? "\u2713"
+                                : scfg.icon}
+                        </div>
                       </div>
                       <div
                         style={{
@@ -937,12 +985,12 @@ export const CapaStatusView = ({
                             : active
                               ? isRejected
                                 ? C.error
-                                : C.primary
+                                : scfg.dot
                               : C.text3,
                           fontWeight: active || done ? 600 : 400,
                         }}
                       >
-                        {label}
+                        {scfg.label || label}
                       </div>
                       {(stepRetryCount[label] || 0) > 1 && (
                         <div
@@ -968,8 +1016,8 @@ export const CapaStatusView = ({
                           flex: 1,
                           height: 2,
                           margin: "0 -1px",
-                          position: "relative",
-                          top: -10,
+                          marginTop: 17,
+                          alignSelf: "flex-start",
                           background: done ? C.success : C.divider,
                         }}
                       />
@@ -1365,7 +1413,7 @@ export const CapaStatusView = ({
             />
           </Card>
 
-          {/* All statuses */}
+          {/* All statuses — CHANGE 3: added both new statuses between Approved and Pending Note */}
           <Card>
             <SectionLabel>All statuses</SectionLabel>
             {[
@@ -1374,12 +1422,14 @@ export const CapaStatusView = ({
               "Pending Capa Approval",
               "Capa Revision Required",
               "Approved",
+              "Pending Approval by Account Manager",
+              "Approval By Account Manager",
               "Pending Note",
               "Closed",
               "Rejected",
             ].map((s) => {
               const sc = STATUS_CFG[s];
-              const isCurr = s === _currentStatus;
+              const isCurr = s === _currentStatusNorm;
               return (
                 <div
                   key={s}
