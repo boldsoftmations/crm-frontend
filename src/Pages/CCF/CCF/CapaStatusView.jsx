@@ -42,7 +42,12 @@ const C = {
   shadowXl: "0 20px 25px -5px rgba(0, 0, 0, 0.1)",
 };
 
+// ── STATUS CONFIG ─────────────────────────────────────────────────────────────
+// Flow: Under Review → Pending Capa Approval → Approval By Account Manager
+//       → Pending Note → Closed
+// Side states: Capa Revision Required (loops back), Rejected (terminal)
 const STATUS_CFG = {
+  // ── Main flow ─────────────────────────────────────────────────────────────
   "Under Review": {
     dot: C.info,
     bg: C.infoLight,
@@ -51,45 +56,29 @@ const STATUS_CFG = {
     icon: "🔍",
     label: "Under Review",
   },
-  "CAPA Created": {
-    dot: C.warning,
-    bg: C.warningLight,
-    color: C.warningDark,
-    border: C.warningBorder,
-    icon: "📋",
-    label: "CAPA Created",
-  },
   "Pending Capa Approval": {
     dot: C.primary,
     bg: C.primaryLight,
     color: C.primaryDark,
     border: C.primaryBorder,
     icon: "⏳",
-    label: "Awaiting Approval",
+    label: "Pending Approval",
   },
-  "Capa Revision Required": {
-    dot: C.error,
-    bg: C.errorLight,
-    color: C.errorDark,
-    border: C.errorBorder,
-    icon: "🔄",
-    label: "Rework Required",
-  },
-  Approved: {
-    dot: C.success,
-    bg: C.successLight,
-    color: C.successDark,
-    border: C.successBorder,
-    icon: "✓",
-    label: "Approved",
+  "Pending By Account Manager": {
+    dot: C.primary,
+    bg: C.primaryLight,
+    color: C.primaryDark,
+    border: C.primaryBorder,
+    icon: "👤",
+    label: "Manager Approval",
   },
   "Pending Note": {
-    dot: C.info,
-    bg: C.infoLight,
-    color: C.infoDark,
-    border: C.infoBorder,
+    dot: C.warning,
+    bg: C.warningLight,
+    color: C.warningDark,
+    border: C.warningBorder,
     icon: "📝",
-    label: "Note Pending",
+    label: "Pending Note",
   },
   Closed: {
     dot: C.success,
@@ -99,6 +88,15 @@ const STATUS_CFG = {
     icon: "✓",
     label: "Closed",
   },
+  // ── Side / terminal states ────────────────────────────────────────────────
+  "Capa Revision Required": {
+    dot: C.error,
+    bg: C.errorLight,
+    color: C.errorDark,
+    border: C.errorBorder,
+    icon: "🔄",
+    label: "Revision Required",
+  },
   Rejected: {
     dot: C.error,
     bg: C.errorLight,
@@ -107,6 +105,40 @@ const STATUS_CFG = {
     icon: "✕",
     label: "Rejected",
   },
+  // ── Legacy / fallback statuses (kept for old records) ────────────────────
+  "CAPA Created": {
+    dot: C.warning,
+    bg: C.warningLight,
+    color: C.warningDark,
+    border: C.warningBorder,
+    icon: "📋",
+    label: "CAPA Created",
+  },
+  Approved: {
+    dot: C.success,
+    bg: C.successLight,
+    color: C.successDark,
+    border: C.successBorder,
+    icon: "✓",
+    label: "Approved",
+  },
+  "Pending Approval by Account Manager": {
+    dot: C.primary,
+    bg: C.primaryLight,
+    color: C.primaryDark,
+    border: C.primaryBorder,
+    icon: "⏳",
+    label: "Pending AM Approval",
+  },
+  "Account Manager Approval": {
+    dot: C.success,
+    bg: C.successLight,
+    color: C.successDark,
+    border: C.successBorder,
+    icon: "✓",
+    label: "Approved by AM",
+  },
+  // ── Flow indicator pills ──────────────────────────────────────────────────
   "IN Progress": {
     dot: C.warning,
     bg: C.warningLight,
@@ -125,11 +157,15 @@ const STATUS_CFG = {
   },
 };
 
+// ── FLOW_STEPS: the 5-step main progress bar ─────────────────────────────────
+// Side states (Capa Revision Required, Rejected) are NOT in the stepper.
+// "Capa Revision Required" loops back to "Pending Capa Approval" (shown as retry badge).
+// "Rejected" is terminal — shown via isRejected banner, not a step.
 const FLOW_STEPS = [
   "Under Review",
-  "CAPA Created",
   "Pending Capa Approval",
   "Approved",
+  "Pending By Account Manager",
   "Pending Note",
   "Closed",
 ];
@@ -553,7 +589,7 @@ const LightboxModal = ({ doc, allDocs, onClose }) => {
 
 // ── Data transformation helper ───────────────────────────────────────────────
 export const transformRecordToCapaProps = (record) => {
-  const timelineData = (record.status_details || []).map((item, index) => {
+  const rawTimeline = (record.status_details || []).map((item, index) => {
     const sc = STATUS_CFG[item.status] || STATUS_CFG["Under Review"];
     return {
       id: item.id,
@@ -562,12 +598,44 @@ export const transformRecordToCapaProps = (record) => {
       description:
         index === 0
           ? `Complaint logged: ${record.complaint || record.problem || "—"}. Complaint No: ${record.complain_no}`
-          : `Status updated to "${item.status}" by ${item.created_by_name || item.created_by}.`,
+          : item.status === "Pending Capa Approval"
+            ? `CAPA created and submitted to factory manager for approval by ${item.created_by_name || item.created_by}.`
+            : item.status === "Capa Revision Required"
+              ? `Factory manager returned the CAPA for revision. Revised by ${item.created_by_name || item.created_by}.`
+              : item.status === "Pending By Account Manager"
+                ? `Factory manager approved the CAPA. Forwarded to Account Manager for final approval by ${item.created_by_name || item.created_by}.`
+                : item.status === "Pending Note"
+                  ? `Accounts team notified to process CN/DN by ${item.created_by_name || item.created_by}.`
+                  : item.status === "Rejected"
+                    ? `Account Manager rejected the CAPA. This CCF is now closed. Action by ${item.created_by_name || item.created_by}.`
+                    : item.status === "Closed"
+                      ? `Accounts completed CN/DN. This CCF is now closed by ${item.created_by_name || item.created_by}.`
+                      : `Status updated to "${item.status}" by ${item.created_by_name || item.created_by}.`,
       remark: item.remark || null,
       user: item.created_by_name || item.created_by || "Unknown",
       role: item.created_by_designation || "—",
       date: item.creation_date,
+      _synthetic: false,
     };
+  });
+
+  // Inject a synthetic "Account Manager Approved" entry just before every "Pending Note" entry
+  const timelineData = [];
+  rawTimeline.forEach((entry) => {
+    if (entry.status === "Pending Note") {
+      timelineData.push({
+        id: entry.id + "_am_approved",
+        status: "Approved",
+        title: "Account Manager Approved",
+        description: `Account Manager reviewed and approved the CAPA. Proceeding to CN/DN by ${entry.user}.`,
+        remark: null,
+        user: entry.user,
+        role: entry.role,
+        date: entry.date,
+        _synthetic: true,
+      });
+    }
+    timelineData.push(entry);
   });
 
   return {
@@ -743,11 +811,13 @@ export const CapaStatusView = ({
       ? derived.recordForEdit
       : {};
 
-  const cfg = STATUS_CFG[_currentStatus] || STATUS_CFG["Under Review"];
-  const activeStep = FLOW_STEPS.indexOf(_currentStatus);
-  const isRejected =
-    _currentStatus === "Rejected" ||
-    _currentStatus === "Capa Revision Required";
+  const _currentStatusNorm = (_currentStatus || "").trim();
+  const activeStep = FLOW_STEPS.indexOf(_currentStatusNorm);
+  const cfg = STATUS_CFG[_currentStatusNorm] || STATUS_CFG["Under Review"];
+  // "Rejected" = terminal (AM rejected, flow stops)
+  // "Capa Revision Required" = loops back, shown separately
+  const isRejected = _currentStatusNorm === "Rejected";
+  const isRevision = _currentStatusNorm === "Capa Revision Required";
   const daysOpen = moment().diff(moment(_createdDate), "days");
 
   const stepRetryCount = {};
@@ -856,7 +926,7 @@ export const CapaStatusView = ({
                   alignItems: "center",
                   gap: 10,
                   background: C.errorLight,
-                  border: `1px solid ${C.errorBorder}`,
+                  border: "1px solid " + C.errorBorder,
                   borderRadius: 8,
                   padding: "10px 14px",
                   marginBottom: 16,
@@ -871,19 +941,51 @@ export const CapaStatusView = ({
                       color: C.errorDark,
                     }}
                   >
-                    {_currentStatus}
+                    Rejected by Account Manager
                   </div>
                   <div
                     style={{ fontSize: 12, color: C.errorDark, opacity: 0.8 }}
                   >
-                    This CAPA has been rejected. Action required before it can
-                    proceed.
+                    This CCF has been rejected and the flow has stopped.
+                  </div>
+                </div>
+              </div>
+            )}
+            {isRevision && (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                  background: C.warningLight,
+                  border: "1px solid " + C.warningBorder,
+                  borderRadius: 8,
+                  padding: "10px 14px",
+                  marginBottom: 16,
+                }}
+              >
+                <span style={{ fontSize: 18 }}>🔄</span>
+                <div>
+                  <div
+                    style={{
+                      fontSize: 13,
+                      fontWeight: 600,
+                      color: C.warningDark,
+                    }}
+                  >
+                    Revision Required
+                  </div>
+                  <div
+                    style={{ fontSize: 12, color: C.warningDark, opacity: 0.8 }}
+                  >
+                    Factory manager returned the CAPA for revision. Awaiting
+                    resubmission.
                   </div>
                 </div>
               </div>
             )}
 
-            <div style={{ display: "flex", alignItems: "center" }}>
+            <div style={{ display: "flex", alignItems: "flex-start" }}>
               {FLOW_STEPS.map((label, i) => {
                 const done = activeStep !== -1 && i < activeStep;
                 const active = i === activeStep;
@@ -901,29 +1003,43 @@ export const CapaStatusView = ({
                     >
                       <div
                         style={{
+                          position: "relative",
                           width: 34,
                           height: 34,
-                          borderRadius: "50%",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontSize: done ? 14 : 12,
-                          fontWeight: 700,
-                          zIndex: 1,
-                          background: done
-                            ? C.success
-                            : active
-                              ? scfg.dot
-                              : C.bgPage,
-                          border: done
-                            ? "none"
-                            : active
-                              ? `2px solid ${scfg.dot}`
-                              : `1px solid ${C.divider}`,
-                          color: done ? "#fff" : active ? "#fff" : C.text3,
+                          flexShrink: 0,
                         }}
                       >
-                        {done ? "✓" : active && isRejected ? "✕" : scfg.icon}
+                        <div
+                          style={{
+                            width: 34,
+                            height: 34,
+                            borderRadius: "50%",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontSize: 14,
+                            fontWeight: 700,
+                            position: "relative",
+                            zIndex: 1,
+                            background: done
+                              ? C.success
+                              : active
+                                ? scfg.dot
+                                : C.bgPage,
+                            border:
+                              done || active
+                                ? "none"
+                                : "1px solid " + C.divider,
+                            color: done || active ? "#fff" : C.text3,
+                            boxShadow: active ? "0 0 0 4px " + scfg.bg : "none",
+                          }}
+                        >
+                          {done
+                            ? "\u2713"
+                            : active && scfg.dot === C.success
+                              ? "\u2713"
+                              : scfg.icon}
+                        </div>
                       </div>
                       <div
                         style={{
@@ -932,17 +1048,11 @@ export const CapaStatusView = ({
                           textAlign: "center",
                           maxWidth: 72,
                           lineHeight: 1.3,
-                          color: done
-                            ? C.success
-                            : active
-                              ? isRejected
-                                ? C.error
-                                : C.primary
-                              : C.text3,
+                          color: done ? C.success : active ? scfg.dot : C.text3,
                           fontWeight: active || done ? 600 : 400,
                         }}
                       >
-                        {label}
+                        {scfg.label || label}
                       </div>
                       {(stepRetryCount[label] || 0) > 1 && (
                         <div
@@ -968,8 +1078,8 @@ export const CapaStatusView = ({
                           flex: 1,
                           height: 2,
                           margin: "0 -1px",
-                          position: "relative",
-                          top: -10,
+                          marginTop: 17,
+                          alignSelf: "flex-start",
                           background: done ? C.success : C.divider,
                         }}
                       />
@@ -1098,9 +1208,20 @@ export const CapaStatusView = ({
                 const sc =
                   STATUS_CFG[item.status] || STATUS_CFG["Under Review"];
 
+                const isSynthetic = item._synthetic === true;
                 seenCount[item.status] = (seenCount[item.status] || 0) + 1;
                 const occurrence = seenCount[item.status];
-                const isRetry = occurrence > 1;
+                const isRetry = !isSynthetic && occurrence > 1;
+                const dotColor = isSynthetic
+                  ? C.success
+                  : isRetry
+                    ? C.warning
+                    : sc.dot;
+                const dotShadow = isSynthetic
+                  ? "0 0 0 3px " + C.successLight
+                  : isRetry
+                    ? "0 0 0 3px " + C.warningLight
+                    : "none";
 
                 return (
                   <div key={item.id} style={{ display: "flex", gap: 16 }}>
@@ -1118,12 +1239,10 @@ export const CapaStatusView = ({
                           width: 12,
                           height: 12,
                           borderRadius: "50%",
-                          background: isRetry ? C.warning : sc.dot,
+                          background: dotColor,
                           marginTop: 6,
                           flexShrink: 0,
-                          boxShadow: isRetry
-                            ? `0 0 0 3px ${C.warningLight}`
-                            : "none",
+                          boxShadow: dotShadow,
                         }}
                       />
                       {!isLast && (
@@ -1142,12 +1261,28 @@ export const CapaStatusView = ({
                     <div
                       style={{
                         flex: 1,
-                        background: isRetry ? "#fffbeb" : C.bgPage,
-                        border: `1px solid ${isRetry ? C.warningBorder : C.divider}`,
+                        background: isSynthetic
+                          ? C.successLight
+                          : isRetry
+                            ? "#fffbeb"
+                            : C.bgPage,
+                        border:
+                          "1px solid " +
+                          (isSynthetic
+                            ? C.successBorder
+                            : isRetry
+                              ? C.warningBorder
+                              : C.divider),
                         borderRadius: 8,
                         padding: "14px 16px",
                         marginBottom: isLast ? 0 : 14,
-                        borderLeft: `3px solid ${isRetry ? C.warning : sc.dot}`,
+                        borderLeft:
+                          "3px solid " +
+                          (isSynthetic
+                            ? C.success
+                            : isRetry
+                              ? C.warning
+                              : sc.dot),
                       }}
                     >
                       <div
@@ -1170,11 +1305,28 @@ export const CapaStatusView = ({
                             style={{
                               fontSize: 14,
                               fontWeight: 600,
-                              color: C.text1,
+                              color: isSynthetic ? C.successDark : C.text1,
                             }}
                           >
+                            {isSynthetic ? "✓ " : ""}
                             {item.title}
                           </span>
+                          {isSynthetic && (
+                            <span
+                              style={{
+                                fontSize: 10,
+                                fontWeight: 700,
+                                background: C.success,
+                                color: "#fff",
+                                borderRadius: 4,
+                                padding: "2px 7px",
+                                letterSpacing: "0.05em",
+                                textTransform: "uppercase",
+                              }}
+                            >
+                              Approved
+                            </span>
+                          )}
                         </div>
                         <span
                           style={{
@@ -1365,21 +1517,21 @@ export const CapaStatusView = ({
             />
           </Card>
 
-          {/* All statuses */}
+          {/* All statuses — CHANGE 3: added both new statuses between Approved and Pending Note */}
           <Card>
             <SectionLabel>All statuses</SectionLabel>
             {[
               "Under Review",
-              "CAPA Created",
               "Pending Capa Approval",
               "Capa Revision Required",
               "Approved",
+              "Pending By Account Manager",
+              "Rejected",
               "Pending Note",
               "Closed",
-              "Rejected",
             ].map((s) => {
               const sc = STATUS_CFG[s];
-              const isCurr = s === _currentStatus;
+              const isCurr = s === _currentStatusNorm;
               return (
                 <div
                   key={s}

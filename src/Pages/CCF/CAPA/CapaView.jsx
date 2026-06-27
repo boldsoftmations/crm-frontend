@@ -26,6 +26,7 @@ import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
 import { CreateCreditNote } from "./CreateCreditNote";
 import { CreateMaterialReturn } from "./CreateMaterialReturn";
+// import UpdateCAPAStatus from "./UpdateCAPAStatus";
 import UpdateCAPAStatus from "./UpdateCAPAStatus";
 import UpdateCapa from "./UpdateCapa";
 import Updatesettlement from "./Updatesettlement";
