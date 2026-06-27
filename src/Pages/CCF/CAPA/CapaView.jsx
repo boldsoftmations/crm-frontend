@@ -270,7 +270,7 @@ export const CapaView = ({ defaultStatus = "", isClose = false }) => {
                               size="small"
                               onClick={() => handlePopup(setOpenPopup, row)}
                               disabled={
-                                row.ccfstatus === "Approval By Account Manager"
+                                row.ccfstatus === "Pending By Account Manager"
                               }
                             >
                               View
@@ -285,7 +285,7 @@ export const CapaView = ({ defaultStatus = "", isClose = false }) => {
                             size="small"
                             onClick={() => handlePopup(setOpenSettlement, row)}
                             disabled={
-                              row.ccfstatus !== "Approval By Account Manager"
+                              row.ccfstatus !== "Pending By Account Manager"
                             }
                           >
                             Update Settlement
