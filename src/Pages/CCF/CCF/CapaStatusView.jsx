@@ -964,7 +964,9 @@ export const CapaStatusView = ({
                   marginBottom: 16,
                 }}
               >
-                <span style={{ fontSize: 18 }}>🔄</span>
+                <span style={{ fontSize: 18 }} role="img" aria-label="revision">
+                  🔄
+                </span>
                 <div>
                   <div
                     style={{

@@ -172,7 +172,19 @@ const CapaDownload = ({ recordForEdit }) => {
                   Root Cause :
                 </Typography>
                 <Typography variant="body2">
-                  {recordForEdit.root_cause}
+                  1.{recordForEdit.root_cause_why1}
+                </Typography>
+                <Typography variant="body2">
+                  2.{recordForEdit.root_cause_why2}
+                </Typography>
+                <Typography variant="body2">
+                  3.{recordForEdit.root_cause_why3}
+                </Typography>
+                <Typography variant="body2">
+                  4.{recordForEdit.root_cause_why4}
+                </Typography>
+                <Typography variant="body2">
+                  5.{recordForEdit.root_cause_why5}
                 </Typography>
                 <Divider sx={{ marginY: 1 }} />
               </Grid>
