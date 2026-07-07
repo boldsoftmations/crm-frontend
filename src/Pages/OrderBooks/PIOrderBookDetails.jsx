@@ -606,6 +606,7 @@ export const PIOrderBookDetails = () => {
                         </Button>
                       )}
                       {(userData.groups.includes("Production") ||
+                        userData.groups.includes("QA") ||
                         userData.groups.includes("Production Delhi") ||
                         userData.groups.includes(
                           "Operations & Supply Chain Manager",
