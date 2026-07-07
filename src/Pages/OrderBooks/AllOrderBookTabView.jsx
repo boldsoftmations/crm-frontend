@@ -13,6 +13,7 @@ export const AllOrderBookTabView = () => {
 
   const allTabs = isInGroups(
     "Director",
+    "QA",
     "Operations & Supply Chain Manager",
     "Stores Delhi",
     "Production Delhi",

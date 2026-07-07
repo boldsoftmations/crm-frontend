@@ -297,6 +297,10 @@ export const ListItems = ({ setOpen }) => {
           },
           { to: "/user/profile-tab", text: "Employees Master" },
         ]),
+        renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
+        renderSubmenu("production", <FactoryIcon />, "Production", [
+          { to: "/inventory/view-production", text: "Production" },
+        ]),
         renderSubmenu(
           "customer_complaint",
           <ComplaintIcon />,
