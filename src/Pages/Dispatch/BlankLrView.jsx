@@ -36,6 +36,7 @@ import CustomDateFilterPopup from "../../Components/CustomDateFilterPopup";
 export const BlankLrView = () => {
   const [open, setOpen] = useState(false);
   const [LR_Pending, setLRPending] = useState("pending lr");
+  const [count, setCount] = useState(0);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [salesRegisterData, setsalesRegisterData] = useState([]);
@@ -81,6 +82,7 @@ export const BlankLrView = () => {
           pod_copy: item.pod_copy,
         };
       });
+
       setOpen(false);
       return data;
     } catch (error) {
@@ -106,6 +108,7 @@ export const BlankLrView = () => {
       );
       setsalesRegisterData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
+      setCount(response.data.count);
     } catch (error) {
       handleError(error);
     } finally {
@@ -247,6 +250,25 @@ export const BlankLrView = () => {
                 >
                   Pending Copy's
                 </h3>
+              </Grid>
+
+              <Grid item xs={12} sm={4}>
+                <Typography
+                  variant="h6"
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    textAlignLast: "center",
+                    marginTop: "10px",
+                    textAlign: "center",
+                    alignItems: "center",
+                    fontSize: "14px",
+                    color: "rgb(34, 34, 34)",
+                    fontWeight: 600,
+                  }}
+                >
+                  total Pending Copys: {count}
+                </Typography>
               </Grid>
             </Grid>
           </Box>

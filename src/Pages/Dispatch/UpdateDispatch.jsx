@@ -255,6 +255,7 @@ export const UpdateDispatch = (props) => {
           fullWidth
           variant="contained"
           text={"Submit"}
+          disabled={!inputValue.lr_date || !inputValue.transporter}
         />
       </Box>
       <Popup

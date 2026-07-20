@@ -48,6 +48,7 @@ export const ViewDispatch = () => {
   const users = data.profile;
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
+  const [count, setCount] = useState(0);
 
   const getuserProfile = async () => {
     try {
@@ -75,6 +76,8 @@ export const ViewDispatch = () => {
         users.groups.includes("Customer Service") ? "pending_dispatch_tab" : "",
       );
       setDispatchData(response.data.results);
+      setCount(response.data.count);
+
       setTotalPages(Math.ceil(response.data.count / 25));
     } catch (error) {
       handleError(error);
@@ -134,18 +137,35 @@ export const ViewDispatch = () => {
               </Grid>
             </Grid>
           </Box>
-          <Box sx={{ marginBottom: 2, display: "flex", alignItems: "center" }}>
-            <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} sx={{ textAlign: "center" }}>
+          <Box sx={{ mb: 2 }}>
+            <Grid container alignItems="center">
+              <Grid item xs={12} md={4}>
+                {/* Left Empty */}
+              </Grid>
+
+              <Grid item xs={12} md={4} sx={{ textAlign: "center" }}>
                 <h3
                   style={{
                     fontSize: "24px",
                     color: "rgb(34, 34, 34)",
                     fontWeight: 800,
+                    margin: 0,
                   }}
                 >
                   Pending Dispatch
                 </h3>
+              </Grid>
+
+              <Grid
+                item
+                xs={12}
+                md={4}
+                sx={{
+                  textAlign: { xs: "center", md: "right" },
+                  fontWeight: 600,
+                }}
+              >
+                Total Pending: {count}
               </Grid>
             </Grid>
           </Box>

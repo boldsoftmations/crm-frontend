@@ -41,6 +41,7 @@ export const SalesRegisterView = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [userList, setUserList] = useState([]);
   const [unitFilter, setUnitFilter] = useState("");
+  const [count, setCount] = useState(0);
   const [endDate, setEndDate] = useState(new Date()); // set endDate as one week ahead of startDate
   const [startDate, setStartDate] = useState(
     new Date(endDate.getTime() - 7 * 24 * 60 * 60 * 1000),
@@ -82,6 +83,7 @@ export const SalesRegisterView = () => {
           pod_copy: item.pod_copy,
         };
       });
+      setCount(response.data.count);
       setOpen(false);
       return data;
     } catch (error) {
@@ -234,10 +236,28 @@ export const SalesRegisterView = () => {
                   Select Date
                 </Button>
               </Grid>
-              <Grid item xs={12} sm={12}>
+              <Grid item xs={12} sm={4}>
+                <Typography
+                  variant="h6"
+                  style={{
+                    fontSize: "14px",
+                    color: "rgb(34, 34, 34)",
+                    fontWeight: 600,
+                    fontWeight: 800,
+                    alignItems: "center",
+                    marginTop: "10px",
+                    // justifyContent: "center",
+                    // display: "flex",
+                    // textAlignLast: "center",
+                  }}
+                >
+                  total Sales Register: {count}
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={4}>
                 <h3
                   style={{
-                    textAlign: "right",
+                    textAlign: "center",
                     // marginBottom: "1em",
                     fontSize: "24px",
                     color: "rgb(34, 34, 34)",
@@ -251,6 +271,7 @@ export const SalesRegisterView = () => {
                   Sales Register
                 </h3>
               </Grid>
+              <Grid item xs={12} sm={4} sx={{ textAlign: "center" }}></Grid>
             </Grid>
           </Box>
           <TableContainer

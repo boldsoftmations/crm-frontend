@@ -51,6 +51,7 @@ export const UploadedPODs = () => {
   const maxDate = new Date("2030-12-31").toISOString().split("T")[0];
   const [exportData, setExportData] = useState([]);
   const csvLinkRef = useRef(null);
+  const [count, setCount] = useState(0);
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
   const handleStartDateChange = (event) => {
@@ -112,6 +113,7 @@ export const UploadedPODs = () => {
         email,
         "completed pod",
       );
+      setCount(response.data.count);
       setsalesRegisterData(response.data.results);
       setAllSalesRegisterData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -262,14 +264,26 @@ export const UploadedPODs = () => {
                   onReset={handleReset}
                 />
               </Grid>
-              <Grid item xs={12} sm={4}></Grid>
+              <Grid item xs={12} sm={4}>
+                <Typography
+                  variant="h6"
+                  style={{
+                    fontSize: "14px",
+                    color: "rgb(34, 34, 34)",
+                    fontWeight: 600,
+                    marginTop: "10px",
+                  }}
+                >
+                  total uploaded PODs: {count}
+                </Typography>
+              </Grid>
 
               <Grid item xs={12} sm={4}>
                 <h3
                   style={{
                     textAlign: "center",
                     alignItems: "center",
-                    marginBottom: "1em",
+                    // marginBottom: "1em",
                     fontSize: "24px",
                     color: "rgb(34, 34, 34)",
                     fontWeight: 800,

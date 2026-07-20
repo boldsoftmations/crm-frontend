@@ -40,6 +40,7 @@ export const ExportView = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [userList, setUserList] = useState([]);
   const [unitFilter, setUnitFilter] = useState("");
+  const [count, setCount] = useState(0);
   const data = useSelector((state) => state.auth);
   const userData = data.profile;
   const { handleError, handleCloseSnackbar, alertInfo } =
@@ -70,6 +71,7 @@ export const ExportView = () => {
         "not_lr",
       );
       setDispatchData(response.data.results);
+      setCount(response.data.count);
       setTotalPages(Math.ceil(response.data.count / 25));
     } catch (error) {
       handleError(error);
@@ -136,6 +138,19 @@ export const ExportView = () => {
                   onSearch={handleSearch}
                   onReset={handleReset}
                 />
+              </Grid>
+
+              <Grid item xs={12} sm={4}>
+                <Typography
+                  variant="h6"
+                  style={{
+                    fontSize: "14px",
+                    color: "rgb(34, 34, 34)",
+                    fontWeight: 600,
+                  }}
+                >
+                  total Export Invoice: {count}
+                </Typography>
               </Grid>
             </Grid>
           </Box>

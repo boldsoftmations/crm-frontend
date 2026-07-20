@@ -12,6 +12,7 @@ import {
   TableBody,
   Table,
   tableCellClasses,
+  Typography,
 } from "@mui/material";
 
 import { CustomLoader } from "../../../Components/CustomLoader";
@@ -54,6 +55,7 @@ export const DispatchPackagingView = () => {
   const currentMonthStartDate = currentDates.startOf("month");
   const [searchData, setSearchData] = useState(initialSearchQuery);
   const currentMonths = currentMonthStartDate.format("YYYY-MM");
+  const [count, setCount] = useState(0);
 
   const handleClose = () => {
     setAlertMsg({ open: false });
@@ -90,6 +92,7 @@ export const DispatchPackagingView = () => {
       );
       setPackagingData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
+      setCount(response.data.count);
     } catch (e) {
       setAlertMsg({
         message:
@@ -255,6 +258,18 @@ export const DispatchPackagingView = () => {
                     }}
                   />
                 )}
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Typography
+                  variant="h6"
+                  style={{
+                    fontSize: "14px",
+                    color: "rgb(34, 34, 34)",
+                    fontWeight: 600,
+                  }}
+                >
+                  total Packaging Material Consumption: {count}
+                </Typography>
               </Grid>
             </Grid>
           </Box>

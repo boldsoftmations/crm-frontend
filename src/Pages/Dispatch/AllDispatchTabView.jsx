@@ -53,12 +53,13 @@ export const AllDispatchTabView = () => {
   const salesRegisterTab = isInGroups("Accounts Billing Department");
   const isAccpuntExecutive = isInGroups("Accounts Executive");
   const isStores = isInGroups("Stores");
+  const factoryDispatchTab = isInGroups("Factory-Mumbai-OrderBook");
   const [activeTab, setActiveTab] = useState(allTabs ? 0 : 4);
 
   const tabs = [
     {
       label: "Pending Dispatch",
-      visible: allTabs || twoTabs || customerServiceTab,
+      visible: allTabs || twoTabs || factoryDispatchTab,
       index: 0,
     },
 
@@ -68,7 +69,7 @@ export const AllDispatchTabView = () => {
         : dispatchLRPending
           ? "Dispatched-LR Pending"
           : "Dispatch",
-      visible: allTabs || twoTabs || customerServiceTab,
+      visible: allTabs || twoTabs || customerServiceTab || factoryDispatchTab,
       index: 1,
     },
 
@@ -85,17 +86,18 @@ export const AllDispatchTabView = () => {
         customerServiceTab ||
         salesRegisterTab ||
         isAccpuntExecutive ||
-        isStores,
+        isStores ||
+        factoryDispatchTab,
       index: 3,
     },
     {
       label: "Pending LR Copy",
-      visible: adminTab || dispatchPODPending || isStores,
+      visible: adminTab || dispatchPODPending || isStores || factoryDispatchTab,
       index: 4,
     },
     {
       label: "Uploaded POD",
-      visible: adminTab,
+      visible: adminTab || factoryDispatchTab,
       index: 5,
     },
     {

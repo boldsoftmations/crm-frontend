@@ -43,6 +43,7 @@ export const Dispatched = () => {
   const [unitFilter, setUnitFilter] = useState("");
   const data = useSelector((state) => state.auth);
   const csvLinkRef = useRef(null);
+  const [count, setCount] = useState(0);
   const userData = data.profile;
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
@@ -72,6 +73,7 @@ export const Dispatched = () => {
         userData.groups.includes("Customer Service") ? "dispatch_tab" : "",
       );
       setDispatchData(response.data.results);
+      setCount(response.data.count);
       setTotalPages(Math.ceil(response.data.count / 25));
     } catch (error) {
       handleError(error);
@@ -202,11 +204,22 @@ export const Dispatched = () => {
                   onReset={handleReset}
                 />
               </Grid>
-              <Grid item xs={12} sm={7}></Grid>
               <Grid
                 item
                 xs={12}
-                sm={5}
+                md={4}
+                sx={{
+                  // textAlign: { xs: "center", md: "right" },
+                  fontWeight: 600,
+                }}
+              >
+                Total Dispatch: {count}
+              </Grid>
+              <Grid item xs={12} sm={4}></Grid>
+              <Grid
+                item
+                xs={12}
+                sm={4}
                 style={{
                   textAlign: "right",
                 }}
