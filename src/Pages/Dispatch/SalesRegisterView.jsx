@@ -83,7 +83,6 @@ export const SalesRegisterView = () => {
           pod_copy: item.pod_copy,
         };
       });
-      setCount(response.data.count);
       setOpen(false);
       return data;
     } catch (error) {
@@ -122,6 +121,7 @@ export const SalesRegisterView = () => {
       );
       setsalesRegisterData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
+      setCount(response.data.count);
     } catch (error) {
       handleError(error);
     } finally {
