@@ -54,7 +54,7 @@ export const AllDispatchTabView = () => {
   const isAccpuntExecutive = isInGroups("Accounts Executive");
   const isStores = isInGroups("Stores");
   const factoryDispatchTab = isInGroups("Factory-Mumbai-OrderBook");
-  const [activeTab, setActiveTab] = useState(allTabs ? 0 : 4);
+  const [activeTab, setActiveTab] = useState(0);
 
   const tabs = [
     {
@@ -119,17 +119,15 @@ export const AllDispatchTabView = () => {
     5: <UploadedPODs />,
     6: <DispatchPackagingView />,
   };
-
   return (
     <div>
       <CustomTabs
         tabs={visibleTabs}
         activeTab={activeTab}
-        onTabChange={(index) => setActiveTab(visibleTabIndexes[index])}
+        onTabChange={(index) => setActiveTab(index)}
       />
-      {visibleTabIndexes.includes(activeTab) && (
-        <div>{tabComponents[activeTab]}</div>
-      )}
+
+      <div>{tabComponents[visibleTabIndexes[activeTab]]}</div>
     </div>
   );
 };
