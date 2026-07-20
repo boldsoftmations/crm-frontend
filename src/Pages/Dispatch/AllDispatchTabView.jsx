@@ -59,7 +59,7 @@ export const AllDispatchTabView = () => {
   const tabs = [
     {
       label: "Pending Dispatch",
-      visible: allTabs || twoTabs || factoryDispatchTab,
+      visible: allTabs || twoTabs || factoryDispatchTab || customerServiceTab,
       index: 0,
     },
 
