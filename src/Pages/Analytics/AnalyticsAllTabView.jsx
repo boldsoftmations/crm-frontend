@@ -27,6 +27,7 @@ export const AnalyticsAllTabView = () => {
       label: "Sales Person Analytics",
       roles: [
         "Director",
+        "Business Development Executive",
         "Sales Manager",
         "Sales Manager(Retailer)",
         "Sales Deputy Manager",
@@ -60,6 +61,7 @@ export const AnalyticsAllTabView = () => {
       label: "Sales Team Analytics",
       roles: [
         "Director",
+
         "Sales Manager",
         "Sales Deputy Manager",
         "Sales Manager(Retailer)",
@@ -104,6 +106,8 @@ export const AnalyticsAllTabView = () => {
       label: "Top Customer",
       roles: [
         "Director",
+        "Business Development Executive",
+
         "Customer Relationship Manager",
         "Customer Relationship Executive",
         "Sales Manager(Retailer)",
@@ -115,6 +119,8 @@ export const AnalyticsAllTabView = () => {
       label: "CR Report",
       roles: [
         "Director",
+        "Business Development Executive",
+
         "Customer Relationship Manager",
         "Customer Relationship Executive",
       ],
@@ -125,6 +131,7 @@ export const AnalyticsAllTabView = () => {
       label: "Sales Qty Analysis",
       roles: [
         "Director",
+        "Business Development Executive",
         "Customer Relationship Executive",
         "Customer Relationship Manager",
         "Business Development Manager",
