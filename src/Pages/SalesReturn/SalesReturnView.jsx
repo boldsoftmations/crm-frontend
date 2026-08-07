@@ -18,22 +18,16 @@ import {
 import { tableCellClasses } from "@mui/material/TableCell";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-// import SearchComponent from "../../../Components/SearchComponent ";
-import SearchComponent from "../../Components/SearchComponent ";
-// import { MessageAlert } from "../../../Components/MessageAlert";
-import { MessageAlert } from "../../Components/MessageAlert";
-// import InventoryServices from "../../../services/InventoryService";
-import InventoryServices from "../../services/InventoryService";
-// import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
-import { useNotificationHandling } from "../../Components/useNotificationHandling ";
-// import { CustomPagination } from "../../../Components/CustomPagination";
-import { CustomPagination } from "../../Components/CustomPagination";
-// import { CustomLoader } from "../../../Components/CustomLoader";
-import { CustomLoader } from "../../Components/CustomLoader";
-// import { Popup } from "../../../Components/Popup";
-import { Popup } from "../../Components/Popup";
+import SearchComponent from "../../../Components/SearchComponent ";
+import { MessageAlert } from "../../../Components/MessageAlert";
+import InventoryServices from "../../../services/InventoryService";
+import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
+import { CustomPagination } from "../../../Components/CustomPagination";
+import { CustomLoader } from "../../../Components/CustomLoader";
+import { Popup } from "../../../Components/Popup";
 import { SalesReturnCreate } from "./SalesReturnCreate";
-
+import CustomDateFilterPopup from "../../../Components/CustomDateFilterPopup";
+import { CSVLink } from "react-csv";
 export const SalesReturnView = () => {
   const [open, setOpen] = useState(false);
   const [salesReturnData, setSalesReturnData] = useState([]);
@@ -43,14 +37,30 @@ export const SalesReturnView = () => {
   const [openPopupSalesReturn, setOpenPopupSalesReturn] = useState(false);
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
+  // const [openDateFilter, setOpenDateFilter] = useState(false);
+  // const [startDate, setStartDate] = useState(null);
+  // const [endDate, setEndDate] = useState(null);
+
+  const [openDateFilter, setOpenDateFilter] = useState(false);
+
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+
+  const [appliedStartDate, setAppliedStartDate] = useState(null);
+  const [appliedEndDate, setAppliedEndDate] = useState(null);
 
   const getSalesReturnDetails = useCallback(async () => {
     try {
       setOpen(true);
+      const formattedStartDate = formatDateForApi(appliedStartDate);
+      const formattedEndDate = formatDateForApi(appliedEndDate);
       const response = await InventoryServices.getSalesReturnData(
         currentPage,
         searchQuery,
+        formattedStartDate,
+        formattedEndDate,
       );
+
       setSalesReturnData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
     } catch (error) {
@@ -58,11 +68,20 @@ export const SalesReturnView = () => {
     } finally {
       setOpen(false);
     }
-  }, [currentPage, searchQuery]); // Ensure dependencies are correctly listed
+  }, [currentPage, searchQuery, appliedStartDate, appliedEndDate]);
 
   useEffect(() => {
     getSalesReturnDetails();
-  }, [currentPage, searchQuery]);
+  }, [getSalesReturnDetails]);
+  const formatDateForApi = (date) => {
+    if (!date) return "";
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  };
 
   const handleSearch = (query) => {
     setSearchQuery(query);
@@ -76,6 +95,99 @@ export const SalesReturnView = () => {
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
+  };
+
+  const handleDownloadCSV = async () => {
+    try {
+      setOpen(true);
+
+      const formattedStartDate = formatDateForApi(appliedStartDate);
+      const formattedEndDate = formatDateForApi(appliedEndDate);
+
+      let allSalesReturnData = [];
+      let page = 1;
+      let totalPages = 1;
+
+      do {
+        const response = await InventoryServices.getSalesReturnData(
+          page,
+          searchQuery,
+          formattedStartDate,
+          formattedEndDate,
+        );
+
+        const results =
+          response && response.data && response.data.results
+            ? response.data.results
+            : [];
+
+        allSalesReturnData = [...allSalesReturnData, ...results];
+
+        const totalCount =
+          response && response.data && response.data.count
+            ? response.data.count
+            : 0;
+
+        totalPages = Math.ceil(totalCount / 25);
+
+        page++;
+      } while (page <= totalPages);
+
+      if (allSalesReturnData.length === 0) {
+        return;
+      }
+
+      const headers = [
+        "DATE",
+        "INVOICE TYPE",
+        "INVOICE NO",
+        "COMPLAINT NO",
+        "COMPANY",
+        "GST",
+        "AMOUNT",
+        "TOTAL",
+      ];
+
+      const rows = allSalesReturnData.map((row) => [
+        row.invoice_date || "",
+        row.invoice_type || "",
+        row.invoice_no || "",
+        row.ccf_complain_no || "",
+        row.supplier_name || "",
+        row.gst || "",
+        row.amount || "",
+        row.total || "",
+      ]);
+
+      const csvContent = [
+        headers.join(","),
+        ...rows.map((row) =>
+          row
+            .map((value) => `"${String(value).replace(/"/g, '""')}"`)
+            .join(","),
+        ),
+      ].join("\n");
+
+      const blob = new Blob([csvContent], {
+        type: "text/csv;charset=utf-8;",
+      });
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.setAttribute("download", "sales_return.csv");
+
+      document.body.appendChild(link);
+      link.click();
+
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setOpen(false);
+    }
   };
 
   return (
@@ -124,6 +236,7 @@ export const SalesReturnView = () => {
               </Grid>
 
               {/* Add Button on the right */}
+              {/* Date Filter + Add Button */}
               <Grid
                 item
                 xs={12}
@@ -131,8 +244,27 @@ export const SalesReturnView = () => {
                 sx={{
                   display: "flex",
                   justifyContent: { xs: "center", md: "flex-end" },
+                  alignItems: "center",
+                  gap: 1,
+                  flexWrap: "wrap",
                 }}
               >
+                <Button
+                  variant="outlined"
+                  onClick={() => setOpenDateFilter(true)}
+                >
+                  Date Filter
+                </Button>
+
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={handleDownloadCSV}
+                  disabled={!salesReturnData || salesReturnData.length === 0}
+                >
+                  Download CSV
+                </Button>
+
                 <Button
                   color="success"
                   variant="contained"
@@ -143,7 +275,23 @@ export const SalesReturnView = () => {
               </Grid>
             </Grid>
           </Box>
-
+          <CustomDateFilterPopup
+            open={openDateFilter}
+            setOpen={setOpenDateFilter}
+            startDate={startDate}
+            endDate={endDate}
+            setStartDate={setStartDate}
+            setEndDate={setEndDate}
+            onSubmit={() => {
+              setAppliedStartDate(startDate);
+              setAppliedEndDate(endDate);
+              setCurrentPage(1);
+              setOpenDateFilter(false);
+            }}
+            onError={(message) => {
+              console.log(message);
+            }}
+          />
           <TableContainer
             sx={{
               maxHeight: 440,
@@ -171,6 +319,8 @@ export const SalesReturnView = () => {
                   <StyledTableCell align="center">INVOICE NO</StyledTableCell>
                   <StyledTableCell align="center">Complaint NO</StyledTableCell>
                   <StyledTableCell align="center">COMPANY</StyledTableCell>
+                  <StyledTableCell align="center">GSt</StyledTableCell>
+                  <StyledTableCell align="center">Amount</StyledTableCell>
                   <StyledTableCell align="center">TOTAL</StyledTableCell>
                 </TableRow>
               </TableHead>
@@ -229,6 +379,8 @@ function Row(props) {
         <StyledTableCell align="center">{row.invoice_no}</StyledTableCell>
         <StyledTableCell align="center">{row.ccf_complain_no}</StyledTableCell>
         <StyledTableCell align="center">{row.supplier_name}</StyledTableCell>
+        <StyledTableCell align="center">{row.gst}</StyledTableCell>
+        <StyledTableCell align="center">{row.amount}</StyledTableCell>
         <StyledTableCell align="center">{row.total}</StyledTableCell>
       </StyledTableRow>
       <TableRow>
