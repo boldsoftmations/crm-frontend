@@ -26,7 +26,7 @@ import { CustomPagination } from "../../../Components/CustomPagination";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { Popup } from "../../../Components/Popup";
 import { SalesReturnCreate } from "./SalesReturnCreate";
-import CustomDateFilterPopup from "../../../Components/CustomDateFilterPopup";
+import CustomDateFilterPopup from "../../Components/CustomDateFilterPopup";
 import { CSVLink } from "react-csv";
 export const SalesReturnView = () => {
   const [open, setOpen] = useState(false);
