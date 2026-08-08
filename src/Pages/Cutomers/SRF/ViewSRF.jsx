@@ -106,6 +106,7 @@ export const ViewSRF = () => {
             lr_no: index === 0 ? row.lr_no : "",
             special_instructions: product.special_instructions,
             remark: index === 0 ? row.remark : "",
+            created_by: index === 0 ? row.created_by : "",
           });
         });
       });
@@ -140,8 +141,10 @@ export const ViewSRF = () => {
     { label: "Unit", key: "unit" },
     { label: "Customer Name", key: "customer" },
     { label: "Product", key: "product" },
+
     { label: "Quantity", key: "qty" },
     { label: "LR Number", key: "lr_no" },
+    { label: "Created By", key: "created_by" },
     { label: "Remark", key: "remark" },
   ];
 
