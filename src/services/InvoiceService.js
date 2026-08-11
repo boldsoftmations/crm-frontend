@@ -329,6 +329,7 @@ const getAllSaleRegisterData = (
   if (status) {
     params.append("status", status);
   }
+
   // Sending a GET request with query parameters
   return CustomAxios.get(
     `api/invoice/list-sales-register/?${params.toString()}`,
@@ -445,13 +446,20 @@ const getCustomersList = () => {
   return CustomAxios.get(`/api/customer/customer/`);
 };
 
-const getDebitCreditnotes = (page, searchValue) => {
+const getDebitCreditnotes = (page, searchValue, start_date, end_date) => {
   const params = new URLSearchParams();
   if (page) {
     params.append("page", page);
   }
   if (searchValue) {
     params.append("search", searchValue);
+  }
+
+  if (start_date) {
+    params.append("start_date", start_date);
+  }
+  if (end_date) {
+    params.append("end_date", end_date);
   }
 
   return CustomAxios.get(
@@ -560,6 +568,10 @@ const getMisPackagingData = (page, searchValue, year, month) => {
   );
 };
 
+const getAuditReportData = () => {
+  return CustomAxios.get(`/api/audit/audit-logs/`);
+};
+
 const InvoiceServices = {
   getAllSellerAccountData,
   getfilterSellerAccountData,
@@ -618,6 +630,7 @@ const InvoiceServices = {
   getInvoiceCsvData,
 
   getMisPackagingData,
+  getAuditReportData,
 };
 
 export default InvoiceServices;

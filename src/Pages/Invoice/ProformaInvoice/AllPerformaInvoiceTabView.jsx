@@ -45,7 +45,8 @@ export const AllPerformaInvoiceTabView = () => {
     () => [
       {
         label: "Approve PI",
-        visible: roles.allTabs,
+
+        visible: roles.allTabs || roles.isAccountBillingDepartment,
         index: 0,
         component: <ApprovePi />,
       },
@@ -59,15 +60,17 @@ export const AllPerformaInvoiceTabView = () => {
           roles.isSalesManagerWithoutLeads ||
           roles.isSalesManagerWithLeads ||
           roles.allTabs ||
-          roles.isCustomerService ||
-          roles.isAccountBillingDepartment,
+          roles.isCustomerService,
         index: 1,
         component: <ActivePI />,
       },
       {
         label: "Price Approval PI",
         visible:
-          roles.allTabs || roles.isSalesManager || roles.isSalesExecutive,
+          roles.allTabs ||
+          roles.isSalesManager ||
+          roles.isSalesExecutive ||
+          roles.isAccountBillingDepartment,
 
         index: 2,
         component: <PriceApprovalPI />,

@@ -388,6 +388,7 @@ export const ProformaInvoiceView = (props) => {
             {(users.groups.includes("Sales") ||
               users.groups.includes("Director") ||
               users.groups.includes("Customer Service") ||
+              users.groups.includes("Accounts Billing Department") ||
               users.groups.includes("Accounts")) &&
               invoiceData.status === "Raised" && (
                 <Button
@@ -413,7 +414,8 @@ export const ProformaInvoiceView = (props) => {
           </div>
           <div className="col-xs-6 ">
             {invoiceData.status === "Approved" &&
-              users.groups.includes("Accounts") && (
+              users.groups.includes("Accounts") &&
+              users.groups.includes("Accounts Billing Department") && (
                 <Button
                   variant="contained"
                   color="primary"
@@ -441,6 +443,7 @@ export const ProformaInvoiceView = (props) => {
           <div className="col-xs-6">
             {(users.groups.includes("Accounts") ||
               users.groups.includes("Director") ||
+              users.groups.includes("Accounts Billing Department") ||
               users.groups.includes("Accounts Executive")) &&
               invoiceData.status === "Price Approval" && (
                 <Button
@@ -456,6 +459,7 @@ export const ProformaInvoiceView = (props) => {
               )}
             {(users.groups.includes("Accounts") ||
               users.groups.includes("Director") ||
+              users.groups.includes("Accounts Billing Department") ||
               users.groups.includes("Accounts Executive")) &&
               invoiceData.status === "Price Approval" && (
                 <Button
@@ -470,6 +474,7 @@ export const ProformaInvoiceView = (props) => {
                 </Button>
               )}
             {(users.groups.includes("Accounts") ||
+              users.groups.includes("Accounts Billing Department") ||
               users.groups.includes("Director")) &&
               invoiceData.status === "Price Approval" && (
                 <Button
@@ -485,6 +490,7 @@ export const ProformaInvoiceView = (props) => {
             {invoiceData.status === "Approved" &&
               (users.groups.includes("Accounts") ||
                 users.groups.includes("Director") ||
+                users.groups.includes("Accounts Billing Department") ||
                 users.groups.includes("Accounts Executive")) && (
                 <Button
                   variant="contained"
@@ -500,6 +506,7 @@ export const ProformaInvoiceView = (props) => {
               users.groups.includes("Sales Deputy Manager") ||
               users.groups.includes("Customer Service") ||
               users.groups.includes("Business Development Executive") ||
+              users.groups.includes("Accounts Billing Department") ||
               users.groups.includes("Business Development Manager") ||
               users.groups.includes("Customer Relationship Manager") ||
               users.groups.includes("Customer Relationship Executive")) &&

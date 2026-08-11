@@ -22,6 +22,8 @@ import SearchComponent from "../../Components/SearchComponent ";
 import { CustomPagination } from "../../Components/CustomPagination";
 import { Popup } from "../../Components/Popup";
 import { DebitCreditInvoiceNote } from "./DebitCreditInvoiceNote";
+import CustomDateFilterPopup from "../../Components/CustomDateFilterPopup";
+import { formatDate } from "../../utility/dateUtils";
 
 export const DebitCreditView = () => {
   const [open, setOpen] = useState(false);
@@ -33,34 +35,80 @@ export const DebitCreditView = () => {
     useState(false);
   const [openInvoiceNote, setOpenInvoiceNote] = useState(false);
   const [invoiceNoteData, setInvoiceNoteData] = useState();
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
 
+  const [appliedStartDate, setAppliedStartDate] = useState(null);
+  const [appliedEndDate, setAppliedEndDate] = useState(null);
+  const [openDateFilter, setOpenDateFilter] = useState(false);
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
-
+  // const [startDate, setStartDate] = useState(null);
+  // const [endDate, setEndDate] = useState(null);
+  // const [openDateFilter, setOpenDateFilter] = useState(false);
   const getDebitCreditNotesData = useCallback(async () => {
     try {
       setOpen(true);
+
+      const formattedStartDate = appliedStartDate
+        ? appliedStartDate.toISOString().split("T")[0]
+        : "";
+
+      const formattedEndDate = appliedEndDate
+        ? appliedEndDate.toISOString().split("T")[0]
+        : "";
+
       const response = await InvoiceServices.getDebitCreditnotes(
         currentPage,
         searchQuery,
+        formattedStartDate,
+        formattedEndDate,
       );
+
       console.log("Debit/credit", response.data);
-      setDebitCreditNotesData(response.data.results);
-      setTotalPages(Math.ceil(response.data.count / 25));
+
+      setDebitCreditNotesData(
+        response.data && response.data.results ? response.data.results : [],
+      );
+
+      setTotalPages(
+        response.data && response.data.count
+          ? Math.ceil(response.data.count / 25)
+          : 0,
+      );
     } catch (error) {
       handleError(error);
     } finally {
       setOpen(false);
     }
-  }, [currentPage, searchQuery]); // Ensure dependencies are correctly listed
+  }, [currentPage, searchQuery, appliedStartDate, appliedEndDate]); // Ensure dependencies are correctly listed
 
   useEffect(() => {
     getDebitCreditNotesData();
-  }, [currentPage, searchQuery]);
+  }, [getDebitCreditNotesData]);
 
   const handleSearch = (query) => {
     setSearchQuery(query);
     setCurrentPage(1); // Reset to first page with new search
+  };
+  const handleDateFilterSubmit = () => {
+    if (!startDate || !endDate) {
+      handleError("Please select both start date and end date");
+      return;
+    }
+
+    setAppliedStartDate(startDate);
+    setAppliedEndDate(endDate);
+    setCurrentPage(1);
+    setOpenDateFilter(false);
+  };
+  const handleDateFilterReset = () => {
+    setStartDate(null);
+    setEndDate(null);
+    setAppliedStartDate(null);
+    setAppliedEndDate(null);
+    setCurrentPage(1);
+    setOpenDateFilter(false);
   };
 
   const handleReset = () => {
@@ -75,6 +123,111 @@ export const DebitCreditView = () => {
   const openPopUp = (data) => {
     setInvoiceNoteData(data);
     setOpenInvoiceNote(true);
+  };
+  const handleDownloadCSV = async () => {
+    try {
+      setOpen(true);
+
+      const formattedStartDate = appliedStartDate
+        ? appliedStartDate.toISOString().split("T")[0]
+        : "";
+
+      const formattedEndDate = appliedEndDate
+        ? appliedEndDate.toISOString().split("T")[0]
+        : "";
+
+      const allData = [];
+      let page = 1;
+      let totalCount = 0;
+      const pageSize = 25;
+
+      do {
+        const response = await InvoiceServices.getDebitCreditnotes(
+          page,
+          searchQuery,
+          formattedStartDate,
+          formattedEndDate,
+        );
+
+        const responseData = response.data || {};
+        const results = responseData.results || [];
+
+        if (page === 1) {
+          totalCount = responseData.count || 0;
+        }
+
+        allData.push(...results);
+
+        page += 1;
+
+        if (results.length === 0) {
+          break;
+        }
+      } while (allData.length < totalCount);
+
+      if (allData.length === 0) {
+        handleError("No data available to download");
+        return;
+      }
+
+      const headers = [
+        "Date",
+        "Note Type",
+        "Voucher No",
+        "Customer",
+        "Complaint No",
+        "Reason",
+        "GST %",
+        "Amount",
+        "Total Amount",
+      ];
+
+      const csvRows = allData.map((row) => [
+        row.creation_date || "",
+        row.note_type || "",
+        row.note_no || "",
+        row.customer || "",
+        row.ccf_complain_no || "N/A",
+        row.reason || "",
+        row.gst_percentage + "%" || "",
+        row.amount || "",
+        row.total_amount || "",
+      ]);
+
+      const csvContent = [headers, ...csvRows]
+        .map((row) =>
+          row
+            .map((value) => {
+              const stringValue = String(value);
+              return `"${stringValue.replace(/"/g, '""')}"`;
+            })
+            .join(","),
+        )
+        .join("\n");
+
+      const blob = new Blob([csvContent], {
+        type: "text/csv;charset=utf-8;",
+      });
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.setAttribute(
+        "download",
+        `debit_credit_notes_${new Date().toISOString().split("T")[0]}.csv`,
+      );
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setOpen(false);
+    }
   };
   return (
     <>
@@ -127,8 +280,25 @@ export const DebitCreditView = () => {
                 sx={{
                   display: "flex",
                   justifyContent: { xs: "center", md: "flex-end" },
+                  gap: 1,
                 }}
               >
+                <Button
+                  color="primary"
+                  variant="outlined"
+                  onClick={() => setOpenDateFilter(true)}
+                >
+                  Date Filter
+                </Button>
+
+                <Button
+                  color="success"
+                  variant="outlined"
+                  onClick={handleDownloadCSV}
+                >
+                  Download CSV
+                </Button>
+
                 <Button
                   color="primary"
                   variant="contained"
@@ -167,6 +337,9 @@ export const DebitCreditView = () => {
                   <StyledTableCell align="center">Customer</StyledTableCell>
                   <StyledTableCell align="center">Complaint NO</StyledTableCell>
                   <StyledTableCell align="center">Reason</StyledTableCell>
+                  <StyledTableCell align="center">GSt</StyledTableCell>
+                  <StyledTableCell align="center">AMOUNT</StyledTableCell>
+
                   <StyledTableCell align="center">Total Amount</StyledTableCell>
                   <StyledTableCell align="center">ACTION</StyledTableCell>
                 </TableRow>
@@ -191,6 +364,13 @@ export const DebitCreditView = () => {
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.reason}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {row.gst_percentage}%
+                    </StyledTableCell>
+
+                    <StyledTableCell align="center">
+                      {row.amount}
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.total_amount}
@@ -238,6 +418,22 @@ export const DebitCreditView = () => {
             getDebitCreditNotesData={getDebitCreditNotesData}
             setOpenPopup={setOpenInvoiceNote}
             invoiceNoteData={invoiceNoteData}
+          />
+        </Popup>
+        <Popup
+          title="Date Filter"
+          openPopup={openDateFilter}
+          setOpenPopup={setOpenDateFilter}
+        >
+          <CustomDateFilterPopup
+            open={openDateFilter}
+            setOpen={setOpenDateFilter}
+            startDate={startDate}
+            endDate={endDate}
+            setStartDate={setStartDate}
+            setEndDate={setEndDate}
+            onSubmit={handleDateFilterSubmit}
+            onError={handleError}
           />
         </Popup>
       </Grid>
