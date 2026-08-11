@@ -168,7 +168,7 @@ const getOrderBookData = (
 
   if (filterBySellerUnit) {
     params.append(
-      "orderbook__proforma_invoice__seller_account__state",
+      "orderbook__proforma_invoice__seller_account__unit",
       filterBySellerUnit,
     );
   }
