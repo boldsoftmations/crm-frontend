@@ -46,6 +46,7 @@ export const PIOrderBookDetails = () => {
   const dataList = useSelector((state) => state.auth);
   const userData = dataList.profile;
   const assigned = userData.active_sales_user || [];
+  const [stateOptions, setStateOptions] = useState([]);
   console.log();
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
@@ -131,7 +132,21 @@ export const PIOrderBookDetails = () => {
       setOpen(false);
     }
   };
+  const getStateOptions = async () => {
+    try {
+      const response = await InvoiceServices.getAllSellerAccountData();
 
+      if (response && response.data && response.data.results) {
+        setStateOptions(response.data.results);
+      }
+    } catch (err) {
+      console.log("Error in fetching seller account data:", err);
+    }
+  };
+
+  useEffect(() => {
+    getStateOptions();
+  }, []);
   const openInPopup = (item) => {
     try {
       const matchedODBData = orderBookData.find(
@@ -388,11 +403,18 @@ export const PIOrderBookDetails = () => {
                 <CustomAutocomplete
                   size="small"
                   fullWidth
-                  value={filterSellerUnit}
-                  onChange={(event, value) => setFilterSellerUnit(value)}
-                  options={StateOption.map((option) => option)}
-                  getOptionLabel={(option) => option}
-                  label="Filter By State"
+                  value={
+                    stateOptions.find(
+                      (option) => option.unit === filterSellerUnit,
+                    ) || null
+                  }
+                  onChange={(event, value) => {
+                    setFilterSellerUnit(value ? value.unit : "");
+                    setCurrentPage(1);
+                  }}
+                  options={stateOptions}
+                  getOptionLabel={(option) => option.unit || ""}
+                  label="Filter By Seller Account"
                 />
               </Grid>
               <Grid item xs={12} sm={3}>
