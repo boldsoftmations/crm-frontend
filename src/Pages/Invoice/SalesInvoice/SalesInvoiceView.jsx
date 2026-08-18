@@ -587,11 +587,13 @@ function Row(props) {
             )}
           {(userData.groups.includes("Director") ||
             userData.groups.includes("Accounts") ||
+            userData.groups.includes("Accounts Billing Department") ||
             userData.groups.includes("Accounts Executive")) && (
             <Button
               variant="text"
               color="error"
               onClick={() => openInPopup2(row)}
+              disabled={userData.groups.includes("Accounts Billing Department")}
             >
               Cancel
             </Button>
