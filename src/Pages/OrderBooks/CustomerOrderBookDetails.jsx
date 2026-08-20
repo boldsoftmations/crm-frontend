@@ -71,7 +71,10 @@ export const CustomerOrderBookDetails = () => {
         (ODBData) => ODBData.id === item.id,
       );
       setRecordForEdit(matchedODBData);
-      if (userData.groups.includes("Accounts")) {
+      if (
+        userData.groups.includes("Accounts") ||
+        userData.groups.includes("Accounts Billing Department")
+      ) {
         setOpenModal2(true);
       }
       if (
