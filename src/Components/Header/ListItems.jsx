@@ -523,7 +523,15 @@ export const ListItems = ({ setOpen }) => {
       condition: isInGroups("Accounts Billing Department"),
       items: [
         renderSubmenu("master", <BusinessIcon />, "Master", [
+          { to: "/products/all-product", text: "Inventory Master" },
+          {
+            to: "/county-state-city/master-tab",
+            text: "Country Master",
+          },
           { to: "/user/profile-tab", text: "Employees Master" },
+        ]),
+        renderSubmenu("accounts", <AttachMoneyIcon />, "Accounts", [
+          { to: "/products/view-price-list", text: "Price List" },
         ]),
 
         renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
@@ -532,6 +540,9 @@ export const ListItems = ({ setOpen }) => {
         ]),
         renderSubmenu("inventory", <InventoryIcon />, "Inventory", [
           { to: "/inventory/view-inventory", text: "Inventory" },
+        ]),
+        renderSubmenu("sales", <TrendingUpIcon />, "Sales", [
+          { to: "/customers/all-customer", text: "Customer" },
         ]),
         renderSubmenu("production", <FactoryIcon />, "Production", [
           { to: "/inventory/view-production", text: "Production" },

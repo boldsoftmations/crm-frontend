@@ -151,6 +151,7 @@ export const WareHouseDetails = ({ recordForEdit }) => {
           <Box flexGrow={0.5} align="right">
             {(userData.groups.includes("Accounts") ||
               userData.groups.includes("Accounts Executive") ||
+              userData.groups.includes("Accounts Billing Department") ||
               userData.groups.includes("Director")) && (
               <Button
                 onClick={() => setOpenPopup2(true)}
@@ -208,6 +209,9 @@ export const WareHouseDetails = ({ recordForEdit }) => {
                       <StyledTableCell align="center">
                         {(userData.groups.includes("Accounts") ||
                           userData.groups.includes("Accounts Executive") ||
+                          userData.groups.includes(
+                            "Accounts Billing Department",
+                          ) ||
                           userData.groups.includes("Director")) && (
                           <Button
                             variant="contained"

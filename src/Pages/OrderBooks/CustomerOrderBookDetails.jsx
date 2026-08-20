@@ -351,7 +351,13 @@ export const CustomerOrderBookDetails = () => {
               </Grid>
 
               <Grid item xs={12} sm={4}>
-                <Button variant="contained" onClick={handleDownload}>
+                <Button
+                  variant="contained"
+                  onClick={handleDownload}
+                  disabled={userData.groups.includes(
+                    "Accounts Billing Department",
+                  )}
+                >
                   Download CSV
                 </Button>
 

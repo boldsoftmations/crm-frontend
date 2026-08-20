@@ -149,7 +149,7 @@ export const ViewRawMaterials = () => {
       setOpen(true);
       const response = await ProductService.getAllRawMaterials(
         currentPage,
-        searchQuery
+        searchQuery,
       );
       setRawMaterials(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -264,7 +264,11 @@ export const ViewRawMaterials = () => {
               >
                 Add
               </Button>
-              <Button variant="contained" onClick={handleDownload}>
+              <Button
+                variant="contained"
+                onClick={handleDownload}
+                disabled={isInGroups("Accounts Billing Department")}
+              >
                 Download CSV
               </Button>
               {exportData.length > 0 && (

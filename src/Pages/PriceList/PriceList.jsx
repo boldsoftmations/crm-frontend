@@ -16,6 +16,7 @@ import UploadCSV from "./UploadCSV";
 import CustomTextField from "../../Components/CustomTextField";
 import CustomSnackbar from "../../Components/CustomerSnackbar";
 import MasterService from "../../services/MasterService";
+import { useSelector } from "react-redux";
 
 export const PriceList = () => {
   const [priceListData, setPriceListData] = useState([]);
@@ -44,6 +45,9 @@ export const PriceList = () => {
   const handleClose = () => {
     setAlertMsg({ open: false });
   };
+  const userData = useSelector((state) => state.auth.profile);
+  const isInGroups = (...groups) =>
+    groups.some((group) => userData.groups.includes(group));
 
   const csvLinkRef = useRef(null);
   const getProduct = async () => {
@@ -72,7 +76,7 @@ export const PriceList = () => {
         "all",
         filterQuery,
         searchQuery,
-        zoneFilter
+        zoneFilter,
       );
       const data = response.data.map((row) => {
         return {
@@ -116,7 +120,7 @@ export const PriceList = () => {
         currentPage,
         filterQuery,
         searchQuery,
-        zoneFilter
+        zoneFilter,
       );
       setPriceListData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -327,6 +331,7 @@ export const PriceList = () => {
                     color="info"
                     size="small"
                     onClick={() => setOpenCSVFile(true)}
+                    disabled={isInGroups("Accounts Billing Department")}
                     // style={{ marginRight: "10px" }}
                   >
                     Upload CSV File
@@ -338,6 +343,7 @@ export const PriceList = () => {
                     size="small"
                     className="mx-3"
                     onClick={handleDownload}
+                    disabled={isInGroups("Accounts Billing Department")}
                   >
                     DownLoad CSV
                   </Button>
@@ -400,6 +406,7 @@ export const PriceList = () => {
                     variant="contained"
                     color="inherit"
                     size="small"
+                    disabled={isInGroups("Accounts Billing Department")}
                     onClick={() => setOpenPopupUpdateValidity(true)}
                   >
                     Update Validity

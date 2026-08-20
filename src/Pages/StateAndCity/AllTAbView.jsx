@@ -16,28 +16,53 @@ export const AllTabView = () => {
   const tabs = [
     {
       label: "Country",
-      roles: ["Director", "Accounts", "Accounts Executive"],
+      roles: [
+        "Director",
+        "Accounts",
+        "Accounts Executive",
+        "Accounts Billing Department",
+      ],
       component: <ViewCountry />,
     },
     {
       label: "Zone",
-      roles: ["Director", "Accounts", "Accounts Executive"],
+      roles: [
+        "Director",
+        "Accounts",
+        "Accounts Executive",
+        "Accounts Billing Department",
+      ],
       component: <ZoneListView />,
     },
     {
       label: "State",
-      roles: ["Director", "Accounts", "Accounts Executive"],
+      roles: [
+        "Director",
+        "Accounts",
+        "Accounts Executive",
+        "Accounts Billing Department",
+      ],
       component: <ViewState />,
     },
     {
       label: "City",
-      roles: ["Director", "Accounts", "Accounts Executive"],
+      roles: [
+        "Director",
+        "Accounts",
+        "Accounts Executive",
+        "Accounts Billing Department",
+      ],
       component: <ViewCity />,
     },
 
     {
       label: "Pin Code",
-      roles: ["Director", "Accounts", "Accounts Executive"],
+      roles: [
+        "Director",
+        "Accounts",
+        "Accounts Executive",
+        "Accounts Billing Department",
+      ],
       component: <ViewPincode />,
     },
   ];

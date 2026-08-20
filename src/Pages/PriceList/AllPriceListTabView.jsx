@@ -13,7 +13,12 @@ export const AllPriceListTabView = () => {
   const tabs = [
     {
       label: "Price List",
-      roles: ["Director", "Accounts", "Accounts Executive"],
+      roles: [
+        "Director",
+        "Accounts",
+        "Accounts Executive",
+        "Accounts Billing Department",
+      ],
       component: <PriceList />,
     },
     {

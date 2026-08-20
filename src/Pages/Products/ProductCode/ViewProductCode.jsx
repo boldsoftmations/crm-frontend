@@ -11,6 +11,7 @@ import { CSVLink } from "react-csv";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import SearchComponent from "../../../Components/SearchComponent ";
 import { MessageAlert } from "../../../Components/MessageAlert";
+import { useSelector } from "react-redux";
 
 export const ViewProductCode = () => {
   const [productCode, setProductCode] = useState([]);
@@ -25,7 +26,10 @@ export const ViewProductCode = () => {
   const csvLinkRef = useRef(null);
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
+  const userData = useSelector((state) => state.auth.profile);
 
+  const isInGroups = (...groups) =>
+    groups.some((group) => userData.groups.includes(group));
   const handleDownload = async () => {
     try {
       const data = await handleExport();
@@ -75,7 +79,7 @@ export const ViewProductCode = () => {
       setOpen(true);
       const response = await ProductService.getAllProductCode(
         currentPage,
-        searchQuery
+        searchQuery,
       );
       setProductCode(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -170,7 +174,11 @@ export const ViewProductCode = () => {
               >
                 Add
               </Button>
-              <Button variant="contained" onClick={handleDownload}>
+              <Button
+                variant="contained"
+                onClick={handleDownload}
+                disabled={isInGroups("Accounts Billing Department")}
+              >
                 Download CSV
               </Button>
               {exportData.length > 0 && (
