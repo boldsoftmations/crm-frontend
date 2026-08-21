@@ -216,7 +216,8 @@ export const UpdateCompanyDetails = (props) => {
     if (
       userData.groups.includes("Director") ||
       userData.groups.includes("Accounts") ||
-      userData.groups.includes("Accounts Executive")
+      userData.groups.includes("Accounts Executive") ||
+      userData.groups.includes("Accounts Billing Department")
     ) {
       setDisabled(false);
     }
