@@ -361,11 +361,18 @@ export const CompanyDetails = () => {
                 sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}
               >
                 {/* Download CSV Button */}
-                <Button variant="contained" onClick={handleDownload}>
+                <Button
+                  variant="contained"
+                  onClick={handleDownload}
+                  disabled={userData.groups.includes(
+                    "Accounts Billing Department",
+                  )}
+                >
                   Download CSV
                 </Button>
 
                 {(userData.groups.includes("Accounts") ||
+                  userData.groups.includes("Accounts Billing Department") ||
                   userData.groups.includes("Director")) && (
                   <Button
                     variant="contained"
