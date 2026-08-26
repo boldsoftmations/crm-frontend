@@ -327,6 +327,7 @@ export const OrderBookPeningQuantityUpdate = (props) => {
           </Grid>
         </Grid>
         {(users.groups.includes("Accounts") ||
+          users.groups.includes("Accounts Billing Department") ||
           users.groups.includes("Director")) && (
           <Button
             fullWidth
