@@ -63,7 +63,7 @@ export const BankDetails = ({ recordForEdit }) => {
       setOpen(true);
       const bankResponse = await CustomerServices.getCompanyDataByIdWithType(
         recordForEdit,
-        "bank"
+        "bank",
       );
       setBankData(bankResponse.data.bank);
       setOpen(false);
@@ -101,6 +101,7 @@ export const BankDetails = ({ recordForEdit }) => {
           </Box>
           <Box flexGrow={0.5} align="right">
             {(userData.groups.includes("Accounts") ||
+              userData.groups.includes("Accounts Billing Department") ||
               userData.groups.includes("Director")) && (
               <Button
                 onClick={() => setOpenPopup2(true)}
