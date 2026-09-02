@@ -233,6 +233,7 @@ export const ContactDetails = ({ recordForEdit }) => {
               userData.groups.includes("Sales Deputy Manager") ||
               userData.groups.includes("Sales Manager") ||
               userData.groups.includes("Sales Executive") ||
+              userData.groups.includes("Accounts Billing Department") ||
               userData.groups.includes("Sales Assistant Deputy Manager")) && (
               <Button
                 onClick={() => setOpenPopup2(true)}
