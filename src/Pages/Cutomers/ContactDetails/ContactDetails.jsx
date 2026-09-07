@@ -380,6 +380,9 @@ export const ContactDetails = ({ recordForEdit }) => {
                           {(userData.groups.includes("Accounts") ||
                             userData.groups.includes("Accounts Executive") ||
                             userData.groups.includes("Customer Service") ||
+                            userData.groups.includes(
+                              "Accounts Billing Department",
+                            ) ||
                             userData.groups.includes("Director")) && (
                             <Button
                               size="small"
