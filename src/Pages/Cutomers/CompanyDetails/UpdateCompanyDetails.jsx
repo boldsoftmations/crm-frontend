@@ -504,6 +504,7 @@ export const UpdateCompanyDetails = (props) => {
         {(userData.groups.includes("Director") ||
           userData.groups.includes("Accounts") ||
           userData.groups.includes("Customer Relationship Executive") ||
+          userData.groups.includes("Accounts Billing Department") ||
           userData.groups.includes("Business Development Executive") ||
           userData.groups.includes("Sales Manager(Retailer)") ||
           userData.groups.includes("Accounts Executive") ||
