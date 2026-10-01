@@ -149,6 +149,11 @@ export const ListItems = ({ setOpen }) => {
           { to: "/inventory/view-vendor", text: "Vendor" },
           { to: "/inventory/view-purchase", text: "Purchase" },
         ]),
+        // renderListItem(
+        //   "/Trasnport-Finder",
+        //   <StickyNote2Icon />,
+        //   "Trasnport Finder",
+        // ),
         renderSubmenu("inventory", <InventoryIcon />, "Inventory", [
           { to: "/inventory/view-inventory", text: "Inventory" },
           { to: "/inventory/physical", text: "Physical Inventory" },
@@ -623,6 +628,11 @@ export const ListItems = ({ setOpen }) => {
           { to: "/master/transport", text: "Transport Master" },
         ]),
         renderListItem(
+          "/Trasnport-Finder",
+          <StickyNote2Icon />,
+          "Trasnport Finder",
+        ),
+        renderListItem(
           "/master/customer-visit",
           <DirectionsRunIcon />,
           "Field Sales",
@@ -921,7 +931,7 @@ export const ListItems = ({ setOpen }) => {
             to: "/county-state-city/master-tab",
             text: "Country Master",
           },
-          { to: "/master/transport", text: "Transport Master" },
+          // { to: "/master/transport", text: "Transport Master" },
         ]),
         renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
           { to: "/invoice/performa-invoice-tab", text: "Performa Invoice" },
@@ -938,6 +948,11 @@ export const ListItems = ({ setOpen }) => {
           <ComplaintIcon />,
           "Customer Complaint",
           [{ to: "/customer/complaints/ccp-capa", text: "CCF-CAPA" }],
+        ),
+        renderListItem(
+          "/Trasnport-Finder",
+          <StickyNote2Icon />,
+          "Trasnport Finder",
         ),
         // renderListItem("/user/faq", <HelpOutlineIcon />, "Script"),
         renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),

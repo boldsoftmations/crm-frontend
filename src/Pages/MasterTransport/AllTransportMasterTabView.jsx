@@ -89,11 +89,11 @@ export const AllTransportMasterTabView = () => {
       roles: transporterWorkspaceRoles,
       component: <TransportersHome />,
     },
-    {
-      label: "Transporter Finder",
-      roles: transporterWorkspaceRoles,
-      component: <TransporterFinder />,
-    },
+    // {
+    //   label: "Transporter Finder",
+    //   roles: transporterWorkspaceRoles,
+    //   component: <TransporterFinder />,
+    // },
     {
       label: "Transport Assignment Requests",
       roles: requestRoles,
