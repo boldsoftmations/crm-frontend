@@ -324,19 +324,19 @@ export const CreateCustomerProformaInvoice = (props) => {
   const createCustomerProformaInvoiceDetails = async (e) => {
     e.preventDefault();
 
-    const isValidData =
-      contactData &&
-      contactData.contact !== null &&
-      warehouseData &&
-      warehouseData.address !== null &&
-      warehouseData.state !== null &&
-      warehouseData.city !== null &&
-      warehouseData.pincode !== null;
+    // const isValidData =
+    //   contactData &&
+    //   contactData.contact !== null &&
+    //   warehouseData &&
+    //   warehouseData.address !== null &&
+    //   warehouseData.state !== null &&
+    //   warehouseData.city !== null &&
+    //   warehouseData.pincode !== null;
 
-    if (!isValidData) {
-      setOpenPopup2(true);
-      return;
-    }
+    // if (!isValidData) {
+    //   setOpenPopup2(true);
+    //   return;
+    // }
 
     if (!transportSelection || !transportSelection.mode) {
       handleError("Please select a Transport Method.");
@@ -1185,7 +1185,7 @@ export const CreateCustomerProformaInvoice = (props) => {
         </Button>
       </Box>
 
-      <Popup
+      {/* <Popup
         maxWidth="xl"
         title="Update Lead Details"
         openPopup={openPopup2}
@@ -1197,7 +1197,7 @@ export const CreateCustomerProformaInvoice = (props) => {
         <Button variant="contained" onClick={() => openInPopup()}>
           Update Customer
         </Button>
-      </Popup>
+      </Popup> */}
 
       <Popup
         maxWidth="xl"
