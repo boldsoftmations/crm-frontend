@@ -10,6 +10,7 @@ export const AllOrderBookTabView = () => {
 
   const isInGroups = (...groups) =>
     groups.some((group) => userData.groups.includes(group));
+  const QA = isInGroups("QA");
 
   const allTabs = isInGroups(
     "Director",
@@ -50,12 +51,14 @@ export const AllOrderBookTabView = () => {
         allTabs ||
         customerServiceTabs ||
         isDispatch ||
-        isBillingDaprment,
+        isBillingDaprment ||
+        QA,
       index: 0,
     },
     {
       label: "Product Wise Orderbook",
-      visible: orderBookUsers || allTabs || customerServiceTabs || isDispatch,
+      visible:
+        orderBookUsers || allTabs || customerServiceTabs || isDispatch || QA,
       index: 1,
     },
     {

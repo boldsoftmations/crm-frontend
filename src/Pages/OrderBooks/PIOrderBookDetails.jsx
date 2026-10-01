@@ -662,9 +662,11 @@ export const PIOrderBookDetails = () => {
                           color="secondary"
                           size="small"
                           onClick={() => openInPopup2(row)}
-                          disabled={userData.groups.includes(
-                            "Operations & Supply Chain Manager",
-                          )}
+                          disabled={
+                            userData.groups.includes(
+                              "Operations & Supply Chain Manager",
+                            ) || userData.groups.includes("QA")
+                          }
                         >
                           Production View
                         </Button>

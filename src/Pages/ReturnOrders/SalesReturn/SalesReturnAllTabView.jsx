@@ -13,7 +13,7 @@ export const SalesReturnAllTabView = () => {
   const tabs = [
     {
       label: "Sales Return",
-      roles: ["Director", "Accounts"],
+      roles: ["Director", "Accounts", "QA"],
       component: <SalesReturnView />,
     },
     {

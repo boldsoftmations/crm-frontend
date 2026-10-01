@@ -55,9 +55,8 @@ export const PackingListView = () => {
   const getAllSellerAccountsDetails = async () => {
     try {
       setOpen(true);
-      const response = await InvoiceServices.getAllPaginateSellerAccountData(
-        "all"
-      );
+      const response =
+        await InvoiceServices.getAllPaginateSellerAccountData("all");
       dispatch(getSellerAccountData(response.data));
       setOpen(false);
     } catch (err) {
@@ -76,7 +75,7 @@ export const PackingListView = () => {
       const response = await InventoryServices.getAllPackingListData(
         page,
         filter,
-        query
+        query,
       );
       setPackingListData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -154,7 +153,7 @@ export const PackingListView = () => {
                   sx={{ width: "200px" }}
                   size="small"
                   value={AcceptedOption.find(
-                    (option) => option.value === acceptedFilter.toString()
+                    (option) => option.value === acceptedFilter.toString(),
                   )}
                   onChange={(event, newValue) => handleFilter(newValue)}
                   options={AcceptedOption}
@@ -349,6 +348,7 @@ function Row({
             (userData.groups.includes("Stores Delhi") ||
               userData.groups.includes("Accounts") ||
               userData.groups.includes("Production Delhi") ||
+              userData.groups.includes("QA") ||
               userData.groups.includes("Stores") ||
               userData.groups.includes("Director")) && (
               <Button

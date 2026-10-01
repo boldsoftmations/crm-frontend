@@ -307,12 +307,22 @@ export const ListItems = ({ setOpen }) => {
           },
           { to: "/user/profile-tab", text: "Employees Master" },
         ]),
+        renderSubmenu("production", <FactoryIcon />, "Production", [
+          { to: "/inventory/view-production", text: "Production" },
+        ]),
+        renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
+        renderSubmenu("inventory", <FactoryIcon />, "Inventory", [
+          { to: "/inventory/stock-alert", text: "Stock Summary" },
+        ]),
         renderSubmenu(
           "customer_complaint",
           <ComplaintIcon />,
           "Customer Complaint",
           [{ to: "/customer/complaints/ccp-capa", text: "CCF-CAPA" }],
         ),
+        renderSubmenu("ReturnOrder", <DescriptionIcon />, "ReturnOrder", [
+          { to: "/inventory/sales-return", text: "Sales Return" },
+        ]),
       ],
     },
 

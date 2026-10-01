@@ -539,7 +539,9 @@ export const ProductOrderBookDetails = () => {
                           disabled={
                             userData.groups.includes(
                               "Operations & Supply Chain Manager",
-                            ) || userData.groups.includes("Accounts Executive")
+                            ) ||
+                            userData.groups.includes("Accounts Executive") ||
+                            userData.groups.includes("QA")
                           }
                         >
                           Account View

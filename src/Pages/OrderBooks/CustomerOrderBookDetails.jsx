@@ -515,9 +515,11 @@ export const CustomerOrderBookDetails = () => {
                         color="info"
                         size="small"
                         onClick={() => openInPopup(row)}
-                        disabled={userData.groups.includes(
-                          "Operations & Supply Chain Manager",
-                        )}
+                        disabled={
+                          userData.groups.includes(
+                            "Operations & Supply Chain Manager",
+                          ) || userData.groups.includes("QA")
+                        }
                       >
                         Production View
                       </Button>
