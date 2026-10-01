@@ -763,11 +763,80 @@ const getComplaintNo = (customer, seller_account) => {
   return CustomAxios.get(`/api/invoice/company-ccf-list/?${params.toString()}`);
 };
 
-const getTransportList = (pincode) => {
+const getTransportList = (paramsOrPincode, country_id, unit_id, unit_code) => {
   const params = new URLSearchParams();
+
+  // Preferred shape for the corrected flow is one object argument.
+  // Keep positional arguments working for older screens so this service
+  // change does not break unrelated legacy callers.
+  const isObjectArgument =
+    paramsOrPincode &&
+    typeof paramsOrPincode === "object" &&
+    !Array.isArray(paramsOrPincode);
+
+  const pincode = isObjectArgument
+    ? paramsOrPincode.pincode
+    : paramsOrPincode;
+  const countryId = isObjectArgument
+    ? paramsOrPincode.countryId || paramsOrPincode.country_id
+    : country_id;
+  const unitId = isObjectArgument
+    ? paramsOrPincode.unitId || paramsOrPincode.unit_id
+    : unit_id;
+  const unitCode = isObjectArgument
+    ? paramsOrPincode.unitCode || paramsOrPincode.unit_code
+    : unit_code;
+  if (unitId) params.append("unit_id", unitId);
+  if (unitCode) params.append("unit_code", unitCode);
+  if (countryId) params.append("country_id", countryId);
   if (pincode) params.append("pincode", pincode);
+
   return CustomAxios.get(
     `/api/master/pincode-transporter/?${params.toString()}`,
+  );
+};
+
+// CONFIRMED against Nandani's real API list: this IS the correct, only
+// lookup endpoint (/api/master/pincode-transporter/, no "mode" param -
+// it's inherently Surface-only, response always has options[] of
+// transporter_type: "Surface Transport"). My earlier getTransportOptions
+// guess (a different fake endpoint /api/master/transport-options/ with a
+// "mode" param) was wrong and has been removed - getTransportList above
+// was already correct all along, this just wraps it in the
+// object-argument shape TransportSelector.jsx uses.
+const getPincodeTransporter = ({ countryId, pincode, unitId, unitCode }) => {
+  return getTransportList({
+    countryId: countryId,
+    pincode: pincode,
+    unitId: unitId,
+    unitCode: unitCode,
+  });
+};
+
+const getTransporterCapabilities = ({
+  transportMode,
+  serviceabilityStrategy,
+  isActive,
+}) => {
+  const params = new URLSearchParams();
+
+  if (transportMode) {
+    params.append("transport_mode", transportMode);
+  }
+
+  if (serviceabilityStrategy) {
+    params.append("serviceability_strategy", serviceabilityStrategy);
+  }
+
+  if (isActive !== null && isActive !== undefined) {
+    params.append("is_active", isActive);
+  }
+
+  // Backend supports page=all and returns the complete capability list.
+  params.append("page", "all");
+
+  return CustomAxios.get(
+    `/api/master/transporter-capability/?${params.toString()}`,
   );
 };
 
@@ -882,6 +951,8 @@ const CustomerServices = {
   getCategoryList,
   getComplaintNo,
   getTransportList,
+  getPincodeTransporter,
+  getTransporterCapabilities,
   getAllTransporterTypes,
 };
 

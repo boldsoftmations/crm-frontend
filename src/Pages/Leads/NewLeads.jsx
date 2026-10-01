@@ -159,7 +159,7 @@ export const NewLeads = () => {
     const isPinned = pinnedRows.includes(row.lead_id);
     if (isPinned) {
       setPinnedRows((prevPinnedRows) =>
-        prevPinnedRows.filter((rowId) => rowId !== row.lead_id)
+        prevPinnedRows.filter((rowId) => rowId !== row.lead_id),
       );
     } else {
       setPinnedRows((prevPinnedRows) => [...prevPinnedRows, row.lead_id]);
@@ -193,7 +193,7 @@ export const NewLeads = () => {
         "new",
         filterQuery,
         filterSelectedQuery,
-        searchQuery
+        searchQuery,
       );
       setLeads(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -318,21 +318,21 @@ export const NewLeads = () => {
                       filterQuery === "assigned_to__email"
                         ? "Assigned To"
                         : filterQuery === "references__source"
-                        ? "Reference"
-                        : filterQuery === "description__name"
-                        ? "Description"
-                        : "",
+                          ? "Reference"
+                          : filterQuery === "description__name"
+                            ? "Description"
+                            : "",
                       filterQuery === "assigned_to__email"
                         ? assigned.map((option) => option.email)
                         : filterQuery === "references__source"
-                        ? referenceData.map((option) => option.source)
-                        : filterQuery === "description__name"
-                        ? descriptionMenuData.map((option) => option.name)
-                        : [],
+                          ? referenceData.map((option) => option.source)
+                          : filterQuery === "description__name"
+                            ? descriptionMenuData.map((option) => option.name)
+                            : [],
                       (value) => {
                         setFilterSelectedQuery(value);
                         setCurrentPage(1);
-                      }
+                      },
                     )}
                 </Grid>
               )}
@@ -492,18 +492,36 @@ export const NewLeads = () => {
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       <Button onClick={() => openInPopup(row)}>View</Button>,
-                      <Button onClick={() => openInPopup2(row)}>
+                      <Button
+                        onClick={() => openInPopup2(row)}
+                        disabled={userData.groups.includes("Digital Marketing")}
+                      >
                         Activity
                       </Button>
-                      ,
-                      <Button onClick={() => openInPopup3(row)}>
+                      <Button
+                        onClick={() => openInPopup3(row)}
+                        disabled={userData.groups.includes("Digital Marketing")}
+                      >
                         Potential
                       </Button>
-                      ,<Button onClick={() => openInPopup4(row)}>PI</Button>,
-                      <Button onClick={() => openInPopup5(row)}>
+                      ,
+                      <Button
+                        onClick={() => openInPopup4(row)}
+                        disabled={userData.groups.includes("Digital Marketing")}
+                      >
+                        PI
+                      </Button>
+                      ,
+                      <Button
+                        onClick={() => openInPopup5(row)}
+                        disabled={userData.groups.includes("Digital Marketing")}
+                      >
                         Forecast
                       </Button>
-                      <Button onClick={() => handleopenEDCmodal(row)}>
+                      <Button
+                        onClick={() => handleopenEDCmodal(row)}
+                        disabled={userData.groups.includes("Digital Marketing")}
+                      >
                         Assign to EDC
                       </Button>
                     </StyledTableCell>

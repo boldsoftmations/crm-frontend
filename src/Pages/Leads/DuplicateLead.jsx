@@ -283,12 +283,13 @@ export const DuplicateLead = () => {
                           align="center"
                           style={{ width: "200px" }}
                         >
-                          <div
-                            style={{ color: "green" }}
+                          <Button
+                            variant="text"
+                            size="small"
                             onClick={() => openInPopup2(row)}
                           >
-                            Activity
-                          </div>
+                            Drop
+                          </Button>
                         </StyledTableCell>
                       </StyledTableRow>
                     );

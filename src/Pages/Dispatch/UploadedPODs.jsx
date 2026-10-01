@@ -1,5 +1,9 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import InvoiceServices from "../../services/InvoiceService";
+import {
+  getTransportMethodLabel,
+  getTransporterDisplayName,
+} from "../../utility/transportDisplay";
 import { styled } from "@mui/material/styles";
 import {
   Box,
@@ -84,7 +88,13 @@ export const UploadedPODs = () => {
         sales_invoice: item.sales_invoice,
         customer: item.customer,
         dispatch_location: item.dispatch_location,
-        transporter: item.transporter,
+        selected_transport_mode: getTransportMethodLabel(
+          item.selected_transport_mode,
+        ),
+        transporter: getTransporterDisplayName(
+          item.selected_transport_mode,
+          item.transporter,
+        ),
         pod_uploaded_date: item.pod_uploaded_date,
         pod_uploaded_by_name: item.pod_uploaded_by_name,
         lr_copy: item.lr_copy,
@@ -360,7 +370,10 @@ export const UploadedPODs = () => {
                     PodUploadDate
                   </StyledTableCell>
                   <StyledTableCell align="center">
-                    TransPort Name
+                    Transport Method
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    Transporter
                   </StyledTableCell>
 
                   <StyledTableCell align="center">Uploaded BY</StyledTableCell>
@@ -437,7 +450,15 @@ function Row(props) {
         <TableCell align="center">{row.sales_invoice}</TableCell>
         <TableCell align="center">{row.customer}</TableCell>
         <TableCell align="center">{row.pod_uploaded_date}</TableCell>
-        <TableCell align="center">{row.transporter}</TableCell>
+        <TableCell align="center">
+          {getTransportMethodLabel(row.selected_transport_mode)}
+        </TableCell>
+        <TableCell align="center">
+          {getTransporterDisplayName(
+            row.selected_transport_mode,
+            row.transporter,
+          )}
+        </TableCell>
         <TableCell align="center">{row.pod_uploaded_by_name}</TableCell>
         <TableCell align="center">{row.dispatch_location}</TableCell>
 
@@ -543,7 +564,8 @@ const headers = [
   { label: "Customer", key: "customer" },
   { label: "Unit", key: "unit" },
   { label: "Dispatch Location", key: "dispatch_location" },
-  { label: "Transport Name", key: "transporter" },
+  { label: "Transport Method", key: "selected_transport_mode" },
+  { label: "Transporter", key: "transporter" },
   { label: "POD Uploaded Date", key: "pod_uploaded_date" },
   { label: "POD Uploaded By", key: "pod_uploaded_by_name" },
   { label: "LR Copy", key: "lr_copy" },

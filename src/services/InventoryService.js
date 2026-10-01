@@ -634,7 +634,7 @@ const updatePhysical = (id, data) => {
 };
 
 // Sales Return inventory api
-const getSalesReturnData = (page, searchValue, start_date, end_date) => {
+const getSalesReturnData = (page, searchValue, startdate, enddate) => {
   // Constructing the query parameters
   const params = new URLSearchParams();
 
@@ -647,11 +647,12 @@ const getSalesReturnData = (page, searchValue, start_date, end_date) => {
   if (searchValue) {
     params.append("search", searchValue);
   }
-  if (start_date) {
-    params.append("start_date", start_date);
+
+  if (startdate) {
+    params.append("start_date", startdate);
   }
-  if (end_date) {
-    params.append("end_date", end_date);
+  if (enddate) {
+    params.append("end_date", enddate);
   }
 
   // Sending a GET request with query parameters

@@ -258,7 +258,6 @@ export const ViewConsumable = () => {
               >
                 Add
               </Button>
-
               <Button
                 variant="contained"
                 onClick={handleDownload}

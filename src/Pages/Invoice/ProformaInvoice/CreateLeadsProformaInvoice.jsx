@@ -25,6 +25,8 @@ import useDynamicFormFields from "../../../Components/useDynamicFormFields ";
 import ProductService from "../../../services/ProductService";
 import InventoryServices from "../../../services/InventoryService";
 import CustomerServices from "../../../services/CustomerService";
+import TransportSelector from "../../../Components/TransportSelector";
+import { buildLeadTransportPayload } from "../../../utility/Buildtransportpayload";
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -52,7 +54,7 @@ export const CreateLeadsProformaInvoice = (props) => {
   const [currencyOption, setCurrencyOption] = useState([]);
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
-
+  const [transportSelection, setTransportSelection] = useState(null);
   const {
     handleAutocompleteChange,
     handleFormChange,
@@ -78,7 +80,7 @@ export const CreateLeadsProformaInvoice = (props) => {
   const [openPopup2, setOpenPopup2] = useState(false);
   const [openPopup3, setOpenPopup3] = useState(false);
   const [open, setOpen] = useState(false);
-  const [inputValue, setInputValue] = useState([]);
+  const [inputValue, setInputValue] = useState({});
   const [selectedSellerData, setSelectedSellerData] = useState("");
   const [paymentTermData, setPaymentTermData] = useState([]);
   const [deliveryTermData, setDeliveryTermData] = useState([]);
@@ -109,6 +111,21 @@ export const CreateLeadsProformaInvoice = (props) => {
     return () => clearInterval(timer); // Cleanup on component unmount
   }, [timeLeft, setOpenPopup]);
 
+  // const handleSellerAccountChange = async (e, value) => {
+  //   setSelectedSellerData(value);
+  //   try {
+  //     setOpen(true);
+  //     const response = await CustomerServices.getCustomerLastPi(
+  //       rowData && rowData.name,
+  //       value.unit,
+  //     );
+  //     setCustomerLastPiData(response.data || {});
+  //   } catch (err) {
+  //     console.error("error getting last pi", err);
+  //   } finally {
+  //     setOpen(false);
+  //   }
+  // };
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -179,9 +196,41 @@ export const CreateLeadsProformaInvoice = (props) => {
 
   const createLeadProformaInvoiceDetails = async (e) => {
     e.preventDefault();
-    if (!inputValue.transporter_name) {
-      return alert("Transporter name is required");
+
+    if (!selectedSellerData || !selectedSellerData.unit) {
+      return alert("Please select Seller Account");
     }
+
+    if (!transportSelection || !transportSelection.mode) {
+      return alert("Please select Transport Method");
+    }
+
+    if (transportSelection.mode === "SURFACE") {
+      if (!transportSelection.verifiedPincodeId) {
+        return alert(
+          "Surface transport requires a valid Lead destination pincode.",
+        );
+      }
+
+      const isToBeAssigned =
+        transportSelection.transporterName === "To Be Assigned" &&
+        transportSelection.assignmentStatus === "Unassigned";
+
+      if (!isToBeAssigned && !transportSelection.transporterId) {
+        return alert("Please select a Surface transporter");
+      }
+    }
+
+    if (
+      (transportSelection.mode === "COURIER" ||
+        transportSelection.mode === "LOCAL_AGGREGATOR") &&
+      !transportSelection.transporterId
+    ) {
+      return alert("Please select a transporter for the selected method");
+    }
+
+    const transportPayload = buildLeadTransportPayload(transportSelection);
+
     const payload = {
       type: "Lead",
       raised_by: users.email,
@@ -218,7 +267,7 @@ export const CreateLeadsProformaInvoice = (props) => {
       state: leads.shipping_state,
       city: leads.shipping_city,
       place_of_supply: inputValue.place_of_supply,
-      transporter_name: inputValue.transporter_name,
+      ...transportPayload,
       buyer_order_no: checked === true ? "verbal" : inputValue.buyer_order_no,
       buyer_order_date: inputValue.buyer_order_date
         ? inputValue.buyer_order_date
@@ -299,7 +348,10 @@ export const CreateLeadsProformaInvoice = (props) => {
               size="small"
               disablePortal
               id="combo-box-demo"
-              onChange={(event, value) => setSelectedSellerData(value)}
+              onChange={(event, value) => {
+                setSelectedSellerData(value || "");
+                setTransportSelection(null);
+              }}
               options={sellerData}
               getOptionLabel={(option) => option.unit}
               sx={{ minWidth: 300 }}
@@ -546,14 +598,23 @@ export const CreateLeadsProformaInvoice = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <CustomTextField
-              fullWidth
-              name="transporter_name"
-              size="small"
-              label="Transporter Name"
-              variant="outlined"
-              value={inputValue.transporter_name}
-              onChange={handleInputChange}
+            <TransportSelector
+              countryId={leads && leads.country_id ? leads.country_id : ""}
+              pincode={
+                leads && leads.shipping_pincode ? leads.shipping_pincode : ""
+              }
+              unitId={
+                selectedSellerData && selectedSellerData.id
+                  ? selectedSellerData.id
+                  : ""
+              }
+              unitCode={
+                selectedSellerData && selectedSellerData.unit
+                  ? selectedSellerData.unit
+                  : ""
+              }
+              value={transportSelection}
+              onChange={setTransportSelection}
             />
           </Grid>
           <Grid item xs={12}>
@@ -766,7 +827,7 @@ export const CreateLeadsProformaInvoice = (props) => {
         setOpenPopup={setOpenPopup2}
       >
         <Typography>
-          "Kindly update all Shipping Details & Leads Details in required field"
+          "Kindly update all Shipping Details & Laeds Details in required field"
         </Typography>
         <Button variant="contained" onClick={() => setOpenPopup(false)}>
           Update Leads

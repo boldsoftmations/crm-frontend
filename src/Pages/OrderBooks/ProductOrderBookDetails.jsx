@@ -27,10 +27,20 @@ import { TotalPendingQuantity } from "./TotalPendingQuantity";
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../Components/MessageAlert";
+import {
+  getTransportMethodLabel,
+  getTransporterDisplayName,
+} from "../../utility/transportDisplay";
+import {
+  getOrderBookTransportMode,
+  getOrderBookTransporterName,
+  useOrderBookTransportDetails,
+} from "../../utility/useOrderBookTransportDetails";
 import SearchComponent from "../../Components/SearchComponent ";
 
 export const ProductOrderBookDetails = () => {
   const [orderBookData, setOrderBookData] = useState([]);
+  const transportByPi = useOrderBookTransportDetails(orderBookData);
   const [open, setOpen] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [openModal2, setOpenModal2] = useState(false);
@@ -268,6 +278,8 @@ export const ProductOrderBookDetails = () => {
     "Sales Person",
     "Billing City",
     "Shipping City",
+    "Transport Method",
+    "Transporter",
     "Product",
     "Quantity",
     "Rate",
@@ -362,7 +374,6 @@ export const ProductOrderBookDetails = () => {
                   label="Filter By Ready Date"
                 />
               </Grid>
-
               <Grid item xs={12} sm={4}>
                 <Button
                   sx={{ marginLeft: "10px" }}
@@ -431,7 +442,7 @@ export const ProductOrderBookDetails = () => {
             }}
           >
             <Table
-              sx={{ minWidth: 1200 }}
+              sx={{ minWidth: 1450 }}
               stickyHeader
               aria-label="sticky table"
             >
@@ -469,6 +480,17 @@ export const ProductOrderBookDetails = () => {
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.shipping_city}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {getTransportMethodLabel(
+                        getOrderBookTransportMode(row, transportByPi),
+                      )}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {getTransporterDisplayName(
+                        getOrderBookTransportMode(row, transportByPi),
+                        getOrderBookTransporterName(row, transportByPi),
+                      )}
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.product}

@@ -3,6 +3,11 @@ import { Box, Grid } from "@mui/material";
 import { useState } from "react";
 import { CustomButton } from "./../../Components/CustomButton";
 import InvoiceServices from "../../services/InvoiceService";
+import {
+  getTransportMethodLabel,
+  getTransporterDisplayName,
+  isDirectTransportMode,
+} from "../../utility/transportDisplay";
 import { CustomLoader } from "./../../Components/CustomLoader";
 import { useSelector } from "react-redux";
 import CustomTextField from "../../Components/CustomTextField";
@@ -17,10 +22,18 @@ export const UpdateExportInvoice = (props) => {
   const [selectedFile, setSelectedFile] = useState("");
   const [selectedFileImage, setSelectedFileImage] = useState("");
   const [hideImage, setHideImage] = useState(false);
-  const [inputValue, setInputValue] = useState([]);
+  const [inputValue, setInputValue] = useState({});
   const [filterValue, setFilterValue] = useState(idData.dispatch_type);
   const data = useSelector((state) => state.auth);
   const users = data.profile;
+  const transportMode =
+    idData && idData.selected_transport_mode
+      ? idData.selected_transport_mode
+      : "";
+  const directTransportMode = isDirectTransportMode(transportMode);
+  const effectiveTransporter = inputValue.transporter
+    ? inputValue.transporter
+    : idData.transporter;
   const handleImageLRCopy = (event) => {
     setSelectedFile(event.target.files[0]);
     setSelectedFileImage(URL.createObjectURL(event.target.files[0]));
@@ -38,7 +51,10 @@ export const UpdateExportInvoice = (props) => {
       const data = new FormData();
       // Append common fields to form data
       data.append("sales_invoice", idData.sales_invoice);
-      data.append("transporter", inputValue.transporter || idData.transporter);
+      data.append(
+        "transporter",
+        directTransportMode ? "" : effectiveTransporter || "",
+      );
       data.append("lr_number", inputValue.lr_number || idData.lr_number);
       data.append("lr_date", inputValue.lr_date || idData.lr_date);
       data.append("dispatched", true);
@@ -59,9 +75,10 @@ export const UpdateExportInvoice = (props) => {
 
       const LRDATE = inputValue.lr_date || idData.lr_date;
       const LRNUMBER = inputValue.lr_number || idData.lr_number;
-      const TRANSPORTER = inputValue.transporter || idData.transporter;
+      const TRANSPORTER = effectiveTransporter;
+      const hasTransporter = directTransportMode || Boolean(TRANSPORTER);
 
-      const shouldSubmit = selectedFile || (LRDATE && LRNUMBER && TRANSPORTER);
+      const shouldSubmit = selectedFile || (LRDATE && LRNUMBER && hasTransporter);
 
       if (shouldSubmit) {
         setOpen(true);
@@ -109,16 +126,27 @@ export const UpdateExportInvoice = (props) => {
           <Grid item xs={12}>
             <CustomTextField
               fullWidth
+              size="small"
+              label="Transport Method"
+              variant="outlined"
+              value={getTransportMethodLabel(transportMode)}
+              disabled
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <CustomTextField
+              fullWidth
               name="transporter"
               size="small"
               label="Transporter"
               variant="outlined"
               value={
-                inputValue.transporter
-                  ? inputValue.transporter
-                  : idData.transporter
+                directTransportMode
+                  ? getTransporterDisplayName(transportMode, idData.transporter)
+                  : effectiveTransporter || ""
               }
               onChange={handleInputChange}
+              disabled={directTransportMode}
             />
           </Grid>
           <Grid item xs={12}>

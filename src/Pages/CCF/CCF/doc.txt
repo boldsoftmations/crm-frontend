@@ -1,0 +1,163 @@
+Frontend Code Pack 1A - Geo Master Screens Guide
+Glutape India Pvt. Ltd. | Geo Master + Postal Code + Transporter Module Correction
+Purpose
+This pack explains how Geo Master screens should behave after postal cleanup. It is not a visual redesign. The screen must guide users away from duplicate creation and must prevent unauthorized users from editing master data.
+Geo Master screen correction
+Control point	Explanation
+Purpose	StateAndCity screens currently allow master viewing and editing patterns that do not clearly separate admin control from user access.
+Current ERP problem	Users may create duplicate pincode rows or edit masters without knowing downstream impact.
+Business risk if not fixed	Duplicate pincode rows break transporter mapping and customer assignment.
+Correct target flow	Rename and organize screens, show active/inactive status, hide Add/Edit/Delete for non-admin, and prevent duplicate pincode creation from UI.
+Glutape example	If 400059 already exists as active India postal row, user should not create another active 400059 for locality. Alias must be used instead.
+IT action	Patch src/Pages/StateAndCity/* and use role helper.
+Expected output/result	Users see controlled Geo Master with clear statuses.
+QA acceptance criteria	QA checks Sales cannot add or edit and inactive rows do not appear in normal dropdowns.
+Common mistakes to avoid	Do not use County typo.
+What not to touch	Do not change master_zone or PriceList.
+
+Role helper usage
+// src/utils/rolePermissions.js is a new file if not present.
+export const hasAnyRole = (user, roles = []) => {
+  const groups = user?.groups || user?.group_names || [];
+  return roles.some(role => groups.includes(role));
+};
+export const canEditGeoMaster = (user) => hasAnyRole(user, ["Director", "Admin"]);
+Expected IT output
+•	Geo & Logistics Master menu is clear.
+•	Postal Code screen shows Active, Inactive, or Merged.
+•	Add/Edit/Delete hidden for unauthorized roles.
+•	Inactive merged rows hidden from normal selections.
+Acceptance criteria
+•	Director/Admin sees edit buttons.
+•	Sales does not see edit buttons.
+•	Duplicate active postal create is blocked or review-routed.
+•	PriceList Zone UI remains unchanged.
+Common mistakes to avoid
+•	Do not create a new pincode row for every locality.
+•	Do not hide active row status.
+•	Do not invent frontend role names.
+•	Do not rename master_zone.
+Frontend Code Pack 1A Geo Master Screens Guide: Why this matters in Glutape ERP
+This section exists because frontend code pack 1a geo master screens guide is not only a screen correction. It protects the ERP single source of truth. In the current ERP, a user may see a value on screen and assume that it is correct, but the underlying master record may be duplicated, inactive, or linked to the wrong dispatch serviceability rule. The corrected design makes the master record, the business transaction, and the audit trail agree with each other.
+The business result expected from this correction is controlled visibility. Sales should not need to guess transporter names. Customer Success should not need to follow up manually because the ERP lost the context of dispatch unit. Dispatch should not receive a PI with a transporter chosen from the wrong unit. Management should be able to verify why a pincode was merged, who approved the correction, and which references were changed.
+The target flow is simple: clean master data first, then controlled lookup, then controlled transaction save, then audit trail. When a customer or PI uses a postal code, the ERP must know which canonical postal row is being used. When transporter serviceability is checked, the ERP must know the dispatch unit and canonical postal row. If no mapping exists, the ERP should return To Be Assigned and create a request for Customer Success and Dispatch, instead of allowing free-text guessing.
+Example: M1 plus pincode 400059 may show Transporter A and Transporter B. D1 plus the same pincode may show Transporter C. T1 plus the same pincode may show Self-Pickup or a different surface transporter. This is not a contradiction; it is the correct business result because serviceability depends on dispatch unit.
+Frontend correction must prevent stale choices. If unit, customer, warehouse, shipping pincode, or verified pincode changes, the selected transporter must be cleared and fetched again. The screen must not keep a transporter selected from an earlier pincode or earlier dispatch unit.
+Additional acceptance view for Frontend Code Pack 1A Geo Master Screens Guide
+Control point	Explanation
+Purpose	This expansion ensures the reader understands the business reason, not only the action list.
+Current ERP problem	The ERP problem is not isolated to one screen or file; it is a chain problem from postal master to transporter and customer verification.
+Business risk if not fixed	If the chain is only partly corrected, users may believe the ERP is fixed while hidden FK and mapping errors remain.
+Correct target flow	Treat each correction as a control point with clear input, output, and test evidence.
+Glutape example	M1, D1, and T1 with the same destination pincode should behave according to serviceability, not according to visible pincode text alone.
+IT action	Follow the relevant code pack, SQL pack, frontend pack, and checklist for the section.
+Expected output/result	The system produces controlled, auditable, tested behavior.
+QA acceptance criteria	QA repeats the Glutape example and records the actual result.
+Common mistakes to avoid	Do not skip tests because the screen appears normal.
+What not to touch	Do not touch Zone, PriceList, old snapshots, or global dataset import.
+
+Frontend Code Pack 1A Geo Master Screens Guide: Why this matters in Glutape ERP
+This section exists because frontend code pack 1a geo master screens guide is not only a screen correction. It protects the ERP single source of truth. In the current ERP, a user may see a value on screen and assume that it is correct, but the underlying master record may be duplicated, inactive, or linked to the wrong dispatch serviceability rule. The corrected design makes the master record, the business transaction, and the audit trail agree with each other.
+The business result expected from this correction is controlled visibility. Sales should not need to guess transporter names. Customer Success should not need to follow up manually because the ERP lost the context of dispatch unit. Dispatch should not receive a PI with a transporter chosen from the wrong unit. Management should be able to verify why a pincode was merged, who approved the correction, and which references were changed.
+The target flow is simple: clean master data first, then controlled lookup, then controlled transaction save, then audit trail. When a customer or PI uses a postal code, the ERP must know which canonical postal row is being used. When transporter serviceability is checked, the ERP must know the dispatch unit and canonical postal row. If no mapping exists, the ERP should return To Be Assigned and create a request for Customer Success and Dispatch, instead of allowing free-text guessing.
+Example: M1 plus pincode 400059 may show Transporter A and Transporter B. D1 plus the same pincode may show Transporter C. T1 plus the same pincode may show Self-Pickup or a different surface transporter. This is not a contradiction; it is the correct business result because serviceability depends on dispatch unit.
+Frontend correction must prevent stale choices. If unit, customer, warehouse, shipping pincode, or verified pincode changes, the selected transporter must be cleared and fetched again. The screen must not keep a transporter selected from an earlier pincode or earlier dispatch unit.
+Additional acceptance view for Frontend Code Pack 1A Geo Master Screens Guide
+Control point	Explanation
+Purpose	This expansion ensures the reader understands the business reason, not only the action list.
+Current ERP problem	The ERP problem is not isolated to one screen or file; it is a chain problem from postal master to transporter and customer verification.
+Business risk if not fixed	If the chain is only partly corrected, users may believe the ERP is fixed while hidden FK and mapping errors remain.
+Correct target flow	Treat each correction as a control point with clear input, output, and test evidence.
+Glutape example	M1, D1, and T1 with the same destination pincode should behave according to serviceability, not according to visible pincode text alone.
+IT action	Follow the relevant code pack, SQL pack, frontend pack, and checklist for the section.
+Expected output/result	The system produces controlled, auditable, tested behavior.
+QA acceptance criteria	QA repeats the Glutape example and records the actual result.
+Common mistakes to avoid	Do not skip tests because the screen appears normal.
+What not to touch	Do not touch Zone, PriceList, old snapshots, or global dataset import.
+
+  Code Pack 1A Geo Master Screens Guide: Why this matters in Glutape ERP
+This section exists because frontend code pack 1a geo master screens guide is not only a screen correction. It protects the ERP single source of truth. In the current ERP, a user may see a value on screen and assume that it is correct, but the underlying master record may be duplicated, inactive, or linked to the wrong dispatch serviceability rule. The corrected design makes the master record, the business transaction, and the audit trail agree with each other.
+The business result expected from this correction is controlled visibility. Sales should not need to guess transporter names. Customer Success should not need to follow up manually because the ERP lost the context of dispatch unit. Dispatch should not receive a PI with a transporter chosen from the wrong unit. Management should be able to verify why a pincode was merged, who approved the correction, and which references were changed.
+The target flow is simple: clean master data first, then controlled lookup, then controlled transaction save, then audit trail. When a customer or PI uses a postal code, the ERP must know which canonical postal row is being used. When transporter serviceability is checked, the ERP must know the dispatch unit and canonical postal row. If no mapping exists, the ERP should return To Be Assigned and create a request for Customer Success and Dispatch, instead of allowing free-text guessing.
+Example: M1 plus pincode 400059 may show Transporter A and Transporter B. D1 plus the same pincode may show Transporter C. T1 plus the same pincode may show Self-Pickup or a different surface transporter. This is not a contradiction; it is the correct business result because serviceability depends on dispatch unit.
+Frontend correction must prevent stale choices. If unit, customer, warehouse, shipping pincode, or verified pincode changes, the selected transporter must be cleared and fetched again. The screen must not keep a transporter selected from an earlier pincode or earlier dispatch unit.
+Additional acceptance view for Frontend Code Pack 1A Geo Master Screens Guide
+Control point	Explanation
+Purpose	This expansion ensures the reader understands the business reason, not only the action list.
+Current ERP problem	The ERP problem is not isolated to one screen or file; it is a chain problem from postal master to transporter and customer verification.
+Business risk if not fixed	If the chain is only partly corrected, users may believe the ERP is fixed while hidden FK and mapping errors remain.
+Correct target flow	Treat each correction as a control point with clear input, output, and test evidence.
+Glutape example	M1, D1, and T1 with the same destination pincode should behave according to serviceability, not according to visible pincode text alone.
+IT action	Follow the relevant code pack, SQL pack, frontend pack, and checklist for the section.
+Expected output/result	The system produces controlled, auditable, tested behavior.
+QA acceptance criteria	QA repeats the Glutape example and records the actual result.
+Common mistakes to avoid	Do not skip tests because the screen appears normal.
+What not to touch	Do not touch Zone, PriceList, old snapshots, or global dataset import.
+
+Frontend Code Pack 1A Geo Master Screens Guide: Why this matters in Glutape ERP
+This section exists because frontend code pack 1a geo master screens guide is not only a screen correction. It protects the ERP single source of truth. In the current ERP, a user may see a value on screen and assume that it is correct, but the underlying master record may be duplicated, inactive, or linked to the wrong dispatch serviceability rule. The corrected design makes the master record, the business transaction, and the audit trail agree with each other.
+The business result expected from this correction is controlled visibility. Sales should not need to guess transporter names. Customer Success should not need to follow up manually because the ERP lost the context of dispatch unit. Dispatch should not receive a PI with a transporter chosen from the wrong unit. Management should be able to verify why a pincode was merged, who approved the correction, and which references were changed.
+The target flow is simple: clean master data first, then controlled lookup, then controlled transaction save, then audit trail. When a customer or PI uses a postal code, the ERP must know which canonical postal row is being used. When transporter serviceability is checked, the ERP must know the dispatch unit and canonical postal row. If no mapping exists, the ERP should return To Be Assigned and create a request for Customer Success and Dispatch, instead of allowing free-text guessing.
+Example: M1 plus pincode 400059 may show Transporter A and Transporter B. D1 plus the same pincode may show Transporter C. T1 plus the same pincode may show Self-Pickup or a different surface transporter. This is not a contradiction; it is the correct business result because serviceability depends on dispatch unit.
+Frontend correction must prevent stale choices. If unit, customer, warehouse, shipping pincode, or verified pincode changes, the selected transporter must be cleared and fetched again. The screen must not keep a transporter selected from an earlier pincode or earlier dispatch unit.
+Additional acceptance view for Frontend Code Pack 1A Geo Master Screens Guide
+Control point	Explanation
+Purpose	This expansion ensures the reader understands the business reason, not only the action list.
+Current ERP problem	The ERP problem is not isolated to one screen or file; it is a chain problem from postal master to transporter and customer verification.
+Business risk if not fixed	If the chain is only partly corrected, users may believe the ERP is fixed while hidden FK and mapping errors remain.
+Correct target flow	Treat each correction as a control point with clear input, output, and test evidence.
+Glutape example	M1, D1, and T1 with the same destination pincode should behave according to serviceability, not according to visible pincode text alone.
+IT action	Follow the relevant code pack, SQL pack, frontend pack, and checklist for the section.
+Expected output/result	The system produces controlled, auditable, tested behavior.
+QA acceptance criteria	QA repeats the Glutape example and records the actual result.
+Common mistakes to avoid	Do not skip tests because the screen appears normal.
+What not to touch	Do not touch Zone, PriceList, old snapshots, or global dataset import.
+
+ 
+Final Code and Execution Appendix
+This appendix is added to the explanatory handover document to give IT ready-to-adapt implementation logic. The explanation above remains the base instruction. Code below must be adapted to the exact project imports and current file structure without changing the approved business rules.
+Role helper and edit control
+Create src/utils/rolePermissions.js unless already present. Use exact backend group names and default unknown roles to view-only.
+// src/utils/rolePermissions.js - new file unless already present
+export const hasAnyRole = (user, roles = []) => {
+  const groups = user?.groups || user?.group_names || [];
+  return roles.some(role => groups.includes(role));
+};
+
+export const canEditGeoMaster = (user) => hasAnyRole(user, ['Director', 'Admin']);
+
+export const canEditTransporter = (user) => hasAnyRole(user, [
+  'Director', 'Admin', 'Dispatch', 'Operations & Supply Chain Manager',
+  'Factory-Mumbai-Dispatch', 'Factory-Delhi-Dispatch'
+]);
+Badge and duplicate prevention snippets
+Use active/inactive badges and exact lookup before create.
+const activePostalOptions = postalOptions.filter(x => x.is_active);
+{canEditGeoMaster(currentUser) && <Button onClick={handleAdd}>Add Postal Code</Button>}
+const beforeCreatePostalCode = async () => {
+  const res = await MasterService.lookupPostalCode(countryId, postalCode).catch(e => e);
+  if (res?.data?.id) { showError('Active postal code already exists for this country. Use alias if locality differs.'); return false; }
+  return true;
+};
+Professional UI snippets
+Use professional labels and status displays.
+// Active / Inactive / Merged badge
+<Chip
+  label={row.is_active ? 'Active' : 'Inactive / Merged'}
+  color={row.is_active ? 'success' : 'default'}
+/>
+
+// Transporter dropdown label
+getOptionLabel={(option) => {
+  if (!option) return '';
+  const name = option.transporter_name || '';
+  const type = option.transporter_type ? ` (${option.transporter_type})` : '';
+  const priority = option.priority ? ` - ${option.priority}` : '';
+  const warning = option.is_to_be_assigned ? ' - Action Required' : '';
+  return `${name}${type}${priority}${warning}`;
+}}
+
+// To Be Assigned warning
+{transporterName?.is_to_be_assigned && (
+  <Alert severity='warning'>PI will proceed, but Customer Success / Dispatch must assign transporter before dispatch.</Alert>
+)}

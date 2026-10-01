@@ -1,11 +1,12 @@
 import React, { useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import { Box, Button, Grid } from "@mui/material";
-import axios from "axios";
+
 import { CustomLoader } from "../../../Components/CustomLoader";
 import InventoryServices from "../../../services/InventoryService";
 import CustomTextField from "../../../Components/CustomTextField";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import MasterService from "../../../services/MasterService";
 export const UpdateWareHouseInventoryDetails = (props) => {
   const {
     IDForEdit,
@@ -38,9 +39,7 @@ export const UpdateWareHouseInventoryDetails = (props) => {
 
   const validatePinCode = async (pinCode) => {
     try {
-      const response = await axios.get(
-        `https://api.postalpincode.in/pincode/${pinCode}`
-      );
+      const response = await MasterService.ValidatePincode("", pinCode);
       setPinCodeData(response.data[0].PostOffice[0]);
     } catch (error) {
       console.log("Creating Bank error ", error);

@@ -26,6 +26,10 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { tableCellClasses } from "@mui/material/TableCell";
 import InvoiceServices from "../../services/InvoiceService";
+import {
+  getTransportMethodLabel,
+  getTransporterDisplayName,
+} from "../../utility/transportDisplay";
 import { CustomLoader } from "./../../Components/CustomLoader";
 import { CustomPagination } from "./../../Components/CustomPagination";
 import moment from "moment";
@@ -197,6 +201,10 @@ export const ViewDispatch = () => {
                   <StyledTableCell align="center">User</StyledTableCell>
                   <StyledTableCell align="center">PI No</StyledTableCell>
                   <StyledTableCell align="center">Customer</StyledTableCell>
+                  <StyledTableCell align="center">
+                    Transport Method
+                  </StyledTableCell>
+                  <StyledTableCell align="center">Transporter</StyledTableCell>
                   <StyledTableCell align="center">Date</StyledTableCell>
                   <StyledTableCell align="center">
                     Dispatch Location
@@ -299,6 +307,15 @@ function Row(props) {
             : "NA"}
         </TableCell>
         <TableCell align="center">{row.customer}</TableCell>
+        <TableCell align="center">
+          {getTransportMethodLabel(row.selected_transport_mode)}
+        </TableCell>
+        <TableCell align="center">
+          {getTransporterDisplayName(
+            row.selected_transport_mode,
+            row.transporter,
+          )}
+        </TableCell>
         <TableCell align="center">
           {moment(row.date).format("DD-MM-YYYY")}
         </TableCell>

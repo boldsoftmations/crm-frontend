@@ -23,7 +23,7 @@ import TransportMappingUpdate from "./TransportMappingUpdate";
 import TransportMappingCreate from "./TransportMappingCreate";
 import InvoiceServices from "../../../services/InvoiceService";
 
-const TransPortMapping = () => {
+const TransPortMapping = ({ lockedTransporter }) => {
   const [mappingData, setMappingData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -33,15 +33,30 @@ const TransPortMapping = () => {
   // false = Active, true = Inactive
   const [isInactiveFilter, setIsInactiveFilter] = useState(false);
 
-  // Filter states
-  const [selectedTransporter, setSelectedTransporter] = useState(null);
+  // Filter states - GAP FIX (2/3 + 3/3): when opened from inside a
+  // transporter's workspace (lockedTransporter passed in), this is forced
+  // to that transporter and the filter dropdown is hidden, same as
+  // Contacts. On top of that, Serviceability only applies to Surface
+  // transporters (doc Section 8: "This tab is primarily for Surface / Road
+  // transporters... Courier providers marked universal do not need PIN
+  // rows.") - if the locked transporter isn't Surface, this renders a
+  // message instead of the mapping list/create UI further down.
+  const [selectedTransporter, setSelectedTransporter] = useState(
+    lockedTransporter || null,
+  );
   const [selectedUnit, setSelectedUnit] = useState(null);
   const [selectedPincode, setSelectedPincode] = useState(null);
+
+  useEffect(() => {
+    if (lockedTransporter) {
+      setSelectedTransporter(lockedTransporter);
+    }
+  }, [lockedTransporter]);
 
   // Filter options
   const [transporterOptions, setTransporterOptions] = useState([]);
   const [unitOptions, setUnitOptions] = useState([]);
-  const [pincodeOptions, setPincodeOptions] = useState([]);
+  // const [pincodeOptions, setPincodeOptions] = useState([]);
 
   const [openCreatePopup, setOpenCreatePopup] = useState(false);
   const [openUpdatePopup, setOpenUpdatePopup] = useState(false);
@@ -64,8 +79,6 @@ const TransPortMapping = () => {
     "TRANSPORTER",
     "PINCODE",
     "UNIT",
-    "PRIORITY",
-    "IS SYSTEM DEFAULT",
     "CREATED BY",
     "UPDATED BY",
     "CREATION DATE",
@@ -82,7 +95,7 @@ const TransPortMapping = () => {
       const transportRes = await MasterService.getAllTransportMaster();
       console.log("trans is ", transportRes);
 
-      const pincodeRes = await MasterService.getMasterPincode("all", "");
+      // const pincodeRes = await MasterService.getMasterPincode("all", "");
       const unitRes = await InvoiceServices.getAllSellerAccountData();
 
       if (transportRes && transportRes.data && transportRes.data.results) {
@@ -91,10 +104,10 @@ const TransPortMapping = () => {
       if (unitRes && unitRes.data && unitRes.data.results) {
         setUnitOptions(unitRes.data.results);
       }
-      if (pincodeRes && pincodeRes.data && pincodeRes.data) {
-        console.log("pincode is:", pincodeRes);
-        setPincodeOptions(pincodeRes.data);
-      }
+      // if (pincodeRes && pincodeRes.data && pincodeRes.data) {
+      //   console.log("pincode is:", pincodeRes);
+      //   setPincodeOptions(pincodeRes.data);
+      // }
     } catch (error) {
       handleError(error);
     }
@@ -189,8 +202,6 @@ const TransPortMapping = () => {
     transporter: value.transporter,
     pincode: value.pincode,
     unit: value.unit,
-    priority: value.priority,
-    is_system_default: value.is_system_default ? "Yes" : "No",
     created_by: value.created_by,
     updated_by: value.updated_by,
     creation_date: value.creation_date,
@@ -200,6 +211,35 @@ const TransPortMapping = () => {
 
   const hasActiveFilters =
     selectedTransporter || selectedUnit || selectedPincode;
+
+  // GAP FIX (3/3): Serviceability only applies to Surface transporters.
+  // When opened from a workspace for a Courier/Local-Adhoc transporter,
+  // don't even render the list/filters/Add button - there is nothing
+  // valid to map for them (doc: "Never create Train, Bus, Air, Self
+  // Pickup or Phase-1 Courier rows for every PIN.").
+  if (lockedTransporter && lockedTransporter.transporter_type !== "Surface Transport") {
+    return (
+      <Paper sx={{ p: 4, m: 4, textAlign: "center" }}>
+        <MessageAlert
+          open={alertInfo.open}
+          onClose={handleCloseSnackbar}
+          severity={alertInfo.severity}
+          message={alertInfo.message}
+        />
+        <h3 style={{ margin: 0, color: "#666" }}>
+          Serviceability not applicable
+        </h3>
+        <p style={{ color: "#999" }}>
+          {lockedTransporter.transporter_name} is a{" "}
+          {lockedTransporter.transporter_type} transporter. Pincode
+          serviceability mapping only applies to Surface transporters -
+          {lockedTransporter.transporter_type === "Courier"
+            ? " Courier providers are treated as universal, no PIN mapping needed."
+            : " no PIN mapping is needed for this type."}
+        </p>
+      </Paper>
+    );
+  }
 
   return (
     <>
@@ -254,14 +294,16 @@ const TransPortMapping = () => {
                 minWidth: "300px",
               }}
             >
-              <Button
-                variant="contained"
-                color="success"
-                onClick={() => setOpenCreatePopup(true)}
-                disabled={isInGroups("Stores")}
-              >
-                Add
-              </Button>
+              {userData.groups.includes("Director") && (
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={() => setOpenCreatePopup(true)}
+                  disabled={isInGroups("Stores")}
+                >
+                  Add
+                </Button>
+              )}
             </Box>
           </Box>
 
@@ -277,22 +319,30 @@ const TransPortMapping = () => {
               gap: 2,
             }}
           >
-            {/* Transporter Filter */}
+            {/* Transporter Filter - hidden when locked to one transporter
+                from a workspace (Surface-only guard above already ensures
+                we only reach here for Surface transporters). */}
             <Box sx={{ minWidth: "200px", flexGrow: 1, maxWidth: "250px" }}>
-              <CustomAutocomplete
-                fullWidth
-                size="small"
-                options={transporterOptions}
-                value={selectedTransporter}
-                getOptionLabel={(option) =>
-                  option.transporter_name ? option.transporter_name : ""
-                }
-                onChange={(e, value) => {
-                  setSelectedTransporter(value || null);
-                  setCurrentPage(1);
-                }}
-                label="Filter by Transporter"
-              />
+              {lockedTransporter ? (
+                <Box sx={{ fontSize: 14, color: "#555" }}>
+                  Transporter: <b>{lockedTransporter.transporter_name}</b>
+                </Box>
+              ) : (
+                <CustomAutocomplete
+                  fullWidth
+                  size="small"
+                  options={transporterOptions}
+                  value={selectedTransporter}
+                  getOptionLabel={(option) =>
+                    option.transporter_name ? option.transporter_name : ""
+                  }
+                  onChange={(e, value) => {
+                    setSelectedTransporter(value || null);
+                    setCurrentPage(1);
+                  }}
+                  label="Filter by Transporter"
+                />
+              )}
             </Box>
 
             {/* Unit Filter */}
@@ -312,7 +362,7 @@ const TransPortMapping = () => {
             </Box>
 
             {/* Pincode Filter */}
-            <Box sx={{ minWidth: "180px", flexGrow: 1, maxWidth: "220px" }}>
+            {/* <Box sx={{ minWidth: "180px", flexGrow: 1, maxWidth: "220px" }}>
               <CustomAutocomplete
                 fullWidth
                 size="small"
@@ -327,7 +377,7 @@ const TransPortMapping = () => {
                 }}
                 label="Filter by Pincode"
               />
-            </Box>
+            </Box> */}
 
             {/* Clear Filters + Active/Inactive Toggle */}
             <Box
@@ -389,6 +439,7 @@ const TransPortMapping = () => {
           getMappingData={getMappingData}
           currentPage={currentPage}
           searchQuery={searchQuery}
+          lockedTransporter={lockedTransporter}
         />
       </Popup>
 
@@ -405,6 +456,7 @@ const TransPortMapping = () => {
           currentPage={currentPage}
           searchQuery={searchQuery}
           recordForEdit={recordForEdit}
+          lockedTransporter={lockedTransporter}
         />
       </Popup>
     </>

@@ -19,6 +19,10 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { tableCellClasses } from "@mui/material/TableCell";
 import InvoiceServices from "../../services/InvoiceService";
+import {
+  getTransportMethodLabel,
+  getTransporterDisplayName,
+} from "../../utility/transportDisplay";
 import { CustomLoader } from "./../../Components/CustomLoader";
 import { Popup } from "./../../Components/Popup";
 import { UpdateDispatch } from "./UpdateDispatch";
@@ -119,7 +123,13 @@ export const Dispatched = () => {
             user: item.user,
             pi_list: (item.pi_list && item.pi_list.join(",")) || "", // ✅ safe chaining
             customer: item.customer,
-            transporter: item.transporter,
+            selected_transport_mode: getTransportMethodLabel(
+              item.selected_transport_mode,
+            ),
+            transporter: getTransporterDisplayName(
+              item.selected_transport_mode,
+              item.transporter,
+            ),
             dispatch_location: item.dispatch_location,
             lr_copy: item.lr_copy,
             pod_copy: item.pod_copy,
@@ -278,7 +288,10 @@ export const Dispatched = () => {
                   <StyledTableCell align="center">PI No</StyledTableCell>
                   <StyledTableCell align="center">Customer</StyledTableCell>
                   <StyledTableCell align="center">
-                    Transport Name
+                    Transport Method
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    Transporter
                   </StyledTableCell>
                   <StyledTableCell align="center">Date</StyledTableCell>
                   <StyledTableCell align="center">
@@ -344,7 +357,15 @@ function Row(props) {
             : "NA"}
         </TableCell>
         <TableCell align="center">{row.customer}</TableCell>
-        <TableCell align="center">{row.transporter}</TableCell>
+        <TableCell align="center">
+          {getTransportMethodLabel(row.selected_transport_mode)}
+        </TableCell>
+        <TableCell align="center">
+          {getTransporterDisplayName(
+            row.selected_transport_mode,
+            row.transporter,
+          )}
+        </TableCell>
         <TableCell align="center">
           {moment(row.date).format("DD-MM-YYYY")}
         </TableCell>
@@ -455,6 +476,7 @@ const headers = [
   { label: "User", key: "user" },
   { label: "PI NO", key: "PI NO" },
   { label: "Customer", key: "customer" },
+  { label: "Transport Method", key: "selected_transport_mode" },
   { label: "Transporter", key: "transporter" },
   { label: "Dispatch Location", key: "dispatch_location" },
   { label: "LR Copy", key: "lr_copy" },

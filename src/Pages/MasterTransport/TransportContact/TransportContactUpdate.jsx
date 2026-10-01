@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
+  Alert,
   Box,
   Button,
   FormControlLabel,
@@ -13,6 +14,7 @@ import { useNotificationHandling } from "../../../Components/useNotificationHand
 import { MessageAlert } from "../../../Components/MessageAlert";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import { useSelector } from "react-redux";
 
 const DESIGNATION_ROLE_CHOICES = [
   "Booking",
@@ -26,10 +28,13 @@ const TransportContactUpdate = ({
   recordForEdit,
   getTransportContactData,
   setOpenPopup,
+  lockedTransporter,
 }) => {
   const [formData, setFormData] = useState({
     transporter: "",
     transporter_id: "",
+    transporter_type: "",
+    branch_id: null,
     unit: "",
     city: "",
     contact_person: "",
@@ -41,11 +46,14 @@ const TransportContactUpdate = ({
     is_primary: false,
     is_inactive: false,
   });
+  const userData = useSelector((state) => state.auth.profile);
 
   const [loading, setLoading] = useState(false);
   const [transporterOptions, setTransporterOptions] = useState([]);
   const [unitOptions, setUnitOptions] = useState([]);
   const [cityOptions, setCityOptions] = useState([]);
+  const [branchOptions, setBranchOptions] = useState([]);
+  const [serviceabilityStatus, setServiceabilityStatus] = useState("idle");
 
   const { handleError, handleCloseSnackbar, alertInfo, handleSuccess } =
     useNotificationHandling();
@@ -74,6 +82,7 @@ const TransportContactUpdate = ({
 
     try {
       setLoading(true);
+      setServiceabilityStatus("loading");
 
       const response = await MasterService.getTransportContact(transporterId);
       const results = Array.isArray(response.data) ? response.data : [];
@@ -100,6 +109,9 @@ const TransportContactUpdate = ({
 
       setUnitOptions(units);
       setCityOptions(cities);
+      setServiceabilityStatus(
+        units.length > 0 || cities.length > 0 ? "available" : "none",
+      );
 
       // Restore existing unit/city if still valid, otherwise auto-fill if only one option
       setFormData((prev) => ({
@@ -116,7 +128,11 @@ const TransportContactUpdate = ({
             : "",
       }));
     } catch (error) {
-      handleError(error);
+      // A missing serviceability mapping must never block contact update.
+      console.error("Serviceability lookup unavailable for contact:", error);
+      setUnitOptions([]);
+      setCityOptions([]);
+      setServiceabilityStatus("none");
     } finally {
       setLoading(false);
     }
@@ -136,9 +152,21 @@ const TransportContactUpdate = ({
   // ==============================
   useEffect(() => {
     if (recordForEdit) {
+      // transporter_type is not stored on the Contact record itself - it
+      // has to be looked up from the transporterOptions list by matching
+      // the transporter_id, once that list has loaded.
+      const matchedTransporter = transporterOptions.find(
+        (option) => option.id === recordForEdit.transporter_id,
+      );
+      const transporterType = matchedTransporter
+        ? matchedTransporter.transporter_type
+        : "";
+
       setFormData({
         transporter: recordForEdit.transporter || "",
         transporter_id: recordForEdit.transporter_id || "",
+        transporter_type: transporterType,
+        branch_id: recordForEdit.branch || null,
         unit: recordForEdit.unit || "",
         city: recordForEdit.city || "",
         contact_person: recordForEdit.contact_person || "",
@@ -151,9 +179,28 @@ const TransportContactUpdate = ({
         is_inactive: recordForEdit.is_inactive || false,
       });
 
-      // Load units & cities for the existing transporter,
-      // preserving the already-selected unit & city
+      // Branch options load for every transporter type.
       if (recordForEdit.transporter_id) {
+        MasterService.getAllTransportBranch(recordForEdit.transporter_id)
+          .then((branchResponse) => {
+            const branchResults =
+              branchResponse &&
+              branchResponse.data &&
+              Array.isArray(branchResponse.data.results)
+                ? branchResponse.data.results
+                : [];
+            setBranchOptions(branchResults);
+          })
+          .catch((branchError) => {
+            console.error("Error loading branch options:", branchError);
+            setBranchOptions([]);
+          });
+      }
+
+      // Unit/City only apply to Surface transporters (see note in
+      // handleTransporterChange below) - skip the lookup entirely
+      // otherwise, same reasoning as the Create form.
+      if (recordForEdit.transporter_id && transporterType === "Surface Transport") {
         fetchUnitAndCity(
           recordForEdit.transporter_id,
           recordForEdit.unit || "",
@@ -161,7 +208,7 @@ const TransportContactUpdate = ({
         );
       }
     }
-  }, [recordForEdit]);
+  }, [recordForEdit, transporterOptions]);
 
   // ==============================
   // Transporter Change — reset unit & city
@@ -171,14 +218,41 @@ const TransportContactUpdate = ({
       ...prev,
       transporter: value ? value.transporter_name : "",
       transporter_id: value ? value.id : "",
+      transporter_type: value ? value.transporter_type : "",
+      branch_id: null,
       unit: "",
       city: "",
     }));
 
     setUnitOptions([]);
     setCityOptions([]);
+    setBranchOptions([]);
+    setServiceabilityStatus("idle");
 
     if (!value || !value.id) return;
+
+    try {
+      const branchResponse = await MasterService.getAllTransportBranch(
+        value.id,
+      );
+      const branchResults =
+        branchResponse &&
+        branchResponse.data &&
+        Array.isArray(branchResponse.data.results)
+          ? branchResponse.data.results
+          : [];
+      setBranchOptions(branchResults);
+    } catch (branchError) {
+      console.error("Error loading branch options:", branchError);
+      setBranchOptions([]);
+    }
+
+    // Same reasoning as ContactTransportCreate.jsx - Unit/City are derived
+    // from Serviceability mappings, which only exist for Surface.
+    if (value.transporter_type !== "Surface Transport") {
+      setServiceabilityStatus("not-applicable");
+      return;
+    }
 
     await fetchUnitAndCity(value.id, "", "");
   };
@@ -209,10 +283,13 @@ const TransportContactUpdate = ({
     try {
       setLoading(true);
 
+      const isSurface = formData.transporter_type === "Surface Transport";
+
       const payload = {
         transporter: formData.transporter,
-        unit: formData.unit,
-        city: formData.city,
+        branch: formData.branch_id,
+        unit: isSurface && formData.unit ? formData.unit : null,
+        city: isSurface && formData.city ? formData.city : null,
         contact_person: formData.contact_person,
         designation_role: formData.designation_role,
         mobile_number: formData.mobile_number,
@@ -251,7 +328,10 @@ const TransportContactUpdate = ({
 
       <Box component="form" onSubmit={handleSubmit} sx={{ p: 1 }}>
         <Grid container spacing={2}>
-          {/* Transporter */}
+          {/* Transporter - disabled when opened from inside a workspace
+              (lockedTransporter given), so a contact can't be silently
+              moved to a different transporter from within that
+              transporter's own record page. */}
           <Grid item xs={12} sm={6}>
             <CustomAutocomplete
               fullWidth
@@ -267,44 +347,90 @@ const TransportContactUpdate = ({
               }
               onChange={(e, value) => handleTransporterChange(value)}
               label="Transporter"
+              disabled={Boolean(lockedTransporter)}
             />
           </Grid>
 
-          {/* Unit — auto-populated from transporter */}
+          {/* Branch - optional, applies to every transporter type */}
           <Grid item xs={12} sm={6}>
             <CustomAutocomplete
               fullWidth
               size="small"
-              options={unitOptions}
+              options={branchOptions}
               value={
-                unitOptions.find((opt) => opt.unit === formData.unit) || null
+                branchOptions.find((opt) => opt.id === formData.branch_id) ||
+                null
               }
-              getOptionLabel={(option) => (option.unit ? option.unit : "")}
+              getOptionLabel={(option) =>
+                option.branch_name ? option.branch_name : ""
+              }
               onChange={(e, value) =>
-                handleAutocompleteChange("unit", value ? value.unit : "")
+                setFormData((prev) => ({
+                  ...prev,
+                  branch_id: value ? value.id : null,
+                }))
               }
-              label="Unit"
+              label="Branch (optional)"
               disabled={!formData.transporter}
             />
           </Grid>
 
-          {/* City — auto-populated from transporter */}
-          <Grid item xs={12} sm={6}>
-            <CustomAutocomplete
-              fullWidth
-              size="small"
-              options={cityOptions}
-              value={
-                cityOptions.find((opt) => opt.city === formData.city) || null
-              }
-              getOptionLabel={(option) => (option.city ? option.city : "")}
-              onChange={(e, value) =>
-                handleAutocompleteChange("city", value ? value.city : "")
-              }
-              label="City"
-              disabled={!formData.transporter}
-            />
-          </Grid>
+          {/* Surface contact remains editable even if there is no
+              Unit/Pincode serviceability mapping. */}
+          {formData.transporter_type === "Surface Transport" &&
+            serviceabilityStatus === "none" && (
+              <Grid item xs={12}>
+                <Alert severity="info">
+                  No Unit / Pincode serviceability mapping is available for
+                  this Surface transporter. The contact can still be updated.
+                </Alert>
+              </Grid>
+            )}
+
+          {formData.transporter_type === "Surface Transport" &&
+            serviceabilityStatus === "available" && (
+              <>
+                <Grid item xs={12} sm={6}>
+                  <CustomAutocomplete
+                    fullWidth
+                    size="small"
+                    options={unitOptions}
+                    value={
+                      unitOptions.find((opt) => opt.unit === formData.unit) ||
+                      null
+                    }
+                    getOptionLabel={(option) =>
+                      option.unit ? option.unit : ""
+                    }
+                    onChange={(e, value) =>
+                      handleAutocompleteChange("unit", value ? value.unit : "")
+                    }
+                    label="Unit (optional)"
+                    disabled={!formData.transporter}
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <CustomAutocomplete
+                    fullWidth
+                    size="small"
+                    options={cityOptions}
+                    value={
+                      cityOptions.find((opt) => opt.city === formData.city) ||
+                      null
+                    }
+                    getOptionLabel={(option) =>
+                      option.city ? option.city : ""
+                    }
+                    onChange={(e, value) =>
+                      handleAutocompleteChange("city", value ? value.city : "")
+                    }
+                    label="City (optional)"
+                    disabled={!formData.transporter}
+                  />
+                </Grid>
+              </>
+            )}
 
           {/* Contact Person */}
           <Grid item xs={12} sm={6}>
@@ -438,14 +564,16 @@ const TransportContactUpdate = ({
         <Box
           sx={{ display: "flex", justifyContent: "flex-end", gap: 1, mt: 3 }}
         >
-          <Button
-            type="submit"
-            variant="contained"
-            color="success"
-            disabled={loading}
-          >
-            Update
-          </Button>
+          {userData.groups.includes("Director") && (
+            <Button
+              type="submit"
+              variant="contained"
+              color="success"
+              disabled={loading}
+            >
+              Update
+            </Button>
+          )}
         </Box>
       </Box>
     </>

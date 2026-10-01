@@ -693,7 +693,7 @@ const Invoice_Type_Options = ["unit", "customer", "Scrap", "Supplier"];
 const DateOptions = [
   {
     value: "Today",
-  },
+  }, //
   {
     value: "Yesterday",
   },

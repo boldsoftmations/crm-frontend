@@ -15,7 +15,7 @@ const sendResetPasswordEmail = (data) => {
 const ChangePassword = (id, token, newPasswordDetails) => {
   return CustomAxios.post(
     `api/user/reset-password/${id}/${token}/`,
-    newPasswordDetails
+    newPasswordDetails,
   );
 };
 
@@ -120,7 +120,7 @@ const updateProductObjectionData = (id, data) => {
 const getDailySaleReviewData = (
   selectedYearMonth,
   salesPersonByFilter,
-  searchQuery
+  searchQuery,
 ) => {
   // Constructing the query parameters
   const params = new URLSearchParams();

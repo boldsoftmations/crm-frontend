@@ -208,6 +208,9 @@ export const AllProformaInvoice = () => {
     payment_terms: row.payment_terms,
     transporter_name: row.transporter_name,
     pincode: row.pincode,
+    seller_account: row.seller_account,
+    seller_id: row.seller_id,
+    country_id: row.country_id,
   }));
 
   const Tableheaders = [

@@ -13,13 +13,12 @@ import MasterService from "../../../services/MasterService";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
 import { CustomLoader } from "../../../Components/CustomLoader";
+import { useSelector } from "react-redux";
 
 const TRANSPORTER_TYPE_CHOICES = [
-  "Universal Mode",
   "Surface Transport",
   "Courier",
   "Local-Adhoc",
-  "Transporter",
 ];
 
 function MasterTransportUpdate({
@@ -33,6 +32,7 @@ function MasterTransportUpdate({
     is_inactive: false,
   });
   const [loading, setLoading] = useState(false);
+  const userData = useSelector((state) => state.auth.profile);
 
   const { handleError, handleCloseSnackbar, alertInfo, handleSuccess } =
     useNotificationHandling();
@@ -154,14 +154,16 @@ function MasterTransportUpdate({
             mt: 3,
           }}
         >
-          <Button
-            type="submit"
-            variant="contained"
-            color="success"
-            disabled={loading}
-          >
-            Update
-          </Button>
+          {userData.groups.includes("Director") && (
+            <Button
+              type="submit"
+              variant="contained"
+              color="success"
+              disabled={loading}
+            >
+              Update
+            </Button>
+          )}
         </Box>
       </Box>
     </>

@@ -1,9 +1,9 @@
 import React from "react";
 import { Box, Grid, Button } from "@mui/material";
 import { Popup } from "./Popup";
-import CustomTextField from "./CustomTextField";
-import { getMaxEndDate } from "../utility/dateUtils";
 
+import CustomTextField from "./CustomTextField";
+import { getMaxEndDate, formatDate } from "../utility/dateUtils";
 const CustomDateFilterPopup = ({
   open,
   setOpen,
@@ -14,68 +14,66 @@ const CustomDateFilterPopup = ({
   onSubmit,
   minDate,
   maxDate,
+  onReset,
   onError, // ✅ NEW PROP (for professional alert/snackbar)
 }) => {
-  const formatDate = (date) =>
-    date ? new Date(date).toISOString().split("T")[0] : "";
+  // const getMaxEndDate = (date) =>
+  //   date ? new Date(date).toISOString().split("T")[0] : "";
 
   const handleStartDateChange = (event) => {
-    const value = event.target.value;
+    if (!event.target.value) return;
 
-    if (!value) {
-      onError && onError("Please select a valid start date");
-      return;
-    }
+    // create local date (no timezone shift)
+    const selectedDate = new Date(event.target.value + "T00:00:00");
 
-    const date = new Date(value);
+    setStartDate(selectedDate);
 
-    if (isNaN(date.getTime())) {
-      onError && onError("Invalid start date selected");
-      return;
-    }
+    if (endDate) {
+      const maxEnd = getMaxEndDate(selectedDate);
 
-    setStartDate(date);
+      if (endDate > maxEnd) {
+        setEndDate(maxEnd);
 
-    const maxEnd = getMaxEndDate(date);
-
-    if (endDate && new Date(endDate) > maxEnd) {
-      setEndDate(maxEnd);
-      onError &&
-        onError("End date adjusted to maximum allowed range (3 months)");
+        if (onError) {
+          onError("End date adjusted to maximum allowed range (3 months)");
+        }
+      }
     }
   };
   const getResetDate = () => {
-    setStartDate(new Date());
-    setEndDate(new Date());
+    setStartDate(null);
+    setEndDate(null);
+
+    if (onReset) {
+      onReset();
+    }
   };
   const handleEndDateChange = (event) => {
-    const value = event.target.value;
+    if (!event.target.value) return;
+    console.log("End Date Changed:", event.target.value);
 
-    if (!value) {
-      onError && onError("Please select a valid end date");
+    const selectedDate = new Date(event.target.value + "T00:00:00");
+    console.log(selectedDate);
+
+    if (startDate && selectedDate < startDate) {
+      if (onError) {
+        onError("End date cannot be before start date");
+      }
       return;
     }
 
-    const date = new Date(value);
+    if (startDate) {
+      const maxEnd = getMaxEndDate(startDate);
 
-    if (isNaN(date.getTime())) {
-      onError && onError("Invalid end date selected");
-      return;
+      if (selectedDate > maxEnd) {
+        if (onError) {
+          onError("Date range cannot exceed 3 months");
+        }
+        return;
+      }
     }
 
-    if (!startDate) {
-      setEndDate(date);
-      return;
-    }
-
-    const maxEnd = getMaxEndDate(startDate);
-
-    if (date > maxEnd) {
-      onError && onError("Date range cannot exceed 3 months");
-      return;
-    }
-
-    setEndDate(date);
+    setEndDate(selectedDate);
   };
 
   return (

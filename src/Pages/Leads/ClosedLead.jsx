@@ -45,6 +45,7 @@ export const ClosedLead = () => {
   const [openModal, setOpenModal] = useState(false);
   const tokenData = useSelector((state) => state.auth);
   const users = tokenData.profile;
+  const userData = useSelector((state) => state.auth.profile);
   const assigned = users.active_sales_user || [];
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
@@ -105,7 +106,7 @@ export const ClosedLead = () => {
         "close",
         filterQuery,
         filterSelectedQuery,
-        searchQuery
+        searchQuery,
       );
       setLeads(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -219,25 +220,25 @@ export const ClosedLead = () => {
                       filterQuery === "assigned_to__email"
                         ? "Assigned To"
                         : filterQuery === "references__source"
-                        ? "Reference"
-                        : filterQuery === "stage"
-                        ? "Stage"
-                        : filterQuery === "description__name"
-                        ? "Description"
-                        : "",
+                          ? "Reference"
+                          : filterQuery === "stage"
+                            ? "Stage"
+                            : filterQuery === "description__name"
+                              ? "Description"
+                              : "",
                       filterQuery === "assigned_to__email"
                         ? assigned.map((option) => option.email)
                         : filterQuery === "references__source"
-                        ? referenceData.map((option) => option.source)
-                        : filterQuery === "stage"
-                        ? StageOptions.map((option) => option.value)
-                        : filterQuery === "description__name"
-                        ? descriptionMenuData.map((option) => option.name)
-                        : [],
+                          ? referenceData.map((option) => option.source)
+                          : filterQuery === "stage"
+                            ? StageOptions.map((option) => option.value)
+                            : filterQuery === "description__name"
+                              ? descriptionMenuData.map((option) => option.name)
+                              : [],
                       (value) => {
                         setFilterSelectedQuery(value);
                         setCurrentPage(1);
-                      }
+                      },
                     )}
                 </Grid>
               )}
@@ -269,6 +270,7 @@ export const ClosedLead = () => {
                   variant="contained"
                   color="success"
                   onClick={() => setOpenPopup2(true)}
+                  disabled={userData.groups.includes("Digital Marketing")}
                 >
                   Add
                 </Button>
@@ -311,6 +313,7 @@ export const ClosedLead = () => {
             ButtonText1={"Potential"}
             PriorityColor={PriorityColor}
             Styles={{ paddingLeft: "10px", paddingRight: "10px" }}
+            // Isviewable={!userData.groups.includes("Digital Marketing")}
           />
           <CustomPagination
             totalPages={totalPages}

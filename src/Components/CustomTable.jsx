@@ -1,5 +1,6 @@
 import { Button } from "@mui/material";
 import React from "react";
+import { useSelector } from "react-redux";
 
 export const CustomTable = ({
   headers,
@@ -21,6 +22,7 @@ export const CustomTable = ({
   Styles,
   handleClickLRCOPY,
 }) => {
+  const users = useSelector((state) => state.auth.profile);
   return (
     <div
       style={{
@@ -86,8 +88,8 @@ export const CustomTable = ({
                     PriorityColor && PriorityColor[index].priority
                       ? PriorityColor[index].priority
                       : index % 2 === 0
-                      ? "#ffffff"
-                      : "#f2f2f2",
+                        ? "#ffffff"
+                        : "#f2f2f2",
                   borderBottom: "1px solid rgba(224, 224, 224, 1)",
                   position: isLastRow ? "sticky" : "static",
                   bottom: isLastRow ? 0 : "auto",
@@ -253,6 +255,7 @@ export const CustomTable = ({
                         marginRight: "8px",
                       }}
                       onClick={() => openInPopup2(row)}
+                      disabled={users.groups.includes("Digital Marketing")}
                     >
                       {ButtonText}
                     </div>

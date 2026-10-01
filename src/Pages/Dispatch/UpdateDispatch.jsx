@@ -3,6 +3,11 @@ import { Box, Grid } from "@mui/material";
 import { useState } from "react";
 import { CustomButton } from "./../../Components/CustomButton";
 import InvoiceServices from "../../services/InvoiceService";
+import {
+  getTransportMethodLabel,
+  getTransporterDisplayName,
+  isDirectTransportMode,
+} from "../../utility/transportDisplay";
 import { CustomLoader } from "./../../Components/CustomLoader";
 import { useSelector } from "react-redux";
 import CustomTextField from "../../Components/CustomTextField";
@@ -19,9 +24,20 @@ export const UpdateDispatch = (props) => {
   const [hideImage, setHideImage] = useState(false);
   const [podCopy, setPodCopy] = useState("");
   const [podCopyImage, setPodCopyImage] = useState("");
-  const [inputValue, setInputValue] = useState([]);
+  const [inputValue, setInputValue] = useState({});
   const data = useSelector((state) => state.auth);
   const users = data.profile;
+  const transportMode =
+    idData && idData.selected_transport_mode
+      ? idData.selected_transport_mode
+      : "";
+  const directTransportMode = isDirectTransportMode(transportMode);
+  const effectiveTransporter = inputValue.transporter
+    ? inputValue.transporter
+    : idData.transporter;
+  const effectiveLrDate = inputValue.lr_date
+    ? inputValue.lr_date
+    : idData.lr_date;
   console.log(close);
   const handleImageLRCopy = (event) => {
     setLrCopy(event.target.files[0]);
@@ -51,7 +67,7 @@ export const UpdateDispatch = (props) => {
         data.append("sales_invoice", idData.sales_invoice);
         data.append(
           "transporter",
-          inputValue.transporter ? inputValue.transporter : idData.transporter,
+          directTransportMode ? "" : effectiveTransporter || "",
         );
         data.append(
           "lr_number",
@@ -72,7 +88,7 @@ export const UpdateDispatch = (props) => {
         data.append("sales_invoice", idData.sales_invoice);
         data.append(
           "transporter",
-          inputValue.transporter ? inputValue.transporter : idData.transporter,
+          directTransportMode ? "" : effectiveTransporter || "",
         );
         data.append(
           "lr_number",
@@ -94,9 +110,12 @@ export const UpdateDispatch = (props) => {
       const LRNUMBER = inputValue.lr_number
         ? inputValue.lr_number
         : idData.lr_number;
-      const TRANSPORTER = inputValue.transporter
-        ? inputValue.transporter
-        : idData.transporter;
+      const TRANSPORTER = effectiveTransporter;
+      const hasTransporter =
+        directTransportMode ||
+        (TRANSPORTER !== null &&
+          TRANSPORTER !== undefined &&
+          TRANSPORTER !== "");
       console.log("LRDATE", LRDATE);
 
       if (
@@ -104,7 +123,7 @@ export const UpdateDispatch = (props) => {
         podCopy !== "" ||
         (LRDATE !== null &&
           LRNUMBER !== null &&
-          TRANSPORTER !== null &&
+          hasTransporter &&
           userData.groups.toString() === "Customer Service") ||
         userData.groups.toString() === "Director"
       ) {
@@ -118,7 +137,7 @@ export const UpdateDispatch = (props) => {
       } else {
         if (
           lrCopy !== "" ||
-          (LRDATE !== null && LRNUMBER !== null && TRANSPORTER !== null)
+          (LRDATE !== null && LRNUMBER !== null && hasTransporter)
         ) {
           setOpen(true);
           await InvoiceServices.updateDispatched(idData.id, data);
@@ -166,16 +185,27 @@ export const UpdateDispatch = (props) => {
           <Grid item xs={12}>
             <CustomTextField
               fullWidth
+              size="small"
+              label="Transport Method"
+              variant="outlined"
+              value={getTransportMethodLabel(transportMode)}
+              disabled
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <CustomTextField
+              fullWidth
               name="transporter"
               size="small"
               label="Transporter"
               variant="outlined"
               value={
-                inputValue.transporter
-                  ? inputValue.transporter
-                  : idData.transporter
+                directTransportMode
+                  ? getTransporterDisplayName(transportMode, idData.transporter)
+                  : effectiveTransporter || ""
               }
               onChange={handleInputChange}
+              disabled={directTransportMode}
             />
           </Grid>
           <Grid item xs={12}>
@@ -255,7 +285,10 @@ export const UpdateDispatch = (props) => {
           fullWidth
           variant="contained"
           text={"Submit"}
-          // disabled={!inputValue.lr_date || !inputValue.transporter}
+          disabled={
+            !effectiveLrDate ||
+            (!directTransportMode && !effectiveTransporter)
+          }
         />
       </Box>
       <Popup

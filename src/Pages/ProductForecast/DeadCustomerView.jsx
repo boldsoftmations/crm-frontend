@@ -67,6 +67,23 @@ export const DeadCustomerView = () => {
       console.error("CSVLink Download error", error);
     }
   };
+  const isSupplyChain = UserData.groups.includes(
+    "Operations & Supply Chain Manager",
+  );
+  const emails = [
+    "admin@glutape.com",
+    "rajeev@glutape.com",
+    "gaurav@glutape.com",
+    "arjun@glutape.com",
+    "pruthvi@glutape.com",
+    "anuradha@glutape.com",
+    "vivek_production@glutape.com",
+    "vivek2@glutape.com",
+    "managerwithoutlead@glutape.com",
+    "biraj@glutape.com",
+    "rushilsalian13@glutape.com",
+    "it1@glutape.com",
+  ];
 
   const headers = [
     { label: "Company", key: "company" },
@@ -125,32 +142,6 @@ export const DeadCustomerView = () => {
       setOpen(false);
     }
   };
-  const isSupplyChain = UserData.groups.includes(
-    "Operations & Supply Chain Manager",
-  );
-  const emails = [
-    "admin@glutape.com",
-    "sumit@glutape.com",
-    "rajeev@glutape.com",
-    "devannsh@glutape.com",
-    "sales01@glutape.com",
-    "mahesh@glutape.com",
-    "divisa@glutape.com",
-    "cre04@glutape.com",
-    "bde05@glutape.com",
-    "cre06@glutape.com",
-    "cre01@glutape.com",
-    "bde09@glutape.com",
-    "bde06@glutape.com",
-    "cre05@glutape.com",
-    "bde01@glutape.com",
-    "ashish@glutape.com",
-    "amit@glutape.com",
-    "tl1@glutape.com",
-    "tl2@glutape.com",
-    "sales02@glutape.com",
-    "bde03@glutape.com",
-  ];
 
   useEffect(() => {
     getProduct();

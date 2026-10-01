@@ -70,7 +70,7 @@ export const CreateLeads = memo((props) => {
         setAssigned(
           Array({
             email: users.email,
-          })
+          }),
         );
       } else {
         setAssigned(users.active_sales_user);
@@ -79,6 +79,7 @@ export const CreateLeads = memo((props) => {
   }, [users.email]);
 
   const validatePinCode = async () => {
+    console.log("dATA IS: ", leads.pincode, leads.country);
     try {
       if (!leads.origin_type) {
         setAlertMsg({
@@ -98,13 +99,10 @@ export const CreateLeads = memo((props) => {
         return;
       }
       setOpen(true);
-      const Country = leads.country;
+      const Country = leads.origin_type === "International" ? leads.country : 1;
       const PINCODE = leads.pincode;
-      const response = await MasterService.getCountryDataByPincode(
-        Country,
-        PINCODE
-      );
-      if (response.data.length === 0) {
+      const response = await MasterService.ValidatePincode(Country, PINCODE);
+      if (!response || !response.data || !response.data.id) {
         setAlertMsg({
           message:
             "This Pin Code does not exist ! First Create the Pin code in the master country",
@@ -115,7 +113,6 @@ export const CreateLeads = memo((props) => {
           ...leads,
           state: "",
           city: "",
-          country: "",
         });
       } else {
         setAlertMsg({
@@ -123,12 +120,11 @@ export const CreateLeads = memo((props) => {
           severity: "success",
           open: true,
         });
-        setLeads({
-          ...leads,
-          state: response.data[0].state,
-          city: response.data[0].city_name,
-          country: response.data[0].country,
-        });
+        setLeads((prev) => ({
+          ...prev,
+          state: response.data.state_name,
+          city: response.data.city_name,
+        }));
       }
     } catch (error) {
       console.log("error", error);
@@ -232,7 +228,13 @@ export const CreateLeads = memo((props) => {
           origin_type: leads.origin_type || null,
           city: leads.city,
           state: leads.state,
-          country: leads.country,
+          country:
+            leads.origin_type === "Domestic"
+              ? "India"
+              : countryList.find((item) => item && item.id === leads.country)
+                ? countryList.find((item) => item && item.id === leads.country)
+                    .name
+                : "",
           pincode: leads.pincode || null,
           shipping_address:
             checked === true ? leads.address : leads.shipping_address,
@@ -276,17 +278,18 @@ export const CreateLeads = memo((props) => {
           getleads(currentPage, filterQuery, filterSelectedQuery, searchQuery);
         }, 300);
       } catch (error) {
+        console.error("Create lead error:", error);
         handleError(error);
       } finally {
         setOpen(false);
       }
     },
-    [leads, currentPage, filterQuery, filterSelectedQuery, searchQuery]
+    [leads, currentPage, filterQuery, filterSelectedQuery, searchQuery],
   );
 
   const GST_NO = (gst_no) =>
     /^[0-9]{2}[A-Za-z]{5}[0-9]{4}[A-Za-z]{1}[1-9A-Za-z]{1}Z[0-9A-Za-z]{1}$/.test(
-      gst_no
+      gst_no,
     );
 
   const PAN_NO = (pan_no) =>
@@ -581,13 +584,15 @@ export const CreateLeads = memo((props) => {
               <CustomAutocomplete
                 sx={{ minWidth: 220 }}
                 size="small"
-                onChange={(event, value) => {
-                  handleSelectChange("country", value);
-                }}
-                value={leads.country || ""}
-                options={
-                  countryList && countryList.map((option) => option.name)
+                options={countryList || []}
+                value={
+                  countryList.find((item) => item.id === leads.country) || null
                 }
+                getOptionLabel={(option) => option.name || ""}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
+                onChange={(event, value) => {
+                  handleSelectChange("country", value ? value.id : "");
+                }}
                 label="Country"
               />
             </Grid>
@@ -837,7 +842,7 @@ export const CreateLeads = memo((props) => {
                 }
                 value={leads ? leads.distribution_type : ""}
                 options={Option.DistributionTypeOption.map(
-                  (option) => option.label
+                  (option) => option.label,
                 )}
                 getOptionLabel={(option) => option}
                 label="Distribution Type"

@@ -7,7 +7,6 @@ import { useSelector } from "react-redux";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
-// import { DecimalValidation } from "../../../utility/DecimalValidation";
 import { DecimalValidation } from "../../../utility/DecimalValidation";
 export const MaterialTransferNoteCreate = memo((props) => {
   const {

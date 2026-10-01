@@ -27,9 +27,19 @@ import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import SearchComponent from "../../Components/SearchComponent ";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../Components/MessageAlert";
+import {
+  getTransportMethodLabel,
+  getTransporterDisplayName,
+} from "../../utility/transportDisplay";
+import {
+  getOrderBookTransportMode,
+  getOrderBookTransporterName,
+  useOrderBookTransportDetails,
+} from "../../utility/useOrderBookTransportDetails";
 
 export const CustomerOrderBookDetails = () => {
   const [orderBookData, setOrderBookData] = useState([]);
+  const transportByPi = useOrderBookTransportDetails(orderBookData);
   const [open, setOpen] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [openModal2, setOpenModal2] = useState(false);
@@ -256,6 +266,8 @@ export const CustomerOrderBookDetails = () => {
     "Sales Person",
     "Billing City",
     "Shipping City",
+    "Transport Method",
+    "Transporter",
     "Product",
     "Quantity",
 
@@ -354,16 +366,9 @@ export const CustomerOrderBookDetails = () => {
               </Grid>
 
               <Grid item xs={12} sm={4}>
-                <Button
-                  variant="contained"
-                  onClick={handleDownload}
-                  disabled={userData.groups.includes(
-                    "Accounts Billing Department",
-                  )}
-                >
+                <Button variant="contained" onClick={handleDownload}>
                   Download CSV
                 </Button>
-
                 {exportData.length > 0 && (
                   <CSVLink
                     headers={
@@ -422,7 +427,7 @@ export const CustomerOrderBookDetails = () => {
             }}
           >
             <Table
-              sx={{ minWidth: 1200 }}
+              sx={{ minWidth: 1450 }}
               stickyHeader
               aria-label="sticky table"
             >
@@ -460,6 +465,17 @@ export const CustomerOrderBookDetails = () => {
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.shipping_city}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {getTransportMethodLabel(
+                        getOrderBookTransportMode(row, transportByPi),
+                      )}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {getTransporterDisplayName(
+                        getOrderBookTransportMode(row, transportByPi),
+                        getOrderBookTransporterName(row, transportByPi),
+                      )}
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.product}

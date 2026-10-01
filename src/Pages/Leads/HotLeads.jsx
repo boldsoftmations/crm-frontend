@@ -160,7 +160,7 @@ export const HotLeads = () => {
     if (isPinned) {
       // If already pinned, remove it from the pinned rows
       setPinnedRows((prevPinnedRows) =>
-        prevPinnedRows.filter((rowId) => rowId !== row.lead_id)
+        prevPinnedRows.filter((rowId) => rowId !== row.lead_id),
       );
     } else {
       // If not pinned, add it to the pinned rows
@@ -198,7 +198,7 @@ export const HotLeads = () => {
         "-lead_id",
         filterQuery,
         filterSelectedQuery,
-        searchQuery
+        searchQuery,
       );
       setLeads(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -327,25 +327,25 @@ export const HotLeads = () => {
                       filterQuery === "assigned_to__email"
                         ? "Assigned To"
                         : filterQuery === "references__source"
-                        ? "Reference"
-                        : filterQuery === "stage"
-                        ? "Stage"
-                        : filterQuery === "description__name"
-                        ? "Description"
-                        : "",
+                          ? "Reference"
+                          : filterQuery === "stage"
+                            ? "Stage"
+                            : filterQuery === "description__name"
+                              ? "Description"
+                              : "",
                       filterQuery === "assigned_to__email"
                         ? assigned.map((option) => option.email)
                         : filterQuery === "references__source"
-                        ? referenceData.map((option) => option.source)
-                        : filterQuery === "stage"
-                        ? StageOptions.map((option) => option.value)
-                        : filterQuery === "description__name"
-                        ? descriptionMenuData.map((option) => option.name)
-                        : [],
+                          ? referenceData.map((option) => option.source)
+                          : filterQuery === "stage"
+                            ? StageOptions.map((option) => option.value)
+                            : filterQuery === "description__name"
+                              ? descriptionMenuData.map((option) => option.name)
+                              : [],
                       (value) => {
                         setFilterSelectedQuery(value);
                         setCurrentPage(1);
-                      }
+                      },
                     )}
                 </Grid>
               )}
@@ -377,6 +377,7 @@ export const HotLeads = () => {
                   variant="contained"
                   color="success"
                   onClick={() => setOpenPopup2(true)}
+                  disabled={users.groups.includes("Digital Marketing")}
                 >
                   Add
                 </Button>
@@ -505,15 +506,31 @@ export const HotLeads = () => {
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       <Button onClick={() => openInPopup(row)}>View</Button>,
-                      <Button onClick={() => openInPopup2(row)}>
+                      <Button
+                        onClick={() => openInPopup2(row)}
+                        disabled={users.groups.includes("Digital Marketing")}
+                      >
                         Activity
                       </Button>
                       ,
-                      <Button onClick={() => openInPopup3(row)}>
+                      <Button
+                        onClick={() => openInPopup3(row)}
+                        disabled={users.groups.includes("Digital Marketing")}
+                      >
                         Potential
                       </Button>
-                      ,<Button onClick={() => openInPopup4(row)}>PI</Button>,{" "}
-                      <Button onClick={() => openInPopup5(row)}>
+                      ,
+                      <Button
+                        onClick={() => openInPopup4(row)}
+                        disabled={users.groups.includes("Digital Marketing")}
+                      >
+                        PI
+                      </Button>
+                      ,{" "}
+                      <Button
+                        onClick={() => openInPopup5(row)}
+                        disabled={users.groups.includes("Digital Marketing")}
+                      >
                         Forecast
                       </Button>
                       {(users.groups.includes("Sales Manager") ||

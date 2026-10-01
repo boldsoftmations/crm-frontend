@@ -79,6 +79,7 @@ export const SalesTeamAnalytics = (props) => {
         "Business Development Manager",
       ].includes(user.groups__name),
     );
+    console.log(SALES_PERSON_OPTIONS);
   }
 
   let displayOptions = SALES_PERSON_OPTIONS.map((option) => {

@@ -19,6 +19,7 @@ export const CreatePincode = ({ getMasterPincode, setOpenPopup }) => {
 
   const [inputValue, setInputValue] = useState({
     country: "",
+    countryName: "",
     state: "",
     city: "",
     pincode: "",
@@ -57,9 +58,10 @@ export const CreatePincode = ({ getMasterPincode, setOpenPopup }) => {
       const response = await MasterService.getAllMasterStates(
         "all",
         "",
-        country
+        country,
       );
       setStateOptions(response.data);
+      console.log("Data is :", response);
       setCityOptions([]); // Clear city options when country changes
     } catch (error) {
       setAlertMsg({
@@ -79,10 +81,11 @@ export const CreatePincode = ({ getMasterPincode, setOpenPopup }) => {
       const response = await MasterService.getMasterCities(
         "all",
         "",
-        inputValue.country,
-        state
+        inputValue.countryName,
+        state,
       );
       setCityOptions(response.data);
+      console.log("Data is :", response);
     } catch (error) {
       setAlertMsg({
         message: error.response.data.message || "Error fetching cities",
@@ -111,10 +114,10 @@ export const CreatePincode = ({ getMasterPincode, setOpenPopup }) => {
     try {
       setOpen(true);
       const payload = {
-        pincode: inputValue.pincode,
+        country: inputValue.country, // 7
+        state: inputValue.state, // 12
         city: inputValue.city,
-        state: inputValue.state,
-        country: inputValue.country,
+        pincode: inputValue.pincode,
       };
       await MasterService.createMasterPincode(payload);
       setAlertMsg({
@@ -139,25 +142,25 @@ export const CreatePincode = ({ getMasterPincode, setOpenPopup }) => {
   };
 
   // Handle country change and fetch states
-  const handleCountryChange = (e, value) => {
-    setInputValue((prev) => ({ ...prev, country: value, state: "", city: "" }));
-    if (value) {
-      getStatesByCountry(value);
-    } else {
-      setStateOptions([]);
-      setCityOptions([]);
-    }
-  };
+  // const handleCountryChange = (e, value) => {
+  //   setInputValue((prev) => ({ ...prev, country: value, state: "", city: "" }));
+  //   if (value) {
+  //     getStatesByCountry(value);
+  //   } else {
+  //     setStateOptions([]);
+  //     setCityOptions([]);
+  //   }
+  // };
 
   // Handle state change and fetch cities
-  const handleStateChange = (e, value) => {
-    setInputValue((prev) => ({ ...prev, state: value, city: "" }));
-    if (value) {
-      getCitiesByState(value);
-    } else {
-      setCityOptions([]);
-    }
-  };
+  // const handleStateChange = (e, value) => {
+  //   setInputValue((prev) => ({ ...prev, state: value, city: "" }));
+  //   if (value) {
+  //     getCitiesByState(value);
+  //   } else {
+  //     setCityOptions([]);
+  //   }
+  // };
 
   return (
     <>
@@ -173,32 +176,55 @@ export const CreatePincode = ({ getMasterPincode, setOpenPopup }) => {
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <CustomAutocomplete
-              name="country"
-              size="small"
-              disablePortal
-              id="country-select"
-              options={countryOptions.map((option) => option.name)}
-              onChange={handleCountryChange}
-              getOptionLabel={(option) => option}
-              fullWidth
+              options={countryOptions}
+              getOptionLabel={(option) => option.name || ""}
+              value={
+                countryOptions.find((item) => item.id === inputValue.country) ||
+                null
+              }
+              onChange={(e, value) => {
+                setInputValue((prev) => ({
+                  ...prev,
+                  country: value ? value.id : "",
+                  countryName: value ? value.name : "",
+                  state: "",
+                  city: "",
+                }));
+
+                if (value) {
+                  getStatesByCountry(value.name); // API gets country name
+                } else {
+                  setStateOptions([]);
+                  setCityOptions([]);
+                }
+              }}
               label="Country"
-              value={inputValue.country}
             />
           </Grid>
 
           <Grid item xs={12}>
             <CustomAutocomplete
-              name="state"
-              size="small"
-              disablePortal
-              id="state-select"
-              options={stateOptions.map((option) => option.name)}
-              onChange={handleStateChange}
-              getOptionLabel={(option) => option}
-              fullWidth
+              options={stateOptions}
+              getOptionLabel={(option) => option.name || ""}
+              value={
+                stateOptions.find((item) => item.id === inputValue.state) ||
+                null
+              }
+              onChange={(e, value) => {
+                setInputValue((prev) => ({
+                  ...prev,
+                  state: value ? value.id : "",
+                  city: "",
+                }));
+
+                if (value) {
+                  getCitiesByState(value.name);
+                } else {
+                  setCityOptions([]);
+                }
+              }}
               label="State"
-              value={inputValue.state}
-              disabled={!inputValue.country} // Disable until country is selected
+              disabled={!inputValue.country}
             />
           </Grid>
 
@@ -216,7 +242,7 @@ export const CreatePincode = ({ getMasterPincode, setOpenPopup }) => {
               fullWidth
               label="City"
               value={cityOptions.find(
-                (cityOption) => cityOption.id === inputValue.city
+                (cityOption) => cityOption.id === inputValue.city,
               )}
               disabled={!inputValue.state} // Disable until state is selected
             />

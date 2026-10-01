@@ -48,7 +48,7 @@ export const PLApprovelListUpdate = ({
 
   const handleQuantityChange = (index, newQuantity) => {
     const updatedProducts = products.map((product, idx) =>
-      idx === index ? { ...product, quantity: newQuantity } : product
+      idx === index ? { ...product, quantity: newQuantity } : product,
     );
     setProducts(updatedProducts);
     console.log(products.map((item) => item.quantity));
@@ -236,7 +236,7 @@ export const PLApprovelListUpdate = ({
                       : Math.floor(
                           0 <= product.quantity &&
                             Number(product.quantity) &&
-                            product.quantity
+                            product.quantity,
                         ) || ""
                   }
                   onChange={(e) =>

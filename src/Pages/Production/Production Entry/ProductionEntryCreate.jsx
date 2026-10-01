@@ -334,7 +334,6 @@ export const ProductionEntryCreate = memo((props) => {
               label="Bill of Material"
             />
           </Grid>
-
           <Grid item xs={12} sm={2}>
             <CustomTextField
               fullWidth
@@ -344,7 +343,6 @@ export const ProductionEntryCreate = memo((props) => {
               // value={input.remark ? input.remark : ""}
             />
           </Grid>
-
           <Grid item xs={12} sm={4}>
             <CustomTextField
               fullWidth

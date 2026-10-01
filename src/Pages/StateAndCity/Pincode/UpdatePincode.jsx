@@ -1,4 +1,4 @@
-import { Box, Button, Grid, TextField } from "@mui/material";
+import { Box, Button, Checkbox, Grid, TextField } from "@mui/material";
 import React, { useState } from "react";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
@@ -23,6 +23,7 @@ export const UpdatePincode = ({
     state: recordForEdit.state || "",
     city: recordForEdit.city || "",
     pincode: recordForEdit.pincode || "",
+    status: recordForEdit.is_active || false,
   });
 
   // Close Snackbar
@@ -34,6 +35,7 @@ export const UpdatePincode = ({
   const handleSubmit = async (e) => {
     e.preventDefault();
     const { city, pincode } = inputValue;
+    console.log("Data is", inputValue);
 
     if (!city || !pincode) {
       setAlertMsg({
@@ -49,6 +51,7 @@ export const UpdatePincode = ({
       const payload = {
         pincode: inputValue.pincode,
         city: inputValue.city,
+        status: inputValue.status,
       };
       await MasterService.updateMasterPincode(recordForEdit.id, payload);
       setAlertMsg({
@@ -143,7 +146,14 @@ export const UpdatePincode = ({
             />
           </Grid>
         </Grid>
-
+        <Checkbox
+          checked={inputValue.status}
+          onChange={(e) =>
+            setInputValue((prev) => ({ ...prev, status: e.target.checked }))
+          }
+          color="primary"
+        />
+        <span>Active</span>
         <Button
           type="submit"
           fullWidth

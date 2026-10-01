@@ -361,13 +361,7 @@ export const CompanyDetails = () => {
                 sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}
               >
                 {/* Download CSV Button */}
-                <Button
-                  variant="contained"
-                  onClick={handleDownload}
-                  disabled={userData.groups.includes(
-                    "Accounts Billing Department",
-                  )}
-                >
+                <Button variant="contained" onClick={handleDownload}>
                   Download CSV
                 </Button>
 

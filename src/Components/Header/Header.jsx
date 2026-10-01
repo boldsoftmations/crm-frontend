@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import {
   AppBar,
@@ -78,7 +78,7 @@ export const Header = () => {
     if (auth.user) getAllTaskDetails();
   }, [auth.user]);
 
-  const getAllTaskDetails = async () => {
+  const getAllTaskDetails = useCallback(async () => {
     try {
       setOpen(true);
       const response = await TaskService.getAllTaskData("all");
@@ -88,7 +88,7 @@ export const Header = () => {
     } finally {
       setOpen(false);
     }
-  };
+  }, [auth.user]);
 
   return (
     <div>

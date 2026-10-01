@@ -183,14 +183,16 @@ export const MasterTransportView = () => {
                 minWidth: "300px",
               }}
             >
-              <Button
-                variant="contained"
-                color="success"
-                onClick={() => setOpenCreatePopup(true)}
-                disabled={isInGroups("Operations & Supply Chain Manager")}
-              >
-                Add
-              </Button>
+              {userData.groups.includes("Director") && (
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={() => setOpenCreatePopup(true)}
+                  disabled={isInGroups("Operations & Supply Chain Manager")}
+                >
+                  Add
+                </Button>
+              )}
             </Box>
           </Box>
 

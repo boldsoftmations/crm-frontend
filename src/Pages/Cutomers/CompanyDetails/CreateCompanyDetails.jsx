@@ -31,110 +31,289 @@ import CustomSnackbar from "../../../Components/CustomerSnackbar";
 
 export const CreateCompanyDetails = (props) => {
   const { getAllCompanyDetails, setOpenPopup } = props;
+
   const [openPopup2, setOpenPopup2] = useState(false);
   const [open, setOpen] = useState(false);
-  const [inputValue, setInputValue] = useState([]);
+
+  const [inputValue, setInputValue] = useState({});
+
   const [countryList, setCountryList] = useState([]);
   const [idForEdit, setIdForEdit] = useState("");
   const [assigned, setAssigned] = useState([]);
+
+  const [postalVerificationStatus, setPostalVerificationStatus] = useState("");
+
   const [alertmsg, setAlertMsg] = useState({
     message: "",
     severity: "",
     open: false,
   });
-  const handleClose = () => {
-    setAlertMsg({ open: false });
-  };
+
   const dispatch = useDispatch();
+
+  const handleClose = () => {
+    setAlertMsg({
+      message: "",
+      severity: "",
+      open: false,
+    });
+  };
+
+  useEffect(() => {
+    getCountries();
+    getAssignedData();
+  }, []);
+
+  const getCountries = async () => {
+    try {
+      setOpen(true);
+
+      const response = await MasterService.getAllMasterCountries("all");
+
+      const countries = response.data || [];
+
+      const india = countries.find((data) => data.name === "India");
+
+      const internationalCountries = countries.filter(
+        (data) => data.name !== "India",
+      );
+
+      setCountryList(internationalCountries);
+
+      /*
+       * Set India as the default Country Master object.
+       * This allows Domestic also to use country.id with lookup API.
+       */
+      if (india) {
+        setInputValue((prev) => ({
+          ...prev,
+          country: india,
+        }));
+      }
+    } catch (error) {
+      console.log("Error getting country data", error);
+    } finally {
+      setOpen(false);
+    }
+  };
+
   const handleInputChange = (event) => {
     const { name, value } = event.target;
+
     const updatedValue =
       name === "gst_number" || name === "pan_number"
         ? value.toUpperCase()
         : value;
-    setInputValue({ ...inputValue, [name]: updatedValue });
+
+    /*
+     * If postal code changes, previous postal verification
+     * is no longer valid.
+     */
+    if (name === "pincode") {
+      setInputValue({
+        ...inputValue,
+        pincode: updatedValue,
+        pin_code: "",
+        state: "",
+        city: "",
+        zone: "",
+      });
+
+      setPostalVerificationStatus("");
+
+      return;
+    }
+
+    setInputValue({
+      ...inputValue,
+      [name]: updatedValue,
+    });
   };
 
   const handleSelectChange = async (name, value) => {
+    /*
+     * Customer origin type changed.
+     */
+    if (name === "origin_type") {
+      if (value === "Domestic") {
+        try {
+          setOpen(true);
+
+          const response = await MasterService.getAllMasterCountries("all");
+
+          const countries = response.data || [];
+
+          const india = countries.find((data) => data.name === "India");
+
+          setInputValue({
+            ...inputValue,
+            origin_type: "Domestic",
+            country: india || null,
+            pincode: "",
+            pin_code: "",
+            state: "",
+            city: "",
+            zone: "",
+          });
+
+          setPostalVerificationStatus("");
+
+          setCountryList(countries.filter((data) => data.name !== "India"));
+        } catch (error) {
+          console.log("Error getting India country data", error);
+        } finally {
+          setOpen(false);
+        }
+
+        return;
+      }
+
+      if (value === "International") {
+        try {
+          setOpen(true);
+
+          const response = await MasterService.getAllMasterCountries("all");
+
+          const countries = response.data || [];
+
+          const internationalCountries = countries.filter(
+            (data) => data.name !== "India",
+          );
+
+          setCountryList(internationalCountries);
+
+          setInputValue({
+            ...inputValue,
+            origin_type: "International",
+            country: null,
+            pincode: "",
+            pin_code: "",
+            state: "",
+            city: "",
+            zone: "",
+          });
+
+          setPostalVerificationStatus("");
+        } catch (error) {
+          console.log("Error getting international country data", error);
+        } finally {
+          setOpen(false);
+        }
+
+        return;
+      }
+    }
+
     setInputValue({
       ...inputValue,
       [name]: value,
     });
-    if (value === "International") {
-      try {
-        setOpen(true);
-        const response = await MasterService.getAllMasterCountries("all");
-        const RemoveIndia = response.data.filter((data) => {
-          return data.name !== "India";
-        });
-        setCountryList(RemoveIndia);
-      } catch {
-        console.log("Error in getting country data by pincode");
-      } finally {
-        setOpen(false);
-      }
-    }
   };
 
-  const validatePinCode = async () => {
+  /*
+   * Postal Code Lookup API
+   *
+   * This is NOT the old ValidatePincode API.
+   * It uses:
+   * country_id + postal_code
+   */
+  const validatePostalCode = async () => {
     try {
       setOpen(true);
-      if (!inputValue.origin_type) {
+
+      if (!inputValue.pincode) {
         setAlertMsg({
-          message:
-            "Please select customer origin type before validating pincode",
+          message: "Please enter postal code before validation",
           severity: "error",
           open: true,
         });
-        return;
-      }
-      if (inputValue.origin_type === "International" && !inputValue.country) {
-        setAlertMsg({
-          message: "Please select country before validating pincode",
-          severity: "error",
-          open: true,
-        });
+
         return;
       }
 
-      const PINCODE = inputValue.pincode;
-      const Country = inputValue.country;
-      const response = await MasterService.getCountryDataByPincode(
-        Country,
-        PINCODE,
-      );
-      if (response.data.length === 0) {
+      const countryId =
+        inputValue.country && inputValue.country.id
+          ? inputValue.country.id
+          : "";
+
+      if (!countryId) {
         setAlertMsg({
-          message:
-            "This Pin Code does not exist ! First Create the Pin code in the master country",
+          message: "Please select country before validating postal code",
           severity: "error",
           open: true,
         });
+
+        return;
+      }
+
+      const postalCode = inputValue.pincode;
+
+      console.log("Postal Code Lookup:", {
+        country_id: countryId,
+        postal_code: postalCode,
+      });
+
+      const response = await MasterService.ValidatePincode(
+        countryId,
+        postalCode,
+      );
+
+      /*
+       * Lookup did not find a valid Postal Master record.
+       */
+      if (!response.data || !response.data.id) {
+        setPostalVerificationStatus("No Match");
+
         setInputValue({
           ...inputValue,
+          pin_code: "",
           state: "",
           city: "",
-          country: "",
+          zone: "",
         });
-      } else {
+
         setAlertMsg({
-          message: "Pin code is valid",
-          severity: "success",
+          message: "This postal code does not exist in the Postal Code Master",
+          severity: "error",
           open: true,
         });
-        setInputValue({
-          ...inputValue,
-          state: response.data[0].state,
-          city: response.data[0].city_name,
-          country: response.data[0].country,
-          pin_code: response.data[0].id,
-          zone: response.data[0].zone,
-        });
+
+        return;
       }
-    } catch (error) {
-      console.log("error", error);
+
+      /*
+       * Exact canonical Postal Master record found.
+       */
+      setPostalVerificationStatus("Verified");
+
+      setInputValue({
+        ...inputValue,
+        pin_code: response.data.id,
+        state: response.data.state_name,
+        city: response.data.city_name,
+        zone: response.data.zone_name,
+      });
+
       setAlertMsg({
-        message: "Error fetching country data by pincode",
+        message: "Postal code validated successfully",
+        severity: "success",
+        open: true,
+      });
+    } catch (error) {
+      console.log("Postal code lookup error", error);
+
+      setPostalVerificationStatus("Needs Review");
+
+      setInputValue({
+        ...inputValue,
+        pin_code: "",
+        state: "",
+        city: "",
+        zone: "",
+      });
+
+      setAlertMsg({
+        message: "Error validating postal code",
         severity: "error",
         open: true,
       });
@@ -143,19 +322,16 @@ export const CreateCompanyDetails = (props) => {
     }
   };
 
-  useEffect(() => {
-    getAssignedData();
-  }, []);
-
-  const getAssignedData = async (id) => {
+  const getAssignedData = async () => {
     try {
       setOpen(true);
+
       const res = await LeadServices.getAllAssignedUser();
 
-      setAssigned(res.data);
-      setOpen(false);
+      setAssigned(res.data || []);
     } catch (error) {
       console.log("error", error);
+    } finally {
       setOpen(false);
     }
   };
@@ -171,7 +347,21 @@ export const CreateCompanyDetails = (props) => {
   const createCompanyDetails = async (e) => {
     try {
       e.preventDefault();
-      setOpen(true);
+
+      /*
+       * First check postal verification.
+       */
+      if (!inputValue.pin_code) {
+        setAlertMsg({
+          message:
+            "Please validate the postal code before creating the customer",
+          severity: "error",
+          open: true,
+        });
+
+        return;
+      }
+
       if (
         !inputValue.name ||
         !inputValue.business_type ||
@@ -186,33 +376,76 @@ export const CreateCompanyDetails = (props) => {
         (inputValue.type_of_customer === "Distribution Customer" &&
           !inputValue.distribution_type) ||
         (inputValue.type_of_customer === "Distribution Customer" &&
-          inputValue.category.length === 0)
+          (!inputValue.category || inputValue.category.length === 0))
       ) {
         setAlertMsg({
           message: "Please fill all the required fields",
           severity: "error",
           open: true,
         });
-        setOpen(false);
+
         return;
       }
+
+      /*
+       * Additional GST/PAN validation.
+       */
+      if (inputValue.gst_number && !GST_NO(inputValue.gst_number)) {
+        setAlertMsg({
+          message: "Please enter a valid GST Number",
+          severity: "error",
+          open: true,
+        });
+
+        return;
+      }
+
+      if (inputValue.pan_number && !PAN_NO(inputValue.pan_number)) {
+        setAlertMsg({
+          message: "Please enter a valid PAN Number",
+          severity: "error",
+          open: true,
+        });
+
+        return;
+      }
+
+      setOpen(true);
+
       const req = {
         name: inputValue.name,
         address: inputValue.address,
+
+        /*
+         * Raw entered postal code.
+         */
         pincode: inputValue.pincode,
-        country: inputValue.country,
+
+        /*
+         * Country name for existing backend contract.
+         */
+        country:
+          inputValue.country && inputValue.country.name
+            ? inputValue.country.name
+            : "",
+
         state: inputValue.state,
         zone: inputValue.zone,
         city: inputValue.city,
+
+        /*
+         * Canonical Postal Master ID.
+         */
         pin_code: inputValue.pin_code,
+
         gst_number: inputValue.gst_number || null,
         pan_number: inputValue.pan_number || null,
         business_type: inputValue.business_type,
         assigned_to: inputValue.assigned_to || [],
         type_of_customer: inputValue.type_of_customer,
-        website: inputValue.website,
-        estd_year: inputValue.estd_year,
-        approx_annual_turnover: inputValue.approx_annual_turnover,
+        website: inputValue.website || "",
+        estd_year: inputValue.estd_year || "",
+        approx_annual_turnover: inputValue.approx_annual_turnover || "",
         purchase_decision_maker: inputValue.purchase_decision_maker || null,
         industrial_list: inputValue.industrial_list || null,
         distribution_type: inputValue.distribution_type || null,
@@ -220,21 +453,33 @@ export const CreateCompanyDetails = (props) => {
         main_distribution: inputValue.main_distribution || [],
         origin_type: inputValue.origin_type || null,
       };
+
+      console.log("Create Company Payload:", req);
+
       const response = await CustomerServices.createCompanyData(req);
+
       setIdForEdit(response.data.company_id);
+
       getAllCompanyDetailsByID(response.data.company_id);
-      setOpen(false);
+
       setAlertMsg({
         message: "Company created successfully",
         severity: "success",
         open: true,
       });
+
       setTimeout(() => {
         setOpenPopup2(true);
       }, 700);
-      // getAllCompanyDetails();
     } catch (error) {
-      console.log("createing company detail error", error);
+      console.log("creating company detail error", error);
+
+      setAlertMsg({
+        message: "Error creating company",
+        severity: "error",
+        open: true,
+      });
+    } finally {
       setOpen(false);
     }
   };
@@ -242,24 +487,28 @@ export const CreateCompanyDetails = (props) => {
   const getAllCompanyDetailsByID = async (COMPANY_ID) => {
     try {
       setOpen(true);
+
       const response = await CustomerServices.getCompanyDataById(COMPANY_ID);
+
       dispatch(getCompanyName(response.data.name));
-      setOpen(false);
     } catch (err) {
-      setOpen(false);
       console.log("company data by id error", err);
+    } finally {
+      setOpen(false);
     }
   };
 
   return (
     <div>
       <CustomLoader open={open} />
+
       <CustomSnackbar
         open={alertmsg.open}
         message={alertmsg.message}
         severity={alertmsg.severity}
         onClose={handleClose}
       />
+
       <Box
         component="form"
         noValidate
@@ -267,6 +516,7 @@ export const CreateCompanyDetails = (props) => {
       >
         <Grid container spacing={2}>
           {/* Company Details */}
+
           <Grid item xs={12}>
             <Root>
               <Divider>
@@ -274,6 +524,7 @@ export const CreateCompanyDetails = (props) => {
               </Divider>
             </Root>
           </Grid>
+
           <Grid item xs={12} sm={4}>
             <CustomTextField
               fullWidth
@@ -281,7 +532,7 @@ export const CreateCompanyDetails = (props) => {
               size="small"
               label="Company Name"
               variant="outlined"
-              value={inputValue.name}
+              value={inputValue.name || ""}
               onChange={handleInputChange}
               required
             />
@@ -289,14 +540,14 @@ export const CreateCompanyDetails = (props) => {
 
           <Grid item xs={12} sm={4}>
             <FormControl fullWidth size="small" required>
-              <InputLabel id="demo-simple-select-label">
-                Business Type
-              </InputLabel>
+              <InputLabel id="business-type-label">Business Type</InputLabel>
+
               <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                label="Busniess Type"
-                onChange={(e, value) =>
+                labelId="business-type-label"
+                id="business-type"
+                label="Business Type"
+                value={inputValue.business_type || ""}
+                onChange={(e) =>
                   handleSelectChange("business_type", e.target.value)
                 }
               >
@@ -308,47 +559,91 @@ export const CreateCompanyDetails = (props) => {
               </Select>
             </FormControl>
           </Grid>
+
+          {/* Postal Code */}
+
           <Grid item xs={12} sm={4}>
-            <CustomTextField
-              sx={{ minWidth: "200px" }}
-              name="pincode"
-              size="small"
-              type={"number"}
-              label="Pin Code"
-              variant="outlined"
-              value={inputValue.pincode}
-              onChange={handleInputChange}
-              required
-            />
-            <Button
-              onClick={validatePinCode}
-              variant="contained"
-              sx={{ marginLeft: "1rem" }}
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+              }}
             >
-              Validate
-            </Button>
+              <CustomTextField
+                fullWidth
+                name="pincode"
+                size="small"
+                label="Postal Code"
+                variant="outlined"
+                value={inputValue.pincode || ""}
+                onChange={handleInputChange}
+                required
+              />
+
+              <Button
+                type="button"
+                onClick={validatePostalCode}
+                variant="contained"
+                sx={{ marginLeft: "1rem", whiteSpace: "nowrap" }}
+              >
+                Validate
+              </Button>
+            </Box>
+
+            {postalVerificationStatus === "Verified" && (
+              <Chip
+                label="Verified"
+                color="success"
+                size="small"
+                sx={{ mt: 1 }}
+              />
+            )}
+
+            {postalVerificationStatus === "No Match" && (
+              <Chip
+                label="No Match"
+                color="error"
+                size="small"
+                sx={{ mt: 1 }}
+              />
+            )}
+
+            {postalVerificationStatus === "Needs Review" && (
+              <Chip
+                label="Needs Review"
+                color="warning"
+                size="small"
+                sx={{ mt: 1 }}
+              />
+            )}
           </Grid>
+
+          {/* Country */}
+
           {inputValue.origin_type === "International" ? (
             <Grid item xs={12} sm={3}>
               <CustomAutocomplete
-                sx={{ minWidth: 220 }}
                 size="small"
-                onChange={(event, value) => {
-                  handleSelectChange("country", value);
-                }}
-                value={inputValue.country || ""}
-                options={
-                  countryList && countryList.map((option) => option.name)
+                options={countryList || []}
+                value={inputValue.country || null}
+                getOptionLabel={(option) =>
+                  option && option.name ? option.name : ""
                 }
+                isOptionEqualToValue={(option, value) => option.id === value.id}
+                onChange={(event, value) => {
+                  setInputValue({
+                    ...inputValue,
+                    country: value,
+                    pincode: "",
+                    pin_code: "",
+                    state: "",
+                    city: "",
+                    zone: "",
+                  });
+
+                  setPostalVerificationStatus("");
+                }}
                 label="Country"
-                randerInput={(params) => (
-                  <CustomTextField
-                    {...params}
-                    label="Country"
-                    variant="outlined"
-                    required
-                  />
-                )}
               />
             </Grid>
           ) : (
@@ -359,12 +654,17 @@ export const CreateCompanyDetails = (props) => {
                 label="Country"
                 name="country"
                 variant="outlined"
-                value={inputValue.country || ""}
+                value={
+                  inputValue.country && inputValue.country.name
+                    ? inputValue.country.name
+                    : ""
+                }
                 disabled
                 required
               />
             </Grid>
           )}
+
           <Grid item xs={12} sm={3}>
             <CustomTextField
               fullWidth
@@ -376,6 +676,7 @@ export const CreateCompanyDetails = (props) => {
               required
             />
           </Grid>
+
           <Grid item xs={12} sm={3}>
             <CustomTextField
               fullWidth
@@ -386,6 +687,7 @@ export const CreateCompanyDetails = (props) => {
               disabled
             />
           </Grid>
+
           <Grid item xs={12} sm={3}>
             <CustomTextField
               fullWidth
@@ -397,6 +699,7 @@ export const CreateCompanyDetails = (props) => {
               required
             />
           </Grid>
+
           <Grid item xs={12} sm={4}>
             <CustomTextField
               fullWidth
@@ -404,33 +707,39 @@ export const CreateCompanyDetails = (props) => {
               name="gst_number"
               label="GST No."
               variant="outlined"
-              value={inputValue.gst_number}
+              value={inputValue.gst_number || ""}
               onChange={handleInputChange}
-              error={inputValue.gst_number && !GST_NO(inputValue.gst_number)}
+              error={
+                inputValue.gst_number ? !GST_NO(inputValue.gst_number) : false
+              }
               helperText={
-                inputValue.gst_number &&
-                !GST_NO(inputValue.gst_number) &&
-                "Invalid GST Number"
+                inputValue.gst_number && !GST_NO(inputValue.gst_number)
+                  ? "Invalid GST Number"
+                  : ""
               }
             />
           </Grid>
+
           <Grid item xs={12} sm={4}>
             <CustomTextField
               fullWidth
               size="small"
               name="pan_number"
-              label="Pan No."
+              label="PAN No."
               variant="outlined"
-              value={inputValue.pan_number}
+              value={inputValue.pan_number || ""}
               onChange={handleInputChange}
-              error={inputValue.pan_number && !PAN_NO(inputValue.pan_number)}
+              error={
+                inputValue.pan_number ? !PAN_NO(inputValue.pan_number) : false
+              }
               helperText={
-                inputValue.pan_number &&
-                !PAN_NO(inputValue.pan_number) &&
-                "Invalid PAN Number"
+                inputValue.pan_number && !PAN_NO(inputValue.pan_number)
+                  ? "Invalid PAN Number"
+                  : ""
               }
             />
           </Grid>
+
           <Grid item xs={12} sm={4}>
             <CustomAutocomplete
               size="small"
@@ -440,7 +749,7 @@ export const CreateCompanyDetails = (props) => {
               }}
               multiple
               limitTags={3}
-              id="multiple-limit-tags"
+              id="assigned-to"
               options={assigned.map((option) => option.email)}
               freeSolo
               renderTags={(value, getTagProps) =>
@@ -456,6 +765,7 @@ export const CreateCompanyDetails = (props) => {
               placeholder="Assign To"
             />
           </Grid>
+
           <Grid item xs={12}>
             <CustomTextField
               multiline
@@ -464,12 +774,14 @@ export const CreateCompanyDetails = (props) => {
               size="small"
               label="Address"
               variant="outlined"
-              value={inputValue.address}
+              value={inputValue.address || ""}
               onChange={handleInputChange}
               required
             />
           </Grid>
-          {/* kyc Details */}
+
+          {/* KYC Details */}
+
           <Grid item xs={12}>
             <Root>
               <Divider>
@@ -477,44 +789,41 @@ export const CreateCompanyDetails = (props) => {
               </Divider>
             </Root>
           </Grid>
+
           <Grid item xs={12}>
-            <>
-              <FormControl required>
-                <FormLabel id="demo-row-radio-buttons-group-label">
-                  Customer Type
-                </FormLabel>
-                <RadioGroup
-                  row
-                  aria-labelledby="demo-row-radio-buttons-group-label"
-                  name="row-radio-buttons-group"
-                  value={inputValue.origin_type || ""}
-                  onChange={(event) =>
-                    handleSelectChange("origin_type", event.target.value)
-                  }
-                >
-                  <FormControlLabel
-                    value="Domestic"
-                    control={<Radio />}
-                    label="Domestic"
-                  />
-                  <FormControlLabel
-                    value="International"
-                    control={<Radio />}
-                    label="International"
-                  />
-                </RadioGroup>
-              </FormControl>
-            </>
-          </Grid>
-          <Grid item xs={12} sm={4}>
             <FormControl required>
-              <FormLabel id="demo-row-radio-buttons-group-label">
-                Type of Customer
-              </FormLabel>
+              <FormLabel id="origin-type-label">Customer Type</FormLabel>
+
               <RadioGroup
                 row
-                aria-labelledby="demo-row-radio-buttons-group-label"
-                name="row-radio-buttons-group"
+                aria-labelledby="origin-type-label"
+                value={inputValue.origin_type || ""}
+                onChange={(event) =>
+                  handleSelectChange("origin_type", event.target.value)
+                }
+              >
+                <FormControlLabel
+                  value="Domestic"
+                  control={<Radio />}
+                  label="Domestic"
+                />
+
+                <FormControlLabel
+                  value="International"
+                  control={<Radio />}
+                  label="International"
+                />
+              </RadioGroup>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} sm={4}>
+            <FormControl required>
+              <FormLabel id="customer-type-label">Type of Customer</FormLabel>
+
+              <RadioGroup
+                row
+                aria-labelledby="customer-type-label"
                 value={inputValue.type_of_customer || ""}
                 onChange={(event) =>
                   handleSelectChange("type_of_customer", event.target.value)
@@ -525,6 +834,7 @@ export const CreateCompanyDetails = (props) => {
                   control={<Radio />}
                   label="Industrial Customer"
                 />
+
                 <FormControlLabel
                   value="Distribution Customer"
                   control={<Radio />}
@@ -533,6 +843,7 @@ export const CreateCompanyDetails = (props) => {
               </RadioGroup>
             </FormControl>
           </Grid>
+
           <Grid item xs={12} sm={4}>
             <CustomTextField
               fullWidth
@@ -540,26 +851,23 @@ export const CreateCompanyDetails = (props) => {
               size="small"
               label="Website"
               variant="outlined"
-              value={inputValue.website}
+              value={inputValue.website || ""}
               onChange={handleInputChange}
             />
           </Grid>
+
           <Grid item xs={12} sm={4}>
             <CustomTextField
               fullWidth
-              // type="number"
               name="estd_year"
               size="small"
               label="Established Year"
               placeholder="YYYY"
-              // inputProps={{
-              //   min: "1900",
-              //   max: "2099",
-              // }}
               value={inputValue.estd_year || ""}
               onChange={handleInputChange}
             />
           </Grid>
+
           <Grid item xs={12} sm={3}>
             <CustomTextField
               fullWidth
@@ -567,10 +875,11 @@ export const CreateCompanyDetails = (props) => {
               size="small"
               label="Approx Annual Turnover"
               variant="outlined"
-              value={inputValue.approx_annual_turnover}
+              value={inputValue.approx_annual_turnover || ""}
               onChange={handleInputChange}
             />
           </Grid>
+
           <Grid item xs={12} sm={3}>
             <CustomTextField
               fullWidth
@@ -578,11 +887,12 @@ export const CreateCompanyDetails = (props) => {
               size="small"
               label="Purchase Decision Maker"
               variant="outlined"
-              value={inputValue.name || ""}
+              value={inputValue.purchase_decision_maker || ""}
               onChange={handleInputChange}
               required
             />
           </Grid>
+
           {inputValue.type_of_customer === "Industrial Customer" && (
             <Grid item xs={12} sm={3}>
               <CustomAutocomplete
@@ -605,6 +915,7 @@ export const CreateCompanyDetails = (props) => {
               />
             </Grid>
           )}
+
           {inputValue.type_of_customer === "Distribution Customer" && (
             <Grid item xs={12} sm={3}>
               <CustomAutocomplete
@@ -628,6 +939,7 @@ export const CreateCompanyDetails = (props) => {
               />
             </Grid>
           )}
+
           {inputValue.type_of_customer === "Distribution Customer" && (
             <Grid item xs={12} sm={3}>
               <CustomAutocomplete
@@ -638,7 +950,7 @@ export const CreateCompanyDetails = (props) => {
                 }}
                 multiple
                 limitTags={3}
-                id="multiple-limit-tags"
+                id="category"
                 options={Option.CategoryOption.map((option) => option.label)}
                 freeSolo
                 renderTags={(value, getTagProps) =>
@@ -655,6 +967,7 @@ export const CreateCompanyDetails = (props) => {
               />
             </Grid>
           )}
+
           {inputValue.type_of_customer === "Distribution Customer" && (
             <Grid item xs={12} sm={3}>
               <CustomAutocomplete
@@ -665,7 +978,7 @@ export const CreateCompanyDetails = (props) => {
                 }}
                 multiple
                 limitTags={3}
-                id="multiple-limit-tags"
+                id="main-distribution"
                 options={Option.MainDistribution.map((option) => option.label)}
                 freeSolo
                 renderTags={(value, getTagProps) =>
@@ -693,6 +1006,7 @@ export const CreateCompanyDetails = (props) => {
           Submit
         </Button>
       </Box>
+
       <Popup
         maxWidth={"lg"}
         title={"Create Customer"}

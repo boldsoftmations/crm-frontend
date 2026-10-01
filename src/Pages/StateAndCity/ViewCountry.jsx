@@ -63,7 +63,7 @@ export const ViewCountry = () => {
       setIsLoading(true);
       const response = await MasterService.getAllMasterCountries(
         currentPage,
-        searchQuery
+        searchQuery,
       );
       setCountry(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));

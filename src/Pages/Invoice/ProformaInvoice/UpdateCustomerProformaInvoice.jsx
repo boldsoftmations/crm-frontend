@@ -22,6 +22,56 @@ import CustomTextField from "../../../Components/CustomTextField";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
+import TransportSelector from "../../../Components/TransportSelector";
+import { buildTransportPayload } from "../../../utility/Buildtransportpayload";
+
+const normalizeTransportMode = (mode) => {
+  if (mode === "Train") return "TRAIN";
+  if (mode === "Bus") return "BUS";
+  if (mode === "Air") return "AIR";
+  if (mode === "Self Pickup") return "SELF_PICKUP";
+  return mode || "";
+};
+
+const getRelationId = (value) => {
+  if (value && typeof value === "object" && value.id) {
+    return value.id;
+  }
+  return value || null;
+};
+
+const getInitialTransportSelection = (piData) => {
+  if (!piData) {
+    return null;
+  }
+
+  const mappingId = getRelationId(piData.transporter_mapping);
+  const transporterId = getRelationId(piData.transporter);
+  const verifiedPincodeId = getRelationId(piData.verified_pincode);
+  let mode = normalizeTransportMode(piData.selected_transport_mode);
+
+  // Older Surface PIs may not have selected_transport_mode populated yet.
+  // Mapping / verified pincode / To Be Assigned are safe Surface indicators.
+  if (
+    !mode &&
+    (mappingId || verifiedPincodeId || piData.transporter_name === "To Be Assigned")
+  ) {
+    mode = "SURFACE";
+  }
+
+  if (!mode) {
+    return null;
+  }
+
+  return {
+    mode: mode,
+    transporterId: transporterId,
+    transporterName: piData.transporter_name || null,
+    mappingId: mappingId,
+    verifiedPincodeId: verifiedPincodeId,
+    assignmentStatus: piData.transporter_assignment_status || null,
+  };
+};
 
 export const UpdateCustomerProformaInvoice = (props) => {
   const { idForEdit, getProformaInvoiceData, setOpenPopup } = props;
@@ -39,6 +89,7 @@ export const UpdateCustomerProformaInvoice = (props) => {
   const [productEdit, setProductEdit] = useState(false);
   const [warehouseOptions, setWarehouseOptions] = useState([]);
   const [warehouseData, setWarehouseData] = useState([]);
+  const [transportSelection, setTransportSelection] = useState(null);
   const [contactOptions, setContactOptions] = useState([]);
   const [contactData, setContactData] = useState([]);
   const [products, setProducts] = useState([
@@ -112,6 +163,7 @@ export const UpdateCustomerProformaInvoice = (props) => {
         idForEdit.pi_number,
       );
       setCustomerPIdataByID(response.data);
+      setTransportSelection(getInitialTransportSelection(response.data));
       setPaymentTermData(response.data.payment_terms);
       setDeliveryTermData(response.data.delivery_terms);
 
@@ -162,14 +214,72 @@ export const UpdateCustomerProformaInvoice = (props) => {
     }
   };
 
+  const effectiveSeller =
+    selectedSellerData && selectedSellerData.id
+      ? selectedSellerData
+      : sellerData.find(
+          (item) =>
+            item &&
+            item.unit ===
+              (customerPIdataByID && customerPIdataByID.seller_account
+                ? customerPIdataByID.seller_account
+                : ""),
+        ) || null;
+
+  const effectiveShippingPincode =
+    warehouseData && warehouseData.pincode
+      ? warehouseData.pincode
+      : customerPIdataByID && customerPIdataByID.pincode
+        ? customerPIdataByID.pincode
+        : "";
+
+  const effectiveCountryId =
+    warehouseData && warehouseData.country_id
+      ? warehouseData.country_id
+      : customerData && customerData.country_id
+        ? customerData.country_id
+        : "";
+
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setInputValue({ ...inputValue, [name]: value });
   };
 
   const updateLeadProformaInvoiceDetails = async (e) => {
+    e.preventDefault();
+
+    if (!transportSelection || !transportSelection.mode) {
+      handleError("Please select a Transport Method.");
+      return;
+    }
+
+    if (
+      (transportSelection.mode === "COURIER" ||
+        transportSelection.mode === "LOCAL_AGGREGATOR") &&
+      (!transportSelection.transporterId || !transportSelection.transporterName)
+    ) {
+      handleError(
+        "Please select a transporter for the selected Transport Method.",
+      );
+      return;
+    }
+
+    if (transportSelection.mode === "SURFACE") {
+      const isMappedSurface =
+        transportSelection.transporterId && transportSelection.mappingId;
+      const isToBeAssigned =
+        transportSelection.transporterName === "To Be Assigned" &&
+        transportSelection.assignmentStatus === "Unassigned";
+
+      if (!isMappedSurface && !isToBeAssigned) {
+        handleError(
+          "Please wait for Surface transporter lookup, then select a mapped transporter or continue as To Be Assigned.",
+        );
+        return;
+      }
+    }
+
     try {
-      e.preventDefault();
       setOpen(true);
 
       const productList = productEdit === true ? products : [];
@@ -242,8 +352,7 @@ export const UpdateCustomerProformaInvoice = (props) => {
         city: warehouseData.city,
         place_of_supply:
           inputValue.place_of_supply || customerPIdataByID.place_of_supply,
-        transporter_name:
-          inputValue.transporter_name || customerPIdataByID.transporter_name,
+        ...buildTransportPayload(transportSelection),
         buyer_order_no: checked
           ? "Verbal"
           : inputValue.buyer_order_no !== undefined
@@ -617,25 +726,13 @@ export const UpdateCustomerProformaInvoice = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <CustomTextField
-              fullWidth
-              name="transporter_name"
-              size="small"
-              label="Transporter Name"
-              variant="outlined"
-              value={
-                inputValue.transporter_name ||
-                customerPIdataByID.transporter_name
-              }
-              // value={
-              //   customerPIdataByID.transporter_name
-              //     ? customerPIdataByID.transporter_name
-              //     : inputValue.transporter_name
-              // }
-              InputLabelProps={{
-                shrink: true,
-              }}
-              onChange={handleInputChange}
+            <TransportSelector
+              countryId={effectiveCountryId}
+              pincode={effectiveShippingPincode}
+              unitId={effectiveSeller ? effectiveSeller.id : ""}
+              unitCode={effectiveSeller ? effectiveSeller.unit : ""}
+              value={transportSelection}
+              onChange={setTransportSelection}
             />
           </Grid>
           <Grid item xs={12}>
@@ -775,7 +872,7 @@ export const UpdateCustomerProformaInvoice = (props) => {
           variant="contained"
           sx={{ mt: 3, mb: 2 }}
         >
-          Submit
+          Submits
         </Button>
       </Box>
     </>

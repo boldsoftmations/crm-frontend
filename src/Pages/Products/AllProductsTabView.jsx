@@ -24,10 +24,10 @@ export const AllProductsTabView = () => {
   const isAdmin = isInGroups(
     "Director",
     "Accounts",
-    // "Accounts Billing Department",
+
     "Accounts Executive",
   );
-  const isAccountsBillingDepartment = isInGroups("Accounts Billing Department");
+  const isAccountBillingDepartment = isInGroups("Accounts Billing Department");
   const isStore = isInGroups("Stores");
 
   // Initial active tab based on user role
@@ -37,12 +37,12 @@ export const AllProductsTabView = () => {
   const tabs = [
     {
       label: "Raw Materials",
-      visible: isAdmin || isStore || isAccountsBillingDepartment,
+      visible: isAdmin || isStore || isAccountBillingDepartment,
       index: 0,
     },
     {
       label: "Finish Goods",
-      visible: isAdmin || isStore || isAccountsBillingDepartment,
+      visible: isAdmin || isStore || isAccountBillingDepartment,
       index: 1,
     },
     {
@@ -52,42 +52,38 @@ export const AllProductsTabView = () => {
     },
     {
       label: "Description",
-      visible: isAdmin || isAccountsBillingDepartment,
+      visible: isAdmin || isAccountBillingDepartment,
       index: 3,
     },
     {
       label: "Product Code",
-      visible: isAdmin || isAccountsBillingDepartment,
+      visible: isAdmin || isAccountBillingDepartment,
       index: 4,
     },
     {
       label: "Brand",
-      visible: isAdmin || isAccountsBillingDepartment,
+      visible: isAdmin || isAccountBillingDepartment,
       index: 5,
     },
     {
       label: "Color",
-      visible: isAdmin || isAccountsBillingDepartment,
+      visible: isAdmin || isAccountBillingDepartment,
       index: 6,
     },
-    {
-      label: "Unit",
-      visible: isAdmin || isAccountsBillingDepartment,
-      index: 7,
-    },
+    { label: "Unit", visible: isAdmin || isAccountBillingDepartment, index: 7 },
     {
       label: "Packing Unit",
-      visible: isAdmin || isAccountsBillingDepartment,
+      visible: isAdmin || isAccountBillingDepartment,
       index: 8,
     },
     {
       label: "Basic Unit",
-      visible: isAdmin || isAccountsBillingDepartment,
+      visible: isAdmin || isAccountBillingDepartment,
       index: 9,
     },
     {
       label: "Sample Product",
-      visible: isAdmin || isAccountsBillingDepartment,
+      visible: isAdmin || isAccountBillingDepartment,
       index: 10,
     },
   ];
@@ -95,10 +91,6 @@ export const AllProductsTabView = () => {
   // Filter tabs based on visibility
   const visibleTabs = tabs.filter((tab) => tab.visible);
   const visibleTabIndexes = visibleTabs.map((tab) => tab.index);
-
-  // Position of the actual active tab within the visible tabs array.
-  // This is what CustomTabs should use for highlighting, NOT the raw tab.index.
-  const activeTabPosition = visibleTabIndexes.indexOf(activeTab);
 
   // Tab components mapping
   const tabComponents = {
@@ -119,7 +111,7 @@ export const AllProductsTabView = () => {
     <div>
       <CustomTabs
         tabs={visibleTabs}
-        activeTab={activeTabPosition === -1 ? 0 : activeTabPosition}
+        activeTab={activeTab}
         onTabChange={(index) => setActiveTab(visibleTabIndexes[index])}
       />
       {visibleTabIndexes.includes(activeTab) && (

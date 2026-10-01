@@ -1,16 +1,17 @@
 import React, { memo } from "react";
-import { Backdrop, CircularProgress } from "@mui/material";
+import "./CustomLoader.css"; // ⬅️ import CSS
 
-export const CustomLoader = memo((props) => {
-  const { open } = props;
+export const CustomLoader = memo(({ open }) => {
+  if (!open) return null;
+
   return (
-    <div>
-      <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={open}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>
+    <div className="loader-backdrop">
+      <div class="loader">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
     </div>
   );
 });

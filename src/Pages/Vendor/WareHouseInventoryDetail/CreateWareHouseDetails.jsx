@@ -1,7 +1,8 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { Box, Button, Grid } from "@mui/material";
 import { useSelector } from "react-redux";
-import axios from "axios";
+import CustomSnackbar from "../../../Components/CustomerSnackbar";
+import validatePincode from "../../../utility/validatePincode";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import InventoryServices from "../../../services/InventoryService";
 import CustomTextField from "../../../Components/CustomTextField";
@@ -14,34 +15,82 @@ export const CreateWareHouseInventoryDetails = (props) => {
   const [pinCodeData, setPinCodeData] = useState(null);
   const [selectedcontact, setSelectedContact] = useState("");
   const data = useSelector((state) => state.auth);
-  const timeoutRef = useRef(null);
+  // const timeoutRef = useRef(null);
+  const [validCheck, setValidCheck] = useState(true);
+
+  const [alertmsg, setAlertMsg] = useState({
+    message: "",
+    severity: "",
+    open: false,
+  });
+
+  const handleClose = () => {
+    setAlertMsg({ ...alertmsg, open: false });
+  };
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    setInputValue({ ...inputValue, [name]: value });
+
+    setInputValue({
+      ...inputValue,
+      [name]: value,
+    });
 
     if (name === "pincode") {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-      timeoutRef.current = setTimeout(() => {
-        validatePinCode(value);
-      }, 500);
+      setPinCodeData(null);
+      setValidCheck(false);
     }
   };
 
-  const validatePinCode = async (pinCode) => {
+  const validatePinCode = async () => {
     try {
-      const response = await axios.get(
-        `https://api.postalpincode.in/pincode/${pinCode}`
-      );
-      setPinCodeData(response.data[0].PostOffice[0]);
+      setOpen(true);
+
+      const PINCODE = inputValue.pincode;
+
+      if (!PINCODE || PINCODE.trim().length !== 6) {
+        setAlertMsg({
+          message: "Please enter a valid 6-digit Pin Code",
+          severity: "warning",
+          open: true,
+        });
+        return;
+      }
+
+      const response = await validatePincode(vendorData.country_id, PINCODE);
+
+      setPinCodeData(response);
+
+      setValidCheck(true);
+
+      setAlertMsg({
+        message: "Pin Code is valid",
+        severity: "success",
+        open: true,
+      });
     } catch (error) {
-      console.log("Creating Bank error ", error);
+      setPinCodeData(null);
+
+      setValidCheck(false);
+
+      setAlertMsg({
+        message: error.message,
+        severity: "warning",
+        open: true,
+      });
+    } finally {
+      setOpen(false);
     }
   };
-
   const createWareHouseDetails = async (e) => {
+    if (vendorData.type === "Domestic" && !validCheck) {
+      setAlertMsg({
+        message: "Please validate the Pin Code first.",
+        severity: "warning",
+        open: true,
+      });
+      return;
+    }
     try {
       e.preventDefault();
       setOpen(true);
@@ -50,8 +99,8 @@ export const CreateWareHouseInventoryDetails = (props) => {
         contact: selectedcontact.id,
         address: inputValue.address,
         pincode: inputValue.pincode,
-        state: pinCodeData.State,
-        city: pinCodeData.District,
+        state: pinCodeData ? pinCodeData.state_name : "",
+        city: pinCodeData ? pinCodeData.city_name : "",
       };
       await InventoryServices.createWareHouseInventoryData(req);
       setOpenPopup(false);
@@ -65,6 +114,12 @@ export const CreateWareHouseInventoryDetails = (props) => {
 
   return (
     <div>
+      <CustomSnackbar
+        open={alertmsg.open}
+        message={alertmsg.message}
+        severity={alertmsg.severity}
+        onClose={handleClose}
+      />
       <CustomLoader open={open} />
 
       <Box
@@ -86,19 +141,31 @@ export const CreateWareHouseInventoryDetails = (props) => {
             />
           </Grid>
           {vendorData.type === "Domestic" ? (
-            <Grid item xs={12}>
-              <CustomTextField
-                fullWidth
-                name="pincode"
-                size="small"
-                type={"number"}
-                label="Pin Code"
-                variant="outlined"
-                value={inputValue.pincode}
-                onChange={handleInputChange}
-                onBlur={handleInputChange}
-              />
-            </Grid>
+            <>
+              <Grid item xs={12} sm={8}>
+                <CustomTextField
+                  fullWidth
+                  name="pincode"
+                  size="small"
+                  label="Pin Code"
+                  variant="outlined"
+                  value={inputValue.pincode || ""}
+                  onChange={handleInputChange}
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={4}>
+                <Button
+                  fullWidth
+                  variant="contained"
+                  onClick={validatePinCode}
+                  disabled={!inputValue.pincode}
+                  sx={{ height: "40px" }}
+                >
+                  Validate
+                </Button>
+              </Grid>
+            </>
           ) : null}
           <Grid item xs={12}>
             <CustomTextField
@@ -122,7 +189,7 @@ export const CreateWareHouseInventoryDetails = (props) => {
                   name="state"
                   label="State"
                   variant="outlined"
-                  value={pinCodeData.State ? pinCodeData.State : ""}
+                  value={pinCodeData ? pinCodeData.state_name : ""}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -132,7 +199,7 @@ export const CreateWareHouseInventoryDetails = (props) => {
                   name="city"
                   label="City"
                   variant="outlined"
-                  value={pinCodeData.District ? pinCodeData.District : ""}
+                  value={pinCodeData ? pinCodeData.city_name : ""}
                 />
               </Grid>
             </>

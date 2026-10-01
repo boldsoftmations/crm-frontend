@@ -68,7 +68,6 @@ export const ProductionAllTabView = () => {
         "Production",
         "Production Delhi",
         "Accounts Executive",
-        "QA",
       ],
       component: <MaterialTransferNoteView />,
     },

@@ -5,8 +5,9 @@ import { useSelector } from "react-redux";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomTextField from "../../../Components/CustomTextField";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
-import MasterService from "../../../services/MasterService";
+
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
+import validatePincode from "../../../utility/validatePincode";
 
 export const CreateWareHouseDetails = (props) => {
   const { setOpenPopup, getAllCompanyDetailsByID, contactData } = props;
@@ -37,53 +38,73 @@ export const CreateWareHouseDetails = (props) => {
   const validatePinCode = async () => {
     try {
       setOpen(true);
+
       const PINCODE = inputValue.pincode;
-      if (!PINCODE || PINCODE.trim().length < 2) {
-        setInputValue({
-          ...inputValue,
+
+      if (!PINCODE || PINCODE.trim().length !== 6) {
+        setInputValue((prev) => ({
+          ...prev,
           state: "",
           city: "",
-        });
+        }));
+
         setAlertMsg({
-          message: "Pin code is not valid",
+          message: "Please enter a valid 6-digit Pin Code",
           severity: "warning",
-          open: true,
-        });
-        return;
-      }
-      const response = await MasterService.getCountryDataByPincode(
-        "India",
-        PINCODE
-      );
-      if (response.data.length === 0) {
-        setAlertMsg({
-          message:
-            "This Pin Code does not exist ! First Create the Pin code in the master country",
-          severity: "warning",
-          open: true,
-        });
-        setInputValue({
-          ...inputValue,
-          state: "",
-          city: "",
-        });
-      } else {
-        setAlertMsg({
-          message: "Pin code is valid",
-          severity: "success",
           open: true,
         });
 
-        setInputValue({
-          ...inputValue,
-          state: response.data[0].state,
-          city: response.data[0].city_name,
-        });
+        return;
       }
-    } catch (error) {
-      console.log("error", error);
+
+      const response = await validatePincode(
+        selectedcontact.country_id,
+        PINCODE,
+      );
+
+      console.log("Validate Response:", response);
+
+      if (!response || !response.state_name || !response.city_name) {
+        setInputValue((prev) => ({
+          ...prev,
+          state: "",
+          city: "",
+        }));
+
+        setAlertMsg({
+          message:
+            "This Pin Code does not exist! First create the Pin Code in the master.",
+          severity: "warning",
+          open: true,
+        });
+
+        return;
+      }
+
+      setInputValue((prev) => ({
+        ...prev,
+        state: response.state_name,
+        city: response.city_name,
+      }));
+
+      setValidCheck(true);
+
       setAlertMsg({
-        message: "Error fetching country data by pincode",
+        message: "Pin Code is valid",
+        severity: "success",
+        open: true,
+      });
+    } catch (error) {
+      console.log("Validate Pincode Error:", error);
+
+      setInputValue((prev) => ({
+        ...prev,
+        state: "",
+        city: "",
+      }));
+
+      setAlertMsg({
+        message: "Error fetching pincode details",
         severity: "error",
         open: true,
       });

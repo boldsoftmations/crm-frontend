@@ -2,10 +2,12 @@ import React, { memo, useState } from "react";
 import { Box, Button, Divider, Grid, Paper } from "@mui/material";
 import { Popup } from "../../../Components/Popup";
 import { LeadPotentialCreate } from "./LeadPotentialCreate";
+import { useSelector } from "react-redux";
 
 export const LeadPotentialView = memo((props) => {
   const { potential, getLeadByID, leadsByID } = props;
   const [openModal, setOpenModal] = useState(false);
+  const userData = useSelector((state) => state.auth.profile);
   return (
     <>
       {potential && (
@@ -29,6 +31,7 @@ export const LeadPotentialView = memo((props) => {
                   variant="contained"
                   color="success"
                   onClick={() => setOpenModal(true)}
+                  disabled={userData.groups.includes("Digital Marketing")}
                 >
                   Create Potential
                 </Button>

@@ -63,7 +63,7 @@ export const ViewCity = () => {
       setIsLoading(true);
       const response = await MasterService.getMasterCities(
         currentPage,
-        searchQuery
+        searchQuery,
       );
       setCity(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));

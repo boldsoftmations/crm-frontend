@@ -29,6 +29,7 @@ export const ViewDescription = () => {
   const userData = useSelector((state) => state.auth.profile);
   const isInGroups = (...groups) =>
     groups.some((group) => userData.groups.includes(group));
+
   const handleDownload = async () => {
     try {
       const data = await handleExport();

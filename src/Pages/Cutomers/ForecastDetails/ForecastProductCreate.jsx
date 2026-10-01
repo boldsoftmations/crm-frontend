@@ -149,7 +149,7 @@ export const ForecastProductCreate = (props) => {
 
           {/* <Grid item xs={12} sm={8} alignContent="right">
                   <Button
-                    onClick={addFields}
+                    onClick={() => addFields()}
                     variant="contained"
                     sx={{ marginRight: "1em" }}
                   >

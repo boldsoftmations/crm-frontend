@@ -64,6 +64,8 @@ export const UpdateLeads = memo((props) => {
     severity: "",
     open: false,
   });
+  console.log(getAllleadsData, "getAllleadsData");
+  console.log("LeadsBYID is: ", leadsByID);
   const UserData = useSelector((state) => state.auth.profile);
   const handleClose = () => {
     setAlertMsg({ open: false });
@@ -97,13 +99,10 @@ export const UpdateLeads = memo((props) => {
   const validatePinCode = async () => {
     try {
       setOpen(true);
-      const Country = leads.country;
+      const Country = leads.country_id;
       const PINCODE = leads.pincode;
-      const response = await MasterService.getCountryDataByPincode(
-        Country,
-        PINCODE,
-      );
-      if (response.data.length === 0) {
+      const response = await MasterService.ValidatePincode(Country, PINCODE);
+      if (!response.data) {
         setAlertMsg({
           message:
             "This Pin Code does not exist ! First Create the Pin code in the master country",
@@ -114,7 +113,6 @@ export const UpdateLeads = memo((props) => {
           ...leads,
           state: "",
           city: "",
-          country: "",
         });
       } else {
         setAlertMsg({
@@ -124,9 +122,8 @@ export const UpdateLeads = memo((props) => {
         });
         setLeads({
           ...leads,
-          state: response.data[0].state,
-          city: response.data[0].city_name,
-          country: response.data[0].country,
+          state: response.data.state_name,
+          city: response.data.city_name,
         });
       }
     } catch (error) {

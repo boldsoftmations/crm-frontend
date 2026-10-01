@@ -13,7 +13,6 @@ export const AllOrderBookTabView = () => {
 
   const allTabs = isInGroups(
     "Director",
-    "QA",
     "Operations & Supply Chain Manager",
     "Stores Delhi",
     "Production Delhi",
@@ -27,12 +26,13 @@ export const AllOrderBookTabView = () => {
     "Sales Manager without Leads",
     "Sales Manager with Lead",
     "Accounts",
+
     "Production",
     "Accounts Executive",
     "Business Development Manager",
     "Business Development Executive",
   );
-  const isAccountsBillingDepartment = isInGroups("Accounts Billing Department");
+  const isBillingDaprment = isInGroups("Accounts Billing Department");
   const orderBookUsers = isInGroups(
     "Factory-Mumbai-OrderBook",
     "Factory-Delhi-OrderBook",
@@ -50,7 +50,7 @@ export const AllOrderBookTabView = () => {
         allTabs ||
         customerServiceTabs ||
         isDispatch ||
-        isAccountsBillingDepartment,
+        isBillingDaprment,
       index: 0,
     },
     {

@@ -66,7 +66,7 @@ export const LeadActivityCreate = memo(
           };
 
           const response = await LeadServices.createFollowUpLeads(followUpData);
-
+          console.log(response);
           const successMessage =
             response.data.message || "Activity Created successfully";
           handleSuccess(successMessage);

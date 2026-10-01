@@ -340,6 +340,7 @@ export const ProductionEntryView = () => {
                   <StyledTableCell align="center">QUANTITY</StyledTableCell>
                   <StyledTableCell align="center">CREATED BY</StyledTableCell>
                   <StyledTableCell align="center">DATE</StyledTableCell>
+                  <StyledTableCell align="center">Remark</StyledTableCell>
                 </StyledTableRow>
               </TableHead>
               <TableBody>
@@ -429,6 +430,7 @@ function Row(props) {
         <StyledTableCell align="center">{row.quantity}</StyledTableCell>
         <StyledTableCell align="center">{row.user}</StyledTableCell>
         <StyledTableCell align="center">{row.created_on}</StyledTableCell>
+        <StyledTableCell align="center">{row.remark}</StyledTableCell>
       </StyledTableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>

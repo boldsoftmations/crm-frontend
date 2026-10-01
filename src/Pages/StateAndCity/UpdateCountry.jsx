@@ -39,7 +39,7 @@ export const UpdateCountry = ({
       setOpen(true);
       const response = await MasterService.updateMasterCountry(
         recordForEdit.id,
-        inputValue
+        inputValue,
       );
       if (response.status === 200) {
         setAlertMsg({

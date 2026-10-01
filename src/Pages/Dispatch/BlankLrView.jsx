@@ -1,5 +1,9 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import InvoiceServices from "../../services/InvoiceService";
+import {
+  getTransportMethodLabel,
+  getTransporterDisplayName,
+} from "../../utility/transportDisplay";
 import { styled } from "@mui/material/styles";
 import {
   Box,
@@ -77,7 +81,13 @@ export const BlankLrView = () => {
           sales_invoice: item.sales_invoice,
           customer: item.customer,
           dispatch_location: item.dispatch_location,
-          transporter: item.transporter,
+          selected_transport_mode: getTransportMethodLabel(
+            item.selected_transport_mode,
+          ),
+          transporter: getTransporterDisplayName(
+            item.selected_transport_mode,
+            item.transporter,
+          ),
           lr_copy: item.lr_copy,
           pod_copy: item.pod_copy,
         };
@@ -302,7 +312,10 @@ export const BlankLrView = () => {
                     Sales Invoice
                   </StyledTableCell>
                   <StyledTableCell align="center">Customer</StyledTableCell>
-                  <StyledTableCell>TransPort Name</StyledTableCell>
+                  <StyledTableCell align="center">
+                    Transport Method
+                  </StyledTableCell>
+                  <StyledTableCell align="center">Transporter</StyledTableCell>
 
                   <StyledTableCell align="center">
                     Dispatch Location
@@ -388,7 +401,15 @@ function Row(props) {
         </TableCell>
         <TableCell align="center">{row.sales_invoice}</TableCell>
         <TableCell align="center">{row.customer}</TableCell>
-        <TableCell align="center">{row.transporter}</TableCell>
+        <TableCell align="center">
+          {getTransportMethodLabel(row.selected_transport_mode)}
+        </TableCell>
+        <TableCell align="center">
+          {getTransporterDisplayName(
+            row.selected_transport_mode,
+            row.transporter,
+          )}
+        </TableCell>
 
         <TableCell align="center">{row.dispatch_location}</TableCell>
         <TableCell align="center">
@@ -493,6 +514,7 @@ const headers = [
   { label: "Customer", key: "customer" },
   { label: "Unit", key: "unit" },
   { label: "Dispatch Location", key: "dispatch_location" },
+  { label: "Transport Method", key: "selected_transport_mode" },
   { label: "Transporter", key: "transporter" },
   { label: "LR Copy", key: "lr_copy" },
   { label: "POD Copy", key: "pod_copy" },

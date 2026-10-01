@@ -27,7 +27,6 @@ export const ViewProductCode = () => {
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
   const userData = useSelector((state) => state.auth.profile);
-
   const isInGroups = (...groups) =>
     groups.some((group) => userData.groups.includes(group));
   const handleDownload = async () => {

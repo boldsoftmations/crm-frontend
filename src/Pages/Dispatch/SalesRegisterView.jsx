@@ -1,5 +1,9 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import InvoiceServices from "../../services/InvoiceService";
+import {
+  getTransportMethodLabel,
+  getTransporterDisplayName,
+} from "../../utility/transportDisplay";
 import { styled } from "@mui/material/styles";
 import {
   Box,
@@ -32,6 +36,7 @@ import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import UserProfileService from "../../services/UserProfileService";
 import { useSelector } from "react-redux";
 import CustomDateFilterPopup from "../../Components/CustomDateFilterPopup";
+import { formatDate } from "../../utility/dateUtils";
 
 export const SalesRegisterView = () => {
   const [open, setOpen] = useState(false);
@@ -62,8 +67,8 @@ export const SalesRegisterView = () => {
   const handleExport = async () => {
     try {
       setOpen(true);
-      const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
-      const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
+      const StartDate = formatDate(startDate);
+      const EndDate = formatDate(endDate);
       const response = await InvoiceServices.getAllSaleRegisterData(
         StartDate,
         EndDate,
@@ -76,13 +81,20 @@ export const SalesRegisterView = () => {
           date: moment(item.date).format("DD-MM-YYYY"),
           sales_invoice: item.sales_invoice,
           customer: item.customer,
-          transporter: item.transporter,
+          selected_transport_mode: getTransportMethodLabel(
+            item.selected_transport_mode,
+          ),
+          transporter: getTransporterDisplayName(
+            item.selected_transport_mode,
+            item.transporter,
+          ),
           type_of_customer: item.type_of_customer,
           dispatch_location: item.dispatch_location,
           lr_copy: item.lr_copy,
           pod_copy: item.pod_copy,
         };
       });
+      setCount(response.data.count);
       setOpen(false);
       return data;
     } catch (error) {
@@ -110,8 +122,14 @@ export const SalesRegisterView = () => {
   const getSalesRegisterData = useCallback(async () => {
     try {
       setOpen(true);
-      const StartDate = startDate ? startDate.toISOString().split("T")[0] : "";
-      const EndDate = endDate ? endDate.toISOString().split("T")[0] : "";
+      const StartDate = formatDate(startDate);
+      const EndDate = formatDate(endDate);
+
+      console.log("startDate state:", startDate);
+      console.log("endDate state:", endDate);
+      console.log("Formatted StartDate:", StartDate);
+      console.log("Formatted EndDate:", EndDate);
+
       const response = await InvoiceServices.getAllSaleRegisterData(
         StartDate,
         EndDate,
@@ -120,14 +138,14 @@ export const SalesRegisterView = () => {
         unitFilter,
       );
       setsalesRegisterData(response.data.results);
+
       setTotalPages(Math.ceil(response.data.count / 25));
-      setCount(response.data.count);
     } catch (error) {
       handleError(error);
     } finally {
       setOpen(false);
     }
-  }, [startDate, currentPage, searchQuery, unitFilter]); // Ensure dependencies are correctly listed
+  }, [endDate, startDate, currentPage, searchQuery, unitFilter]); // Ensure dependencies are correctly listed
 
   useEffect(() => {
     getSalesRegisterData();
@@ -143,6 +161,13 @@ export const SalesRegisterView = () => {
     setCurrentPage(1); // Reset to first page with no search query
   };
 
+  useEffect(() => {
+    console.log("endDate changed =>", endDate);
+  }, [endDate]);
+
+  useEffect(() => {
+    console.log("startDate changed =>", startDate);
+  }, [startDate]);
   const handlePageChange = (event, value) => setCurrentPage(value);
 
   const handleDownload = async () => {
@@ -240,9 +265,8 @@ export const SalesRegisterView = () => {
                 <Typography
                   variant="h6"
                   style={{
-                    fontSize: "14px",
                     color: "rgb(34, 34, 34)",
-                    fontWeight: 600,
+
                     fontWeight: 800,
                     alignItems: "center",
                     marginTop: "10px",
@@ -301,7 +325,10 @@ export const SalesRegisterView = () => {
                   <StyledTableCell align="center">User</StyledTableCell>
                   <StyledTableCell align="center">PI No</StyledTableCell>
                   <StyledTableCell align="center">
-                    transport Name
+                    Transport Method
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    Transporter
                   </StyledTableCell>
 
                   <StyledTableCell align="center">
@@ -354,7 +381,11 @@ export const SalesRegisterView = () => {
         setStartDate={setStartDate}
         setEndDate={setEndDate}
         onSubmit={() => {
-          getSalesRegisterData();
+          setTimeout(() => {
+            console.log("After timeout:", startDate, endDate);
+            getSalesRegisterData();
+          }, 0);
+
           setCustomDataPopup(false);
         }}
       />
@@ -405,7 +436,15 @@ function Row(props) {
             ? row.pi_list.join(", ")
             : "NA"}
         </TableCell>
-        <TableCell align="center">{row.transporter}</TableCell>
+        <TableCell align="center">
+          {getTransportMethodLabel(row.selected_transport_mode)}
+        </TableCell>
+        <TableCell align="center">
+          {getTransporterDisplayName(
+            row.selected_transport_mode,
+            row.transporter,
+          )}
+        </TableCell>
         <TableCell align="center">{row.sales_invoice}</TableCell>
         <TableCell align="center">{row.customer}</TableCell>
         {isInGroups("Operations & Supply Chain Manager", "Director") && (
@@ -514,7 +553,8 @@ const headers = [
   { label: "Seller Unit", key: "seller_unit" },
   { label: "Sales Invoice", key: "sales_invoice" },
   { label: "Customer", key: "customer" },
-  { label: "Transporter Name", key: "transporter" },
+  { label: "Transport Method", key: "selected_transport_mode" },
+  { label: "Transporter", key: "transporter" },
   { label: "Type of Customer", key: "type_of_customer" },
   { label: "Dispatch Location", key: "dispatch_location" },
   { label: "LR Copy", key: "lr_copy" },

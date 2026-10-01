@@ -75,11 +75,10 @@ export const UpdateCompanyDetails = (props) => {
     try {
       setOpen(true);
       const PINCODE = inputValue.pincode;
-      const Country = inputValue.country;
-      const response = await MasterService.getCountryDataByPincode(
-        Country,
-        PINCODE,
-      );
+      const Country = selectedCustomers.country_id;
+      console.log("Country Id is:", selectedCustomers);
+      const response = await MasterService.ValidatePincode(Country, PINCODE);
+      console.log(response && response.data);
       if (response.data.length === 0) {
         setAlertMsg({
           message:
@@ -102,11 +101,11 @@ export const UpdateCompanyDetails = (props) => {
         });
         setInputValue({
           ...inputValue,
-          state: response.data[0].state,
-          city: response.data[0].city_name,
-          country: response.data[0].country,
-          pin_code: response.data[0].pin_code,
-          zone: response.data[0].zone,
+          state: response.data.state_name,
+          city: response.data.city_name,
+          country: response.data.country_name,
+          pin_code: response.data.pincode,
+          zone: response.data.zone_name || "",
         });
       }
     } catch (error) {
@@ -116,6 +115,9 @@ export const UpdateCompanyDetails = (props) => {
         severity: "error",
         open: true,
       });
+      console.log("Error:", error);
+      console.log("Response:", error.response);
+      console.log("Data:", error.response && error.response.data);
     } finally {
       setOpen(false);
     }
@@ -216,8 +218,7 @@ export const UpdateCompanyDetails = (props) => {
     if (
       userData.groups.includes("Director") ||
       userData.groups.includes("Accounts") ||
-      userData.groups.includes("Accounts Executive") ||
-      userData.groups.includes("Accounts Billing Department")
+      userData.groups.includes("Accounts Executive")
     ) {
       setDisabled(false);
     }
@@ -504,8 +505,8 @@ export const UpdateCompanyDetails = (props) => {
         {(userData.groups.includes("Director") ||
           userData.groups.includes("Accounts") ||
           userData.groups.includes("Customer Relationship Executive") ||
-          userData.groups.includes("Accounts Billing Department") ||
           userData.groups.includes("Business Development Executive") ||
+          userData.groups.includes("Accounts Billing Department") ||
           userData.groups.includes("Sales Manager(Retailer)") ||
           userData.groups.includes("Accounts Executive") ||
           userData.groups.includes("Sales Manager")) && (

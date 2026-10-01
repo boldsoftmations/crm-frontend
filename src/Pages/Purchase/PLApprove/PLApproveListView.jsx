@@ -52,9 +52,8 @@ const PLApproveListView = () => {
   const getAllSellerAccountsDetails = async () => {
     try {
       setOpen(true);
-      const response = await InvoiceServices.getAllPaginateSellerAccountData(
-        "all"
-      );
+      const response =
+        await InvoiceServices.getAllPaginateSellerAccountData("all");
       dispatch(getSellerAccountData(response.data));
       setOpen(false);
     } catch (err) {
@@ -72,7 +71,7 @@ const PLApproveListView = () => {
       const response = await InventoryServices.getAllPackingListData(
         page,
         filter,
-        query
+        query,
       );
       setPackingListData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -149,7 +148,7 @@ const PLApproveListView = () => {
                   sx={{ width: "200px" }}
                   size="small"
                   value={AcceptedOption.find(
-                    (option) => option.value === acceptedFilter.toString()
+                    (option) => option.value === acceptedFilter.toString(),
                   )}
                   onChange={(event, newValue) => handleFilter(newValue)}
                   options={AcceptedOption}
@@ -337,7 +336,7 @@ function Row({ row, handleCreateGrn, userData }) {
                     : false ||
                       (row.grn_rejected ? false : true) ||
                       userData.groups.includes(
-                        "Operations & Supply Chain Manager"
+                        "Operations & Supply Chain Manager",
                       )
                 }
               >

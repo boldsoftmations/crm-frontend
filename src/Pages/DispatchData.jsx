@@ -33,13 +33,13 @@ export const DispatchData = (props) => {
               1,
               true,
               true,
-              filterValue
+              filterValue,
             )
           : await InvoiceServices.getPODCopyDashboardData(
               1,
               true,
               true,
-              filterValue
+              filterValue,
             );
       setLeads(response.data.results);
       const total = response.data.count;
@@ -62,13 +62,13 @@ export const DispatchData = (props) => {
               page,
               true,
               true,
-              filterValue
+              filterValue,
             )
           : await InvoiceServices.getPODCopyDashboardData(
               page,
               true,
               true,
-              filterValue
+              filterValue,
             );
       setLeads(response.data.results);
       const total = response.data.count;

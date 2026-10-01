@@ -12,7 +12,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     padding: theme.spacing(1),
   },
 }));
-
+//new
 function BootstrapDialogTitle(props) {
   const { children, onClose } = props;
 

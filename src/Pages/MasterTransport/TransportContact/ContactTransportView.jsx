@@ -33,7 +33,7 @@ import TransportContactUpdate from "./TransportContactUpdate";
 
 // import ContactTransportUpdate from "./ContactTransportUpdate";
 
-const ContactTransportView = () => {
+const ContactTransportView = ({ lockedTransporter }) => {
   const [openUpdatePopup, setOpenUpdatePopup] = useState(false); // ADD THIS
   const [recordForEdit, setRecordForEdit] = useState(null); // ADD THIS
 
@@ -47,9 +47,21 @@ const ContactTransportView = () => {
   // false = Active, true = Inactive
   const [isInactiveFilter, setIsInactiveFilter] = useState(false);
 
-  // Transporter filter
+  // Transporter filter - GAP FIX (2/3): when opened from inside a
+  // transporter's workspace (lockedTransporter passed in), this is forced
+  // to that transporter and the filter dropdown is hidden - doc: "Add
+  // contact -> Transporter is implicit from workspace." When opened
+  // standalone (no lockedTransporter), behaves exactly as before.
   const [transporterOptions, setTransporterOptions] = useState([]);
-  const [selectedTransporter, setSelectedTransporter] = useState(null);
+  const [selectedTransporter, setSelectedTransporter] = useState(
+    lockedTransporter || null,
+  );
+
+  useEffect(() => {
+    if (lockedTransporter) {
+      setSelectedTransporter(lockedTransporter);
+    }
+  }, [lockedTransporter]);
 
   const [openCreatePopup, setOpenCreatePopup] = useState(false);
 
@@ -173,6 +185,7 @@ const ContactTransportView = () => {
       transporter: value.transporter,
       unit: value.unit,
       city: value.city,
+      branch_name: value.branch_name,
       contact_person: value.contact_person,
       designation_role: value.designation_role,
       mobile_number: value.mobile_number,
@@ -190,6 +203,7 @@ const ContactTransportView = () => {
     "TRANSPORTER",
     "UNIT",
     "CITY",
+    "BRANCH",
     "CONTACT PERSON",
     "DESIGNATION ROLE",
     "MOBILE NUMBER",
@@ -273,16 +287,18 @@ const ContactTransportView = () => {
                 minWidth: "300px",
               }}
             >
-              <Button
-                variant="contained"
-                color="success"
-                onClick={() => {
-                  setOpenCreatePopup(true);
-                }}
-                disabled={isInGroups("Stores")}
-              >
-                Add
-              </Button>
+              {userData.groups.includes("Director") && (
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={() => {
+                    setOpenCreatePopup(true);
+                  }}
+                  disabled={isInGroups("Stores")}
+                >
+                  Add
+                </Button>
+              )}
             </Box>
           </Box>
 
@@ -298,7 +314,8 @@ const ContactTransportView = () => {
               gap: 2,
             }}
           >
-            {/* Transporter Filter */}
+            {/* Transporter Filter - hidden when locked to one transporter
+                from a workspace; shown as plain text instead. */}
             <Box
               sx={{
                 minWidth: "300px",
@@ -306,20 +323,26 @@ const ContactTransportView = () => {
                 maxWidth: "400px",
               }}
             >
-              <CustomAutocomplete
-                fullWidth
-                size="small"
-                options={transporterOptions}
-                value={selectedTransporter}
-                getOptionLabel={(option) =>
-                  option.transporter_name ? option.transporter_name : option
-                }
-                onChange={(e, value) => {
-                  setSelectedTransporter(value || null);
-                  setCurrentPage(1);
-                }}
-                label="Filter by Transporter"
-              />
+              {lockedTransporter ? (
+                <Box sx={{ fontSize: 14, color: "#555" }}>
+                  Transporter: <b>{lockedTransporter.transporter_name}</b>
+                </Box>
+              ) : (
+                <CustomAutocomplete
+                  fullWidth
+                  size="small"
+                  options={transporterOptions}
+                  value={selectedTransporter}
+                  getOptionLabel={(option) =>
+                    option.transporter_name ? option.transporter_name : option
+                  }
+                  onChange={(e, value) => {
+                    setSelectedTransporter(value || null);
+                    setCurrentPage(1);
+                  }}
+                  label="Filter by Transporter"
+                />
+              )}
             </Box>
 
             {/* Active / Inactive Toggle */}
@@ -391,6 +414,9 @@ const ContactTransportView = () => {
                       <StyledTableCell align="center">
                         {row.city}
                       </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.branch_name}
+                      </StyledTableCell>
 
                       <StyledTableCell align="center">
                         {row.contact_person}
@@ -450,6 +476,7 @@ const ContactTransportView = () => {
         <ContactTransportCreate
           getTransportContactData={getTransportContactData}
           setOpenPopup={setOpenCreatePopup}
+          lockedTransporter={lockedTransporter}
         />
       </Popup>
 
@@ -465,6 +492,7 @@ const ContactTransportView = () => {
           recordForEdit={recordForEdit}
           setOpenPopup={setOpenUpdatePopup}
           getTransportContactData={getTransportContactData}
+          lockedTransporter={lockedTransporter}
         />
       </Popup>
     </>

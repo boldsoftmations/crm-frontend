@@ -43,7 +43,7 @@ export const ProductionInventoryConsView = () => {
 
   // Filter the productionInventoryData based on the search query
   const filteredData = productionInventoryData.filter((row) =>
-    row.product__name.toLowerCase().includes(searchQuery.toLowerCase())
+    row.product__name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const Tableheaders = [
@@ -126,7 +126,7 @@ export const ProductionInventoryConsView = () => {
               </Grid>
             </Grid>
           </Box>
-          <CustomTable headers={Tableheaders} data={data} />
+          <CustomTable headers={Tableheaders} Isviewable={false} data={data} />
         </Paper>
       </Grid>
     </>

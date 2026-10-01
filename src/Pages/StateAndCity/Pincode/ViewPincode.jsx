@@ -12,7 +12,12 @@ import {
   TableBody,
   Table,
   tableCellClasses,
+  Collapse,
+  IconButton,
+  Typography,
 } from "@mui/material";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import SearchComponent from "../../../Components/SearchComponent ";
 import { CustomPagination } from "../../../Components/CustomPagination";
@@ -21,6 +26,10 @@ import { CreatePincode } from "./CreatePincode";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
 import MasterService from "../../../services/MasterService";
 import { UpdatePincode } from "./UpdatePincode";
+import { CreateAlias } from "./CreateAlias";
+import MergePincodeCreate from "./MergePincodeCreate";
+import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import { useSelector } from "react-redux";
 
 export const ViewPincode = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -31,12 +40,16 @@ export const ViewPincode = () => {
   const [recordForEdit, setRecordForEdit] = useState(null);
   const [openPopup, setOpenPopup] = useState(false);
   const [openUpdatePopup, setOpenUpdatePopup] = useState(false);
+  const [openAlisaPopup, setOpenAlisaPopup] = useState(false);
   const [alertmsg, setAlertMsg] = useState({
     message: "",
     severity: "",
     open: false,
   });
+  const [openMergePopup, setOpenMergePopup] = useState(false);
+  const [status, setStatus] = useState("Active");
 
+  const userData = useSelector((state) => state.auth.profile);
   const handleClose = () => {
     setAlertMsg({ open: false });
   };
@@ -57,12 +70,21 @@ export const ViewPincode = () => {
     setRecordForEdit(data);
     setOpenUpdatePopup(true);
   };
+  const openAliasPopup = (data) => {
+    setRecordForEdit(data);
+    setOpenAlisaPopup(true);
+  };
+  const openMergePopupHandler = (data) => {
+    setRecordForEdit(data);
+    setOpenMergePopup(true);
+  };
   const getMasterPincode = async () => {
     try {
       setIsLoading(true);
       const response = await MasterService.getMasterPincode(
         currentPage,
-        searchQuery
+        searchQuery,
+        status === "Active",
       );
       setPincode(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -78,7 +100,8 @@ export const ViewPincode = () => {
   };
   useEffect(() => {
     getMasterPincode();
-  }, [currentPage, searchQuery]);
+  }, [currentPage, searchQuery, status]);
+
   return (
     <>
       <CustomSnackbar
@@ -112,15 +135,29 @@ export const ViewPincode = () => {
                   </h3>
                 </Box>
               </Grid>
-              <Grid item xs={12} sm={4} style={{ textAlign: "right" }}>
-                <Button
-                  variant="contained"
-                  color="info"
-                  size="small"
-                  onClick={() => setOpenPopup(true)}
-                >
-                  Add
-                </Button>
+              <Grid item xs={12} sm={4}>
+                <Box sx={{ display: "flex", gap: 2 }}>
+                  <CustomAutocomplete
+                    label="Status"
+                    value={status}
+                    options={["Active", "Inactive"]}
+                    onChange={(event, newValue) => {
+                      setStatus(newValue || "Active");
+                      setCurrentPage(1);
+                    }}
+                    sx={{ width: "70%" }}
+                  />
+                  {userData.groups.includes("Director") && (
+                    <Button
+                      variant="contained"
+                      color="info"
+                      size="small"
+                      onClick={() => setOpenPopup(true)}
+                    >
+                      Add
+                    </Button>
+                  )}
+                </Box>
               </Grid>
             </Grid>
           </Box>
@@ -146,6 +183,7 @@ export const ViewPincode = () => {
             >
               <TableHead>
                 <TableRow>
+                  <StyledTableCell align="center"></StyledTableCell>
                   <StyledTableCell align="center">County </StyledTableCell>
                   <StyledTableCell align="center">Zone </StyledTableCell>
                   <StyledTableCell align="center">State </StyledTableCell>
@@ -157,33 +195,14 @@ export const ViewPincode = () => {
               <TableBody>
                 {pincode &&
                   pincode.map((row, i) => (
-                    <StyledTableRow key={i}>
-                      <StyledTableCell align="center">
-                        {row.country}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.zone}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.state}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.city_name}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.pincode}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        <Button
-                          variant="contained"
-                          color="success"
-                          size="small"
-                          onClick={() => openInPopup(row)}
-                        >
-                          Edit
-                        </Button>
-                      </StyledTableCell>
-                    </StyledTableRow>
+                    <Row
+                      key={i}
+                      row={row}
+                      openInPopup={openInPopup}
+                      openAliasPopup={openAliasPopup}
+                      openMergePopupHandler={openMergePopupHandler}
+                      userData={userData}
+                    />
                   ))}
               </TableBody>
             </Table>
@@ -204,6 +223,31 @@ export const ViewPincode = () => {
             />
           </Popup>
           <Popup
+            title="Create Alias"
+            openPopup={openAlisaPopup}
+            setOpenPopup={setOpenAlisaPopup}
+          >
+            <CreateAlias
+              recordForEdit={recordForEdit}
+              getMasterPincode={getMasterPincode}
+              setOpenAlisaPopup={setOpenAlisaPopup}
+            />
+          </Popup>
+
+          <Popup
+            title="Merge Pincode"
+            openPopup={openMergePopup}
+            setOpenPopup={setOpenMergePopup}
+          >
+            <MergePincodeCreate
+              recordForEdit={recordForEdit}
+              getMasterPincode={getMasterPincode}
+              setOpenMergePopup={setOpenMergePopup}
+              PincodeData={pincode}
+            />
+          </Popup>
+
+          <Popup
             title="Update Pin Code"
             openPopup={openUpdatePopup}
             setOpenPopup={setOpenUpdatePopup}
@@ -219,6 +263,140 @@ export const ViewPincode = () => {
     </>
   );
 };
+
+function Row({
+  row,
+  openInPopup,
+  openAliasPopup,
+  openMergePopupHandler,
+  userData,
+}) {
+  const [open, setOpen] = useState(false);
+
+  const aliases =
+    row.pincode_aliases && row.pincode_aliases.length > 0
+      ? row.pincode_aliases
+      : [];
+
+  return (
+    <>
+      <StyledTableRow sx={{ "& > *": { borderBottom: "unset" } }}>
+        <StyledTableCell align="center">
+          <IconButton
+            aria-label="expand row"
+            size="small"
+            onClick={() => setOpen(!open)}
+          >
+            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+          </IconButton>
+        </StyledTableCell>
+        <StyledTableCell align="center">
+          {row.country_name ? row.country_name : row.country}
+        </StyledTableCell>
+        <StyledTableCell align="center">{row.zone}</StyledTableCell>
+        <StyledTableCell align="center">
+          {row.state_name ? row.state_name : row.state}
+        </StyledTableCell>
+        <StyledTableCell align="center">{row.city_name}</StyledTableCell>
+        <StyledTableCell align="center">{row.pincode}</StyledTableCell>
+        <StyledTableCell align="center">
+          <Box display="flex" justifyContent="center" gap={1}>
+            {userData.groups.includes("Director") && (
+              <Button
+                variant="contained"
+                color="success"
+                size="small"
+                onClick={() => openInPopup(row)}
+              >
+                Edit
+              </Button>
+            )}
+            {userData.groups.includes("Director") && (
+              <Button
+                variant="contained"
+                size="small"
+                color="info"
+                onClick={() => openAliasPopup(row)}
+              >
+                Create Alias
+              </Button>
+            )}
+            {userData.groups.includes("Director") && (
+              <Button
+                variant="contained"
+                size="small"
+                color="warning"
+                onClick={() => openMergePopupHandler(row)}
+              >
+                Merge Pincode
+              </Button>
+            )}
+          </Box>
+        </StyledTableCell>
+      </StyledTableRow>
+
+      <TableRow>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
+          <Collapse in={open} timeout="auto" unmountOnExit>
+            <Box sx={{ margin: 1 }}>
+              <Typography variant="h6" gutterBottom component="div">
+                Pincode Aliases
+              </Typography>
+              <Table size="small" aria-label="pincode-aliases">
+                <TableHead>
+                  <TableRow>
+                    <TableCell align="center">SR.NO</TableCell>
+                    <TableCell align="center">POSTAL CODE</TableCell>
+                    <TableCell align="center">ALIAS NAME</TableCell>
+                    <TableCell align="center">ALIAS TYPE</TableCell>
+                    <TableCell align="center">PRIMARY</TableCell>
+                    <TableCell align="center">ACTIVE</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {aliases.length > 0 ? (
+                    aliases.map((alias, i) => (
+                      <StyledTableRow key={alias.id ? alias.id : i}>
+                        <StyledTableCell align="center">
+                          {i + 1}
+                        </StyledTableCell>
+                        <StyledTableCell align="center">
+                          {alias.postal_code}
+                        </StyledTableCell>
+                        <StyledTableCell align="center">
+                          {alias.alias_name}
+                        </StyledTableCell>
+                        <StyledTableCell align="center">
+                          {alias.alias_type}
+                        </StyledTableCell>
+                        <StyledTableCell align="center">
+                          {alias.is_primary ? "Yes" : "No"}
+                        </StyledTableCell>
+                        <StyledTableCell align="center">
+                          {alias.is_active ? "Yes" : "No"}
+                        </StyledTableCell>
+                      </StyledTableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell
+                        colSpan={6}
+                        align="center"
+                        sx={{ color: "#999" }}
+                      >
+                        No aliases found
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </Box>
+          </Collapse>
+        </TableCell>
+      </TableRow>
+    </>
+  );
+}
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {

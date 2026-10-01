@@ -6,6 +6,9 @@ import { ViewState } from "./State/ViewState";
 import { ViewCity } from "./City/ViewCity";
 import { ViewPincode } from "./Pincode/ViewPincode";
 import ZoneListView from "./ZoneList/ZoneListView";
+import { MergePincodeView } from "./MergePinCode/MergePincodeView";
+import ViewPincodeAuditLog from "./PincodeAuditLog/ViewPincodeAuditLog";
+import ViewRefrenceGeoPostal from "./RefrenceGeoPostal/ViewRefrenceGeoPostal";
 
 export const AllTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
@@ -64,6 +67,21 @@ export const AllTabView = () => {
         "Accounts Billing Department",
       ],
       component: <ViewPincode />,
+    },
+    {
+      label: "Merge Pin Code",
+      roles: ["Director"],
+      component: <MergePincodeView />,
+    },
+    {
+      label: "Geo Audit Log",
+      roles: ["Director"],
+      component: <ViewPincodeAuditLog />,
+    },
+    {
+      label: "Geo Postal Reference",
+      roles: ["Director"],
+      component: <ViewRefrenceGeoPostal />,
     },
   ];
 

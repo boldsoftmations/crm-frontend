@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -9,7 +9,7 @@ import {
   Radio,
   RadioGroup,
 } from "@mui/material";
-import axios from "axios";
+
 import { Popup } from "../../../Components/Popup";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import InventoryServices from "../../../services/InventoryService";
@@ -19,6 +19,7 @@ import CustomTextField from "../../../Components/CustomTextField";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
+import validatePincode from "../../../utility/validatePincode";
 
 export const CreateVendorDetails = (props) => {
   const { getAllVendorDetails } = props;
@@ -26,6 +27,7 @@ export const CreateVendorDetails = (props) => {
   const [open, setOpen] = useState(false);
   const [typeData, setTypeData] = useState("Domestic");
   const [gstFocused, setGstFocused] = useState(false);
+  const [isValidPincode, setIsValidPincode] = useState(false);
   const [panFocused, setPanFocused] = useState(false);
   const today = new Date().toISOString().slice(0, 10); // Get current date in YYYY-MM-DD format
   const [inputValue, setInputValue] = useState({
@@ -46,14 +48,43 @@ export const CreateVendorDetails = (props) => {
   const [idForEdit, setIdForEdit] = useState("");
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
-  const timeoutRef = useRef(null);
+  const [selectedCountry, setSelectedCountry] = useState({
+    id: 1,
+    name: "India",
+  });
+
   const handleChange = (event) => {
     const { value } = event.target;
     setTypeData(value);
 
     if (value === "Domestic") {
-      setInputValue({ ...inputValue, country: "India" });
+      setSelectedCountry({
+        id: 1,
+        name: "India",
+      });
+
+      setInputValue((prev) => ({
+        ...prev,
+        country: "India",
+      }));
+    } else {
+      setSelectedCountry(null);
+
+      setInputValue((prev) => ({
+        ...prev,
+        country: "",
+      }));
     }
+
+    // type switch hone par pincode aur uska validation state reset karna zaroori hai,
+    // warna Domestic -> International -> Domestic wapas aane par purana isValidPincode
+    // stale reh jata tha aur bina dobara validate kiye Submit enable ho jata tha
+    setInputValue((prev) => ({
+      ...prev,
+      pincode: "",
+    }));
+    setIsValidPincode(false);
+    setPinCodeData([]);
   };
 
   const handleInputChange = (event) => {
@@ -68,26 +99,76 @@ export const CreateVendorDetails = (props) => {
       });
     }
 
+    // pincode change hote hi purana validation invalid maan lo -
+    // jab tak user dobara "Validate" na dabaye, process/submit allow nahi hoga
     if (name === "pincode") {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-      timeoutRef.current = setTimeout(() => {
-        validatePinCode(value);
-      }, 500);
+      setIsValidPincode(false);
+      setPinCodeData([]);
     }
   };
 
-  console.log("inputValue", inputValue);
-  const validatePinCode = async (pinCode) => {
+  // core validation logic - hamesha ek explicit pincode value leta hai,
+  // kabhi bhi stale state (inputValue.pincode) par depend nahi karta
+  const runPincodeValidation = async (pincodeValue) => {
     try {
-      const response = await axios.get(
-        `https://api.postalpincode.in/pincode/${pinCode}`
-      );
-      setPinCodeData(response.data[0].PostOffice[0]);
+      if (!pincodeValue || pincodeValue.length !== 6) {
+        handleError({
+          response: {
+            data: {
+              message: "Please enter a valid 6-digit pincode.",
+            },
+          },
+        });
+        return;
+      }
+
+      if (!selectedCountry || !selectedCountry.id) {
+        handleError({
+          response: {
+            data: {
+              message: "Please select a country first.",
+            },
+          },
+        });
+        return;
+      }
+
+      setOpen(true);
+
+      const verified = await validatePincode(selectedCountry.id, pincodeValue);
+
+      setPinCodeData({
+        State: verified.state_name,
+        District: verified.city_name,
+      });
+
+      setInputValue((prev) => ({
+        ...prev,
+        pincode: verified.pincode,
+      }));
+
+      setIsValidPincode(true);
+
+      handleSuccess("Pincode verified successfully.");
     } catch (error) {
-      console.log("Creating Bank error ", error);
+      setPinCodeData([]);
+      setIsValidPincode(false);
+
+      handleError({
+        response: {
+          data: {
+            message: error.message || "Invalid pincode.",
+          },
+        },
+      });
+    } finally {
+      setOpen(false);
     }
+  };
+
+  // "Validate" button hamesha current typed value se hi validate karega
+  const handleValidateClick = () => {
+    runPincodeValidation(inputValue.pincode);
   };
 
   // Function to validate GST number
@@ -121,9 +202,27 @@ export const CreateVendorDetails = (props) => {
       ? "Invalid PAN No."
       : "";
 
+  // Domestic ke liye pincode validate hona zaroori hai, International ke liye zaroorat nahi
+  // (kyunki International me pincode field dikhta hi nahi)
+  const canSubmit = typeData === "Domestic" ? isValidPincode : true;
+
   const createCompanyDetails = async (e) => {
     try {
       e.preventDefault();
+
+      // extra safety guard - agar kisi tarah (Enter key, programmatic submit) se
+      // form submit ho jaye bina Validate kiye, to yaha rok denge
+      if (typeData === "Domestic" && !isValidPincode) {
+        handleError({
+          response: {
+            data: {
+              message: "Please validate the pincode before submitting.",
+            },
+          },
+        });
+        return;
+      }
+
       setOpen(true);
       if (gstError || panError) {
         setOpen(false);
@@ -155,12 +254,11 @@ export const CreateVendorDetails = (props) => {
           typeData === "Domestic"
             ? "India"
             : inputValue.country
-            ? inputValue.country
-            : null,
+              ? inputValue.country
+              : null,
       };
       const response = await InventoryServices.createVendorData(req);
       setIdForEdit(response.data.vendor_id);
-      // setOpenPopup(false);
       handleSuccess("Vendor created successfully");
       getAllVendorDetails();
       setOpen(false);
@@ -171,6 +269,19 @@ export const CreateVendorDetails = (props) => {
 
       setOpen(false);
     }
+  };
+
+  const handleCountryChange = (event, value) => {
+    setSelectedCountry(value);
+
+    setIsValidPincode(false);
+
+    setInputValue((prev) => ({
+      ...prev,
+      pincode: "",
+    }));
+
+    setPinCodeData([]);
   };
 
   return (
@@ -224,13 +335,11 @@ export const CreateVendorDetails = (props) => {
               getOptionLabel={(option) => option.name}
               value={
                 typeData === "Domestic"
-                  ? { name: "India" }
-                  : inputValue.country
-                  ? { name: inputValue.country }
-                  : null
+                  ? { id: 1, name: "India" }
+                  : selectedCountry
               }
-              onChange={(event, value) => handleInputChange(event, value)}
-              label={"Enter Country Name"}
+              onChange={handleCountryChange}
+              label="Enter Country Name"
             />
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -266,17 +375,30 @@ export const CreateVendorDetails = (props) => {
           </Grid>
           {typeData === "Domestic" ? (
             <Grid item xs={12} sm={4}>
-              <CustomTextField
-                fullWidth
-                name="pincode"
-                size="small"
-                type={"number"}
-                label="Pin Code"
-                variant="outlined"
-                value={inputValue.pincode}
-                onChange={handleInputChange}
-                onBlur={handleInputChange}
-              />
+              <Box display="flex" gap={1}>
+                <CustomTextField
+                  fullWidth
+                  name="pincode"
+                  size="small"
+                  type="number"
+                  label="Pin Code"
+                  variant="outlined"
+                  value={inputValue.pincode}
+                  onChange={handleInputChange}
+                  InputProps={{
+                    readOnly: isValidPincode,
+                  }}
+                />
+
+                <Button
+                  type="button"
+                  variant="contained"
+                  onClick={handleValidateClick}
+                  disabled={isValidPincode}
+                >
+                  Validate
+                </Button>
+              </Box>
             </Grid>
           ) : null}
           <Grid item xs={12} sm={3}>
@@ -294,6 +416,9 @@ export const CreateVendorDetails = (props) => {
                   : inputValue.state
               }
               onChange={handleInputChange}
+              InputProps={{
+                readOnly: typeData === "Domestic",
+              }}
             />
           </Grid>
           <Grid item xs={12} sm={3}>
@@ -311,6 +436,9 @@ export const CreateVendorDetails = (props) => {
                   : inputValue.city
               }
               onChange={handleInputChange}
+              InputProps={{
+                readOnly: typeData === "Domestic",
+              }}
             />
           </Grid>
 
@@ -404,6 +532,7 @@ export const CreateVendorDetails = (props) => {
           fullWidth
           variant="contained"
           sx={{ mt: 3, mb: 2 }}
+          disabled={!canSubmit}
         >
           Submit
         </Button>

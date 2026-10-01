@@ -13,10 +13,11 @@ import {
 import moment from "moment";
 import { Popup } from "../../Components/Popup";
 import { LeadActivityCreate } from "./LeadActivityCreate";
+import { useSelector } from "react-redux";
 
 export const LeadActivity = memo((props) => {
   const { followup, leadsByID, getLeadByID, updateData } = props;
-
+  const userData = useSelector((state) => state.auth.profile);
   const [openModal, setOpenModal] = useState(false);
   return (
     <>
@@ -41,6 +42,7 @@ export const LeadActivity = memo((props) => {
                 variant="contained"
                 color="success"
                 onClick={() => setOpenModal(true)}
+                disabled={userData.groups.includes("Digital Marketing")}
               >
                 Create Activity
               </Button>
@@ -73,7 +75,7 @@ export const LeadActivity = memo((props) => {
                             <TimelineOppositeContent sx={{ px: 2 }}>
                               <Typography variant="h6">
                                 {moment(data.current_date).format(
-                                  "DD/MM/YYYY h:mm"
+                                  "DD/MM/YYYY h:mm",
                                 )}
                               </Typography>
                             </TimelineOppositeContent>
@@ -91,7 +93,7 @@ export const LeadActivity = memo((props) => {
                                 {data.activity} - {data.user_name} -
                                 {data.next_followup_date &&
                                   moment(data.next_followup_date).format(
-                                    "DD/MM/YYYY"
+                                    "DD/MM/YYYY",
                                   )}
                               </Typography>
                               <Typography

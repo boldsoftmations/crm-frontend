@@ -59,7 +59,7 @@ const ViewLeavAplicaton = ({
       setOpen(true);
       const response = await MasterService.getLeavapproval();
       const filterId = response.data.results.filter(
-        (item) => item.leave === selectedRow.id
+        (item) => item.leave === selectedRow.id,
       );
 
       setApprovalData(filterId);
@@ -217,7 +217,7 @@ const ViewLeavAplicaton = ({
                     <TimelineOppositeContent sx={{ px: 2 }}>
                       <Typography variant="body2" color="text.secondary">
                         {moment(selectedRow.created_at, "YYYY-MM-DD").format(
-                          "DD MMM YYYY"
+                          "DD MMM YYYY",
                         )}
                       </Typography>
                     </TimelineOppositeContent>
@@ -227,8 +227,8 @@ const ViewLeavAplicaton = ({
                           selectedRow.status === "Pending"
                             ? "warning"
                             : selectedRow.status === "Approved"
-                            ? "success"
-                            : "error"
+                              ? "success"
+                              : "error"
                         }
                       >
                         {selectedRow.status === "Pending" ? (
@@ -258,8 +258,8 @@ const ViewLeavAplicaton = ({
                               selectedRow.status === "Pending"
                                 ? "warning"
                                 : selectedRow.status === "Approved"
-                                ? "success"
-                                : "error"
+                                  ? "success"
+                                  : "error"
                             }
                           />
                         </div>
@@ -295,7 +295,7 @@ const ViewLeavAplicaton = ({
                               >
                                 {moment(
                                   Approvdata.reviewed_at,
-                                  "YYYY-MM-DD hh:mm A"
+                                  "YYYY-MM-DD hh:mm A",
                                 ).format("DD MMM YYYY, h:mm A")}
                               </Typography>
                             </TimelineOppositeContent>
@@ -348,7 +348,7 @@ const ViewLeavAplicaton = ({
                                   <Chip
                                     label={Approvdata.reviewed_by_designation.replace(
                                       ",",
-                                      " &"
+                                      " &",
                                     )}
                                     color={
                                       Approvdata.decision === "Approved"

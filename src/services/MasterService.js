@@ -73,13 +73,16 @@ const updateMasterCity = (id, data) => {
   return CustomAxios.patch(`/api/master/city/${id}/`, data);
 };
 
-const getMasterPincode = (page, searchvalue) => {
+const getMasterPincode = (page, searchvalue, is_active = true) => {
   const params = new URLSearchParams();
   if (page) {
     params.append("page", page);
   }
   if (searchvalue) {
     params.append("search", searchvalue);
+  }
+  if (is_active !== null && is_active !== undefined) {
+    params.append("is_active", is_active);
   }
   return CustomAxios.get(`/api/master/pincode/?${params.toString()}`);
 };
@@ -289,6 +292,10 @@ const getAllTransportMaster = (page, is_inactive, search) => {
     `/api/master/transporter-master/?${params.toString()}`,
   );
 };
+const getTransportMasterById = (id) => {
+  return CustomAxios.get(`/api/master/transporter-master/${id}/`);
+};
+
 const createTransportMaster = (data) => {
   return CustomAxios.post("/api/master/transporter-master/", data);
 };
@@ -296,6 +303,49 @@ const createTransportMaster = (data) => {
 const updateTransportMaster = (id, data) => {
   return CustomAxios.patch(`/api/master/transporter-master/${id}/`, data);
 };
+
+// =====================================================================
+// Transporter Branch APIs (V3 handover - Branches & IDs tab, Section 6)
+// =====================================================================
+const getAllTransportBranch = (transporter_id) => {
+  const params = new URLSearchParams();
+  if (transporter_id) {
+    params.append("transporter_id", transporter_id);
+  }
+  return CustomAxios.get(
+    `/api/master/transporter-branch/?${params.toString()}`,
+  );
+};
+
+const createTransportBranch = (data) => {
+  return CustomAxios.post("/api/master/transporter-branch/", data);
+};
+
+const updateTransportBranch = (id, data) => {
+  return CustomAxios.patch(`/api/master/transporter-branch/${id}/`, data);
+};
+
+// =====================================================================
+// Transporter Identifier APIs (GSTIN / TRANSIN / Common Enrolment Number)
+// =====================================================================
+const getAllTransportIdentifier = (transporter_id) => {
+  const params = new URLSearchParams();
+  if (transporter_id) {
+    params.append("transporter_id", transporter_id);
+  }
+  return CustomAxios.get(
+    `/api/master/transporter-identifier/?${params.toString()}`,
+  );
+};
+
+const createTransportIdentifier = (data) => {
+  return CustomAxios.post("/api/master/transporter-identifier/", data);
+};
+
+const updateTransportIdentifier = (id, data) => {
+  return CustomAxios.patch(`/api/master/transporter-identifier/${id}/`, data);
+};
+
 const getTransportMapping = (
   isActive,
   page,
@@ -384,6 +434,119 @@ const getonUniversalType = () => {
   );
 };
 
+const CreateMasterPincode = (data) => {
+  return CustomAxios.post(`/api/master/pincode-alias/`, data);
+};
+const CreateMergePincode = (data) => {
+  return CustomAxios.post(`/api/master/pincode-merge/`, data);
+};
+const getMergePincodeList = (page, search, old_pincode__pincode) => {
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+  if (search) {
+    params.append("search", search);
+  }
+  if (old_pincode__pincode) {
+    params.append("old_pincode__pincode", old_pincode__pincode);
+  }
+
+  return CustomAxios.get(`/api/master/pincode-merge/?${params.toString()}`);
+};
+
+const getPincodeAuditlog = (page, search) => {
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+  if (search) {
+    params.append("search", search);
+  }
+  return CustomAxios.get(`/api/master/geo-audit-logs/?${params.toString()}`);
+};
+
+const getPincodeRefrenceData = (page, search) => {
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+  if (search) {
+    params.append("search", search);
+  }
+  return CustomAxios.get(
+    `/api/master/pincode-reference-logs/?${params.toString()}`,
+  );
+};
+
+const ValidatePincode = (country_id, postal_code) => {
+  const params = new URLSearchParams();
+  if (country_id) {
+    params.append("country_id", country_id);
+  }
+  if (postal_code) {
+    params.append("postal_code", postal_code);
+  }
+  return CustomAxios.get(
+    `/api/master/postal-code-lookup/?${params.toString()}`,
+  );
+};
+
+const getTransporterAuditLog = ({
+  entityType,
+  entityId,
+  action,
+  pageAll = true,
+} = {}) => {
+  const params = new URLSearchParams();
+
+  if (entityType) {
+    params.append("entity_type", entityType);
+  }
+  if (entityId) {
+    params.append("entity_id", entityId);
+  }
+  if (action) {
+    params.append("action", action);
+  }
+  if (pageAll) {
+    params.append("page", "all");
+  }
+
+  return CustomAxios.get(
+    `/api/master/transporter-audit-log/?${params.toString()}`,
+  );
+};
+
+const getTransportRefData = (page, search, status) => {
+  const params = new URLSearchParams();
+  if (page) {
+    params.append("page", page);
+  }
+  if (search) {
+    params.append("search", search);
+  }
+  if (status) {
+    params.append("status", status);
+  }
+  return CustomAxios.get(
+    `/api/master/transporter-mapping-request/?${params.toString()}`,
+  );
+};
+const UpdateMasterRefRequest = (id, data) => {
+  return CustomAxios.patch(
+    `/api/master/transporter-mapping-request/${id}/`,
+    data,
+  );
+};
+
+const resolveTransportRequest = (requestId, data) => {
+  return CustomAxios.post(
+    `/api/master/resolve-transport-request/${requestId}/`,
+    data,
+  );
+};
+
 const MasterService = {
   getLeavapproval,
   updateApprovalStage,
@@ -403,6 +566,7 @@ const MasterService = {
   getMasterCities,
   updateMasterCity,
   getMasterPincode,
+  getMergePincodeList,
   createMasterPincode,
   updateMasterPincode,
   getCountryDataByPincode,
@@ -432,6 +596,13 @@ const MasterService = {
   createTransportMaster,
   updateTransportMaster,
   getAllTransportMaster,
+  getTransportMasterById,
+  getAllTransportBranch,
+  createTransportBranch,
+  updateTransportBranch,
+  getAllTransportIdentifier,
+  createTransportIdentifier,
+  updateTransportIdentifier,
   createTransportMapping,
   updateTransportMapping,
   getTransportContact,
@@ -439,5 +610,14 @@ const MasterService = {
   getAllTransportConstact,
   updateTransportContact,
   getonUniversalType,
+  CreateMasterPincode,
+  CreateMergePincode,
+  getPincodeAuditlog,
+  getPincodeRefrenceData,
+  ValidatePincode,
+  UpdateMasterRefRequest,
+  getTransporterAuditLog,
+  getTransportRefData,
+  resolveTransportRequest,
 };
 export default MasterService;

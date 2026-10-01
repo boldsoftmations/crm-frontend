@@ -11,6 +11,7 @@ import CustomSnackbar from "../../../Components/CustomerSnackbar";
 export const UpdateWareHouseDetails = (props) => {
   const { IDForEdit, getAllCompanyDetailsByID, setOpenPopup, contactData } =
     props;
+  console.log("Data is: ", IDForEdit);
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState([]);
   const data = useSelector((state) => state.auth);
@@ -20,10 +21,17 @@ export const UpdateWareHouseDetails = (props) => {
     open: false,
   });
 
-  const [selectedcontact, setSelectedContact] = useState("");
+  const [selectedContact, setSelectedContact] = useState(null);
+
+  const [isDisabledBtn, setIsDisabledBtn] = useState(false);
+  // const [SelectedContactId, setSelectedContactId] = useState(null);
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setInputValue({ ...inputValue, [name]: value });
+
+    if (name === "pincode") {
+      setIsDisabledBtn(true);
+    }
   };
 
   useEffect(() => {
@@ -37,54 +45,91 @@ export const UpdateWareHouseDetails = (props) => {
   const getWareHouseDataByID = async () => {
     try {
       setOpen(true);
+
       const response = await CustomerServices.getWareHouseDataById(IDForEdit);
-      setInputValue(response.data);
+
+      const warehouse = response.data;
+
+      setInputValue(warehouse);
+
+      // Find current contact and pre-select it
+      if (contactData && contactData.length > 0) {
+        const contact = contactData.find(
+          (item) => item.id === warehouse.contact,
+        );
+
+        if (contact) {
+          setSelectedContact(contact);
+        }
+      }
+
       setOpen(false);
     } catch (err) {
+      console.log(err);
       setOpen(false);
-      console.log("company data by id error", err);
     }
   };
 
   const validatePinCode = async () => {
     try {
-      setOpen(true);
-      const PINCODE = inputValue.pincode;
-      const response = await MasterService.getCountryDataByPincode(
-        "India",
-        PINCODE
-      );
-      if (response.data.length === 0) {
+      const countryId =
+        selectedContact && selectedContact.country_id
+          ? selectedContact.country_id
+          : "";
+
+      if (!countryId) {
         setAlertMsg({
-          message:
-            "This Pin Code does not exist ! First Create the Pin code in the master country",
+          message: "Please select a contact.",
           severity: "warning",
           open: true,
         });
-        setInputValue({
-          ...inputValue,
+        return;
+      }
+
+      setOpen(true);
+
+      const response = await MasterService.ValidatePincode(
+        countryId,
+        inputValue.pincode,
+      );
+
+      if (!response.data) {
+        setAlertMsg({
+          message:
+            "This Pin Code does not exist! First create it in the master.",
+          severity: "warning",
+          open: true,
+        });
+
+        setInputValue((prev) => ({
+          ...prev,
           state: "",
           city: "",
-        });
+        }));
+        // Disable the button if the pin code is invalid
       } else {
         setAlertMsg({
-          message: "Pin code is valid",
+          message: "Pin code is valid.",
           severity: "success",
           open: true,
         });
-        setInputValue({
-          ...inputValue,
-          state: response.data[0].state,
-          city: response.data[0].city_name,
-        });
+
+        setInputValue((prev) => ({
+          ...prev,
+          state: response.data.state_name,
+          city: response.data.city_name,
+        }));
+        setIsDisabledBtn(false);
       }
     } catch (error) {
-      console.log("error", error);
+      console.log(error);
+
       setAlertMsg({
-        message: "Error fetching country data by pincode",
+        message: "Error validating pincode.",
         severity: "error",
         open: true,
       });
+      setIsDisabledBtn(true);
     } finally {
       setOpen(false);
     }
@@ -96,7 +141,7 @@ export const UpdateWareHouseDetails = (props) => {
       setOpen(true);
       const req = {
         company: data ? data.companyName : "",
-        contact: selectedcontact.id ? selectedcontact.id : inputValue.contact,
+        contact: selectedContact ? selectedContact.id : inputValue.contact,
         address: inputValue.address,
         pincode: inputValue.pincode,
         state: inputValue.state || "",
@@ -127,34 +172,34 @@ export const UpdateWareHouseDetails = (props) => {
         onSubmit={(e) => UpdateWareHouseDetails(e)}
       >
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={6}>
-            <CustomTextField
-              fullWidth
-              size="small"
-              name="contact"
-              label="Contact"
-              variant="outlined"
-              value={
-                inputValue.contact_name
-                  ? `${inputValue.contact_name} ${inputValue.contact_number}`
-                  : ""
-              }
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12}>
             <CustomAutocomplete
               fullWidth
               size="small"
               id="grouped-demo"
-              onChange={(event, value) => setSelectedContact(value)}
-              options={contactData.map((option) => option)}
-              groupBy={(option) => option.designation}
-              getOptionLabel={(option) => `${option.name} ${option.contact}`}
+              value={selectedContact}
+              onChange={(event, value) => {
+                setSelectedContact(value);
+                // Need validation again
+                setIsDisabledBtn(true);
+                if (value) {
+                  setInputValue((prev) => ({
+                    ...prev,
+                    contact: value.id,
+                    contact_name: value.name,
+                    contact_number: value.contact,
+                  }));
+                }
+              }}
+              options={contactData || []}
+              groupBy={(option) => option.designation || ""}
+              getOptionLabel={(option) =>
+                option ? `${option.name} ${option.contact}` : ""
+              }
+              isOptionEqualToValue={(option, value) => option.id === value.id}
               label="Update Contact"
             />
           </Grid>
-
           <Grid item xs={12}>
             <CustomTextField
               fullWidth
@@ -177,7 +222,6 @@ export const UpdateWareHouseDetails = (props) => {
               variant="outlined"
               value={inputValue.pincode || ""}
             />
-
             {/* <Button
               onClick={() => validatePinCode()}
               variant="contained"
@@ -191,6 +235,7 @@ export const UpdateWareHouseDetails = (props) => {
               onClick={validatePinCode}
               variant="contained"
               sx={{ marginLeft: "1rem" }}
+              disabled={!inputValue.pincode}
             >
               Validate
             </Button>
@@ -223,6 +268,7 @@ export const UpdateWareHouseDetails = (props) => {
           fullWidth
           variant="contained"
           sx={{ mt: 3, mb: 2 }}
+          disabled={isDisabledBtn}
         >
           Submit
         </Button>

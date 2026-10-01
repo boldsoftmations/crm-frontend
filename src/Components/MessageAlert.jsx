@@ -6,11 +6,21 @@ export const MessageAlert = ({ open, onClose, severity, message }) => {
   return (
     <Snackbar
       open={open}
-      autoHideDuration={8000} // Increased to 8000 milliseconds (8 seconds)
+      autoHideDuration={8000}
       onClose={onClose}
       anchorOrigin={{ vertical: "top", horizontal: "right" }}
     >
-      <Alert onClose={onClose} severity={severity} sx={{ width: "100%" }}>
+      <Alert
+        onClose={onClose}
+        severity={severity}
+        sx={{
+          width: "100%",
+          maxWidth: 600,
+          whiteSpace: "pre-line",
+          wordBreak: "break-word",
+          alignItems: "flex-start",
+        }}
+      >
         {message}
       </Alert>
     </Snackbar>

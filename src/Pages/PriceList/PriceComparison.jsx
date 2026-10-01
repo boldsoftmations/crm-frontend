@@ -10,7 +10,9 @@ import ProductService from "../../services/ProductService";
 
 export const PriceComparison = () => {
   const [open, setOpen] = useState(false);
+
   const [PriceComparisionData, setpriceComparisionData] = useState([]);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [exportData, setExportData] = useState([]);
   const csvLinkRef = useRef(null);
@@ -191,6 +193,17 @@ export const PriceComparison = () => {
                     }}
                   />
                 )}
+                {/* {(userData.groups.includes("Accounts") ||
+                userData.groups.includes("Director") ||
+                userData.groups.includes("Production")) && (
+                <Button
+                  onClick={() => setOpenPopup(true)}
+                  variant="contained"
+                  color="success"
+                >
+                  Add
+                </Button>
+              )} */}
               </Box>
             </Grid>
           </Grid>
@@ -202,6 +215,7 @@ export const PriceComparison = () => {
           openInPopup={null}
           openInPopup2={null}
         />
+        \
       </Paper>
     </>
   );

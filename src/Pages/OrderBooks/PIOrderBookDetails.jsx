@@ -26,10 +26,20 @@ import {
 import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../Components/MessageAlert";
+import {
+  getTransportMethodLabel,
+  getTransporterDisplayName,
+} from "../../utility/transportDisplay";
+import {
+  getOrderBookTransportMode,
+  getOrderBookTransporterName,
+  useOrderBookTransportDetails,
+} from "../../utility/useOrderBookTransportDetails";
 import SearchComponent from "../../Components/SearchComponent ";
 
 export const PIOrderBookDetails = () => {
   const [orderBookData, setOrderBookData] = useState([]);
+  const transportByPi = useOrderBookTransportDetails(orderBookData);
   const [open, setOpen] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [openModal2, setOpenModal2] = useState(false);
@@ -242,6 +252,8 @@ export const PIOrderBookDetails = () => {
     "Sales Person",
     "Billing City",
     "Shipping City",
+    "Transport Method",
+    "Transporter",
     "Product",
     "Rate",
     "Quantity",
@@ -536,7 +548,7 @@ export const PIOrderBookDetails = () => {
             }}
           >
             <Table
-              sx={{ minWidth: 1200 }}
+              sx={{ minWidth: 1450 }}
               stickyHeader
               aria-label="sticky table"
             >
@@ -574,6 +586,17 @@ export const PIOrderBookDetails = () => {
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.shipping_city}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {getTransportMethodLabel(
+                        getOrderBookTransportMode(row, transportByPi),
+                      )}
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      {getTransporterDisplayName(
+                        getOrderBookTransportMode(row, transportByPi),
+                        getOrderBookTransporterName(row, transportByPi),
+                      )}
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.product}

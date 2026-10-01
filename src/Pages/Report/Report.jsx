@@ -24,6 +24,7 @@ import { useSelector } from "react-redux";
 import { PotentialTurnover } from "./Potential Turnover/PotentialTurnover";
 import EmployeeReport from "./employeReport/EmployeeReport";
 import CustomDateFilterPopup from "../../Components/CustomDateFilterPopup";
+import AuditRportView from "./AuditReport/AuditRportView";
 
 export function Report() {
   const [open, setOpen] = useState(false);
@@ -138,6 +139,9 @@ export function Report() {
     ...(hasSpecialAccess ? [{ label: "Profit Report" }] : []), // Daily Profitability Report
     ...(SpecialAccess ? [{ label: "Potential Turnover" }] : []),
     ...(onlyDirestorAccess ? [{ label: "Lead Summary" }] : []), // Potential Turnover
+    {
+      label:"Audit"
+    }
   ];
 
   useEffect(() => {
@@ -371,6 +375,12 @@ export function Report() {
           {activeTab === 9 && (
             <div>
               <EmployeeReport />
+            </div>
+          )}
+
+            {activeTab === 10 && (
+            <div>
+              <AuditRportView />
             </div>
           )}
         </div>

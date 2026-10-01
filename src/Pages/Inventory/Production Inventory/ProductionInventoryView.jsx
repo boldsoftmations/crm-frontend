@@ -53,12 +53,11 @@ export const ProductionInventoryView = () => {
       if (searchQuery) {
         response = await InventoryServices.getProductionInventoryPaginateData(
           "all",
-          searchQuery
+          searchQuery,
         );
       } else {
-        response = await InventoryServices.getProductionInventoryPaginateData(
-          "all"
-        );
+        response =
+          await InventoryServices.getProductionInventoryPaginateData("all");
       }
       const data = response.data.map((row) => {
         return {
@@ -101,7 +100,7 @@ export const ProductionInventoryView = () => {
       setOpen(true);
       const response = await InventoryServices.getProductionInventoryData(
         page,
-        query
+        query,
       );
       setProductionInventoryData(response.data.results);
       setTotalPages(Math.ceil(response.data.count / 25));
@@ -209,6 +208,7 @@ export const ProductionInventoryView = () => {
             data={Tabledata}
             openInPopup={null}
             openInPopup2={null}
+            Isviewable={false}
             Styles={{ paddingLeft: "10px", paddingRight: "10px" }}
           />
 

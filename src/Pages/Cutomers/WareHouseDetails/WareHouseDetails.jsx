@@ -196,7 +196,6 @@ export const WareHouseDetails = ({ recordForEdit }) => {
                       <StyledTableCell align="center">
                         {row.contact_number}
                       </StyledTableCell>
-
                       <StyledTableCell align="center">
                         {row.state}
                       </StyledTableCell>

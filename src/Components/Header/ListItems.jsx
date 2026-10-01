@@ -170,6 +170,11 @@ export const ListItems = ({ setOpen }) => {
           { to: "/market-analysis/competitor", text: "Market Analysis" },
         ]),
         renderListItem("/customer/srf", <StickyNote2Icon />, "SRF"),
+        renderListItem(
+          "/Trasnport-Finder",
+          <StickyNote2Icon />,
+          "Trasnport Finder",
+        ),
         renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
 
         renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
@@ -297,10 +302,6 @@ export const ListItems = ({ setOpen }) => {
           },
           { to: "/user/profile-tab", text: "Employees Master" },
         ]),
-        renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
-        renderSubmenu("production", <FactoryIcon />, "Production", [
-          { to: "/inventory/view-production", text: "Production" },
-        ]),
         renderSubmenu(
           "customer_complaint",
           <ComplaintIcon />,
@@ -354,7 +355,7 @@ export const ListItems = ({ setOpen }) => {
             text: "CCF Complaint Master",
           },
           { to: "/user/profile-tab", text: "Employees Master" },
-          // { to: "/master/transport", text: "Transport Master" },
+          { to: "/master/transport", text: "Transport Master" },
         ]),
         renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
           { to: "/invoice/performa-invoice-tab", text: "Performa Invoice" },
@@ -390,7 +391,7 @@ export const ListItems = ({ setOpen }) => {
       items: [
         renderSubmenu("master", <BusinessIcon />, "Master", [
           { to: "/user/profile-tab", text: "Employees Master" },
-          // { to: "/master/transport", text: "Transport Master" },
+          { to: "/master/transport", text: "Transport Master" },
         ]),
         renderListItem("/customer/srf", <StickyNote2Icon />, "SRF"),
         renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
@@ -619,7 +620,7 @@ export const ListItems = ({ setOpen }) => {
             to: "/master/beat",
             text: "Beat Master",
           },
-          // { to: "/master/transport", text: "Transport Master" },
+          { to: "/master/transport", text: "Transport Master" },
         ]),
         renderListItem(
           "/master/customer-visit",
@@ -711,6 +712,7 @@ export const ListItems = ({ setOpen }) => {
     {
       condition: isInGroups("Business Development Executive"),
       items: [
+        // renderListItem("/user/report", <AssessmentIcon />, "Report"),
         renderListItem("/user/analytics", <DashboardIcon />, "Analytics"),
         renderSubmenu("master", <BusinessIcon />, "Master", [
           { to: "/user/profile-tab", text: "Employees Master" },
@@ -764,6 +766,7 @@ export const ListItems = ({ setOpen }) => {
         renderSubmenu("master", <BusinessIcon />, "Master", [
           { to: "/user/profile-tab", text: "Employees Master" },
         ]),
+
         renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
           { to: "/invoice/performa-invoice-tab", text: "Performa Invoice" },
         ]),
@@ -869,7 +872,7 @@ export const ListItems = ({ setOpen }) => {
           { to: "/products/all-product", text: "Inventory Master" },
           { to: "/invoice/seller-account", text: "Company Master" },
           { to: "/user/profile-tab", text: "Employees Master" },
-          // { to: "/master/transport", text: "Transport Master" },
+          { to: "/master/transport", text: "Transport Master" },
         ]),
         renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
           { to: "/invoice/performa-invoice-tab", text: "Performa Invoice" },
@@ -914,6 +917,11 @@ export const ListItems = ({ setOpen }) => {
         renderListItem("/user/analytics", <DashboardIcon />, "Analytics"),
         renderSubmenu("master", <BusinessIcon />, "Master", [
           { to: "/user/profile-tab", text: "Employees Master" },
+          {
+            to: "/county-state-city/master-tab",
+            text: "Country Master",
+          },
+          { to: "/master/transport", text: "Transport Master" },
         ]),
         renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
           { to: "/invoice/performa-invoice-tab", text: "Performa Invoice" },
@@ -931,6 +939,7 @@ export const ListItems = ({ setOpen }) => {
           "Customer Complaint",
           [{ to: "/customer/complaints/ccp-capa", text: "CCF-CAPA" }],
         ),
+        // renderListItem("/user/faq", <HelpOutlineIcon />, "Script"),
         renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
         renderListItem("/dispatch/tab-view", <LocalShippingIcon />, "Dispatch"),
         renderListItem("/task/view-task", <AssignmentTurnedInIcon />, "Task"),

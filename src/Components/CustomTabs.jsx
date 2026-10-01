@@ -16,7 +16,7 @@ const CustomTabsContainer = styled("div")({
   boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
   cursor: `pointer`,
   "&::-webkit-scrollbar": {
-    height: "10px",
+    height: "8px",
   },
   "&::-webkit-scrollbar-track": {
     boxShadow: "inset 0 0 5px grey",

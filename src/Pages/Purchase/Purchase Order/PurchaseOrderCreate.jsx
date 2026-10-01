@@ -1,5 +1,5 @@
 import { Box, Button, Chip, Divider, Grid } from "@mui/material";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomTextField from "../../../Components/CustomTextField";
 import InventoryServices from "../../../services/InventoryService";
@@ -60,6 +60,8 @@ export const PurchaseOrderCreate = ({
   const [loading, setLoading] = useState(false);
   const [productOption, setProductOption] = useState([]);
   const [currencyOption, setCurrencyOption] = useState([]);
+
+  const debounceTimer = useRef(null);
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
@@ -192,7 +194,7 @@ export const PurchaseOrderCreate = ({
   }, [recordForEdit]);
 
   useEffect(() => {
-    getProduct();
+    // getProduct();
     getCurrencyDetails();
   }, [recordForEdit]);
 
@@ -226,10 +228,10 @@ export const PurchaseOrderCreate = ({
     }
   };
 
-  const getProduct = async () => {
+  const getProduct = async (searchText) => {
     try {
       setLoading(true);
-      const res = await ProductService.getAllProduct();
+      const res = await ProductService.getAllProduct(searchText);
       setProductOption(res.data);
       setLoading(false);
     } catch (err) {
@@ -238,6 +240,15 @@ export const PurchaseOrderCreate = ({
       setLoading(false);
     }
   };
+
+  const debouncedGetProduct = useCallback((searchText) => {
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
+    debounceTimer.current = setTimeout(() => {
+      getProduct(searchText);
+    }, 400); // 400ms delay, tune as needed
+  }, []);
   const openAlertPopup = (e) => {
     e.preventDefault();
     setOpenAlert(true);
@@ -456,6 +467,8 @@ export const PurchaseOrderCreate = ({
                     onChange={(event, value) =>
                       handleProductAutocompleteChange(index, value)
                     }
+                    onInputChange={handleInputChange}
+                    loading={loading}
                     options={productOption.map((option) => option.name)}
                     getOptionLabel={(option) => option}
                     sx={{ minWidth: 300 }}
