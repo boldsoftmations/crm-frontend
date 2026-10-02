@@ -43,8 +43,7 @@ export const ListItems = ({ setOpen }) => {
     userData && Array.isArray(userData.groups) ? userData.groups : [];
 
   // Function to check if the user is in a specific group
-  const isInGroups = (...groups) =>
-    groups.some((g) => userGroups.includes(g));
+  const isInGroups = (...groups) => groups.some((g) => userGroups.includes(g));
 
   const canViewPinMasterAccess = canViewPinMaster(userData);
   const canViewTransportMasterAccess = canViewTransporterMaster(userData);
@@ -166,9 +165,9 @@ export const ListItems = ({ setOpen }) => {
           { to: "/inventory/view-purchase", text: "Purchase" },
         ]),
         // renderListItem(
-        //   "/Trasnport-Finder",
+        //   "/Transport-Finder",
         //   <StickyNote2Icon />,
-        //   "Trasnport Finder",
+        //   "Transport Finder",
         // ),
         renderSubmenu("inventory", <InventoryIcon />, "Inventory", [
           { to: "/inventory/view-inventory", text: "Inventory" },
@@ -193,9 +192,9 @@ export const ListItems = ({ setOpen }) => {
         renderListItem("/customer/srf", <StickyNote2Icon />, "SRF"),
         canUseTransportFinderAccess
           ? renderListItem(
-              "/Trasnport-Finder",
+              "/Transport-Finder",
               <StickyNote2Icon />,
-              "Trasnport Finder",
+              "Transport Finder",
             )
           : null,
         renderListItem("/invoice/orderbook-tab", <ReceiptIcon />, "Order Book"),
@@ -376,9 +375,9 @@ export const ListItems = ({ setOpen }) => {
         ]),
         canUseTransportFinderAccess
           ? renderListItem(
-              "/Trasnport-Finder",
+              "/Transport-Finder",
               <StickyNote2Icon />,
-              "Trasnport Finder",
+              "Transport Finder",
             )
           : null,
         renderListItem("/dispatch/tab-view", <LocalShippingIcon />, "Dispatch"),
@@ -410,9 +409,9 @@ export const ListItems = ({ setOpen }) => {
         ]),
         canUseTransportFinderAccess
           ? renderListItem(
-              "/Trasnport-Finder",
+              "/Transport-Finder",
               <StickyNote2Icon />,
-              "Trasnport Finder",
+              "Transport Finder",
             )
           : null,
         renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
@@ -455,9 +454,9 @@ export const ListItems = ({ setOpen }) => {
         ]),
         canUseTransportFinderAccess
           ? renderListItem(
-              "/Trasnport-Finder",
+              "/Transport-Finder",
               <StickyNote2Icon />,
-              "Trasnport Finder",
+              "Transport Finder",
             )
           : null,
         renderListItem("/customer/srf", <StickyNote2Icon />, "SRF"),
@@ -553,9 +552,9 @@ export const ListItems = ({ setOpen }) => {
         ]),
         canUseTransportFinderAccess
           ? renderListItem(
-              "/Trasnport-Finder",
+              "/Transport-Finder",
               <StickyNote2Icon />,
-              "Trasnport Finder",
+              "Transport Finder",
             )
           : null,
         renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
@@ -617,9 +616,9 @@ export const ListItems = ({ setOpen }) => {
         ]),
         canUseTransportFinderAccess
           ? renderListItem(
-              "/Trasnport-Finder",
+              "/Transport-Finder",
               <StickyNote2Icon />,
-              "Trasnport Finder",
+              "Transport Finder",
             )
           : null,
         renderSubmenu("accounts", <AttachMoneyIcon />, "Accounts", [
@@ -663,9 +662,9 @@ export const ListItems = ({ setOpen }) => {
         ]),
         canUseTransportFinderAccess
           ? renderListItem(
-              "/Trasnport-Finder",
+              "/Transport-Finder",
               <StickyNote2Icon />,
-              "Trasnport Finder",
+              "Transport Finder",
             )
           : null,
 
@@ -735,9 +734,9 @@ export const ListItems = ({ setOpen }) => {
         ]),
         canUseTransportFinderAccess
           ? renderListItem(
-              "/Trasnport-Finder",
+              "/Transport-Finder",
               <StickyNote2Icon />,
-              "Trasnport Finder",
+              "Transport Finder",
             )
           : null,
         renderListItem(
@@ -802,9 +801,9 @@ export const ListItems = ({ setOpen }) => {
         ]),
         canUseTransportFinderAccess
           ? renderListItem(
-              "/Trasnport-Finder",
+              "/Transport-Finder",
               <StickyNote2Icon />,
-              "Trasnport Finder",
+              "Transport Finder",
             )
           : null,
         renderListItem(
@@ -848,9 +847,9 @@ export const ListItems = ({ setOpen }) => {
         ]),
         canUseTransportFinderAccess
           ? renderListItem(
-              "/Trasnport-Finder",
+              "/Transport-Finder",
               <StickyNote2Icon />,
-              "Trasnport Finder",
+              "Transport Finder",
             )
           : null,
         renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
@@ -888,9 +887,9 @@ export const ListItems = ({ setOpen }) => {
         ]),
         canUseTransportFinderAccess
           ? renderListItem(
-              "/Trasnport-Finder",
+              "/Transport-Finder",
               <StickyNote2Icon />,
-              "Trasnport Finder",
+              "Transport Finder",
             )
           : null,
 
@@ -920,9 +919,9 @@ export const ListItems = ({ setOpen }) => {
         ]),
         canUseTransportFinderAccess
           ? renderListItem(
-              "/Trasnport-Finder",
+              "/Transport-Finder",
               <StickyNote2Icon />,
-              "Trasnport Finder",
+              "Transport Finder",
             )
           : null,
 
@@ -975,9 +974,9 @@ export const ListItems = ({ setOpen }) => {
         ]),
         canUseTransportFinderAccess
           ? renderListItem(
-              "/Trasnport-Finder",
+              "/Transport-Finder",
               <StickyNote2Icon />,
-              "Trasnport Finder",
+              "Transport Finder",
             )
           : null,
         renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
@@ -1015,9 +1014,9 @@ export const ListItems = ({ setOpen }) => {
         ]),
         canUseTransportFinderAccess
           ? renderListItem(
-              "/Trasnport-Finder",
+              "/Transport-Finder",
               <StickyNote2Icon />,
-              "Trasnport Finder",
+              "Transport Finder",
             )
           : null,
         renderSubmenu("sales", <TrendingUpIcon />, "Sales", [
@@ -1044,9 +1043,9 @@ export const ListItems = ({ setOpen }) => {
         ]),
         canUseTransportFinderAccess
           ? renderListItem(
-              "/Trasnport-Finder",
+              "/Transport-Finder",
               <StickyNote2Icon />,
-              "Trasnport Finder",
+              "Transport Finder",
             )
           : null,
       ],
@@ -1067,9 +1066,9 @@ export const ListItems = ({ setOpen }) => {
         ]),
         canUseTransportFinderAccess
           ? renderListItem(
-              "/Trasnport-Finder",
+              "/Transport-Finder",
               <StickyNote2Icon />,
-              "Trasnport Finder",
+              "Transport Finder",
             )
           : null,
         renderSubmenu("invoice", <InsertDriveFileIcon />, "Invoice", [
@@ -1140,9 +1139,9 @@ export const ListItems = ({ setOpen }) => {
         ),
         canUseTransportFinderAccess
           ? renderListItem(
-              "/Trasnport-Finder",
+              "/Transport-Finder",
               <StickyNote2Icon />,
-              "Trasnport Finder",
+              "Transport Finder",
             )
           : null,
         // renderListItem("/user/faq", <HelpOutlineIcon />, "Script"),
