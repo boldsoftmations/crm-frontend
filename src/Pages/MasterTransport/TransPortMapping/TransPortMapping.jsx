@@ -21,6 +21,7 @@ import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import MasterService from "../../../services/MasterService";
 import TransportMappingUpdate from "./TransportMappingUpdate";
 import TransportMappingCreate from "./TransportMappingCreate";
+import { canEditTransporterMappings } from "../../../utility/masterAccess";
 import InvoiceServices from "../../../services/InvoiceService";
 
 const TransPortMapping = ({ lockedTransporter }) => {
@@ -67,12 +68,7 @@ const TransPortMapping = ({ lockedTransporter }) => {
 
   const userData = useSelector((state) => state.auth.profile);
 
-  const isInGroups = (...groups) => {
-    if (!userData || !userData.groups || !Array.isArray(userData.groups)) {
-      return false;
-    }
-    return groups.some((group) => userData.groups.includes(group));
-  };
+  const canEditMappings = canEditTransporterMappings(userData);
 
   const tableHeader = [
     "ID",
@@ -294,12 +290,11 @@ const TransPortMapping = ({ lockedTransporter }) => {
                 minWidth: "300px",
               }}
             >
-              {userData.groups.includes("Director") && (
+              {canEditMappings && (
                 <Button
                   variant="contained"
                   color="success"
                   onClick={() => setOpenCreatePopup(true)}
-                  disabled={isInGroups("Stores")}
                 >
                   Add
                 </Button>
@@ -416,6 +411,7 @@ const TransPortMapping = ({ lockedTransporter }) => {
             headers={tableHeader}
             data={tableData}
             openInPopup={openInPopup}
+            Isviewable={canEditMappings}
           />
 
           <CustomPagination

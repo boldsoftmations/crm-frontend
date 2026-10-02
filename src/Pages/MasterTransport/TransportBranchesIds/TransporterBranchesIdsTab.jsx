@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import {
   Box,
   Button,
@@ -21,6 +22,7 @@ import TransportBranchCreate from "./TransportBranchCreate";
 import TransportBranchUpdate from "./TransportBranchUpdate";
 import TransportIdentifierCreate from "./TransportIdentifierCreate";
 import TransportIdentifierUpdate from "./TransportIdentifierUpdate";
+import { canEditTransporterBranches } from "../../../utility/masterAccess";
 
 // V3 handover, Section 6: branches and identifiers are shown together for
 // usability but are separate backend child tables. An identifier can apply
@@ -31,6 +33,8 @@ import TransportIdentifierUpdate from "./TransportIdentifierUpdate";
 // 1:1 branch->identifier relationship.
 
 const TransporterBranchesIdsTab = ({ transporter, onDataChanged }) => {
+  const userData = useSelector((state) => state.auth.profile);
+  const canEdit = canEditTransporterBranches(userData);
   const [branches, setBranches] = useState([]);
   const [identifiers, setIdentifiers] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -180,18 +184,20 @@ const TransporterBranchesIdsTab = ({ transporter, onDataChanged }) => {
         message={alertInfo.message}
       />
 
-      <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
-        <Button variant="contained" onClick={() => setOpenBranchCreate(true)}>
-          + Add Branch
-        </Button>
-        <Button
-          variant="outlined"
-          onClick={() => setOpenIdentifierCreate(true)}
-          disabled={branches.length === 0}
-        >
-          + Add Statutory Details
-        </Button>
-      </Stack>
+      {canEdit ? (
+        <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
+          <Button variant="contained" onClick={() => setOpenBranchCreate(true)}>
+            + Add Branch
+          </Button>
+          <Button
+            variant="outlined"
+            onClick={() => setOpenIdentifierCreate(true)}
+            disabled={branches.length === 0}
+          >
+            + Add Statutory Details
+          </Button>
+        </Stack>
+      ) : null}
       {branches.length === 0 && (
         <Typography variant="caption" sx={{ color: "#999" }}>
           Add at least one branch before adding statutory details.
@@ -309,15 +315,17 @@ const TransporterBranchesIdsTab = ({ transporter, onDataChanged }) => {
                       </Stack>
                     </Box>
 
-                    <Button
-                      size="small"
-                      variant="outlined"
-                      startIcon={<EditIcon />}
-                      onClick={() => openIdentifierEdit(identifier)}
-                      sx={{ whiteSpace: "nowrap" }}
-                    >
-                      Update / Manage Branches
-                    </Button>
+                    {canEdit ? (
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        startIcon={<EditIcon />}
+                        onClick={() => openIdentifierEdit(identifier)}
+                        sx={{ whiteSpace: "nowrap" }}
+                      >
+                        Update / Manage Branches
+                      </Button>
+                    ) : null}
                   </Stack>
                 </Box>
               );
@@ -358,9 +366,11 @@ const TransporterBranchesIdsTab = ({ transporter, onDataChanged }) => {
                       City: {branch.city} | Pincode: {branch.pincode}
                     </Typography>
                   </Box>
-                  <IconButton size="small" onClick={() => openBranchEdit(branch)}>
-                    <EditIcon fontSize="small" />
-                  </IconButton>
+                  {canEdit ? (
+                    <IconButton size="small" onClick={() => openBranchEdit(branch)}>
+                      <EditIcon fontSize="small" />
+                    </IconButton>
+                  ) : null}
                 </Stack>
 
                 <Box sx={{ mt: 1.5 }}>
@@ -389,15 +399,17 @@ const TransporterBranchesIdsTab = ({ transporter, onDataChanged }) => {
                           {identifier.is_primary ? " (Primary)" : ""}
                           {!identifier.is_active ? " (Inactive)" : ""}
                         </Typography>
-                        <Button
-                          size="small"
-                          variant="text"
-                          startIcon={<EditIcon sx={{ fontSize: 14 }} />}
-                          onClick={() => openIdentifierEdit(identifier)}
-                          sx={{ minWidth: "auto", textTransform: "none" }}
-                        >
-                          Manage Branches
-                        </Button>
+                        {canEdit ? (
+                          <Button
+                            size="small"
+                            variant="text"
+                            startIcon={<EditIcon sx={{ fontSize: 14 }} />}
+                            onClick={() => openIdentifierEdit(identifier)}
+                            sx={{ minWidth: "auto", textTransform: "none" }}
+                          >
+                            Manage Branches
+                          </Button>
+                        ) : null}
                       </Stack>
                     ))
                   )}

@@ -23,6 +23,7 @@ import MasterService from "../../../services/MasterService";
 import { Popup } from "../../../Components/Popup";
 import UpdateTransportRef from "./UpdateTransportRef";
 import ResolveTransportRequest from "./ResolveTransportRequest";
+import { canManageTransportAssignmentRequests } from "../../../utility/masterAccess";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -110,27 +111,7 @@ const ViewTransportRef = () => {
   const [openResolvePopup, setOpenResolvePopup] = useState(false);
   const [resolveRecord, setResolveRecord] = useState(null);
 
-  const userGroups =
-    userData && userData.groups && Array.isArray(userData.groups)
-      ? userData.groups
-      : [];
-
-  // Matches backend write access + the operational roles called out in the
-  // Geo/Transporter handover. Sales can view the queue but cannot resolve it.
-  const manageRequestRoles = [
-    "Director",
-    "Admin",
-    "Dispatch",
-    "Factory-Mumbai-Dispatch",
-    "Factory-Delhi-Dispatch",
-    "Operations & Supply Chain Manager",
-    "Customer Service",
-    "Customer Relationship Manager",
-  ];
-
-  const canManageRequest = manageRequestRoles.some((role) =>
-    userGroups.includes(role),
-  );
+  const canManageRequest = canManageTransportAssignmentRequests(userData);
 
   const getTransportRefData = useCallback(async () => {
     try {

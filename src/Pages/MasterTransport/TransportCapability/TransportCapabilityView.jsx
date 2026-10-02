@@ -25,6 +25,7 @@ import { Popup } from "../../../Components/Popup";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { MessageAlert } from "../../../Components/MessageAlert";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
+import { canEditTransporterCapability } from "../../../utility/masterAccess";
 
 const MODE_OPTIONS = [
   { value: "SURFACE", label: "Surface / Road" },
@@ -32,14 +33,6 @@ const MODE_OPTIONS = [
   { value: "LOCAL_AGGREGATOR", label: "Local / Aggregator" },
 ];
 
-const EDIT_ROLES = [
-  "Director",
-  "Admin",
-  "Dispatch",
-  "Operations & Supply Chain Manager",
-  "Factory-Mumbai-Dispatch",
-  "Factory-Delhi-Dispatch",
-];
 
 const getStrategyForMode = (mode) => {
   if (mode === "SURFACE") {
@@ -335,14 +328,7 @@ const TransportCapabilityView = ({ transporter }) => {
   const { handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
-  const canEdit = useMemo(() => {
-    const groups =
-      userData && userData.groups && Array.isArray(userData.groups)
-        ? userData.groups
-        : [];
-
-    return EDIT_ROLES.some((role) => groups.includes(role));
-  }, [userData]);
+  const canEdit = canEditTransporterCapability(userData);
 
   const getCapabilityData = useCallback(async () => {
     if (!transporter || !transporter.id) {

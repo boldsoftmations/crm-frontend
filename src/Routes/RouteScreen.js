@@ -53,6 +53,11 @@ import { PurchaseAllTabView } from "../Pages/Purchase/PurchaseAllTabView";
 import { ViewPackagingMaster } from "../Pages/MasterPackaging/ViewPackagingMaster";
 import { AllTransportMasterTabView } from "../Pages/MasterTransport/AllTransportMasterTabView";
 import TransporterFinder from "../Pages/MasterTransport/TransporterFinder";
+import {
+  canUseTransporterFinder,
+  canViewPinMaster,
+  canViewTransporterMaster,
+} from "../utility/masterAccess";
 // import PurchaseReturnAllTabView from "../Pages/ReturnOrders/PurchaseReturn/PurchaseReturnAllTabView";
 
 const PrivateRoute = ({ children, redirectTo = "/" }) => {
@@ -64,6 +69,8 @@ const PrivateRoute = ({ children, redirectTo = "/" }) => {
 export const RouteScreen = () => {
   const tokenData = useSelector((state) => state.auth);
   const token = tokenData.user;
+  const profile = tokenData.profile;
+  const profileReady = profile && Array.isArray(profile.groups);
 
   return (
     <Routes>
@@ -372,7 +379,11 @@ export const RouteScreen = () => {
             path="/county-state-city/master-tab"
             element={
               <PrivateRoute>
-                <AllTabView />
+                {!profileReady ? null : canViewPinMaster(profile) ? (
+                  <AllTabView />
+                ) : (
+                  <Navigate to="/user/analytics" replace />
+                )}
               </PrivateRoute>
             }
           />
@@ -415,7 +426,11 @@ export const RouteScreen = () => {
             path="/Trasnport-Finder"
             element={
               <PrivateRoute>
-                <TransporterFinder />
+                {!profileReady ? null : canUseTransporterFinder(profile) ? (
+                  <TransporterFinder />
+                ) : (
+                  <Navigate to="/user/analytics" replace />
+                )}
               </PrivateRoute>
             }
           />
@@ -457,7 +472,11 @@ export const RouteScreen = () => {
             path="/master/transport"
             element={
               <PrivateRoute>
-                <AllTransportMasterTabView />
+                {!profileReady ? null : canViewTransporterMaster(profile) ? (
+                  <AllTransportMasterTabView />
+                ) : (
+                  <Navigate to="/user/analytics" replace />
+                )}
               </PrivateRoute>
             }
           />

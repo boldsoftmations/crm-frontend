@@ -15,6 +15,7 @@ import { MessageAlert } from "../../../Components/MessageAlert";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import { useSelector } from "react-redux";
+import { canEditTransporterMappings } from "../../../utility/masterAccess";
 
 const TransportMappingUpdate = ({
   recordForEdit,
@@ -29,6 +30,7 @@ const TransportMappingUpdate = ({
     is_inactive: false,
   });
   const userData = useSelector((state) => state.auth.profile);
+  const canEditMappings = canEditTransporterMappings(userData);
   const [loading, setLoading] = useState(false);
 
   const [unitOptions, setUnitOptions] = useState([]);
@@ -184,6 +186,10 @@ const TransportMappingUpdate = ({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!canEditMappings) {
+      return;
+    }
 
     if (!recordForEdit || !recordForEdit.id) {
       handleError("No record selected for update.");
@@ -347,7 +353,7 @@ const TransportMappingUpdate = ({
         <Box
           sx={{ display: "flex", justifyContent: "flex-end", gap: 1, mt: 3 }}
         >
-          {userData.groups.includes("Director") && (
+          {canEditMappings && (
             <Button
               type="submit"
               variant="contained"

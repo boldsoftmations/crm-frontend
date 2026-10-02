@@ -14,6 +14,11 @@ import { useNotificationHandling } from "../../../Components/useNotificationHand
 import { MessageAlert } from "../../../Components/MessageAlert";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { useSelector } from "react-redux";
+import {
+  canDeactivateTransporter,
+  canEditTransporterCapability,
+  canEditTransporterCore,
+} from "../../../utility/masterAccess";
 
 const TRANSPORTER_TYPE_CHOICES = [
   "Surface Transport",
@@ -33,6 +38,9 @@ function MasterTransportUpdate({
   });
   const [loading, setLoading] = useState(false);
   const userData = useSelector((state) => state.auth.profile);
+  const canEditCore = canEditTransporterCore(userData);
+  const canEditType = canEditTransporterCapability(userData);
+  const canDeactivate = canDeactivateTransporter(userData);
 
   const { handleError, handleCloseSnackbar, alertInfo, handleSuccess } =
     useNotificationHandling();
@@ -59,6 +67,10 @@ function MasterTransportUpdate({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!canEditCore) {
+      return;
+    }
     console.log("Data is :", recordForEdit);
 
     if (!recordForEdit || !recordForEdit.id) return;
@@ -67,7 +79,19 @@ function MasterTransportUpdate({
     try {
       setLoading(true);
 
-      await MasterService.updateTransportMaster(recordForEdit.id, formData);
+      const payload = {
+        transporter_name: formData.transporter_name,
+      };
+
+      if (canEditType) {
+        payload.transporter_type = formData.transporter_type;
+      }
+
+      if (canDeactivate) {
+        payload.is_inactive = formData.is_inactive;
+      }
+
+      await MasterService.updateTransportMaster(recordForEdit.id, payload);
       console.log("Clisked");
 
       handleSuccess("Transport updated successfully");
@@ -120,6 +144,7 @@ function MasterTransportUpdate({
               value={formData.transporter_type}
               onChange={handleChange}
               size="small"
+              disabled={!canEditType}
             >
               {TRANSPORTER_TYPE_CHOICES.map((type) => (
                 <MenuItem key={type} value={type}>
@@ -138,6 +163,7 @@ function MasterTransportUpdate({
                   onChange={handleToggle}
                   name="is_inactive"
                   color="error"
+                  disabled={!canDeactivate}
                 />
               }
               label={formData.is_inactive ? "Inactive" : "Active"}
@@ -154,7 +180,7 @@ function MasterTransportUpdate({
             mt: 3,
           }}
         >
-          {userData.groups.includes("Director") && (
+          {canEditCore && (
             <Button
               type="submit"
               variant="contained"

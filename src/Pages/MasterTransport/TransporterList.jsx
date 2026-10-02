@@ -20,6 +20,10 @@ import { MessageAlert } from "../../Components/MessageAlert";
 import MasterService from "../../services/MasterService";
 import MasterTransportCreate from "./TransportMaster/MasterTransportCreate";
 import MasterTransportUpdate from "./TransportMaster/MasterTransportUpdate";
+import {
+  canCreateTransporter,
+  canEditTransporterCore,
+} from "../../utility/masterAccess";
 
 // GAP FIX (1/3): real "search a transporter, then open it" screen. Replaces
 // the temporary numeric-id text box that used to live inside
@@ -49,12 +53,8 @@ export const TransporterList = ({ onOpenTransporter }) => {
 
   const userData = useSelector((state) => state.auth.profile);
 
-  const isInGroups = (...groups) => {
-    if (!userData || !userData.groups || !Array.isArray(userData.groups)) {
-      return false;
-    }
-    return groups.some((group) => userData.groups.includes(group));
-  };
+  const canCreate = canCreateTransporter(userData);
+  const canEditCore = canEditTransporterCore(userData);
 
   const tableHeader = [
     "ID",
@@ -187,12 +187,11 @@ export const TransporterList = ({ onOpenTransporter }) => {
                 minWidth: "300px",
               }}
             >
-              {userData.groups.includes("Director") && (
+              {canCreate && (
                 <Button
                   variant="contained"
                   color="success"
                   onClick={() => setOpenCreatePopup(true)}
-                  disabled={isInGroups("Operations & Supply Chain Manager")}
                 >
                   + Add Transporter
                 </Button>
@@ -224,6 +223,7 @@ export const TransporterList = ({ onOpenTransporter }) => {
             openInPopup={openUpdateForRow}
             openInPopup2={openWorkspaceForRow}
             ButtonText="Open"
+            Isviewable={canEditCore}
           />
 
           <CustomPagination

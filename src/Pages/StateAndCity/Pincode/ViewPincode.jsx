@@ -30,6 +30,7 @@ import { CreateAlias } from "./CreateAlias";
 import MergePincodeCreate from "./MergePincodeCreate";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import { useSelector } from "react-redux";
+import { canAdminPinMaster } from "../../../utility/masterAccess";
 
 export const ViewPincode = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -50,6 +51,7 @@ export const ViewPincode = () => {
   const [status, setStatus] = useState("Active");
 
   const userData = useSelector((state) => state.auth.profile);
+  const canAdmin = canAdminPinMaster(userData);
   const handleClose = () => {
     setAlertMsg({ open: false });
   };
@@ -147,7 +149,7 @@ export const ViewPincode = () => {
                     }}
                     sx={{ width: "70%" }}
                   />
-                  {userData.groups.includes("Director") && (
+                  {canAdmin && (
                     <Button
                       variant="contained"
                       color="info"
@@ -201,7 +203,7 @@ export const ViewPincode = () => {
                       openInPopup={openInPopup}
                       openAliasPopup={openAliasPopup}
                       openMergePopupHandler={openMergePopupHandler}
-                      userData={userData}
+                      canAdmin={canAdmin}
                     />
                   ))}
               </TableBody>
@@ -269,7 +271,7 @@ function Row({
   openInPopup,
   openAliasPopup,
   openMergePopupHandler,
-  userData,
+  canAdmin,
 }) {
   const [open, setOpen] = useState(false);
 
@@ -301,7 +303,7 @@ function Row({
         <StyledTableCell align="center">{row.pincode}</StyledTableCell>
         <StyledTableCell align="center">
           <Box display="flex" justifyContent="center" gap={1}>
-            {userData.groups.includes("Director") && (
+            {canAdmin && (
               <Button
                 variant="contained"
                 color="success"
@@ -311,7 +313,7 @@ function Row({
                 Edit
               </Button>
             )}
-            {userData.groups.includes("Director") && (
+            {canAdmin && (
               <Button
                 variant="contained"
                 size="small"
@@ -321,7 +323,7 @@ function Row({
                 Create Alias
               </Button>
             )}
-            {userData.groups.includes("Director") && (
+            {canAdmin && (
               <Button
                 variant="contained"
                 size="small"

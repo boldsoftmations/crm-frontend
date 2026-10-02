@@ -15,6 +15,7 @@ import { MessageAlert } from "../../../Components/MessageAlert";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import { useSelector } from "react-redux";
+import { canEditTransporterContacts } from "../../../utility/masterAccess";
 
 const DESIGNATION_ROLE_CHOICES = [
   "Booking",
@@ -47,6 +48,7 @@ const TransportContactUpdate = ({
     is_inactive: false,
   });
   const userData = useSelector((state) => state.auth.profile);
+  const canEditContacts = canEditTransporterContacts(userData);
 
   const [loading, setLoading] = useState(false);
   const [transporterOptions, setTransporterOptions] = useState([]);
@@ -279,6 +281,10 @@ const TransportContactUpdate = ({
   // ==============================
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!canEditContacts) {
+      return;
+    }
 
     try {
       setLoading(true);
@@ -564,7 +570,7 @@ const TransportContactUpdate = ({
         <Box
           sx={{ display: "flex", justifyContent: "flex-end", gap: 1, mt: 3 }}
         >
-          {userData.groups.includes("Director") && (
+          {canEditContacts && (
             <Button
               type="submit"
               variant="contained"

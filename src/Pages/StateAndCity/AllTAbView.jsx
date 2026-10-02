@@ -9,85 +9,60 @@ import ZoneListView from "./ZoneList/ZoneListView";
 import { MergePincodeView } from "./MergePinCode/MergePincodeView";
 import ViewPincodeAuditLog from "./PincodeAuditLog/ViewPincodeAuditLog";
 import ViewRefrenceGeoPostal from "./RefrenceGeoPostal/ViewRefrenceGeoPostal";
+import {
+  canAdminPinMaster,
+  canViewPinMaster,
+} from "../../utility/masterAccess";
 
 export const AllTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
-
-  const isInGroups = (...groups) =>
-    groups.some((group) => userData.groups.includes(group));
+  const canAdmin = canAdminPinMaster(userData);
+  const canView = canViewPinMaster(userData);
 
   const tabs = [
     {
       label: "Country",
-      roles: [
-        "Director",
-        "Accounts",
-        "Accounts Executive",
-        "Accounts Billing Department",
-      ],
+      allowed: canAdmin,
       component: <ViewCountry />,
     },
     {
       label: "Zone",
-      roles: [
-        "Director",
-        "Accounts",
-        "Accounts Executive",
-        "Accounts Billing Department",
-      ],
+      allowed: canAdmin,
       component: <ZoneListView />,
     },
     {
       label: "State",
-      roles: [
-        "Director",
-        "Accounts",
-        "Accounts Executive",
-        "Accounts Billing Department",
-      ],
+      allowed: canAdmin,
       component: <ViewState />,
     },
     {
       label: "City",
-      roles: [
-        "Director",
-        "Accounts",
-        "Accounts Executive",
-        "Accounts Billing Department",
-      ],
+      allowed: canAdmin,
       component: <ViewCity />,
     },
-
     {
       label: "Pin Code",
-      roles: [
-        "Director",
-        "Accounts",
-        "Accounts Executive",
-        "Accounts Billing Department",
-      ],
+      allowed: canView,
       component: <ViewPincode />,
     },
     {
       label: "Merge Pin Code",
-      roles: ["Director"],
+      allowed: canAdmin,
       component: <MergePincodeView />,
     },
     {
       label: "Geo Audit Log",
-      roles: ["Director"],
+      allowed: canAdmin,
       component: <ViewPincodeAuditLog />,
     },
     {
       label: "Geo Postal Reference",
-      roles: ["Director"],
+      allowed: canAdmin,
       component: <ViewRefrenceGeoPostal />,
     },
   ];
 
-  const visibleTabs = tabs.filter((tab) => isInGroups(...tab.roles));
-
-  // Simplified active tab state to always start with the first item of visibleTabs if available
+  const visibleTabs = tabs.filter((tab) => tab.allowed);
   const [activeTab, setActiveTab] = useState(0);
 
   const onTabChange = (newIndex) => {

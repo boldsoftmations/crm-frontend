@@ -24,7 +24,12 @@ import MasterService from "../../services/MasterService";
 import TransPortMapping from "./TransPortMapping/TransPortMapping";
 import ContactTransportView from "./TransportContact/ContactTransportView";
 import TransporterBranchesIdsTab from "./TransportBranchesIds/TransporterBranchesIdsTab";
-import TransporterAuditLog from "./AuditLog/TransporterAuditLog";
+import {
+  canEditTransporterBranches,
+  canEditTransporterContacts,
+  canViewTransporterMappings,
+  canViewTransporterMaster,
+} from "../../utility/masterAccess";
 
 // =============================================================================
 // DATA SOURCE NOTICE - updated after Branch/Identifier/Contact APIs went live.
@@ -520,43 +525,10 @@ const TransporterHeader = ({ transporter, headerStats, statsLoading }) => {
 
 export const TransporterWorkspace = ({ transporterId }) => {
   const userData = useSelector((state) => state.auth.profile);
-
-  const isInGroups = (...groups) => {
-    if (!userData || !userData.groups || !Array.isArray(userData.groups)) {
-      return false;
-    }
-    return groups.some((group) => userData.groups.includes(group));
-  };
-
-  const commonMasterRoles = [
-    "Director",
-    "Sales Manager",
-    "Sales Manager(Retailer)",
-    "Business Development Manager",
-    "Customer Relationship Manager",
-    "Sales Deputy Manager",
-    "Sales Assistant Deputy Manager",
-    "Operations & Supply Chain Manager",
-    "Sales Manager without Leads",
-    "Sales Manager with Lead",
-  ];
-
-  const contactRoles = [
-    "Director",
-    "Sales Manager",
-    "Sales Manager(Retailer)",
-    "Business Development Manager",
-    "Customer Relationship Executive",
-    "Customer Relationship Manager",
-    "Sales Deputy Manager",
-    "Sales Assistant Deputy Manager",
-    "Sales Executive",
-    "Operations & Supply Chain Manager",
-    "Sales Manager without Leads",
-    "Sales Manager with Lead",
-  ];
-
-  const auditLogRoles = ["Director"];
+  const canViewOverview = canViewTransporterMaster(userData);
+  const canViewBranches = canEditTransporterBranches(userData);
+  const canViewContacts = canEditTransporterContacts(userData);
+  const canViewServiceability = canViewTransporterMappings(userData);
 
   // ---------------------------------------------------------------------
   // Selected transporter is loaded directly from the backend detail route.
@@ -730,7 +702,7 @@ export const TransporterWorkspace = ({ transporterId }) => {
   const subTabs = [
     {
       label: "Overview",
-      roles: commonMasterRoles,
+      allowed: canViewOverview,
       component: (
         <TransporterOverviewTab
           transporter={transporter}
@@ -741,7 +713,7 @@ export const TransporterWorkspace = ({ transporterId }) => {
     },
     {
       label: "Branches & IDs",
-      roles: commonMasterRoles,
+      allowed: canViewBranches,
       component: (
         <TransporterBranchesIdsTab
           transporter={transporter}
@@ -751,27 +723,17 @@ export const TransporterWorkspace = ({ transporterId }) => {
     },
     {
       label: "Contacts",
-      roles: contactRoles,
+      allowed: canViewContacts,
       component: <ContactTransportView lockedTransporter={transporter} />,
     },
     {
       label: "Serviceability",
-      roles: commonMasterRoles,
+      allowed: canViewServiceability,
       component: <TransPortMapping lockedTransporter={transporter} />,
     },
-    // {
-    //   label: "Audit Log",
-    //   roles: auditLogRoles,
-    //   component: (
-    //     <TransporterAuditLog
-    //       defaultEntityType="TRANSPORTER"
-    //       defaultEntityId={transporter && transporter.id ? transporter.id : ""}
-    //     />
-    //   ),
-    // },
   ];
 
-  const visibleSubTabs = subTabs.filter((tab) => isInGroups(...tab.roles));
+  const visibleSubTabs = subTabs.filter((tab) => tab.allowed);
 
   const [activeSubTab, setActiveSubTab] = useState(0);
 

@@ -30,6 +30,7 @@ import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import MasterService from "../../../services/MasterService";
 import ContactTransportCreate from "./ContactTransportCreate";
 import TransportContactUpdate from "./TransportContactUpdate";
+import { canEditTransporterContacts } from "../../../utility/masterAccess";
 
 // import ContactTransportUpdate from "./ContactTransportUpdate";
 
@@ -70,13 +71,7 @@ const ContactTransportView = ({ lockedTransporter }) => {
 
   const userData = useSelector((state) => state.auth.profile);
 
-  const isInGroups = (...groups) => {
-    if (!userData || !userData.groups || !Array.isArray(userData.groups)) {
-      return false;
-    }
-
-    return groups.some((group) => userData.groups.includes(group));
-  };
+  const canEditContacts = canEditTransporterContacts(userData);
 
   const openInPopup = (row) => {
     const selectedData = transportContactData.find(
@@ -287,14 +282,13 @@ const ContactTransportView = ({ lockedTransporter }) => {
                 minWidth: "300px",
               }}
             >
-              {userData.groups.includes("Director") && (
+              {canEditContacts && (
                 <Button
                   variant="contained"
                   color="success"
                   onClick={() => {
                     setOpenCreatePopup(true);
                   }}
-                  disabled={isInGroups("Stores")}
                 >
                   Add
                 </Button>
@@ -450,7 +444,9 @@ const ContactTransportView = ({ lockedTransporter }) => {
                         {row.creation_date}
                       </StyledTableCell>
                       <StyledTableRow key={index} sx={{ cursor: "pointer" }}>
-                        <Button onClick={() => openInPopup(row)}>View</Button>
+                        {canEditContacts ? (
+                          <Button onClick={() => openInPopup(row)}>View</Button>
+                        ) : null}
                       </StyledTableRow>
                     </StyledTableRow>
                   ))}

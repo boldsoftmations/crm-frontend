@@ -6,6 +6,10 @@ import { useNotificationHandling } from "../../../Components/useNotificationHand
 import { MessageAlert } from "../../../Components/MessageAlert";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import { useSelector } from "react-redux";
+import {
+  canCreateTransporter,
+  canEditTransporterCapability,
+} from "../../../utility/masterAccess";
 
 const TRANSPORTER_TYPE_CHOICES = [
   "Surface Transport",
@@ -30,14 +34,24 @@ function MasterTransportCreate({ getTransportData, setOpenPopup }) {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
   const userData = useSelector((state) => state.auth.profile);
+  const canCreate = canCreateTransporter(userData);
+  const canEditType = canEditTransporterCapability(userData);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!canCreate) {
+      return;
+    }
+
     try {
       setLoading(true);
 
-      await MasterService.createTransportMaster(formData);
+      const payload = canEditType
+        ? formData
+        : { transporter_name: formData.transporter_name };
+
+      await MasterService.createTransportMaster(payload);
 
       handleSuccess("Transport created successfully");
 
@@ -80,25 +94,27 @@ function MasterTransportCreate({ getTransportData, setOpenPopup }) {
             />
           </Grid>
 
-          {/* Transporter Type */}
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              required
-              select
-              label="Transporter Type"
-              name="transporter_type"
-              value={formData.transporter_type}
-              onChange={handleChange}
-              size="small"
-            >
-              {TRANSPORTER_TYPE_CHOICES.map((type) => (
-                <MenuItem key={type} value={type}>
-                  {type}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Grid>
+          {/* Type / Capability is managed by Operations/Dispatch Manager or Admin. */}
+          {canEditType && (
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                required
+                select
+                label="Transporter Type"
+                name="transporter_type"
+                value={formData.transporter_type}
+                onChange={handleChange}
+                size="small"
+              >
+                {TRANSPORTER_TYPE_CHOICES.map((type) => (
+                  <MenuItem key={type} value={type}>
+                    {type}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+          )}
         </Grid>
 
         {/* Action Buttons */}
@@ -110,12 +126,12 @@ function MasterTransportCreate({ getTransportData, setOpenPopup }) {
             mt: 3,
           }}
         >
-          {userData.groups.includes("Director") && (
+          {canCreate && (
             <Button variant="outlined" color="error" onClick={handleReset}>
               Reset
             </Button>
           )}
-          {userData.groups.includes("Director") && (
+          {canCreate && (
             <Button
               type="submit"
               variant="contained"
