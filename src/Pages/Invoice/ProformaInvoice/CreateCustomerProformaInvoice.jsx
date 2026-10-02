@@ -10,7 +10,6 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import Divider from "@mui/material/Divider";
@@ -80,7 +79,6 @@ export const CreateCustomerProformaInvoice = (props) => {
   // transporter selection.
   const [transportSelection, setTransportSelection] = useState(null);
 
-  const [openPopup2, setOpenPopup2] = useState(false);
   const [openPopup3, setOpenPopup3] = useState(false);
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState({});
@@ -100,6 +98,34 @@ export const CreateCustomerProformaInvoice = (props) => {
   const [customerLastPiData, setCustomerLastPiData] = useState(null);
   const [packageList, setPackageList] = useState([]);
   const [timeLeft, setTimeLeft] = useState(5 * 60);
+
+  // Resolve the contact from:
+  // 1) manual selection,
+  // 2) last PI contact (match by number or name), or
+  // 3) the only available customer contact.
+  //
+  // This prevents the UI from showing a contact while contactData is still empty,
+  // which previously caused `contact: null` in the Customer PI payload.
+  const selectedContact =
+    contactData ||
+    contactOptions.find((option) => {
+      if (!customerLastPiData || !option) {
+        return false;
+      }
+
+      const sameContact =
+        customerLastPiData.contact &&
+        option.contact &&
+        String(option.contact) === String(customerLastPiData.contact);
+
+      const sameName =
+        customerLastPiData.contact_person_name &&
+        option.name &&
+        option.name === customerLastPiData.contact_person_name;
+
+      return Boolean(sameContact || sameName);
+    }) ||
+    (contactOptions.length === 1 ? contactOptions[0] : null);
 
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
@@ -200,11 +226,6 @@ export const CreateCustomerProformaInvoice = (props) => {
     setCustomerLastPiData((prev) => {
       return { ...prev, [name]: value };
     });
-  };
-
-  const openInPopup = () => {
-    setOpenPopup3(true);
-    setOpenPopup2(false);
   };
 
   const getAllMaterialDetailsByID = async () => {
@@ -324,19 +345,13 @@ export const CreateCustomerProformaInvoice = (props) => {
   const createCustomerProformaInvoiceDetails = async (e) => {
     e.preventDefault();
 
-    // const isValidData =
-    //   contactData &&
-    //   contactData.contact !== null &&
-    //   warehouseData &&
-    //   warehouseData.address !== null &&
-    //   warehouseData.state !== null &&
-    //   warehouseData.city !== null &&
-    //   warehouseData.pincode !== null;
+    // Old generic Customer/Warehouse popup validation is intentionally disabled.
+    // Contact is validated separately below so the PI payload never sends contact=null.
 
-    // if (!isValidData) {
-    //   setOpenPopup2(true);
-    //   return;
-    // }
+    if (!selectedContact || !selectedContact.contact) {
+      handleError("Please select a valid Customer Contact.");
+      return;
+    }
 
     if (!transportSelection || !transportSelection.mode) {
       handleError("Please select a Transport Method.");
@@ -433,9 +448,11 @@ export const CreateCustomerProformaInvoice = (props) => {
           : customerData && customerData.name
             ? customerData.name
             : "",
-      contact: contactData ? contactData.contact : null,
-      contact_person_name: contactData ? contactData.name : null,
-      alternate_contact: contactData ? contactData.alternate_contact : null,
+      contact: selectedContact ? selectedContact.contact : null,
+      contact_person_name: selectedContact ? selectedContact.name : null,
+      alternate_contact: selectedContact
+        ? selectedContact.alternate_contact
+        : null,
       gst_number:
         customerData && customerData.gst_number
           ? customerData.gst_number
@@ -637,15 +654,7 @@ export const CreateCustomerProformaInvoice = (props) => {
                 labelId="contact-name-label"
                 id="contact-name-select"
                 label="Contact Name"
-                value={
-                  contactData ||
-                  contactOptions.find(
-                    (option) =>
-                      customerLastPiData &&
-                      option.name === customerLastPiData.contact_person_name,
-                  ) ||
-                  ""
-                }
+                value={selectedContact || ""}
                 onChange={(e) => setContactData(e.target.value)}
                 renderValue={(selected) =>
                   selected && selected.name ? selected.name : ""
@@ -669,11 +678,9 @@ export const CreateCustomerProformaInvoice = (props) => {
               label="Contact"
               variant="outlined"
               value={
-                contactData && contactData.contact
-                  ? contactData.contact
-                  : customerLastPiData && customerLastPiData.contact
-                    ? customerLastPiData.contact
-                    : ""
+                selectedContact && selectedContact.contact
+                  ? selectedContact.contact
+                  : ""
               }
               InputLabelProps={{ shrink: true }}
             />
@@ -1185,19 +1192,7 @@ export const CreateCustomerProformaInvoice = (props) => {
         </Button>
       </Box>
 
-      {/* <Popup
-        maxWidth="xl"
-        title="Update Lead Details"
-        openPopup={openPopup2}
-        setOpenPopup={setOpenPopup2}
-      >
-        <Typography>
-          Kindly update all required field WareHouse Details in Company
-        </Typography>
-        <Button variant="contained" onClick={() => openInPopup()}>
-          Update Customer
-        </Button>
-      </Popup> */}
+      {/* Old generic Customer/Warehouse update popup intentionally disabled. */}
 
       <Popup
         maxWidth="xl"
