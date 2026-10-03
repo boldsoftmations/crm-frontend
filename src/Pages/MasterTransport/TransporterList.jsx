@@ -115,7 +115,7 @@ export const TransporterList = ({ onOpenTransporter }) => {
 
   // Pass the list record along so Overview can show its name even if a role
   // can list transporters but cannot access the detail endpoint.
-  const openWorkspaceForRow = (item) => onOpenTransporter?.(item);
+  const openWorkspaceForRow = (item) => onOpenTransporter && onOpenTransporter(item);
 
   return (
     <>
