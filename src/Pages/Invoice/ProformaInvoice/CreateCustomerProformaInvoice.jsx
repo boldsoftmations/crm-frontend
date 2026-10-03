@@ -127,6 +127,13 @@ export const CreateCustomerProformaInvoice = (props) => {
     }) ||
     (contactOptions.length === 1 ? contactOptions[0] : null);
 
+  // The alternate number shown on this form comes from the selected
+  // shipping warehouse when it has one. Use the same value in the PI.
+  const selectedAlternateContact =
+    (warehouseData && warehouseData.contact_number) ||
+    (selectedContact && selectedContact.alternate_contact) ||
+    null;
+
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
   const { profile: users } = useSelector((state) => state.auth);
@@ -348,7 +355,7 @@ export const CreateCustomerProformaInvoice = (props) => {
     // Old generic Customer/Warehouse popup validation is intentionally disabled.
     // Contact is validated separately below so the PI payload never sends contact=null.
 
-    if (!selectedContact || !selectedContact.contact) {
+    if (!selectedContact || !selectedContact.contact || !selectedContact.name) {
       handleError("Please select a valid Customer Contact.");
       return;
     }
@@ -450,9 +457,7 @@ export const CreateCustomerProformaInvoice = (props) => {
             : "",
       contact: selectedContact ? selectedContact.contact : null,
       contact_person_name: selectedContact ? selectedContact.name : null,
-      alternate_contact: selectedContact
-        ? selectedContact.alternate_contact
-        : null,
+      alternate_contact: selectedAlternateContact,
       gst_number:
         customerData && customerData.gst_number
           ? customerData.gst_number
@@ -693,11 +698,7 @@ export const CreateCustomerProformaInvoice = (props) => {
               size="small"
               label="Alt. Contact"
               variant="outlined"
-              value={
-                warehouseData && warehouseData.contact_number
-                  ? warehouseData.contact_number
-                  : ""
-              }
+              value={selectedAlternateContact || ""}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
