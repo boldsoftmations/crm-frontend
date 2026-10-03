@@ -9,11 +9,15 @@ import LeadServices from "../../../services/LeadService";
 import { buildTransportPayload } from "../../../utility/Buildtransportpayload";
 
 const normalizeTransportMode = (mode) => {
-  if (mode === "Train") return "TRAIN";
-  if (mode === "Bus") return "BUS";
-  if (mode === "Air") return "AIR";
-  if (mode === "Self Pickup") return "SELF_PICKUP";
-  return mode || "";
+  const value = mode
+    ? String(mode)
+        .trim()
+        .toUpperCase()
+        .replace(/[\s/-]+/g, "_")
+    : "";
+  return value === "SURFACE_TRANSPORT" || value === "SURFACE_ROAD"
+    ? "SURFACE"
+    : value;
 };
 
 const getRelationId = (value) => {
@@ -28,14 +32,22 @@ const getInitialTransportSelection = (piData) => {
     return null;
   }
 
-  const mappingId = getRelationId(piData.transporter_mapping);
-  const transporterId = getRelationId(piData.transporter);
-  const verifiedPincodeId = getRelationId(piData.verified_pincode);
+  const mappingId = getRelationId(
+    piData.transporter_mapping_id || piData.transporter_mapping,
+  );
+  const transporterId = getRelationId(
+    piData.transporter_id || piData.transporter,
+  );
+  const verifiedPincodeId = getRelationId(
+    piData.verified_pincode_id || piData.verified_pincode,
+  );
   let mode = normalizeTransportMode(piData.selected_transport_mode);
 
   if (
     !mode &&
-    (mappingId || verifiedPincodeId || piData.transporter_name === "To Be Assigned")
+    (mappingId ||
+      verifiedPincodeId ||
+      piData.transporter_name === "To Be Assigned")
   ) {
     mode = "SURFACE";
   }
@@ -62,7 +74,10 @@ const UpdateProformaInvoice = ({
   handleSuccess,
 }) => {
   const sellerData = useSelector((state) => state.auth.sellerAccount);
-  const [countryId, setCountryId] = useState("");
+  const [resolvedCountry, setResolvedCountry] = useState({
+    piNumber: null,
+    id: "",
+  });
   const [transportSelection, setTransportSelection] = useState(
     getInitialTransportSelection(idForEdit),
   );
@@ -73,20 +88,41 @@ const UpdateProformaInvoice = ({
           return false;
         }
 
-        if (idForEdit && idForEdit.seller_id) {
-          return String(item.id) === String(idForEdit.seller_id);
+        const piSellerId = getRelationId(idForEdit && idForEdit.seller_id);
+        if (piSellerId) {
+          return String(item.id) === String(piSellerId);
         }
 
         if (idForEdit && idForEdit.seller_account) {
           return (
-            String(item.id) === String(idForEdit.seller_account) ||
-            item.unit === idForEdit.seller_account
+            String(item.id) ===
+              String(getRelationId(idForEdit.seller_account)) ||
+            item.unit === idForEdit.seller_account ||
+            (idForEdit.seller_account &&
+              item.unit === idForEdit.seller_account.unit)
           );
         }
 
         return false;
       }) || null
     : null;
+
+  const sellerAccount = idForEdit && idForEdit.seller_account;
+  const unitId =
+    getRelationId(
+      idForEdit && (idForEdit.seller_id || idForEdit.seller_account_id),
+    ) ||
+    (effectiveSeller && effectiveSeller.id) ||
+    "";
+  const unitCode =
+    (effectiveSeller && effectiveSeller.unit) ||
+    (sellerAccount && sellerAccount.unit) ||
+    (typeof sellerAccount === "string" ? sellerAccount : "");
+  const countryId =
+    getRelationId(idForEdit && idForEdit.country_id) ||
+    (idForEdit && resolvedCountry.piNumber === idForEdit.pi_number
+      ? resolvedCountry.id
+      : "");
 
   useEffect(() => {
     setTransportSelection(getInitialTransportSelection(idForEdit));
@@ -96,16 +132,24 @@ const UpdateProformaInvoice = ({
     let active = true;
 
     const loadDestinationCountry = async () => {
-      if (!idForEdit) {
+      if (!idForEdit || idForEdit.country_id) {
         return;
       }
 
       try {
         let response = null;
 
-        if (idForEdit.type === "customer" && idForEdit.company) {
-          response = await CustomerServices.getCompanyDataById(idForEdit.company);
-        } else if (idForEdit.type === "lead" && idForEdit.lead) {
+        if (
+          String(idForEdit.type).toLowerCase() === "customer" &&
+          idForEdit.company
+        ) {
+          response = await CustomerServices.getCompanyDataById(
+            idForEdit.company,
+          );
+        } else if (
+          String(idForEdit.type).toLowerCase() === "lead" &&
+          idForEdit.lead
+        ) {
           response = await LeadServices.getLeadsById(idForEdit.lead);
         }
 
@@ -113,11 +157,14 @@ const UpdateProformaInvoice = ({
           return;
         }
 
-        setCountryId(response.data.country_id || "");
+        setResolvedCountry({
+          piNumber: idForEdit.pi_number,
+          id: getRelationId(response.data.country_id) || "",
+        });
       } catch (error) {
         if (active) {
           console.error("Unable to load PI destination country:", error);
-          setCountryId("");
+          setResolvedCountry({ piNumber: idForEdit.pi_number, id: "" });
         }
       }
     };
@@ -197,10 +244,11 @@ const UpdateProformaInvoice = ({
           <TransportSelector
             countryId={countryId}
             pincode={idForEdit && idForEdit.pincode ? idForEdit.pincode : ""}
-            unitId={effectiveSeller ? effectiveSeller.id : ""}
-            unitCode={effectiveSeller ? effectiveSeller.unit : ""}
+            unitId={unitId}
+            unitCode={unitCode}
             value={transportSelection}
             onChange={setTransportSelection}
+            preserveSelectionOnLoad
           />
         </Grid>
 
