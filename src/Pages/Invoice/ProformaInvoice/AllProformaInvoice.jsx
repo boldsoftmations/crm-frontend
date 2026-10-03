@@ -428,7 +428,7 @@ export const AllProformaInvoice = () => {
                           variant="outlined"
                           color="info"
                           size="small"
-                          onClick={() => openInPopup2(row)}
+                          onClick={() => openInPopup2(invoiceData[i])}
                           disabled={!isAllowed}
                         >
                           Update

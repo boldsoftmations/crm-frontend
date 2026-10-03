@@ -13,16 +13,21 @@ import {
 
 export const AllTransportMasterTabView = () => {
   const userData = useSelector((state) => state.auth.profile);
+  const isInGroups = (...groups) =>
+    groups.some((g) => userData.groups.includes(g));
 
   const tabs = [
     {
       label: "Transporters",
-      allowed: canViewTransporterMaster(userData),
+      allowed:
+        canViewTransporterMaster(userData) || isInGroups("Customer Service"),
       component: <TransportersHome />,
     },
     {
       label: "Transport Assignment Requests",
-      allowed: canManageTransportAssignmentRequests(userData),
+      allowed:
+        canManageTransportAssignmentRequests(userData) ||
+        isInGroups("Customer Service"),
       component: <ViewTransportRef />,
     },
     {

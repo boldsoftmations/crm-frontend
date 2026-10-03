@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useSelector } from "react-redux";
 import {
   Box,
+  Button,
   Paper,
   Typography,
   Chip,
@@ -19,14 +20,18 @@ import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { CustomTabs } from "../../Components/CustomTabs";
 import { CustomLoader } from "../../Components/CustomLoader";
+import { Popup } from "../../Components/Popup";
 import MasterService from "../../services/MasterService";
 
 import TransPortMapping from "./TransPortMapping/TransPortMapping";
 import ContactTransportView from "./TransportContact/ContactTransportView";
+import ContactTransportCreate from "./TransportContact/ContactTransportCreate";
+import TransportMappingCreate from "./TransPortMapping/TransportMappingCreate";
 import TransporterBranchesIdsTab from "./TransportBranchesIds/TransporterBranchesIdsTab";
 import {
   canEditTransporterBranches,
   canEditTransporterContacts,
+  canEditTransporterMappings,
   canViewTransporterMappings,
   canViewTransporterMaster,
 } from "../../utility/masterAccess";
@@ -151,7 +156,13 @@ const SetupStatusRow = ({ label, complete, completeText, pendingText }) => (
 // Shows only real/derived transporter data. Fields that do not exist in the
 // backend are intentionally not presented as fake editable information.
 // ---------------------------------------------------------------------------
-const TransporterOverviewTab = ({ transporter, headerStats, statsLoading }) => {
+const TransporterOverviewTab = ({
+  transporter,
+  headerStats,
+  statsLoading,
+  onAddContact,
+  onAddServiceability,
+}) => {
   if (!transporter) return null;
 
   const stats = headerStats || {};
@@ -181,6 +192,20 @@ const TransporterOverviewTab = ({ transporter, headerStats, statsLoading }) => {
 
   return (
     <Box sx={{ py: 2 }}>
+      {(onAddContact || onAddServiceability) && (
+        <Stack direction={{ xs: "column", sm: "row" }} spacing={1} sx={{ mb: 2 }}>
+          {onAddContact && (
+            <Button variant="contained" onClick={onAddContact}>
+              Add Contact
+            </Button>
+          )}
+          {onAddServiceability && (
+            <Button variant="outlined" onClick={onAddServiceability}>
+              Add Serviceability
+            </Button>
+          )}
+        </Stack>
+      )}
       <Grid container spacing={2}>
         <Grid item xs={12} lg={8}>
           <Paper
@@ -523,24 +548,29 @@ const TransporterHeader = ({ transporter, headerStats, statsLoading }) => {
   );
 };
 
-export const TransporterWorkspace = ({ transporterId }) => {
+export const TransporterWorkspace = ({ transporterId, initialTransporter = null }) => {
   const userData = useSelector((state) => state.auth.profile);
   const canViewOverview = canViewTransporterMaster(userData);
   const canViewBranches = canEditTransporterBranches(userData);
   const canViewContacts = canEditTransporterContacts(userData);
   const canViewServiceability = canViewTransporterMappings(userData);
+  const canAddServiceability = canEditTransporterMappings(userData);
 
   // ---------------------------------------------------------------------
   // Selected transporter is loaded directly from the backend detail route.
   // TransporterMaster is a ModelViewSet, so /transporter-master/{id}/ is
   // available and there is no need to scan paginated active/inactive lists.
   // ---------------------------------------------------------------------
-  const [transporter, setTransporter] = useState(null);
+  const [transporter, setTransporter] = useState(initialTransporter);
   const [loading, setLoading] = useState(false);
+  const [openContactCreate, setOpenContactCreate] = useState(false);
+  const [openServiceabilityCreate, setOpenServiceabilityCreate] = useState(false);
+  const [contactRefresh, setContactRefresh] = useState(0);
+  const [serviceabilityRefresh, setServiceabilityRefresh] = useState(0);
 
   const loadTransporter = useCallback(async (id) => {
     if (!id) {
-      setTransporter(null);
+      setTransporter((current) => current?.id === id ? current : null);
       return;
     }
 
@@ -550,7 +580,9 @@ export const TransporterWorkspace = ({ transporterId }) => {
       setTransporter(response && response.data ? response.data : null);
     } catch (error) {
       console.error("Error loading transporter record:", error);
-      setTransporter(null);
+      // The list record still contains the fields needed for the workspace.
+      // Keep it visible if a role can list transporters but cannot fetch detail.
+      setTransporter((current) => current?.id === id ? current : null);
     } finally {
       setLoading(false);
     }
@@ -708,6 +740,12 @@ export const TransporterWorkspace = ({ transporterId }) => {
           transporter={transporter}
           headerStats={headerStats}
           statsLoading={statsLoading}
+          onAddContact={canViewContacts ? () => setOpenContactCreate(true) : null}
+          onAddServiceability={
+            canAddServiceability && transporter?.transporter_type === "Surface Transport"
+              ? () => setOpenServiceabilityCreate(true)
+              : null
+          }
         />
       ),
     },
@@ -724,18 +762,44 @@ export const TransporterWorkspace = ({ transporterId }) => {
     {
       label: "Contacts",
       allowed: canViewContacts,
-      component: <ContactTransportView lockedTransporter={transporter} />,
+      component: (
+        <ContactTransportView
+          key={contactRefresh}
+          lockedTransporter={transporter}
+        />
+      ),
     },
     {
       label: "Serviceability",
       allowed: canViewServiceability,
-      component: <TransPortMapping lockedTransporter={transporter} />,
+      component: (
+        <TransPortMapping
+          key={serviceabilityRefresh}
+          lockedTransporter={transporter}
+        />
+      ),
     },
   ];
 
   const visibleSubTabs = subTabs.filter((tab) => tab.allowed);
 
   const [activeSubTab, setActiveSubTab] = useState(0);
+
+  const showTab = (label) => {
+    const index = visibleSubTabs.findIndex((tab) => tab.label === label);
+    if (index >= 0) setActiveSubTab(index);
+  };
+
+  const onContactCreated = () => {
+    setContactRefresh((value) => value + 1);
+    loadHeaderStats(transporter);
+    showTab("Contacts");
+  };
+
+  const onServiceabilityCreated = () => {
+    setServiceabilityRefresh((value) => value + 1);
+    showTab("Serviceability");
+  };
 
   const onSubTabChange = (newIndex) => {
     setActiveSubTab(newIndex);
@@ -765,14 +829,48 @@ export const TransporterWorkspace = ({ transporterId }) => {
         )
       )}
 
-      <CustomTabs
-        tabs={visibleSubTabs.map((tab) => ({ label: tab.label }))}
-        activeTab={activeSubTab}
-        onTabChange={onSubTabChange}
-      />
-      {visibleSubTabs.length > 0 && visibleSubTabs[activeSubTab] ? (
-        <div>{visibleSubTabs[activeSubTab].component}</div>
-      ) : null}
+      {transporter && (
+        <>
+          <CustomTabs
+            tabs={visibleSubTabs.map((tab) => ({ label: tab.label }))}
+            activeTab={activeSubTab}
+            onTabChange={onSubTabChange}
+          />
+          {visibleSubTabs[activeSubTab] ? (
+            <div>{visibleSubTabs[activeSubTab].component}</div>
+          ) : null}
+        </>
+      )}
+
+      <Popup
+        maxWidth="xl"
+        title="Add Contact"
+        openPopup={openContactCreate}
+        setOpenPopup={setOpenContactCreate}
+      >
+        {openContactCreate && (
+          <ContactTransportCreate
+            lockedTransporter={transporter}
+            setOpenPopup={setOpenContactCreate}
+            getTransportContactData={onContactCreated}
+          />
+        )}
+      </Popup>
+
+      <Popup
+        maxWidth="xl"
+        title="Add Serviceability"
+        openPopup={openServiceabilityCreate}
+        setOpenPopup={setOpenServiceabilityCreate}
+      >
+        {openServiceabilityCreate && (
+          <TransportMappingCreate
+            lockedTransporter={transporter}
+            setOpenPopup={setOpenServiceabilityCreate}
+            getMappingData={onServiceabilityCreated}
+          />
+        )}
+      </Popup>
     </Box>
   );
 };

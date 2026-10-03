@@ -113,6 +113,13 @@ const ViewTransportRef = () => {
 
   const canManageRequest = canManageTransportAssignmentRequests(userData);
 
+  const userGroups =
+    userData && userData.groups && Array.isArray(userData.groups)
+      ? userData.groups
+      : [];
+
+  const isInGroups = (...groups) => groups.some((g) => userGroups.includes(g));
+
   const getTransportRefData = useCallback(async () => {
     try {
       setOpen(true);
@@ -166,14 +173,19 @@ const ViewTransportRef = () => {
   };
 
   const handleEditClick = (row) => {
+    if (isResolvedRequest(row)) return;
     setRecordData(row);
     setOpenEditPopup(true);
   };
 
   const handleResolveClick = (row) => {
+    if (isResolvedRequest(row)) return;
     setResolveRecord(row);
     setOpenResolvePopup(true);
   };
+
+  const isResolvedRequest = (row) =>
+    row && ["closed", "resolved"].includes(String(row.status || "").trim().toLowerCase());
 
   const isOpenForResolution = (row) =>
     row && (row.status === "Open" || row.status === "In Progress");
@@ -194,7 +206,8 @@ const ViewTransportRef = () => {
             variant="body2"
             sx={{ textAlign: "center", color: "#777", mt: 0.5 }}
           >
-            Surface mapping requests created automatically when a Customer PI is saved as To Be Assigned.
+            Surface mapping requests created automatically when a Customer PI is
+            saved as To Be Assigned.
           </Typography>
         </Box>
 
@@ -265,7 +278,9 @@ const ViewTransportRef = () => {
                 <StyledTableCell align="center">Request</StyledTableCell>
                 <StyledTableCell align="center">Created At</StyledTableCell>
                 <StyledTableCell align="center">Unit</StyledTableCell>
-                <StyledTableCell align="center">Postal Code / Pincode</StyledTableCell>
+                <StyledTableCell align="center">
+                  Postal Code / Pincode
+                </StyledTableCell>
                 <StyledTableCell align="center">Customer</StyledTableCell>
                 <StyledTableCell align="center">PI</StyledTableCell>
                 <StyledTableCell align="center">Requested By</StyledTableCell>
@@ -296,7 +311,9 @@ const ViewTransportRef = () => {
                               ? row.pincode_text
                               : "-"}
                         </Typography>
-                        {row.canonical_pincode && row.pincode_text && row.canonical_pincode !== row.pincode_text ? (
+                        {row.canonical_pincode &&
+                        row.pincode_text &&
+                        row.canonical_pincode !== row.pincode_text ? (
                           <Typography variant="caption" sx={{ color: "#777" }}>
                             Raw: {row.pincode_text}
                           </Typography>
@@ -331,7 +348,10 @@ const ViewTransportRef = () => {
                       {row.remarks ? row.remarks : "-"}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {canManageRequest && isOpenForResolution(row) ? (
+                      {!isResolvedRequest(row) &&
+                      (canManageRequest ||
+                        (isInGroups("Customer Service") &&
+                          isOpenForResolution(row))) ? (
                         <Stack
                           direction="row"
                           spacing={1}

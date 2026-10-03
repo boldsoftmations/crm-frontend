@@ -6,13 +6,18 @@ import {
   Box,
   ToggleButtonGroup,
   ToggleButton,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
 } from "@mui/material";
 import { useSelector } from "react-redux";
 
 import { Popup } from "../../Components/Popup";
 import { CustomLoader } from "../../Components/CustomLoader";
 import { CustomPagination } from "../../Components/CustomPagination";
-import { CustomTable } from "../../Components/CustomTable";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
 import SearchComponent from "../../Components/SearchComponent ";
 import { MessageAlert } from "../../Components/MessageAlert";
@@ -25,14 +30,8 @@ import {
   canEditTransporterCore,
 } from "../../utility/masterAccess";
 
-// GAP FIX (1/3): real "search a transporter, then open it" screen. Replaces
-// the temporary numeric-id text box that used to live inside
-// TransporterWorkspace.jsx. This is basically MasterTransportView.jsx's
-// list, reused, with one addition: an "Open" action (CustomTable's unused
-// openInPopup2 slot) that hands the row's id up to TransportersHome.jsx,
-// which then renders the single-record workspace for it - matching the V3
-// mockup's "TRANSPORTERS / Search by transporter name.../ [+ Add
-// Transporter]" screen.
+// Show the transporter name and Open to every role with list access. Editing
+// the transporter master record remains limited to core-edit roles.
 
 export const TransporterList = ({ onOpenTransporter }) => {
   const [transportData, setTransportData] = useState([]);
@@ -55,14 +54,6 @@ export const TransporterList = ({ onOpenTransporter }) => {
 
   const canCreate = canCreateTransporter(userData);
   const canEditCore = canEditTransporterCore(userData);
-
-  const tableHeader = [
-    "ID",
-    "TRANSPORTER TYPE",
-    "TRANSPORTER NAME",
-    "IS INACTIVE",
-    "ACTION",
-  ];
 
   const getTransportData = useCallback(async () => {
     try {
@@ -122,21 +113,9 @@ export const TransporterList = ({ onOpenTransporter }) => {
     setOpenUpdatePopup(true);
   };
 
-  // The actual "search a transporter, then show Overview and Branch" step
-  // the user asked for - clicking Open hands the id up to the parent
-  // (TransportersHome.jsx), which switches to the workspace view.
-  const openWorkspaceForRow = (item) => {
-    if (onOpenTransporter) {
-      onOpenTransporter(item.id);
-    }
-  };
-
-  const tableData = transportData.map((value) => ({
-    id: value.id,
-    transporter_type: value.transporter_type,
-    transporter_name: value.transporter_name,
-    is_inactive: value.is_inactive ? "Yes" : "No",
-  }));
+  // Pass the list record along so Overview can show its name even if a role
+  // can list transporters but cannot access the detail endpoint.
+  const openWorkspaceForRow = (item) => onOpenTransporter?.(item);
 
   return (
     <>
@@ -214,17 +193,39 @@ export const TransporterList = ({ onOpenTransporter }) => {
             </ToggleButtonGroup>
           </Box>
 
-          {/* openInPopup -> Update (existing behaviour), openInPopup2 ->
-              Open workspace (new). ButtonText labels the openInPopup2
-              action. */}
-          <CustomTable
-            headers={tableHeader}
-            data={tableData}
-            openInPopup={openUpdateForRow}
-            openInPopup2={openWorkspaceForRow}
-            ButtonText="Open"
-            Isviewable={canEditCore}
-          />
+          <TableContainer sx={{ maxHeight: 440 }}>
+            <Table stickyHeader aria-label="Transporters">
+              <TableHead>
+                <TableRow>
+                  {["ID", "TRANSPORTER TYPE", "TRANSPORTER NAME", "IS INACTIVE", "ACTION"].map((label) => (
+                    <TableCell key={label} sx={{ backgroundColor: "#006BA1", color: "white", fontWeight: 700 }}>
+                      {label}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {transportData.map((item) => (
+                  <TableRow key={item.id} hover>
+                    <TableCell>{item.id}</TableCell>
+                    <TableCell>{item.transporter_type}</TableCell>
+                    <TableCell>
+                      <Button onClick={() => openWorkspaceForRow(item)} sx={{ textTransform: "none", textAlign: "left" }}>
+                        {item.transporter_name}
+                      </Button>
+                    </TableCell>
+                    <TableCell>{item.is_inactive ? "Yes" : "No"}</TableCell>
+                    <TableCell sx={{ whiteSpace: "nowrap" }}>
+                      <Button onClick={() => openWorkspaceForRow(item)}>Open</Button>
+                      {canEditCore && (
+                        <Button onClick={() => openUpdateForRow(item)}>Update</Button>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
 
           <CustomPagination
             totalPages={totalPages}

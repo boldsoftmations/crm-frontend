@@ -213,7 +213,10 @@ const TransPortMapping = ({ lockedTransporter }) => {
   // don't even render the list/filters/Add button - there is nothing
   // valid to map for them (doc: "Never create Train, Bus, Air, Self
   // Pickup or Phase-1 Courier rows for every PIN.").
-  if (lockedTransporter && lockedTransporter.transporter_type !== "Surface Transport") {
+  if (
+    lockedTransporter &&
+    lockedTransporter.transporter_type !== "Surface Transport"
+  ) {
     return (
       <Paper sx={{ p: 4, m: 4, textAlign: "center" }}>
         <MessageAlert
@@ -296,7 +299,7 @@ const TransPortMapping = ({ lockedTransporter }) => {
                   color="success"
                   onClick={() => setOpenCreatePopup(true)}
                 >
-                  Add
+                  {lockedTransporter ? "Add Serviceability" : "Add"}
                 </Button>
               )}
             </Box>
@@ -383,7 +386,7 @@ const TransPortMapping = ({ lockedTransporter }) => {
                 marginLeft: "auto",
               }}
             >
-              {hasActiveFilters && (
+              {/* {hasActiveFilters && (
                 <Button
                   size="small"
                   variant="outlined"
@@ -392,7 +395,7 @@ const TransPortMapping = ({ lockedTransporter }) => {
                 >
                   Clear Filters
                 </Button>
-              )}
+              )} */}
 
               <ToggleButtonGroup
                 value={isInactiveFilter}

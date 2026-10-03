@@ -206,7 +206,14 @@ const TransportMappingCreate = ({
     }
   };
 
-  const handleReset = () => setFormData(initialFormState);
+  const handleReset = () => {
+    setFormData(lockedTransporter
+      ? { ...initialFormState, transporter: lockedTransporter.transporter_name }
+      : initialFormState);
+    setCountyName("");
+    setPincodeInput("");
+    setIsValidPincode(false);
+  };
 
   return (
     <>

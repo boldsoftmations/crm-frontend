@@ -426,11 +426,7 @@ export const RouteScreen = () => {
             path="/Transport-Finder"
             element={
               <PrivateRoute>
-                {!profileReady ? null : canUseTransporterFinder(profile) ? (
-                  <TransporterFinder />
-                ) : (
-                  <Navigate to="/user/analytics" replace />
-                )}
+                <TransporterFinder />
               </PrivateRoute>
             }
           />

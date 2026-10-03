@@ -290,7 +290,7 @@ const ContactTransportView = ({ lockedTransporter }) => {
                     setOpenCreatePopup(true);
                   }}
                 >
-                  Add
+                  {lockedTransporter ? "Add Contact" : "Add"}
                 </Button>
               )}
             </Box>

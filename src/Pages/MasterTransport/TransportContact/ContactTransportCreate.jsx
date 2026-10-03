@@ -303,12 +303,19 @@ function ContactTransportCreate({
   // Reset
   // ==============================
   const handleReset = () => {
-    setFormData(initialFormState); // transporter_id is "" in initialFormState — auto-reset
+    setFormData(lockedTransporter ? {
+      ...initialFormState,
+      transporter: lockedTransporter.transporter_name,
+      transporter_id: lockedTransporter.id,
+      transporter_type: lockedTransporter.transporter_type,
+    } : initialFormState);
 
-    setUnitOptions([]);
-    setCityOptions([]);
-    setBranchOptions([]);
-    setServiceabilityStatus("idle");
+    if (!lockedTransporter) {
+      setUnitOptions([]);
+      setCityOptions([]);
+      setBranchOptions([]);
+      setServiceabilityStatus("idle");
+    }
   };
 
   return (

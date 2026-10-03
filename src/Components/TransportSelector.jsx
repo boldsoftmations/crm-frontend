@@ -42,6 +42,7 @@ export default function TransportSelector({
   value,
   onChange,
   disabled = false,
+  preserveSelectionOnLoad = false,
 }) {
   const [mode, setMode] = useState(value && value.mode ? value.mode : "");
   const [options, setOptions] = useState([]);
@@ -172,7 +173,45 @@ export default function TransportSelector({
           setSurfaceVerifiedPincodeId(verifiedPincodeId);
           setOptions(surfaceOptions);
 
-          if (!data.mapping_found || surfaceOptions.length === 0) {
+          const currentMapping =
+            preserveSelectionOnLoad && value && value.mappingId
+              ? surfaceOptions.find(
+                  (option) =>
+                    String(option.mapping_id) === String(value.mappingId),
+                )
+              : null;
+
+          if (currentMapping) {
+            if (
+              onChange &&
+              (String(value.transporterId || "") !==
+                String(currentMapping.transporter_id || "") ||
+                String(value.verifiedPincodeId || "") !==
+                  String(verifiedPincodeId || ""))
+            ) {
+              onChange({
+                ...value,
+                transporterId: currentMapping.transporter_id,
+                transporterName: currentMapping.transporter_name,
+                verifiedPincodeId: verifiedPincodeId,
+                assignmentStatus: "Assigned",
+              });
+            }
+          } else if (preserveSelectionOnLoad && value && value.mappingId) {
+            setWarning(
+              "The current transporter mapping is not available for this Unit and Pincode. Select an available transporter before saving.",
+            );
+            if (onChange) {
+              onChange({
+                mode: "SURFACE",
+                transporterId: null,
+                transporterName: null,
+                mappingId: null,
+                verifiedPincodeId: verifiedPincodeId,
+                assignmentStatus: null,
+              });
+            }
+          } else if (!data.mapping_found || surfaceOptions.length === 0) {
             setWarning(
               'No Surface transporter mapping found for this Unit + Pincode. PI will be saved as "To Be Assigned".',
             );
@@ -232,7 +271,7 @@ export default function TransportSelector({
     // onChange intentionally omitted to avoid re-fetching when parent state
     // is updated by this component.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, countryId, pincode, unitId, unitCode]);
+  }, [mode, countryId, pincode, unitId, unitCode, preserveSelectionOnLoad]);
 
   const handleModeChange = (event, selectedMode) => {
     const nextMode = selectedMode && selectedMode.value ? selectedMode.value : "";
@@ -314,21 +353,36 @@ export default function TransportSelector({
 
   const selectedSurfaceOption =
     mode === "SURFACE" && value && value.transporterId
-      ? options.find(
-          (option) => option.transporter_id === value.transporterId,
-        ) || null
+      ? options.find((option) =>
+          value.mappingId
+            ? String(option.mapping_id) === String(value.mappingId)
+            : String(option.transporter_id) === String(value.transporterId),
+        ) ||
+        (preserveSelectionOnLoad && options.length === 0 && value.mappingId
+          ? {
+              mapping_id: value.mappingId,
+              transporter_id: value.transporterId,
+              transporter_name: value.transporterName,
+            }
+          : null)
       : null;
 
   const selectedCapabilityOption =
     isCapabilityMode(mode) && value
       ? options.find((option) => {
           if (value.transporterId && option.transporter_id) {
-            return option.transporter_id === value.transporterId;
+            return String(option.transporter_id) === String(value.transporterId);
           }
 
           const optionName = option.transporter || option.transporter_name || "";
           return optionName === value.transporterName;
-        }) || null
+        }) ||
+        (preserveSelectionOnLoad && options.length === 0 && value.transporterName
+          ? {
+              transporter_id: value.transporterId,
+              transporter_name: value.transporterName,
+            }
+          : null)
       : null;
 
   return (
@@ -363,7 +417,7 @@ export default function TransportSelector({
           }
           isOptionEqualToValue={(option, selectedValue) =>
             option && selectedValue
-              ? option.mapping_id === selectedValue.mapping_id
+              ? String(option.mapping_id) === String(selectedValue.mapping_id)
               : false
           }
           onChange={handleSurfaceTransporterChange}
@@ -405,7 +459,10 @@ export default function TransportSelector({
             }
 
             if (option.transporter_id && selectedValue.transporter_id) {
-              return option.transporter_id === selectedValue.transporter_id;
+              return (
+                String(option.transporter_id) ===
+                String(selectedValue.transporter_id)
+              );
             }
 
             const optionName =

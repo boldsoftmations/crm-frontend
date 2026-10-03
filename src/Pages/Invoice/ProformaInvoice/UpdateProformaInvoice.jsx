@@ -10,10 +10,7 @@ import { buildTransportPayload } from "../../../utility/Buildtransportpayload";
 
 const normalizeTransportMode = (mode) => {
   const value = mode
-    ? String(mode)
-        .trim()
-        .toUpperCase()
-        .replace(/[\s/-]+/g, "_")
+    ? String(mode).trim().toUpperCase().replace(/[\s/-]+/g, "_")
     : "";
   return value === "SURFACE_TRANSPORT" || value === "SURFACE_ROAD"
     ? "SURFACE"
@@ -35,9 +32,7 @@ const getInitialTransportSelection = (piData) => {
   const mappingId = getRelationId(
     piData.transporter_mapping_id || piData.transporter_mapping,
   );
-  const transporterId = getRelationId(
-    piData.transporter_id || piData.transporter,
-  );
+  const transporterId = getRelationId(piData.transporter_id || piData.transporter);
   const verifiedPincodeId = getRelationId(
     piData.verified_pincode_id || piData.verified_pincode,
   );
@@ -45,9 +40,7 @@ const getInitialTransportSelection = (piData) => {
 
   if (
     !mode &&
-    (mappingId ||
-      verifiedPincodeId ||
-      piData.transporter_name === "To Be Assigned")
+    (mappingId || verifiedPincodeId || piData.transporter_name === "To Be Assigned")
   ) {
     mode = "SURFACE";
   }
@@ -74,10 +67,7 @@ const UpdateProformaInvoice = ({
   handleSuccess,
 }) => {
   const sellerData = useSelector((state) => state.auth.sellerAccount);
-  const [resolvedCountry, setResolvedCountry] = useState({
-    piNumber: null,
-    id: "",
-  });
+  const [resolvedCountry, setResolvedCountry] = useState({ piNumber: null, id: "" });
   const [transportSelection, setTransportSelection] = useState(
     getInitialTransportSelection(idForEdit),
   );
@@ -95,8 +85,7 @@ const UpdateProformaInvoice = ({
 
         if (idForEdit && idForEdit.seller_account) {
           return (
-            String(item.id) ===
-              String(getRelationId(idForEdit.seller_account)) ||
+            String(item.id) === String(getRelationId(idForEdit.seller_account)) ||
             item.unit === idForEdit.seller_account ||
             (idForEdit.seller_account &&
               item.unit === idForEdit.seller_account.unit)
@@ -109,9 +98,7 @@ const UpdateProformaInvoice = ({
 
   const sellerAccount = idForEdit && idForEdit.seller_account;
   const unitId =
-    getRelationId(
-      idForEdit && (idForEdit.seller_id || idForEdit.seller_account_id),
-    ) ||
+    getRelationId(idForEdit && (idForEdit.seller_id || idForEdit.seller_account_id)) ||
     (effectiveSeller && effectiveSeller.id) ||
     "";
   const unitCode =
@@ -139,17 +126,9 @@ const UpdateProformaInvoice = ({
       try {
         let response = null;
 
-        if (
-          String(idForEdit.type).toLowerCase() === "customer" &&
-          idForEdit.company
-        ) {
-          response = await CustomerServices.getCompanyDataById(
-            idForEdit.company,
-          );
-        } else if (
-          String(idForEdit.type).toLowerCase() === "lead" &&
-          idForEdit.lead
-        ) {
+        if (String(idForEdit.type).toLowerCase() === "customer" && idForEdit.company) {
+          response = await CustomerServices.getCompanyDataById(idForEdit.company);
+        } else if (String(idForEdit.type).toLowerCase() === "lead" && idForEdit.lead) {
           response = await LeadServices.getLeadsById(idForEdit.lead);
         }
 
