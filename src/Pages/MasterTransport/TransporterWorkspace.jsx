@@ -193,7 +193,11 @@ const TransporterOverviewTab = ({
   return (
     <Box sx={{ py: 2 }}>
       {(onAddContact || onAddServiceability) && (
-        <Stack direction={{ xs: "column", sm: "row" }} spacing={1} sx={{ mb: 2 }}>
+        <Stack
+          direction={{ xs: "column", sm: "row" }}
+          spacing={1}
+          sx={{ mb: 2 }}
+        >
           {onAddContact && (
             <Button variant="contained" onClick={onAddContact}>
               Add Contact
@@ -548,7 +552,10 @@ const TransporterHeader = ({ transporter, headerStats, statsLoading }) => {
   );
 };
 
-export const TransporterWorkspace = ({ transporterId, initialTransporter = null }) => {
+export const TransporterWorkspace = ({
+  transporterId,
+  initialTransporter = null,
+}) => {
   const userData = useSelector((state) => state.auth.profile);
   const canViewOverview = canViewTransporterMaster(userData);
   const canViewBranches = canEditTransporterBranches(userData);
@@ -564,13 +571,16 @@ export const TransporterWorkspace = ({ transporterId, initialTransporter = null 
   const [transporter, setTransporter] = useState(initialTransporter);
   const [loading, setLoading] = useState(false);
   const [openContactCreate, setOpenContactCreate] = useState(false);
-  const [openServiceabilityCreate, setOpenServiceabilityCreate] = useState(false);
+  const [openServiceabilityCreate, setOpenServiceabilityCreate] =
+    useState(false);
   const [contactRefresh, setContactRefresh] = useState(0);
   const [serviceabilityRefresh, setServiceabilityRefresh] = useState(0);
 
   const loadTransporter = useCallback(async (id) => {
     if (!id) {
-      setTransporter((current) => current?.id === id ? current : null);
+      setTransporter((current) =>
+        current && current.id === id ? current : null,
+      );
       return;
     }
 
@@ -582,7 +592,9 @@ export const TransporterWorkspace = ({ transporterId, initialTransporter = null 
       console.error("Error loading transporter record:", error);
       // The list record still contains the fields needed for the workspace.
       // Keep it visible if a role can list transporters but cannot fetch detail.
-      setTransporter((current) => current?.id === id ? current : null);
+      setTransporter((current) =>
+        current && current.id === id ? current : null,
+      );
     } finally {
       setLoading(false);
     }
@@ -740,9 +752,13 @@ export const TransporterWorkspace = ({ transporterId, initialTransporter = null 
           transporter={transporter}
           headerStats={headerStats}
           statsLoading={statsLoading}
-          onAddContact={canViewContacts ? () => setOpenContactCreate(true) : null}
+          onAddContact={
+            canViewContacts ? () => setOpenContactCreate(true) : null
+          }
           onAddServiceability={
-            canAddServiceability && transporter?.transporter_type === "Surface Transport"
+            canAddServiceability &&
+            transporter &&
+            transporter.transporter_type === "Surface Transport"
               ? () => setOpenServiceabilityCreate(true)
               : null
           }
