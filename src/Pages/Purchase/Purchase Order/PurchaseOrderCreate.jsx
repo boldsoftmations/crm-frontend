@@ -1,5 +1,5 @@
 import { Box, Button, Chip, Divider, Grid } from "@mui/material";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomTextField from "../../../Components/CustomTextField";
 import InventoryServices from "../../../services/InventoryService";
@@ -31,14 +31,19 @@ export const PurchaseOrderCreate = ({
     sellerData: state.auth.sellerAccount,
     userData: state.auth.profile,
   }));
+  const vendorContacts =
+    recordForEdit && Array.isArray(recordForEdit.contacts)
+      ? recordForEdit.contacts
+      : [];
+  const sellerAccounts = Array.isArray(sellerData) ? sellerData : [];
   const [openAlert, setOpenAlert] = useState(false);
   const today = new Date().toISOString().slice(0, 10);
   const [inputValues, setInputValues] = useState({
-    created_by: userData.email,
+    created_by: userData ? userData.email : "",
     po_date: today,
     schedule_date: today,
-    vendor: recordForEdit.name,
-    vendor_type: recordForEdit.type,
+    vendor: recordForEdit ? recordForEdit.name : "",
+    vendor_type: recordForEdit ? recordForEdit.type : "",
     vendor_email: "",
     vendor_contact_person: "",
     vendor_contact: "",
@@ -58,10 +63,10 @@ export const PurchaseOrderCreate = ({
   });
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [productLoading, setProductLoading] = useState(false);
   const [productOption, setProductOption] = useState([]);
   const [currencyOption, setCurrencyOption] = useState([]);
 
-  const debounceTimer = useRef(null);
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
 
@@ -78,18 +83,20 @@ export const PurchaseOrderCreate = ({
         const newValues = { ...prevValues, [fieldName]: value };
         console.log(selectedProducts);
         if (fieldName === "vendor_contact_person") {
-          const selectedContact = recordForEdit.contacts.find(
+          const selectedContact = vendorContacts.find(
             (contact) => contact.name === value,
           );
-          if (selectedContact) {
-            newValues.vendor_contact = selectedContact.contact;
-            newValues.vendor_email = selectedContact.email;
-          }
+          newValues.vendor_contact = selectedContact
+            ? selectedContact.contact || ""
+            : "";
+          newValues.vendor_email = selectedContact
+            ? selectedContact.email || ""
+            : "";
 
           // Set currency based on vendor type from recordForEdit
-          if (recordForEdit.type === "Domestic") {
+          if (recordForEdit && recordForEdit.type === "Domestic") {
             newValues.currency = "INR";
-          } else if (recordForEdit.type === "International") {
+          } else if (recordForEdit && recordForEdit.type === "International") {
             // Remove INR from options or set to a default currency for International
             newValues.currency = ""; // This can be set to a different default if needed
           }
@@ -98,7 +105,7 @@ export const PurchaseOrderCreate = ({
         return newValues;
       });
     },
-    [recordForEdit.type, recordForEdit.contacts],
+    [recordForEdit],
   );
 
   const handleProductChange = (index, field, value) => {
@@ -126,8 +133,23 @@ export const PurchaseOrderCreate = ({
   };
 
   const handleProductAutocompleteChange = (index, selectedProductName) => {
-    // Prevent function from running if the selected product name is not defined
-    if (!selectedProductName) return;
+    if (!selectedProductName) {
+      setInputValues((prevValues) => ({
+        ...prevValues,
+        products: prevValues.products.map((product, idx) =>
+          idx === index
+            ? {
+                ...product,
+                product: "",
+                unit: "",
+                type_of_unit: "",
+                max_decimal_digit: "",
+              }
+            : product,
+        ),
+      }));
+      return;
+    }
 
     // Find the product object based on the selected value
     const productObj = productOption.find(
@@ -188,13 +210,15 @@ export const PurchaseOrderCreate = ({
     if (recordForEdit) {
       setInputValues((prevValues) => ({
         ...prevValues,
+        vendor: recordForEdit.name,
         vendor_type: recordForEdit.type,
       }));
     }
   }, [recordForEdit]);
 
   useEffect(() => {
-    // getProduct();
+    if (!recordForEdit) return;
+    getProduct();
     getCurrencyDetails();
   }, [recordForEdit]);
 
@@ -203,7 +227,11 @@ export const PurchaseOrderCreate = ({
     try {
       const response = await InventoryServices.getCurrencyData();
       if (response && response.data) {
-        let filteredCurrencyOptions = response.data;
+        let filteredCurrencyOptions = Array.isArray(response.data)
+          ? response.data
+          : response.data && Array.isArray(response.data.results)
+            ? response.data.results
+            : [];
         if (recordForEdit.type === "International") {
           // Exclude INR for international vendors
           filteredCurrencyOptions = filteredCurrencyOptions.filter(
@@ -228,27 +256,24 @@ export const PurchaseOrderCreate = ({
     }
   };
 
-  const getProduct = async (searchText) => {
+  const getProduct = async () => {
     try {
-      setLoading(true);
-      const res = await ProductService.getAllProduct(searchText);
-      setProductOption(res.data);
-      setLoading(false);
+      setProductLoading(true);
+      const res = await ProductService.getAllProduct();
+      setProductOption(
+        Array.isArray(res.data)
+          ? res.data
+          : res.data && Array.isArray(res.data.results)
+            ? res.data.results
+            : [],
+      );
     } catch (err) {
       handleError(err);
       console.error("error potential", err);
-      setLoading(false);
+    } finally {
+      setProductLoading(false);
     }
   };
-
-  const debouncedGetProduct = useCallback((searchText) => {
-    if (debounceTimer.current) {
-      clearTimeout(debounceTimer.current);
-    }
-    debounceTimer.current = setTimeout(() => {
-      getProduct(searchText);
-    }, 400); // 400ms delay, tune as needed
-  }, []);
   const openAlertPopup = (e) => {
     e.preventDefault();
     setOpenAlert(true);
@@ -321,7 +346,7 @@ export const PurchaseOrderCreate = ({
         severity={alertInfo.severity}
         message={alertInfo.message}
       />
-      <CustomLoader open={loading} />
+      <CustomLoader open={loading || productLoading} />
 
       <Box component="form" noValidate onSubmit={(e) => openAlertPopup(e)}>
         <Grid container spacing={2}>
@@ -331,7 +356,7 @@ export const PurchaseOrderCreate = ({
               size="small"
               label="Vendor"
               variant="outlined"
-              value={recordForEdit.name || ""}
+              value={recordForEdit ? recordForEdit.name || "" : ""}
             />
           </Grid>
           <Grid item xs={12} sm={3}>
@@ -339,10 +364,13 @@ export const PurchaseOrderCreate = ({
               size="small"
               disablePortal
               id="combo-box-demo"
-              options={recordForEdit.contacts}
+              options={vendorContacts}
               getOptionLabel={(option) => option.name}
               onChange={(event, value) =>
-                handleAutocompleteChange("vendor_contact_person", value.name)
+                handleAutocompleteChange(
+                  "vendor_contact_person",
+                  value ? value.name : "",
+                )
               }
               label="Vendor Contact Person"
             />
@@ -366,7 +394,7 @@ export const PurchaseOrderCreate = ({
               onChange={(event, value) =>
                 handleAutocompleteChange("seller_account", value)
               }
-              options={sellerData.map((option) => option.unit)}
+              options={sellerAccounts.map((option) => option.unit)}
               getOptionLabel={(option) => option}
               sx={{ minWidth: 300 }}
               label="Buyer Account"
@@ -425,7 +453,10 @@ export const PurchaseOrderCreate = ({
                 null
               }
               onChange={(event, value) =>
-                setInputValues({ ...inputValues, currency: value.name })
+                setInputValues({
+                  ...inputValues,
+                  currency: value ? value.name : "",
+                })
               }
               options={currencyOption.map((option) => option)}
               getOptionLabel={(option) => `${option.name} (${option.symbol})`}
@@ -467,8 +498,6 @@ export const PurchaseOrderCreate = ({
                     onChange={(event, value) =>
                       handleProductAutocompleteChange(index, value)
                     }
-                    onInputChange={handleInputChange}
-                    loading={loading}
                     options={productOption.map((option) => option.name)}
                     getOptionLabel={(option) => option}
                     sx={{ minWidth: 300 }}
