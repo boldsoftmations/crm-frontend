@@ -139,12 +139,11 @@ export const ListItems = ({ setOpen }) => {
           // {
           //   to: "/",
           // },
-          canViewPinMasterAccess
-            ? {
-                to: "/county-state-city/master-tab",
-                text: "Country Master",
-              }
-            : null,
+
+          {
+            to: "/county-state-city/master-tab",
+            text: "Country Master",
+          },
           {
             to: "/master/activity-list",
             text: "Master Activity",
