@@ -3,10 +3,7 @@ const toGroups = (userOrGroups) => {
     return userOrGroups;
   }
 
-  if (
-    userOrGroups &&
-    Array.isArray(userOrGroups.groups)
-  ) {
+  if (userOrGroups && Array.isArray(userOrGroups.groups)) {
     return userOrGroups.groups;
   }
 
@@ -56,20 +53,20 @@ const MANAGER_GROUPS = [
   "Dispatch Manager",
 ];
 
-const ADMIN_GROUPS = ["Director", "ERP Admin"];
+const ADMIN_GROUPS = ["Director"];
 
 export const canAdminPinMaster = (userOrGroups) =>
   hasAnyGroup(userOrGroups, ["PIN_MASTER_ADMIN", ...ACCOUNTS_GROUPS]);
 
+export const canEditPincode = (userOrGroups) =>
+  canAdminPinMaster(userOrGroups) || hasAnyGroup(userOrGroups, ["Director"]);
+
 export const canViewPinMaster = (userOrGroups) =>
-  canAdminPinMaster(userOrGroups) ||
+  canEditPincode(userOrGroups) ||
   hasAnyGroup(userOrGroups, ["PIN_VIEWER", ...CUSTOMER_SUCCESS_GROUPS]);
 
 export const canUseTransporterFinder = (userOrGroups) =>
-  hasAnyGroup(userOrGroups, [
-    "TRANSPORTER_FINDER_USER",
-    ...SALES_GROUPS,
-  ]) ||
+  hasAnyGroup(userOrGroups, ["TRANSPORTER_FINDER_USER", ...SALES_GROUPS]) ||
   canViewTransporterMaster(userOrGroups);
 
 export const canUseTransporterServiceability = (userOrGroups) =>
@@ -79,10 +76,7 @@ export const canUseTransporterServiceability = (userOrGroups) =>
   ]);
 
 export const canUseTransporterAccountsAdmin = (userOrGroups) =>
-  hasAnyGroup(userOrGroups, [
-    "TRANSPORTER_ACCOUNTS_ADMIN",
-    ...ACCOUNTS_GROUPS,
-  ]);
+  hasAnyGroup(userOrGroups, ["TRANSPORTER_ACCOUNTS_ADMIN", ...ACCOUNTS_GROUPS]);
 
 export const canUseTransporterManager = (userOrGroups) =>
   hasAnyGroup(userOrGroups, ["TRANSPORTER_MANAGER", ...MANAGER_GROUPS]);
@@ -139,3 +133,8 @@ export const canViewTransporterAudit = (userOrGroups) =>
 export const canManageTransportAssignmentRequests = (userOrGroups) =>
   canUseTransporterManager(userOrGroups) ||
   canUseTransporterAdmin(userOrGroups);
+
+
+
+
+  

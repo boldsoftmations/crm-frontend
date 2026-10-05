@@ -30,7 +30,7 @@ import { CreateAlias } from "./CreateAlias";
 import MergePincodeCreate from "./MergePincodeCreate";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import { useSelector } from "react-redux";
-import { canAdminPinMaster } from "../../../utility/masterAccess";
+import { canEditPincode } from "../../../utility/masterAccess";
 
 export const ViewPincode = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -51,7 +51,7 @@ export const ViewPincode = () => {
   const [status, setStatus] = useState("Active");
 
   const userData = useSelector((state) => state.auth.profile);
-  const canAdmin = canAdminPinMaster(userData);
+  const canAdmin = canEditPincode(userData);
   const handleClose = () => {
     setAlertMsg({ open: false });
   };
