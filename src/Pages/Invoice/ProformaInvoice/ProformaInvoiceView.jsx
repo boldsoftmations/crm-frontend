@@ -485,7 +485,8 @@ export const ProformaInvoiceView = (props) => {
             {invoiceData.status === "Approved" &&
               (users.groups.includes("Accounts") ||
                 users.groups.includes("Director") ||
-                users.groups.includes("Accounts Executive")) && (
+                users.groups.includes("Accounts Executive") ||
+                users.groups.includes("Accounts Billing Department")) && (
                 <Button
                   variant="contained"
                   color="success"
