@@ -56,7 +56,7 @@ const MANAGER_GROUPS = [
 const ADMIN_GROUPS = ["Director"];
 
 export const canAdminPinMaster = (userOrGroups) =>
-  hasAnyGroup(userOrGroups, ["PIN_MASTER_ADMIN", ...ACCOUNTS_GROUPS]);
+  hasAnyGroup(userOrGroups, ["Director", ...ACCOUNTS_GROUPS]);
 
 export const canEditPincode = (userOrGroups) =>
   canAdminPinMaster(userOrGroups) || hasAnyGroup(userOrGroups, ["Director"]);
@@ -133,8 +133,3 @@ export const canViewTransporterAudit = (userOrGroups) =>
 export const canManageTransportAssignmentRequests = (userOrGroups) =>
   canUseTransporterManager(userOrGroups) ||
   canUseTransporterAdmin(userOrGroups);
-
-
-
-
-  
