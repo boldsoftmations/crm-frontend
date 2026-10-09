@@ -91,16 +91,19 @@ export const canViewTransporterMaster = (userOrGroups) =>
   canUseTransporterAdmin(userOrGroups);
 
 export const canEditTransporterCore = (userOrGroups) =>
+  hasAnyGroup(userOrGroups, ["Customer Service"]) ||
   canUseTransporterAccountsAdmin(userOrGroups) ||
   canUseTransporterManager(userOrGroups) ||
   canUseTransporterAdmin(userOrGroups);
 
 export const canCreateTransporter = (userOrGroups) =>
+  hasAnyGroup(userOrGroups, ["Customer Service"]) ||
   canUseTransporterAccountsAdmin(userOrGroups) ||
   canUseTransporterManager(userOrGroups) ||
   canUseTransporterAdmin(userOrGroups);
 
 export const canEditTransporterBranches = (userOrGroups) =>
+  hasAnyGroup(userOrGroups, ["Customer Service"]) ||
   canUseTransporterAccountsAdmin(userOrGroups) ||
   canUseTransporterManager(userOrGroups) ||
   canUseTransporterAdmin(userOrGroups);
@@ -120,10 +123,20 @@ export const canEditTransporterMappings = (userOrGroups) =>
   canUseTransporterAdmin(userOrGroups);
 
 export const canEditTransporterCapability = (userOrGroups) =>
+  hasAnyGroup(userOrGroups, ["Customer Service"]) ||
   canUseTransporterManager(userOrGroups) ||
   canUseTransporterAdmin(userOrGroups);
 
+export const canSetTransporterTypeOnCreate = (userOrGroups) =>
+  hasAnyGroup(userOrGroups, ["Customer Service"]) ||
+  canEditTransporterCapability(userOrGroups);
+
+export const canEditTransporterTypeDetails = (userOrGroups) =>
+  hasAnyGroup(userOrGroups, ["Customer Service"]) ||
+  canEditTransporterCapability(userOrGroups);
+
 export const canDeactivateTransporter = (userOrGroups) =>
+  hasAnyGroup(userOrGroups, ["Customer Service"]) ||
   canUseTransporterManager(userOrGroups) ||
   canUseTransporterAdmin(userOrGroups);
 

@@ -16,7 +16,7 @@ import { CustomLoader } from "../../../Components/CustomLoader";
 import { useSelector } from "react-redux";
 import {
   canDeactivateTransporter,
-  canEditTransporterCapability,
+  canEditTransporterTypeDetails,
   canEditTransporterCore,
 } from "../../../utility/masterAccess";
 
@@ -39,7 +39,7 @@ function MasterTransportUpdate({
   const [loading, setLoading] = useState(false);
   const userData = useSelector((state) => state.auth.profile);
   const canEditCore = canEditTransporterCore(userData);
-  const canEditType = canEditTransporterCapability(userData);
+  const canEditType = canEditTransporterTypeDetails(userData);
   const canDeactivate = canDeactivateTransporter(userData);
 
   const { handleError, handleCloseSnackbar, alertInfo, handleSuccess } =
