@@ -1,3 +1,4 @@
+import WorkPulseAuthorize from "../Pages/Auth/WorkPulseAuthorize";
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -74,6 +75,7 @@ export const RouteScreen = () => {
 
   return (
     <Routes>
+      <Route path="/workpulse/authorize" element={<WorkPulseAuthorize />} />
       {token ? (
         <>
           {/* Preferred private route when token exists */}

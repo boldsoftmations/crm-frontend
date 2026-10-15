@@ -33,7 +33,7 @@ import UserProfileService from "../../services/UserProfileService";
 const avatarStyle = { backgroundColor: "#1bbd7e" };
 // const btnstyle = { margin: "8px 0" };
 
-export const Login = () => {
+export const Login = ({ onSuccess } = {}) => {
   const [open, setOpen] = useState(false);
   const theme = createTheme();
   let navigate = useNavigate();
@@ -82,10 +82,18 @@ export const Login = () => {
         password: user.password,
       };
       const response = await UserProfileService.login(req);
+      if (onSuccess && !response.data.token)
+        throw new Error("CRM did not return a valid login token.");
       if (response.data.token) {
         setUserData(response.data.token);
         dispatch(loginsucces(response.data));
         dispatch(getProfileUser(response.data));
+        if (onSuccess) {
+          setUser({ employee_id: "", password: "", showPassword: false });
+          setOpen(false);
+          await onSuccess();
+          return;
+        }
         getUsers();
       }
       navigate("/user/analytics");
@@ -93,7 +101,6 @@ export const Login = () => {
 
       setOpen(false);
     } catch (err) {
-      console.log("err :>> ", err);
       setOpen(false);
       if (!err.response) {
         setErrMsg("please verify your email");
