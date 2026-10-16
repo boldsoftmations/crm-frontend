@@ -1,27 +1,27 @@
 self.__precacheManifest = [
   {
-    "revision": "025f293dab5fe0a29f31",
+    "revision": "503f3e1a5918e332adcd",
     "url": "/crm-frontend/static/css/main.d4f11393.chunk.css"
   },
   {
-    "revision": "025f293dab5fe0a29f31",
-    "url": "/crm-frontend/static/js/main.5c97afb6.chunk.js"
+    "revision": "503f3e1a5918e332adcd",
+    "url": "/crm-frontend/static/js/main.e1cf4295.chunk.js"
   },
   {
-    "revision": "8bc7d394c599342959f9",
-    "url": "/crm-frontend/static/js/runtime~main.c773eb21.js"
+    "revision": "44bfaf7f52a7f4701b52",
+    "url": "/crm-frontend/static/js/runtime~main.0e2edfe3.js"
   },
   {
-    "revision": "c20dae8da80309c05322",
+    "revision": "b51dadf6ef05eccc6762",
     "url": "/crm-frontend/static/css/2.f752c19d.chunk.css"
   },
   {
-    "revision": "c20dae8da80309c05322",
-    "url": "/crm-frontend/static/js/2.38819b42.chunk.js"
+    "revision": "b51dadf6ef05eccc6762",
+    "url": "/crm-frontend/static/js/2.1b1a89fc.chunk.js"
   },
   {
-    "revision": "c4892216ea51d4e0b889",
-    "url": "/crm-frontend/static/js/3.d83403df.chunk.js"
+    "revision": "e46777b9988264834ec5",
+    "url": "/crm-frontend/static/js/3.f50a3031.chunk.js"
   },
   {
     "revision": "b22461016ddd0b341a07",
@@ -64,7 +64,7 @@ self.__precacheManifest = [
     "url": "/crm-frontend/static/media/MAINTENANCE.2a4fa97a.gif"
   },
   {
-    "revision": "b5f93f9b1d963eab0b3158322ff9754b",
+    "revision": "bc92ccc227167af50eb8beb4d7d1a0a6",
     "url": "/crm-frontend/index.html"
   }
 ];
