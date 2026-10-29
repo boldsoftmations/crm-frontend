@@ -29,7 +29,7 @@ export const ReworkEntryCreate = ({
     useNotificationHandling();
   const [productOption, setProductOption] = useState([]);
   const [open, setOpen] = useState(false);
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState({});
   const [rawMaterials, setRawMaterials] = useState(
     selectedRow.products.map((product) => ({
       ...product,
@@ -116,6 +116,17 @@ export const ReworkEntryCreate = ({
   const createReworkEntryDetails = async (e) => {
     e.preventDefault();
 
+    if (!inputValue.product) {
+      handleError("Please select a Product before submitting.");
+      return;
+    }
+
+    const quantity = Number(inputValue.quantity);
+    if (!inputValue.quantity || Number.isNaN(quantity) || quantity <= 0) {
+      handleError("Please enter a valid Quantity.");
+      return;
+    }
+
     const payload = {
       seller_account: selectedRow.unit,
       source_key: selectedRow.batch_no.join(", "),
@@ -132,6 +143,7 @@ export const ReworkEntryCreate = ({
         response.data.message || "Rework Entry created successfully!",
       );
       getSalesReturnInventoryDetails();
+      setOpenPopup(false); // only here
     } catch (error) {
       handleError(error);
     } finally {
@@ -187,6 +199,7 @@ export const ReworkEntryCreate = ({
               getOptionLabel={(option) => option}
               fullWidth
               label="Product"
+              required
             />
           </Grid>
           <Grid item xs={12} sm={4}>

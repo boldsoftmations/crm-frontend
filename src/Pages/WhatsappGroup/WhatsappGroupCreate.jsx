@@ -201,6 +201,7 @@ export const WhatsappGroupCreate = ({ setOpenPopup, refreshData }) => {
               "Exclusive Distribution",
               "All Distribution",
               "All Industrial",
+              "All Trading",
             ]}
             getOptionLabel={(option) => option}
             label="Type Of Customer"

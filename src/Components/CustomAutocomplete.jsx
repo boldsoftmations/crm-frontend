@@ -14,13 +14,15 @@ const CustomAutocomplete = ({
   getOptionLabel,
   label,
   sx,
-  renderInput, // Existing custom renderInput
-  multiple, // Added for multi-select functionality
-  limitTags, // Added to limit the number of tags shown
-  freeSolo, // Added for allowing arbitrary values not present in the options
+  renderInput,
+  multiple,
+  limitTags,
+  freeSolo,
   renderTags,
-  disabled, // Added for custom tag rendering
-  // Include any additional props that might be necessary
+  disabled,
+  required,
+  error,
+  helperText,
 }) => (
   <Autocomplete
     size={size || "small"}
@@ -32,7 +34,16 @@ const CustomAutocomplete = ({
     groupBy={groupBy}
     getOptionLabel={getOptionLabel || ((option) => option)} // Ensuring there's a default getOptionLabel
     renderInput={
-      renderInput || ((params) => <CustomTextField {...params} label={label} />)
+      renderInput ||
+      ((params) => (
+        <CustomTextField
+          {...params}
+          label={label}
+          required={required}
+          error={error}
+          helperText={helperText}
+        />
+      ))
     }
     sx={sx}
     multiple={multiple}

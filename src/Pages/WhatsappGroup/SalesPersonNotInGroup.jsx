@@ -152,4 +152,8 @@ const FilterOptions = [
     label: "Exclusive Distribution Customer",
     value: "Exclusive Distribution Customer",
   },
+  {
+    label: "Trading Customer",
+    value: "trading_customer",
+  },
 ];

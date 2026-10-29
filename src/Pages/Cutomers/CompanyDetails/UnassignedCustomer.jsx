@@ -380,4 +380,8 @@ const TypeCustomer = [
     value: "Exclusive Distribution Customer",
     label: "Exclusive Distribution Customer",
   },
+  {
+    value: "trading_customer",
+    label: "Trading Customer",
+  },
 ];

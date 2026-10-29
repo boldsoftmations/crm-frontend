@@ -761,6 +761,11 @@ export const CreateLeads = memo((props) => {
                     control={<Radio />}
                     label="Distribution Customer"
                   />
+                  <FormControlLabel
+                    value="Trading Customer"
+                    control={<Radio />}
+                    label="Trading Customer"
+                  />
                 </RadioGroup>
               </FormControl>
             </>
