@@ -202,7 +202,7 @@ export const UnassignedCustomer = () => {
                   options={TypeCustomer}
                   onChange={(e, value) => handlFilterCustomer(value)}
                   getOptionLabel={(option) => option.label}
-                  label="Filter By Customer"
+                  label="Filter By Business Vertical"
                 />
               </Grid>
             </Grid>
@@ -370,18 +370,18 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 const TypeCustomer = [
   {
     value: "industrial_customer",
-    label: "Industrial Customer",
+    label: "Industrial",
   },
   {
     value: "distribution_customer",
-    label: "Distribution Customer",
+    label: "Distribution",
   },
   {
     value: "Exclusive Distribution Customer",
-    label: "Exclusive Distribution Customer",
+    label: "Exclusive Distribution",
   },
   {
     value: "trading_customer",
-    label: "Trading Customer",
+    label: "Trading",
   },
 ];

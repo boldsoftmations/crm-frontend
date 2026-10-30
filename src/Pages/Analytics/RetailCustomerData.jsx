@@ -51,7 +51,7 @@ export const RetailCustomerData = () => {
       <Card className="shadow-lg mb-2">
         <CardContent>
           <h2 className="text-md font-extrabold tracking-tight text-center">
-            Distribution Customer Count:{" "}
+            Distribution Count:{" "}
             <span className="mx-2"> {data.retailerCustomerCount}</span>
           </h2>
         </CardContent>

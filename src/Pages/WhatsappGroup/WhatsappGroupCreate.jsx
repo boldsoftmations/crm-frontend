@@ -204,7 +204,7 @@ export const WhatsappGroupCreate = ({ setOpenPopup, refreshData }) => {
               "All Trading",
             ]}
             getOptionLabel={(option) => option}
-            label="Type Of Customer"
+            label="Business Vertical"
             value={whatsappGroup.type_of_customer}
           />
         </Grid>

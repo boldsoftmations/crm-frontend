@@ -107,7 +107,7 @@ export const AllCustomerTabView = () => {
         component: <IncompleteKycDetails />,
       },
       {
-        label: "Exclusive Distribution Customers",
+        label: "Exclusive Distribution",
         visible:
           allCustomerTabs ||
           isSalesExecutive ||

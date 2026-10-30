@@ -340,7 +340,7 @@ export const SalesRegisterView = () => {
                     "Director",
                   ) && (
                     <StyledTableCell align="center">
-                      Type Of Customer
+                      Business Vertical
                     </StyledTableCell>
                   )}
 
@@ -448,7 +448,9 @@ function Row(props) {
         <TableCell align="center">{row.sales_invoice}</TableCell>
         <TableCell align="center">{row.customer}</TableCell>
         {isInGroups("Operations & Supply Chain Manager", "Director") && (
-          <TableCell align="center">{row.type_of_customer}</TableCell>
+          <TableCell align="center">
+            {(row.type_of_customer || "").replace(/ Customer$/, "")}
+          </TableCell>
         )}
         <TableCell align="center">{row.dispatch_location}</TableCell>
         <TableCell align="center">
@@ -555,7 +557,7 @@ const headers = [
   { label: "Customer", key: "customer" },
   { label: "Transport Method", key: "selected_transport_mode" },
   { label: "Transporter", key: "transporter" },
-  { label: "Type of Customer", key: "type_of_customer" },
+  { label: "Business Vertical", key: "type_of_customer" },
   { label: "Dispatch Location", key: "dispatch_location" },
   { label: "LR Copy", key: "lr_copy" },
   { label: "POD Copy", key: "pod_copy" },

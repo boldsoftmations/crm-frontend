@@ -819,7 +819,7 @@ export const CreateCompanyDetails = (props) => {
 
           <Grid item xs={12} sm={4}>
             <FormControl required>
-              <FormLabel id="customer-type-label">Type of Customer</FormLabel>
+              <FormLabel id="customer-type-label">Business Vertical</FormLabel>
 
               <RadioGroup
                 row
@@ -832,19 +832,19 @@ export const CreateCompanyDetails = (props) => {
                 <FormControlLabel
                   value="Industrial Customer"
                   control={<Radio />}
-                  label="Industrial Customer"
+                  label="Industrial"
                 />
 
                 <FormControlLabel
                   value="Distribution Customer"
                   control={<Radio />}
-                  label="Distribution Customer"
+                  label="Distribution"
                 />
 
                 <FormControlLabel
                   value="Trading Customer"
                   control={<Radio />}
-                  label="Trading Customer"
+                  label="Trading"
                 />
               </RadioGroup>
             </FormControl>

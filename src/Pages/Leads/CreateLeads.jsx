@@ -740,7 +740,7 @@ export const CreateLeads = memo((props) => {
             <>
               <FormControl>
                 <FormLabel id="demo-row-radio-buttons-group-label">
-                  Type of Customer
+                  Business Vertical
                 </FormLabel>
                 <RadioGroup
                   row
@@ -754,17 +754,17 @@ export const CreateLeads = memo((props) => {
                   <FormControlLabel
                     value="Industrial Customer"
                     control={<Radio />}
-                    label="Industrial Customer"
+                    label="Industrial"
                   />
                   <FormControlLabel
                     value="Distribution Customer"
                     control={<Radio />}
-                    label="Distribution Customer"
+                    label="Distribution"
                   />
                   <FormControlLabel
                     value="Trading Customer"
                     control={<Radio />}
-                    label="Trading Customer"
+                    label="Trading"
                   />
                 </RadioGroup>
               </FormControl>

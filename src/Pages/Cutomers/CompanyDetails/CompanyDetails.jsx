@@ -228,7 +228,7 @@ export const CompanyDetails = () => {
   const Tableheaders = [
     "NAME",
     "Assigned To",
-    "Customer Type",
+    "Business Vertical",
     "PAN NO.",
     "GST NO.",
     "CITY",
@@ -315,7 +315,7 @@ export const CompanyDetails = () => {
                   }}
                   options={TypeCustomer}
                   getOptionLabel={(option) => option.label}
-                  label="Filter By Customer Type" // Passed directly to CustomAutocomplete
+                  label="Filter By Business Vertical" // Passed directly to CustomAutocomplete
                 />
               </Grid>
               <Grid item xs={12} sm={3}>
@@ -481,7 +481,7 @@ export const CompanyDetails = () => {
                       ))}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {row.type_of_customer}
+                      {(row.type_of_customer || "").replace(/ Customer$/, "")}
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       {row.pan_number}
@@ -653,18 +653,18 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 const TypeCustomer = [
   {
     value: "industrial_customer",
-    label: "Industrial Customer",
+    label: "Industrial",
   },
   {
     value: "distribution_customer",
-    label: "Distribution Customer",
+    label: "Distribution",
   },
   {
     value: "Exclusive Distribution Customer",
-    label: "Exclusive Distribution Customer",
+    label: "Exclusive Distribution",
   },
   {
     value: "trading_customer",
-    label: "Trading Customer",
+    label: "Trading",
   },
 ];

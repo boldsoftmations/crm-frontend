@@ -123,7 +123,7 @@ export const ExclusiveDistributionCustomer = () => {
                     fontWeight: 800,
                   }}
                 >
-                  Exclusive Distribution Customers
+                  Exclusive Distribution
                 </h3>
               </Grid>
             </Grid>

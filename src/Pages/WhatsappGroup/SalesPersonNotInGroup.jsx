@@ -123,7 +123,7 @@ export const SalesPersonNotInGroup = () => {
                   }
                   options={FilterOptions}
                   getOptionLabel={(option) => option.label}
-                  label="Filter By Type of Customer"
+                  label="Filter By Business Vertical"
                 />
               </Grid>
             </Grid>
@@ -141,19 +141,19 @@ export const SalesPersonNotInGroup = () => {
 };
 const FilterOptions = [
   {
-    label: "Industrial Customer",
+    label: "Industrial",
     value: "industrial_customer",
   },
   {
-    label: "Distribution Customer",
+    label: "Distribution",
     value: "distribution_customer",
   },
   {
-    label: "Exclusive Distribution Customer",
+    label: "Exclusive Distribution",
     value: "Exclusive Distribution Customer",
   },
   {
-    label: "Trading Customer",
+    label: "Trading",
     value: "trading_customer",
   },
 ];

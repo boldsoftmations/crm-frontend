@@ -78,7 +78,7 @@ export const AnalyticsAllTabView = () => {
       component: <SalesFieldDashboard />,
     },
     {
-      label: "Distribution Customer",
+      label: "Distribution",
       roles: ["Director"],
       component: <RetailCustomerData />,
     },

@@ -135,8 +135,14 @@ export const ViewCustomerList = ({
           <Table stickyHeader>
             <TableHead>
               <TableRow>
-                {["Customer", "State", "City", "Pincode", "Type", "Action"].map(
-                  (header, index) => (
+                {[
+                  "Customer",
+                  "State",
+                  "City",
+                  "Pincode",
+                  "Business Vertical",
+                  "Action",
+                ].map((header, index) => (
                     <StyledTableCell key={index} align="center">
                       {header}
                     </StyledTableCell>
@@ -159,7 +165,7 @@ export const ViewCustomerList = ({
                       {row.pincode}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      {row.type_of_customer}
+                      {(row.type_of_customer || "").replace(/ Customer$/, "")}
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       <Button

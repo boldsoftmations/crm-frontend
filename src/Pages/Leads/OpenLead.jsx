@@ -647,7 +647,7 @@ export const OpenLead = () => {
       </Popup>
       <Popup
         maxWidth="lg"
-        title={"Assign to Exclusive Distribution Customer"}
+        title={"Assign to Exclusive Distribution"}
         openPopup={openEDCModal}
         setOpenPopup={setOpenEDCModal}
       >
