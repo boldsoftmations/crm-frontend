@@ -104,7 +104,7 @@ export const UpdateCompanyDetails = (props) => {
           state: response.data.state_name,
           city: response.data.city_name,
           country: response.data.country_name,
-          pin_code: response.data.pincode,
+          pin_code: response.data.id,
           zone: response.data.zone_name || "",
         });
       }
