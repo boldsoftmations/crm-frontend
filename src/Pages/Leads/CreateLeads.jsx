@@ -73,7 +73,8 @@ export const CreateLeads = memo((props) => {
     if (users && users.groups) {
       if (
         users.groups.includes("Sales Executive") ||
-        users.groups.includes("Business Development Execution") ||
+        users.groups.includes("Business Development Executive") ||
+        users.groups.includes("Customer Relationship Executive") ||
         users.groups.includes("Customer Service")
       ) {
         setAssigned(

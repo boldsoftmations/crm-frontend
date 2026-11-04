@@ -431,7 +431,8 @@ export const OpenLead = () => {
               <TableHead>
                 <StyledTableRow>
                   {(userData.groups.includes("Sales Executive") ||
-                  userData.groups.includes("Business Development Executive")
+                  userData.groups.includes("Business Development Executive") ||
+                  userData.groups.includes("Customer Relationship Executive")
                     ? TableheadersForExecutive
                     : Tableheaders
                   ).map((header) => (
@@ -486,7 +487,8 @@ export const OpenLead = () => {
                     {/* Display 'Assigned To' column only for non-executive users */}
                     {!(
                       userData.groups.includes("Sales Executive") ||
-                      userData.groups.includes("Business Development Executive")
+                      userData.groups.includes("Business Development Executive") ||
+                      userData.groups.includes("Customer Relationship Executive")
                     ) && (
                       <StyledTableCell align="center">
                         {row.assigned_name}

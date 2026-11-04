@@ -989,6 +989,7 @@ export const ListItems = ({ setOpen }) => {
         ),
         renderListItem("/customer/srf", <StickyNote2Icon />, "SRF"),
         renderSubmenu("sales", <TrendingUpIcon />, "Sales", [
+          { to: "/leads/all-lead", text: "Leads" },
           { to: "/customers/all-customer", text: "Customer" },
           { to: "/followp/view-followup", text: "Followup" },
           { to: "/forecast/view-product-forecast", text: "Forecast" },

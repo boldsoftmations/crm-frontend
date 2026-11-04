@@ -431,7 +431,8 @@ export const HotLeads = () => {
               <TableHead>
                 <StyledTableRow>
                   {(users.groups.includes("Sales Executive") ||
-                  users.groups.includes("Business Development Executive")
+                  users.groups.includes("Business Development Executive") ||
+                  users.groups.includes("Customer Relationship Executive")
                     ? TableheadersForExecutive
                     : Tableheaders
                   ).map((header) => (
@@ -486,7 +487,8 @@ export const HotLeads = () => {
                     {/* Display 'Assigned To' column only for non-executive users */}
                     {!(
                       users.groups.includes("Sales Executive") ||
-                      users.groups.includes("Business Development Executive")
+                      users.groups.includes("Business Development Executive") ||
+                      users.groups.includes("Customer Relationship Executive")
                     ) && (
                       <StyledTableCell align="center">
                         {row.assigned_name}
