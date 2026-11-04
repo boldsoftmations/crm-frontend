@@ -398,7 +398,12 @@ export const UpdateLeads = memo((props) => {
       try {
         e.preventDefault();
 
-        if (!leads.pin_code || !leads.city || !leads.state) {
+        // Location optional on leads; if a pin is entered it must be validated.
+        const hasBillingPin =
+          leads.pincode !== null &&
+          leads.pincode !== undefined &&
+          String(leads.pincode).trim() !== "";
+        if (hasBillingPin && (!leads.pin_code || !leads.city || !leads.state)) {
           setAlertMsg({
             message:
               "Please validate the postal code before updating the lead",
@@ -408,8 +413,13 @@ export const UpdateLeads = memo((props) => {
           return;
         }
 
-        if (
+        const hasShippingPin =
           !checked &&
+          leads.shipping_pincode !== null &&
+          leads.shipping_pincode !== undefined &&
+          String(leads.shipping_pincode).trim() !== "";
+        if (
+          hasShippingPin &&
           (!leads.shipping_pin_code ||
             !leads.shipping_city ||
             !leads.shipping_state)
