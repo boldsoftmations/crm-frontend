@@ -7,10 +7,12 @@ import { useNotificationHandling } from "../../../Components/useNotificationHand
 import { MessageAlert } from "../../../Components/MessageAlert";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+import validatePincode from "../../../utility/validatePincode";
 
 const initialFormState = {
   unit: "",
   pincode: "",
+  country_id: "",
   transporter: "",
 };
 
@@ -105,65 +107,30 @@ const TransportMappingCreate = ({
     getAllCountryList();
   }, []);
   const ValidatePincode = async () => {
-    if (!pincodeInput.trim()) {
-      handleError({
-        response: {
-          data: {
-            message: "Please enter a pincode.",
-          },
-        },
-      });
-      return;
-    }
-
     try {
       setLoading(true);
 
-      const response = await MasterService.ValidatePincode(
-        countyName.id,
+      const data = await validatePincode(
+        countyName && countyName.id,
         pincodeInput,
       );
 
-      if (response && response.data) {
-        const verified = response.data;
-
-        setFormData((prev) => ({
-          ...prev,
-          pincode: verified.pincode,
-        }));
-
-        setPincodeInput(verified.pincode);
-        setIsValidPincode(true);
-
-        handleSuccess("Pincode verified successfully.");
-      } else {
-        setIsValidPincode(false);
-
-        setFormData((prev) => ({
-          ...prev,
-          pincode: "",
-        }));
-
-        handleError({
-          response: {
-            data: {
-              message: "Invalid pincode.",
-            },
-          },
-        });
-      }
+      setFormData((prev) => ({
+        ...prev,
+        pincode: data.pincode,
+        country_id: data.country_id || (countyName && countyName.id) || "",
+      }));
+      setPincodeInput(data.pincode);
+      setIsValidPincode(true);
+      handleSuccess("Pincode verified successfully.");
     } catch (error) {
       setIsValidPincode(false);
-      console.log(error);
       setFormData((prev) => ({
         ...prev,
         pincode: "",
+        country_id: "",
       }));
-
-      handleError(
-        (error.response && error.response.data.message) ||
-          "Error validating pincode.",
-      );
+      handleError(error.message || "Error validating pincode.");
     } finally {
       setLoading(false);
     }
@@ -181,16 +148,29 @@ const TransportMappingCreate = ({
     setFormData((prev) => ({
       ...prev,
       pincode: "",
+      country_id: "",
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const countryId =
+      formData.country_id || (countyName && countyName.id) || null;
+
+    if (!countryId) {
+      handleError("Please select country and validate pincode before submitting.");
+      return;
+    }
+
     try {
       setLoading(true);
 
-      await MasterService.createTransportMapping(formData);
+      // Backend ActivePincodeField resolves pincode by country_id from the payload
+      await MasterService.createTransportMapping({
+        ...formData,
+        country_id: countryId,
+      });
 
       handleSuccess("Transport mapping created successfully");
 
@@ -200,7 +180,7 @@ const TransportMappingCreate = ({
       }, 1000);
     } catch (error) {
       console.log(error);
-      handleError(error.response && error.response.data.non_field_errors[0]);
+      handleError(error);
     } finally {
       setLoading(false);
     }

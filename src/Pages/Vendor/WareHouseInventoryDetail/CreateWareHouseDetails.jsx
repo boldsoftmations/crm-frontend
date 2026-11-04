@@ -3,20 +3,29 @@ import { Box, Button, Grid } from "@mui/material";
 import { useSelector } from "react-redux";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
 import validatePincode from "../../../utility/validatePincode";
+import {
+  applyPostalLookupSuccess,
+  clearPostalFields,
+} from "../../../utility/postalAddressHelpers";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import InventoryServices from "../../../services/InventoryService";
 import CustomTextField from "../../../Components/CustomTextField";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
+
 export const CreateWareHouseInventoryDetails = (props) => {
   const { setOpenPopup, getAllVendorDetailsByID, contactData, vendorData } =
     props;
+  const isDomestic = vendorData && vendorData.type === "Domestic";
   const [open, setOpen] = useState(false);
-  const [inputValue, setInputValue] = useState([]);
-  const [pinCodeData, setPinCodeData] = useState(null);
+  const [inputValue, setInputValue] = useState({
+    address: "",
+    pincode: "",
+    pin_code: "",
+    city: "",
+    state: "",
+  });
   const [selectedcontact, setSelectedContact] = useState("");
   const data = useSelector((state) => state.auth);
-  // const timeoutRef = useRef(null);
-  const [validCheck, setValidCheck] = useState(true);
 
   const [alertmsg, setAlertMsg] = useState({
     message: "",
@@ -25,30 +34,34 @@ export const CreateWareHouseInventoryDetails = (props) => {
   });
 
   const handleClose = () => {
-    setAlertMsg({ ...alertmsg, open: false });
+    setAlertMsg({ open: false });
   };
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-
-    setInputValue({
-      ...inputValue,
-      [name]: value,
-    });
-
     if (name === "pincode") {
-      setPinCodeData(null);
-      setValidCheck(false);
+      setInputValue((prev) => ({
+        ...clearPostalFields(prev),
+        pincode: value,
+      }));
+      return;
     }
+    setInputValue((prev) => ({ ...prev, [name]: value }));
   };
 
   const validatePinCode = async () => {
     try {
-      setOpen(true);
+      if (!vendorData || !vendorData.country_id) {
+        setAlertMsg({
+          message: "Vendor country is required before validating postal code",
+          severity: "warning",
+          open: true,
+        });
+        return;
+      }
 
       const PINCODE = inputValue.pincode;
-
-      if (!PINCODE || PINCODE.trim().length !== 6) {
+      if (!PINCODE || String(PINCODE).trim().length !== 6) {
         setAlertMsg({
           message: "Please enter a valid 6-digit Pin Code",
           severity: "warning",
@@ -57,57 +70,55 @@ export const CreateWareHouseInventoryDetails = (props) => {
         return;
       }
 
+      setOpen(true);
       const response = await validatePincode(vendorData.country_id, PINCODE);
 
-      setPinCodeData(response);
-
-      setValidCheck(true);
-
+      setInputValue((prev) => applyPostalLookupSuccess(prev, response));
       setAlertMsg({
-        message: "Pin Code is valid",
+        message: "Postal code validated successfully",
         severity: "success",
         open: true,
       });
     } catch (error) {
-      setPinCodeData(null);
-
-      setValidCheck(false);
-
+      setInputValue((prev) => clearPostalFields(prev));
       setAlertMsg({
-        message: error.message,
-        severity: "warning",
+        message: error.message || "Error validating postal code",
+        severity: "error",
         open: true,
       });
     } finally {
       setOpen(false);
     }
   };
+
   const createWareHouseDetails = async (e) => {
-    if (vendorData.type === "Domestic" && !validCheck) {
-      setAlertMsg({
-        message: "Please validate the Pin Code first.",
-        severity: "warning",
-        open: true,
-      });
-      return;
-    }
     try {
       e.preventDefault();
+
+      if (isDomestic && (!inputValue.pin_code || !inputValue.city || !inputValue.state)) {
+        setAlertMsg({
+          message: "Please validate the Pin Code first.",
+          severity: "warning",
+          open: true,
+        });
+        return;
+      }
+
       setOpen(true);
       const req = {
         vendor: data ? data.vendorName : "",
         contact: selectedcontact.id,
         address: inputValue.address,
         pincode: inputValue.pincode,
-        state: pinCodeData ? pinCodeData.state_name : "",
-        city: pinCodeData ? pinCodeData.city_name : "",
+        state: inputValue.state || "",
+        city: inputValue.city || "",
       };
       await InventoryServices.createWareHouseInventoryData(req);
       setOpenPopup(false);
       getAllVendorDetailsByID();
-      setOpen(false);
     } catch (error) {
       console.log("createing company detail error", error);
+    } finally {
       setOpen(false);
     }
   };
@@ -140,7 +151,7 @@ export const CreateWareHouseInventoryDetails = (props) => {
               label="Contact"
             />
           </Grid>
-          {vendorData.type === "Domestic" ? (
+          {isDomestic ? (
             <>
               <Grid item xs={12} sm={8}>
                 <CustomTextField
@@ -180,7 +191,7 @@ export const CreateWareHouseInventoryDetails = (props) => {
             />
           </Grid>
 
-          {pinCodeData ? (
+          {isDomestic ? (
             <>
               <Grid item xs={12} sm={6}>
                 <CustomTextField
@@ -189,7 +200,8 @@ export const CreateWareHouseInventoryDetails = (props) => {
                   name="state"
                   label="State"
                   variant="outlined"
-                  value={pinCodeData ? pinCodeData.state_name : ""}
+                  value={inputValue.state || ""}
+                  disabled
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -199,7 +211,8 @@ export const CreateWareHouseInventoryDetails = (props) => {
                   name="city"
                   label="City"
                   variant="outlined"
-                  value={pinCodeData ? pinCodeData.city_name : ""}
+                  value={inputValue.city || ""}
+                  disabled
                 />
               </Grid>
             </>

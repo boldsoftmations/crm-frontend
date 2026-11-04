@@ -13,45 +13,108 @@ import { useDispatch } from "react-redux";
 import { getVendorName } from "../../../Redux/Action/Action";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import InventoryServices from "../../../services/InventoryService";
+import MasterService from "../../../services/MasterService";
 import CustomTextField from "../../../Components/CustomTextField";
-import { country } from "../../Inventory/Country";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
 import validatePincode from "../../../utility/validatePincode";
+import {
+  applyPostalLookupSuccess,
+  clearPostalFields,
+} from "../../../utility/postalAddressHelpers";
 
 export const UpdateVendorDetails = (props) => {
   const { setOpenPopup, getAllVendorDetails, recordForEdit } = props;
   const [open, setOpen] = useState(false);
   const [typeData, setTypeData] = useState(recordForEdit.type);
-  const [inputValue, setInputValue] = useState(recordForEdit);
+  const [inputValue, setInputValue] = useState({
+    ...recordForEdit,
+    pin_code: "",
+  });
   const [errorMessage, setErrorMessage] = useState([]);
+  const [countryList, setCountryList] = useState([]);
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
   const dispatch = useDispatch();
 
-  // Domestic hamesha India hai (id:1). International ke liye, jo bhi
-  // country pehle se record me tha usko `country` list me dhoondh ke
-  // uski id nikal lo (name-only match).
-  const findCountryByName = (name) => {
-    if (!name) {
-      return null;
-    }
-    const match = country.find((c) => c.name === name);
-    return match ? match : null;
-  };
-
   const [selectedCountry, setSelectedCountry] = useState(
-    recordForEdit.type === "Domestic"
-      ? { id: 1, name: "India" }
-      : findCountryByName(recordForEdit.country),
+    recordForEdit.type === "Domestic" ? { id: 1, name: "India" } : null,
   );
 
-  // agar vendor ka record pehle se ek valid pincode ke saath saved hai,
-  // to usse already-validated maan lo - jab tak user pincode edit na kare
-  const [isValidPincode, setIsValidPincode] = useState(
-    recordForEdit.type === "Domestic" && recordForEdit.pincode ? true : false,
-  );
+  // Do not trust saved pincode as verified — revalidate on load.
+  const [isValidPincode, setIsValidPincode] = useState(false);
+
+  useEffect(() => {
+    dispatch(getVendorName(recordForEdit.name));
+
+    const initPostal = async () => {
+      try {
+        setOpen(true);
+
+        const response = await MasterService.getAllMasterCountries("all");
+        const countries = Array.isArray(response.data)
+          ? response.data
+          : (response.data && response.data.results) || [];
+        const internationalCountries = countries.filter(
+          (item) => item && item.name !== "India",
+        );
+        setCountryList(internationalCountries);
+
+        let countryForLookup =
+          recordForEdit.type === "Domestic"
+            ? { id: 1, name: "India" }
+            : null;
+
+        if (recordForEdit.type === "International" && recordForEdit.country) {
+          const match = internationalCountries.find(
+            (c) => c.name === recordForEdit.country,
+          );
+          if (match) {
+            countryForLookup = match;
+            setSelectedCountry(match);
+          }
+        } else if (recordForEdit.type === "Domestic") {
+          setSelectedCountry({ id: 1, name: "India" });
+        }
+
+        if (
+          recordForEdit.pincode &&
+          countryForLookup &&
+          countryForLookup.id
+        ) {
+          try {
+            const postalData = await validatePincode(
+              countryForLookup.id,
+              recordForEdit.pincode,
+            );
+            setInputValue((prev) => ({
+              ...applyPostalLookupSuccess(prev, postalData),
+              pincode: postalData.pincode,
+            }));
+            setIsValidPincode(true);
+          } catch (error) {
+            setIsValidPincode(false);
+            handleError({
+              response: {
+                data: {
+                  message:
+                    error.message ||
+                    "Loaded postal code could not be verified. Please validate again.",
+                },
+              },
+            });
+          }
+        }
+      } catch (error) {
+        console.log("Error initializing vendor postal data", error);
+      } finally {
+        setOpen(false);
+      }
+    };
+
+    initPostal();
+  }, []);
 
   const handleChange = (event) => {
     const { value } = event.target;
@@ -59,66 +122,66 @@ export const UpdateVendorDetails = (props) => {
 
     if (value === "Domestic") {
       setSelectedCountry({ id: 1, name: "India" });
-      setInputValue({ ...inputValue, country: "India" });
+      setInputValue((prev) => ({
+        ...clearPostalFields(prev),
+        country: "India",
+        pincode: "",
+      }));
     } else {
       setSelectedCountry(null);
-      setInputValue({ ...inputValue, country: "" });
+      setInputValue((prev) => ({
+        ...clearPostalFields(prev),
+        country: "",
+        pincode: "",
+      }));
     }
 
-    // type switch hone par pincode invalid maan lo, dobara validate karna hoga
     setIsValidPincode(false);
   };
 
   const handleInputChange = (event) => {
-    // ye ab sirf normal text/number/date fields ke liye hai
     const { name, value } = event.target;
-    setInputValue({ ...inputValue, [name]: value });
 
     if (name === "pincode") {
+      setInputValue((prev) => ({
+        ...clearPostalFields(prev),
+        pincode: value,
+      }));
       setIsValidPincode(false);
+      return;
     }
+
+    setInputValue((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSourceChange = (event, value) => {
-    setInputValue({
-      ...inputValue,
+    setInputValue((prev) => ({
+      ...prev,
       vendor_source: value ? value.name : "",
-    });
+    }));
   };
 
-  // Country Autocomplete ke liye alag, sahi handler - MUI Autocomplete
-  // onChange(event, value) deta hai jaha value poora {id, name} object hota hai
   const handleCountryChange = (event, value) => {
     setSelectedCountry(value);
-    setInputValue({
-      ...inputValue,
-      country: value ? value.name : "",
-    });
     setIsValidPincode(false);
+    setInputValue((prev) => ({
+      ...clearPostalFields(prev),
+      country: value ? value.name : "",
+      pincode: "",
+    }));
   };
-
-  useEffect(() => {
-    dispatch(getVendorName(recordForEdit.name));
-  }, []);
 
   const GST_NO = (gst_no) => gst_no.length <= 14;
 
-  // Domestic ke liye pincode validate hona zaroori hai, International ke liye nahi
-  const canSubmit = typeData === "Domestic" ? isValidPincode : true;
+  const canSubmit = Boolean(
+    isValidPincode &&
+      inputValue.pin_code &&
+      inputValue.city &&
+      inputValue.state,
+  );
 
   const runPincodeValidation = async (pincodeValue) => {
     try {
-      if (!pincodeValue || String(pincodeValue).length !== 6) {
-        handleError({
-          response: {
-            data: {
-              message: "Please enter a valid 6-digit pincode.",
-            },
-          },
-        });
-        return;
-      }
-
       if (!selectedCountry || !selectedCountry.id) {
         handleError({
           response: {
@@ -130,20 +193,46 @@ export const UpdateVendorDetails = (props) => {
         return;
       }
 
+      const pin =
+        pincodeValue !== null && pincodeValue !== undefined
+          ? String(pincodeValue).trim()
+          : "";
+
+      if (!pin) {
+        handleError({
+          response: {
+            data: {
+              message: "Please enter postal code before validation.",
+            },
+          },
+        });
+        return;
+      }
+
+      if (typeData === "Domestic" && pin.length !== 6) {
+        handleError({
+          response: {
+            data: {
+              message: "Please enter a valid 6-digit pincode.",
+            },
+          },
+        });
+        return;
+      }
+
       setOpen(true);
 
-      const verified = await validatePincode(selectedCountry.id, pincodeValue);
+      const verified = await validatePincode(selectedCountry.id, pin);
 
       setInputValue((prev) => ({
-        ...prev,
+        ...applyPostalLookupSuccess(prev, verified),
         pincode: verified.pincode,
-        state: verified.state_name,
-        city: verified.city_name,
       }));
 
       setIsValidPincode(true);
       handleSuccess("Pincode verified successfully.");
     } catch (error) {
+      setInputValue((prev) => clearPostalFields(prev));
       setIsValidPincode(false);
       handleError({
         response: {
@@ -165,11 +254,16 @@ export const UpdateVendorDetails = (props) => {
     try {
       e.preventDefault();
 
-      if (typeData === "Domestic" && !isValidPincode) {
+      if (
+        !isValidPincode ||
+        !inputValue.pin_code ||
+        !inputValue.city ||
+        !inputValue.state
+      ) {
         handleError({
           response: {
             data: {
-              message: "Please validate the pincode before submitting.",
+              message: "Please validate the postal code before submitting.",
             },
           },
         });
@@ -183,8 +277,8 @@ export const UpdateVendorDetails = (props) => {
         vendor_source: inputValue.vendor_source,
         address: inputValue.address,
         pincode: inputValue.pincode,
-        state: typeData === "Domestic" ? inputValue.state : "",
-        city: typeData === "Domestic" ? inputValue.city : "",
+        state: inputValue.state || "",
+        city: inputValue.city || "",
         website: inputValue.website,
         estd_date: inputValue.estd_date,
         gst_number: inputValue.gst_number,
@@ -263,8 +357,8 @@ export const UpdateVendorDetails = (props) => {
             <CustomAutocomplete
               size="small"
               id="grouped-demo"
-              options={typeData === "International" ? country : []}
-              getOptionLabel={(option) => option.name}
+              options={typeData === "International" ? countryList : []}
+              getOptionLabel={(option) => (option && option.name) || ""}
               value={
                 typeData === "Domestic"
                   ? { id: 1, name: "India" }
@@ -310,33 +404,30 @@ export const UpdateVendorDetails = (props) => {
               }}
             />
           </Grid>
-          {typeData === "Domestic" ? (
-            <Grid item xs={12} sm={3}>
-              <Box display="flex" gap={1}>
-                <CustomTextField
-                  fullWidth
-                  name="pincode"
-                  size="small"
-                  type={"number"}
-                  label="Pin Code"
-                  variant="outlined"
-                  value={inputValue.pincode ? inputValue.pincode : ""}
-                  onChange={handleInputChange}
-                  InputProps={{
-                    readOnly: isValidPincode,
-                  }}
-                />
-                <Button
-                  type="button"
-                  variant="contained"
-                  onClick={handleValidateClick}
-                  disabled={isValidPincode}
-                >
-                  Validate
-                </Button>
-              </Box>
-            </Grid>
-          ) : null}
+          <Grid item xs={12} sm={3}>
+            <Box display="flex" gap={1}>
+              <CustomTextField
+                fullWidth
+                name="pincode"
+                size="small"
+                label={typeData === "Domestic" ? "Pin Code" : "Postal Code"}
+                variant="outlined"
+                value={inputValue.pincode ? inputValue.pincode : ""}
+                onChange={handleInputChange}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+              <Button
+                type="button"
+                variant="contained"
+                onClick={handleValidateClick}
+                disabled={isValidPincode}
+              >
+                Validate
+              </Button>
+            </Box>
+          </Grid>
           <Grid item xs={12} sm={4}>
             <CustomTextField
               fullWidth
@@ -344,15 +435,8 @@ export const UpdateVendorDetails = (props) => {
               name="state"
               label="State"
               variant="outlined"
-              value={
-                typeData === "Domestic" && inputValue.state
-                  ? inputValue.state
-                  : ""
-              }
-              onChange={handleInputChange}
-              InputProps={{
-                readOnly: typeData === "Domestic",
-              }}
+              value={inputValue.state || ""}
+              disabled
               InputLabelProps={{
                 shrink: true,
               }}
@@ -365,15 +449,8 @@ export const UpdateVendorDetails = (props) => {
               size="small"
               label="City"
               variant="outlined"
-              value={
-                typeData === "Domestic" && inputValue.city
-                  ? inputValue.city
-                  : ""
-              }
-              onChange={handleInputChange}
-              InputProps={{
-                readOnly: typeData === "Domestic",
-              }}
+              value={inputValue.city || ""}
+              disabled
               InputLabelProps={{
                 shrink: true,
               }}

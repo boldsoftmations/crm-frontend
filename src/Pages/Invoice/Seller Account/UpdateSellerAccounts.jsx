@@ -6,11 +6,22 @@ import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomTextField from "../../../Components/CustomTextField";
 import CloseIcon from "@mui/icons-material/Close";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
+import validatePincode from "../../../utility/validatePincode";
+import {
+  getCountryIdForOrigin,
+  applyPostalLookupSuccess,
+  clearPostalFields,
+} from "../../../utility/postalAddressHelpers";
 
 export const UpdateSellerAccounts = (props) => {
   const { setOpenPopup, getAllSellerAccountsDetails, idForEdit } = props;
   const [open, setOpen] = useState(false);
-  const [inputValue, setInputValue] = useState([]);
+  const [inputValue, setInputValue] = useState({
+    pincode: "",
+    pin_code: "",
+    state: "",
+    city: "",
+  });
   const [bankData, setBankData] = useState([]);
   const [errMsg, setErrMsg] = useState("");
   const [cvPreview, setCvPreview] = useState(null);
@@ -25,7 +36,14 @@ export const UpdateSellerAccounts = (props) => {
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    setInputValue({ ...inputValue, [name]: value });
+    if (name === "pincode") {
+      setInputValue((prev) => ({
+        ...clearPostalFields(prev),
+        pincode: value,
+      }));
+      return;
+    }
+    setInputValue((prev) => ({ ...prev, [name]: value }));
   };
 
   useEffect(() => {
@@ -38,12 +56,74 @@ export const UpdateSellerAccounts = (props) => {
       const response = await InvoiceServices.getSellerAccountDataById(
         idForEdit
       );
-      console.log("response", response);
-      setInputValue(response.data);
-      setOpen(false);
+      const apiData = response.data || {};
+      /*
+       * Seller Account API returns pincode/state/city only (no pin_code FK).
+       * Keep loaded state/city; do not clearPostalFields on load.
+       * pin_code/zone are client verification fields filled by lookup.
+       */
+      const loaded = {
+        ...apiData,
+        pin_code: "",
+        zone: "",
+      };
+      setInputValue(loaded);
+
+      if (loaded.pincode) {
+        try {
+          const postalData = await validatePincode(
+            getCountryIdForOrigin("Domestic"),
+            loaded.pincode
+          );
+          setInputValue((prev) => applyPostalLookupSuccess(prev, postalData));
+        } catch (error) {
+          setAlertMsg({
+            message:
+              error.message ||
+              "Loaded postal code could not be verified. Please validate again.",
+            severity: "warning",
+            open: true,
+          });
+        }
+      }
     } catch (err) {
-      setOpen(false);
       console.log("company data by id error", err);
+    } finally {
+      setOpen(false);
+    }
+  };
+
+  const validatePinCode = async () => {
+    try {
+      if (!inputValue.pincode) {
+        setAlertMsg({
+          message: "Please enter postal code before validation",
+          severity: "error",
+          open: true,
+        });
+        return;
+      }
+
+      setOpen(true);
+      const data = await validatePincode(
+        getCountryIdForOrigin("Domestic"),
+        inputValue.pincode
+      );
+      setInputValue((prev) => applyPostalLookupSuccess(prev, data));
+      setAlertMsg({
+        message: "Postal code validated successfully",
+        severity: "success",
+        open: true,
+      });
+    } catch (error) {
+      setInputValue((prev) => clearPostalFields(prev));
+      setAlertMsg({
+        message: error.message || "Error validating postal code",
+        severity: "error",
+        open: true,
+      });
+    } finally {
+      setOpen(false);
     }
   };
 
@@ -103,11 +183,26 @@ export const UpdateSellerAccounts = (props) => {
   const updateBankDetails = async (e) => {
     try {
       e.preventDefault();
+
+      if (!inputValue.pin_code || !inputValue.city || !inputValue.state) {
+        setAlertMsg({
+          message:
+            "Please validate the postal code before updating the seller account",
+          severity: "error",
+          open: true,
+        });
+        return;
+      }
+
       setOpen(true);
       const formDataToSend = new FormData();
 
       // Append only fields with values to 'formDataToSend'
       Object.keys(inputValue).forEach((key) => {
+        // pin_code / zone are lookup-only; Seller Account API does not take them
+        if (key === "pin_code" || key === "zone") {
+          return;
+        }
         if (inputValue[key]) {
           // Check if the key is 'company_profile' and not of file type
           if (key === "company_profile" && !(inputValue[key] instanceof File)) {
@@ -227,7 +322,7 @@ export const UpdateSellerAccounts = (props) => {
           </Grid>
           <Grid item xs={12} sm={4}>
             <CustomTextField
-              fullWidth
+              sx={{ minWidth: "200px" }}
               name="pincode"
               size="small"
               label="Pin Code"
@@ -235,6 +330,13 @@ export const UpdateSellerAccounts = (props) => {
               value={inputValue.pincode ? inputValue.pincode : ""}
               onChange={handleInputChange}
             />
+            <Button
+              onClick={validatePinCode}
+              variant="contained"
+              sx={{ marginLeft: "1rem" }}
+            >
+              Validate
+            </Button>
           </Grid>
           <Grid item xs={12} sm={4}>
             <CustomTextField
@@ -244,7 +346,7 @@ export const UpdateSellerAccounts = (props) => {
               label="State"
               variant="outlined"
               value={inputValue.state ? inputValue.state : ""}
-              onChange={handleInputChange}
+              disabled
             />
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -255,7 +357,7 @@ export const UpdateSellerAccounts = (props) => {
               label="City"
               variant="outlined"
               value={inputValue.city ? inputValue.city : ""}
-              onChange={handleInputChange}
+              disabled
             />
           </Grid>
           <Grid item xs={12} sm={4}>

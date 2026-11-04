@@ -8,103 +8,79 @@ import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
 import validatePincode from "../../../utility/validatePincode";
+import {
+  applyPostalLookupSuccess,
+  clearPostalFields,
+} from "../../../utility/postalAddressHelpers";
 
 export const CreateWareHouseDetails = (props) => {
   const { setOpenPopup, getAllCompanyDetailsByID, contactData } = props;
   const [open, setOpen] = useState(false);
   const [selectedcontact, setSelectedContact] = useState("");
-  const [validCheck, setValidCheck] = useState(true);
   const data = useSelector((state) => state.auth);
 
   const [inputValue, setInputValue] = useState({
     address: "",
     pincode: "",
+    pin_code: "",
     city: "",
     state: "",
   });
+
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    setInputValue({ ...inputValue, [name]: value });
-    setValidCheck(false);
+    if (name === "pincode") {
+      setInputValue((prev) => ({
+        ...clearPostalFields(prev),
+        pincode: value,
+      }));
+      return;
+    }
+    setInputValue((prev) => ({ ...prev, [name]: value }));
   };
+
   const [alertmsg, setAlertMsg] = useState({
     message: "",
     severity: "",
     open: false,
   });
+
   const handleClose = () => {
     setAlertMsg({ open: false });
   };
+
+  const handleContactChange = (event, value) => {
+    setSelectedContact(value);
+    setInputValue((prev) => clearPostalFields(prev));
+  };
+
   const validatePinCode = async () => {
     try {
-      setOpen(true);
-
-      const PINCODE = inputValue.pincode;
-
-      if (!PINCODE || PINCODE.trim().length !== 6) {
-        setInputValue((prev) => ({
-          ...prev,
-          state: "",
-          city: "",
-        }));
-
+      if (!selectedcontact || !selectedcontact.country_id) {
         setAlertMsg({
-          message: "Please enter a valid 6-digit Pin Code",
+          message: "Please select a contact before validating postal code",
           severity: "warning",
           open: true,
         });
-
         return;
       }
 
+      setOpen(true);
       const response = await validatePincode(
         selectedcontact.country_id,
-        PINCODE,
+        inputValue.pincode,
       );
 
-      console.log("Validate Response:", response);
-
-      if (!response || !response.state_name || !response.city_name) {
-        setInputValue((prev) => ({
-          ...prev,
-          state: "",
-          city: "",
-        }));
-
-        setAlertMsg({
-          message:
-            "This Pin Code does not exist! First create the Pin Code in the master.",
-          severity: "warning",
-          open: true,
-        });
-
-        return;
-      }
-
-      setInputValue((prev) => ({
-        ...prev,
-        state: response.state_name,
-        city: response.city_name,
-      }));
-
-      setValidCheck(true);
-
+      setInputValue((prev) => applyPostalLookupSuccess(prev, response));
       setAlertMsg({
-        message: "Pin Code is valid",
+        message: "Postal code validated successfully",
         severity: "success",
         open: true,
       });
     } catch (error) {
-      console.log("Validate Pincode Error:", error);
-
-      setInputValue((prev) => ({
-        ...prev,
-        state: "",
-        city: "",
-      }));
-
+      setInputValue((prev) => clearPostalFields(prev));
       setAlertMsg({
-        message: "Error fetching pincode details",
+        message: error.message || "Error validating postal code",
         severity: "error",
         open: true,
       });
@@ -112,9 +88,30 @@ export const CreateWareHouseDetails = (props) => {
       setOpen(false);
     }
   };
+
   const createWareHouseDetails = async (e) => {
     try {
       e.preventDefault();
+
+      if (!inputValue.address || !String(inputValue.address).trim()) {
+        setAlertMsg({
+          message: "Address is required",
+          severity: "error",
+          open: true,
+        });
+        return;
+      }
+
+      if (!inputValue.pin_code || !inputValue.city || !inputValue.state) {
+        setAlertMsg({
+          message:
+            "Please validate the postal code before creating the warehouse",
+          severity: "error",
+          open: true,
+        });
+        return;
+      }
+
       setOpen(true);
       const req = {
         company: data ? data.companyName : "",
@@ -126,10 +123,10 @@ export const CreateWareHouseDetails = (props) => {
       };
       await CustomerServices.createWareHouseData(req);
       setOpenPopup(false);
-      setOpen(false);
       getAllCompanyDetailsByID();
     } catch (error) {
       console.log("createing company detail error", error);
+    } finally {
       setOpen(false);
     }
   };
@@ -154,7 +151,7 @@ export const CreateWareHouseDetails = (props) => {
               fullWidth
               size="small"
               id="grouped-demo"
-              onChange={(event, value) => setSelectedContact(value)}
+              onChange={handleContactChange}
               options={contactData.map((option) => option)}
               groupBy={(option) => option.designation}
               getOptionLabel={(option) => `${option.name} ${option.contact}`}
@@ -188,7 +185,6 @@ export const CreateWareHouseDetails = (props) => {
               onClick={validatePinCode}
               variant="contained"
               sx={{ marginLeft: "1rem" }}
-              disabled={validCheck}
             >
               Validate
             </Button>
@@ -202,7 +198,6 @@ export const CreateWareHouseDetails = (props) => {
               label="State"
               variant="outlined"
               value={inputValue.state || ""}
-              onChange={handleInputChange}
               disabled
             />
           </Grid>
@@ -214,7 +209,6 @@ export const CreateWareHouseDetails = (props) => {
               label="City"
               variant="outlined"
               value={inputValue.city || ""}
-              onChange={handleInputChange}
               disabled
             />
           </Grid>

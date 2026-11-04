@@ -5,6 +5,12 @@ import MasterService from "../../../services/MasterService";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
 import { CustomLoader } from "../../../Components/CustomLoader";
+import validatePincode from "../../../utility/validatePincode";
+import {
+  getCountryIdForOrigin,
+  applyPostalLookupSuccess,
+  clearPostalFields,
+} from "../../../utility/postalAddressHelpers";
 
 // API contract (as given):
 // POST /api/master/transporter-branch/
@@ -17,6 +23,9 @@ import { CustomLoader } from "../../../Components/CustomLoader";
 // double-checking with backend that this is really intended and not a typo
 // in the contract, since a name-based FK is fragile if the transporter is
 // ever renamed. Implemented exactly as specified for now.
+//
+// pin_code / state / zone are client-side verification fields from postal
+// lookup only — not sent in the branch API payload.
 
 function TransportBranchCreate({
   transporterId,
@@ -28,6 +37,9 @@ function TransportBranchCreate({
     branch_name: "",
     city: "",
     pincode: "",
+    pin_code: "",
+    state: "",
+    zone: "",
     address: "",
     is_active: true,
   };
@@ -40,7 +52,36 @@ function TransportBranchCreate({
 
   const handleChange = (event) => {
     const { name, value } = event.target;
+    if (name === "pincode") {
+      setFormData((prev) => ({
+        ...clearPostalFields(prev),
+        pincode: value,
+      }));
+      return;
+    }
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const validatePinCode = async () => {
+    try {
+      if (!formData.pincode) {
+        handleError("Please enter postal code before validation");
+        return;
+      }
+
+      setLoading(true);
+      const data = await validatePincode(
+        getCountryIdForOrigin("Domestic"),
+        formData.pincode
+      );
+      setFormData((prev) => applyPostalLookupSuccess(prev, data));
+      handleSuccess("Postal code validated successfully");
+    } catch (error) {
+      setFormData((prev) => clearPostalFields(prev));
+      handleError(error.message || "Error validating postal code");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -48,6 +89,11 @@ function TransportBranchCreate({
 
     if (!formData.branch_name || !formData.city || !formData.pincode) {
       handleError("Branch Name, City and Pincode are required.");
+      return;
+    }
+
+    if (!formData.pin_code) {
+      handleError("Please validate the postal code before saving the branch.");
       return;
     }
 
@@ -103,19 +149,7 @@ function TransportBranchCreate({
           />
         </Grid>
 
-        <Grid item xs={12} sm={6}>
-          <TextField
-            fullWidth
-            required
-            label="City"
-            name="city"
-            value={formData.city}
-            onChange={handleChange}
-            size="small"
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12} sm={6} sx={{ display: "flex", alignItems: "center" }}>
           <TextField
             fullWidth
             required
@@ -124,6 +158,25 @@ function TransportBranchCreate({
             value={formData.pincode}
             onChange={handleChange}
             size="small"
+          />
+          <Button
+            onClick={validatePinCode}
+            variant="contained"
+            sx={{ marginLeft: "1rem", whiteSpace: "nowrap" }}
+          >
+            Validate
+          </Button>
+        </Grid>
+
+        <Grid item xs={12} sm={6}>
+          <TextField
+            fullWidth
+            required
+            label="City"
+            name="city"
+            value={formData.city}
+            size="small"
+            disabled
           />
         </Grid>
 

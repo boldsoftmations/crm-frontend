@@ -5,34 +5,32 @@ import CustomerServices from "../../../services/CustomerService";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomTextField from "../../../Components/CustomTextField";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
-import MasterService from "../../../services/MasterService";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
+import validatePincode from "../../../utility/validatePincode";
+import {
+  applyPostalLookupSuccess,
+  clearPostalFields,
+} from "../../../utility/postalAddressHelpers";
 
 export const UpdateWareHouseDetails = (props) => {
   const { IDForEdit, getAllCompanyDetailsByID, setOpenPopup, contactData } =
     props;
-  console.log("Data is: ", IDForEdit);
   const [open, setOpen] = useState(false);
-  const [inputValue, setInputValue] = useState([]);
+  const [inputValue, setInputValue] = useState({
+    address: "",
+    pincode: "",
+    pin_code: "",
+    city: "",
+    state: "",
+    contact: "",
+  });
   const data = useSelector((state) => state.auth);
   const [alertmsg, setAlertMsg] = useState({
     message: "",
     severity: "",
     open: false,
   });
-
   const [selectedContact, setSelectedContact] = useState(null);
-
-  const [isDisabledBtn, setIsDisabledBtn] = useState(false);
-  // const [SelectedContactId, setSelectedContactId] = useState(null);
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setInputValue({ ...inputValue, [name]: value });
-
-    if (name === "pincode") {
-      setIsDisabledBtn(true);
-    }
-  };
 
   useEffect(() => {
     getWareHouseDataByID();
@@ -42,28 +40,76 @@ export const UpdateWareHouseDetails = (props) => {
     setAlertMsg({ open: false });
   };
 
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    if (name === "pincode") {
+      setInputValue((prev) => ({
+        ...clearPostalFields(prev),
+        pincode: value,
+      }));
+      return;
+    }
+    setInputValue((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleContactChange = (event, value) => {
+    setSelectedContact(value);
+    setInputValue((prev) => {
+      const cleared = clearPostalFields(prev);
+      if (!value) {
+        return { ...cleared, contact: "" };
+      }
+      return {
+        ...cleared,
+        contact: value.id,
+        contact_name: value.name,
+        contact_number: value.contact,
+      };
+    });
+  };
+
   const getWareHouseDataByID = async () => {
     try {
       setOpen(true);
 
       const response = await CustomerServices.getWareHouseDataById(IDForEdit);
+      const warehouse = response.data || {};
 
-      const warehouse = response.data;
+      /*
+       * Loaded geo is unverified until lookup succeeds.
+       * Auto-validate so non-address edits still save.
+       */
+      let nextValue = clearPostalFields({ ...warehouse });
+      let contact = null;
 
-      setInputValue(warehouse);
-
-      // Find current contact and pre-select it
       if (contactData && contactData.length > 0) {
-        const contact = contactData.find(
-          (item) => item.id === warehouse.contact,
-        );
-
+        contact = contactData.find((item) => item.id === warehouse.contact);
         if (contact) {
           setSelectedContact(contact);
         }
       }
 
+      setInputValue(nextValue);
       setOpen(false);
+
+      if (contact && contact.country_id && nextValue.pincode) {
+        try {
+          const postalData = await validatePincode(
+            contact.country_id,
+            nextValue.pincode,
+          );
+          nextValue = applyPostalLookupSuccess(nextValue, postalData);
+          setInputValue(nextValue);
+        } catch (error) {
+          setAlertMsg({
+            message:
+              error.message ||
+              "Loaded postal code could not be verified. Please validate again.",
+            severity: "warning",
+            open: true,
+          });
+        }
+      }
     } catch (err) {
       console.log(err);
       setOpen(false);
@@ -72,14 +118,9 @@ export const UpdateWareHouseDetails = (props) => {
 
   const validatePinCode = async () => {
     try {
-      const countryId =
-        selectedContact && selectedContact.country_id
-          ? selectedContact.country_id
-          : "";
-
-      if (!countryId) {
+      if (!selectedContact || !selectedContact.country_id) {
         setAlertMsg({
-          message: "Please select a contact.",
+          message: "Please select a contact before validating postal code",
           severity: "warning",
           open: true,
         });
@@ -87,72 +128,67 @@ export const UpdateWareHouseDetails = (props) => {
       }
 
       setOpen(true);
-
-      const response = await MasterService.ValidatePincode(
-        countryId,
+      const response = await validatePincode(
+        selectedContact.country_id,
         inputValue.pincode,
       );
 
-      if (!response.data) {
-        setAlertMsg({
-          message:
-            "This Pin Code does not exist! First create it in the master.",
-          severity: "warning",
-          open: true,
-        });
-
-        setInputValue((prev) => ({
-          ...prev,
-          state: "",
-          city: "",
-        }));
-        // Disable the button if the pin code is invalid
-      } else {
-        setAlertMsg({
-          message: "Pin code is valid.",
-          severity: "success",
-          open: true,
-        });
-
-        setInputValue((prev) => ({
-          ...prev,
-          state: response.data.state_name,
-          city: response.data.city_name,
-        }));
-        setIsDisabledBtn(false);
-      }
-    } catch (error) {
-      console.log(error);
-
+      setInputValue((prev) => applyPostalLookupSuccess(prev, response));
       setAlertMsg({
-        message: "Error validating pincode.",
+        message: "Postal code validated successfully",
+        severity: "success",
+        open: true,
+      });
+    } catch (error) {
+      setInputValue((prev) => clearPostalFields(prev));
+      setAlertMsg({
+        message: error.message || "Error validating postal code",
         severity: "error",
         open: true,
       });
-      setIsDisabledBtn(true);
     } finally {
       setOpen(false);
     }
   };
 
-  const UpdateWareHouseDetails = async (e) => {
+  const updateWareHouseDetails = async (e) => {
     try {
       e.preventDefault();
+
+      if (!inputValue.address || !String(inputValue.address).trim()) {
+        setAlertMsg({
+          message: "Address is required",
+          severity: "error",
+          open: true,
+        });
+        return;
+      }
+
+      if (!inputValue.pin_code || !inputValue.city || !inputValue.state) {
+        setAlertMsg({
+          message:
+            "Please validate the postal code before updating the warehouse",
+          severity: "error",
+          open: true,
+        });
+        return;
+      }
+
       setOpen(true);
       const req = {
         company: data ? data.companyName : "",
         contact: selectedContact ? selectedContact.id : inputValue.contact,
         address: inputValue.address,
         pincode: inputValue.pincode,
-        state: inputValue.state || "",
-        city: inputValue.city || "",
+        state: inputValue.state,
+        city: inputValue.city,
       };
       await CustomerServices.updatetWareHouseData(IDForEdit, req);
       setOpenPopup(false);
-      setOpen(false);
       getAllCompanyDetailsByID();
     } catch (error) {
       console.log("createing company detail error", error);
+    } finally {
       setOpen(false);
     }
   };
@@ -169,7 +205,7 @@ export const UpdateWareHouseDetails = (props) => {
       <Box
         component="form"
         noValidate
-        onSubmit={(e) => UpdateWareHouseDetails(e)}
+        onSubmit={(e) => updateWareHouseDetails(e)}
       >
         <Grid container spacing={2}>
           <Grid item xs={12}>
@@ -178,19 +214,7 @@ export const UpdateWareHouseDetails = (props) => {
               size="small"
               id="grouped-demo"
               value={selectedContact}
-              onChange={(event, value) => {
-                setSelectedContact(value);
-                // Need validation again
-                setIsDisabledBtn(true);
-                if (value) {
-                  setInputValue((prev) => ({
-                    ...prev,
-                    contact: value.id,
-                    contact_name: value.name,
-                    contact_number: value.contact,
-                  }));
-                }
-              }}
+              onChange={handleContactChange}
               options={contactData || []}
               groupBy={(option) => option.designation || ""}
               getOptionLabel={(option) =>
@@ -209,12 +233,12 @@ export const UpdateWareHouseDetails = (props) => {
               name="address"
               label="Address"
               variant="outlined"
-              value={inputValue.address ? inputValue.address : ""}
+              value={inputValue.address || ""}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={12}>
             <CustomTextField
-              fullWidth
+              sx={{ minWidth: "300px" }}
               onChange={handleInputChange}
               size="small"
               name="pincode"
@@ -222,20 +246,10 @@ export const UpdateWareHouseDetails = (props) => {
               variant="outlined"
               value={inputValue.pincode || ""}
             />
-            {/* <Button
-              onClick={() => validatePinCode()}
-              variant="contained"
-              sx={{ marginLeft: "1rem" }}
-            >
-              Validate
-            </Button> */}
-          </Grid>
-          <Grid item xs={12} sm={6}>
             <Button
               onClick={validatePinCode}
               variant="contained"
               sx={{ marginLeft: "1rem" }}
-              disabled={!inputValue.pincode}
             >
               Validate
             </Button>
@@ -248,7 +262,7 @@ export const UpdateWareHouseDetails = (props) => {
               label="State"
               variant="outlined"
               value={inputValue.state || ""}
-              onChange={handleInputChange}
+              disabled
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -259,7 +273,7 @@ export const UpdateWareHouseDetails = (props) => {
               label="City"
               variant="outlined"
               value={inputValue.city || ""}
-              onChange={handleInputChange}
+              disabled
             />
           </Grid>
         </Grid>
@@ -268,7 +282,6 @@ export const UpdateWareHouseDetails = (props) => {
           fullWidth
           variant="contained"
           sx={{ mt: 3, mb: 2 }}
-          disabled={isDisabledBtn}
         >
           Submit
         </Button>

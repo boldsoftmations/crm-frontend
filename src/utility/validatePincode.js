@@ -20,11 +20,13 @@ const validatePincode = async (countryId, pincode) => {
       pincodeValue,
     );
 
-    if (response && response.data) {
+    if (response && response.data && response.data.id) {
       return response.data;
     }
 
-    throw new Error("Invalid pincode.");
+    throw new Error(
+      "This postal code does not exist in the Postal Code Master",
+    );
   } catch (error) {
     // axios error ka error.message generic hota hai (e.g. "Request failed
     // with status code 400") - asli backend validation message

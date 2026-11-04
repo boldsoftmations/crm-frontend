@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -12,6 +12,15 @@ import MasterService from "../../../services/MasterService";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
 import { CustomLoader } from "../../../Components/CustomLoader";
+import validatePincode from "../../../utility/validatePincode";
+import {
+  getCountryIdForOrigin,
+  applyPostalLookupSuccess,
+  clearPostalFields,
+} from "../../../utility/postalAddressHelpers";
+
+// pin_code / state / zone are client-side verification fields from postal
+// lookup only — not sent in the branch API payload.
 
 function TransportBranchUpdate({
   recordForEdit,
@@ -27,6 +36,9 @@ function TransportBranchUpdate({
     city: recordForEdit && recordForEdit.city ? recordForEdit.city : "",
     pincode:
       recordForEdit && recordForEdit.pincode ? recordForEdit.pincode : "",
+    pin_code: "",
+    state: "",
+    zone: "",
     address:
       recordForEdit && recordForEdit.address ? recordForEdit.address : "",
     is_active:
@@ -39,9 +51,67 @@ function TransportBranchUpdate({
   const { handleError, handleCloseSnackbar, alertInfo, handleSuccess } =
     useNotificationHandling();
 
+  useEffect(() => {
+    const verifyLoadedPincode = async () => {
+      const loadedPincode =
+        recordForEdit && recordForEdit.pincode ? recordForEdit.pincode : "";
+      if (!loadedPincode) {
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const postalData = await validatePincode(
+          getCountryIdForOrigin("Domestic"),
+          loadedPincode
+        );
+        setFormData((prev) => applyPostalLookupSuccess(prev, postalData));
+      } catch (error) {
+        handleError(
+          error.message ||
+            "Loaded postal code could not be verified. Please validate again."
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    verifyLoadedPincode();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [recordForEdit]);
+
   const handleChange = (event) => {
     const { name, value } = event.target;
+    if (name === "pincode") {
+      setFormData((prev) => ({
+        ...clearPostalFields(prev),
+        pincode: value,
+      }));
+      return;
+    }
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const validatePinCode = async () => {
+    try {
+      if (!formData.pincode) {
+        handleError("Please enter postal code before validation");
+        return;
+      }
+
+      setLoading(true);
+      const data = await validatePincode(
+        getCountryIdForOrigin("Domestic"),
+        formData.pincode
+      );
+      setFormData((prev) => applyPostalLookupSuccess(prev, data));
+      handleSuccess("Postal code validated successfully");
+    } catch (error) {
+      setFormData((prev) => clearPostalFields(prev));
+      handleError(error.message || "Error validating postal code");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -52,8 +122,21 @@ function TransportBranchUpdate({
       return;
     }
 
+    if (!formData.branch_name || !formData.city || !formData.pincode) {
+      handleError("Branch Name, City and Pincode are required.");
+      return;
+    }
+
+    if (!formData.pin_code) {
+      handleError(
+        "Please validate the postal code before updating the branch."
+      );
+      return;
+    }
+
     // Only send the fields the PATCH contract showed (branch_name,
     // is_active) plus the other editable fields, all as a partial update.
+    // pin_code / state / zone stay client-only.
     const payload = {
       branch_name: formData.branch_name,
       city: formData.city,
@@ -66,7 +149,7 @@ function TransportBranchUpdate({
       setLoading(true);
       const response = await MasterService.updateTransportBranch(
         recordForEdit.id,
-        payload,
+        payload
       );
       const successMessage =
         (response && response.data && response.data.message) ||
@@ -108,19 +191,7 @@ function TransportBranchUpdate({
           />
         </Grid>
 
-        <Grid item xs={12} sm={6}>
-          <TextField
-            fullWidth
-            required
-            label="City"
-            name="city"
-            value={formData.city}
-            onChange={handleChange}
-            size="small"
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12} sm={6} sx={{ display: "flex", alignItems: "center" }}>
           <TextField
             fullWidth
             required
@@ -129,6 +200,25 @@ function TransportBranchUpdate({
             value={formData.pincode}
             onChange={handleChange}
             size="small"
+          />
+          <Button
+            onClick={validatePinCode}
+            variant="contained"
+            sx={{ marginLeft: "1rem", whiteSpace: "nowrap" }}
+          >
+            Validate
+          </Button>
+        </Grid>
+
+        <Grid item xs={12} sm={6}>
+          <TextField
+            fullWidth
+            required
+            label="City"
+            name="city"
+            value={formData.city}
+            size="small"
+            disabled
           />
         </Grid>
 

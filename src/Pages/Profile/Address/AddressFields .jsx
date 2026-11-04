@@ -2,7 +2,8 @@ import { Grid, FormControlLabel, Checkbox } from "@mui/material";
 import CustomTextField from "../../../Components/CustomTextField";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import React from "react";
-import { pincodes } from "../UserProfile/pincodeData";
+import validatePincode from "../../../utility/validatePincode";
+import { getCountryIdForOrigin } from "../../../utility/postalAddressHelpers";
 
 export const AddressFields = ({ type, formData, setFormData, error }) => {
   const [open, setOpen] = React.useState(false);
@@ -23,45 +24,51 @@ export const AddressFields = ({ type, formData, setFormData, error }) => {
 
   const handlePinChange = (event) => {
     const pinCode = event.target.value;
-    handleChange(event);
+    const { name } = event.target;
+    const [addrType, field] = name.split("_");
+
+    setFormData((prev) => {
+      const addressData = {
+        ...prev.address,
+        [addrType]: {
+          ...prev.address[addrType],
+          [field]: pinCode,
+          ...(pinCode.length !== 6 ? { city: "", state: "" } : {}),
+        },
+      };
+      return {
+        ...prev,
+        address: addressData,
+      };
+    });
 
     if (pinCode.length === 6) {
       handlePinLookup(pinCode);
-    } else {
-      // Clear city and state if pin is incomplete
-      setFormData((prev) => ({
-        ...prev,
-        address: {
-          ...prev.address,
-          [type]: {
-            ...prev.address[type],
-            city: "",
-            state: "",
-          },
-        },
-      }));
     }
   };
 
-  const handlePinLookup = (pinCode) => {
+  const handlePinLookup = async (pinCode) => {
     setOpen(true);
 
-    const match = pincodes.find((entry) => entry.pincode === pinCode);
+    try {
+      const data = await validatePincode(
+        getCountryIdForOrigin("Domestic"),
+        pinCode
+      );
 
-    if (match) {
       setFormData((prev) => ({
         ...prev,
         address: {
           ...prev.address,
           [type]: {
             ...prev.address[type],
-            city: match.city,
-            state: match.state,
+            city: data.city_name || "",
+            state: data.state_name || "",
           },
         },
       }));
-    } else {
-      console.log("Pincode not valid or data not found.");
+    } catch (error) {
+      console.log(error.message || "Pincode not valid or data not found.");
       setFormData((prev) => ({
         ...prev,
         address: {
@@ -73,9 +80,9 @@ export const AddressFields = ({ type, formData, setFormData, error }) => {
           },
         },
       }));
+    } finally {
+      setOpen(false);
     }
-
-    setOpen(false);
   };
 
   const onSameAsCurrentChange = (event) => {

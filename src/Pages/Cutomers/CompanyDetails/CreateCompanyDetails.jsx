@@ -28,6 +28,13 @@ import { getCompanyName } from "../../../Redux/Action/Action";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import MasterService from "../../../services/MasterService";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
+import validatePincode from "../../../utility/validatePincode";
+import {
+  getCountryIdForOrigin,
+  applyPostalLookupSuccess,
+  clearPostalFields,
+  clearAllPostalVerification,
+} from "../../../utility/postalAddressHelpers";
 
 export const CreateCompanyDetails = (props) => {
   const { getAllCompanyDetails, setOpenPopup } = props;
@@ -57,6 +64,15 @@ export const CreateCompanyDetails = (props) => {
       severity: "",
       open: false,
     });
+  };
+
+  const resolveCountryId = () => {
+    return getCountryIdForOrigin(
+      inputValue.origin_type,
+      inputValue.country && inputValue.country.id
+        ? inputValue.country.id
+        : null,
+    );
   };
 
   useEffect(() => {
@@ -105,22 +121,12 @@ export const CreateCompanyDetails = (props) => {
         ? value.toUpperCase()
         : value;
 
-    /*
-     * If postal code changes, previous postal verification
-     * is no longer valid.
-     */
     if (name === "pincode") {
-      setInputValue({
-        ...inputValue,
+      setInputValue((prev) => ({
+        ...clearPostalFields(prev),
         pincode: updatedValue,
-        pin_code: "",
-        state: "",
-        city: "",
-        zone: "",
-      });
-
+      }));
       setPostalVerificationStatus("");
-
       return;
     }
 
@@ -131,9 +137,6 @@ export const CreateCompanyDetails = (props) => {
   };
 
   const handleSelectChange = async (name, value) => {
-    /*
-     * Customer origin type changed.
-     */
     if (name === "origin_type") {
       if (value === "Domestic") {
         try {
@@ -145,16 +148,12 @@ export const CreateCompanyDetails = (props) => {
 
           const india = countries.find((data) => data.name === "India");
 
-          setInputValue({
-            ...inputValue,
+          setInputValue((prev) => ({
+            ...clearAllPostalVerification(prev),
             origin_type: "Domestic",
             country: india || null,
             pincode: "",
-            pin_code: "",
-            state: "",
-            city: "",
-            zone: "",
-          });
+          }));
 
           setPostalVerificationStatus("");
 
@@ -182,16 +181,12 @@ export const CreateCompanyDetails = (props) => {
 
           setCountryList(internationalCountries);
 
-          setInputValue({
-            ...inputValue,
+          setInputValue((prev) => ({
+            ...clearAllPostalVerification(prev),
             origin_type: "International",
             country: null,
             pincode: "",
-            pin_code: "",
-            state: "",
-            city: "",
-            zone: "",
-          });
+          }));
 
           setPostalVerificationStatus("");
         } catch (error) {
@@ -210,31 +205,9 @@ export const CreateCompanyDetails = (props) => {
     });
   };
 
-  /*
-   * Postal Code Lookup API
-   *
-   * This is NOT the old ValidatePincode API.
-   * It uses:
-   * country_id + postal_code
-   */
-  const validatePostalCode = async () => {
+  const validatePinCode = async () => {
     try {
-      setOpen(true);
-
-      if (!inputValue.pincode) {
-        setAlertMsg({
-          message: "Please enter postal code before validation",
-          severity: "error",
-          open: true,
-        });
-
-        return;
-      }
-
-      const countryId =
-        inputValue.country && inputValue.country.id
-          ? inputValue.country.id
-          : "";
+      const countryId = resolveCountryId();
 
       if (!countryId) {
         setAlertMsg({
@@ -242,78 +215,37 @@ export const CreateCompanyDetails = (props) => {
           severity: "error",
           open: true,
         });
-
         return;
       }
 
-      const postalCode = inputValue.pincode;
-
-      console.log("Postal Code Lookup:", {
-        country_id: countryId,
-        postal_code: postalCode,
-      });
-
-      const response = await MasterService.ValidatePincode(
-        countryId,
-        postalCode,
-      );
-
-      /*
-       * Lookup did not find a valid Postal Master record.
-       */
-      if (!response.data || !response.data.id) {
-        setPostalVerificationStatus("No Match");
-
-        setInputValue({
-          ...inputValue,
-          pin_code: "",
-          state: "",
-          city: "",
-          zone: "",
-        });
-
+      if (!inputValue.pincode) {
         setAlertMsg({
-          message: "This postal code does not exist in the Postal Code Master",
+          message: "Please enter postal code before validation",
           severity: "error",
           open: true,
         });
-
         return;
       }
 
-      /*
-       * Exact canonical Postal Master record found.
-       */
+      setOpen(true);
+      const data = await validatePincode(countryId, inputValue.pincode);
+      setInputValue((prev) => applyPostalLookupSuccess(prev, data));
       setPostalVerificationStatus("Verified");
-
-      setInputValue({
-        ...inputValue,
-        pin_code: response.data.id,
-        state: response.data.state_name,
-        city: response.data.city_name,
-        zone: response.data.zone_name,
-      });
-
       setAlertMsg({
         message: "Postal code validated successfully",
         severity: "success",
         open: true,
       });
     } catch (error) {
-      console.log("Postal code lookup error", error);
-
-      setPostalVerificationStatus("Needs Review");
-
-      setInputValue({
-        ...inputValue,
-        pin_code: "",
-        state: "",
-        city: "",
-        zone: "",
-      });
-
+      setInputValue((prev) => clearPostalFields(prev));
+      setPostalVerificationStatus(
+        error.message &&
+          error.message.includes("does not exist in the Postal Code Master")
+          ? "No Match"
+          : "Needs Review",
+      );
       setAlertMsg({
-        message: "Error validating postal code",
+        message: error.message || "Error validating postal code",
         severity: "error",
         open: true,
       });
@@ -582,7 +514,7 @@ export const CreateCompanyDetails = (props) => {
 
               <Button
                 type="button"
-                onClick={validatePostalCode}
+                onClick={validatePinCode}
                 variant="contained"
                 sx={{ marginLeft: "1rem", whiteSpace: "nowrap" }}
               >
@@ -631,16 +563,11 @@ export const CreateCompanyDetails = (props) => {
                 }
                 isOptionEqualToValue={(option, value) => option.id === value.id}
                 onChange={(event, value) => {
-                  setInputValue({
-                    ...inputValue,
+                  setInputValue((prev) => ({
+                    ...clearAllPostalVerification(prev),
                     country: value,
                     pincode: "",
-                    pin_code: "",
-                    state: "",
-                    city: "",
-                    zone: "",
-                  });
-
+                  }));
                   setPostalVerificationStatus("");
                 }}
                 label="Country"

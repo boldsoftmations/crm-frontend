@@ -4,16 +4,78 @@ import axios from "axios";
 import InvoiceServices from "./../../../services/InvoiceService";
 import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomTextField from "../../../Components/CustomTextField";
+import CustomSnackbar from "../../../Components/CustomerSnackbar";
+import validatePincode from "../../../utility/validatePincode";
+import {
+  getCountryIdForOrigin,
+  applyPostalLookupSuccess,
+  clearPostalFields,
+} from "../../../utility/postalAddressHelpers";
 
 export const CreateSellerAccounts = (props) => {
   const { setOpenPopup, getAllSellerAccountsDetails } = props;
   const [open, setOpen] = useState(false);
-  const [inputValue, setInputValue] = useState([]);
+  const [inputValue, setInputValue] = useState({
+    pincode: "",
+    pin_code: "",
+    state: "",
+    city: "",
+  });
   const [bankData, setBankData] = useState([]);
   const [errMsg, setErrMsg] = useState("");
+  const [alertmsg, setAlertMsg] = useState({
+    message: "",
+    severity: "",
+    open: false,
+  });
+
+  const handleClose = () => {
+    setAlertMsg({ open: false });
+  };
+
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    setInputValue({ ...inputValue, [name]: value });
+    if (name === "pincode") {
+      setInputValue((prev) => ({
+        ...clearPostalFields(prev),
+        pincode: value,
+      }));
+      return;
+    }
+    setInputValue((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const validatePinCode = async () => {
+    try {
+      const countryId = getCountryIdForOrigin("Domestic");
+
+      if (!inputValue.pincode) {
+        setAlertMsg({
+          message: "Please enter postal code before validation",
+          severity: "error",
+          open: true,
+        });
+        return;
+      }
+
+      setOpen(true);
+      const data = await validatePincode(countryId, inputValue.pincode);
+      setInputValue((prev) => applyPostalLookupSuccess(prev, data));
+      setAlertMsg({
+        message: "Postal code validated successfully",
+        severity: "success",
+        open: true,
+      });
+    } catch (error) {
+      setInputValue((prev) => clearPostalFields(prev));
+      setAlertMsg({
+        message: error.message || "Error validating postal code",
+        severity: "error",
+        open: true,
+      });
+    } finally {
+      setOpen(false);
+    }
   };
 
   const validateifsc = async () => {
@@ -36,6 +98,17 @@ export const CreateSellerAccounts = (props) => {
   const createBankDetails = async (e) => {
     try {
       e.preventDefault();
+
+      if (!inputValue.pin_code || !inputValue.city || !inputValue.state) {
+        setAlertMsg({
+          message:
+            "Please validate the postal code before creating the seller account",
+          severity: "error",
+          open: true,
+        });
+        return;
+      }
+
       setOpen(true);
       const req = {
         name: inputValue.name,
@@ -71,6 +144,12 @@ export const CreateSellerAccounts = (props) => {
   return (
     <div>
       <CustomLoader open={open} />
+      <CustomSnackbar
+        open={alertmsg.open}
+        message={alertmsg.message}
+        severity={alertmsg.severity}
+        onClose={handleClose}
+      />
 
       <Box component="form" noValidate onSubmit={(e) => createBankDetails(e)}>
         <Grid container spacing={2}>
@@ -145,7 +224,7 @@ export const CreateSellerAccounts = (props) => {
           </Grid>
           <Grid item xs={12} sm={4}>
             <CustomTextField
-              fullWidth
+              sx={{ minWidth: "200px" }}
               name="pincode"
               size="small"
               label="Pin Code"
@@ -153,7 +232,14 @@ export const CreateSellerAccounts = (props) => {
               value={inputValue.pincode ? inputValue.pincode : ""}
               onChange={handleInputChange}
             />
-          </Grid>{" "}
+            <Button
+              onClick={validatePinCode}
+              variant="contained"
+              sx={{ marginLeft: "1rem" }}
+            >
+              Validate
+            </Button>
+          </Grid>
           <Grid item xs={12} sm={4}>
             <CustomTextField
               fullWidth
@@ -162,9 +248,9 @@ export const CreateSellerAccounts = (props) => {
               label="State"
               variant="outlined"
               value={inputValue.state ? inputValue.state : ""}
-              onChange={handleInputChange}
+              disabled
             />
-          </Grid>{" "}
+          </Grid>
           <Grid item xs={12} sm={4}>
             <CustomTextField
               fullWidth
@@ -173,7 +259,7 @@ export const CreateSellerAccounts = (props) => {
               label="City"
               variant="outlined"
               value={inputValue.city ? inputValue.city : ""}
-              onChange={handleInputChange}
+              disabled
             />
           </Grid>
           <Grid item xs={12} sm={4}>

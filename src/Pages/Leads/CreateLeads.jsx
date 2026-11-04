@@ -29,6 +29,15 @@ import { useNotificationHandling } from "../../Components/useNotificationHandlin
 import { useSelector } from "react-redux";
 import CustomSnackbar from "../../Components/CustomerSnackbar";
 import MasterService from "../../services/MasterService";
+import validatePincode from "../../utility/validatePincode";
+import {
+  getCountryIdForOrigin,
+  applyPostalLookupSuccess,
+  clearPostalFields,
+  applyShippingPostalLookupSuccess,
+  clearShippingPostalFields,
+  clearAllPostalVerification,
+} from "../../utility/postalAddressHelpers";
 
 export const CreateLeads = memo((props) => {
   const {
@@ -79,7 +88,6 @@ export const CreateLeads = memo((props) => {
   }, [users.email]);
 
   const validatePinCode = async () => {
-    console.log("dATA IS: ", leads.pincode, leads.country);
     try {
       if (!leads.origin_type) {
         setAlertMsg({
@@ -98,38 +106,82 @@ export const CreateLeads = memo((props) => {
         });
         return;
       }
+
+      const countryId = getCountryIdForOrigin(
+        leads.origin_type,
+        leads.country,
+      );
+
       setOpen(true);
-      const Country = leads.origin_type === "International" ? leads.country : 1;
-      const PINCODE = leads.pincode;
-      const response = await MasterService.ValidatePincode(Country, PINCODE);
-      if (!response || !response.data || !response.data.id) {
+      const data = await validatePincode(countryId, leads.pincode);
+      setLeads((prev) => {
+        const next = applyPostalLookupSuccess(prev, data);
+        if (checked) {
+          return {
+            ...next,
+            shipping_pincode: next.pincode || null,
+            shipping_city: next.city || "",
+            shipping_state: next.state || "",
+            shipping_pin_code: next.pin_code || "",
+            shipping_address: next.address || "",
+          };
+        }
+        return next;
+      });
+      setAlertMsg({
+        message: "Postal code validated successfully",
+        severity: "success",
+        open: true,
+      });
+    } catch (error) {
+      setLeads((prev) => clearPostalFields(prev));
+      setAlertMsg({
+        message: error.message || "Error validating postal code",
+        severity: "error",
+        open: true,
+      });
+    } finally {
+      setOpen(false);
+    }
+  };
+
+  const validateShippingPinCode = async () => {
+    try {
+      if (!leads.origin_type) {
         setAlertMsg({
           message:
-            "This Pin Code does not exist ! First Create the Pin code in the master country",
+            "Please select customer origin type before validating pincode",
           severity: "error",
           open: true,
         });
-        setLeads({
-          ...leads,
-          state: "",
-          city: "",
-        });
-      } else {
+        return;
+      }
+      if (leads.origin_type === "International" && !leads.country) {
         setAlertMsg({
-          message: "Pin code is valid",
-          severity: "success",
+          message: "Please select country before validating pincode",
+          severity: "error",
           open: true,
         });
-        setLeads((prev) => ({
-          ...prev,
-          state: response.data.state_name,
-          city: response.data.city_name,
-        }));
+        return;
       }
-    } catch (error) {
-      console.log("error", error);
+
+      const countryId = getCountryIdForOrigin(
+        leads.origin_type,
+        leads.country,
+      );
+
+      setOpen(true);
+      const data = await validatePincode(countryId, leads.shipping_pincode);
+      setLeads((prev) => applyShippingPostalLookupSuccess(prev, data));
       setAlertMsg({
-        message: "Error fetching country data by pincode",
+        message: "Shipping postal code validated successfully",
+        severity: "success",
+        open: true,
+      });
+    } catch (error) {
+      setLeads((prev) => clearShippingPostalFields(prev));
+      setAlertMsg({
+        message: error.message || "Error validating shipping postal code",
         severity: "error",
         open: true,
       });
@@ -144,6 +196,23 @@ export const CreateLeads = memo((props) => {
     if (name === "gst_number" || name === "pan_number") {
       updatedValue = value.toUpperCase();
     }
+
+    if (name === "pincode") {
+      setLeads((prev) => ({
+        ...clearPostalFields(prev),
+        pincode: updatedValue,
+      }));
+      return;
+    }
+
+    if (name === "shipping_pincode") {
+      setLeads((prev) => ({
+        ...clearShippingPostalFields(prev),
+        shipping_pincode: updatedValue,
+      }));
+      return;
+    }
+
     if (name === "name") {
       setLeads({
         ...leads,
@@ -156,28 +225,67 @@ export const CreateLeads = memo((props) => {
   };
 
   const handleSelectChange = async (name, value) => {
+    if (name === "origin_type") {
+      setLeads((prev) => ({
+        ...clearAllPostalVerification(prev),
+        origin_type: value,
+        country: value === "Domestic" ? "" : prev.country,
+        pincode: "",
+        shipping_pincode: "",
+      }));
+
+      if (value === "International") {
+        try {
+          setOpen(true);
+          const response = await MasterService.getAllMasterCountries("all");
+          const RemoveIndia = response.data.filter((data) => {
+            return data.name !== "India";
+          });
+          setCountryList(RemoveIndia);
+        } catch {
+          console.log("Error in getting country data by pincode");
+        } finally {
+          setOpen(false);
+        }
+      }
+      return;
+    }
+
+    if (name === "country") {
+      setLeads((prev) => ({
+        ...clearAllPostalVerification(prev),
+        country: value,
+        pincode: "",
+        shipping_pincode: "",
+      }));
+      return;
+    }
+
     setLeads({
       ...leads,
       [name]: value,
     });
-    if (value === "International") {
-      try {
-        setOpen(true);
-        const response = await MasterService.getAllMasterCountries("all");
-        const RemoveIndia = response.data.filter((data) => {
-          return data.name !== "India";
-        });
-        setCountryList(RemoveIndia);
-      } catch {
-        console.log("Error in getting country data by pincode");
-      } finally {
-        setOpen(false);
-      }
-    }
   };
 
   const handleSameAsAddress = (event) => {
-    setChecked(event.target.checked);
+    const isChecked = event.target.checked;
+    setChecked(isChecked);
+    if (isChecked) {
+      setLeads((prev) => ({
+        ...prev,
+        shipping_address: prev.address || "",
+        shipping_city: prev.city || "",
+        shipping_state: prev.state || "",
+        shipping_pincode: prev.pincode || null,
+        shipping_pin_code: prev.pin_code || "",
+      }));
+    } else {
+      setLeads((prev) => ({
+        ...clearShippingPostalFields(prev),
+        shipping_address: "",
+        shipping_pincode: "",
+      }));
+    }
   };
 
   const getDescriptionNoData = async () => {
@@ -208,6 +316,32 @@ export const CreateLeads = memo((props) => {
     async (e) => {
       try {
         e.preventDefault();
+
+        if (!leads.pin_code || !leads.city || !leads.state) {
+          setAlertMsg({
+            message:
+              "Please validate the postal code before creating the lead",
+            severity: "error",
+            open: true,
+          });
+          return;
+        }
+
+        if (
+          !checked &&
+          (!leads.shipping_pin_code ||
+            !leads.shipping_city ||
+            !leads.shipping_state)
+        ) {
+          setAlertMsg({
+            message:
+              "Please validate the shipping postal code before creating the lead",
+            severity: "error",
+            open: true,
+          });
+          return;
+        }
+
         setOpen(true);
 
         const data = {
@@ -284,7 +418,15 @@ export const CreateLeads = memo((props) => {
         setOpen(false);
       }
     },
-    [leads, currentPage, filterQuery, filterSelectedQuery, searchQuery],
+    [
+      leads,
+      checked,
+      countryList,
+      currentPage,
+      filterQuery,
+      filterSelectedQuery,
+      searchQuery,
+    ],
   );
 
   const GST_NO = (gst_no) =>
@@ -698,6 +840,32 @@ export const CreateLeads = memo((props) => {
                 checked === true ? leads.pincode : leads.shipping_pincode || ""
               }
               onChange={handleInputChange}
+              disabled={checked}
+              InputLabelProps={{ shrink: true }}
+            />
+            {!checked && (
+              <Button
+                size="small"
+                onClick={validateShippingPinCode}
+                variant="contained"
+                sx={{ marginLeft: "1rem", marginTop: "0.5rem" }}
+              >
+                Validate
+              </Button>
+            )}
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <CustomTextField
+              fullWidth
+              name="shipping_state"
+              size="small"
+              label="Shipping State"
+              variant="outlined"
+              value={
+                checked === true ? leads.state : leads.shipping_state || ""
+              }
+              InputLabelProps={{ shrink: true }}
+              disabled
             />
           </Grid>
           <Grid item xs={12} sm={3}>
@@ -708,24 +876,8 @@ export const CreateLeads = memo((props) => {
               label="Shipping City"
               variant="outlined"
               value={checked === true ? leads.city : leads.shipping_city || ""}
-              onChange={handleInputChange}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={3}>
-            <CustomAutocomplete
-              sx={{
-                minWidth: 220,
-              }}
-              size="small"
-              onChange={(event, value) =>
-                handleSelectChange("shipping_state", value)
-              }
-              name="shipping_state"
-              value={checked ? leads.state : leads.shipping_state || ""}
-              options={Option.StateOption.map((option) => option.value)}
-              getOptionLabel={(option) => option}
-              label="Shipping State"
+              InputLabelProps={{ shrink: true }}
+              disabled
             />
           </Grid>
           {/* kyc Details */}

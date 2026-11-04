@@ -31,9 +31,17 @@ import CustomAutocomplete from "../../Components/CustomAutocomplete";
 import { useNotificationHandling } from "../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../Components/MessageAlert";
 import { useSelector } from "react-redux";
-import MasterService from "../../services/MasterService";
 import CustomSnackbar from "../../Components/CustomerSnackbar";
 import ContactList from "./MultipleContactList";
+import validatePincode from "../../utility/validatePincode";
+import {
+  getCountryIdForOrigin,
+  applyPostalLookupSuccess,
+  clearPostalFields,
+  applyShippingPostalLookupSuccess,
+  clearShippingPostalFields,
+  clearAllPostalVerification,
+} from "../../utility/postalAddressHelpers";
 
 export const UpdateLeads = memo((props) => {
   // Destructure props
@@ -96,43 +104,102 @@ export const UpdateLeads = memo((props) => {
     }
   }, [users.email]);
   // Event handlers
-  const validatePinCode = async () => {
+  const resolveCountryId = (leadData) => {
+    const source = leadData || leads;
+    return getCountryIdForOrigin(
+      source.origin_type,
+      source.country_id || source.country,
+    );
+  };
+
+  const validatePinCode = async (leadOverride = null) => {
+    const source = leadOverride || leads;
     try {
-      setOpen(true);
-      const Country = leads.country_id;
-      const PINCODE = leads.pincode;
-      const response = await MasterService.ValidatePincode(Country, PINCODE);
-      if (!response.data) {
+      if (!source.origin_type) {
         setAlertMsg({
           message:
-            "This Pin Code does not exist ! First Create the Pin code in the master country",
+            "Please select customer origin type before validating pincode",
           severity: "error",
           open: true,
         });
-        setLeads({
-          ...leads,
-          state: "",
-          city: "",
-        });
-      } else {
+        return false;
+      }
+
+      const countryId = resolveCountryId(source);
+      if (!countryId) {
         setAlertMsg({
-          message: "Pin code is valid",
-          severity: "success",
+          message: "Please select country before validating pincode",
+          severity: "error",
           open: true,
         });
-        setLeads({
-          ...leads,
-          state: response.data.state_name,
-          city: response.data.city_name,
-        });
+        return false;
       }
-    } catch (error) {
-      console.log("error", error);
+
+      setOpen(true);
+      const data = await validatePincode(countryId, source.pincode);
+      setLeads((prev) => {
+        const next = applyPostalLookupSuccess(prev, data);
+        if (checked) {
+          return {
+            ...next,
+            shipping_pincode: next.pincode || null,
+            shipping_city: next.city || "",
+            shipping_state: next.state || "",
+            shipping_pin_code: next.pin_code || "",
+            shipping_address: next.address || "",
+          };
+        }
+        return next;
+      });
       setAlertMsg({
-        message: "Error fetching country data by pincode",
+        message: "Postal code validated successfully",
+        severity: "success",
+        open: true,
+      });
+      return true;
+    } catch (error) {
+      setLeads((prev) => clearPostalFields(prev));
+      setAlertMsg({
+        message: error.message || "Error validating postal code",
         severity: "error",
         open: true,
       });
+      return false;
+    } finally {
+      setOpen(false);
+    }
+  };
+
+  const validateShippingPinCode = async (leadOverride = null) => {
+    const source = leadOverride || leads;
+    try {
+      const countryId = resolveCountryId(source);
+      if (!countryId) {
+        setAlertMsg({
+          message: "Please select country before validating pincode",
+          severity: "error",
+          open: true,
+        });
+        return false;
+      }
+
+      setOpen(true);
+      const data = await validatePincode(countryId, source.shipping_pincode);
+      setLeads((prev) => applyShippingPostalLookupSuccess(prev, data));
+      setAlertMsg({
+        message: "Shipping postal code validated successfully",
+        severity: "success",
+        open: true,
+      });
+      return true;
+    } catch (error) {
+      setLeads((prev) => clearShippingPostalFields(prev));
+      setAlertMsg({
+        message: error.message || "Error validating shipping postal code",
+        severity: "error",
+        open: true,
+      });
+      return false;
     } finally {
       setOpen(false);
     }
@@ -144,6 +211,23 @@ export const UpdateLeads = memo((props) => {
     if (name === "gst_number" || name === "pan_number") {
       updatedValue = value.toUpperCase();
     }
+
+    if (name === "pincode") {
+      setLeads((prev) => ({
+        ...clearPostalFields(prev),
+        pincode: updatedValue,
+      }));
+      return;
+    }
+
+    if (name === "shipping_pincode") {
+      setLeads((prev) => ({
+        ...clearShippingPostalFields(prev),
+        shipping_pincode: updatedValue,
+      }));
+      return;
+    }
+
     if (name === "name") {
       setLeads({
         ...leads,
@@ -162,23 +246,44 @@ export const UpdateLeads = memo((props) => {
         [name]: value,
         target_date: value ? getTargetDate() : "",
       });
-    } else {
-      setLeads({
-        ...leads,
-        [name]: value,
-      });
+      return;
     }
+
+    if (name === "origin_type") {
+      setLeads((prev) => ({
+        ...clearAllPostalVerification(prev),
+        origin_type: value,
+        pincode: "",
+        shipping_pincode: "",
+      }));
+      return;
+    }
+
+    setLeads({
+      ...leads,
+      [name]: value,
+    });
   };
 
   const handleSameAsAddress = (event) => {
-    setChecked(event.target.checked);
-    setLeads((prev) => ({
-      ...prev,
-      shipping_address: event.target.checked ? leads.address : "",
-      shipping_city: event.target.checked ? leads.city : "",
-      shipping_state: event.target.checked ? leads.state : "",
-      shipping_pincode: event.target.checked ? leads.pincode : null,
-    }));
+    const isChecked = event.target.checked;
+    setChecked(isChecked);
+    if (isChecked) {
+      setLeads((prev) => ({
+        ...prev,
+        shipping_address: prev.address || "",
+        shipping_city: prev.city || "",
+        shipping_state: prev.state || "",
+        shipping_pincode: prev.pincode || null,
+        shipping_pin_code: prev.pin_code || "",
+      }));
+    } else {
+      setLeads((prev) => ({
+        ...clearShippingPostalFields(prev),
+        shipping_address: "",
+        shipping_pincode: "",
+      }));
+    }
   };
   const getDescriptionNoData = async () => {
     try {
@@ -213,9 +318,69 @@ export const UpdateLeads = memo((props) => {
       const res = await LeadServices.getLeadsById(recordForEdit);
       setFollowup(res.data.followup);
       setPotential(res.data.potential);
-      setLeads(res.data);
 
+      const leadData = res.data || {};
+      const sameAsBilling =
+        leadData.shipping_pincode &&
+        String(leadData.shipping_pincode) === String(leadData.pincode) &&
+        (leadData.shipping_address || "") === (leadData.address || "");
+      setChecked(Boolean(sameAsBilling));
+
+      /*
+       * Loaded geo is unverified until lookup succeeds.
+       * Auto-validate billing (and shipping when different) so non-address edits still save.
+       */
+      let nextLead = clearAllPostalVerification({ ...leadData });
+      setLeads(nextLead);
       setOpen(false);
+
+      const countryId = getCountryIdForOrigin(
+        nextLead.origin_type,
+        nextLead.country_id || nextLead.country,
+      );
+
+      if (countryId && nextLead.pincode) {
+        try {
+          const billingData = await validatePincode(countryId, nextLead.pincode);
+          nextLead = applyPostalLookupSuccess(nextLead, billingData);
+          if (sameAsBilling) {
+            nextLead = {
+              ...nextLead,
+              shipping_pin_code: billingData.id,
+              shipping_city: billingData.city_name || "",
+              shipping_state: billingData.state_name || "",
+            };
+          }
+          setLeads(nextLead);
+        } catch (error) {
+          setAlertMsg({
+            message:
+              error.message ||
+              "Loaded postal code could not be verified. Please validate again.",
+            severity: "warning",
+            open: true,
+          });
+        }
+      }
+
+      if (!sameAsBilling && countryId && nextLead.shipping_pincode) {
+        try {
+          const shippingData = await validatePincode(
+            countryId,
+            nextLead.shipping_pincode,
+          );
+          nextLead = applyShippingPostalLookupSuccess(nextLead, shippingData);
+          setLeads(nextLead);
+        } catch (error) {
+          setAlertMsg({
+            message:
+              error.message ||
+              "Loaded shipping postal code could not be verified. Please validate again.",
+            severity: "warning",
+            open: true,
+          });
+        }
+      }
     } catch (error) {
       console.log("error", error);
       setOpen(false);
@@ -231,6 +396,32 @@ export const UpdateLeads = memo((props) => {
     async (e) => {
       try {
         e.preventDefault();
+
+        if (!leads.pin_code || !leads.city || !leads.state) {
+          setAlertMsg({
+            message:
+              "Please validate the postal code before updating the lead",
+            severity: "error",
+            open: true,
+          });
+          return;
+        }
+
+        if (
+          !checked &&
+          (!leads.shipping_pin_code ||
+            !leads.shipping_city ||
+            !leads.shipping_state)
+        ) {
+          setAlertMsg({
+            message:
+              "Please validate the shipping postal code before updating the lead",
+            severity: "error",
+            open: true,
+          });
+          return;
+        }
+
         setOpen(true);
 
         const data = {
@@ -308,7 +499,15 @@ export const UpdateLeads = memo((props) => {
         setOpen(false);
       }
     },
-    [leads, currentPage, filterQuery, filterSelectedQuery, searchQuery],
+    [
+      leads,
+      checked,
+      leadsByID,
+      currentPage,
+      filterQuery,
+      filterSelectedQuery,
+      searchQuery,
+    ],
   );
 
   // Regular expressions for GST and PAN validation
@@ -699,7 +898,7 @@ export const UpdateLeads = memo((props) => {
             />
             <Button
               size="small"
-              onClick={validatePinCode}
+              onClick={() => validatePinCode()}
               variant="contained"
               sx={{ marginLeft: "1rem" }}
               disabled={UserData.groups.includes("Digital Marketing")}
@@ -757,6 +956,35 @@ export const UpdateLeads = memo((props) => {
                   : leads.shipping_pincode || ""
               }
               onChange={handleInputChange}
+              disabled={
+                checked || UserData.groups.includes("Digital Marketing")
+              }
+              InputLabelProps={{ shrink: true }}
+            />
+            {!checked && (
+              <Button
+                size="small"
+                onClick={() => validateShippingPinCode()}
+                variant="contained"
+                sx={{ marginLeft: "1rem", marginTop: "0.5rem" }}
+                disabled={UserData.groups.includes("Digital Marketing")}
+              >
+                Validate
+              </Button>
+            )}
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <CustomTextField
+              fullWidth
+              name="shipping_state"
+              size="small"
+              label="Shipping State"
+              variant="outlined"
+              value={
+                checked === true ? leads.state || "" : leads.shipping_state || ""
+              }
+              InputLabelProps={{ shrink: true }}
+              disabled
             />
           </Grid>
           <Grid item xs={12} sm={3}>
@@ -769,24 +997,8 @@ export const UpdateLeads = memo((props) => {
               value={
                 checked === true ? leads.city || "" : leads.shipping_city || ""
               }
-              onChange={handleInputChange}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={3}>
-            <CustomAutocomplete
-              sx={{
-                minWidth: 220,
-              }}
-              size="small"
-              onChange={(event, value) =>
-                handleSelectChange("shipping_state", value)
-              }
-              name="shipping_state"
-              value={checked ? leads.state || "" : leads.shipping_state || ""}
-              options={Option.StateOption.map((option) => option.value)}
-              getOptionLabel={(option) => option}
-              label="Shipping State"
+              InputLabelProps={{ shrink: true }}
+              disabled
             />
           </Grid>
           {/* kyc Details */}

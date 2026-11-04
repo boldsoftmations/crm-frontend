@@ -16,6 +16,7 @@ import { CustomLoader } from "../../../Components/CustomLoader";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
 import { useSelector } from "react-redux";
 import { canEditTransporterMappings } from "../../../utility/masterAccess";
+import validatePincode from "../../../utility/validatePincode";
 
 const TransportMappingUpdate = ({
   recordForEdit,
@@ -130,50 +131,46 @@ const TransportMappingUpdate = ({
   const handleCountryChange = (e, value) => {
     setCountyName(value || "");
     // country badalte hi pincode dobara validate karwana padega
+    setPincodeInput("");
     setIsPincodeValid(false);
+    setFormData((prev) => ({
+      ...prev,
+      pincode: "",
+      country_id: "",
+    }));
   };
 
   const handlePincodeInputChange = (e) => {
     setPincodeInput(e.target.value);
-    setFormData((prev) => ({ ...prev, pincode: "" }));
+    setFormData((prev) => ({ ...prev, pincode: "", country_id: "" }));
     setIsPincodeValid(false);
   };
 
   const handleValidatePincode = async () => {
-    if (!countyName || !countyName.id) {
-      handleError("Please select country first");
-      return;
-    }
-    if (!pincodeInput.trim()) {
-      handleError("Please enter pincode to validate");
-      return;
-    }
-
     try {
       setValidatingPincode(true);
 
-      const response = await MasterService.ValidatePincode(
-        countyName.id,
+      const data = await validatePincode(
+        countyName && countyName.id,
         pincodeInput,
       );
 
-      if (response && response.data) {
-        const verified = response.data;
-
-        setFormData((prev) => ({ ...prev, pincode: verified.pincode }));
-        setPincodeInput(verified.pincode);
-        setIsPincodeValid(true);
-
-        handleSuccess("Pincode validated successfully");
-      } else {
-        setIsPincodeValid(false);
-        setFormData((prev) => ({ ...prev, pincode: "" }));
-        handleError("Invalid pincode");
-      }
+      setFormData((prev) => ({
+        ...prev,
+        pincode: data.pincode,
+        country_id: data.country_id || (countyName && countyName.id) || "",
+      }));
+      setPincodeInput(data.pincode);
+      setIsPincodeValid(true);
+      handleSuccess("Pincode validated successfully");
     } catch (error) {
       setIsPincodeValid(false);
-      setFormData((prev) => ({ ...prev, pincode: "" }));
-      handleError(error);
+      setFormData((prev) => ({
+        ...prev,
+        pincode: "",
+        country_id: "",
+      }));
+      handleError(error.message || "Error validating pincode.");
     } finally {
       setValidatingPincode(false);
     }
@@ -201,10 +198,22 @@ const TransportMappingUpdate = ({
       return;
     }
 
+    const countryId =
+      formData.country_id || (countyName && countyName.id) || null;
+
+    if (!countryId) {
+      handleError("Please select country and validate pincode before submitting.");
+      return;
+    }
+
     try {
       setLoading(true);
 
-      await MasterService.updateTransportMapping(recordForEdit.id, formData);
+      // Backend ActivePincodeField resolves pincode by country_id from the payload
+      await MasterService.updateTransportMapping(recordForEdit.id, {
+        ...formData,
+        country_id: countryId,
+      });
 
       handleSuccess("Transport mapping updated successfully");
 

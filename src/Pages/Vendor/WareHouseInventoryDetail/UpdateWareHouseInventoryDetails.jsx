@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Box, Button, Grid } from "@mui/material";
 
@@ -6,7 +6,13 @@ import { CustomLoader } from "../../../Components/CustomLoader";
 import InventoryServices from "../../../services/InventoryService";
 import CustomTextField from "../../../Components/CustomTextField";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
-import MasterService from "../../../services/MasterService";
+import CustomSnackbar from "../../../Components/CustomerSnackbar";
+import validatePincode from "../../../utility/validatePincode";
+import {
+  applyPostalLookupSuccess,
+  clearPostalFields,
+} from "../../../utility/postalAddressHelpers";
+
 export const UpdateWareHouseInventoryDetails = (props) => {
   const {
     IDForEdit,
@@ -15,55 +21,143 @@ export const UpdateWareHouseInventoryDetails = (props) => {
     contactData,
     vendorData,
   } = props;
-  console.log("IDForEdit", IDForEdit);
+  const isDomestic = vendorData && vendorData.type === "Domestic";
   const [open, setOpen] = useState(false);
-  const [inputValue, setInputValue] = useState(IDForEdit);
+  const [inputValue, setInputValue] = useState(() =>
+    isDomestic ? clearPostalFields({ ...IDForEdit }) : { ...IDForEdit },
+  );
   const data = useSelector((state) => state.auth);
-  const [pinCodeData, setPinCodeData] = useState([]);
   const [selectedcontact, setSelectedContact] = useState("");
-  const timeoutRef = useRef(null);
+  const [alertmsg, setAlertMsg] = useState({
+    message: "",
+    severity: "",
+    open: false,
+  });
+
+  useEffect(() => {
+    const autoValidateLoadedPincode = async () => {
+      if (!isDomestic || !IDForEdit || !IDForEdit.pincode) {
+        return;
+      }
+      if (!vendorData || !vendorData.country_id) {
+        return;
+      }
+
+      try {
+        setOpen(true);
+        const postalData = await validatePincode(
+          vendorData.country_id,
+          IDForEdit.pincode,
+        );
+        setInputValue((prev) => applyPostalLookupSuccess(prev, postalData));
+      } catch (error) {
+        setAlertMsg({
+          message:
+            error.message ||
+            "Loaded postal code could not be verified. Please validate again.",
+          severity: "warning",
+          open: true,
+        });
+      } finally {
+        setOpen(false);
+      }
+    };
+
+    autoValidateLoadedPincode();
+  }, []);
+
+  const handleClose = () => {
+    setAlertMsg({ open: false });
+  };
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    setInputValue({ ...inputValue, [name]: value });
-
     if (name === "pincode") {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-      timeoutRef.current = setTimeout(() => {
-        validatePinCode(value);
-      }, 500);
+      setInputValue((prev) => ({
+        ...clearPostalFields(prev),
+        pincode: value,
+      }));
+      return;
     }
+    setInputValue((prev) => ({ ...prev, [name]: value }));
   };
 
-  const validatePinCode = async (pinCode) => {
+  const validatePinCode = async () => {
     try {
-      const response = await MasterService.ValidatePincode("", pinCode);
-      setPinCodeData(response.data[0].PostOffice[0]);
+      if (!vendorData || !vendorData.country_id) {
+        setAlertMsg({
+          message: "Vendor country is required before validating postal code",
+          severity: "warning",
+          open: true,
+        });
+        return;
+      }
+
+      setOpen(true);
+      const response = await validatePincode(
+        vendorData.country_id,
+        inputValue.pincode,
+      );
+
+      setInputValue((prev) => applyPostalLookupSuccess(prev, response));
+      setAlertMsg({
+        message: "Postal code validated successfully",
+        severity: "success",
+        open: true,
+      });
     } catch (error) {
-      console.log("Creating Bank error ", error);
+      setInputValue((prev) => clearPostalFields(prev));
+      setAlertMsg({
+        message: error.message || "Error validating postal code",
+        severity: "error",
+        open: true,
+      });
+    } finally {
+      setOpen(false);
     }
   };
 
   const UpdateWareHouseDetails = async (e) => {
     try {
       e.preventDefault();
+
+      if (!inputValue.address || !String(inputValue.address).trim()) {
+        setAlertMsg({
+          message: "Address is required",
+          severity: "error",
+          open: true,
+        });
+        return;
+      }
+
+      if (
+        isDomestic &&
+        (!inputValue.pin_code || !inputValue.city || !inputValue.state)
+      ) {
+        setAlertMsg({
+          message:
+            "Please validate the postal code before updating the warehouse",
+          severity: "error",
+          open: true,
+        });
+        return;
+      }
+
       setOpen(true);
       const req = {
         vendor: data ? data.vendorName : "",
         contact: selectedcontact.id ? selectedcontact.id : inputValue.contact,
         address: inputValue.address,
-        pincode: inputValue.pincode,
-        state: pinCodeData.State ? pinCodeData.State : inputValue.state,
-        city: pinCodeData.District ? pinCodeData.District : inputValue.city,
+        pincode: inputValue.pincode || "",
+        state: inputValue.state || "",
+        city: inputValue.city || "",
       };
       await InventoryServices.updatetWareHouseInventoryData(inputValue.id, req);
       setOpenPopup(false);
       getAllVendorDetailsByID();
-      setOpen(false);
     } catch (error) {
       console.log("createing company detail error", error);
+    } finally {
       setOpen(false);
     }
   };
@@ -71,6 +165,12 @@ export const UpdateWareHouseInventoryDetails = (props) => {
   return (
     <div>
       <CustomLoader open={open} />
+      <CustomSnackbar
+        open={alertmsg.open}
+        message={alertmsg.message}
+        severity={alertmsg.severity}
+        onClose={handleClose}
+      />
 
       <Box
         component="form"
@@ -92,7 +192,7 @@ export const UpdateWareHouseInventoryDetails = (props) => {
               }
             />
           </Grid>
-          {vendorData.type === "Domestic" ? (
+          {isDomestic ? (
             <Grid item xs={12} sm={6}>
               <CustomAutocomplete
                 fullWidth
@@ -118,47 +218,54 @@ export const UpdateWareHouseInventoryDetails = (props) => {
               value={inputValue.address ? inputValue.address : ""}
             />
           </Grid>
-          <Grid item xs={12}>
-            <CustomTextField
-              fullWidth
-              name="pincode"
-              size="small"
-              type={"number"}
-              label="Pin Code"
-              variant="outlined"
-              value={inputValue.pincode ? inputValue.pincode : ""}
-              onChange={handleInputChange}
-              onBlur={handleInputChange}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <CustomTextField
-              fullWidth
-              size="small"
-              name="state"
-              label="State"
-              variant="outlined"
-              value={pinCodeData.State ? pinCodeData.State : inputValue.state}
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <CustomTextField
-              fullWidth
-              size="small"
-              name="city"
-              label="City"
-              variant="outlined"
-              value={
-                pinCodeData.District ? pinCodeData.District : inputValue.city
-              }
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
-          </Grid>
+          {isDomestic ? (
+            <>
+              <Grid item xs={12} sm={8}>
+                <CustomTextField
+                  fullWidth
+                  name="pincode"
+                  size="small"
+                  label="Pin Code"
+                  variant="outlined"
+                  value={inputValue.pincode ? inputValue.pincode : ""}
+                  onChange={handleInputChange}
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Button
+                  fullWidth
+                  variant="contained"
+                  onClick={validatePinCode}
+                  disabled={!inputValue.pincode}
+                  sx={{ height: "40px" }}
+                >
+                  Validate
+                </Button>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <CustomTextField
+                  fullWidth
+                  size="small"
+                  name="state"
+                  label="State"
+                  variant="outlined"
+                  value={inputValue.state || ""}
+                  disabled
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <CustomTextField
+                  fullWidth
+                  size="small"
+                  name="city"
+                  label="City"
+                  variant="outlined"
+                  value={inputValue.city || ""}
+                  disabled
+                />
+              </Grid>
+            </>
+          ) : null}
         </Grid>
         <Button
           type="submit"

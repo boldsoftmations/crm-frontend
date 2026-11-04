@@ -27,8 +27,14 @@ import { ViewCustomerFollowUp } from "../../FollowUp/ViewCustomerFollowUp";
 import Option from "../../../Options/Options";
 import CustomTextField from "../../../Components/CustomTextField";
 import CustomAutocomplete from "../../../Components/CustomAutocomplete";
-import MasterService from "../../../services/MasterService";
 import CustomSnackbar from "../../../Components/CustomerSnackbar";
+import validatePincode from "../../../utility/validatePincode";
+import {
+  getCountryIdForOrigin,
+  applyPostalLookupSuccess,
+  clearPostalFields,
+  clearAllPostalVerification,
+} from "../../../utility/postalAddressHelpers";
 
 export const UpdateCompanyDetails = (props) => {
   const {
@@ -55,16 +61,44 @@ export const UpdateCompanyDetails = (props) => {
   const handleClose = () => {
     setAlertMsg({ open: false });
   };
+
+  const resolveCountryId = () => {
+    return getCountryIdForOrigin(
+      inputValue.origin_type,
+      (selectedCustomers && selectedCustomers.country_id) ||
+        inputValue.country_id,
+    );
+  };
+
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     const updatedValue =
       name === "gst_number" || name === "pan_number"
         ? value.toUpperCase()
         : value;
+
+    if (name === "pincode") {
+      setInputValue((prev) => ({
+        ...clearPostalFields(prev),
+        pincode: updatedValue,
+      }));
+      return;
+    }
+
     setInputValue({ ...inputValue, [name]: updatedValue });
   };
 
   const handleSelectChange = (name, value) => {
+    if (name === "origin_type") {
+      setInputValue((prev) => ({
+        ...clearAllPostalVerification(prev),
+        origin_type: value,
+        pincode: "",
+        country: value === "Domestic" ? "India" : "",
+      }));
+      return;
+    }
+
     setInputValue({
       ...inputValue,
       [name]: value,
@@ -73,51 +107,41 @@ export const UpdateCompanyDetails = (props) => {
 
   const validatePinCode = async () => {
     try {
-      setOpen(true);
-      const PINCODE = inputValue.pincode;
-      const Country = selectedCustomers.country_id;
-      console.log("Country Id is:", selectedCustomers);
-      const response = await MasterService.ValidatePincode(Country, PINCODE);
-      console.log(response && response.data);
-      if (response.data.length === 0) {
+      const countryId = resolveCountryId();
+
+      if (!countryId) {
         setAlertMsg({
-          message:
-            "This Pin Code does not exist ! First Create the Pin code in the master country",
+          message: "Please select country before validating postal code",
           severity: "error",
           open: true,
         });
-        setInputValue({
-          ...inputValue,
-          state: "",
-          city: "",
-          country: "",
-          zone: "",
-        });
-      } else {
+        return;
+      }
+
+      if (!inputValue.pincode) {
         setAlertMsg({
-          message: "Pin code is valid",
-          severity: "success",
+          message: "Please enter postal code before validation",
+          severity: "error",
           open: true,
         });
-        setInputValue({
-          ...inputValue,
-          state: response.data.state_name,
-          city: response.data.city_name,
-          country: response.data.country_name,
-          pin_code: response.data.id,
-          zone: response.data.zone_name || "",
-        });
+        return;
       }
-    } catch (error) {
-      console.log("error", error);
+
+      setOpen(true);
+      const data = await validatePincode(countryId, inputValue.pincode);
+      setInputValue((prev) => applyPostalLookupSuccess(prev, data));
       setAlertMsg({
-        message: "Error fetching country data by pincode",
+        message: "Postal code validated successfully",
+        severity: "success",
+        open: true,
+      });
+    } catch (error) {
+      setInputValue((prev) => clearPostalFields(prev));
+      setAlertMsg({
+        message: error.message || "Error validating postal code",
         severity: "error",
         open: true,
       });
-      console.log("Error:", error);
-      console.log("Response:", error.response);
-      console.log("Data:", error.response && error.response.data);
     } finally {
       setOpen(false);
     }
@@ -131,7 +155,11 @@ export const UpdateCompanyDetails = (props) => {
     try {
       setOpen(true);
       const response = await CustomerServices.getCompanyDataById(recordForEdit);
-      setInputValue(response.data);
+      /*
+       * Keep loaded pin_code as verified. User must re-validate only after
+       * editing pincode or if pin_code FK is missing.
+       */
+      setInputValue(response.data || {});
       dispatch(getCompanyName(response.data.name));
       setOpen(false);
     } catch (err) {
@@ -164,6 +192,17 @@ export const UpdateCompanyDetails = (props) => {
   const UpdateCompanyDetails = async (e) => {
     try {
       e.preventDefault();
+
+      if (!inputValue.pin_code || !inputValue.city || !inputValue.state) {
+        setAlertMsg({
+          message:
+            "Please validate the postal code before updating the customer",
+          severity: "error",
+          open: true,
+        });
+        return;
+      }
+
       setOpen(true);
       const req = {
         name: inputValue.name || null,
