@@ -105,7 +105,12 @@ export const ViewSRF = () => {
             qty: product.quantity,
             lr_no: index === 0 ? row.lr_no : "",
             transport: index === 0 ? row.transport || "" : "",
-            total_weight: index === 0 ? row.total_weight ?? "" : "",
+            total_weight:
+              index === 0
+                ? row.total_weight != null
+                  ? row.total_weight
+                  : ""
+                : "",
             grn: index === 0 ? row.grn || "" : "",
             date_of_dispatch: index === 0 ? row.date_of_dispatch || "" : "",
             special_instructions: product.special_instructions,
