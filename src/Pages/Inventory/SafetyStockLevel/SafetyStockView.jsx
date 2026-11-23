@@ -22,8 +22,13 @@ import { CustomPagination } from "../../../Components/CustomPagination";
 import { useNotificationHandling } from "../../../Components/useNotificationHandling ";
 import { MessageAlert } from "../../../Components/MessageAlert";
 import { CustomLoader } from "../../../Components/CustomLoader";
+import { useSelector } from "react-redux";
 
 export const SafetyStockView = () => {
+  const userData = useSelector((state) => state.auth.profile);
+  const isStoresViewOnly =
+    userData.groups.includes("Stores") ||
+    userData.groups.includes("Stores Delhi");
   const [openPopupCreate, setOpenPopupCreate] = useState(false);
   const [safetyStockData, setSafetyStockData] = useState([]);
   const [openPopupUpdate, setOpenPopupUpdate] = useState(false);
@@ -102,22 +107,23 @@ export const SafetyStockView = () => {
                 </Typography>
               </Grid>
 
-              {/* Download CSV Button on the Right */}
-              <Grid
-                item
-                xs={12}
-                sm={4}
-                md={4}
-                sx={{ display: "flex", justifyContent: "flex-end" }}
-              >
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => setOpenPopupCreate(true)}
+              {!isStoresViewOnly && (
+                <Grid
+                  item
+                  xs={12}
+                  sm={4}
+                  md={4}
+                  sx={{ display: "flex", justifyContent: "flex-end" }}
                 >
-                  Add New
-                </Button>
-              </Grid>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => setOpenPopupCreate(true)}
+                  >
+                    Add New
+                  </Button>
+                </Grid>
+              )}
             </Grid>
           </Box>
 
@@ -130,7 +136,9 @@ export const SafetyStockView = () => {
                   <StyledTableCell align="center">Description</StyledTableCell>
                   <StyledTableCell align="center">Product</StyledTableCell>
                   <StyledTableCell align="center">Quantity</StyledTableCell>
-                  <StyledTableCell align="center">Action</StyledTableCell>
+                  {!isStoresViewOnly && (
+                    <StyledTableCell align="center">Action</StyledTableCell>
+                  )}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -152,9 +160,11 @@ export const SafetyStockView = () => {
                     <StyledTableCell align="center">
                       {row.quantity}
                     </StyledTableCell>
-                    <StyledTableCell align="center">
-                      <Button onClick={() => handleEdit(row)}>Edit</Button>
-                    </StyledTableCell>
+                    {!isStoresViewOnly && (
+                      <StyledTableCell align="center">
+                        <Button onClick={() => handleEdit(row)}>Edit</Button>
+                      </StyledTableCell>
+                    )}
                   </StyledTableRow>
                 ))}
               </TableBody>

@@ -343,28 +343,30 @@ function Row({
                 <Button onClick={() => openInPopup(row)}>Edit</Button>
               )
           } */}
-          {
-            // Show Create GRN button if the user is in any of the specified groups
-            (userData.groups.includes("Stores Delhi") ||
-              userData.groups.includes("Accounts") ||
-              userData.groups.includes("Production Delhi") ||
-              userData.groups.includes("QA") ||
-              userData.groups.includes("Stores") ||
-              userData.groups.includes("Director")) && (
+          {!(
+            userData.groups.includes("Stores") ||
+            userData.groups.includes("Stores Delhi")
+          ) && (
+            <>
+              {(userData.groups.includes("Accounts") ||
+                userData.groups.includes("Production Delhi") ||
+                userData.groups.includes("QA") ||
+                userData.groups.includes("Director")) && (
+                <Button
+                  disabled={row.grn_rejected}
+                  onClick={() => handleCreateGrn(row)}
+                >
+                  Create GRN
+                </Button>
+              )}
               <Button
-                disabled={row.grn_rejected}
-                onClick={() => handleCreateGrn(row)}
+                disabled={row.grn_rejected || row.accepted}
+                onClick={handleConfromReject}
               >
-                Create GRN
+                Reject
               </Button>
-            )
-          }
-          <Button
-            disabled={row.grn_rejected || row.accepted}
-            onClick={handleConfromReject}
-          >
-            Reject
-          </Button>
+            </>
+          )}
           {/* <Button onClick={() => handleReject}>Reject</Button> */}
         </StyledTableCell>
       </StyledTableRow>
