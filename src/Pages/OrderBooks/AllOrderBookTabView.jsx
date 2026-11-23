@@ -11,6 +11,7 @@ export const AllOrderBookTabView = () => {
   const isInGroups = (...groups) =>
     groups.some((group) => userData.groups.includes(group));
   const QA = isInGroups("QA");
+  const storesViewOnly = isInGroups("Stores", "Stores Delhi");
 
   const allTabs = isInGroups(
     "Director",
@@ -41,7 +42,6 @@ export const AllOrderBookTabView = () => {
 
   const isDispatch = isInGroups("Factory-Mumbai-Dispatch");
   const customerServiceTabs = isInGroups("Customer Service");
-  const [activeTab, setActiveTab] = useState(allTabs || orderBookUsers ? 0 : 4);
 
   const tabs = [
     {
@@ -63,13 +63,22 @@ export const AllOrderBookTabView = () => {
     },
     {
       label: "PI Wise Orderbook",
-      visible: orderBookUsers || allTabs || isDispatch || customerServiceTabs,
+      visible:
+        orderBookUsers ||
+        allTabs ||
+        isDispatch ||
+        customerServiceTabs ||
+        QA ||
+        storesViewOnly,
       index: 2,
     },
   ];
 
   const visibleTabs = tabs.filter((tab) => tab.visible);
   const visibleTabIndexes = visibleTabs.map((tab) => tab.index);
+  const [activeTab, setActiveTab] = useState(
+    visibleTabIndexes[0] ?? (allTabs || orderBookUsers ? 0 : 4),
+  );
 
   const tabComponents = {
     0: <CustomerOrderBookDetails />,
@@ -77,11 +86,13 @@ export const AllOrderBookTabView = () => {
     2: <PIOrderBookDetails />,
   };
 
+  const activeVisibleIndex = visibleTabIndexes.indexOf(activeTab);
+
   return (
     <div>
       <CustomTabs
         tabs={visibleTabs}
-        activeTab={activeTab}
+        activeTab={activeVisibleIndex >= 0 ? activeVisibleIndex : 0}
         onTabChange={(index) => setActiveTab(visibleTabIndexes[index])}
       />
       {visibleTabIndexes.includes(activeTab) && (

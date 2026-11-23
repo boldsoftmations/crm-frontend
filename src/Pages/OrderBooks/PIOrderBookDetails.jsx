@@ -244,6 +244,11 @@ export const PIOrderBookDetails = () => {
     setCurrentPage(value);
   };
 
+  const isViewOnly =
+    userData.groups.includes("QA") ||
+    userData.groups.includes("Stores") ||
+    userData.groups.includes("Stores Delhi");
+
   const Tableheaders2 = [
     "Pi No",
     "Pi Date",
@@ -266,7 +271,7 @@ export const PIOrderBookDetails = () => {
     "Request Date",
     "Special Instructions",
     "Revision",
-    "ACTION",
+    ...(isViewOnly ? [] : ["ACTION"]),
   ];
   const StateOption = ["Delhi", "Maharashtra"];
   const readyDateOption = [
@@ -630,48 +635,48 @@ export const PIOrderBookDetails = () => {
                       {row.special_instructions}
                     </StyledTableCell>
                     <StyledTableCell>{row.revision}</StyledTableCell>
-                    <StyledTableCell align="center">
-                      {(userData.groups.includes("Accounts") ||
-                        userData.groups.includes(
-                          "Operations & Supply Chain Manager",
-                        ) ||
-                        userData.groups.includes("Director")) && (
-                        <Button
-                          variant="text"
-                          color="info"
-                          size="small"
-                          onClick={() => openInPopup(row)}
-                          disabled={
-                            userData.groups.includes(
+                    {!isViewOnly && (
+                      <StyledTableCell align="center">
+                        {(userData.groups.includes("Accounts") ||
+                          userData.groups.includes(
+                            "Operations & Supply Chain Manager",
+                          ) ||
+                          userData.groups.includes("Director")) && (
+                          <Button
+                            variant="text"
+                            color="info"
+                            size="small"
+                            onClick={() => openInPopup(row)}
+                            disabled={
+                              userData.groups.includes(
+                                "Operations & Supply Chain Manager",
+                              ) ||
+                              userData.groups.includes("Accounts Executive")
+                            }
+                          >
+                            Account View
+                          </Button>
+                        )}
+                        {(userData.groups.includes("Production") ||
+                          userData.groups.includes("Production Delhi") ||
+                          userData.groups.includes(
+                            "Operations & Supply Chain Manager",
+                          ) ||
+                          userData.groups.includes("Director")) && (
+                          <Button
+                            variant="text"
+                            color="secondary"
+                            size="small"
+                            onClick={() => openInPopup2(row)}
+                            disabled={userData.groups.includes(
                               "Operations & Supply Chain Manager",
-                            ) || userData.groups.includes("Accounts Executive")
-                          }
-                        >
-                          Account View
-                        </Button>
-                      )}
-                      {(userData.groups.includes("Production") ||
-                        userData.groups.includes("QA") ||
-                        userData.groups.includes("Production Delhi") ||
-                        userData.groups.includes(
-                          "Operations & Supply Chain Manager",
-                        ) ||
-                        userData.groups.includes("Director")) && (
-                        <Button
-                          variant="text"
-                          color="secondary"
-                          size="small"
-                          onClick={() => openInPopup2(row)}
-                          disabled={
-                            userData.groups.includes(
-                              "Operations & Supply Chain Manager",
-                            ) || userData.groups.includes("QA")
-                          }
-                        >
-                          Production View
-                        </Button>
-                      )}
-                    </StyledTableCell>
+                            )}
+                          >
+                            Production View
+                          </Button>
+                        )}
+                      </StyledTableCell>
+                    )}
                   </StyledTableRow>
                 ))}
               </TableBody>

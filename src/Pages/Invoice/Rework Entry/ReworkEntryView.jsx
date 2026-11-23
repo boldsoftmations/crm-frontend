@@ -35,6 +35,10 @@ export const ReworkEntryView = () => {
   const [openConsumablePopUp, setOpenConsumablePopUp] = useState(false);
   const [openRawMaterialPopUp, setOpenRawmaterialPopUp] = useState(false);
   const { profile: users } = useSelector((state) => state.auth);
+  const isViewOnly =
+    users.groups.includes("QA") ||
+    users.groups.includes("Stores") ||
+    users.groups.includes("Stores Delhi");
 
   const { handleSuccess, handleError, handleCloseSnackbar, alertInfo } =
     useNotificationHandling();
@@ -223,7 +227,12 @@ export const ReworkEntryView = () => {
                       <Switch
                         checked={row.is_accepted}
                         inputProps={{ "aria-label": "controlled" }}
-                        onClick={() => handleUpdateReworkInvoice(row)}
+                        disabled={isViewOnly || row.is_accepted}
+                        onClick={() => {
+                          if (!isViewOnly && !row.is_accepted) {
+                            handleUpdateReworkInvoice(row);
+                          }
+                        }}
                       />
                     </StyledTableCell>
                     <StyledTableCell align="center">

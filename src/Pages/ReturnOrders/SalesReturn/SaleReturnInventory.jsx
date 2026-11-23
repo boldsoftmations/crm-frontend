@@ -38,6 +38,10 @@ export const SaleReturnInventory = () => {
   const [openModalScrapInvoice, setOpenModalScrapInvoice] = useState(false);
   const [openModalReworkInvoice, setOpenModalReworkInvoice] = useState(false);
   const { profile: users } = useSelector((state) => state.auth);
+  const isViewOnly =
+    users.groups.includes("QA") ||
+    users.groups.includes("Stores") ||
+    users.groups.includes("Stores Delhi");
 
   const [selectedRow, setSelectedRow] = useState({
     unit: "",
@@ -179,33 +183,35 @@ export const SaleReturnInventory = () => {
               </Grid>
 
               {/* Add Button on the right */}
-              <Grid item xs={12} md={5}>
-                <Button
-                  disabled={buttonDisabled}
-                  onClick={() => setOpenModalSupplierInvoice(true)}
-                  variant="outlined"
-                >
-                  Supplier Invoice
-                </Button>
-                <Button
-                  sx={{ marginLeft: "5px" }}
-                  disabled={buttonDisabled}
-                  onClick={() => setOpenModalScrapInvoice(true)}
-                  variant="outlined"
-                  color="success"
-                >
-                  Scrap Invoice
-                </Button>
-                <Button
-                  sx={{ marginLeft: "5px" }}
-                  disabled={buttonDisabled}
-                  onClick={() => handleReworkEntry()}
-                  variant="outlined"
-                  color="secondary"
-                >
-                  Rework Entry
-                </Button>
-              </Grid>
+              {!isViewOnly && (
+                <Grid item xs={12} md={5}>
+                  <Button
+                    disabled={buttonDisabled}
+                    onClick={() => setOpenModalSupplierInvoice(true)}
+                    variant="outlined"
+                  >
+                    Supplier Invoice
+                  </Button>
+                  <Button
+                    sx={{ marginLeft: "5px" }}
+                    disabled={buttonDisabled}
+                    onClick={() => setOpenModalScrapInvoice(true)}
+                    variant="outlined"
+                    color="success"
+                  >
+                    Scrap Invoice
+                  </Button>
+                  <Button
+                    sx={{ marginLeft: "5px" }}
+                    disabled={buttonDisabled}
+                    onClick={() => handleReworkEntry()}
+                    variant="outlined"
+                    color="secondary"
+                  >
+                    Rework Entry
+                  </Button>
+                </Grid>
+              )}
             </Grid>
           </Box>
 
@@ -230,7 +236,9 @@ export const SaleReturnInventory = () => {
             >
               <TableHead>
                 <TableRow>
-                  <StyledTableCell align="center">Checkbox</StyledTableCell>
+                  {!isViewOnly && (
+                    <StyledTableCell align="center">Checkbox</StyledTableCell>
+                  )}
                   <StyledTableCell align="center">UNIT</StyledTableCell>
                   <StyledTableCell align="center">BATCH_NO</StyledTableCell>
                   <StyledTableCell align="center">PRODUCT</StyledTableCell>
@@ -249,15 +257,17 @@ export const SaleReturnInventory = () => {
               <TableBody>
                 {salesReturnInventoryData.map((row) => (
                   <StyledTableRow>
-                    <StyledTableCell align="center">
-                      <Checkbox
-                        checked={selectedRow.products.some(
-                          (item) => item.id === row.id,
-                        )}
-                        onChange={() => handleCheckboxChange(row)}
-                        inputProps={{ "aria-label": "controlled" }}
-                      />
-                    </StyledTableCell>
+                    {!isViewOnly && (
+                      <StyledTableCell align="center">
+                        <Checkbox
+                          checked={selectedRow.products.some(
+                            (item) => item.id === row.id,
+                          )}
+                          onChange={() => handleCheckboxChange(row)}
+                          inputProps={{ "aria-label": "controlled" }}
+                        />
+                      </StyledTableCell>
+                    )}
                     <StyledTableCell align="center">{row.unit}</StyledTableCell>
                     <StyledTableCell align="center">
                       {row.batch_no}
