@@ -77,7 +77,11 @@ export const AllOrderBookTabView = () => {
   const visibleTabs = tabs.filter((tab) => tab.visible);
   const visibleTabIndexes = visibleTabs.map((tab) => tab.index);
   const [activeTab, setActiveTab] = useState(
-    visibleTabIndexes[0] ?? (allTabs || orderBookUsers ? 0 : 4),
+    visibleTabIndexes[0] !== undefined
+      ? visibleTabIndexes[0]
+      : allTabs || orderBookUsers
+        ? 0
+        : 4,
   );
 
   const tabComponents = {
