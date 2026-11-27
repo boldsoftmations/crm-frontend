@@ -198,8 +198,7 @@ export const AllProformaInvoiceView = (props) => {
       >
         <div className="row p-4">
           <div className="col-xs-6 ">
-            {invoiceData.status !== "Pending Approval" &&
-              invoiceData.status !== "Raised" && (
+            {invoiceData.can_download === true && (
                 <div>
                   <Button
                     variant="contained"

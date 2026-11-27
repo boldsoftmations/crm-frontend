@@ -354,11 +354,7 @@ export const ProformaInvoiceView = (props) => {
       >
         <div className="row p-4">
           <div className="col-xs-6 ">
-            {invoiceData &&
-              invoiceData.status &&
-              invoiceData.status !== "Pending Approval" &&
-              invoiceData.status !== "Price Approval" &&
-              invoiceData.status !== "Raised" && (
+            {invoiceData && invoiceData.can_download === true && (
                 <Button
                   variant="contained"
                   color="primary"
@@ -369,11 +365,7 @@ export const ProformaInvoiceView = (props) => {
                 </Button>
               )}
 
-            {invoiceData &&
-              invoiceData.status &&
-              invoiceData.status !== "Pending Approval" &&
-              invoiceData.status !== "Price Approval" &&
-              invoiceData.status !== "Raised" && (
+            {invoiceData && invoiceData.can_download === true && (
                 <Button
                   variant="contained"
                   color="secondary"
